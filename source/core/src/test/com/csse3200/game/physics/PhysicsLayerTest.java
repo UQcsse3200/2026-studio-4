@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 class PhysicsLayerTest {
   @Test
   void weaponLayerShouldBeDistinctFromPlayerAndNpc() {
-    assertEquals(1 << 4, PhysicsLayer.WEAPON);
+    assertEquals(PhysicsLayer.WEAPON, 1 << 4);
     assertFalse(PhysicsLayer.contains(PhysicsLayer.PLAYER, PhysicsLayer.WEAPON));
     assertFalse(PhysicsLayer.contains(PhysicsLayer.NPC, PhysicsLayer.WEAPON));
     assertTrue(PhysicsLayer.contains(PhysicsLayer.ALL, PhysicsLayer.WEAPON));
