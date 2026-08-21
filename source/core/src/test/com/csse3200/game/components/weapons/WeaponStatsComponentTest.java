@@ -92,6 +92,25 @@ class WeaponStatsComponentTest {
   }
 
   @Test
+  void shouldIgnoreUpdateWhenAlreadyReady() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.4f, 10, 0f);
+    stats.update(0.2f);
+    assertEquals(0f, stats.getRemainingCooldown());
+    assertTrue(stats.canAttack());
+  }
+
+  @Test
+  void shouldSetValidStats() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.4f, 10, 1f);
+    stats.setCooldown(0.8f);
+    stats.setDamage(20);
+    stats.setKnockback(2.5f);
+    assertEquals(0.8f, stats.getCooldown());
+    assertEquals(20, stats.getDamage());
+    assertEquals(2.5f, stats.getKnockback());
+  }
+
+  @Test
   void shouldUpdateFromTimeSource() {
     GameTime gameTime = mock(GameTime.class);
     when(gameTime.getDeltaTime()).thenReturn(0.2f);

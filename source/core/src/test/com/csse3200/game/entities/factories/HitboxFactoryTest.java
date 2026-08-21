@@ -86,14 +86,48 @@ class HitboxFactoryTest {
   }
 
   @Test
-  void shouldRejectInvalidSpec() {
+  void shouldRejectNullSpec() {
     assertThrows(IllegalArgumentException.class, () -> HitboxFactory.createHitbox(null));
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> HitboxFactory.createHitbox(meleeSpec().size(new Vector2(0f, 1f))));
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> HitboxFactory.createHitbox(meleeSpec().lifetime(-0.1f)));
+  }
+
+  @Test
+  void shouldRejectMissingPosition() {
+    HitboxSpec spec = new HitboxSpec().size(new Vector2(0.4f, 0.8f));
+    assertThrows(IllegalArgumentException.class, () -> HitboxFactory.createHitbox(spec));
+  }
+
+  @Test
+  void shouldRejectMissingSize() {
+    HitboxSpec spec = new HitboxSpec().position(new Vector2(1f, 2f));
+    assertThrows(IllegalArgumentException.class, () -> HitboxFactory.createHitbox(spec));
+  }
+
+  @Test
+  void shouldRejectNonPositiveSize() {
+    HitboxSpec zeroWidth = meleeSpec().size(new Vector2(0f, 1f));
+    HitboxSpec zeroHeight = meleeSpec().size(new Vector2(1f, 0f));
+    HitboxSpec negativeSize = meleeSpec().size(new Vector2(-0.1f, 1f));
+    assertThrows(IllegalArgumentException.class, () -> HitboxFactory.createHitbox(zeroWidth));
+    assertThrows(IllegalArgumentException.class, () -> HitboxFactory.createHitbox(zeroHeight));
+    assertThrows(IllegalArgumentException.class, () -> HitboxFactory.createHitbox(negativeSize));
+  }
+
+  @Test
+  void shouldRejectNegativeLifetime() {
+    HitboxSpec spec = meleeSpec().lifetime(-0.1f);
+    assertThrows(IllegalArgumentException.class, () -> HitboxFactory.createHitbox(spec));
+  }
+
+  @Test
+  void shouldRejectNegativeDamage() {
+    HitboxSpec spec = meleeSpec().damage(-1);
+    assertThrows(IllegalArgumentException.class, () -> HitboxFactory.createHitbox(spec));
+  }
+
+  @Test
+  void shouldRejectNegativeKnockback() {
+    HitboxSpec spec = meleeSpec().knockback(-0.5f);
+    assertThrows(IllegalArgumentException.class, () -> HitboxFactory.createHitbox(spec));
   }
 
   @Test
@@ -108,6 +142,15 @@ class HitboxFactoryTest {
     assertNotNull(weapon.spawned);
     assertNotNull(weapon.spawned.getComponent(HitboxComponent.class));
     assertFalse(weapon.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+  }
+
+  @Test
+  void shouldPreventInstantiation() throws Exception {
+    var constructor = HitboxFactory.class.getDeclaredConstructor();
+    constructor.setAccessible(true);
+    Exception thrown =
+        assertThrows(java.lang.reflect.InvocationTargetException.class, constructor::newInstance);
+    assertTrue(thrown.getCause() instanceof IllegalStateException);
   }
 
   private static HitboxSpec meleeSpec() {

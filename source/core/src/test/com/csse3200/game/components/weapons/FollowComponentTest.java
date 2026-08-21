@@ -1,6 +1,8 @@
 package com.csse3200.game.components.weapons;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;
@@ -58,5 +60,49 @@ class FollowComponentTest {
     follower.update();
     assertEquals(0f, follower.getPosition().x, 1e-4f);
     assertEquals(1f, follower.getPosition().y, 1e-4f);
+  }
+
+  @Test
+  void shouldCopyOffsetSoCallerMutationDoesNotMoveFollower() {
+    Entity owner = new Entity();
+    owner.setPosition(0f, 0f);
+    Vector2 offset = new Vector2(1f, 0f);
+    FollowComponent follow = new FollowComponent(owner, offset);
+    Entity follower = new Entity().addComponent(follow);
+    follower.create();
+
+    offset.set(99f, 99f);
+    follower.update();
+    assertEquals(1f, follower.getPosition().x, 1e-4f);
+    assertEquals(0f, follower.getPosition().y, 1e-4f);
+  }
+
+  @Test
+  void shouldExposeOwnerAndOffsetCopies() {
+    Entity owner = new Entity();
+    FollowComponent follow = new FollowComponent(owner, new Vector2(2f, 3f));
+    assertSame(owner, follow.getOwner());
+    Vector2 copy = follow.getLocalOffset();
+    copy.set(0f, 0f);
+    assertEquals(2f, follow.getLocalOffset().x, 1e-4f);
+    assertEquals(3f, follow.getLocalOffset().y, 1e-4f);
+  }
+
+  @Test
+  void shouldRejectNullOwner() {
+    Vector2 offset = new Vector2(1f, 0f);
+    assertThrows(IllegalArgumentException.class, () -> new FollowComponent(null, offset));
+  }
+
+  @Test
+  void shouldRejectNullOffset() {
+    Entity owner = new Entity();
+    assertThrows(IllegalArgumentException.class, () -> new FollowComponent(owner, null));
+  }
+
+  @Test
+  void shouldRejectNullSetLocalOffset() {
+    FollowComponent follow = new FollowComponent(new Entity(), new Vector2(1f, 0f));
+    assertThrows(IllegalArgumentException.class, () -> follow.setLocalOffset(null));
   }
 }
