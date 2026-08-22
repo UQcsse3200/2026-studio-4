@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.List;
  *
  * <p>Support for enabling/disabling game areas could be added by making this a Component instead.
  */
-public abstract class GameArea implements Disposable {
+public abstract class GameArea extends Component implements Disposable {
   protected TerrainComponent terrain;
   protected List<Entity> areaEntities;
 
