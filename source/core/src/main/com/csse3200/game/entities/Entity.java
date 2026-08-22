@@ -201,10 +201,8 @@ public class Entity {
 
   /** Dispose of the entity. This will dispose of all components on this entity. */
   public void dispose() {
-    // Index loop: dispose() can run from a component update(), and LibGDX Array for-each
-    // iterators cannot be nested on the same array.
-    for (int i = 0; i < createdComponents.size; i++) {
-      createdComponents.get(i).dispose();
+    for (Component component : createdComponents) {
+      component.dispose();
     }
     ServiceLocator.getEntityService().unregister(this);
   }
