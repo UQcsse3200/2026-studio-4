@@ -50,7 +50,13 @@ public class CombatStatsComponent extends Component {
     }
     if (entity != null) {
       entity.getEvents().trigger("updateHealth", this.health);
+
+      if (isDead()) {
+        entity.getEvents().trigger("onDeath", entity.getPosition(), entity);
+        entity.dispose();
+      }
     }
+
   }
 
   /**
