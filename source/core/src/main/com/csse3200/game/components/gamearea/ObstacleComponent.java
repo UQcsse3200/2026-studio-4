@@ -8,6 +8,11 @@ import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.utils.math.RandomUtils;
 
+/**
+ * Component used to create obstacles and add them to game area entities. Any
+ * game ares which utilises obstacles such as walls or rocks should have an instance
+ * of this class registered. This class can be extended for more specific obstacle needs.
+ */
 public class ObstacleComponent extends Component {
     private int NumOfObstacles;
     private TerrainComponent terrain;
@@ -21,8 +26,8 @@ public class ObstacleComponent extends Component {
 
         for (int i = 0; i < NumOfObstacles; i++) {
             GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity tree = ObstacleFactory.createTree();
+            Entity tree = ObstacleFactory.createObstacle(TREE);
             //Spawn entity on game are
         }
-    }
+        }
 }
