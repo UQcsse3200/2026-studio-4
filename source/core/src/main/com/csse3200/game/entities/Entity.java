@@ -282,6 +282,10 @@ public class Entity {
 
   @Override
   public String toString() {
-    return String.format("Entity{id=%d}", id);
+    StringBuilder sb = new StringBuilder();
+    for (Component comp : createdComponents) {
+      sb.append(comp.getClass()).append(", ");
+    }
+    return String.format("Entity{id=%d}, with components: {%s}", id,sb.toString());
   }
 }
