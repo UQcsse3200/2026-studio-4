@@ -69,6 +69,7 @@ public class MainGameScreen extends ScreenAdapter {
 
     logger.debug("Initialising main game screen entities");
     Entity room = RoomFactory.createRoom(renderer, "Cool Room");
+    // room.getComponent(ObstacleComponent.class).createTrees();
     ServiceLocator.getEntityService().register(room);
 
     player = PlayerFactory.createPlayer();

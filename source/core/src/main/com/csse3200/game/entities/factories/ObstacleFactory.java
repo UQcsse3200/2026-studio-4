@@ -30,7 +30,7 @@ public class ObstacleFactory {
         obstacle.addComponent(new TextureRenderComponent("images/tree.png"));
         break;
       case "Rock":
-        //obstacle.addComponent(new TextureRenderComponent("images/rock.png"))
+        // obstacle.addComponent(new TextureRenderComponent("images/rock.png"))
         break;
     }
     obstacle.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
