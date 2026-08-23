@@ -19,6 +19,7 @@ import java.util.List;
 public abstract class GameArea extends Component implements Disposable {
   protected TerrainComponent terrain;
   protected List<Entity> areaEntities;
+  protected Entity player;
 
   protected GameArea() {
     areaEntities = new ArrayList<>();
@@ -32,6 +33,15 @@ public abstract class GameArea extends Component implements Disposable {
     for (Entity entity : areaEntities) {
       entity.dispose();
     }
+  }
+
+  /**
+   * Get the player entity
+   *
+   * @return The player entity
+   */
+  public Entity getPlayer() {
+    return player;
   }
 
   /**
