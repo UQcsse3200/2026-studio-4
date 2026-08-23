@@ -45,8 +45,13 @@ public class NPCFactory {
    * @return entity
    */
   public static Entity createGhost(Entity target) {
-    Entity ghost = createBaseNPC(target);
+    Entity ghost = createBaseNPC();
     BaseEntityConfig config = configs.ghost;
+
+    AITaskComponent aiComponent =
+        new AITaskComponent()
+            .addTask(new WanderTask(new Vector2(2f, 2f), 2f))
+            .addTask(new ChaseTask(target, 10, 3f, 4f));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -56,6 +61,8 @@ public class NPCFactory {
 
     ghost
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
+        .addComponent(aiComponent)
         .addComponent(animator)
         .addComponent(new GhostAnimationController());
 
@@ -71,8 +78,13 @@ public class NPCFactory {
    * @return entity
    */
   public static Entity createGhostKing(Entity target) {
-    Entity ghostKing = createBaseNPC(target);
+    Entity ghostKing = createBaseNPC();
     GhostKingConfig config = configs.ghostKing;
+
+    AITaskComponent aiComponent =
+        new AITaskComponent()
+            .addTask(new WanderTask(new Vector2(2f, 2f), 2f))
+            .addTask(new ChaseTask(target, 10, 3f, 4f));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -83,6 +95,8 @@ public class NPCFactory {
 
     ghostKing
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
+        .addComponent(aiComponent)
         .addComponent(animator)
         .addComponent(new GhostAnimationController());
 
@@ -95,20 +109,14 @@ public class NPCFactory {
    *
    * @return entity
    */
-  private static Entity createBaseNPC(Entity target) {
-    AITaskComponent aiComponent =
-        new AITaskComponent()
-            .addTask(new WanderTask(new Vector2(2f, 2f), 2f))
-            .addTask(new ChaseTask(target, 10, 3f, 4f));
+  public static Entity createBaseNPC() {
     Entity npc =
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
-            .addComponent(new DeathComponent())
-            .addComponent(aiComponent);
+            .addComponent(new DeathComponent());
 
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);
     return npc;
