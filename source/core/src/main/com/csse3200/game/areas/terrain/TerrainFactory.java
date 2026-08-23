@@ -85,6 +85,41 @@ public class TerrainFactory {
     }
   }
 
+  public TerrainComponent createTerrain(TerrainConfig terrainConfig, CameraComponent camera) {
+    ResourceService resourceService = ServiceLocator.getResourceService();
+    TextureRegion ground =
+        new TextureRegion(resourceService.getAsset(terrainConfig.groundTexture, Texture.class));
+    TextureRegion groundAlt1 =
+        new TextureRegion(resourceService.getAsset(terrainConfig.gAltTexture1, Texture.class));
+    TextureRegion groundAlt2 =
+        new TextureRegion(resourceService.getAsset(terrainConfig.gAltTexture2, Texture.class));
+
+    GridPoint2 tileSize = new GridPoint2(ground.getRegionWidth(), ground.getRegionHeight());
+    TerrainTile groundTile = new TerrainTile(ground);
+    TerrainTile groundAlt1Tile = new TerrainTile(groundAlt1);
+    TerrainTile groundAlt2Tile = new TerrainTile(groundAlt2);
+    TiledMapTileLayer layer =
+        new TiledMapTileLayer(
+            terrainConfig.MAP_SIZE.x, terrainConfig.MAP_SIZE.y, tileSize.x, tileSize.y);
+
+    fillTiles(layer, terrainConfig.MAP_SIZE, groundTile);
+    fillTilesAtRandom(
+        layer, terrainConfig.MAP_SIZE, groundAlt1Tile, terrainConfig.gAltTexture1Count);
+    fillTilesAtRandom(
+        layer, terrainConfig.MAP_SIZE, groundAlt2Tile, terrainConfig.gAltTexture2Count);
+
+    TiledMap tiledMap = new TiledMap();
+    tiledMap.getLayers().add(layer);
+
+    TiledMapRenderer renderer = new OrthogonalTiledMapRenderer(tiledMap, 0.5f / tileSize.x);
+    return new TerrainComponent(
+        (OrthographicCamera) camera.getCamera(),
+        tiledMap,
+        renderer,
+        TerrainOrientation.ORTHOGONAL,
+        0.5f);
+  }
+
   private TerrainComponent createForestDemoTerrain(
       float tileWorldSize, TextureRegion grass, TextureRegion grassTuft, TextureRegion rocks) {
     GridPoint2 tilePixelSize = new GridPoint2(grass.getRegionWidth(), grass.getRegionHeight());

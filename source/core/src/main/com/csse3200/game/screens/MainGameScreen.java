@@ -4,12 +4,12 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
-import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.input.InputComponent;
@@ -68,15 +68,11 @@ public class MainGameScreen extends ScreenAdapter {
     createUI();
 
     logger.debug("Initialising main game screen entities");
-    // TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
-    // ForestGameArea forestGameArea = new ForestGameArea(terrainFactory);
-    // forestGameArea.create();
-    Entity room = RoomFactory.createForestGameArea(renderer);
+    Entity room = RoomFactory.createRoom(renderer, "Cool Room");
     ServiceLocator.getEntityService().register(room);
-    ForestGameArea area = room.getComponent(ForestGameArea.class);
-    if (area != null) {
-      player = area.getPlayer();
-    }
+
+    player = PlayerFactory.createPlayer();
+    ServiceLocator.getEntityService().register(player);
   }
 
   @Override
