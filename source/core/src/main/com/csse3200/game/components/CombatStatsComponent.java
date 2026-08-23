@@ -66,26 +66,25 @@ public class CombatStatsComponent extends Component {
    *
    * @param health health
    */
-public void setHealth(int health){
-  boolean wasDead = isDead();
+  public void setHealth(int health) {
+    boolean wasDead = isDead();
 
-  if (health > maxHealth) {
-    this.health = maxHealth;
-  }else if (health >= 0) {
-    this.health = health;
-  }else {
-    this.health = 0;
-  }
+    if (health > maxHealth) {
+      this.health = maxHealth;
+    } else if (health >= 0) {
+      this.health = health;
+    } else {
+      this.health = 0;
+    }
 
-  if (entity != null){
-    entity.getEvents().trigger("enemyDied");
-    //Trigger enemyDied event for Team 4 / Task 6 integration when entity dies
-    if (!wasDead && !isDead()) {
+    if (entity != null) {
       entity.getEvents().trigger("enemyDied");
+      // Trigger enemyDied event for Team 4 / Task 6 integration when entity dies
+      if (!wasDead && !isDead()) {
+        entity.getEvents().trigger("enemyDied");
+      }
     }
   }
-}
-
 
   /**
    * Adds to the player's health. The amount added can be negative.
@@ -119,13 +118,12 @@ public void setHealth(int health){
   }
 
   /**
-   * Core method for dealing raw damage directly.
-   * Handles health reduction, hit reaction, and death checks.
-   * Compatible with Task 2 ticket spec.
+   * Core method for dealing raw damage directly. Handles health reduction, hit reaction, and death
+   * checks. Compatible with Task 2 ticket spec.
    *
    * @param damage Amount of damage to deal
    */
-  public  void takeDamage(int damage) {
+  public void takeDamage(int damage) {
     if (damage > 0) {
       addHealth(-damage);
       if (!isDead()) {
@@ -135,8 +133,8 @@ public void setHealth(int health){
   }
 
   /**
-   * Covinience method for entity-on-emtity combat.
-   * Reads base attack from the attacker and applies damage.
+   * Covinience method for entity-on-emtity combat. Reads base attack from the attacker and applies
+   * damage.
    *
    * @param attacker The entity dealing damage
    */
@@ -146,12 +144,10 @@ public void setHealth(int health){
     }
   }
 
-  /**
-   * Applies visual red flash and knockback hit reaction.
-   */
+  /** Applies visual red flash and knockback hit reaction. */
   private void applyHitreaction() {
-    //TODO: Visual red flash & knockback implementation before Aug 28
-    if(entity != null) {
+    // TODO: Visual red flash & knockback implementation before Aug 28
+    if (entity != null) {
       entity.getEvents().trigger("hitReaction");
     }
   }
