@@ -11,6 +11,15 @@ import com.csse3200.game.rendering.Renderer;
 
 /** Factory to create rooms with predefined components */
 public class RoomFactory {
+  private Renderer renderer;
+
+  public RoomFactory(Renderer renderer) {
+    this.renderer = renderer;
+  }
+
+  public Entity createRoom(String roomName) {
+    return createRoom(renderer, roomName);
+  }
 
   /**
    * Creates the original forest game area as a entity.

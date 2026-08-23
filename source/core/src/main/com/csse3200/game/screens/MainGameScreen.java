@@ -7,6 +7,7 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.PlayerFactory;
@@ -43,11 +44,14 @@ public class MainGameScreen extends ScreenAdapter {
   private final PhysicsEngine physicsEngine;
 
   private Entity player = null;
+  private RoomManager roomManager;
+  private Terminal terminal;
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
 
     logger.debug("Initialising main game screen services");
+    terminal = new Terminal();
     ServiceLocator.registerTimeSource(new GameTime());
 
     PhysicsService physicsService = new PhysicsService();
@@ -62,18 +66,22 @@ public class MainGameScreen extends ScreenAdapter {
 
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
-
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
-    loadAssets();
-    createUI();
-
     logger.debug("Initialising main game screen entities");
-    Entity room = RoomFactory.createRoom(renderer, "Cool Room");
-    ServiceLocator.getEntityService().register(room);
 
+    loadAssets();
     player = PlayerFactory.createPlayer();
+
+    RoomFactory roomFactory = new RoomFactory(renderer);
+    roomManager = new RoomManager(player, roomFactory);
     ServiceLocator.getEntityService().register(player);
+
+    roomManager.addRoom(RoomFactory.createRoom(renderer, "Second Room"));
+
+    terminal.addCommand("room", roomManager);
+
+    createUI();
   }
 
   @Override
@@ -144,7 +152,7 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(new PerformanceDisplay())
         .addComponent(new MainGameActions(this.game))
         .addComponent(new MainGameExitDisplay())
-        .addComponent(new Terminal())
+        .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay());
 
