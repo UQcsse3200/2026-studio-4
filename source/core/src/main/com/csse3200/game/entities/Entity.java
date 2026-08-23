@@ -286,6 +286,6 @@ public class Entity {
     for (Component comp : createdComponents) {
       sb.append(comp.getClass()).append(", ");
     }
-    return String.format("Entity{id=%d}, with components: {%s}", id,sb.toString());
+    return String.format("Entity{id=%d}, with components: {%s}", id, sb.toString());
   }
 }

@@ -48,8 +48,6 @@ public class ForestGameArea extends GameArea {
 
   private final TerrainFactory terrainFactory;
 
-
-
   /**
    * Initialise this ForestGameArea to use the provided TerrainFactory.
    *
