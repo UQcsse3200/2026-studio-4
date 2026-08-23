@@ -14,14 +14,14 @@ import org.slf4j.LoggerFactory;
  */
 public class RoomAssetsComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(RoomAssetsComponent.class);
-  private final String playerTexture = "images/box_boy_leaf.png";
+  // private final String playerTexture = "images/box_boy_leaf.png";
   private final String tileTexture1 = "images/grass_1.png";
   private final String tileTexture2 = "images/grass_2.png";
   private final String tileTexture3 = "images/grass_3.png";
 
   private final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
 
-  private final String[] textures = {playerTexture, tileTexture1, tileTexture2, tileTexture3};
+  private final String[] textures = {tileTexture1, tileTexture2, tileTexture3};
   private final String[] music = {backgroundMusic};
   private final String[] sounds = {"sounds/Impact4.ogg"};
   private final String[] enemyTextures = {"images/ghost_1.png", "images/ghost_king.png"};

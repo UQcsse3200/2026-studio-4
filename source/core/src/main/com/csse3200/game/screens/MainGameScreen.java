@@ -34,7 +34,8 @@ import org.slf4j.LoggerFactory;
  */
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
-  private static final String[] mainGameTextures = {"images/heart.png"};
+  // TODO: Eventually load player asset with the player entity
+  private static final String[] mainGameTextures = {"images/heart.png", "images/box_boy_leaf.png"};
   private Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
   private final GdxGame game;
