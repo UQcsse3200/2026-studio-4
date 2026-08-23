@@ -12,9 +12,11 @@ public class CombatStatsComponent extends Component {
 
   private static final Logger logger = LoggerFactory.getLogger(CombatStatsComponent.class);
   private int health;
+  private int maxHealth;
   private int baseAttack;
 
   public CombatStatsComponent(int health, int baseAttack) {
+    this.maxHealth = health;
     setHealth(health);
     setBaseAttack(baseAttack);
   }
@@ -40,23 +42,48 @@ public class CombatStatsComponent extends Component {
   /**
    * Sets the entity's health. Health has a minimum bound of 0.
    *
+   * @return max health
+   */
+  public int getMaxHealth() {
+    return maxHealth;
+  }
+
+  /**
+   * Sets the entity's health. Health has a minimum bound of 0.
+   *
+   * @param maxHealth max health
+   */
+  public void setMaxHealth(int maxHealth) {
+    if (maxHealth >= 0) {
+      this.maxHealth = maxHealth;
+    } else {
+      logger.error("cannot set health to a negative value");
+    }
+  }
+
+  /**
+   * Sets the entity's health. Health has a minimum bound of 0.
+   *
    * @param health health
    */
   public void setHealth(int health) {
-    if (health >= 0) {
+    boolean wasDead = isDead();
+
+    if (health > maxHealth) {
+      this.health = maxHealth;
+    } else if (health >= 0) {
       this.health = health;
     } else {
       this.health = 0;
     }
+
     if (entity != null) {
       entity.getEvents().trigger("updateHealth", this.health);
-
-      if (isDead()) {
-        entity.getEvents().trigger("onDeath", entity.getPosition(), entity);
+      if (!wasDead && isDead()) {
+        entity.getEvents().trigger("enemyDied", entity.getPosition(), entity);
         entity.dispose();
       }
     }
-
   }
 
   /**
@@ -90,8 +117,38 @@ public class CombatStatsComponent extends Component {
     }
   }
 
+  /**
+   * Core method for dealing raw damage directly. Handles health reduction, hit reaction, and death
+   * checks. Compatible with Task 2 ticket spec.
+   *
+   * @param damage Amount of damage to deal
+   */
+  public void takeDamage(int damage) {
+    if (damage > 0) {
+      addHealth(-damage);
+      if (!isDead()) {
+        applyHitreaction();
+      }
+    }
+  }
+
+  /**
+   * Covinience method for entity-on-emtity combat. Reads base attack from the attacker and applies
+   * damage.
+   *
+   * @param attacker The entity dealing damage
+   */
   public void hit(CombatStatsComponent attacker) {
-    int newHealth = getHealth() - attacker.getBaseAttack();
-    setHealth(newHealth);
+    if (attacker != null) {
+      takeDamage(attacker.getBaseAttack());
+    }
+  }
+
+  /** Applies visual red flash and knockback hit reaction. */
+  private void applyHitreaction() {
+    // TODO: Visual red flash & knockback implementation before Aug 28
+    if (entity != null) {
+      entity.getEvents().trigger("hitReaction");
+    }
   }
 }
