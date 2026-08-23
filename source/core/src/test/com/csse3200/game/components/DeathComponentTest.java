@@ -21,7 +21,7 @@ class DeathComponentTest {
     Entity entity = new Entity().addComponent(new DeathComponent());
     entity.create();
 
-    entity.getEvents().trigger("enemyDied", new Vector2(0, 0), entity);
+    entity.getEvents().trigger("entityDied", new Vector2(0, 0), entity);
 
     verify(entityService).unregister(entity);
   }

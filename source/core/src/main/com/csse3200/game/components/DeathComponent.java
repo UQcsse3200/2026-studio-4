@@ -15,7 +15,7 @@ public class DeathComponent extends Component {
     entity
         .getEvents()
         .addListener(
-            "enemyDied",
+            "entityDied",
             (Vector2 position, Entity deadEntity) -> {
               entity.dispose();
             });
