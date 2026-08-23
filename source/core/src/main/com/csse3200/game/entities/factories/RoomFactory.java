@@ -1,11 +1,10 @@
 package com.csse3200.game.entities.factories;
 
 import com.csse3200.game.areas.ForestGameArea;
-import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TerrainConfig;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
-import com.csse3200.game.components.gamearea.ObstacleComponent;
+import com.csse3200.game.components.rooms.ObstacleComponent;
 import com.csse3200.game.components.rooms.RoomAssetsComponent;
 import com.csse3200.game.components.rooms.WallComponent;
 import com.csse3200.game.entities.Entity;
@@ -51,7 +50,8 @@ public class RoomFactory {
             .addComponent(assetsComponent)
             .addComponent(new GameAreaDisplay(roomName))
             .addComponent(terrainFactory.createTerrain(terrainConfig, renderer.getCamera()))
-            .addComponent(new WallComponent());
+            .addComponent(new WallComponent())
+            .addComponent(new ObstacleComponent());
 
     return entity;
   }
