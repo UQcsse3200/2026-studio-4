@@ -4,6 +4,8 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.areas.ForestGameArea;
+import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
@@ -34,11 +36,13 @@ import org.slf4j.LoggerFactory;
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
   private static final String[] mainGameTextures = {"images/heart.png"};
-  private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
+  private Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
+
+  private Entity player = null;
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
@@ -58,6 +62,7 @@ public class MainGameScreen extends ScreenAdapter {
 
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
+
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
     loadAssets();
@@ -69,10 +74,17 @@ public class MainGameScreen extends ScreenAdapter {
     // forestGameArea.create();
     Entity room = RoomFactory.createForestGameArea(renderer);
     ServiceLocator.getEntityService().register(room);
+    ForestGameArea area = room.getComponent(ForestGameArea.class);
+    if (area != null) {
+      player = area.getPlayer();
+    }
   }
 
   @Override
   public void render(float delta) {
+    if (player != null){
+      renderer.getCamera().getEntity().setPosition(player.getPosition());
+    }
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
