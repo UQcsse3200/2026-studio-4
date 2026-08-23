@@ -16,22 +16,28 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 public class ObstacleFactory {
 
   /**
-   * Creates a tree entity.
+   * Creates an Obstacle entity.
    *
    * @return entity
    */
-  public static Entity createTree() {
-    Entity tree =
+  public static Entity createObstacle(String obstacleType) {
+    Entity obstacle =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/tree.png"))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
-
-    tree.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
-    tree.getComponent(TextureRenderComponent.class).scaleEntity();
-    tree.scaleHeight(2.5f);
-    PhysicsUtils.setScaledCollider(tree, 0.5f, 0.2f);
-    return tree;
+    switch (obstacleType) {
+      case "Tree":
+        obstacle.addComponent(new TextureRenderComponent("images/tree.png"));
+        break;
+      case "Rock":
+        //obstacle.addComponent(new TextureRenderComponent("images/rock.png"))
+        break;
+    }
+    obstacle.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
+    obstacle.getComponent(TextureRenderComponent.class).scaleEntity();
+    obstacle.scaleHeight(2.5f);
+    PhysicsUtils.setScaledCollider(obstacle, 0.5f, 0.2f);
+    return obstacle;
   }
 
   /**
