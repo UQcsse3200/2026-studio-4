@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
-class DeathComponentTest {
+class EnemyDeathComponentTest {
   @Test
   void shouldDisposeEntityOnDeathEvent() {
     EntityService entityService = mock(EntityService.class);
     ServiceLocator.registerEntityService(entityService);
 
-    Entity entity = new Entity().addComponent(new DeathComponent());
+    Entity entity = new Entity().addComponent(new EnemyDeathComponent());
     entity.create();
 
     entity.getEvents().trigger("entityDied", new Vector2(0, 0), entity);
