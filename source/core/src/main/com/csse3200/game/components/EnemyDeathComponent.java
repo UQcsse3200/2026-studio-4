@@ -10,14 +10,14 @@ import com.csse3200.game.entities.Entity;
  */
 public class EnemyDeathComponent extends Component {
 
-    @Override
-    public void create() {
-        entity
-                .getEvents()
-                .addListener(
-                        "entityDied",
-                        (Vector2 position, Entity deadEntity) -> {
-                            entity.dispose();
-                        });
-    }
+  @Override
+  public void create() {
+    entity
+        .getEvents()
+        .addListener(
+            "entityDied",
+            (Vector2 position, Entity deadEntity) -> {
+              entity.dispose();
+            });
+  }
 }

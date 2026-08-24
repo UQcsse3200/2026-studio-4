@@ -124,7 +124,7 @@ public class CombatStatsComponent extends Component {
    * @param damage Amount of damage to deal
    */
   public void takeDamage(int damage) {
-    takeDamage(damage,null);
+    takeDamage(damage, null);
   }
 
   /**
@@ -150,7 +150,7 @@ public class CombatStatsComponent extends Component {
    */
   public void hit(CombatStatsComponent attacker) {
     if (attacker != null) {
-      takeDamage(attacker.getBaseAttack(),attacker.getEntity());
+      takeDamage(attacker.getBaseAttack(), attacker.getEntity());
     }
   }
 
@@ -158,7 +158,7 @@ public class CombatStatsComponent extends Component {
   private void applyHitreaction(Entity attacker) {
     // TODO: Visual red flash & knockback implementation before Aug 28
     if (entity != null) {
-      entity.getEvents().trigger("hitReaction",attacker);
+      entity.getEvents().trigger("hitReaction", attacker);
     }
   }
 }
