@@ -1,6 +1,9 @@
 package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
+import com.csse3200.game.items.Charm;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,9 +16,12 @@ import org.slf4j.LoggerFactory;
 public class InventoryComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(InventoryComponent.class);
   private int gold;
+  // Stores charms currently held by the player
+  private final List<Charm> charms;
 
   public InventoryComponent(int gold) {
     setGold(gold);
+    this.charms = new ArrayList<>();
   }
 
   /**
@@ -54,5 +60,15 @@ public class InventoryComponent extends Component {
    */
   public void addGold(int gold) {
     setGold(this.gold + gold);
+  }
+
+  /**
+   * Returns the charms currently stored in the inventory.
+   *
+   * @return stored charms
+   */
+  public List<Charm> getCharms() {
+
+    return this.charms;
   }
 }
