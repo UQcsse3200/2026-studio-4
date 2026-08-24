@@ -1,5 +1,6 @@
 package com.csse3200.game.components;
 
+import com.csse3200.game.entities.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,10 +124,20 @@ public class CombatStatsComponent extends Component {
    * @param damage Amount of damage to deal
    */
   public void takeDamage(int damage) {
+    takeDamage(damage,null);
+  }
+
+  /**
+   * Core method for dealing raw damage directly. Handles health reduction, hit reaction, and death
+   * checks. Compatible with Task 2 ticket spec.
+   *
+   * @param damage Amount of damage to deal
+   */
+  public void takeDamage(int damage, Entity attacker) {
     if (damage > 0) {
       addHealth(-damage);
       if (!isDead()) {
-        applyHitreaction();
+        applyHitreaction(attacker);
       }
     }
   }
@@ -139,15 +150,15 @@ public class CombatStatsComponent extends Component {
    */
   public void hit(CombatStatsComponent attacker) {
     if (attacker != null) {
-      takeDamage(attacker.getBaseAttack());
+      takeDamage(attacker.getBaseAttack(),attacker.getEntity());
     }
   }
 
   /** Applies visual red flash and knockback hit reaction. */
-  private void applyHitreaction() {
+  private void applyHitreaction(Entity attacker) {
     // TODO: Visual red flash & knockback implementation before Aug 28
     if (entity != null) {
-      entity.getEvents().trigger("hitReaction");
+      entity.getEvents().trigger("hitReaction",attacker);
     }
   }
 }
