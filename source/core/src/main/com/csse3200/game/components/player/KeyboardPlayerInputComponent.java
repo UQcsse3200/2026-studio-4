@@ -43,7 +43,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         triggerWalkEvent();
         return true;
       case Keys.SPACE:
-        entity.getEvents().trigger("attack");
+        entity.getEvents().trigger("dash", walkDirection);
         return true;
       default:
         return false;
