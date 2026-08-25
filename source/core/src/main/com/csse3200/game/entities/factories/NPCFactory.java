@@ -11,9 +11,7 @@ import com.csse3200.game.components.npc.GhostAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.configs.BaseEntityConfig;
-import com.csse3200.game.entities.configs.GhostKingConfig;
-import com.csse3200.game.entities.configs.NPCConfigs;
+import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
@@ -37,7 +35,43 @@ import com.csse3200.game.services.ServiceLocator;
 public class NPCFactory {
   private static final NPCConfigs configs =
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
+  private static final PlayerConfig targetConfig =
+          FileLoader.readClass(PlayerConfig.class, "configs/Player.json");
 
+  /**
+   * Creates a bomb Enemy entity.
+   *
+   * @param target entity to chase
+   * @return entity
+   */
+  public static Entity createBombEnemy(Entity target) {
+    Entity bombEnemy = createBaseNPC();
+    BombEnemyConfig config = configs.bombEnemy;
+    int targetHealth = targetConfig.health;
+
+    AITaskComponent aiComponent =
+            new AITaskComponent()
+                    .addTask(new WanderTask(new Vector2(2f, 2f), 2f))
+                    .addTask(new ChaseTask(target, 10, 3f, 10f));
+
+    AnimationRenderComponent animator =
+            new AnimationRenderComponent(
+                    ServiceLocator.getResourceService().getAsset("images/bombEnemy.atlas", TextureAtlas.class));
+    animator.addAnimation("angry_float", 0.7f, Animation.PlayMode.LOOP);
+    animator.addAnimation("float", 0.5f, Animation.PlayMode.LOOP);
+    animator.addAnimation("explode", 0.1f, Animation.PlayMode.LOOP);
+
+    bombEnemy
+            .addComponent(new CombatStatsComponent(config.health, targetHealth/100 * 90 ))
+            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
+            .addComponent(aiComponent)
+            .addComponent(animator)
+            .addComponent(new GhostAnimationController());
+
+    bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
+
+    return bombEnemy;
+  }
   /**
    * Creates a ghost entity.
    *

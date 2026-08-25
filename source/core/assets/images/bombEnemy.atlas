@@ -1,0 +1,69 @@
+bombEnemy.png
+size: 2880, 3840
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+float
+  rotate: false
+  xy: 0, 0
+  size: 960, 960
+  orig: 960, 960
+  offset: 0, 0
+  index: 0
+float
+  rotate: false
+  xy: 960, 0
+  size: 960, 960
+  orig: 960, 960
+  offset: 0, 0
+  index: 1
+angry_float
+  rotate: false
+  xy: 1920, 0
+  size: 960, 960
+  orig: 960, 960
+  offset: 0, 0
+  index: 2
+anrgy_float
+  rotate: false
+  xy: 0, 960
+  size: 0, 960
+  orig: 960, 960
+  offset: 0, 0
+  index: 3
+default
+  rotate: false
+  xy: 960, 960
+  size: 960, 960
+  orig: 960, 960
+  offset: 0, 0
+  index: 4
+explode
+  rotate: false
+  xy: 1920, 960
+  size: 960, 960
+  orig: 960, 960
+  offset: 0, 0
+  index: 5
+explode
+  rotate: false
+  xy: 0, 1920
+  size: 960, 960
+  orig: 960, 960
+  offset: 0, 0
+  index: 6
+explode
+   rotate: false
+   xy: 960, 1920
+   size: 960, 960
+   orig: 960, 960
+   offset: 0, 0
+   index: 7
+explode
+   rotate: false
+   xy: 1920, 1920
+   size: 960, 960
+   orig: 960, 960
+   offset: 0, 0
+   index: 8
+
