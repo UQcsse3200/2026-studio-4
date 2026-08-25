@@ -12,28 +12,28 @@ import com.csse3200.game.services.ServiceLocator;
  * its brief lifetime.
  */
 public class KnifeWeaponComponent extends WeaponComponent {
-    private static final Vector2 SIZE = new Vector2(0.5f, 1.0f);
-    private static final float LIFETIME = 0.15f;
-    private static final float REACH = 0.5f;
+  private static final Vector2 SIZE = new Vector2(0.5f, 1.0f);
+  private static final float LIFETIME = 0.15f;
+  private static final float REACH = 0.5f;
 
-    @Override
-    protected void createAttack(Vector2 origin, Vector2 direction) {
-        WeaponStatsComponent stats = entity.getComponent(WeaponStatsComponent.class);
-        Vector2 offset = direction.cpy().nor().scl(REACH);
+  @Override
+  protected void createAttack(Vector2 origin, Vector2 direction) {
+    WeaponStatsComponent stats = entity.getComponent(WeaponStatsComponent.class);
+    Vector2 offset = direction.cpy().nor().scl(REACH);
 
-        HitboxSpec spec =
-                new HitboxSpec()
-                        .position(origin)
-                        .size(SIZE)
-                        .lifetime(LIFETIME)
-                        .layer(PhysicsLayer.WEAPON)
-                        .targetLayer(PhysicsLayer.NPC)
-                        .damage(stats.getDamage())
-                        .knockback(stats.getKnockback())
-                        .owner(entity)
-                        .localOffset(offset);
+    HitboxSpec spec =
+        new HitboxSpec()
+            .position(origin)
+            .size(SIZE)
+            .lifetime(LIFETIME)
+            .layer(PhysicsLayer.WEAPON)
+            .targetLayer(PhysicsLayer.NPC)
+            .damage(stats.getDamage())
+            .knockback(stats.getKnockback())
+            .owner(entity)
+            .localOffset(offset);
 
-        Entity hitbox = HitboxFactory.createHitbox(spec);
-        ServiceLocator.getEntityService().register(hitbox);
-    }
+    Entity hitbox = HitboxFactory.createHitbox(spec);
+    ServiceLocator.getEntityService().register(hitbox);
+  }
 }
