@@ -68,7 +68,46 @@ public class InventoryComponent extends Component {
    * @return stored charms
    */
   public List<Charm> getCharms() {
-
     return this.charms;
+  }
+
+  /**
+   * Adds a charm to the player's inventory. Used when the player picks up a charm.
+   *
+   * @param charm charm to add
+   */
+  public void addCharm(Charm charm) {
+    this.charms.add(charm);
+  }
+
+  /**
+   * Removes a charm from the player's inventory. Used when a charm is dropped or removed.
+   *
+   * @param charm charm to remove
+   * @return true if the charm was successfully removed
+   */
+  public boolean removeCharm(Charm charm) {
+    return this.charms.remove(charm);
+  }
+
+  /**
+   * Checks whether the player currently has a specific charm. This can be used later when checking
+   * charm effects or buffs.
+   *
+   * @param charm charm to check
+   * @return true if the charm is stored in the inventory
+   */
+  public boolean hasCharm(Charm charm) {
+    return this.charms.contains(charm);
+  }
+
+  /**
+   * Returns the number of charms currently held by the player. Useful for checking and testing the
+   * inventory.
+   *
+   * @return number of stored charms
+   */
+  public int getCharmCount() {
+    return this.charms.size();
   }
 }
