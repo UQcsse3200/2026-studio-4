@@ -4,4 +4,6 @@ package com.csse3200.game.entities.configs;
 public class PlayerConfig extends BaseEntityConfig {
   public int gold = 1;
   public String favouriteColour = "none";
+  public float movementSpeed = 3f;
+  public float attackSpeed = 1f;
 }
