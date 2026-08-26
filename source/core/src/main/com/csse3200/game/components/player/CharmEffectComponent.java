@@ -7,11 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Listens for charm add/remove events on the player entity and applies or removes the
- * corresponding stat buff via {@link CombatStatsComponent}.
+ * Listens for charm add/remove events on the player entity and applies or removes the corresponding
+ * stat buff via {@link CombatStatsComponent}.
  *
- * <p>This component does not store charms itself - it only reacts to events fired when a charm
- * is added to or removed from the player's inventory (see {@link InventoryComponent}).
+ * <p>This component does not store charms itself - it only reacts to events fired when a charm is
+ * added to or removed from the player's inventory (see {@link InventoryComponent}).
  */
 public class CharmEffectComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(CharmEffectComponent.class);
