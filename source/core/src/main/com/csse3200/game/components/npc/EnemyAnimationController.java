@@ -29,13 +29,11 @@ public class EnemyAnimationController extends Component {
     animator.startAnimation("angry_float");
   }
 
-  void animateExplode(){
+  void animateExplode() {
     animator.startAnimation("explode");
   }
 
-  void animatePause(){
+  void animatePause() {
     animator.startAnimation("default");
   }
 }
-
-

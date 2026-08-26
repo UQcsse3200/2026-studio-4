@@ -35,7 +35,7 @@ public class NPCFactory {
   private static final NPCConfigs configs =
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
   private static final PlayerConfig targetConfig =
-          FileLoader.readClass(PlayerConfig.class, "configs/Player.json");
+      FileLoader.readClass(PlayerConfig.class, "configs/Player.json");
 
   /**
    * Creates a bomb Enemy entity.
@@ -49,24 +49,25 @@ public class NPCFactory {
     int targetHealth = targetConfig.health;
 
     AITaskComponent aiComponent =
-            new AITaskComponent()
-                    .addTask(new WanderTask(config.movement, 1f))
-                    .addTask(new ChaseTask(target, 10, 3f, 10f));
+        new AITaskComponent()
+            .addTask(new WanderTask(config.movement, 1f))
+            .addTask(new ChaseTask(target, 10, 3f, 10f));
 
     AnimationRenderComponent animator =
-            new AnimationRenderComponent(
-                    ServiceLocator.getResourceService().getAsset("images/bombEnemy.atlas", TextureAtlas.class));
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/bombEnemy.atlas", TextureAtlas.class));
     animator.addAnimation("float", 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("explode", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
 
     bombEnemy
-            .addComponent(new CombatStatsComponent(config.health, targetHealth/100 * 90 ))
-            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
-            .addComponent(aiComponent)
-            .addComponent(animator)
-            .addComponent(new EnemyAnimationController());
+        .addComponent(new CombatStatsComponent(config.health, targetHealth / 100 * 90))
+        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
+        .addComponent(aiComponent)
+        .addComponent(animator)
+        .addComponent(new EnemyAnimationController());
 
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
 
