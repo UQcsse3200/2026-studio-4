@@ -13,6 +13,7 @@ public class CombatStatsComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(CombatStatsComponent.class);
   private int health;
   private int baseAttack;
+  private int strength;
 
   public CombatStatsComponent(int health, int baseAttack) {
     setHealth(health);
@@ -82,6 +83,40 @@ public class CombatStatsComponent extends Component {
     } else {
       logger.error("Can not set base attack to a negative attack value");
     }
+  }
+
+  /**
+   * Returns the entity's strength.
+   *
+   * @return entity's strength
+   */
+  public int getStrength() {
+    return strength;
+  }
+
+  /**
+   * Sets the entity's strength. Strength has a minimum bound of 0.
+   *
+   * @param strength strength
+   */
+  public void setStrength(int strength) {
+    if (strength >= 0) {
+      this.strength = strength;
+    } else {
+      this.strength = 0;
+    }
+    if (entity != null) {
+      entity.getEvents().trigger("updateStrength", this.strength);
+    }
+  }
+
+  /**
+   * Adds to the entity's strength. The amount added can be negative.
+   *
+   * @param strength strength to add
+   */
+  public void addStrength(int strength) {
+    setStrength(this.strength + strength);
   }
 
   public void hit(CombatStatsComponent attacker) {

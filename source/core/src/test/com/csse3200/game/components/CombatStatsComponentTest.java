@@ -53,4 +53,34 @@ class CombatStatsComponentTest {
     combat.setBaseAttack(-50);
     assertEquals(150, combat.getBaseAttack());
   }
+
+  @Test
+  void shouldSetGetStrength() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 20);
+    assertEquals(0, combat.getStrength());
+
+    combat.setStrength(10);
+    assertEquals(10, combat.getStrength());
+
+    combat.setStrength(-5);
+    assertEquals(0, combat.getStrength());
+  }
+
+  @Test
+  void shouldAddStrength() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 20);
+    combat.addStrength(10);
+    assertEquals(10, combat.getStrength());
+
+    combat.addStrength(-10);
+    assertEquals(0, combat.getStrength());
+  }
+
+  @Test
+  void shouldNotAllowNegativeStrength() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 20);
+    combat.addStrength(5);
+    combat.addStrength(-100);
+    assertEquals(0, combat.getStrength());
+  }
 }
