@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class WeaponComponentTest {
   @Test
   void shouldCallCreateAttackWhenReady() {
-    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 10, 0f);
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
     RecordingWeapon weapon = new RecordingWeapon();
     Entity wielder = new Entity().addComponent(stats).addComponent(weapon);
     wielder.create();
@@ -30,7 +31,7 @@ class WeaponComponentTest {
 
   @Test
   void shouldNotCreateAttackWhileCoolingDown() {
-    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 10, 0f);
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
     RecordingWeapon weapon = new RecordingWeapon();
     Entity wielder = new Entity().addComponent(stats).addComponent(weapon);
     wielder.create();
@@ -44,7 +45,7 @@ class WeaponComponentTest {
 
   @Test
   void shouldCreateAttackAgainAfterCooldown() {
-    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 10, 0f);
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
     RecordingWeapon weapon = new RecordingWeapon();
     Entity wielder = new Entity().addComponent(stats).addComponent(weapon);
     wielder.create();
@@ -66,7 +67,7 @@ class WeaponComponentTest {
 
   @Test
   void shouldRejectNullOriginOrDirection() {
-    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 10, 0f);
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
     RecordingWeapon weapon = new RecordingWeapon();
     Entity wielder = new Entity().addComponent(stats).addComponent(weapon);
     wielder.create();
@@ -75,6 +76,30 @@ class WeaponComponentTest {
     Vector2 origin = new Vector2(0f, 0f);
     assertThrows(IllegalArgumentException.class, () -> weapon.attack(null, direction));
     assertThrows(IllegalArgumentException.class, () -> weapon.attack(origin, null));
+  }
+
+  @Test
+  void shouldResolveHitboxDamageFromWielderBaseAttack() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 0.8f, 0f);
+    RecordingWeapon weapon = new RecordingWeapon();
+    Entity wielder =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(stats)
+            .addComponent(weapon);
+    wielder.create();
+
+    assertEquals(8, weapon.resolveHitboxDamage());
+  }
+
+  @Test
+  void shouldResolveZeroHitboxDamageWithoutCombatStats() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1.5f, 0f);
+    RecordingWeapon weapon = new RecordingWeapon();
+    Entity wielder = new Entity().addComponent(stats).addComponent(weapon);
+    wielder.create();
+
+    assertEquals(0, weapon.resolveHitboxDamage());
   }
 
   private static class RecordingWeapon extends WeaponComponent {

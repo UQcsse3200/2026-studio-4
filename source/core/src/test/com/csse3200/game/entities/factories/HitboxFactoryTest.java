@@ -132,15 +132,20 @@ class HitboxFactoryTest {
 
   @Test
   void stubWeaponShouldSpawnHitboxThroughFactory() {
-    WeaponStatsComponent stats = new WeaponStatsComponent(0.2f, 8, 0f);
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.2f, 0.8f, 0f);
     FactoryWeapon weapon = new FactoryWeapon();
-    Entity wielder = new Entity().addComponent(stats).addComponent(weapon);
+    Entity wielder =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(stats)
+            .addComponent(weapon);
     wielder.setPosition(0f, 0f);
     wielder.create();
 
     assertTrue(weapon.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
     assertNotNull(weapon.spawned);
     assertNotNull(weapon.spawned.getComponent(HitboxComponent.class));
+    assertEquals(8, weapon.spawned.getComponent(CombatStatsComponent.class).getBaseAttack());
     assertFalse(weapon.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
   }
 
@@ -169,7 +174,6 @@ class HitboxFactoryTest {
 
     @Override
     protected void createAttack(Vector2 origin, Vector2 direction) {
-      WeaponStatsComponent stats = entity.getComponent(WeaponStatsComponent.class);
       HitboxSpec spec =
           new HitboxSpec()
               .position(origin)
@@ -177,8 +181,8 @@ class HitboxFactoryTest {
               .lifetime(0.15f)
               .layer(PhysicsLayer.WEAPON)
               .targetLayer(PhysicsLayer.NPC)
-              .damage(stats.getDamage())
-              .knockback(stats.getKnockback())
+              .damage(resolveHitboxDamage())
+              .knockback(entity.getComponent(WeaponStatsComponent.class).getKnockback())
               .owner(entity)
               .localOffset(direction.cpy().nor().scl(0.5f));
       spawned = HitboxFactory.createHitbox(spec);

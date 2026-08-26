@@ -1,6 +1,7 @@
 package com.csse3200.game.components.weapons;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.factories.HitboxFactory;
 import com.csse3200.game.entities.factories.HitboxSpec;
@@ -10,7 +11,9 @@ import com.csse3200.game.entities.factories.HitboxSpec;
  * subclasses cannot skip cooldown. Override {@link #createAttack(Vector2, Vector2)} to spawn the
  * weapon-specific hitbox.
  *
- * <p>The same entity must also have a {@link WeaponStatsComponent}.
+ * <p>The same entity must also have a {@link WeaponStatsComponent}. Hitbox damage is {@code
+ * round(wielder.baseAttack * weapon.multiplier)}; use {@link #resolveHitboxDamage()} when filling
+ * {@link HitboxSpec#damage(int)}.
  *
  * <p>Example melee subclass:
  *
@@ -27,7 +30,7 @@ import com.csse3200.game.entities.factories.HitboxSpec;
  *             .lifetime(0.15f)
  *             .layer(com.csse3200.game.physics.PhysicsLayer.WEAPON)
  *             .targetLayer(com.csse3200.game.physics.PhysicsLayer.NPC)
- *             .damage(stats.getDamage())
+ *             .damage(resolveHitboxDamage())
  *             .knockback(stats.getKnockback())
  *             .owner(entity)
  *             .localOffset(offset);
@@ -91,4 +94,16 @@ public abstract class WeaponComponent extends Component {
    * @require origin != null &amp;&amp; direction != null
    */
   protected abstract void createAttack(Vector2 origin, Vector2 direction);
+
+  /**
+   * Integer damage to copy onto a spawned hitbox: wielder {@code baseAttack} times this weapon's
+   * multiplier, rounded. Missing combat stats are treated as 0 base attack.
+   *
+   * @return {@code round(baseAttack * multiplier)}
+   */
+  protected int resolveHitboxDamage() {
+    CombatStatsComponent combat = entity.getComponent(CombatStatsComponent.class);
+    int baseAttack = combat == null ? 0 : combat.getBaseAttack();
+    return stats.resolveHitboxDamage(baseAttack);
+  }
 }

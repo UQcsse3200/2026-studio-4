@@ -74,6 +74,10 @@ public class HitboxSpec {
   }
 
   /**
+   * Integer contact damage copied onto the hitbox {@code CombatStatsComponent}. Callers should pass
+   * {@code round(wielder.baseAttack * weapon.multiplier)}, typically via {@code
+   * WeaponComponent.resolveHitboxDamage()}.
+   *
    * @param damage damage applied via {@code TouchAttackComponent}
    * @return this spec
    */
