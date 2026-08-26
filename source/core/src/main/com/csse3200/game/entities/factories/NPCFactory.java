@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.DeathComponent;
+import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -85,7 +85,7 @@ public class NPCFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new DeathComponent());
+            .addComponent(new EnemyDeathComponent());
 
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);
     return npc;

@@ -8,7 +8,7 @@ import com.csse3200.game.entities.Entity;
  * handling separate from health tracking so that CombatStatsComponent does not need to dispose
  * entities directly.
  */
-public class DeathComponent extends Component {
+public class EnemyDeathComponent extends Component {
 
   @Override
   public void create() {
