@@ -24,10 +24,10 @@ angry_float
   orig: 960, 960
   offset: 0, 0
   index: 2
-anrgy_float
+angry_float
   rotate: false
   xy: 0, 960
-  size: 0, 960
+  size: 960, 960
   orig: 960, 960
   offset: 0, 0
   index: 3

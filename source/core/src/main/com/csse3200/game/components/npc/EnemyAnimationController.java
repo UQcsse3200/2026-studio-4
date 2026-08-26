@@ -7,16 +7,18 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
  * This class listens to events relevant to a ghost entity's state and plays the animation when one
  * of the events is triggered.
  */
-public class GhostAnimationController extends Component {
+public class EnemyAnimationController extends Component {
   AnimationRenderComponent animator;
 
   @Override
   public void create() {
     super.create();
     animator = this.entity.getComponent(AnimationRenderComponent.class);
+
     entity.getEvents().addListener("wanderStart", this::animateWander);
     entity.getEvents().addListener("chaseStart", this::animateChase);
     entity.getEvents().addListener("explode", this::animateExplode);
+    entity.getEvents().addListener("default", this::animatePause);
   }
 
   void animateWander() {
@@ -30,4 +32,10 @@ public class GhostAnimationController extends Component {
   void animateExplode(){
     animator.startAnimation("explode");
   }
+
+  void animatePause(){
+    animator.startAnimation("default");
+  }
 }
+
+
