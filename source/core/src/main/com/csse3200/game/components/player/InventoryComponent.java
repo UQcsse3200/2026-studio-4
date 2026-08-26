@@ -78,6 +78,11 @@ public class InventoryComponent extends Component {
    */
   public void addCharm(Charm charm) {
     this.charms.add(charm);
+
+    // Notify other components when a charm is added
+    if (entity != null) {
+      entity.getEvents().trigger("charmAdded", charm);
+    }
   }
 
   /**
@@ -87,7 +92,14 @@ public class InventoryComponent extends Component {
    * @return true if the charm was successfully removed
    */
   public boolean removeCharm(Charm charm) {
-    return this.charms.remove(charm);
+    boolean removed = this.charms.remove(charm);
+
+    // Notify other components only when the charm is successfully removed
+    if (removed && entity != null) {
+      entity.getEvents().trigger("charmRemoved", charm);
+    }
+
+    return removed;
   }
 
   /**
