@@ -16,31 +16,36 @@ import org.slf4j.LoggerFactory;
  */
 public class ObstacleComponent extends EntityManagerComponent {
   private static final Logger logger = LoggerFactory.getLogger(ObstacleComponent.class);
-  private int NumOfObstacles = new Random().nextInt(10, 30);
+  private int NumOfObstacles = new Random().nextInt(10, 20);
   private static final String TREE = "Tree";
   private static final String ROCK = "Rock";
+  private static final String HOLE = "Hole";
 
   public ObstacleComponent() {
     super();
   }
 
   public void create() {
-    createTrees();
+    createObstacle(ROCK);
+    createObstacle(HOLE);
   }
 
-  public void createTrees() {
+  public void createObstacle(String obstacle) {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
     if (terrain == null) {
-      logger.error("Spawning Trees on an entity without a terrain");
+      logger.error("Spawning obstacle on an entity without a terrain");
       return;
     }
+
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
     for (int i = 0; i < NumOfObstacles; i++) {
       GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-      Entity tree = ObstacleFactory.createObstacle(ROCK);
-      spawnEntityAt(tree, randomPos, true, false);
+      Entity createdObstacle = ObstacleFactory.createObstacle(obstacle);
+      spawnEntityAt(createdObstacle, randomPos, true, false);
     }
   }
+
+
 }

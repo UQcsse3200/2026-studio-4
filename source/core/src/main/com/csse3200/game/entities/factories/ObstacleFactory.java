@@ -31,12 +31,19 @@ public class ObstacleFactory {
         break;
       case "Rock":
         obstacle.addComponent(new TextureRenderComponent("images/rock.png"));
+        obstacle.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
+        obstacle.getComponent(TextureRenderComponent.class).scaleEntity();
+        obstacle.scaleHeight(1f);
+        PhysicsUtils.setScaledCollider(obstacle, 0.6f, 0.7f);
+        break;
+      case "Hole":
+        obstacle.addComponent(new TextureRenderComponent("images/hole.png"));
+        obstacle.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
+        obstacle.getComponent(TextureRenderComponent.class).scaleEntity();
+        obstacle.scaleHeight(1f);
+        PhysicsUtils.setScaledCollider(obstacle, 0.7f, 0.9f);
         break;
     }
-    obstacle.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
-    obstacle.getComponent(TextureRenderComponent.class).scaleEntity();
-    obstacle.scaleHeight(1f);
-    PhysicsUtils.setScaledCollider(obstacle, 0.8f, 0.6f);
     return obstacle;
   }
 
