@@ -46,6 +46,4 @@ public class ObstacleComponent extends EntityManagerComponent {
       spawnEntityAt(createdObstacle, randomPos, true, false);
     }
   }
-
-
 }
