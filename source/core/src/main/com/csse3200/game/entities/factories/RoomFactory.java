@@ -37,6 +37,13 @@ public class RoomFactory {
     return entity;
   }
 
+  /**
+   * Creates a basic room entity with the given room name.
+   *
+   * @param renderer
+   * @param roomName
+   * @return
+   */
   public static Entity createRoom(Renderer renderer, String roomName) {
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
     TerrainConfig terrainConfig = new TerrainConfig();
@@ -53,7 +60,7 @@ public class RoomFactory {
             .addComponent(terrainFactory.createTerrain(terrainConfig, renderer.getCamera()))
             .addComponent(new WallComponent())
             .addComponent(new ObstacleComponent())
-                .addComponent(new EnemyManagerComponent());
+            .addComponent(new EnemyManagerComponent());
     return entity;
   }
 }
