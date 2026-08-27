@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.factories;
 
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.items.CharmPickupComponent;
 import com.csse3200.game.components.player.CharmEffectComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.PlayerActions;
@@ -46,6 +47,7 @@ public class PlayerFactory {
             .addComponent(new CombatStatsComponent(stats.health, stats.baseAttack))
             .addComponent(new CharmEffectComponent())
             .addComponent(new InventoryComponent(stats.gold))
+            .addComponent(new CharmPickupComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerStatsDisplay());
 
