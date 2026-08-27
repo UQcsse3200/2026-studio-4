@@ -9,6 +9,18 @@ public final class ItemFactory {
   private static final String STRENGTH_CHARM_NAME = "Strength Charm";
 
   /**
+   * Selects and creates the item dropped after an enemy is defeated.
+   *
+   * <p>Sprint 1 uses a deterministic drop: every request returns a Strength Charm. The returned
+   * entity is not positioned or registered; the requesting room owns those responsibilities.
+   *
+   * @return a non-null, unregistered item entity for the room to spawn
+   */
+  public static Entity createDrop() {
+    return createStrengthCharm();
+  }
+
+  /**
    * Creates the Strength Charm used for Sprint 1 item drops.
    *
    * <p>The returned entity is not positioned or registered. The room that requests the item owns

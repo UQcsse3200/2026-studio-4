@@ -10,6 +10,20 @@ import org.junit.jupiter.api.Test;
 
 class ItemFactoryTest {
   @Test
+  void shouldCreateStrengthCharmForEveryDropRequest() {
+    Entity firstDrop = ItemFactory.createDrop();
+    Entity secondDrop = ItemFactory.createDrop();
+
+    assertNotNull(firstDrop);
+    assertNotNull(secondDrop);
+    assertEquals(
+        "Strength Charm", firstDrop.getComponent(ItemComponent.class).getCharm().getName());
+    assertEquals(
+        "Strength Charm", secondDrop.getComponent(ItemComponent.class).getCharm().getName());
+    assertNotSame(firstDrop, secondDrop);
+  }
+
+  @Test
   void shouldCreateStrengthCharm() {
     Entity item = ItemFactory.createStrengthCharm();
 
