@@ -40,6 +40,35 @@ class CharmEffectComponentTest {
     assertEquals(10, player.getComponent(CombatStatsComponent.class).getStrength());
   }
 
+  @Test
+  void shouldNotStackBuffWhenDuplicateStrengthCharmsAdded() {
+    Entity player = createPlayer();
+
+    // Two separate Strength Charm instances, e.g. picked up twice
+    player.getEvents().trigger("charmAdded", new Charm("Strength Charm"));
+    player.getEvents().trigger("charmAdded", new Charm("Strength Charm"));
+
+    // Buff should only apply once, not stack to +20
+    assertEquals(20, player.getComponent(CombatStatsComponent.class).getStrength());
+  }
+
+  @Test
+  void shouldKeepBuffActiveUntilLastStrengthCharmRemoved() {
+    Entity player = createPlayer();
+
+    player.getEvents().trigger("charmAdded", new Charm("Strength Charm"));
+    player.getEvents().trigger("charmAdded", new Charm("Strength Charm"));
+    player.getEvents().trigger("charmRemoved", new Charm("Strength Charm"));
+
+    // One Strength Charm still held, so the buff should remain active
+    assertEquals(20, player.getComponent(CombatStatsComponent.class).getStrength());
+
+    player.getEvents().trigger("charmRemoved", new Charm("Strength Charm"));
+
+    // Last Strength Charm removed, buff should now be gone
+    assertEquals(10, player.getComponent(CombatStatsComponent.class).getStrength());
+  }
+
   private Entity createPlayer() {
     Entity player =
         new Entity()
