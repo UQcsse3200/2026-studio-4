@@ -4,6 +4,7 @@ import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas.terrain.TerrainConfig;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.components.rooms.ObstacleComponent;
 import com.csse3200.game.components.rooms.RoomAssetsComponent;
 import com.csse3200.game.components.rooms.WallComponent;
@@ -51,8 +52,8 @@ public class RoomFactory {
             .addComponent(new GameAreaDisplay(roomName))
             .addComponent(terrainFactory.createTerrain(terrainConfig, renderer.getCamera()))
             .addComponent(new WallComponent())
-            .addComponent(new ObstacleComponent());
-
+            .addComponent(new ObstacleComponent())
+                .addComponent(new EnemyManagerComponent());
     return entity;
   }
 }

@@ -7,6 +7,7 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -76,8 +77,9 @@ public class MainGameScreen extends ScreenAdapter {
     RoomFactory roomFactory = new RoomFactory(renderer);
     roomManager = new RoomManager(player, roomFactory);
     ServiceLocator.getEntityService().register(player);
-
-    roomManager.addRoom(RoomFactory.createRoom(renderer, "Second Room"));
+    Entity room = RoomFactory.createRoom(renderer, "Second Room");
+    room.getComponent(EnemyManagerComponent.class).spawnGhosts(player);
+    roomManager.addRoom(room);
 
     terminal.addCommand("room", roomManager);
 
@@ -87,7 +89,7 @@ public class MainGameScreen extends ScreenAdapter {
   @Override
   public void render(float delta) {
     if (player != null) {
-      Vector2 velocity = player.getPosition().sub(CAMERA_POSITION).scl(0.1f);
+      Vector2 velocity = player.getPosition().sub(CAMERA_POSITION).scl(0.01f);
       CAMERA_POSITION = CAMERA_POSITION.add(velocity);
     }
     renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);

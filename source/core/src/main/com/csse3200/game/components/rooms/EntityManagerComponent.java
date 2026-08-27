@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Component for spawning entities inside room entities */
-public class EntityManagerComponent extends Component {
+public abstract class EntityManagerComponent extends Component {
 
   private List<Entity> entities;
 
