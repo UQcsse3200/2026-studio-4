@@ -6,9 +6,25 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.services.ServiceLocator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(GameExtension.class)
 class ItemFactoryTest {
+  @BeforeEach
+  void beforeEach() {
+    ServiceLocator.registerPhysicsService(new PhysicsService());
+    ServiceLocator.registerEntityService(new EntityService());
+  }
+
   @Test
   void shouldCreateStrengthCharmForEveryDropRequest() {
     Entity firstDrop = ItemFactory.createDrop();
@@ -30,6 +46,9 @@ class ItemFactoryTest {
     ItemComponent itemComponent = item.getComponent(ItemComponent.class);
     assertNotNull(itemComponent);
     assertEquals("Strength Charm", itemComponent.getCharm().getName());
+    assertNotNull(item.getComponent(PhysicsComponent.class));
+    assertNotNull(item.getComponent(HitboxComponent.class));
+    assertEquals(PhysicsLayer.ITEM, item.getComponent(HitboxComponent.class).getLayer());
   }
 
   @Test

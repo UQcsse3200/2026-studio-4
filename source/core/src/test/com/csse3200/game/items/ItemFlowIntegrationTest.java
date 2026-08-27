@@ -3,27 +3,46 @@ package com.csse3200.game.items;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.items.CharmPickupComponent;
 import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.player.CharmEffectComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.services.ServiceLocator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class ItemFlowIntegrationTest {
+  @BeforeEach
+  void beforeEach() {
+    ServiceLocator.registerPhysicsService(new PhysicsService());
+    ServiceLocator.registerEntityService(new EntityService());
+  }
+
   @Test
-  void shouldTransferFactoryDropToInventoryAndApplyBuff() {
+  void shouldPickUpFactoryDropApplyBuffAndRestoreStrengthOnRemoval() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     CombatStatsComponent combatStats = player.getComponent(CombatStatsComponent.class);
     Entity droppedItem = ItemFactory.createDrop();
     Charm droppedCharm = droppedItem.getComponent(ItemComponent.class).getCharm();
+    droppedItem.create();
 
-    inventory.addCharm(droppedCharm);
+    Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
+    Fixture itemFixture = droppedItem.getComponent(HitboxComponent.class).getFixture();
+    player.getEvents().trigger("collisionStart", playerFixture, itemFixture);
+    player.getEvents().trigger("interact");
 
     assertEquals(1, inventory.getCharmCount());
     assertSame(droppedCharm, inventory.getCharms().get(0));
@@ -38,9 +57,12 @@ class ItemFlowIntegrationTest {
   private Entity createPlayer() {
     Entity player =
         new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
             .addComponent(new CombatStatsComponent(100, 10))
             .addComponent(new InventoryComponent(0))
-            .addComponent(new CharmEffectComponent());
+            .addComponent(new CharmEffectComponent())
+            .addComponent(new CharmPickupComponent());
     player.create();
     player.getComponent(CombatStatsComponent.class).setStrength(10);
     return player;
