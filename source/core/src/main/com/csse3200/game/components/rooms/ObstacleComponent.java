@@ -5,6 +5,7 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.utils.math.RandomUtils;
+import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ObstacleComponent extends EntityManagerComponent {
   private static final Logger logger = LoggerFactory.getLogger(ObstacleComponent.class);
-  private int NumOfObstacles = 10;
+  private int NumOfObstacles = new Random().nextInt(10, 30);
   private static final String TREE = "Tree";
   private static final String ROCK = "Rock";
 
@@ -38,7 +39,7 @@ public class ObstacleComponent extends EntityManagerComponent {
 
     for (int i = 0; i < NumOfObstacles; i++) {
       GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-      Entity tree = ObstacleFactory.createObstacle(TREE);
+      Entity tree = ObstacleFactory.createObstacle(ROCK);
       spawnEntityAt(tree, randomPos, true, false);
     }
   }

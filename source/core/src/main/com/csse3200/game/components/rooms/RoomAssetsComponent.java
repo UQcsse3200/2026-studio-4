@@ -25,7 +25,7 @@ public class RoomAssetsComponent extends Component {
   private final String[] music = {backgroundMusic};
   private final String[] sounds = {"sounds/Impact4.ogg"};
   private final String[] enemyTextures = {"images/ghost_1.png", "images/ghost_king.png"};
-  private final String[] obstacleTextures = {"images/tree.png"};
+  private final String[] obstacleTextures = {"images/tree.png", "images/rock.png"};
   private final String[] enemyTextureAtlases = {
     "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas"
   };

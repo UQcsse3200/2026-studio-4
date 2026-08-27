@@ -23,14 +23,20 @@ public class ObstacleFactory {
   public static Entity createObstacle(String obstacleType) {
     Entity obstacle =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/tree.png"))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
-
+    switch (obstacleType) {
+      case "Tree":
+        obstacle.addComponent(new TextureRenderComponent("images/tree.png"));
+        break;
+      case "Rock":
+        obstacle.addComponent(new TextureRenderComponent("images/rock.png"));
+        break;
+    }
     obstacle.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
     obstacle.getComponent(TextureRenderComponent.class).scaleEntity();
-    obstacle.scaleHeight(2.5f);
-    PhysicsUtils.setScaledCollider(obstacle, 0.5f, 0.2f);
+    obstacle.scaleHeight(1f);
+    PhysicsUtils.setScaledCollider(obstacle, 0.8f, 0.6f);
     return obstacle;
   }
 
