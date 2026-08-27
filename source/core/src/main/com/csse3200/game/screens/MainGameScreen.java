@@ -87,8 +87,10 @@ public class MainGameScreen extends ScreenAdapter {
   @Override
   public void render(float delta) {
     if (player != null) {
-      renderer.getCamera().getEntity().setPosition(player.getPosition());
+      Vector2 velocity = player.getPosition().sub(CAMERA_POSITION).scl(0.1f);
+      CAMERA_POSITION = CAMERA_POSITION.add(velocity);
     }
+    renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
