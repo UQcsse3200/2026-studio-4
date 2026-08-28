@@ -22,7 +22,6 @@ public class RoomFactory {
     return createRoom(renderer, roomName);
   }
 
-
   /**
    * Creates a basic room entity with the given room name.
    *

@@ -6,11 +6,10 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Component for spawning entities inside room entities */
 public abstract class EntityManagerComponent extends Component {
@@ -68,6 +67,7 @@ public abstract class EntityManagerComponent extends Component {
 
   /**
    * Returns the max bound of the spawnable area of the room.
+   *
    * @return The max bound of the spawnable area.
    */
   protected GridPoint2 spawnableArea() {

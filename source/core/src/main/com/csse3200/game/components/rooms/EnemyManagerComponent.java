@@ -1,7 +1,6 @@
 package com.csse3200.game.components.rooms;
 
 import com.badlogic.gdx.math.GridPoint2;
-import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.utils.math.RandomUtils;
@@ -22,14 +21,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     super();
   }
 
-    public void spawnGhosts(Entity target) {
-        GridPoint2 maxPos = this.spawnableArea();
-        for (int i = 0; i < NUM_GHOSTS; i++) {
-            GridPoint2 randomPos = RandomUtils.random(new GridPoint2(0, 0), maxPos);
-            Entity ghost = NPCFactory.createGhost(target);
-            spawnEntityAt(ghost, randomPos, true, true);
-        }
+  public void spawnGhosts(Entity target) {
+    GridPoint2 maxPos = this.spawnableArea();
+    for (int i = 0; i < NUM_GHOSTS; i++) {
+      GridPoint2 randomPos = RandomUtils.random(new GridPoint2(0, 0), maxPos);
+      Entity ghost = NPCFactory.createGhost(target);
+      spawnEntityAt(ghost, randomPos, true, true);
     }
+  }
 }
-
-

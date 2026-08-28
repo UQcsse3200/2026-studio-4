@@ -1,13 +1,10 @@
 package com.csse3200.game.components.rooms;
 
 import com.badlogic.gdx.math.GridPoint2;
-import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.utils.math.RandomUtils;
 import java.util.Random;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Component used to create obstacles and add them to game area entities. Any game ares which
