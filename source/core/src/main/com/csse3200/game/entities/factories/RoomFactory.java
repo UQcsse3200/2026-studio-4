@@ -1,6 +1,5 @@
 package com.csse3200.game.entities.factories;
 
-import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas.terrain.TerrainConfig;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
@@ -23,19 +22,6 @@ public class RoomFactory {
     return createRoom(renderer, roomName);
   }
 
-  /**
-   * Creates the original forest game area as a entity.
-   *
-   * <p>Can be removed later.
-   *
-   * @param renderer
-   * @return
-   */
-  public static Entity createForestGameArea(Renderer renderer) {
-    TerrainFactory terrain = new TerrainFactory(renderer.getCamera());
-    Entity entity = new Entity().addComponent(new ForestGameArea(terrain));
-    return entity;
-  }
 
   public static Entity createRoom(Renderer renderer, String roomName) {
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
