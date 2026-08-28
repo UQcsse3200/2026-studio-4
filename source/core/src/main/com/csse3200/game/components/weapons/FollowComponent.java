@@ -59,6 +59,8 @@ public class FollowComponent extends Component {
 
   @Override
   public void update() {
-    entity.setPosition(owner.getPosition().add(localOffset));
+    Vector2 targetCenter = owner.getCenterPosition().add(localOffset);
+    Vector2 halfSize = entity.getScale().cpy().scl(0.5f);
+    entity.setPosition(targetCenter.sub(halfSize));
   }
 }
