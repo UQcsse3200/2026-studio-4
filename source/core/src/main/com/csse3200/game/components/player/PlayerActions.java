@@ -8,7 +8,6 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 
-import java.util.Objects;
 /**
  * Action component for interacting with the player. Player events should be initialised in create()
  * and when triggered should call methods within this class.
@@ -38,8 +37,9 @@ public class PlayerActions extends Component {
 
   @Override
   public void update() {
-    if (time.getTimeSince(dashInit) >= 75){
+    if (time.getTimeSince(dashInit) >= 75) {
       dashOn = false;
+      entity.getEvents().trigger("dashStop");
     }
     if (time.getTimeSince(dashInit) >= 575) {
       dashCooldown = false;
@@ -53,9 +53,9 @@ public class PlayerActions extends Component {
     Body body = physicsComponent.getBody();
     Vector2 velocity = body.getLinearVelocity();
     Vector2 desiredVelocity;
-    if (dashOn){
+    if (dashOn) {
       desiredVelocity = dashDirection.cpy().scl(DASH_SPEED);
-    } else{
+    } else {
       desiredVelocity = walkDirection.cpy().scl(MAX_SPEED);
     }
     // impulse = (desiredVel - currentVel) * mass
@@ -91,7 +91,9 @@ public class PlayerActions extends Component {
     attackSound.play();
   }
 
-  /** Makes the player dash. The player only dashes if the dash is not currently on or on cooldown. */
+  /**
+   * Makes the player dash. The player only dashes if the dash is not currently on or on cooldown.
+   */
   void dash(Vector2 direction) {
     if (!dashOn && !dashCooldown) {
       this.dashDirection = direction.cpy();

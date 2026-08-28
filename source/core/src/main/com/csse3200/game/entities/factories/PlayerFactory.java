@@ -13,7 +13,7 @@ import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.rendering.TriggeredRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -37,7 +37,7 @@ public class PlayerFactory {
 
     Entity player =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/box_boy_leaf.png"))
+            .addComponent(new TriggeredRenderComponent("images/box_boy_leaf.png"))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
@@ -49,7 +49,11 @@ public class PlayerFactory {
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
-    player.getComponent(TextureRenderComponent.class).scaleEntity();
+    player.getComponent(TriggeredRenderComponent.class).scaleEntity();
+    player.getComponent(TriggeredRenderComponent.class).addTexture("images/box_boy.png", "dash", 1);
+    player
+        .getComponent(TriggeredRenderComponent.class)
+        .addTexture("images/box_boy_leaf.png", "dashStop", 0);
     return player;
   }
 
