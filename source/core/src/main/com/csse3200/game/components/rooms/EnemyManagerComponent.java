@@ -5,8 +5,6 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.utils.math.RandomUtils;
 import java.util.Random;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Component used to create enemies and add them to game area entities. Any game areas which
@@ -22,6 +20,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   /**
    * Spawns ghosts with the given target.
+   *
    * @param target The target for the ghosts to attack.
    */
   public void spawnGhosts(Entity target) {

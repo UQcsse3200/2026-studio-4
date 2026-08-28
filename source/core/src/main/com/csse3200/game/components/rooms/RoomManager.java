@@ -3,7 +3,9 @@ package com.csse3200.game.components.rooms;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.commands.Command;
@@ -17,16 +19,29 @@ public class RoomManager implements Command {
   private List<Entity> rooms;
   private Entity currentRoom;
   private Entity player;
+  private CameraComponent camera;
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
 
-  public RoomManager(Entity player, RoomFactory roomFactory) {
+  /**
+   * @requires unregistered player
+   * @param player
+   * @param camera
+   */
+  public RoomManager(Entity player, CameraComponent camera) {
     this.player = player;
+    this.camera = camera;
     this.rooms = new ArrayList<Entity>();
+  }
 
-    currentRoom = roomFactory.createRoom("First Room");
+  /** Create a new RoomManager with a new player */
+  public RoomManager(CameraComponent camera) {
+    this(PlayerFactory.createPlayer(), camera);
+  }
+
+  public void create() {
+    ServiceLocator.getEntityService().register(player);
+    currentRoom = RoomFactory.createRoom("First Room", camera);
     ServiceLocator.getEntityService().register(currentRoom);
-    movePlayer();
-    rooms.add(currentRoom);
   }
 
   /** transitions to the next room in the list, if it exits */
@@ -93,5 +108,9 @@ public class RoomManager implements Command {
   public boolean action(ArrayList<String> args) {
     this.nextRoom();
     return true;
+  }
+
+  public Entity getPlayer() {
+    return player;
   }
 }

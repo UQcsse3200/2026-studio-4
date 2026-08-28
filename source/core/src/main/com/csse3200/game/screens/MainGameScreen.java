@@ -7,13 +7,10 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
-import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.RenderFactory;
-import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
@@ -66,24 +63,17 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.registerRenderService(new RenderService());
 
     renderer = RenderFactory.createRenderer();
-    renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
+    // renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
     logger.debug("Initialising main game screen entities");
 
     loadAssets();
-    player = PlayerFactory.createPlayer();
-
-    RoomFactory roomFactory = new RoomFactory(renderer);
-    roomManager = new RoomManager(player, roomFactory);
-    ServiceLocator.getEntityService().register(player);
-    Entity room = RoomFactory.createRoom(renderer, "Second Room");
-    room.getComponent(EnemyManagerComponent.class).spawnGhosts(player);
-    roomManager.addRoom(room);
-
-    terminal.addCommand("room", roomManager);
-
     createUI();
+
+    roomManager = new RoomManager(renderer.getCamera());
+    roomManager.create();
+    player = roomManager.getPlayer();
   }
 
   @Override
