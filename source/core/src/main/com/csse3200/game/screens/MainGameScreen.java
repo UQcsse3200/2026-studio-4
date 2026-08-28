@@ -1,7 +1,6 @@
 package com.csse3200.game.screens;
 
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
@@ -35,13 +34,11 @@ public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
   // TODO: Eventually load player asset with the player entity
   private static final String[] mainGameTextures = {"images/heart.png", "images/box_boy_leaf.png"};
-  private Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
 
-  private Entity player = null;
   private RoomManager roomManager;
   private final Terminal terminal;
 
@@ -63,7 +60,6 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.registerRenderService(new RenderService());
 
     renderer = RenderFactory.createRenderer();
-    // renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
     logger.debug("Initialising main game screen entities");
@@ -73,17 +69,10 @@ public class MainGameScreen extends ScreenAdapter {
 
     roomManager = new RoomManager(renderer.getCamera());
     roomManager.create();
-    player = roomManager.getPlayer();
   }
 
   @Override
   public void render(float delta) {
-    if (player != null) {
-      float CAMERA_SPEED = 0.1f;
-      Vector2 velocity = player.getPosition().sub(CAMERA_POSITION).scl(CAMERA_SPEED);
-      CAMERA_POSITION = CAMERA_POSITION.add(velocity);
-    }
-    renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();

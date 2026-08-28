@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.FollowingCameraComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.RoomFactory;
@@ -38,6 +39,8 @@ public class RoomManager {
   }
 
   public void create() {
+    player.getComponent(FollowingCameraComponent.class).setCamera(camera);
+
     ServiceLocator.getEntityService().register(player);
     currentRoom = RoomFactory.createRoom("First Room", camera);
     rooms.add(currentRoom);
