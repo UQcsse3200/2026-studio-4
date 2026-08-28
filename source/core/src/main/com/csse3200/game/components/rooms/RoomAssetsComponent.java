@@ -11,10 +11,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Loads the provided textures into the resourceService. Any textures used within the room should
  * exist here. Different rooms may use different textures.
+ *
+ * <p>The assets are loaded to the resource service on constructor call.
  */
 public class RoomAssetsComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(RoomAssetsComponent.class);
-  // private final String playerTexture = "images/box_boy_leaf.png";
   private final String tileTexture1 = "images/grass_1.png";
   private final String tileTexture2 = "images/grass_2.png";
   private final String tileTexture3 = "images/grass_3.png";
@@ -47,6 +48,11 @@ public class RoomAssetsComponent extends Component {
     loadAssets();
   }
 
+  /**
+   * Sets the tiletextures paths into a TerrainConfig.
+   *
+   * @param terrainConfig
+   */
   public void setTerrainConfig(TerrainConfig terrainConfig) {
     terrainConfig.setTextures(tileTexture1, tileTexture2, tileTexture3);
   }
@@ -68,6 +74,11 @@ public class RoomAssetsComponent extends Component {
     }
   }
 
+  /**
+   * Starts playing the background music.
+   *
+   * @requires The music to be loaded into the resource service.
+   */
   private void playMusic() {
     final Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
     music.setLooping(true);
@@ -75,6 +86,7 @@ public class RoomAssetsComponent extends Component {
     music.play();
   }
 
+  /** Unloads the assets used in the room */
   private void unloadAssets() {
     logger.debug("unloading assets");
     final ResourceService resourceService = ServiceLocator.getResourceService();

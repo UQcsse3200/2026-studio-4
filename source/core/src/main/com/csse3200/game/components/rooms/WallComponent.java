@@ -22,6 +22,11 @@ public class WallComponent extends EntityManagerComponent {
     spawnWalls();
   }
 
+  /**
+   * Spawns a wall entity around the map using the room's TerrainComponent.
+   *
+   * @requires entity.getComponent(TerrainComponent.class) != null.
+   */
   private void spawnWalls() {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
     if (terrain == null) {

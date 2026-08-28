@@ -29,6 +29,7 @@ public class RoomManager implements Command {
     rooms.add(currentRoom);
   }
 
+  /** transitions to the next room in the list, if it exits */
   public void nextRoom() {
     for (Entity room : rooms) {
       if (!room.equals(currentRoom)) {
@@ -37,6 +38,11 @@ public class RoomManager implements Command {
     }
   }
 
+  /**
+   * Disposes the current room then register and switches to the given room
+   *
+   * @param room
+   */
   public void transitionRoom(Entity room) {
     if (!isRegistered(room)) {
       logger.error("Transition to unregistered room");
@@ -55,6 +61,12 @@ public class RoomManager implements Command {
     movePlayer();
   }
 
+  /**
+   * Returns true if the room is stored in rooms
+   *
+   * @param room
+   * @return
+   */
   private boolean isRegistered(Entity room) {
     for (Entity registeredRoom : rooms) {
       if (registeredRoom.equals(room)) {
@@ -64,6 +76,7 @@ public class RoomManager implements Command {
     return false;
   }
 
+  /** sets the player position to PLAYER_SPAWN */
   private void movePlayer() {
     Vector2 pos =
         currentRoom.getComponent(TerrainComponent.class).tileToWorldPosition(PLAYER_SPAWN);
