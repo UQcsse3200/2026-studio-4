@@ -1,0 +1,68 @@
+idle_down.png
+size: 768, 80
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+idle_down
+    rotate: false
+    xy: 30, 23
+    size: 36, 36
+    orig: 20, 20
+    offset: 0, 0
+    index: 0
+idle_down
+    rotate: false
+    xy: 126, 23
+    size: 36, 36
+    orig: 20, 20
+    offset: 0, 0
+    index: 1
+idle_down
+    rotate: false
+    xy: 222, 23
+    size: 36, 36
+    orig: 20, 20
+    offset: 0, 0
+    index: 2
+idle_down
+    rotate: false
+    xy: 318, 23
+    size: 36, 36
+    orig: 20, 20
+    offset: 0, 0
+    index: 3
+idle_down
+    rotate: false
+    xy: 414, 23
+    size: 36, 36
+    orig: 20, 20
+    offset: 0, 0
+    index: 4
+idle_down
+    rotate: false
+    xy: 510, 23
+    size: 36, 36
+    orig: 20, 20
+    offset: 0, 0
+    index: 5
+idle_down
+    rotate: false
+    xy: 606, 23
+    size: 36, 36
+    orig: 20, 20
+    offset: 0, 0
+    index: 6
+idle_down
+    rotate: false
+    xy: 702, 23
+    size: 36, 36
+    orig: 20, 20
+    offset: 0, 0
+    index: 7
+default
+    rotate: false
+    xy: 0, 0
+    size: 50, 50
+    orig: 50, 50
+    offset: 0, 0
+    index: 0

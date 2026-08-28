@@ -1,8 +1,11 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.PlayerActions;
+import com.csse3200.game.components.player.PlayerAnimationController;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
@@ -13,6 +16,7 @@ import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.TriggeredRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -35,9 +39,14 @@ public class PlayerFactory {
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForPlayer();
 
+    AnimationRenderComponent animator = new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset("images/idle_down.atlas", TextureAtlas.class));
+    animator.addAnimation("idle_down", 0.1f, Animation.PlayMode.LOOP);
+
     Entity player =
         new Entity()
-            .addComponent(new TriggeredRenderComponent("images/box_boy_leaf.png"))
+                .addComponent(animator)
+            //.addComponent(new TriggeredRenderComponent("images/box_boy_leaf.png"))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
@@ -45,15 +54,18 @@ public class PlayerFactory {
             .addComponent(new CombatStatsComponent(stats.health, stats.baseAttack))
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(inputComponent)
+                .addComponent(new PlayerAnimationController())
             .addComponent(new PlayerStatsDisplay());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
-    player.getComponent(TriggeredRenderComponent.class).scaleEntity();
-    player.getComponent(TriggeredRenderComponent.class).addTexture("images/box_boy.png", "dash", 1);
-    player
-        .getComponent(TriggeredRenderComponent.class)
-        .addTexture("images/box_boy_leaf.png", "dashStop", 0);
+    player.getComponent(AnimationRenderComponent.class).scaleEntity();
+    //player.getComponent(TriggeredRenderComponent.class).scaleEntity();
+    //player.getComponent(TriggeredRenderComponent.class).addTexture("images/box_boy.png", "dash", 1);
+    //player
+        //.getComponent(TriggeredRenderComponent.class)
+        //.addTexture("images/box_boy_leaf.png", "dashStop", 0);
+    player.getComponent(AnimationRenderComponent.class).startAnimation("idle_down");
     return player;
   }
 
