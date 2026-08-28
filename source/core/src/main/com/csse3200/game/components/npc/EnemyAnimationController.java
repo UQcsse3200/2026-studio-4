@@ -17,20 +17,20 @@ public class EnemyAnimationController extends Component {
 
     entity.getEvents().addListener("wanderStart", this::animateWander);
     entity.getEvents().addListener("chaseStart", this::animateChase);
-    entity.getEvents().addListener("explode", this::animateExplode);
+    entity.getEvents().addListener("dieAnimation", this::animateDie);
     entity.getEvents().addListener("default", this::animatePause);
   }
 
   void animateWander() {
-    animator.startAnimation("float");
+    animator.startAnimation("move");
   }
 
   void animateChase() {
-    animator.startAnimation("angry_float");
+    animator.startAnimation("chase");
   }
 
-  void animateExplode() {
-    animator.startAnimation("explode");
+  void animateDie() {
+    animator.startAnimation("dieAnimation");
   }
 
   void animatePause() {

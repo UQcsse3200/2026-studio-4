@@ -58,9 +58,9 @@ public class NPCFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/bombEnemy.atlas", TextureAtlas.class));
-    animator.addAnimation("float", 0.7f, Animation.PlayMode.LOOP);
-    animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("explode", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation("move", 0.7f, Animation.PlayMode.LOOP);
+    animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("dieAnimation", 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
 
     bombEnemy
