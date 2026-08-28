@@ -36,7 +36,7 @@ public class NPCFactory {
   private static final NPCConfigs configs =
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
   private static final PlayerConfig targetConfig =
-      FileLoader.readClass(PlayerConfig.class, "configs/Player.json");
+      FileLoader.readClass(PlayerConfig.class, "configs/player.json");
 
   /**
    * Creates a bomb Enemy entity.
