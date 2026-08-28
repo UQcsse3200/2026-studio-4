@@ -13,9 +13,17 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public class KnifeWeaponComponent extends WeaponComponent {
   private static final Vector2 SIZE = new Vector2(0.5f, 1.0f);
-  private static final float LIFETIME = 0.15f;
+  private static final float LIFETIME = 1.0f;
   private static final float REACH = 0.5f;
 
+  /**
+   * Spawn this weapon's hitbox. Melee implementations should pass the wielder as hitbox owner;
+   * projectile splash should omit owner.
+   *
+   * @param origin world position of the attack
+   * @param direction facing or aim direction
+   * @require origin != null &amp;&amp; direction != null
+   */
   @Override
   protected void createAttack(Vector2 origin, Vector2 direction) {
     WeaponStatsComponent stats = entity.getComponent(WeaponStatsComponent.class);
