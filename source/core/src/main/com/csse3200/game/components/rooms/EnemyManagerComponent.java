@@ -10,9 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Component used to create obstacles and add them to game area entities. Any game ares which
- * utilises obstacles such as walls or rocks should have an instance of this class registered. This
- * class can be extended for more specific obstacle needs.
+ * Component used to create enemies and add them to game area entities. Any game areas which
+ * utilises enemies such as ghosts or bombers should have an instance of this class registered. This
+ * class can be extended for more specific enemy needs.
  */
 public class EnemyManagerComponent extends EntityManagerComponent {
   private static final Logger logger = LoggerFactory.getLogger(EntityManagerComponent.class);
@@ -36,4 +36,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       spawnEntityAt(ghost, randomPos, true, true);
     }
   }
+
+
 }
+
+
