@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.items.Charm;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
@@ -14,6 +15,8 @@ public class PlayerStatsDisplay extends UIComponent {
   Table table;
   private Image heartImage;
   private Label healthLabel;
+  private Label strengthLabel;
+  private Label charmCountLabel;
 
   /** Creates reusable ui styles and adds actors to the stage. */
   @Override
@@ -22,6 +25,9 @@ public class PlayerStatsDisplay extends UIComponent {
     addActors();
 
     entity.getEvents().addListener("updateHealth", this::updatePlayerHealthUI);
+    entity.getEvents().addListener("updateStrength", this::updatePlayerStrengthUI);
+    entity.getEvents().addListener("charmAdded", this::updateCharmCountUI);
+    entity.getEvents().addListener("charmRemoved", this::updateCharmCountUI);
   }
 
   /**
@@ -45,8 +51,20 @@ public class PlayerStatsDisplay extends UIComponent {
     CharSequence healthText = String.format("Health: %d", health);
     healthLabel = new Label(healthText, skin, "large");
 
+    int strength = entity.getComponent(CombatStatsComponent.class).getStrength();
+    CharSequence strengthText = String.format("Strength: %d", strength);
+    strengthLabel = new Label(strengthText, skin, "large");
+
+    int charmCount = entity.getComponent(InventoryComponent.class).getCharmCount();
+    CharSequence charmCountText = String.format("Strength Charms: %d", charmCount);
+    charmCountLabel = new Label(charmCountText, skin, "large");
+
     table.add(heartImage).size(heartSideLength).pad(5);
     table.add(healthLabel);
+    table.row();
+    table.add(strengthLabel).colspan(2).left();
+    table.row();
+    table.add(charmCountLabel).colspan(2).left();
     stage.addActor(table);
   }
 
@@ -65,10 +83,29 @@ public class PlayerStatsDisplay extends UIComponent {
     healthLabel.setText(text);
   }
 
+  /**
+   * Updates the player's strength on the ui.
+   *
+   * @param strength player strength
+   */
+  public void updatePlayerStrengthUI(int strength) {
+    CharSequence text = String.format("Strength: %d", strength);
+    strengthLabel.setText(text);
+  }
+
+  /** Updates the displayed charm count after a charm is added to or removed from the inventory. */
+  public void updateCharmCountUI(Charm charm) {
+    int charmCount = entity.getComponent(InventoryComponent.class).getCharmCount();
+    CharSequence text = String.format("Strength Charms: %d", charmCount);
+    charmCountLabel.setText(text);
+  }
+
   @Override
   public void dispose() {
     super.dispose();
     heartImage.remove();
     healthLabel.remove();
+    strengthLabel.remove();
+    charmCountLabel.remove();
   }
 }
