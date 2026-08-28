@@ -40,7 +40,8 @@ public class TriggeredRenderComponent extends RenderComponent {
    * @param texture Texture to change to on trigger. Will be scaled for entity.
    * @param trigger The trigger on which to change to texture. Listens for this trigger then changes
    *     to given texture.
-   * @param argNum The number of arguments passed with this trigger.
+   * @param argNum The number of arguments passed with this trigger. Will cause an error if you pass
+   *     the wrong number of arguments.
    */
   public void addTexture(Texture texture, String trigger, int argNum) {
     if (argNum == 1) {
@@ -53,8 +54,6 @@ public class TriggeredRenderComponent extends RenderComponent {
       entity.getEvents().addListener(trigger, () -> changeTexture(texture));
     }
   }
-
-
 
   /**
    * Changes texture to given texture.
