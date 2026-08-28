@@ -14,11 +14,20 @@ public class PlayerAnimationController extends Component {
     public void create() {
         super.create();
         animator = this.entity.getComponent(AnimationRenderComponent.class);
-        entity.getEvents().addListener("idleDown", this::animateDown);
+        entity.getEvents().addListener("idleDown", this::animateIdleDown);
+        entity.getEvents().addListener("idleLeft", this::animateIdleLeft);
+        entity.getEvents().addListener("idleRight", this::animateIdleRight);
+        entity.getEvents().addListener("idleUp", this::animateIdleUp);
     }
 
-    void animateDown() {
+    void animateIdleDown() {
         animator.startAnimation("idle_down");
     }
+
+    void animateIdleLeft() {animator.startAnimation("idle_left");}
+
+    void animateIdleRight() {animator.startAnimation("idle_right");}
+
+    void animateIdleUp() {animator.startAnimation("idle_up");}
 
 }

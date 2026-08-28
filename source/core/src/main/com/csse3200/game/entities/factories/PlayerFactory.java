@@ -42,6 +42,9 @@ public class PlayerFactory {
     AnimationRenderComponent animator = new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset("images/idle_down.atlas", TextureAtlas.class));
     animator.addAnimation("idle_down", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("idle_left", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("idle_right", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("idle_up", 0.1f, Animation.PlayMode.LOOP);
 
     Entity player =
         new Entity()
