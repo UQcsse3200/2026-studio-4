@@ -18,22 +18,22 @@ public class SwordWeaponComponent extends WeaponComponent {
 
   @Override
   protected void createAttack(Vector2 origin, Vector2 direction) {
-      WeaponStatsComponent stats = entity.getComponent(WeaponStatsComponent.class);
-      Vector2 offset = direction.cpy().nor().scl(REACH);
+    WeaponStatsComponent stats = entity.getComponent(WeaponStatsComponent.class);
+    Vector2 offset = direction.cpy().nor().scl(REACH);
 
-      HitboxSpec spec =
-          new HitboxSpec()
-              .position(origin)
-              .size(SIZE)
-              .lifetime(LIFETIME)
-              .layer(PhysicsLayer.WEAPON)
-              .targetLayer(PhysicsLayer.NPC)
-              .damage(stats.getDamage())
-              .knockback(stats.getKnockback())
-              .owner(entity)
-              .localOffset(offset);
+    HitboxSpec spec =
+        new HitboxSpec()
+            .position(origin)
+            .size(SIZE)
+            .lifetime(LIFETIME)
+            .layer(PhysicsLayer.WEAPON)
+            .targetLayer(PhysicsLayer.NPC)
+            .damage(stats.getDamage())
+            .knockback(stats.getKnockback())
+            .owner(entity)
+            .localOffset(offset);
 
-      Entity hitbox = HitboxFactory.createHitbox(spec);
-      ServiceLocator.getEntityService().register(hitbox);
+    Entity hitbox = HitboxFactory.createHitbox(spec);
+    ServiceLocator.getEntityService().register(hitbox);
   }
 }
