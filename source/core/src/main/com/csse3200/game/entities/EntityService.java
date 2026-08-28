@@ -1,6 +1,7 @@
 package com.csse3200.game.entities;
 
 import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.components.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,19 @@ public class EntityService {
   public void unregister(Entity entity) {
     logger.debug("Unregistering {} in entity service", entity);
     entities.removeValue(entity, true);
+  }
+
+  /**
+   * First registered entity that has {@code type}, or null. Used by debug commands (e.g. find the
+   * player via {@code PlayerActions}).
+   */
+  public Entity findByComponent(Class<? extends Component> type) {
+    for (Entity entity : entities) {
+      if (entity.getComponent(type) != null) {
+        return entity;
+      }
+    }
+    return null;
   }
 
   /** Update all registered entities. Should only be called from the main game loop. */
