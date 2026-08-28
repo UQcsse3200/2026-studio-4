@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
+import com.csse3200.game.components.ExplodeComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -59,7 +60,7 @@ public class NPCFactory {
                 .getAsset("images/bombEnemy.atlas", TextureAtlas.class));
     animator.addAnimation("float", 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("explode", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("explode", 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
 
     bombEnemy
@@ -67,6 +68,7 @@ public class NPCFactory {
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
         .addComponent(aiComponent)
         .addComponent(animator)
+        .addComponent(new ExplodeComponent(target))
         .addComponent(new EnemyAnimationController());
 
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
