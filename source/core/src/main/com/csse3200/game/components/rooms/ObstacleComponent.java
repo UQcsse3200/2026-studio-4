@@ -12,7 +12,7 @@ import java.util.Random;
  * class can be extended for more specific obstacle needs.
  */
 public class ObstacleComponent extends EntityManagerComponent {
-  private int NumOfObstacles = new Random().nextInt(10, 20);
+  private final int NumOfObstacles = new Random().nextInt(10, 20);
   private static final String TREE = "Tree";
   private static final String ROCK = "Rock";
   private static final String HOLE = "Hole";

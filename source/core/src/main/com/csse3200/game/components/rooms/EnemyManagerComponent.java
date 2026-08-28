@@ -14,13 +14,16 @@ import org.slf4j.LoggerFactory;
  * class can be extended for more specific enemy needs.
  */
 public class EnemyManagerComponent extends EntityManagerComponent {
-  private static final Logger logger = LoggerFactory.getLogger(EntityManagerComponent.class);
   private final int NUM_GHOSTS = new Random().nextInt(10, 20);
 
   public EnemyManagerComponent() {
     super();
   }
 
+  /**
+   * Spawns ghosts with the given target.
+   * @param target The target for the ghosts to attack.
+   */
   public void spawnGhosts(Entity target) {
     GridPoint2 maxPos = this.spawnableArea();
     for (int i = 0; i < NUM_GHOSTS; i++) {
