@@ -4,7 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.entities.Entity;
@@ -15,6 +18,8 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +31,13 @@ class ItemFactoryTest {
   void beforeEach() {
     ServiceLocator.registerPhysicsService(new PhysicsService());
     ServiceLocator.registerEntityService(new EntityService());
+    ResourceService resourceService = mock(ResourceService.class);
+    Texture texture = mock(Texture.class);
+    when(resourceService.getAsset("images/strength_charm_pixel.png", Texture.class))
+        .thenReturn(texture);
+    when(texture.getWidth()).thenReturn(1270);
+    when(texture.getHeight()).thenReturn(1239);
+    ServiceLocator.registerResourceService(resourceService);
   }
 
   @Test
@@ -59,10 +71,12 @@ class ItemFactoryTest {
     Entity item = ItemFactory.createStrengthCharm();
 
     ItemComponent itemComponent = item.getComponent(ItemComponent.class);
+    assertEquals((short) (1 << 5), PhysicsLayer.ITEM);
     assertNotNull(itemComponent);
     assertEquals("Strength Charm", itemComponent.getCharm().getName());
     assertNotNull(item.getComponent(PhysicsComponent.class));
     assertNotNull(item.getComponent(HitboxComponent.class));
+    assertNotNull(item.getComponent(TextureRenderComponent.class));
     assertEquals(PhysicsLayer.ITEM, item.getComponent(HitboxComponent.class).getLayer());
   }
 

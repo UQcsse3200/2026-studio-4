@@ -8,11 +8,13 @@ import com.csse3200.game.items.ItemType;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import java.util.Objects;
 
 /** Factory for creating item entities. */
 public final class ItemFactory {
   private static final String STRENGTH_CHARM_NAME = "Strength Charm";
+  private static final String STRENGTH_CHARM_TEXTURE = "images/strength_charm_pixel.png";
 
   /**
    * Creates the requested item at a world position.
@@ -46,10 +48,14 @@ public final class ItemFactory {
    */
   public static Entity createStrengthCharm() {
     Charm strengthCharm = new Charm(STRENGTH_CHARM_NAME);
-    return new Entity()
-        .addComponent(new PhysicsComponent())
-        .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ITEM))
-        .addComponent(new ItemComponent(strengthCharm));
+    Entity item =
+        new Entity()
+            .addComponent(new TextureRenderComponent(STRENGTH_CHARM_TEXTURE))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ITEM))
+            .addComponent(new ItemComponent(strengthCharm));
+    item.getComponent(TextureRenderComponent.class).scaleEntity();
+    return item;
   }
 
   private ItemFactory() {

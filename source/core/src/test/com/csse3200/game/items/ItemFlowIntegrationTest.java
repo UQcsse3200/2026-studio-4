@@ -2,7 +2,10 @@ package com.csse3200.game.items;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
@@ -18,6 +21,8 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +34,14 @@ class ItemFlowIntegrationTest {
   void beforeEach() {
     ServiceLocator.registerPhysicsService(new PhysicsService());
     ServiceLocator.registerEntityService(new EntityService());
+    ServiceLocator.registerRenderService(mock(RenderService.class));
+    ResourceService resourceService = mock(ResourceService.class);
+    Texture texture = mock(Texture.class);
+    when(resourceService.getAsset("images/strength_charm_pixel.png", Texture.class))
+        .thenReturn(texture);
+    when(texture.getWidth()).thenReturn(1270);
+    when(texture.getHeight()).thenReturn(1239);
+    ServiceLocator.registerResourceService(resourceService);
   }
 
   @Test
