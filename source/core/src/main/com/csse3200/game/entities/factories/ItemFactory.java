@@ -1,26 +1,39 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.items.Charm;
+import com.csse3200.game.items.ItemType;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import java.util.Objects;
 
 /** Factory for creating item entities. */
 public final class ItemFactory {
   private static final String STRENGTH_CHARM_NAME = "Strength Charm";
 
   /**
-   * Selects and creates the item dropped after an enemy is defeated.
+   * Creates the requested item at a world position.
    *
-   * <p>Sprint 1 uses a deterministic drop: every request returns a Strength Charm. The returned
-   * entity is not positioned or registered; the requesting room owns those responsibilities.
+   * <p>Sprint 1 currently supports only {@link ItemType#STRENGTH_CHARM}. The returned entity is not
+   * registered; the requesting room owns that responsibility.
    *
-   * @return a non-null, unregistered item entity for the room to spawn
+   * @param itemType type of item to create
+   * @param position world position assigned to the item entity
+   * @return a non-null, positioned, unregistered item entity for the room to spawn
    */
-  public static Entity createDrop() {
-    return createStrengthCharm();
+  public static Entity createDrop(ItemType itemType, Vector2 position) {
+    Objects.requireNonNull(itemType, "itemType cannot be null");
+    Objects.requireNonNull(position, "position cannot be null");
+
+    Entity item =
+        switch (itemType) {
+          case STRENGTH_CHARM -> createStrengthCharm();
+        };
+    item.setPosition(position);
+    return item;
   }
 
   /**

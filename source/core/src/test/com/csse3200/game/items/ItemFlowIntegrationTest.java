@@ -3,6 +3,7 @@ package com.csse3200.game.items;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.items.CharmPickupComponent;
@@ -35,7 +36,7 @@ class ItemFlowIntegrationTest {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     CombatStatsComponent combatStats = player.getComponent(CombatStatsComponent.class);
-    Entity droppedItem = ItemFactory.createDrop();
+    Entity droppedItem = ItemFactory.createDrop(ItemType.STRENGTH_CHARM, Vector2.Zero);
     Charm droppedCharm = droppedItem.getComponent(ItemComponent.class).getCharm();
     droppedItem.create();
 
