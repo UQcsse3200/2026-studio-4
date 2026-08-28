@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
  * class can be extended for more specific obstacle needs.
  */
 public class ObstacleComponent extends EntityManagerComponent {
-  private static final Logger logger = LoggerFactory.getLogger(ObstacleComponent.class);
   private int NumOfObstacles = new Random().nextInt(10, 20);
   private static final String TREE = "Tree";
   private static final String ROCK = "Rock";
@@ -31,17 +30,9 @@ public class ObstacleComponent extends EntityManagerComponent {
   }
 
   public void createObstacle(String obstacle) {
-    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
-    if (terrain == null) {
-      logger.error("Spawning obstacle on an entity without a terrain");
-      return;
-    }
-
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
+    GridPoint2 maxPos = this.spawnableArea();
     for (int i = 0; i < NumOfObstacles; i++) {
-      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+      GridPoint2 randomPos = RandomUtils.random(new GridPoint2(0, 0), maxPos);
       Entity createdObstacle = ObstacleFactory.createObstacle(obstacle);
       spawnEntityAt(createdObstacle, randomPos, true, false);
     }

@@ -6,6 +6,9 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +20,8 @@ public abstract class EntityManagerComponent extends Component {
   public EntityManagerComponent() {
     entities = new ArrayList<>();
   }
+
+  private static final Logger logger = LoggerFactory.getLogger(EntityManagerComponent.class);
 
   @Override
   public void dispose() {
@@ -59,5 +64,18 @@ public abstract class EntityManagerComponent extends Component {
 
     entity.setPosition(worldPos);
     spawnEntity(entity);
+  }
+
+  /**
+   * Returns the max bound of the spawnable area of the room.
+   * @return The max bound of the spawnable area.
+   */
+  protected GridPoint2 spawnableArea() {
+    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+    if (terrain == null) {
+      logger.error("No spawnable Area on an entity without terrain");
+      return null;
+    }
+    return terrain.getMapBounds(0).sub(2, 2);
   }
 }

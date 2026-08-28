@@ -15,23 +15,16 @@ import org.slf4j.LoggerFactory;
  * class can be extended for more specific obstacle needs.
  */
 public class EnemyManagerComponent extends EntityManagerComponent {
-    private static final Logger logger = LoggerFactory.getLogger(EntityManagerComponent.class);
-    private int NUM_GHOSTS = new Random().nextInt(10, 20);
+    private final int NUM_GHOSTS = new Random().nextInt(10, 20);
 
     public EnemyManagerComponent() {
         super();
     }
 
     public void spawnGhosts(Entity target) {
-        TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
-        if (terrain == null) {
-            logger.error("Spawning obstacle on an entity without a terrain");
-            return;
-        }
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+        GridPoint2 maxPos = this.spawnableArea();
         for (int i = 0; i < NUM_GHOSTS; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+            GridPoint2 randomPos = RandomUtils.random(new GridPoint2(0, 0), maxPos);
             Entity ghost = NPCFactory.createGhost(target);
             spawnEntityAt(ghost, randomPos, true, true);
         }
