@@ -8,13 +8,12 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.ui.terminal.commands.Command;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RoomManager implements Command {
+public class RoomManager {
   private static final Logger logger = LoggerFactory.getLogger(RoomManager.class);
   private List<Entity> rooms;
   private Entity currentRoom;
@@ -41,41 +40,35 @@ public class RoomManager implements Command {
   public void create() {
     ServiceLocator.getEntityService().register(player);
     currentRoom = RoomFactory.createRoom("First Room", camera);
+    rooms.add(currentRoom);
     ServiceLocator.getEntityService().register(currentRoom);
 
     currentRoom.getEvents().trigger("RoomCreated", player);
   }
 
-  /** transitions to the next room in the list, if it exits */
-  public void nextRoom() {
-    for (Entity room : rooms) {
-      if (!room.equals(currentRoom)) {
-        transitionRoom(room);
-      }
-    }
-  }
-
   /**
-   * Disposes the current room then register and switches to the given room
+   * Switches the player to the given room.
    *
-   * @param room
+   * <p>if the room has been added before, will not register to entity service.
+   *
+   * @param room must be unregistered to entity service
    */
-  public void transitionRoom(Entity room) {
-    if (!isRegistered(room)) {
-      logger.error("Transition to unregistered room");
-      return;
+  public void switchRoom(Entity room) {
+    currentRoom.setEnabled(false);
+
+    if (isRegistered(room)) {
+      currentRoom = room;
+      currentRoom.setEnabled(true);
+    } else {
+      currentRoom = room;
+      rooms.add(currentRoom);
+      ServiceLocator.getEntityService().register(room);
+      logger.info("switched room: {}", currentRoom.toString());
+
+      currentRoom.getEvents().trigger("RoomCreated", player);
     }
 
-    if (room.equals(currentRoom)) {
-      logger.error("Transition to current room");
-      return;
-    }
-
-    currentRoom.dispose();
-
-    ServiceLocator.getEntityService().register(room);
-    currentRoom = room;
-    movePlayer();
+    resetPlayerPos();
   }
 
   /**
@@ -94,22 +87,10 @@ public class RoomManager implements Command {
   }
 
   /** sets the player position to PLAYER_SPAWN */
-  private void movePlayer() {
+  private void resetPlayerPos() {
     Vector2 pos =
         currentRoom.getComponent(TerrainComponent.class).tileToWorldPosition(PLAYER_SPAWN);
     player.setPosition(pos);
-  }
-
-  public void addRoom(Entity room) {
-    room.setEnabled(false);
-    // ServiceLocator.getEntityService().register(room);
-    rooms.add(room);
-  }
-
-  @Override
-  public boolean action(ArrayList<String> args) {
-    this.nextRoom();
-    return true;
   }
 
   public Entity getPlayer() {
