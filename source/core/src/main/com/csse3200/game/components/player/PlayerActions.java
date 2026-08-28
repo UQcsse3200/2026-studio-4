@@ -47,11 +47,16 @@ public class PlayerActions extends Component {
     if (moving) {
       updateSpeed();
     }
-    if (walkDirection.y < 0){entity.getEvents().trigger("idleDown");}
-    else if (walkDirection.y > 0){entity.getEvents().trigger("idleUp");}
-    else if (walkDirection.x < 0){entity.getEvents().trigger("idleLeft");}
-    else if (walkDirection.x > 0){entity.getEvents().trigger("idleRight");}
-    //else {entity.getEvents().trigger("idleUp");}
+    if (walkDirection.y < 0) {
+      entity.getEvents().trigger("idleDown");
+    } else if (walkDirection.y > 0) {
+      entity.getEvents().trigger("idleUp");
+    } else if (walkDirection.x < 0) {
+      entity.getEvents().trigger("idleLeft");
+    } else if (walkDirection.x > 0) {
+      entity.getEvents().trigger("idleRight");
+    }
+    // else {entity.getEvents().trigger("idleUp");}
   }
 
   private void updateSpeed() {
