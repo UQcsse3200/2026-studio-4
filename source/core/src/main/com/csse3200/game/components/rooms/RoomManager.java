@@ -42,6 +42,8 @@ public class RoomManager implements Command {
     ServiceLocator.getEntityService().register(player);
     currentRoom = RoomFactory.createRoom("First Room", camera);
     ServiceLocator.getEntityService().register(currentRoom);
+
+    currentRoom.getEvents().trigger("RoomCreated", player);
   }
 
   /** transitions to the next room in the list, if it exits */

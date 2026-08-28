@@ -18,6 +18,11 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     super();
   }
 
+  @Override
+  public void create() {
+    entity.getEvents().addListener("RoomCreated", this::spawnGhosts);
+  }
+
   /**
    * Spawns ghosts with the given target.
    *
