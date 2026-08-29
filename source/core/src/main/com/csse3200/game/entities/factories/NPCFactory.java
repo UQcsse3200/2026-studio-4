@@ -112,13 +112,11 @@ public class NPCFactory {
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(new PhysicsMovementComponent())
-            .addComponent(new ColliderComponent())
             .addComponent(aiComponent)
             .addComponent(animator)
             .addComponent(new FloatingDemonAnimationController());
 
     animator.scaleEntity();
-    PhysicsUtils.setScaledCollider(demon, 0.7f, 0.7f);
     return demon;
   }
 
