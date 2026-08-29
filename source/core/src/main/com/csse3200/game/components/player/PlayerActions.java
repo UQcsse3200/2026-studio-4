@@ -3,6 +3,7 @@ package com.csse3200.game.components.player;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.GameTime;
@@ -13,10 +14,10 @@ import com.csse3200.game.services.ServiceLocator;
  * and when triggered should call methods within this class.
  */
 public class PlayerActions extends Component {
-  private static final Vector2 MAX_SPEED = new Vector2(3f, 3f); // Metres per second
-  private static final Vector2 DASH_SPEED = new Vector2(15f, 15f);
+  private static final float DASH_SPEED_MULTIPLIER = 5;
 
   private PhysicsComponent physicsComponent;
+  private CombatStatsComponent combatStats;
   private Vector2 walkDirection = Vector2.Zero.cpy();
   private Vector2 dashDirection = Vector2.Zero.cpy();
   private boolean moving = false;
@@ -29,6 +30,7 @@ public class PlayerActions extends Component {
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
+    combatStats = entity.getComponent(CombatStatsComponent.class);
     entity.getEvents().addListener("walk", this::walk);
     entity.getEvents().addListener("walkStop", this::stopWalking);
     entity.getEvents().addListener("attack", this::attack);
@@ -63,10 +65,14 @@ public class PlayerActions extends Component {
     Body body = physicsComponent.getBody();
     Vector2 velocity = body.getLinearVelocity();
     Vector2 desiredVelocity;
+
+    float movementSpeed = combatStats.getMovementSpeed();
+
     if (dashOn) {
-      desiredVelocity = dashDirection.cpy().scl(DASH_SPEED);
+      float dashSpeed = DASH_SPEED_MULTIPLIER * movementSpeed;
+      desiredVelocity = dashDirection.cpy().scl(new Vector2(dashSpeed, dashSpeed));
     } else {
-      desiredVelocity = walkDirection.cpy().scl(MAX_SPEED);
+      desiredVelocity = walkDirection.cpy().scl(new Vector2(movementSpeed, movementSpeed));
     }
     // impulse = (desiredVel - currentVel) * mass
     Vector2 impulse = desiredVelocity.sub(velocity).scl(body.getMass());
