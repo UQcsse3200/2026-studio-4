@@ -8,10 +8,14 @@ import com.csse3200.game.services.ServiceLocator;
 public class ProjectileMovementComponent extends Component {
   private final Vector2 direction;
   private final float speed;
+  private final float maxDistance;
+  private float distanceTravelled;
+  private boolean reachedMaxDistance;
 
-  public ProjectileMovementComponent(Vector2 direction, float speed) {
+  public ProjectileMovementComponent(Vector2 direction, float speed, float maxDistance) {
     this.direction = direction.cpy().nor();
     this.speed = speed;
+    this.maxDistance = maxDistance;
   }
 
   @Override
@@ -20,8 +24,25 @@ public class ProjectileMovementComponent extends Component {
   }
 
   public void update(float deltaTime) {
+    if (reachedMaxDistance || deltaTime < 0f) {
+      return;
+    }
+
+    float moveDistance = speed * deltaTime;
+    float distanceLeft = maxDistance - distanceTravelled;
+
+    if (moveDistance >= distanceLeft) {
+      moveDistance = distanceLeft;
+      reachedMaxDistance = true;
+    }
+
     Vector2 newPosition = entity.getPosition();
-    newPosition.mulAdd(direction, speed * deltaTime);
+    newPosition.mulAdd(direction, moveDistance);
     entity.setPosition(newPosition);
+    distanceTravelled += moveDistance;
+
+    if (reachedMaxDistance) {
+      entity.getEvents().trigger("projectileRangeReached");
+    }
   }
 }

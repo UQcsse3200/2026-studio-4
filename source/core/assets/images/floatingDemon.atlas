@@ -329,3 +329,42 @@ projectile
   orig: 50, 50
   offset: 0, 0
   index: 2
+
+Floating_Demon_Assets/5 Projectile HIT F Demon/ProjectileHITFDemon_0001.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectileHit
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 0
+
+Floating_Demon_Assets/5 Projectile HIT F Demon/ProjectileHITFDemon_0002.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectileHit
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 1
+
+Floating_Demon_Assets/5 Projectile HIT F Demon/ProjectileHITFDemon_0003.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectileHit
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 2

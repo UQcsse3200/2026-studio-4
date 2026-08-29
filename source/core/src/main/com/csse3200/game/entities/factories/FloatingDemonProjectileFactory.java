@@ -12,7 +12,8 @@ import com.csse3200.game.services.ServiceLocator;
 /** Creates the visual projectiles fired by a floating demon. */
 public class FloatingDemonProjectileFactory {
   private static final float PROJECTILE_SPEED = 5f;
-  private static final float PROJECTILE_LIFETIME = 2f;
+  private static final float PROJECTILE_RANGE = 7f;
+  private static final float PROJECTILE_LIFETIME = 1.8f;
 
   public static Entity createProjectile(Vector2 position, Vector2 direction) {
     TextureAtlas atlas =
@@ -20,15 +21,20 @@ public class FloatingDemonProjectileFactory {
             .getAsset("images/floatingDemon.atlas", TextureAtlas.class);
     AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
     animator.addAnimation("projectile", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("projectileHit", 0.1f);
 
     Entity projectile =
         new Entity()
-            .addComponent(new ProjectileMovementComponent(direction, PROJECTILE_SPEED))
+            .addComponent(
+                new ProjectileMovementComponent(direction, PROJECTILE_SPEED, PROJECTILE_RANGE))
             .addComponent(new LifetimeComponent(PROJECTILE_LIFETIME))
             .addComponent(animator);
 
+    projectile
+        .getEvents()
+        .addListener("projectileRangeReached", () -> animator.startAnimation("projectileHit"));
     projectile.setPosition(position);
-    projectile.setScale(0.5f, 0.5f);
+    projectile.setScale(0.8f, 0.8f);
     animator.startAnimation("projectile");
     return projectile;
   }
