@@ -1,7 +1,14 @@
 package com.csse3200.game.components.weapons;
 
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.services.ServiceLocator;
 
+/**
+ * Component added to Sword attack hitbox to make it make a sweeping motion
+ *
+ * requires the duration, start and end angles, and radius of the sword attack
+ */
 public class SweepComponent extends Component {
   private final float duration;
   private final float startAngleDeg;
@@ -23,5 +30,20 @@ public class SweepComponent extends Component {
   }
 
   @Override
-  public void update() {}
+  public void update() {
+    FollowComponent follow = entity.getComponent(FollowComponent.class);
+    if (follow == null) {
+      return;
+    }
+
+    /* Updates the offset for the sword attack's FollowComponent based on how long
+    the attack has been going to give it the sweeping motion
+    */
+    float dt = ServiceLocator.getTimeSource().getDeltaTime();
+    elapsed += Math.max(0f, dt);
+    float t = Math.min(1f, elapsed / duration);
+    float angle = startAngleDeg + (endAngleDeg - startAngleDeg) * t;
+    Vector2 offset = new Vector2(radius, 0f).setAngleDeg(angle);
+    follow.setLocalOffset(offset);
+  }
 }
