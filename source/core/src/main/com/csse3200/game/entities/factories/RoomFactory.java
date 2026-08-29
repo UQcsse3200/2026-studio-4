@@ -16,7 +16,7 @@ public class RoomFactory {
   /**
    * Creates a basic room entity with the given room name.
    *
-   * @param renderer
+   * @param camera
    * @param roomName
    * @return
    */
