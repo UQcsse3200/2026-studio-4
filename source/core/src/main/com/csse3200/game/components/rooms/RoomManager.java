@@ -55,4 +55,8 @@ public class RoomManager {
         currentRoom.getComponent(TerrainComponent.class).tileToWorldPosition(PLAYER_SPAWN);
     player.setPosition(pos);
   }
+
+  public Entity getCurrentRoom() {
+    return currentRoom;
+  }
 }
