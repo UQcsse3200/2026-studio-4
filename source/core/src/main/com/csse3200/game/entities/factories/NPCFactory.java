@@ -6,8 +6,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.npc.FloatingDemonAnimationController;
 import com.csse3200.game.components.npc.GhostAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
+import com.csse3200.game.components.tasks.PatrolTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.BaseEntityConfig;
@@ -87,6 +89,37 @@ public class NPCFactory {
 
     ghostKing.getComponent(AnimationRenderComponent.class).scaleEntity();
     return ghostKing;
+  }
+
+  /**
+   * Creates a floating demon which patrols in a straight horizontal line.
+   *
+   * @param leftEdge left side of its patrol area
+   * @param rightEdge right side of its patrol area
+   * @return floating demon entity
+   */
+  public static Entity createFloatingDemon(float leftEdge, float rightEdge) {
+    AITaskComponent aiComponent =
+        new AITaskComponent().addTask(new PatrolTask(leftEdge, rightEdge));
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/floatingDemon.atlas", TextureAtlas.class));
+    animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
+
+    Entity demon =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new PhysicsMovementComponent())
+            .addComponent(new ColliderComponent())
+            .addComponent(aiComponent)
+            .addComponent(animator)
+            .addComponent(new FloatingDemonAnimationController());
+
+    animator.scaleEntity();
+    PhysicsUtils.setScaledCollider(demon, 0.7f, 0.7f);
+    return demon;
   }
 
   /**

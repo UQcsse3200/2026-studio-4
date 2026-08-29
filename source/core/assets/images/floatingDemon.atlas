@@ -1,0 +1,136 @@
+Floating_Demon_Assets/1 Floating Demon/floating demon 1.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+default
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+float
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 0
+
+Floating_Demon_Assets/1 Floating Demon/floating demon 2.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+float
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 1
+
+Floating_Demon_Assets/1 Floating Demon/floating demon 3.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+float
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 2
+
+Floating_Demon_Assets/1 Floating Demon/floating demon 4.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+float
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 3
+
+Floating_Demon_Assets/1 Floating Demon/floating demon 5.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+float
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 4
+
+Floating_Demon_Assets/1 Floating Demon/floating demon 6.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+float
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 5
+
+Floating_Demon_Assets/1 Floating Demon/floating demon 7.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+float
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 6
+
+Floating_Demon_Assets/1 Floating Demon/floating demon 8.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+float
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 7
+
+Floating_Demon_Assets/1 Floating Demon/floating demon 9.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+float
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 8
+
+Floating_Demon_Assets/1 Floating Demon/floating demon 10.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+float
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 9

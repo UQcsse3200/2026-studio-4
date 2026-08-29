@@ -22,6 +22,7 @@ public class ForestGameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
   private static final int NUM_TREES = 7;
   private static final int NUM_GHOSTS = 2;
+  private static final GridPoint2 FLOATING_DEMON_SPAWN = new GridPoint2(5, 8);
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
   private static final float WALL_WIDTH = 0.1f;
   private static final String[] forestTextures = {
@@ -40,7 +41,10 @@ public class ForestGameArea extends GameArea {
     "images/iso_grass_3.png"
   };
   private static final String[] forestTextureAtlases = {
-    "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas"
+    "images/terrain_iso_grass.atlas",
+    "images/ghost.atlas",
+    "images/ghostKing.atlas",
+    "images/floatingDemon.atlas"
   };
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
   private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
@@ -73,6 +77,7 @@ public class ForestGameArea extends GameArea {
     player = spawnPlayer();
     spawnGhosts();
     spawnGhostKing();
+    spawnFloatingDemon();
 
     playMusic();
   }
@@ -148,6 +153,15 @@ public class ForestGameArea extends GameArea {
     GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
     Entity ghostKing = NPCFactory.createGhostKing(player);
     spawnEntityAt(ghostKing, randomPos, true, true);
+  }
+
+  private void spawnFloatingDemon() {
+    float tileSize = terrain.getTileSize();
+    float mapWidth = terrain.getMapBounds(0).x * tileSize;
+
+    // Leave one unit on each side so the demon turns before entering the wall.
+    Entity demon = NPCFactory.createFloatingDemon(1f, mapWidth - 1f);
+    spawnEntityAt(demon, FLOATING_DEMON_SPAWN, true, true);
   }
 
   private void playMusic() {
