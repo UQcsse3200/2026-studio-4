@@ -7,7 +7,7 @@ import com.csse3200.game.services.ServiceLocator;
 /**
  * Component added to Sword attack hitbox to make it make a sweeping motion
  *
- * requires the duration, start and end angles, and radius of the sword attack
+ * <p>requires the duration, start and end angles, and radius of the sword attack
  */
 public class SweepComponent extends Component {
   private final float duration;

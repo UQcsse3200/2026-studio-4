@@ -8,8 +8,8 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * Slower sweeping attack. Spawns a rectangular sword hitbox that moves along a
- * predetermined arc of attack using SweepComponent.
+ * Slower sweeping attack. Spawns a rectangular sword hitbox that moves along a predetermined arc of
+ * attack using SweepComponent.
  */
 public class SwordWeaponComponent extends WeaponComponent {
   // weapon attributes
