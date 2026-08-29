@@ -91,6 +91,10 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">PhysicsLayer</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">Physics layers used as Box2D category bits.
+
+ <p><a href="#WEAPON"><code>WEAPON</code></a> is the category for short-lived attack sensors. Use it as the hitbox layer,
+ not <a href="#PLAYER"><code>PLAYER</code></a>.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -121,6 +125,11 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>static final short</code></div>
 <div class="col-second odd-row-color"><code><a href="#PLAYER" class="member-name-link">PLAYER</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static final short</code></div>
+<div class="col-second even-row-color"><code><a href="#WEAPON" class="member-name-link">WEAPON</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Category for short-lived weapon sensors (slashes, stabs, arrow splash).</div>
+</div>
 </div>
 </section>
 </li>
@@ -221,6 +230,26 @@ loadScripts(document, 'script');</script>
 <dd>
 <ul class="tag-list">
 <li><a href="../../../../constant-values.html#com.csse3200.game.physics.PhysicsLayer.NPC">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="WEAPON">
+<h3>WEAPON</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">short</span>&nbsp;<span class="element-name">WEAPON</span></div>
+<div class="block">Category for short-lived weapon sensors (slashes, stabs, arrow splash).
+
+ <p>Use this as the hitbox <em>layer</em>, and <a href="#NPC"><code>NPC</code></a> (or another victim layer) as the
+ <code>targetLayer</code> passed to <code>TouchAttackComponent</code>. Do not place weapon sensors on
+ <a href="#PLAYER"><code>PLAYER</code></a>: NPC touch-attacks that target the player would treat the slash as a player
+ body.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../constant-values.html#com.csse3200.game.physics.PhysicsLayer.WEAPON">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
