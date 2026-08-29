@@ -3,7 +3,6 @@ package com.csse3200.game.components;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -21,7 +20,7 @@ class EnemyDeathComponentTest {
     Entity entity = new Entity().addComponent(new EnemyDeathComponent());
     entity.create();
 
-    entity.getEvents().trigger("entityDied", new Vector2(0, 0), entity);
+    entity.getEvents().trigger("entityDied");
 
     verify(entityService).unregister(entity);
   }

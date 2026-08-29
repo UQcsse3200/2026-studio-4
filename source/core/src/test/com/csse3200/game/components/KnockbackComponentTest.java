@@ -1,6 +1,11 @@
 package com.csse3200.game.components;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -9,16 +14,15 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 
 @ExtendWith(GameExtension.class)
-public class KnockbackComponentTest {
+class KnockbackComponentTest {
 
   @Test
-  public void shouldKnockbackComponent() {
+  void shouldKnockbackComponent() {
     Entity entity = new Entity();
-    PhysicsComponent physicsComponent = Mockito.mock(PhysicsComponent.class);
-    Body body = Mockito.mock(Body.class);
+    PhysicsComponent physicsComponent = mock(PhysicsComponent.class);
+    Body body = mock(Body.class);
 
     when(body.getWorldCenter()).thenReturn(new Vector2(0, 0));
 

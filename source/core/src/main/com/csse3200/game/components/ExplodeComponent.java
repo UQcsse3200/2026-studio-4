@@ -40,7 +40,7 @@ public class ExplodeComponent extends Component {
   }
 
   private void explode() {
-    entity.getEvents().trigger("explode");
+    entity.getEvents().trigger("dieAnimation");
     /**
      * CombatStatsComponent combatStats = entity.getComponent(CombatStatsComponent.class);
      *

@@ -27,7 +27,7 @@ public class CombatStatsComponent extends Component {
    *
    * @return is player dead
    */
-  public Boolean isDead() {
+  public boolean isDead() {
     return health == 0;
   }
 
@@ -156,7 +156,6 @@ public class CombatStatsComponent extends Component {
 
   /** Applies visual red flash and knockback hit reaction. */
   private void applyHitreaction(Entity attacker) {
-    // TODO: Visual red flash & knockback implementation before Aug 28
     if (entity != null) {
       entity.getEvents().trigger("hitReaction", attacker);
     }
