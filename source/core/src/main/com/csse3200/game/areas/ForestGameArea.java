@@ -21,7 +21,8 @@ import org.slf4j.LoggerFactory;
 public class ForestGameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
   private static final int NUM_TREES = 7;
-  private static final int NUM_GHOSTS = 2;
+  private static final int NUM_BOMBENEMIES = 2;
+  private static final int NUM_CHASE_ENEMIES = 2;
   private static final GridPoint2 FLOATING_DEMON_SPAWN = new GridPoint2(5, 8);
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
   private static final float WALL_WIDTH = 0.1f;
@@ -44,6 +45,8 @@ public class ForestGameArea extends GameArea {
     "images/terrain_iso_grass.atlas",
     "images/ghost.atlas",
     "images/ghostKing.atlas",
+    "images/bombEnemy.atlas",
+    "images/chaseEnemy.atlas",
     "images/floatingDemon.atlas"
   };
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
@@ -75,8 +78,8 @@ public class ForestGameArea extends GameArea {
     spawnTerrain();
     spawnTrees();
     player = spawnPlayer();
-    spawnGhosts();
-    spawnGhostKing();
+    spawnEnemies();
+    spawnChaseEnemies();
     spawnFloatingDemon();
 
     playMusic();
@@ -135,24 +138,26 @@ public class ForestGameArea extends GameArea {
     return newPlayer;
   }
 
-  private void spawnGhosts() {
+  private void spawnEnemies() {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
-    for (int i = 0; i < NUM_GHOSTS; i++) {
+    for (int i = 0; i < NUM_BOMBENEMIES; i++) {
       GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-      Entity ghost = NPCFactory.createGhost(player);
-      spawnEntityAt(ghost, randomPos, true, true);
+      Entity bombEnemy = NPCFactory.createBombEnemy(player);
+      spawnEntityAt(bombEnemy, randomPos, true, true);
     }
   }
 
-  private void spawnGhostKing() {
+  private void spawnChaseEnemies() {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
-    GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-    Entity ghostKing = NPCFactory.createGhostKing(player);
-    spawnEntityAt(ghostKing, randomPos, true, true);
+    for (int i = 0; i < NUM_CHASE_ENEMIES; i++) {
+      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+      Entity chaseEnemy = NPCFactory.createChaseEnemy(player);
+      spawnEntityAt(chaseEnemy, randomPos, true, true);
+    }
   }
 
   private void spawnFloatingDemon() {
