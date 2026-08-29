@@ -10,6 +10,7 @@ import com.csse3200.game.components.npc.FloatingDemonAnimationController;
 import com.csse3200.game.components.npc.GhostAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.PatrolTask;
+import com.csse3200.game.components.tasks.RangedAttackTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.BaseEntityConfig;
@@ -98,15 +99,18 @@ public class NPCFactory {
    * @param rightEdge right side of its patrol area
    * @return floating demon entity
    */
-  public static Entity createFloatingDemon(float leftEdge, float rightEdge) {
+  public static Entity createFloatingDemon(Entity target, float leftEdge, float rightEdge) {
     AITaskComponent aiComponent =
-        new AITaskComponent().addTask(new PatrolTask(leftEdge, rightEdge));
+        new AITaskComponent()
+            .addTask(new PatrolTask(leftEdge, rightEdge))
+            .addTask(new RangedAttackTask(target));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/floatingDemon.atlas", TextureAtlas.class));
     animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("attack", 0.08f);
 
     Entity demon =
         new Entity()

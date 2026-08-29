@@ -160,7 +160,7 @@ public class ForestGameArea extends GameArea {
     float mapWidth = terrain.getMapBounds(0).x * tileSize;
 
     // Leave one unit on each side so the demon turns before entering the wall.
-    Entity demon = NPCFactory.createFloatingDemon(1f, mapWidth - 1f);
+    Entity demon = NPCFactory.createFloatingDemon(player, 1f, mapWidth - 1f);
     spawnEntityAt(demon, FLOATING_DEMON_SPAWN, true, true);
   }
 
