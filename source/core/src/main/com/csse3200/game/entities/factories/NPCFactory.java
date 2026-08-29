@@ -2,10 +2,12 @@ package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.ExplodeComponent;
+import com.csse3200.game.components.SpiltComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -74,6 +76,42 @@ public class NPCFactory {
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
 
     return bombEnemy;
+  }
+
+  /**
+   * Creates a chase enemy entity. Moves quickly toward the player and splits into two weaker copies
+   * the first time it is hit and survives.
+   *
+   * @param target entity to chase
+   * @return entity
+   */
+  public static Entity createChaseEnemy(Entity target) {
+    Entity chaseEnemy = createBaseNPC();
+    ChaseEnemyConfig config = configs.chaseEnemy;
+
+    AITaskComponent aiComponent =
+        new AITaskComponent()
+            .addTask(new WanderTask(config.movement, 1f))
+            .addTask(new ChaseTask(target, 10, 3f, 10f));
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset("images/ghost.atlas", TextureAtlas.class));
+    animator.addAnimation("float", 0.7f, Animation.PlayMode.LOOP);
+    animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
+
+    chaseEnemy
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
+        .addComponent(aiComponent)
+        .addComponent(animator)
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new SpiltComponent(target));
+
+    chaseEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
+    chaseEnemy.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(2.5f, 2.5f));
+
+    return chaseEnemy;
   }
 
   /**
