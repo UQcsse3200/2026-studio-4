@@ -12,7 +12,7 @@ import com.csse3200.game.services.ServiceLocator;
  * its brief lifetime.
  */
 public class KnifeWeaponComponent extends WeaponComponent {
-  //private static final Vector2 SIZE = new Vector2(0.5f, 1.0f);
+  // private static final Vector2 SIZE = new Vector2(0.5f, 1.0f);
   private static final float BLADE_LENGTH = 1.0f;
   private static final float BLADE_WIDTH = 0.5f;
   private static final float LIFETIME = 1.0f;
@@ -29,16 +29,16 @@ public class KnifeWeaponComponent extends WeaponComponent {
   @Override
   protected void createAttack(Vector2 origin, Vector2 direction) {
     WeaponStatsComponent stats = entity.getComponent(WeaponStatsComponent.class);
-    //Vector2 offset = direction.cpy().nor().scl(REACH);
+    // Vector2 offset = direction.cpy().nor().scl(REACH);
     Vector2 dir = direction.cpy().nor();
 
     boolean horizontal = Math.abs(dir.x) >= Math.abs(dir.y);
     Vector2 size =
-            horizontal
-                    ? new Vector2(BLADE_LENGTH, BLADE_WIDTH)
-                    : new Vector2(BLADE_WIDTH, BLADE_LENGTH);
+        horizontal
+            ? new Vector2(BLADE_LENGTH, BLADE_WIDTH)
+            : new Vector2(BLADE_WIDTH, BLADE_LENGTH);
     Vector2 cardinalDir =
-            horizontal ? new Vector2(Math.signum(dir.x), 0f) : new Vector2(0f, Math.signum(dir.y));
+        horizontal ? new Vector2(Math.signum(dir.x), 0f) : new Vector2(0f, Math.signum(dir.y));
 
     Vector2 wielderHalfSize = entity.getScale().cpy().scl(0.5f);
     float wielderHalfExtent = horizontal ? wielderHalfSize.x : wielderHalfSize.y;

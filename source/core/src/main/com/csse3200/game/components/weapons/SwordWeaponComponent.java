@@ -27,7 +27,8 @@ public class SwordWeaponComponent extends WeaponComponent {
     Vector2 dir = direction.cpy().nor();
 
     boolean horizontal = Math.abs(dir.x) >= Math.abs(dir.y);
-    Vector2 size = horizontal
+    Vector2 size =
+        horizontal
             ? new Vector2(BLADE_LENGTH, BLADE_WIDTH)
             : new Vector2(BLADE_WIDTH, BLADE_LENGTH);
 
