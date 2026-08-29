@@ -16,6 +16,8 @@ public class PlayerActions extends Component {
   private static final Vector2 MAX_SPEED = new Vector2(3f, 3f); // Metres per second
   private static final Vector2 DASH_SPEED = new Vector2(15f, 15f);
 
+  private String animation;
+
   private PhysicsComponent physicsComponent;
   private Vector2 walkDirection = Vector2.Zero.cpy();
   private Vector2 dashDirection = Vector2.Zero.cpy();
@@ -47,14 +49,30 @@ public class PlayerActions extends Component {
     if (moving) {
       updateSpeed();
     }
-    if (walkDirection.y < 0) {
+    if (animation == "walkDown" && !moving) {
       entity.getEvents().trigger("idleDown");
-    } else if (walkDirection.y > 0) {
+      animation = "idleDown";
+    } else if (animation == "walkUp" && !moving) {
       entity.getEvents().trigger("idleUp");
-    } else if (walkDirection.x < 0) {
+      animation = "idleUp";
+    } else if (animation == "walkLeft" && !moving) {
       entity.getEvents().trigger("idleLeft");
-    } else if (walkDirection.x > 0) {
+      animation = "idleLeft";
+    } else if (animation == "walkRight" && !moving) {
       entity.getEvents().trigger("idleRight");
+      animation = "idleRight";
+    } else if (walkDirection.y < 0 && animation != "walkDown") {
+      entity.getEvents().trigger("walkDown");
+      animation = "walkDown";
+    }else if (walkDirection.y > 0 && animation != "walkUp") {
+      entity.getEvents().trigger("walkUp");
+      animation = "walkUp";
+    }else if (walkDirection.x < 0 && animation != "walkLeft" && walkDirection.y == 0) {
+      entity.getEvents().trigger("walkLeft");
+      animation = "walkLeft";
+    }else if (walkDirection.x > 0 && animation != "walkRight" && walkDirection.y == 0) {
+      entity.getEvents().trigger("walkRight");
+      animation = "walkRight";
     }
     // else {entity.getEvents().trigger("idleUp");}
   }

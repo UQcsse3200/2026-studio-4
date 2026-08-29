@@ -18,6 +18,10 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("idleLeft", this::animateIdleLeft);
     entity.getEvents().addListener("idleRight", this::animateIdleRight);
     entity.getEvents().addListener("idleUp", this::animateIdleUp);
+    entity.getEvents().addListener("walkDown", this::animateWalkDown);
+    entity.getEvents().addListener("walkLeft", this::animateWalkLeft);
+    entity.getEvents().addListener("walkRight", this::animateWalkRight);
+    entity.getEvents().addListener("walkUp", this::animateWalkUp);
   }
 
   void animateIdleDown() {
@@ -32,7 +36,13 @@ public class PlayerAnimationController extends Component {
     animator.startAnimation("idle_right");
   }
 
-  void animateIdleUp() {
-    animator.startAnimation("idle_up");
-  }
+  void animateIdleUp() {animator.startAnimation("idle_up");}
+
+  void animateWalkDown() {animator.startAnimation("walk_down");}
+
+  void animateWalkLeft() {animator.startAnimation("walk_left");}
+
+  void animateWalkRight() {animator.startAnimation("walk_right");}
+
+  void animateWalkUp() {animator.startAnimation("walk_up");}
 }
