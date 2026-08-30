@@ -13,6 +13,7 @@ import java.util.Random;
  */
 public class EnemyManagerComponent extends EntityManagerComponent {
   private final int NUM_GHOSTS = new Random().nextInt(10, 20);
+  private int numEnemies = 0;
 
   public EnemyManagerComponent() {
     super();
@@ -33,7 +34,29 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     for (int i = 0; i < NUM_GHOSTS; i++) {
       GridPoint2 randomPos = RandomUtils.random(new GridPoint2(0, 0), maxPos);
       Entity ghost = NPCFactory.createGhost(target);
+      track(ghost);
       spawnEntityAt(ghost, randomPos, true, true);
+    }
+  }
+
+  /**
+   * Tracks an enemy by incrementing numEnemies and listening for its death.
+   *
+   * @param enemy The enemy being tracked.
+   */
+  void track(Entity enemy) {
+    numEnemies++;
+    enemy.getEvents().addListener("entityDied", this::onEnemyDefeated);
+  }
+
+  /**
+   * Decreases numEnemies and triggers roomCleared when all enemies are dead
+   *
+   */
+  private void onEnemyDefeated() {
+    numEnemies--;
+    if (numEnemies <= 0) {
+      entity.getEvents().trigger("roomCleared");
     }
   }
 }
