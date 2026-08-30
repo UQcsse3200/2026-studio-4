@@ -11,6 +11,7 @@ import com.csse3200.game.components.SpiltComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
+import com.csse3200.game.components.tasks.LungeAttackTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
@@ -40,6 +41,8 @@ public class NPCFactory {
   private static final PlayerConfig targetConfig =
       FileLoader.readClass(PlayerConfig.class, "configs/player.json");
 
+  private static final float CHASE_SPEED = 2.5f;
+
   /**
    * Creates a bomb Enemy entity.
    *
@@ -60,9 +63,9 @@ public class NPCFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/bombEnemy.atlas", TextureAtlas.class));
-    animator.addAnimation("move", 0.7f, Animation.PlayMode.LOOP);
-    animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("dieAnimation", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation("float", 0.7f, Animation.PlayMode.LOOP);
+    animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("explode", 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
 
     bombEnemy
@@ -79,8 +82,9 @@ public class NPCFactory {
   }
 
   /**
-   * Creates a chase enemy entity. Moves quickly toward the player and splits into two weaker copies
-   * the first time it is hit and survives.
+   * Creates a chase enemy entity. Moves quickly toward the player, performs a telegraphed
+   * lunge/dash attack when close enough, and splits into two weaker copies the first time it is hit
+   * and survives.
    *
    * @param target entity to chase
    * @return entity
@@ -92,13 +96,17 @@ public class NPCFactory {
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(new WanderTask(config.movement, 1f))
-            .addTask(new ChaseTask(target, 10, 3f, 10f));
+            .addTask(new ChaseTask(target, 10, 3f, 10f))
+            .addTask(new LungeAttackTask(target, 20, 3f, 0.5f, 6f, 4f, 0.4f, 2f, CHASE_SPEED));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset("images/ghost.atlas", TextureAtlas.class));
-    animator.addAnimation("float", 0.7f, Animation.PlayMode.LOOP);
-    animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
+            ServiceLocator.getResourceService()
+                .getAsset("images/chaseEnemy.atlas", TextureAtlas.class));
+    animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("dieAnimation", 0.1f, Animation.PlayMode.NORMAL);
 
     chaseEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
@@ -109,7 +117,9 @@ public class NPCFactory {
         .addComponent(new SpiltComponent(target));
 
     chaseEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
-    chaseEnemy.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(2.5f, 2.5f));
+    chaseEnemy
+        .getComponent(PhysicsMovementComponent.class)
+        .setMaxSpeed(new Vector2(CHASE_SPEED, CHASE_SPEED));
 
     return chaseEnemy;
   }
