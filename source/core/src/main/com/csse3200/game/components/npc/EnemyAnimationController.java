@@ -31,7 +31,6 @@ public class EnemyAnimationController extends Component {
     if (dying && animator.isFinished()) {
       dying = false;
       entity.getEvents().trigger("entityDied");
-      // ServiceLocator.getRenderService().unregister(animator);
     }
   }
 
@@ -47,6 +46,7 @@ public class EnemyAnimationController extends Component {
     animator.startAnimation("default");
   }
 
+  @Override
   public void dispose() {
     if (!animator.isFinished()) {
       animator.dispose();
