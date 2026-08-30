@@ -8,12 +8,12 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
  * of the events is triggered.
  */
 public class EnemyAnimationController extends Component {
-  AnimationRenderComponent animator;
+  private AnimationRenderComponent animator;
+  private boolean dying = false;
 
   @Override
   public void create() {
-    super.create();
-    animator = this.entity.getComponent(AnimationRenderComponent.class);
+    animator = entity.getComponent(AnimationRenderComponent.class);
 
     entity.getEvents().addListener("wanderStart", this::animateWander);
     entity.getEvents().addListener("chaseStart", this::animateChase);
@@ -21,19 +21,35 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener("default", this::animatePause);
   }
 
-  void animateWander() {
-    animator.startAnimation("move");
-  }
-
-  void animateChase() {
-    animator.startAnimation("chase");
-  }
-
-  void animateDie() {
+  private void animateDie() {
+    dying = true;
     animator.startAnimation("dieAnimation");
   }
 
-  void animatePause() {
+  @Override
+  public void update() {
+    if (dying && animator.isFinished()) {
+      dying = false;
+      entity.getEvents().trigger("entityDied");
+      // ServiceLocator.getRenderService().unregister(animator);
+    }
+  }
+
+  private void animateWander() {
+    animator.startAnimation("move");
+  }
+
+  private void animateChase() {
+    animator.startAnimation("chase");
+  }
+
+  private void animatePause() {
     animator.startAnimation("default");
+  }
+
+  public void dispose() {
+    if (!animator.isFinished()) {
+      animator.dispose();
+    }
   }
 }

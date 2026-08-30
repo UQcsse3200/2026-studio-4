@@ -7,4 +7,10 @@ public class HitboxComponent extends ColliderComponent {
     setSensor(true);
     super.create();
   }
+
+  @Override
+  public void dispose(){
+    setSensor(false);
+    super.dispose();
+  }
 }

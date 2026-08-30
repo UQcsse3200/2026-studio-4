@@ -9,16 +9,15 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 
 @ExtendWith(GameExtension.class)
-public class KnockbackComponentTest {
+class KnockbackComponentTest {
 
   @Test
-  public void shouldKnockbackComponent() {
+  void shouldKnockbackComponent() {
     Entity entity = new Entity();
-    PhysicsComponent physicsComponent = Mockito.mock(PhysicsComponent.class);
-    Body body = Mockito.mock(Body.class);
+    PhysicsComponent physicsComponent = mock(PhysicsComponent.class);
+    Body body = mock(Body.class);
 
     when(body.getWorldCenter()).thenReturn(new Vector2(0, 0));
 
