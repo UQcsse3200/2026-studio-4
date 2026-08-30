@@ -7,6 +7,7 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.Objects;
 
 /**
  * Action component for interacting with the player. Player events should be initialised in create()
@@ -49,28 +50,33 @@ public class PlayerActions extends Component {
     if (moving) {
       updateSpeed();
     }
-    if (animation == "walkDown" && !moving) {
+    // Check if animation needs to be changed.
+    if (Objects.equals(animation, "walkDown") && !moving) {
       entity.getEvents().trigger("idleDown");
       animation = "idleDown";
-    } else if (animation == "walkUp" && !moving) {
+    } else if (Objects.equals(animation, "walkUp") && !moving) {
       entity.getEvents().trigger("idleUp");
       animation = "idleUp";
-    } else if (animation == "walkLeft" && !moving) {
+    } else if (Objects.equals(animation, "walkLeft") && !moving) {
       entity.getEvents().trigger("idleLeft");
       animation = "idleLeft";
-    } else if (animation == "walkRight" && !moving) {
+    } else if (Objects.equals(animation, "walkRight") && !moving) {
       entity.getEvents().trigger("idleRight");
       animation = "idleRight";
-    } else if (walkDirection.y < 0 && animation != "walkDown") {
+    } else if (walkDirection.y < 0 && !Objects.equals(animation, "walkDown")) {
       entity.getEvents().trigger("walkDown");
       animation = "walkDown";
-    }else if (walkDirection.y > 0 && animation != "walkUp") {
+    } else if (walkDirection.y > 0 && !Objects.equals(animation, "walkUp")) {
       entity.getEvents().trigger("walkUp");
       animation = "walkUp";
-    }else if (walkDirection.x < 0 && animation != "walkLeft" && walkDirection.y == 0) {
+    } else if (walkDirection.x < 0
+        && !Objects.equals(animation, "walkLeft")
+        && walkDirection.y == 0) {
       entity.getEvents().trigger("walkLeft");
       animation = "walkLeft";
-    }else if (walkDirection.x > 0 && animation != "walkRight" && walkDirection.y == 0) {
+    } else if (walkDirection.x > 0
+        && !Objects.equals(animation, "walkRight")
+        && walkDirection.y == 0) {
       entity.getEvents().trigger("walkRight");
       animation = "walkRight";
     }

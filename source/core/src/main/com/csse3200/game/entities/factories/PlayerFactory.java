@@ -54,7 +54,6 @@ public class PlayerFactory {
     Entity player =
         new Entity()
             .addComponent(animator)
-            // .addComponent(new TriggeredRenderComponent("images/box_boy_leaf.png"))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
@@ -70,12 +69,7 @@ public class PlayerFactory {
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
-    // player.getComponent(TriggeredRenderComponent.class).scaleEntity();
-    // player.getComponent(TriggeredRenderComponent.class).addTexture("images/box_boy.png", "dash",
-    // 1);
-    // player
-    // .getComponent(TriggeredRenderComponent.class)
-    // .addTexture("images/box_boy_leaf.png", "dashStop", 0);
+
     player.getComponent(AnimationRenderComponent.class).startAnimation("idle_down");
     return player;
   }
