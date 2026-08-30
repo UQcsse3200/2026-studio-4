@@ -291,6 +291,175 @@ attack
   offset: 0, 0
   index: 11
 
+Floating_Demon_Assets/3 Death F Demon/Death_fdemon_0001.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 0
+
+Floating_Demon_Assets/3 Death F Demon/Death_fdemon_0002.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 1
+
+Floating_Demon_Assets/3 Death F Demon/Death_fdemon_0003.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 2
+
+Floating_Demon_Assets/3 Death F Demon/Death_fdemon_0004.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 3
+
+Floating_Demon_Assets/3 Death F Demon/Death_fdemon_0005.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 4
+
+Floating_Demon_Assets/3 Death F Demon/Death_fdemon_0006.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 5
+
+Floating_Demon_Assets/3 Death F Demon/Death_fdemon_0007.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 6
+
+Floating_Demon_Assets/3 Death F Demon/Death_fdemon_0008.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 7
+
+Floating_Demon_Assets/3 Death F Demon/Death_fdemon_0009.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 8
+
+Floating_Demon_Assets/3 Death F Demon/Death_fdemon_0010.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 9
+
+Floating_Demon_Assets/3 Death F Demon/Death_fdemon_0011.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 10
+
+Floating_Demon_Assets/3 Death F Demon/Death_fdemon_0012.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 11
+
+Floating_Demon_Assets/3 Death F Demon/Death_fdemon_0013.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 12
+
 Floating_Demon_Assets/4 Projectile F Demon/Projectile_FDemon_0001.png
 size: 50, 50
 format: RGBA8888

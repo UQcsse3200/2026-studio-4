@@ -10,7 +10,7 @@
   "floatingDemon" : {
     "health": 77,
     "baseAttack": 7,
-    "spawnCount": 7,
+    "spawnCount": 3,
     "patrolRange": 5,
     "patrolHeight": 2,
     "movement": {

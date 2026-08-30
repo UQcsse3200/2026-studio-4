@@ -140,6 +140,7 @@ public class NPCFactory {
                 .getAsset("images/floatingDemon.atlas", TextureAtlas.class));
     animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.08f);
+    animator.addAnimation("dieAnimation", 0.1f);
 
     Entity demon =
         new Entity()
@@ -147,7 +148,7 @@ public class NPCFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-            .addComponent(new EnemyDeathComponent())
+            .addComponent(new EnemyDeathComponent(true))
             .addComponent(aiComponent)
             .addComponent(animator)
             .addComponent(new FloatingDemonAnimationController());

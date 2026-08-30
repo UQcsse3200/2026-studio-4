@@ -6,6 +6,15 @@ package com.csse3200.game.components;
  * entities directly.
  */
 public class EnemyDeathComponent extends Component {
+  private final boolean hasDeathAnimation;
+
+  public EnemyDeathComponent() {
+    this(false);
+  }
+
+  public EnemyDeathComponent(boolean hasDeathAnimation) {
+    this.hasDeathAnimation = hasDeathAnimation;
+  }
 
   @Override
   public void create() {
@@ -13,6 +22,10 @@ public class EnemyDeathComponent extends Component {
   }
 
   private void disposal() {
-    this.getEntity().dispose();
+    if (hasDeathAnimation) {
+      entity.getEvents().trigger("dieAnimation");
+    } else {
+      entity.dispose();
+    }
   }
 }

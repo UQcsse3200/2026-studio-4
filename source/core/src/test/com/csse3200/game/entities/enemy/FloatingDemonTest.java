@@ -19,6 +19,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
+import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
@@ -79,5 +80,18 @@ class FloatingDemonTest {
     weapon.getEvents().trigger("collisionStart", weaponFixture, demonHitbox.getFixture());
 
     assertEquals(72, demon.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void shouldStartDeathAnimationWhenHealthReachesZero() {
+    Entity demon =
+        NPCFactory.createFloatingDemon(
+            new Entity(), new Vector2(1f, 3f), new Vector2(5f, 5f), new Vector2(10f, 3f));
+    demon.create();
+
+    demon.getComponent(CombatStatsComponent.class).setHealth(0);
+
+    assertEquals(
+        "dieAnimation", demon.getComponent(AnimationRenderComponent.class).getCurrentAnimation());
   }
 }
