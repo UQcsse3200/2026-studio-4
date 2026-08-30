@@ -19,10 +19,12 @@ public class RoomAssetsComponent extends Component {
   };
   private static final String[] MUSIC = {BACKGROUND_MUSIC};
   private static final String[] SOUNDS = {IMPACT_SOUND};
+  private static final String[] TEXTURE_ATLASES = {"images/ghost.atlas"};
 
   public RoomAssetsComponent() {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(TEXTURES);
+    resourceService.loadTextureAtlases(TEXTURE_ATLASES);
     resourceService.loadMusic(MUSIC);
     resourceService.loadSounds(SOUNDS);
     resourceService.loadAll();
@@ -41,6 +43,7 @@ public class RoomAssetsComponent extends Component {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.getAsset(BACKGROUND_MUSIC, Music.class).stop();
     resourceService.unloadAssets(TEXTURES);
+    resourceService.unloadAssets(TEXTURE_ATLASES);
     resourceService.unloadAssets(MUSIC);
     resourceService.unloadAssets(SOUNDS);
   }

@@ -4,6 +4,7 @@ import com.csse3200.game.areas.terrain.TerrainConfig;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.components.rooms.RoomAssetsComponent;
 import com.csse3200.game.entities.Entity;
 
@@ -25,6 +26,7 @@ public class RoomFactory {
     return new Entity()
         .addComponent(assets)
         .addComponent(new GameAreaDisplay(roomName))
-        .addComponent(terrainFactory.createTerrain(terrainConfig));
+        .addComponent(terrainFactory.createTerrain(terrainConfig))
+        .addComponent(new EnemyManagerComponent());
   }
 }

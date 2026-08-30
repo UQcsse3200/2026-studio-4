@@ -34,6 +34,7 @@ class RoomManagerTest {
 
     verify(room).create();
     verify(player).create();
+    verify(room.getEvents()).trigger("RoomCreated", player);
     verify(player).setPosition(new Vector2(5f, 5f));
     assertEquals(room, roomManager.getCurrentRoom());
   }
