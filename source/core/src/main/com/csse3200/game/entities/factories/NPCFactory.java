@@ -121,15 +121,17 @@ public class NPCFactory {
   /**
    * Creates a floating demon which patrols in a straight horizontal line.
    *
-   * @param leftEdge left side of its patrol area
-   * @param rightEdge right side of its patrol area
+   * @param leftPoint left point of its patrol path
+   * @param topPoint top point of its patrol path
+   * @param rightPoint right point of its patrol path
    * @return floating demon entity
    */
-  public static Entity createFloatingDemon(Entity target, float leftEdge, float rightEdge) {
+  public static Entity createFloatingDemon(
+      Entity target, Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint) {
     FloatingDemonConfig config = configs.floatingDemon;
     AITaskComponent aiComponent =
         new AITaskComponent()
-            .addTask(new PatrolTask(leftEdge, rightEdge))
+            .addTask(new PatrolTask(leftPoint, topPoint, rightPoint))
             .addTask(new RangedAttackTask(target, config.baseAttack));
 
     AnimationRenderComponent animator =

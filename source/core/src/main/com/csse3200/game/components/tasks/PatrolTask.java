@@ -5,18 +5,16 @@ import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 
-/** Makes an enemy patrol left and right between two map edges. */
+/** Makes an enemy patrol around three points. */
 public class PatrolTask extends DefaultTask implements PriorityTask {
-  private static final float EDGE_DISTANCE = 0.1f;
+  private static final float POINT_DISTANCE = 0.2f;
 
-  private final float leftEdge;
-  private final float rightEdge;
+  private final Vector2[] patrolPoints;
   private PhysicsMovementComponent movementComponent;
-  private boolean movingRight = true;
+  private int currentPoint;
 
-  public PatrolTask(float leftEdge, float rightEdge) {
-    this.leftEdge = leftEdge;
-    this.rightEdge = rightEdge;
+  public PatrolTask(Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint) {
+    patrolPoints = new Vector2[] {leftPoint.cpy(), topPoint.cpy(), rightPoint.cpy()};
   }
 
   @Override
@@ -29,23 +27,17 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
     super.start();
     movementComponent = owner.getEntity().getComponent(PhysicsMovementComponent.class);
 
-    // Start by travelling towards the right side of the map.
-    movingRight = true;
-    setTarget(rightEdge);
+    setTarget();
     movementComponent.setMoving(true);
     owner.getEntity().getEvents().trigger("patrolStart");
   }
 
   @Override
   public void update() {
-    float currentX = owner.getEntity().getPosition().x;
-
-    if (movingRight && currentX >= rightEdge - EDGE_DISTANCE) {
-      movingRight = false;
-      setTarget(leftEdge);
-    } else if (!movingRight && currentX <= leftEdge + EDGE_DISTANCE) {
-      movingRight = true;
-      setTarget(rightEdge);
+    Vector2 position = owner.getEntity().getPosition();
+    if (position.dst(patrolPoints[currentPoint]) <= POINT_DISTANCE) {
+      currentPoint = (currentPoint + 1) % patrolPoints.length;
+      setTarget();
     }
   }
 
@@ -55,8 +47,7 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
     movementComponent.setMoving(false);
   }
 
-  private void setTarget(float targetX) {
-    float currentY = owner.getEntity().getPosition().y;
-    movementComponent.setTarget(new Vector2(targetX, currentY));
+  private void setTarget() {
+    movementComponent.setTarget(patrolPoints[currentPoint]);
   }
 }

@@ -5,4 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 /** Defines the properties stored in the floating demon config. */
 public class FloatingDemonConfig extends BaseEntityConfig {
   public Vector2 movement = new Vector2(3f, 3f);
+  public int spawnCount = 7;
+  public float patrolRange = 5f;
+  public float patrolHeight = 2f;
 }

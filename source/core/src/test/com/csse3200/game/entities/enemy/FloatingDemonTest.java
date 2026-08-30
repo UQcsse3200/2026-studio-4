@@ -46,7 +46,9 @@ class FloatingDemonTest {
   @Test
   void shouldTakeDamageFromPlayerWeapon() {
     Entity player = new Entity();
-    Entity demon = NPCFactory.createFloatingDemon(player, 1f, 10f);
+    Entity demon =
+        NPCFactory.createFloatingDemon(
+            player, new Vector2(1f, 3f), new Vector2(5f, 5f), new Vector2(10f, 3f));
     demon.create();
 
     HitboxComponent demonHitbox = demon.getComponent(HitboxComponent.class);
