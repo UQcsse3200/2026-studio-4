@@ -9,6 +9,10 @@ public class EnemyDeathComponent extends Component {
 
   @Override
   public void create() {
-    entity.getEvents().addListener("entityDied", () -> entity.dispose());
+    entity.getEvents().addListener("entityDied", this::disposal);
+  }
+
+  private void disposal() {
+    this.getEntity().dispose();
   }
 }

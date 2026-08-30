@@ -37,6 +37,7 @@ public class Entity {
   private Vector2 position = Vector2.Zero.cpy();
   private Vector2 scale = new Vector2(1, 1);
   private Array<Component> createdComponents;
+  private final Array<Component> disposedComponents = new Array<>();
 
   public Entity() {
     id = nextId;
@@ -201,8 +202,19 @@ public class Entity {
 
   /** Dispose of the entity. This will dispose of all components on this entity. */
   public void dispose() {
-    for (Component component : createdComponents) {
-      component.dispose();
+    if (!created) {
+      enabled = false;
+      ServiceLocator.getEntityService().unregister(this);
+      return;
+    }
+    enabled = false;
+
+    for (int each = 0; each < createdComponents.size; each++) {
+      if (createdComponents.get(each) != null
+          && !disposedComponents.contains(createdComponents.get(each), false)) {
+        createdComponents.get(each).dispose();
+        disposedComponents.add(createdComponents.get(each));
+      }
     }
     ServiceLocator.getEntityService().unregister(this);
   }
