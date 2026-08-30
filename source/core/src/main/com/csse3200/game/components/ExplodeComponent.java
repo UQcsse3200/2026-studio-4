@@ -41,10 +41,5 @@ public class ExplodeComponent extends Component {
 
   private void explode() {
     entity.getEvents().trigger("dieAnimation");
-    /**
-     * CombatStatsComponent combatStats = entity.getComponent(CombatStatsComponent.class);
-     *
-     * <p>if (combatStats != null) { combatStats.setHealth(0); }
-     */
   }
 }

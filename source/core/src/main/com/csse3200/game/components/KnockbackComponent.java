@@ -9,7 +9,7 @@ public class KnockbackComponent extends Component {
   private final float strength;
 
   /**
-   * @param strength Thr magnitude of the knockback force.
+   * @param strength The magnitude of the knockback force.
    */
   public KnockbackComponent(float strength) {
     this.strength = strength;
