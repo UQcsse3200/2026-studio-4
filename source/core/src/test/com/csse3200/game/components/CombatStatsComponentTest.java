@@ -14,9 +14,13 @@ class CombatStatsComponentTest {
   void shouldSetGetHealth() {
     CombatStatsComponent combat = new CombatStatsComponent(100, 20);
     assertEquals(100, combat.getHealth());
+    assertEquals(100, combat.getMaxHealth());
 
     combat.setHealth(150);
-    assertEquals(150, combat.getHealth());
+    assertEquals(100, combat.getHealth());
+
+    combat.setHealth(50);
+    assertEquals(50, combat.getHealth());
 
     combat.setHealth(-50);
     assertEquals(0, combat.getHealth());

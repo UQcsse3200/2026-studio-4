@@ -69,7 +69,7 @@ class TouchAttackComponentTest {
     Entity entity =
         new Entity()
             .addComponent(new TouchAttackComponent(targetLayer))
-            .addComponent(new CombatStatsComponent(0, 10))
+            .addComponent(new CombatStatsComponent(100, 10))
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent());
     entity.create();
