@@ -37,6 +37,7 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("dash", this::dash);
     entity.getEvents().addListener("attack", this::attack);
     entity.getEvents().addListener("specialAttack", this::specialAttack);
+    entity.getEvents().addListener("death", this::handleDeath);
   }
 
   @Override
@@ -133,5 +134,8 @@ public class PlayerActions extends Component {
       dashInit = time.getTime();
       dashCooldown = true;
     }
+  }
+  void handleDeath() {
+    entity.getEvents().trigger("death");
   }
 }
