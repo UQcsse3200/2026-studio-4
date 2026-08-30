@@ -323,6 +323,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Called when the entity is created and registered.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/FollowingCameraComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/FollowingCameraComponent.html" title="class in com.csse3200.game.components">FollowingCameraComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/gamearea/GameAreaDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.gamearea.<a href="com/csse3200/game/components/gamearea/GameAreaDisplay.html" title="class in com.csse3200.game.components.gamearea">GameAreaDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.gamearea.<a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html" title="class in com.csse3200.game.components.gamearea">PerformanceDisplay</a></dt>
@@ -705,6 +707,12 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/weapons/FollowComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)" class="member-name-link">FollowComponent(Entity, Vector2)</a> - Constructor for class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/FollowComponent.html" title="class in com.csse3200.game.components.weapons">FollowComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/FollowingCameraComponent.html" class="type-name-link" title="class in com.csse3200.game.components">FollowingCameraComponent</a> - Class in <a href="com/csse3200/game/components/package-summary.html">com.csse3200.game.components</a></dt>
+<dd>
+<div class="block">Moves a camera smoothly toward the entity this component is attached to.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/FollowingCameraComponent.html#%3Cinit%3E()" class="member-name-link">FollowingCameraComponent()</a> - Constructor for class com.csse3200.game.components.<a href="com/csse3200/game/components/FollowingCameraComponent.html" title="class in com.csse3200.game.components">FollowingCameraComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/SortedIntMap.html#forEach(java.util.function.Consumer)" class="member-name-link">forEach(Consumer&lt;? super V&gt;)</a> - Method in class com.csse3200.game.utils.<a href="com/csse3200/game/utils/SortedIntMap.html" title="class in com.csse3200.game.utils">SortedIntMap</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainFactory.TerrainType.html#FOREST_DEMO" class="member-name-link">FOREST_DEMO</a> - Enum constant in enum class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainFactory.TerrainType.html" title="enum class in com.csse3200.game.areas.terrain">TerrainFactory.TerrainType</a></dt>
@@ -717,7 +725,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Forest area for the demo game with trees, a player, and some enemies.</div>
 </dd>
-<dt><a href="com/csse3200/game/areas/ForestGameArea.html#%3Cinit%3E(com.csse3200.game.areas.terrain.TerrainFactory)" class="member-name-link">ForestGameArea(TerrainFactory)</a> - Constructor for class com.csse3200.game.areas.<a href="com/csse3200/game/areas/ForestGameArea.html" title="class in com.csse3200.game.areas">ForestGameArea</a></dt>
+<dt><a href="com/csse3200/game/areas/ForestGameArea.html#%3Cinit%3E(com.csse3200.game.areas.terrain.TerrainFactory,com.csse3200.game.components.CameraComponent)" class="member-name-link">ForestGameArea(TerrainFactory, CameraComponent)</a> - Constructor for class com.csse3200.game.areas.<a href="com/csse3200/game/areas/ForestGameArea.html" title="class in com.csse3200.game.areas">ForestGameArea</a></dt>
 <dd>
 <div class="block">Initialise this ForestGameArea to use the provided TerrainFactory.</div>
 </dd>
@@ -1779,6 +1787,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Set body type</div>
 </dd>
+<dt><a href="com/csse3200/game/components/FollowingCameraComponent.html#setCamera(com.csse3200.game.components.CameraComponent)" class="member-name-link">setCamera(CameraComponent)</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/FollowingCameraComponent.html" title="class in com.csse3200.game.components">FollowingCameraComponent</a></dt>
+<dd>
+<div class="block">Sets the camera that follows this entity.</div>
+</dd>
 <dt><a href="com/csse3200/game/ui/terminal/Terminal.html#setClosed()" class="member-name-link">setClosed()</a> - Method in class com.csse3200.game.ui.terminal.<a href="com/csse3200/game/ui/terminal/Terminal.html" title="class in com.csse3200.game.ui.terminal">Terminal</a></dt>
 <dd>
 <div class="block">Closes the terminal and clears the stored message.</div>
@@ -2239,6 +2251,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Called once per frame of the game, and should be used for most component logic.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/FollowingCameraComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/FollowingCameraComponent.html" title="class in com.csse3200.game.components">FollowingCameraComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerActions.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerActions.html" title="class in com.csse3200.game.components.player">PlayerActions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/settingsmenu/SettingsMenuDisplay.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.settingsmenu.<a href="com/csse3200/game/components/settingsmenu/SettingsMenuDisplay.html" title="class in com.csse3200.game.components.settingsmenu">SettingsMenuDisplay</a></dt>
