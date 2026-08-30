@@ -1,11 +1,14 @@
 package com.csse3200.game.entities;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.csse3200.game.extensions.GameExtension;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -48,5 +51,24 @@ class EntityServiceTest {
     entityService.register(entity);
     entityService.dispose();
     verify(entity).dispose();
+  }
+
+  @Test
+  void shouldRunQueuedActionAfterEntityUpdate() {
+    EntityService entityService = new EntityService();
+    List<String> order = new ArrayList<>();
+    Entity entity =
+        new Entity() {
+          @Override
+          public void update() {
+            order.add("entity");
+            entityService.runAfterUpdate(() -> order.add("after"));
+          }
+        };
+    entityService.register(entity);
+
+    entityService.update();
+
+    assertEquals(List.of("entity", "after"), order);
   }
 }

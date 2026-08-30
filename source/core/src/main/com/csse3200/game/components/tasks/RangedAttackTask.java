@@ -68,8 +68,12 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   }
 
   private void createProjectile(Vector2 position, Vector2 direction) {
-    Entity projectile =
-        FloatingDemonProjectileFactory.createProjectile(position, direction, damage);
-    ServiceLocator.getEntityService().register(projectile);
+    ServiceLocator.getEntityService()
+        .runAfterUpdate(
+            () -> {
+              Entity projectile =
+                  FloatingDemonProjectileFactory.createProjectile(position, direction, damage);
+              ServiceLocator.getEntityService().register(projectile);
+            });
   }
 }

@@ -259,6 +259,9 @@ public class Entity {
       return;
     }
     for (Component component : createdComponents) {
+      if (!enabled) {
+        break;
+      }
       component.triggerUpdate();
     }
   }
