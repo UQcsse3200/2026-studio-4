@@ -20,6 +20,7 @@ public class PlayerActions extends Component {
   private CombatStatsComponent combatStats;
   private Vector2 walkDirection = Vector2.Zero.cpy();
   private Vector2 dashDirection = Vector2.Zero.cpy();
+  private Vector2 facingDirection = new Vector2(0f, -1f);
   private boolean moving = false;
 
   private long dashInit;
@@ -33,8 +34,9 @@ public class PlayerActions extends Component {
     combatStats = entity.getComponent(CombatStatsComponent.class);
     entity.getEvents().addListener("walk", this::walk);
     entity.getEvents().addListener("walkStop", this::stopWalking);
-    entity.getEvents().addListener("attack", this::attack);
     entity.getEvents().addListener("dash", this::dash);
+    entity.getEvents().addListener("attack", this::attack);
+    entity.getEvents().addListener("specialAttack", this::specialAttack);
   }
 
   @Override
@@ -88,6 +90,10 @@ public class PlayerActions extends Component {
     if (!dashOn) {
       this.walkDirection = direction;
       moving = true;
+
+      if (!direction.epsilonEquals(Vector2.Zero)) {
+        this.facingDirection = this.walkDirection.cpy();
+      }
     }
   }
 
@@ -102,6 +108,15 @@ public class PlayerActions extends Component {
 
   /** Makes the player attack. */
   void attack() {
+    entity.getEvents().trigger("weaponAttack", facingDirection);
+    Sound attackSound =
+        ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
+    attackSound.play();
+  }
+
+  /** Makes the player to do special attack. */
+  void specialAttack() {
+
     Sound attackSound =
         ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
     attackSound.play();
