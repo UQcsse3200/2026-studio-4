@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
-  private static final String[] mainGameTextures = {"images/heart.png", "images/box_boy_leaf.png"};
+  private static final String[] mainGameTextures = {"images/heart.png", "images/idle_down.png"};
 
   private final GdxGame game;
   private final Renderer renderer;
@@ -63,10 +63,10 @@ public class MainGameScreen extends ScreenAdapter {
 
     loadAssets();
     logger.debug("Initialising main game screen entities");
+    Entity room = RoomFactory.createRoom("First Room", renderer.getCamera());
     Entity player = PlayerFactory.createPlayer();
+    roomManager = new RoomManager(room, player);
     player.getComponent(FollowingCameraComponent.class).setCamera(renderer.getCamera());
-    roomManager =
-        new RoomManager(RoomFactory.createRoom("First Room", renderer.getCamera()), player);
     roomManager.create();
 
     createUI();
