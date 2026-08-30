@@ -38,6 +38,7 @@ import com.csse3200.game.services.ServiceLocator;
  * similar characteristics.
  */
 public class NPCFactory {
+  private static final int FLOATING_DEMON_HEALTH = 10;
   private static final NPCConfigs configs =
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
   private static final PlayerConfig targetConfig =
@@ -142,6 +143,9 @@ public class NPCFactory {
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(new PhysicsMovementComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new CombatStatsComponent(FLOATING_DEMON_HEALTH, 0))
+            .addComponent(new EnemyDeathComponent())
             .addComponent(aiComponent)
             .addComponent(animator)
             .addComponent(new FloatingDemonAnimationController());
