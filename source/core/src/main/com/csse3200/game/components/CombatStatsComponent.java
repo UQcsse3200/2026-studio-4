@@ -25,6 +25,7 @@ public class CombatStatsComponent extends Component {
   }
 
   public CombatStatsComponent(int health, int baseAttack, float movementSpeed, float attackSpeed) {
+    this.maxHealth = health;
     setHealth(health);
     setBaseAttack(baseAttack);
     setMovementSpeed(movementSpeed);
