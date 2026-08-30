@@ -14,9 +14,8 @@ public class FloatingDemonProjectileFactory {
   private static final float PROJECTILE_SPEED = 5f;
   private static final float PROJECTILE_RANGE = 7f;
   private static final float PROJECTILE_LIFETIME = 1.8f;
-  private static final int PROJECTILE_DAMAGE = 5;
 
-  public static Entity createProjectile(Vector2 position, Vector2 direction) {
+  public static Entity createProjectile(Vector2 position, Vector2 direction, int damage) {
     TextureAtlas atlas =
         ServiceLocator.getResourceService()
             .getAsset("images/floatingDemon.atlas", TextureAtlas.class);
@@ -31,7 +30,7 @@ public class FloatingDemonProjectileFactory {
             .lifetime(PROJECTILE_LIFETIME)
             .layer(PhysicsLayer.WEAPON)
             .targetLayer(PhysicsLayer.PLAYER)
-            .damage(PROJECTILE_DAMAGE);
+            .damage(damage);
 
     Entity projectile = HitboxFactory.createHitbox(spec);
     projectile

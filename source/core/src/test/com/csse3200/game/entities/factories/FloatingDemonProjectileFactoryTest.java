@@ -39,7 +39,8 @@ class FloatingDemonProjectileFactoryTest {
   @Test
   void shouldDamagePlayerOnCollision() {
     Entity projectile =
-        FloatingDemonProjectileFactory.createProjectile(new Vector2(0f, 0f), new Vector2(1f, 0f));
+        FloatingDemonProjectileFactory.createProjectile(
+            new Vector2(0f, 0f), new Vector2(1f, 0f), 7);
     projectile.create();
 
     Entity player =
@@ -53,6 +54,6 @@ class FloatingDemonProjectileFactoryTest {
     Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
     projectile.getEvents().trigger("collisionStart", projectileFixture, playerFixture);
 
-    assertEquals(15, player.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals(13, player.getComponent(CombatStatsComponent.class).getHealth());
   }
 }

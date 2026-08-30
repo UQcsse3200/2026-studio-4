@@ -6,5 +6,13 @@
   "chaseEnemy" : {
     "health": 10,
     "baseAttack": 7
+  },
+  "floatingDemon" : {
+    "health": 77,
+    "baseAttack": 7,
+    "movement": {
+      "x": 3,
+      "y": 3
+    }
   }
 }

@@ -4,4 +4,5 @@ package com.csse3200.game.entities.configs;
 public class NPCConfigs {
   public BombEnemyConfig bombEnemy = new BombEnemyConfig();
   public ChaseEnemyConfig chaseEnemy = new ChaseEnemyConfig();
+  public FloatingDemonConfig floatingDemon = new FloatingDemonConfig();
 }

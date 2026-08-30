@@ -17,6 +17,8 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
@@ -52,6 +54,13 @@ class FloatingDemonTest {
     assertTrue(demonHitbox.getFixture().isSensor());
     assertEquals(PhysicsLayer.NPC, demonHitbox.getLayer());
     assertNotNull(demon.getComponent(EnemyDeathComponent.class));
+    assertEquals(77, demon.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals(7, demon.getComponent(CombatStatsComponent.class).getBaseAttack());
+
+    PhysicsMovementComponent movement = demon.getComponent(PhysicsMovementComponent.class);
+    movement.setTarget(new Vector2(10f, 0f));
+    movement.update();
+    assertEquals(3f, demon.getComponent(PhysicsComponent.class).getBody().getLinearVelocity().x);
 
     HitboxSpec weaponSpec =
         new HitboxSpec()
@@ -67,6 +76,6 @@ class FloatingDemonTest {
     Fixture weaponFixture = weapon.getComponent(HitboxComponent.class).getFixture();
     weapon.getEvents().trigger("collisionStart", weaponFixture, demonHitbox.getFixture());
 
-    assertEquals(5, demon.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals(72, demon.getComponent(CombatStatsComponent.class).getHealth());
   }
 }

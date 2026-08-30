@@ -38,7 +38,6 @@ import com.csse3200.game.services.ServiceLocator;
  * similar characteristics.
  */
 public class NPCFactory {
-  private static final int FLOATING_DEMON_HEALTH = 10;
   private static final NPCConfigs configs =
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
   private static final PlayerConfig targetConfig =
@@ -127,10 +126,11 @@ public class NPCFactory {
    * @return floating demon entity
    */
   public static Entity createFloatingDemon(Entity target, float leftEdge, float rightEdge) {
+    FloatingDemonConfig config = configs.floatingDemon;
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(new PatrolTask(leftEdge, rightEdge))
-            .addTask(new RangedAttackTask(target));
+            .addTask(new RangedAttackTask(target, config.baseAttack));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -144,13 +144,14 @@ public class NPCFactory {
             .addComponent(new PhysicsComponent())
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new CombatStatsComponent(FLOATING_DEMON_HEALTH, 0))
+            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
             .addComponent(new EnemyDeathComponent())
             .addComponent(aiComponent)
             .addComponent(animator)
             .addComponent(new FloatingDemonAnimationController());
 
     animator.scaleEntity();
+    demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
     return demon;
   }
 

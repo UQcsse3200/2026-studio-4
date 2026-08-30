@@ -16,11 +16,13 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   private static final float ATTACK_COOLDOWN = 1.8f;
 
   private final Entity target;
+  private final int damage;
   private PhysicsMovementComponent movementComponent;
   private float cooldownLeft;
 
-  public RangedAttackTask(Entity target) {
+  public RangedAttackTask(Entity target, int damage) {
     this.target = target;
+    this.damage = damage;
   }
 
   @Override
@@ -66,7 +68,8 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   }
 
   private void createProjectile(Vector2 position, Vector2 direction) {
-    Entity projectile = FloatingDemonProjectileFactory.createProjectile(position, direction);
+    Entity projectile =
+        FloatingDemonProjectileFactory.createProjectile(position, direction, damage);
     ServiceLocator.getEntityService().register(projectile);
   }
 }

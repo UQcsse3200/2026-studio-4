@@ -13,7 +13,7 @@ class RangedAttackTaskTest {
   @Test
   void shouldAttackOnlyWhenPlayerIsClose() {
     Entity player = new Entity();
-    RangedAttackTask attackTask = new RangedAttackTask(player);
+    RangedAttackTask attackTask = new RangedAttackTask(player, 7);
     AITaskComponent ai = new AITaskComponent().addTask(attackTask);
     Entity demon = new Entity().addComponent(ai);
 
