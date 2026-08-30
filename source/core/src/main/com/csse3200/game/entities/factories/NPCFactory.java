@@ -96,7 +96,8 @@ public class NPCFactory {
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset("images/chaseEnemy.atlas", TextureAtlas.class));
+            ServiceLocator.getResourceService()
+                .getAsset("images/chaseEnemy.atlas", TextureAtlas.class));
     animator.addAnimation("move", 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
 
