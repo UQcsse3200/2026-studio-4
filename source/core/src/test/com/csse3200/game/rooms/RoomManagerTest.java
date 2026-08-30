@@ -24,7 +24,8 @@ class RoomManagerTest {
     Entity player = mock(Entity.class);
     Entity room = mock(Entity.class);
     TerrainComponent terrain = mock(TerrainComponent.class);
-    when(room.getEvents()).thenReturn(mock(EventHandler.class));
+    EventHandler roomEvents = mock(EventHandler.class);
+    when(room.getEvents()).thenReturn(roomEvents);
     when(room.getComponent(TerrainComponent.class)).thenReturn(terrain);
     when(terrain.tileToWorldPosition(ArgumentMatchers.any())).thenReturn(new Vector2(5f, 5f));
     ServiceLocator.registerEntityService(new EntityService());
