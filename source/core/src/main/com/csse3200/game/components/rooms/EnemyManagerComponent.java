@@ -8,19 +8,19 @@ import java.util.Random;
 
 /** Spawns a random group of ghosts when its room is started. */
 public class EnemyManagerComponent extends EntityManagerComponent {
-  private final int numberOfGhosts = new Random().nextInt(10, 20);
+  private final int numberOfBombEnemies = new Random().nextInt(10, 20);
 
   @Override
   public void create() {
-    entity.getEvents().addListener("RoomCreated", this::spawnGhosts);
+    entity.getEvents().addListener("RoomCreated", this::spawnBombEnemies);
   }
 
   /** Creates ghosts at random valid tiles and sets the player as their target. */
-  public void spawnGhosts(Entity target) {
+  public void spawnBombEnemies(Entity target) {
     GridPoint2 maxPosition = spawnableArea();
-    for (int i = 0; i < numberOfGhosts; i++) {
+    for (int i = 0; i < numberOfBombEnemies; i++) {
       GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
-      Entity ghost = NPCFactory.createGhost(target);
+      Entity ghost = NPCFactory.createBombEnemy(target);
       spawnEntityAt(ghost, position, true, true);
     }
   }
