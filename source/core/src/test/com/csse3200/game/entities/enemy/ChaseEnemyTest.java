@@ -61,7 +61,7 @@ class ChaseEnemyTest {
 
     Fixture chaseFixture = chaseEnemy.getComponent(HitboxComponent.class).getFixture();
     Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
-
+    @SuppressWarnings("unchecked")
     EventListener1<Entity> hitReactionListener = mock(EventListener1.class);
     player.getEvents().addListener("hitReaction", hitReactionListener);
 
@@ -92,9 +92,9 @@ class ChaseEnemyTest {
     otherEntity.create();
 
     Fixture chaseFixture = chaseEnemy.getComponent(HitboxComponent.class).getFixture();
-    Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
     Fixture otherFixture = otherEntity.getComponent(HitboxComponent.class).getFixture();
 
+    @SuppressWarnings("unchecked")
     EventListener1<Entity> hitReactionListener = mock(EventListener1.class);
     player.getEvents().addListener("hitReaction", hitReactionListener);
 
