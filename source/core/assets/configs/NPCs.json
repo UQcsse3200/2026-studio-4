@@ -2,6 +2,9 @@
   "bombEnemy" : {
     "health": 10,
     "baseAttack": 10
+  },
+  "chaseEnemy" : {
+    "health": 10,
+    "baseAttack": 7
   }
 }
-

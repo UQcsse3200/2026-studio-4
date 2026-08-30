@@ -13,6 +13,6 @@ public class EnemyDeathComponent extends Component {
   }
 
   private void disposal() {
-    this.getEntity().dispose();
+    this.getEntity().dispos
   }
 }
