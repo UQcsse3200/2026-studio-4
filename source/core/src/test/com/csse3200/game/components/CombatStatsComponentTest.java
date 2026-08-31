@@ -87,4 +87,50 @@ class CombatStatsComponentTest {
     combat.addStrength(-100);
     assertEquals(0, combat.getStrength());
   }
+
+  @Test
+  void shouldGetSetMovementSpeed() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 30, 3f, 4f);
+    assertEquals(3f, combat.getMovementSpeed());
+
+    combat.setMovementSpeed(5f);
+    assertEquals(5f, combat.getMovementSpeed());
+
+    combat.setMovementSpeed(-4f);
+    assertEquals(5f, combat.getMovementSpeed());
+  }
+
+  @Test
+  void shouldAddMovementSpeed() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 20, 4f, 7f);
+    combat.addMovementSpeed(-3);
+    assertEquals(1f, combat.getMovementSpeed());
+
+    combat.addMovementSpeed(6f);
+    combat.addMovementSpeed(-8F);
+    assertEquals(7, combat.getMovementSpeed());
+  }
+
+  @Test
+  void shouldGetSetAttackSpeed() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 30, 3f, 4f);
+    assertEquals(4f, combat.getAttackSpeed());
+
+    combat.setAttackSpeed(2f);
+    assertEquals(2f, combat.getAttackSpeed());
+
+    combat.setAttackSpeed(-4f);
+    assertEquals(2f, combat.getAttackSpeed());
+  }
+
+  @Test
+  void shouldAddAttackSpeed() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 20, 4f, 7f);
+    combat.addAttackSpeed(-7);
+    assertEquals(0, combat.getAttackSpeed());
+
+    combat.addAttackSpeed(6f);
+    combat.addAttackSpeed(-2F);
+    assertEquals(4f, combat.getAttackSpeed());
+  }
 }

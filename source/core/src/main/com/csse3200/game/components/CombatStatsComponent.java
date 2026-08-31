@@ -16,11 +16,21 @@ public class CombatStatsComponent extends Component {
   private int maxHealth;
   private int baseAttack;
   private int strength;
+  private float movementSpeed;
+  private float attackSpeed;
 
   public CombatStatsComponent(int health, int baseAttack) {
     this.maxHealth = health;
     setHealth(health);
     setBaseAttack(baseAttack);
+  }
+
+  public CombatStatsComponent(int health, int baseAttack, float movementSpeed, float attackSpeed) {
+    this.maxHealth = health;
+    setHealth(health);
+    setBaseAttack(baseAttack);
+    setMovementSpeed(movementSpeed);
+    setAttackSpeed(attackSpeed);
   }
 
   /**
@@ -150,6 +160,68 @@ public class CombatStatsComponent extends Component {
    */
   public void addStrength(int strength) {
     setStrength(this.strength + strength);
+  }
+
+  /**
+   * Returns the entity's movement speed
+   *
+   * @return entity's movement speed
+   */
+  public float getMovementSpeed() {
+    return movementSpeed;
+  }
+
+  /**
+   * Sets the entity's movement speed. Movement Speed has a minimum bound of 0.
+   *
+   * @param newSpeed new movement speed
+   */
+  public void setMovementSpeed(float newSpeed) {
+    if (newSpeed >= 0) {
+      this.movementSpeed = newSpeed;
+    } else {
+      logger.error("Can not set movement speed of entity to a negative value");
+    }
+  }
+
+  /**
+   * Adds to the player's movement speed. The amount added can be negative.
+   *
+   * @param speed speed to add
+   */
+  public void addMovementSpeed(float speed) {
+    setMovementSpeed(this.movementSpeed + speed);
+  }
+
+  /**
+   * Returns the entity's attack speed
+   *
+   * @return entity's attack speed
+   */
+  public float getAttackSpeed() {
+    return attackSpeed;
+  }
+
+  /**
+   * Sets the entity's attack speed. Attack Speed has a minimum bound of 0.
+   *
+   * @param newSpeed entity's new attack speed
+   */
+  public void setAttackSpeed(float newSpeed) {
+    if (newSpeed >= 0) {
+      this.attackSpeed = newSpeed;
+    } else {
+      logger.error("Can not set attack speed of entity to a negative value");
+    }
+  }
+
+  /**
+   * Adds to the player's attack speed. The amount added can be negative.
+   *
+   * @param speed speed to add
+   */
+  public void addAttackSpeed(float speed) {
+    setAttackSpeed(this.attackSpeed + speed);
   }
 
   /**
