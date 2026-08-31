@@ -2,21 +2,20 @@ package com.csse3200.game.components;
 
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.NPCFactory;
-import com.csse3200.game.services.ServiceLocator;
 
 /**
  * Component that splits an enemy into two weaker copies when attacked by the player. This should
  * only happen once. Each new copy has half the lifespan (health) and half the base attack of the
  * original enemy.
  */
-public class SpiltComponent extends Component {
+public class SplitComponent extends Component {
   private boolean hasSplit = false;
   private final Entity target;
 
   /**
    * @param target The entity to chase (usually the player), passed on to the split-off children.
    */
-  public SpiltComponent(Entity target) {
+  public SplitComponent(Entity target) {
     this.target = target;
   }
 
@@ -69,6 +68,6 @@ public class SpiltComponent extends Component {
     }
 
     child.setPosition(entity.getCenterPosition().x + xOffset, entity.getCenterPosition().y);
-    ServiceLocator.getEntityService().register(child);
+    entity.getEvents().trigger("spawnChildren", child);
   }
 }

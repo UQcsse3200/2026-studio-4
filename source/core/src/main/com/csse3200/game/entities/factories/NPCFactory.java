@@ -7,7 +7,7 @@ import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.ExplodeComponent;
-import com.csse3200.game.components.SpiltComponent;
+import com.csse3200.game.components.SplitComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -107,7 +107,7 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(animator)
         .addComponent(new EnemyAnimationController())
-        .addComponent(new SpiltComponent(target));
+        .addComponent(new SplitComponent(target));
 
     chaseEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
     chaseEnemy.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(2.5f, 2.5f));
