@@ -3,22 +3,18 @@ package com.csse3200.game.components;
 /**
  * Handles the disposal of an enemy entity when its death event is triggered.
  *
- * This component listens for the entityDied event. When the event fires, the component
- * either triggers a death animation or immediately disposes of the entity, depending on the
- * configured value of hasDeathAnimation.
- * Separating death handling from health tracking allows CombatStatsComponent to remain
- * responsible for combat statistics without directly disposing of entities.
+ * <p>This component listens for the entityDied event. When the event fires, the component either
+ * triggers a death animation or immediately disposes of the entity, depending on the configured
+ * value of hasDeathAnimation. Separating death handling from health tracking allows
+ * CombatStatsComponent to remain responsible for combat statistics without directly disposing of
+ * entities.
  */
 public class EnemyDeathComponent extends Component {
 
-  /**
-   * Indicates whether the entity should play a death animation before being disposed.
-   */
+  /** Indicates whether the entity should play a death animation before being disposed. */
   private final boolean hasDeathAnimation;
 
-  /**
-   * Creates component that immediately disposes of the entity when it dies.
-   */
+  /** Creates component that immediately disposes of the entity when it dies. */
   public EnemyDeathComponent() {
     this(false);
   }
@@ -26,8 +22,8 @@ public class EnemyDeathComponent extends Component {
   /**
    * Creates an enemyDeathComponent with the specified death-animation behavior.
    *
-   * @param hasDeathAnimation true to trigger the event when the entity
-   *     dies; false to dispose of the entity immediately
+   * @param hasDeathAnimation true to trigger the event when the entity dies; false to dispose of
+   *     the entity immediately
    */
   public EnemyDeathComponent(boolean hasDeathAnimation) {
     this.hasDeathAnimation = hasDeathAnimation;
@@ -36,7 +32,7 @@ public class EnemyDeathComponent extends Component {
   /**
    * Registers a listener for the entity's event.
    *
-   * When the event is triggered, the registered listener invokes disposal
+   * <p>When the event is triggered, the registered listener invokes disposal
    */
   @Override
   public void create() {

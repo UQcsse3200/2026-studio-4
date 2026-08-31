@@ -8,20 +8,16 @@ import com.csse3200.game.physics.components.HitboxComponent;
 /**
  * Triggers an explosion animation when the entity collides with the player.
  *
- * This component listens for the entity's collisionStart event and checks whether the
- * collision involves this entity's hitbox and the configured player entity. When a valid collision
- * occurs, the component triggers the dieAnimation event.
+ * <p>This component listens for the entity's collisionStart event and checks whether the collision
+ * involves this entity's hitbox and the configured player entity. When a valid collision occurs,
+ * the component triggers the dieAnimation event.
  */
 public class ExplodeComponent extends Component {
 
-  /**
-   * The player entity that triggers the explosion upon collision.
-   */
+  /** The player entity that triggers the explosion upon collision. */
   private final Entity player;
 
-  /**
-   * The hitbox component used to identify this entity's collision fixture.
-   */
+  /** The hitbox component used to identify this entity's collision fixture. */
   private HitboxComponent hitboxComponent;
 
   /**
@@ -33,9 +29,7 @@ public class ExplodeComponent extends Component {
     this.player = player;
   }
 
-  /**
-   * Registers a listener for collision events and retrieves this entity's hitbox component.
-   */
+  /** Registers a listener for collision events and retrieves this entity's hitbox component. */
   @Override
   public void create() {
     super.create();
@@ -47,7 +41,7 @@ public class ExplodeComponent extends Component {
   /**
    * Handles the start of a collision involving this entity.
    *
-   * Collisions involving a different fixture are ignored. The other fixture's body user data is
+   * <p>Collisions involving a different fixture are ignored. The other fixture's body user data is
    * then checked to determine whether it belongs to the configured player entity.
    *
    * @param me the fixture belonging to this entity
@@ -71,9 +65,7 @@ public class ExplodeComponent extends Component {
     }
   }
 
-  /**
-   * Triggers the entity's death animation event.
-   */
+  /** Triggers the entity's death animation event. */
   private void explode() {
     entity.getEvents().trigger("dieAnimation");
   }
