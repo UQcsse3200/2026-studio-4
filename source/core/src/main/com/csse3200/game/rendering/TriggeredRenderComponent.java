@@ -45,7 +45,7 @@ public class TriggeredRenderComponent extends RenderComponent {
    */
   public void addTexture(Texture texture, String trigger, int argNum) {
     if (argNum == 1) {
-      entity.getEvents().addListener(trigger, (n) -> changeTexture(texture));
+      entity.getEvents().addListener(trigger, n -> changeTexture(texture));
     } else if (argNum == 2) {
       entity.getEvents().addListener(trigger, (n, m) -> changeTexture(texture));
     } else if (argNum == 3) {

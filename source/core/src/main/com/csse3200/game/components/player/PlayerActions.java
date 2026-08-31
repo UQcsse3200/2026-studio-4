@@ -61,7 +61,6 @@ public class PlayerActions extends Component {
     } else if (walkDirection.x > 0) {
       entity.getEvents().trigger("idleRight");
     }
-    // else {entity.getEvents().trigger("idleUp");}
   }
 
   private void updateSpeed() {
@@ -135,6 +134,7 @@ public class PlayerActions extends Component {
       dashCooldown = true;
     }
   }
+
   void handleDeath() {
     entity.getEvents().trigger("death");
   }
