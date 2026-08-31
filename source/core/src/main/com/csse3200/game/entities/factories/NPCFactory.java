@@ -101,7 +101,7 @@ public class NPCFactory {
         new AITaskComponent()
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new ChaseTask(target, 10, 3f, 10f))
-            .addTask(new LungeAttackTask(target, 20, 3f, 0.5f, 6f, 4f, 0.4f, 2f, CHASE_SPEED));
+            .addTask(new LungeAttackTask(target, CHASE_SPEED));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(

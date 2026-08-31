@@ -14,6 +14,14 @@ import com.csse3200.game.services.ServiceLocator;
  * period before it can lunge again.
  */
 public class LungeAttackTask extends DefaultTask implements PriorityTask {
+  private static final int PRIORITY = 20;
+  private static final float TRIGGER_RANGE = 3f;
+  private static final float TELEGRAPH_DURATION = 0.5f;
+  private static final float DASH_SPEED = 6f;
+  private static final float DASH_DISTANCE = 4f;
+  private static final float DASH_DURATION = 0.4f;
+  private static final float COOLDOWN_DURATION = 2f;
+
   private enum Phase {
     TELEGRAPH,
     DASH,
@@ -21,18 +29,10 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
   }
 
   private final Entity target;
-  private final int priority;
-  private final float triggerRange;
-  private final float telegraphDuration;
-  private final float dashSpeed;
-  private final float dashDistance;
-  private final float dashDuration;
-  private final float cooldownDuration;
   private final float restoreSpeed;
-
   private final GameTime gameTime;
-  private PhysicsMovementComponent movementComponent;
 
+  private PhysicsMovementComponent movementComponent;
   private Phase phase;
   private long phaseStartTime;
   private long cooldownEndTime = 0;
@@ -40,33 +40,10 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
 
   /**
    * @param target Entity to lunge toward (usually the player).
-   * @param priority Priority while lunging (should be higher than the chase task's priority).
-   * @param triggerRange Distance at which the lunge attack starts.
-   * @param telegraphDuration Seconds the entity freezes before dashing.
-   * @param dashSpeed Speed while dashing.
-   * @param dashDistance Distance covered by the dash.
-   * @param dashDuration Maximum seconds the dash can last.
-   * @param cooldownDuration Seconds before another lunge can start after this one finishes.
    * @param restoreSpeed Normal movement speed to return to after the dash ends.
    */
-  public LungeAttackTask(
-      Entity target,
-      int priority,
-      float triggerRange,
-      float telegraphDuration,
-      float dashSpeed,
-      float dashDistance,
-      float dashDuration,
-      float cooldownDuration,
-      float restoreSpeed) {
+  public LungeAttackTask(Entity target, float restoreSpeed) {
     this.target = target;
-    this.priority = priority;
-    this.triggerRange = triggerRange;
-    this.telegraphDuration = telegraphDuration;
-    this.dashSpeed = dashSpeed;
-    this.dashDistance = dashDistance;
-    this.dashDuration = dashDuration;
-    this.cooldownDuration = cooldownDuration;
     this.restoreSpeed = restoreSpeed;
     this.gameTime = ServiceLocator.getTimeSource();
   }
@@ -86,12 +63,12 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
     long now = gameTime.getTime();
     switch (phase) {
       case TELEGRAPH:
-        if (now - phaseStartTime >= telegraphDuration * 1000) {
+        if (now - phaseStartTime >= TELEGRAPH_DURATION * 1000) {
           beginDash(now);
         }
         break;
       case DASH:
-        if (now - phaseStartTime >= dashDuration * 1000 || reachedDashTarget()) {
+        if (now - phaseStartTime >= DASH_DURATION * 1000 || reachedDashTarget()) {
           endDash(now);
         }
         break;
@@ -113,24 +90,24 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
   @Override
   public int getPriority() {
     if (status == Status.ACTIVE) {
-      return phase == Phase.DONE ? -1 : priority;
+      return phase == Phase.DONE ? -1 : PRIORITY;
     }
 
     long now = gameTime.getTime();
     if (now < cooldownEndTime) {
       return -1;
     }
-    if (getDistanceToTarget() <= triggerRange) {
-      return priority;
+    if (getDistanceToTarget() <= TRIGGER_RANGE) {
+      return PRIORITY;
     }
     return -1;
   }
 
   private void beginDash(long now) {
     Vector2 direction = target.getPosition().cpy().sub(owner.getEntity().getPosition()).nor();
-    dashTargetPoint = owner.getEntity().getPosition().cpy().add(direction.scl(dashDistance));
+    dashTargetPoint = owner.getEntity().getPosition().cpy().add(direction.scl(DASH_DISTANCE));
 
-    movementComponent.setMaxSpeed(new Vector2(dashSpeed, dashSpeed));
+    movementComponent.setMaxSpeed(new Vector2(DASH_SPEED, DASH_SPEED));
     movementComponent.setTarget(dashTargetPoint);
     movementComponent.setMoving(true);
 
@@ -143,7 +120,7 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
     movementComponent.setMoving(false);
     movementComponent.setMaxSpeed(new Vector2(restoreSpeed, restoreSpeed));
 
-    cooldownEndTime = now + (long) (cooldownDuration * 1000);
+    cooldownEndTime = now + (long) (COOLDOWN_DURATION * 1000);
     phase = Phase.DONE;
     owner.getEntity().getEvents().trigger("lungeDashEnd");
   }
