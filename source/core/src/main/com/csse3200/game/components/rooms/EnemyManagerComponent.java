@@ -1,7 +1,7 @@
 package com.csse3200.game.components.rooms;
 
 import com.badlogic.gdx.math.GridPoint2;
-import com.csse3200.game.components.SpiltComponent;
+import com.csse3200.game.components.SplitComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.utils.math.RandomUtils;
@@ -37,7 +37,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
 
     Entity splitEnemy = NPCFactory.createBombEnemy(target);
-    splitEnemy.addComponent(new SpiltComponent(target));
+    splitEnemy.addComponent(new SplitComponent(target));
 
     track(splitEnemy);
     splitEnemy.getEvents().addListener("spawnChildren", this::enemyTriggerSpawn);

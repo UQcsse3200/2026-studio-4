@@ -8,14 +8,14 @@ import com.csse3200.game.entities.factories.NPCFactory;
  * only happen once. Each new copy has half the lifespan (health) and half the base attack of the
  * original enemy.
  */
-public class SpiltComponent extends Component {
+public class SplitComponent extends Component {
   private boolean hasSplit = false;
   private final Entity target;
 
   /**
    * @param target The entity to chase (usually the player), passed on to the split-off children.
    */
-  public SpiltComponent(Entity target) {
+  public SplitComponent(Entity target) {
     this.target = target;
   }
 
