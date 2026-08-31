@@ -13,9 +13,11 @@ public class RoomAssetsComponent extends Component {
   private static final String ALTERNATE_TEXTURE_TWO = "images/grass_3.png";
   private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
   private static final String IMPACT_SOUND = "sounds/Impact4.ogg";
+  private static final String ROCK_TEXTURE = "images/rock.png";
+  private static final String HOLE_TEXTURE = "images/hole.png";
 
   private static final String[] TEXTURES = {
-    GROUND_TEXTURE, ALTERNATE_TEXTURE_ONE, ALTERNATE_TEXTURE_TWO
+    GROUND_TEXTURE, ALTERNATE_TEXTURE_ONE, ALTERNATE_TEXTURE_TWO, ROCK_TEXTURE, HOLE_TEXTURE
   };
   private static final String[] MUSIC = {BACKGROUND_MUSIC};
   private static final String[] SOUNDS = {IMPACT_SOUND};
