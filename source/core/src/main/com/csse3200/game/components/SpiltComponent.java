@@ -2,7 +2,6 @@ package com.csse3200.game.components;
 
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.NPCFactory;
-import com.csse3200.game.services.ServiceLocator;
 
 /**
  * Component that splits an enemy into two weaker copies when attacked by the player. This should
@@ -69,6 +68,6 @@ public class SpiltComponent extends Component {
     }
 
     child.setPosition(entity.getCenterPosition().x + xOffset, entity.getCenterPosition().y);
-    ServiceLocator.getEntityService().register(child);
+    entity.getEvents().trigger("spawnChildren", child);
   }
 }

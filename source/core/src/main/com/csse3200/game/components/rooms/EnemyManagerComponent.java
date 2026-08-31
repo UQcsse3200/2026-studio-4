@@ -1,6 +1,7 @@
 package com.csse3200.game.components.rooms;
 
 import com.badlogic.gdx.math.GridPoint2;
+import com.csse3200.game.components.SpiltComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.utils.math.RandomUtils;
@@ -13,7 +14,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   @Override
   public void create() {
-    entity.getEvents().addListener("RoomCreated", this::spawnBombEnemies);
+    entity.getEvents().addListener("RoomCreated", this::spawnEnemies);
+  }
+
+  public void spawnEnemies(Entity target) {
+    // spawnBombEnemies(target);
+    spawnSplitEnemy(target);
   }
 
   /** Creates ghosts at random valid tiles and sets the player as their target. */
@@ -25,6 +31,19 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       track(ghost);
       spawnEntityAt(ghost, position, true, true);
     }
+  }
+
+  public void spawnSplitEnemy(Entity target) {
+    GridPoint2 maxPosition = spawnableArea();
+    GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
+
+    Entity splitEnemy = NPCFactory.createBombEnemy(target);
+    splitEnemy.addComponent(new SpiltComponent(target));
+
+    track(splitEnemy);
+    splitEnemy.getEvents().addListener("spawnChildren", this::enemyTriggerSpawn);
+
+    spawnEntityAt(splitEnemy, position, true, true);
   }
 
   /**
@@ -43,5 +62,18 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     if (numEnemies <= 0) {
       entity.getEvents().trigger("roomCleared");
     }
+  }
+
+  /**
+   * Callback function for when an enemy wishes to spawn another enemy
+   *
+   * <p>Provide this to a listener to give an enemy the ability to add new entities to game. A spawn
+   * should be triggered BEFORE an enemy triggers its death to prevent numEnemies <= 0.
+   *
+   * @param newEnemy the new enemy should not be registed.
+   */
+  private void enemyTriggerSpawn(Entity newEnemy) {
+    numEnemies++;
+    spawnEntity(newEnemy);
   }
 }
