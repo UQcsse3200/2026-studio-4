@@ -136,14 +136,12 @@ public class CombatStatsComponent extends Component {
   public void takeDamage(int damage, Entity attacker) {
     if (damage > 0) {
       addHealth(-damage);
-      if (!isDead()) {
-        applyHitreaction(attacker);
-      }
+      applyHitreaction(attacker);
     }
   }
 
   /**
-   * Covinience method for entity-on-emtity combat. Reads base attack from the attacker and applies
+   * Covenience method for entity-on-entity combat. Reads base attack from the attacker and applies
    * damage.
    *
    * @param attacker The entity dealing damage
