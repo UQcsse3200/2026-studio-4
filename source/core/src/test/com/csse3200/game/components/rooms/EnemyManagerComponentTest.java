@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
+/** Tests developed with assistance from OpenAI Codex and reviewed by Yuezhou Wang. */
 @ExtendWith(GameExtension.class)
 class EnemyManagerComponentTest {
   private Entity room;
@@ -121,6 +122,18 @@ class EnemyManagerComponentTest {
     assertEquals(List.of(new Vector2(1f, 2f)), dropPositions);
     assertEquals(1, drops.size());
     verify(entityService).register(drops.get(0));
+  }
+
+  @Test
+  void shouldSnapshotDeathPositionBeforeDeferredDropCreation() {
+    Entity enemy = trackEnemies(1)[0];
+    Vector2 deathPosition = enemy.getPosition();
+
+    enemy.getEvents().trigger("entityDied");
+    deathPosition.set(9f, 10f);
+    enemyManager.update();
+
+    assertEquals(List.of(new Vector2(1f, 2f)), dropPositions);
   }
 
   @Test

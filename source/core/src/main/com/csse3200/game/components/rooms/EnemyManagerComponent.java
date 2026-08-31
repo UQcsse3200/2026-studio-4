@@ -15,7 +15,12 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 
-/** Spawns a random group of ghosts when its room is started. */
+/**
+ * Spawns and tracks a room's enemies, then creates one Strength Charm at each defeated enemy's
+ * final position.
+ *
+ * <p>Implementation developed with assistance from OpenAI Codex and reviewed by Yuezhou Wang.
+ */
 public class EnemyManagerComponent extends EntityManagerComponent {
   private final int numberOfBombEnemies = new Random().nextInt(10, 20);
   private final Function<Vector2, Entity> dropFactory;
@@ -23,6 +28,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   private final Queue<Vector2> pendingDropPositions = new ArrayDeque<>();
   private int numEnemies = 0;
 
+  /** Creates a manager that drops a Strength Charm for every defeated tracked enemy. */
   public EnemyManagerComponent() {
     this(position -> ItemFactory.createDrop(ItemType.STRENGTH_CHARM, position));
   }
@@ -91,7 +97,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
     // Death usually fires from a Box2D collision callback. Creating the drop here would construct
     // its PhysicsComponent while the world is locked, so defer factory invocation until update().
-    pendingDropPositions.add(enemy.getPosition());
+    pendingDropPositions.add(enemy.getPosition().cpy());
 
     numEnemies--;
     if (numEnemies <= 0) {
