@@ -119,6 +119,11 @@ loadScripts(document, 'script');</script>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int,int)" class="member-name-link">CombatStatsComponent</a><wbr>(int&nbsp;health,
  int&nbsp;baseAttack)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(int,int,float,float)" class="member-name-link">CombatStatsComponent</a><wbr>(int&nbsp;health,
+ int&nbsp;baseAttack,
+ float&nbsp;movementSpeed,
+ float&nbsp;attackSpeed)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -134,24 +139,44 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addHealth(int)" class="member-name-link">addHealth</a><wbr>(int&nbsp;health)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addAttackSpeed(float)" class="member-name-link">addAttackSpeed</a><wbr>(float&nbsp;speed)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Adds to the player's attack speed.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addHealth(int)" class="member-name-link">addHealth</a><wbr>(int&nbsp;health)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Adds to the player's health.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBaseAttack()" class="member-name-link">getBaseAttack</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addMovementSpeed(float)" class="member-name-link">addMovementSpeed</a><wbr>(float&nbsp;speed)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Adds to the player's movement speed.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAttackSpeed()" class="member-name-link">getAttackSpeed</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the entity's base attack damage.</div>
+<div class="block">Returns the entity's attack speed</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHealth()" class="member-name-link">getHealth</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBaseAttack()" class="member-name-link">getBaseAttack</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the entity's health.</div>
+<div class="block">Returns the entity's base attack damage.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMaxHealth()" class="member-name-link">getMaxHealth</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHealth()" class="member-name-link">getHealth</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the entity's health.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMaxHealth()" class="member-name-link">getMaxHealth</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the entity's health.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMovementSpeed()" class="member-name-link">getMovementSpeed</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the entity's movement speed</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hit(com.csse3200.game.components.CombatStatsComponent)" class="member-name-link">hit</a><wbr>(<a href="CombatStatsComponent.html" title="class in com.csse3200.game.components">CombatStatsComponent</a>&nbsp;attacker)</code></div>
@@ -164,19 +189,29 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns true if the entity's has 0 health, otherwise false.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBaseAttack(int)" class="member-name-link">setBaseAttack</a><wbr>(int&nbsp;attack)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setAttackSpeed(float)" class="member-name-link">setAttackSpeed</a><wbr>(float&nbsp;newSpeed)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Sets the entity's attack damage.</div>
+<div class="block">Sets the entity's attack speed.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHealth(int)" class="member-name-link">setHealth</a><wbr>(int&nbsp;health)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBaseAttack(int)" class="member-name-link">setBaseAttack</a><wbr>(int&nbsp;attack)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the entity's attack damage.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHealth(int)" class="member-name-link">setHealth</a><wbr>(int&nbsp;health)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the entity's health.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMaxHealth(int)" class="member-name-link">setMaxHealth</a><wbr>(int&nbsp;maxHealth)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the entity's health.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMaxHealth(int)" class="member-name-link">setMaxHealth</a><wbr>(int&nbsp;maxHealth)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMovementSpeed(float)" class="member-name-link">setMovementSpeed</a><wbr>(float&nbsp;newSpeed)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Sets the entity's health.</div>
+<div class="block">Sets the entity's movement speed.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#takeDamage(int)" class="member-name-link">takeDamage</a><wbr>(int&nbsp;damage)</code></div>
@@ -214,6 +249,15 @@ loadScripts(document, 'script');</script>
 <h3>CombatStatsComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">CombatStatsComponent</span><wbr><span class="parameters">(int&nbsp;health,
  int&nbsp;baseAttack)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(int,int,float,float)">
+<h3>CombatStatsComponent</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">CombatStatsComponent</span><wbr><span class="parameters">(int&nbsp;health,
+ int&nbsp;baseAttack,
+ float&nbsp;movementSpeed,
+ float&nbsp;attackSpeed)</span></div>
 </section>
 </li>
 </ul>
@@ -309,6 +353,72 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>attack</code> - Attack damage</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getMovementSpeed()">
+<h3>getMovementSpeed</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getMovementSpeed</span>()</div>
+<div class="block">Returns the entity's movement speed</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>entity's movement speed</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setMovementSpeed(float)">
+<h3>setMovementSpeed</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setMovementSpeed</span><wbr><span class="parameters">(float&nbsp;newSpeed)</span></div>
+<div class="block">Sets the entity's movement speed. Movement Speed has a minimum bound of 0.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>newSpeed</code> - new movement speed</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="addMovementSpeed(float)">
+<h3>addMovementSpeed</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addMovementSpeed</span><wbr><span class="parameters">(float&nbsp;speed)</span></div>
+<div class="block">Adds to the player's movement speed. The amount added can be negative.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>speed</code> - speed to add</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getAttackSpeed()">
+<h3>getAttackSpeed</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getAttackSpeed</span>()</div>
+<div class="block">Returns the entity's attack speed</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>entity's attack speed</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setAttackSpeed(float)">
+<h3>setAttackSpeed</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setAttackSpeed</span><wbr><span class="parameters">(float&nbsp;newSpeed)</span></div>
+<div class="block">Sets the entity's attack speed. Attack Speed has a minimum bound of 0.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>newSpeed</code> - entity's new attack speed</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="addAttackSpeed(float)">
+<h3>addAttackSpeed</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addAttackSpeed</span><wbr><span class="parameters">(float&nbsp;speed)</span></div>
+<div class="block">Adds to the player's attack speed. The amount added can be negative.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>speed</code> - speed to add</dd>
 </dl>
 </section>
 </li>
