@@ -85,6 +85,31 @@ public class TerrainFactory {
     }
   }
 
+  /** Creates orthogonal terrain from a room's texture and map configuration. */
+  public TerrainComponent createTerrain(TerrainConfig config) {
+    ResourceService resourceService = ServiceLocator.getResourceService();
+    TextureRegion ground =
+        new TextureRegion(resourceService.getAsset(config.groundTexture, Texture.class));
+    TextureRegion alternateOne =
+        new TextureRegion(resourceService.getAsset(config.alternateTextureOne, Texture.class));
+    TextureRegion alternateTwo =
+        new TextureRegion(resourceService.getAsset(config.alternateTextureTwo, Texture.class));
+
+    GridPoint2 tileSize = new GridPoint2(ground.getRegionWidth(), ground.getRegionHeight());
+    TiledMapTileLayer layer =
+        new TiledMapTileLayer(config.mapSize.x, config.mapSize.y, tileSize.x, tileSize.y);
+    fillTiles(layer, config.mapSize, new TerrainTile(ground));
+    fillTilesAtRandom(
+        layer, config.mapSize, new TerrainTile(alternateOne), config.alternateTextureOneCount);
+    fillTilesAtRandom(
+        layer, config.mapSize, new TerrainTile(alternateTwo), config.alternateTextureTwoCount);
+
+    TiledMap tiledMap = new TiledMap();
+    tiledMap.getLayers().add(layer);
+    TiledMapRenderer renderer = new OrthogonalTiledMapRenderer(tiledMap, 0.5f / tileSize.x);
+    return new TerrainComponent(camera, tiledMap, renderer, TerrainOrientation.ORTHOGONAL, 0.5f);
+  }
+
   private TerrainComponent createForestDemoTerrain(
       float tileWorldSize, TextureRegion grass, TextureRegion grassTuft, TextureRegion rocks) {
     GridPoint2 tilePixelSize = new GridPoint2(grass.getRegionWidth(), grass.getRegionHeight());

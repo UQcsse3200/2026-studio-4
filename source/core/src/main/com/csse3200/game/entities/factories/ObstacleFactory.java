@@ -34,6 +34,29 @@ public class ObstacleFactory {
     return tree;
   }
 
+  /** Creates a rock obstacle. */
+  public static Entity createRock() {
+    return createRenderedObstacle("images/rock.png", 0.6f, 0.7f);
+  }
+
+  /** Creates a hole obstacle. */
+  public static Entity createHole() {
+    return createRenderedObstacle("images/hole.png", 0.7f, 0.9f);
+  }
+
+  private static Entity createRenderedObstacle(
+      String texture, float colliderWidth, float colliderHeight) {
+    Entity obstacle =
+        new Entity()
+            .addComponent(new TextureRenderComponent(texture))
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+    obstacle.getComponent(TextureRenderComponent.class).scaleEntity();
+    obstacle.scaleHeight(1f);
+    PhysicsUtils.setScaledCollider(obstacle, colliderWidth, colliderHeight);
+    return obstacle;
+  }
+
   /**
    * Creates an invisible physics wall.
    *
