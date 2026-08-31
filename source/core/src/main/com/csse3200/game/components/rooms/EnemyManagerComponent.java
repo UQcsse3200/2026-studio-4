@@ -72,7 +72,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
    * @param newEnemy the new enemy should not be registed.
    */
   private void enemyTriggerSpawn(Entity newEnemy) {
-    numEnemies++;
+    track(newEnemy);
     spawnEntity(newEnemy);
   }
 }
