@@ -43,8 +43,15 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         triggerWalkEvent();
         return true;
       case Keys.SPACE:
+        entity.getEvents().trigger("dash", walkDirection);
+        return true;
+      case Keys.J:
         entity.getEvents().trigger("attack");
         return true;
+      case Keys.K:
+        entity.getEvents().trigger("specialAttack");
+        return true;
+
       default:
         return false;
     }

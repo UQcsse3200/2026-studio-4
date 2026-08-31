@@ -1,0 +1,38 @@
+package com.csse3200.game.components.player;
+
+import com.csse3200.game.components.Component;
+import com.csse3200.game.rendering.AnimationRenderComponent;
+
+/**
+ * This class listens to events relevant to a Player entity's state and plays the animation when one
+ * of the events is triggered.
+ */
+public class PlayerAnimationController extends Component {
+  AnimationRenderComponent animator;
+
+  @Override
+  public void create() {
+    super.create();
+    animator = this.entity.getComponent(AnimationRenderComponent.class);
+    entity.getEvents().addListener("idleDown", this::animateIdleDown);
+    entity.getEvents().addListener("idleLeft", this::animateIdleLeft);
+    entity.getEvents().addListener("idleRight", this::animateIdleRight);
+    entity.getEvents().addListener("idleUp", this::animateIdleUp);
+  }
+
+  void animateIdleDown() {
+    animator.startAnimation("idle_down");
+  }
+
+  void animateIdleLeft() {
+    animator.startAnimation("idle_left");
+  }
+
+  void animateIdleRight() {
+    animator.startAnimation("idle_right");
+  }
+
+  void animateIdleUp() {
+    animator.startAnimation("idle_up");
+  }
+}
