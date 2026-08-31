@@ -15,6 +15,9 @@ public class PhysicsLayer {
   // NPC (Non-Playable Character) colliders
   public static final short NPC = (1 << 3);
 
+  /** Floor pit. Not solid to arrows; they fly over it. */
+  public static final short HOLE = (1 << 5);
+
   /**
    * Category for short-lived weapon sensors (slashes, stabs, arrow splash).
    *

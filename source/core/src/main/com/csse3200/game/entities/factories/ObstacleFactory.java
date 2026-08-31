@@ -39,9 +39,14 @@ public class ObstacleFactory {
     return createRenderedObstacle("images/rock.png", 0.6f, 0.7f);
   }
 
-  /** Creates a hole obstacle. */
+  /**
+   * Creates a hole. Uses {@link PhysicsLayer#HOLE}, not {@link PhysicsLayer#OBSTACLE}, so arrows
+   * fly over it.
+   */
   public static Entity createHole() {
-    return createRenderedObstacle("images/hole.png", 0.7f, 0.9f);
+    Entity hole = createRenderedObstacle("images/hole.png", 0.7f, 0.9f);
+    hole.getComponent(ColliderComponent.class).setLayer(PhysicsLayer.HOLE);
+    return hole;
   }
 
   private static Entity createRenderedObstacle(
