@@ -8,23 +8,48 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * Slower sweeping attack. Spawns a short range radiant hitbox just in front of the wielder that
- * follows them for its brief lifetime.
+ * Slower sweeping attack. Spawns a rectangular sword hitbox that moves along a predetermined arc of
+ * attack using SweepComponent.
  */
 public class SwordWeaponComponent extends WeaponComponent {
-  private static final Vector2 SIZE = new Vector2(1.0f, 1.5f);
-  private static final float LIFETIME = 1.0f;
-  private static final float REACH = 0.5f;
+  // weapon attributes
+  private static final float LIFETIME = 0.5f; // How long the sweep attack takes
+  private static final float BLADE_LENGTH = 1.0f; // the length of the hitbox when sweeping
+  private static final float BLADE_WIDTH = 0.4f; // the width of the hitbox when sweeping
+  private static final float ARC_DEGREES = 90f; // the arc of the sweep attack
+  private static final float GAP = 0.05f; // hitbox min distance from the player
 
   @Override
   protected void createAttack(Vector2 origin, Vector2 direction) {
     WeaponStatsComponent stats = entity.getComponent(WeaponStatsComponent.class);
-    Vector2 offset = direction.cpy().nor().scl(REACH);
 
+    Vector2 dir = direction.cpy().nor();
+
+    // Flip the axis of the hitbox based on the attack direction
+    boolean horizontal = Math.abs(dir.x) >= Math.abs(dir.y);
+    Vector2 size =
+        horizontal
+            ? new Vector2(BLADE_LENGTH, BLADE_WIDTH)
+            : new Vector2(BLADE_WIDTH, BLADE_LENGTH);
+
+    // Ensure the offset keeps the attack centred with the player
+    Vector2 playerHalfSize = entity.getScale().cpy().scl(0.5f);
+    float playerHalfExtent = horizontal ? playerHalfSize.x : playerHalfSize.y;
+    float hitboxHalfExtent = horizontal ? size.x / 2f : size.y / 2f;
+    float reach = playerHalfExtent + hitboxHalfExtent + GAP;
+
+    // get start and end of attack radius for sweep component constructor
+    float baseAngle = dir.angleDeg();
+    float startAngle = baseAngle - ARC_DEGREES / 2f;
+    float endAngle = baseAngle + ARC_DEGREES / 2f;
+
+    Vector2 offset = new Vector2(reach, 0f).setAngleDeg(startAngle);
+
+    // construct the hitbox spec
     HitboxSpec spec =
         new HitboxSpec()
             .position(origin)
-            .size(SIZE)
+            .size(size)
             .lifetime(LIFETIME)
             .layer(PhysicsLayer.WEAPON)
             .targetLayer(PhysicsLayer.NPC)
@@ -34,6 +59,7 @@ public class SwordWeaponComponent extends WeaponComponent {
             .localOffset(offset);
 
     Entity hitbox = HitboxFactory.createHitbox(spec);
+    hitbox.addComponent(new SweepComponent(LIFETIME, startAngle, endAngle, reach));
     ServiceLocator.getEntityService().register(hitbox);
   }
 }

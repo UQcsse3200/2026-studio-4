@@ -3,6 +3,7 @@ package com.csse3200.game.screens;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.FollowingCameraComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
@@ -35,12 +36,14 @@ import org.slf4j.LoggerFactory;
  */
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
-  private static final String[] mainGameTextures = {"images/heart.png", "images/box_boy_leaf.png"};
+  private static final String[] mainGameTextures = {"images/heart.png", "images/idle_down.png"};
 
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private RoomManager roomManager;
+  private Entity player;
+  private boolean deathScreenTriggered = false; // prevents screen-setting every frame
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
@@ -63,10 +66,10 @@ public class MainGameScreen extends ScreenAdapter {
 
     loadAssets();
     logger.debug("Initialising main game screen entities");
-    Entity player = PlayerFactory.createPlayer();
+    Entity room = RoomFactory.createRoom("First Room", renderer.getCamera());
+    player = PlayerFactory.createPlayer();
+    roomManager = new RoomManager(room, player);
     player.getComponent(FollowingCameraComponent.class).setCamera(renderer.getCamera());
-    roomManager =
-        new RoomManager(RoomFactory.createRoom("First Room", renderer.getCamera()), player);
     roomManager.create();
 
     createUI();
@@ -77,6 +80,13 @@ public class MainGameScreen extends ScreenAdapter {
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
+    if (!deathScreenTriggered && player != null) {
+      CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
+      if (stats != null && stats.getHealth() <= 0) {
+        deathScreenTriggered = true;
+        game.setScreen(GdxGame.ScreenType.DEATH_SCREEN);
+      }
+    }
   }
 
   @Override
