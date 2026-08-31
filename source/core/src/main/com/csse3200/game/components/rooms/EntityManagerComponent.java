@@ -8,6 +8,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,10 +31,7 @@ public abstract class EntityManagerComponent extends Component {
     ServiceLocator.getEntityService().register(spawnedEntity);
   }
 
-  /** 
-   * Places, registers, and records an entity at a terrain tile. 
-   * @throws RuntimeException throws when attached room has no terrain.
-   */
+  /** Places, registers, and records an entity at a terrain tile. */
   protected void spawnEntityAt(
       Entity spawnedEntity, GridPoint2 tilePosition, boolean centerX, boolean centerY) {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
@@ -54,11 +52,12 @@ public abstract class EntityManagerComponent extends Component {
   }
 
   /** Returns the largest safe tile position for random room content. */
-  protected GridPoint2 spawnableArea() {
+  protected Optional<GridPoint2> spawnableArea() {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
     if (terrain == null) {
-      throw new RuntimeException("Entity does not have a terrain component.");
+      logger.error("Cannot find a spawnable area in a room without terrain");
+      return Optional.empty();
     }
-    return terrain.getMapBounds(0).sub(2, 2);
+    return Optional.of(terrain.getMapBounds(0).sub(2, 2));
   }
 }

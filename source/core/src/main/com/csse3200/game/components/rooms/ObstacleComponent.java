@@ -21,11 +21,16 @@ public class ObstacleComponent extends EntityManagerComponent {
   }
 
   private void spawnObstacles(boolean rock) {
-    GridPoint2 maxPosition = spawnableArea().sub(1, 1);
-    for (int i = 0; i < numberOfObstacles; i++) {
-      GridPoint2 position = RandomUtils.random(MINIMUM_POSITION, maxPosition);
-      Entity obstacle = rock ? ObstacleFactory.createRock() : ObstacleFactory.createHole();
-      spawnEntityAt(obstacle, position, true, false);
-    }
+    spawnableArea()
+        .ifPresent(
+            area -> {
+              GridPoint2 maxPosition = area.sub(1, 1);
+              for (int i = 0; i < numberOfObstacles; i++) {
+                GridPoint2 position = RandomUtils.random(MINIMUM_POSITION, maxPosition);
+                Entity obstacle =
+                    rock ? ObstacleFactory.createRock() : ObstacleFactory.createHole();
+                spawnEntityAt(obstacle, position, true, false);
+              }
+            });
   }
 }
