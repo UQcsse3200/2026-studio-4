@@ -84,4 +84,55 @@ class EntityServiceTest {
 
     verify(entity, times(1)).dispose();
   }
+
+  @Test
+  void shouldNotRunScheduledTaskBeforeUpdate() {
+    EntityService entityService = new EntityService();
+    Runnable task = mock(Runnable.class);
+    entityService.schedule(task);
+
+    verify(task, times(0)).run();
+  }
+
+  @Test
+  void shouldRunScheduledTaskOnUpdate() {
+    EntityService entityService = new EntityService();
+    Runnable task = mock(Runnable.class);
+    entityService.schedule(task);
+    entityService.update();
+
+    verify(task, times(1)).run();
+  }
+
+  @Test
+  void shouldRunScheduledTaskOnlyOnce() {
+    EntityService entityService = new EntityService();
+    Runnable task = mock(Runnable.class);
+    entityService.schedule(task);
+    entityService.update();
+    entityService.update();
+
+    verify(task, times(1)).run();
+  }
+
+  @Test
+  void shouldRunTaskScheduledByAnotherTask() {
+    EntityService entityService = new EntityService();
+    Runnable innerTask = mock(Runnable.class);
+    entityService.schedule(() -> entityService.schedule(innerTask));
+    entityService.update();
+
+    verify(innerTask, times(1)).run();
+  }
+
+  @Test
+  void shouldDisposeEntityScheduledByTask() {
+    EntityService entityService = new EntityService();
+    Entity entity = mock(Entity.class);
+    entityService.register(entity);
+    entityService.schedule(() -> entityService.scheduleDisposal(entity));
+    entityService.update();
+
+    verify(entity, times(1)).dispose();
+  }
 }

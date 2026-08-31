@@ -17,6 +17,7 @@ public class EntityService {
 
   private final Array<Entity> entities = new Array<>(false, INITIAL_CAPACITY);
   private final Array<Entity> pendingDisposal = new Array<>(false, INITIAL_CAPACITY);
+  private final Array<Runnable> pendingTasks = new Array<>(false, INITIAL_CAPACITY);
 
   /**
    * Register a new entity with the entity service. The entity will be created and start updating.
@@ -58,22 +59,45 @@ public class EntityService {
     pendingDisposal.add(entity);
   }
 
+  /**
+   * Queue a task to run once the current update has finished. Collision events are fired while the
+   * physics world is locked, and a locked world cannot create or destroy bodies, fixtures, or
+   * joints. Use this to defer such work (e.g. spawning a new entity) from a collision event until
+   * it is safe.
+   *
+   * @param task task to run after the current update, ignored if null.
+   */
+  public void schedule(Runnable task) {
+    if (task == null) {
+      return;
+    }
+    logger.debug("Scheduling deferred task in entity service");
+    pendingTasks.add(task);
+  }
+
   /** Update all registered entities. Should only be called from the main game loop. */
   public void update() {
     for (Entity entity : entities) {
       entity.earlyUpdate();
       entity.update();
     }
-    disposeQueuedEntities();
+    drainQueues();
   }
 
   /**
-   * Dispose every entity queued by {@link #scheduleDisposal(Entity)}. Disposing an entity may queue
-   * further entities, so the queue is drained until it is empty.
+   * Run every task queued by {@link #schedule(Runnable)}, then dispose every entity queued by
+   * {@link #scheduleDisposal(Entity)}. Tasks run before disposals so that queued work can still
+   * read entities that are about to be removed. Tasks and disposals may queue further work, so both
+   * queues are drained until empty.
    */
-  private void disposeQueuedEntities() {
-    while (pendingDisposal.notEmpty()) {
-      pendingDisposal.pop().dispose();
+  private void drainQueues() {
+    while (pendingTasks.notEmpty() || pendingDisposal.notEmpty()) {
+      while (pendingTasks.notEmpty()) {
+        pendingTasks.removeIndex(0).run();
+      }
+      while (pendingDisposal.notEmpty()) {
+        pendingDisposal.pop().dispose();
+      }
     }
   }
 
