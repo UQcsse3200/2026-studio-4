@@ -18,8 +18,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   public void spawnEnemies(Entity target) {
-    // spawnBombEnemies(target);
-    spawnSplitEnemy(target);
+    spawnBombEnemies(target);
   }
 
   /** Creates ghosts at random valid tiles and sets the player as their target. */
@@ -27,9 +26,9 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     GridPoint2 maxPosition = spawnableArea();
     for (int i = 0; i < numberOfBombEnemies; i++) {
       GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
-      Entity ghost = NPCFactory.createBombEnemy(target);
-      track(ghost);
-      spawnEntityAt(ghost, position, true, true);
+      Entity bombEnemy = NPCFactory.createBombEnemy(target);
+      track(bombEnemy);
+      spawnEntityAt(bombEnemy, position, true, true);
     }
   }
 
