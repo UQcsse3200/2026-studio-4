@@ -14,15 +14,12 @@ import com.csse3200.game.services.ServiceLocator;
 /**
  * Moves a weapon hitbox in a straight line and removes it on its first hit.
  *
- * <p>Stops on enemies and solid obstacles (walls, rocks). Does not stop on {@link
- * PhysicsLayer#HOLE}: a pit is not a wall, so the arrow flies over it. Removal is queued via {@link
+ * <p>Stops on enemies and solid obstacles (walls, rocks). Removal is queued via {@link
  * com.csse3200.game.entities.EntityService#scheduleDisposal(com.csse3200.game.entities.Entity)}
  * because collision events fire while the physics world is locked.
  */
 public class ProjectileComponent extends Component {
-  /**
-   * What stops the arrow. {@link PhysicsLayer#HOLE} is omitted on purpose so arrows fly over pits.
-   */
+  /** Enemies and solid walls/rocks. */
   private static final short STOP_LAYERS = PhysicsLayer.NPC | PhysicsLayer.OBSTACLE;
 
   private final Vector2 velocity;
@@ -54,8 +51,7 @@ public class ProjectileComponent extends Component {
 
   /**
    * Kinematic sensors do not contact static walls, so raycast the next step for solid obstacles
-   * only ({@link PhysicsLayer#OBSTACLE}). Holes are {@link PhysicsLayer#HOLE}, so this ray misses
-   * them and the arrow continues.
+   * ({@link PhysicsLayer#OBSTACLE}).
    */
   @Override
   public void update() {
@@ -80,7 +76,7 @@ public class ProjectileComponent extends Component {
     if (hitboxComponent.getFixture() != me) {
       return;
     }
-    // Enemies and solid obstacles stop the arrow. Holes are not in STOP_LAYERS, so they do not.
+    // Ignore anything that is not an enemy or a solid obstacle.
     if (!PhysicsLayer.contains(STOP_LAYERS, other.getFilterData().categoryBits)) {
       return;
     }
