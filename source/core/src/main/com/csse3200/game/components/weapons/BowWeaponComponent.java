@@ -28,6 +28,12 @@ public class BowWeaponComponent extends WeaponComponent {
     // Spawn just outside the wielder so the arrow visibly starts at their edge.
     float reach = entity.getScale().len() / 2f + ARROW_SIZE / 2f + GAP;
     Vector2 spawnCenter = origin.cpy().mulAdd(dir, reach);
+
+    // The spawn point can sit beyond a wall the wielder is touching; never fire through it.
+    if (ProjectileComponent.isPathBlocked(origin, spawnCenter)) {
+      return;
+    }
+
     // HitboxSpec positions by bottom-left corner; shift by half the arrow size to centre it.
     Vector2 spawnPosition = spawnCenter.sub(ARROW_SIZE / 2f, ARROW_SIZE / 2f);
 
