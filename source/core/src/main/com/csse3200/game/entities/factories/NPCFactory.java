@@ -10,8 +10,11 @@ import com.csse3200.game.components.ExplodeComponent;
 import com.csse3200.game.components.SpiltComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
+import com.csse3200.game.components.npc.FloatingDemonAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
+import com.csse3200.game.components.tasks.PatrolTask;
+import com.csse3200.game.components.tasks.RangedAttackTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
@@ -63,9 +66,9 @@ public class NPCFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/bombEnemy.atlas", TextureAtlas.class));
-    animator.addAnimation("float", 0.7f, Animation.PlayMode.LOOP);
-    animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("explode", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation("move", 0.7f, Animation.PlayMode.LOOP);
+    animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("dieAnimation", 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
 
     bombEnemy
@@ -125,14 +128,43 @@ public class NPCFactory {
   }
 
   /**
-   * Creates a generic ghost enemy. Currently an alias for createChaseEnemy, kept for compatibility
-   * with code (e.g. EnemyManagerComponent) that still references createGhost.
+   * Creates a floating demon which patrols in a straight horizontal line.
    *
-   * @param target entity to chase
-   * @return entity
+   * @param leftPoint left point of its patrol path
+   * @param topPoint top point of its patrol path
+   * @param rightPoint right point of its patrol path
+   * @return floating demon entity
    */
-  public static Entity createGhost(Entity target) {
-    return createChaseEnemy(target);
+  public static Entity createFloatingDemon(
+      Entity target, Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint) {
+    FloatingDemonConfig config = configs.floatingDemon;
+    AITaskComponent aiComponent =
+        new AITaskComponent()
+            .addTask(new PatrolTask(leftPoint, topPoint, rightPoint))
+            .addTask(new RangedAttackTask(target, config.baseAttack));
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/floatingDemon.atlas", TextureAtlas.class));
+    animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("attack", 0.08f);
+    animator.addAnimation("dieAnimation", 0.1f);
+
+    Entity demon =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new PhysicsMovementComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+            .addComponent(new EnemyDeathComponent(true))
+            .addComponent(aiComponent)
+            .addComponent(animator)
+            .addComponent(new FloatingDemonAnimationController());
+
+    animator.scaleEntity();
+    demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
+    return demon;
   }
 
   /**
@@ -147,7 +179,7 @@ public class NPCFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new EnemyDeathComponent());
+            .addComponent(new EnemyDeathComponent(true));
 
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);
     return npc;
