@@ -12,7 +12,6 @@ import com.csse3200.game.services.ServiceLocator;
  * its brief lifetime.
  */
 public class KnifeWeaponComponent extends WeaponComponent {
-  // private static final Vector2 SIZE = new Vector2(0.5f, 1.0f);
   private static final float BLADE_LENGTH = 1.0f;
   private static final float BLADE_WIDTH = 0.5f;
   private static final float LIFETIME = 1.0f;
