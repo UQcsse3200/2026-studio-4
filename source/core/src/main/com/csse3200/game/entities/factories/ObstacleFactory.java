@@ -42,7 +42,8 @@ public class ObstacleFactory {
 
   /** Creates a rock obstacle. */
   public static Entity createRock() {
-    Texture texture = ServiceLocator.getResourceService().getAsset("images/rock.png", Texture.class);
+    Texture texture =
+        ServiceLocator.getResourceService().getAsset("images/rock.png", Texture.class);
     return createRenderedObstacle(new TextureRegion(texture), 0.6f, 0.7f);
   }
 
