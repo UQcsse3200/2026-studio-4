@@ -83,7 +83,8 @@ public class GdxGame extends Game {
   public enum ScreenType {
     MAIN_MENU,
     MAIN_GAME,
-    SETTINGS
+    SETTINGS,
+    DEATH_SCREEN
   }
 
   /** Exit the game. */

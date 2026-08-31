@@ -2,6 +2,7 @@ package com.csse3200.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.FollowingCameraComponent;
@@ -42,6 +43,8 @@ public class MainGameScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private RoomManager roomManager;
+  private Entity player;
+  private boolean deathScreenTriggered = false;  // prevents screen-setting every frame
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
@@ -65,7 +68,7 @@ public class MainGameScreen extends ScreenAdapter {
     loadAssets();
     logger.debug("Initialising main game screen entities");
     Entity room = RoomFactory.createRoom("First Room", renderer.getCamera());
-    Entity player = PlayerFactory.createPlayer();
+    player = PlayerFactory.createPlayer();
     roomManager = new RoomManager(room, player);
     player.getComponent(FollowingCameraComponent.class).setCamera(renderer.getCamera());
     roomManager.create();
@@ -78,7 +81,14 @@ public class MainGameScreen extends ScreenAdapter {
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
-  }
+     if (!deathScreenTriggered && player != null) {
+      CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
+    if (stats != null && stats.getHealth() <= 0) {           // <-- exactly as you said
+      deathScreenTriggered = true;
+      game.setScreen(GdxGame.ScreenType.DEATH_SCREEN);
+     }
+    }
+  }  
 
   @Override
   public void resize(int width, int height) {
