@@ -168,17 +168,6 @@ public class NPCFactory {
   }
 
   /**
-   * Creates a generic ghost enemy. Currently an alias for createChaseEnemy, kept for compatibility
-   * with code (e.g. EnemyManagerComponent) that still references createGhost.
-   *
-   * @param target entity to chase
-   * @return entity
-   */
-  public static Entity createGhost(Entity target) {
-    return createChaseEnemy(target);
-  }
-
-  /**
    * Creates a generic NPC to be used as a base entity by more specific NPC creation methods.
    *
    * @return entity
@@ -190,7 +179,7 @@ public class NPCFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new EnemyDeathComponent());
+            .addComponent(new EnemyDeathComponent(true));
 
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);
     return npc;

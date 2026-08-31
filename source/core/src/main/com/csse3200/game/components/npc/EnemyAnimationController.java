@@ -30,7 +30,7 @@ public class EnemyAnimationController extends Component {
   public void update() {
     if (dying && animator.isFinished()) {
       dying = false;
-      entity.getEvents().trigger("entityDied");
+      entity.dispose();
     }
   }
 

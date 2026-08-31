@@ -1,11 +1,11 @@
 {
   "bombEnemy" : {
     "health": 10,
-    "baseAttack": 10
+    "baseAttack": 9
   },
   "chaseEnemy" : {
     "health": 10,
-    "baseAttack": 7
+    "baseAttack": 6
   },
   "floatingDemon" : {
     "health": 77,
@@ -19,3 +19,7 @@
     }
   }
 }
+
+
+
+

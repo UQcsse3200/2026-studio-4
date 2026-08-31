@@ -35,11 +35,7 @@ public class ExplodeComponent extends Component {
     Entity collidedEntity = ((BodyUserData) other.getBody().getUserData()).entity;
 
     if (collidedEntity == player) {
-      explode();
+      entity.getEvents().trigger("entityDied");
     }
-  }
-
-  private void explode() {
-    entity.getEvents().trigger("dieAnimation");
   }
 }
