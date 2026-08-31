@@ -26,7 +26,8 @@ public class DeathScreen extends ScreenAdapter {
   private final GdxGame game;
   private Renderer renderer;
   private static final String[] DEATH_TEXTURES = {"images/game_over.png"};
-  private static final String[] DEATH_SOUND = {"sounds/death_sound.mp3"};
+  private static final String DEATH_SOUND_C = "sounds/death_sound.mp3";
+  private static final String[] DEATH_SOUND = {DEATH_SOUND_C};
 
   public DeathScreen(GdxGame game) {
     this.game = game;
@@ -52,9 +53,8 @@ public class DeathScreen extends ScreenAdapter {
 
   private void playDeathSound() {
     ResourceService resourceService = ServiceLocator.getResourceService();
-    if (resourceService != null
-        && resourceService.containsAsset("sounds/death_sound.mp3", Sound.class)) {
-      resourceService.getAsset("sounds/death_sound.mp3", Sound.class).play();
+    if (resourceService != null && resourceService.containsAsset(DEATH_SOUND_C, Sound.class)) {
+      resourceService.getAsset(DEATH_SOUND_C, Sound.class).play();
     }
   }
 
