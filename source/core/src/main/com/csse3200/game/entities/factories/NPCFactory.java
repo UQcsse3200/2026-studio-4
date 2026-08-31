@@ -55,7 +55,6 @@ public class NPCFactory {
   public static Entity createBombEnemy(Entity target) {
     Entity bombEnemy = createBaseNPC();
     BombEnemyConfig config = configs.bombEnemy;
-    int targetHealth = targetConfig.health;
 
     AITaskComponent aiComponent =
         new AITaskComponent()
@@ -72,7 +71,7 @@ public class NPCFactory {
     animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
 
     bombEnemy
-        .addComponent(new CombatStatsComponent(config.health, targetHealth / 100 * 90))
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
         .addComponent(aiComponent)
         .addComponent(animator)

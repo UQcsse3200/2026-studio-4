@@ -16,20 +16,32 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   private static final FloatingDemonConfig FLOATING_DEMON_CONFIG =
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json").floatingDemon;
   private final int numberOfBombEnemies = new Random().nextInt(10, 20);
+  private final int numberOfChaseEnemies = new Random().nextInt(10, 20);
 
   @Override
   public void create() {
     entity.getEvents().addListener("RoomCreated", this::spawnBombEnemies);
+    //  entity.getEvents().addListener("RoomCreated", this::spawnChaseEnemies);
     entity.getEvents().addListener("RoomCreated", this::spawnFloatingDemons);
   }
 
-  /** Creates ghosts at random valid tiles and sets the player as their target. */
+  /** Creates bomb enemies at random valid tiles and sets the player as their target. */
   public void spawnBombEnemies(Entity target) {
     GridPoint2 maxPosition = spawnableArea();
     for (int i = 0; i < numberOfBombEnemies; i++) {
       GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
-      Entity ghost = NPCFactory.createBombEnemy(target);
-      spawnEntityAt(ghost, position, true, true);
+      Entity bombEnemy = NPCFactory.createBombEnemy(target);
+      spawnEntityAt(bombEnemy, position, true, true);
+    }
+  }
+
+  /** Creates chase enemies at random valid tiles and sets the player as their target. */
+  public void spawnChaseEnemies(Entity target) {
+    GridPoint2 maxPosition = spawnableArea();
+    for (int i = 0; i < numberOfChaseEnemies; i++) {
+      GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
+      Entity chaseEnemy = NPCFactory.createChaseEnemy(target);
+      spawnEntityAt(chaseEnemy, position, true, true);
     }
   }
 
