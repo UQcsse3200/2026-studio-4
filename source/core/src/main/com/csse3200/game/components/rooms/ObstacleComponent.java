@@ -10,6 +10,7 @@ import java.util.Random;
 public class ObstacleComponent extends EntityManagerComponent {
   private static final int MINIMUM_OBSTACLES = 10;
   private static final int MAXIMUM_OBSTACLES = 20;
+  private static final GridPoint2 MINIMUM_POSITION = new GridPoint2(1, 1);
 
   private final int numberOfObstacles = new Random().nextInt(MINIMUM_OBSTACLES, MAXIMUM_OBSTACLES);
 
@@ -20,9 +21,9 @@ public class ObstacleComponent extends EntityManagerComponent {
   }
 
   private void spawnObstacles(boolean rock) {
-    GridPoint2 maxPosition = spawnableArea();
+    GridPoint2 maxPosition = spawnableArea().sub(1, 1);
     for (int i = 0; i < numberOfObstacles; i++) {
-      GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
+      GridPoint2 position = RandomUtils.random(MINIMUM_POSITION, maxPosition);
       Entity obstacle = rock ? ObstacleFactory.createRock() : ObstacleFactory.createHole();
       spawnEntityAt(obstacle, position, true, false);
     }
