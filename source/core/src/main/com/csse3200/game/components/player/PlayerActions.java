@@ -139,4 +139,3 @@ public class PlayerActions extends Component {
     entity.getEvents().trigger("death");
   }
 }
-

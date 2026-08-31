@@ -6,10 +6,10 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.csse3200.game.files.UserSettings;
+import com.csse3200.game.screens.DeathScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsScreen;
-import com.csse3200.game.screens.DeathScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +74,7 @@ public class GdxGame extends Game {
       case SETTINGS:
         return new SettingsScreen(this);
       case DEATH_SCREEN:
-        return new DeathScreen(this);  
+        return new DeathScreen(this);
       default:
         return null;
     }
