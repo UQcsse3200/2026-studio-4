@@ -10,15 +10,6 @@ public class TriggeredRenderComponent extends RenderComponent {
   private Texture texture;
 
   /**
-   * @param texturePath Internal path of initial texture to render. Will be scaled to the entity's
-   *     scale.
-   */
-  public TriggeredRenderComponent(String texturePath) {
-    this(ServiceLocator.getResourceService().getAsset(texturePath, Texture.class));
-  }
-
-  // ...
-  /**
    * @param texture Initial texture to render. Will be scaled to the entity's scale.
    */
   public TriggeredRenderComponent(Texture texture) {
