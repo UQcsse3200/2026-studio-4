@@ -71,6 +71,10 @@ public abstract class WeaponComponent extends Component {
   }
 
   private void onWeaponAttack(Vector2 direction) {
+    // An entity can carry several weapons; only the enabled one responds to attack input.
+    if (!enabled) {
+      return;
+    }
     attack(entity.getCenterPosition(), direction);
   }
 
