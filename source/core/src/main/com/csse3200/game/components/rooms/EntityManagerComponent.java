@@ -30,7 +30,10 @@ public abstract class EntityManagerComponent extends Component {
     ServiceLocator.getEntityService().register(spawnedEntity);
   }
 
-  /** Places, registers, and records an entity at a terrain tile. */
+  /** 
+   * Places, registers, and records an entity at a terrain tile. 
+   * @throws RuntimeException throws when attached room has no terrain.
+   */
   protected void spawnEntityAt(
       Entity spawnedEntity, GridPoint2 tilePosition, boolean centerX, boolean centerY) {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
@@ -54,8 +57,7 @@ public abstract class EntityManagerComponent extends Component {
   protected GridPoint2 spawnableArea() {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
     if (terrain == null) {
-      logger.error("Cannot find a spawnable area in a room without terrain");
-      return null;
+      throw new RuntimeException("Entity does not have a terrain component.");
     }
     return terrain.getMapBounds(0).sub(2, 2);
   }
