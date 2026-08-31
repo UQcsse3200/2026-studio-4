@@ -49,4 +49,39 @@ class EntityServiceTest {
     entityService.dispose();
     verify(entity).dispose();
   }
+
+  @Test
+  void shouldNotDisposeScheduledEntityBeforeUpdate() {
+    EntityService entityService = new EntityService();
+    Entity entity = mock(Entity.class);
+    entityService.register(entity);
+    entityService.scheduleDisposal(entity);
+
+    verify(entity, times(0)).dispose();
+    verify(entity).setEnabled(false);
+  }
+
+  @Test
+  void shouldDisposeScheduledEntityOnUpdate() {
+    EntityService entityService = new EntityService();
+    Entity entity = mock(Entity.class);
+    entityService.register(entity);
+    entityService.scheduleDisposal(entity);
+    entityService.update();
+
+    verify(entity).dispose();
+  }
+
+  @Test
+  void shouldDisposeScheduledEntityOnlyOnce() {
+    EntityService entityService = new EntityService();
+    Entity entity = mock(Entity.class);
+    entityService.register(entity);
+    entityService.scheduleDisposal(entity);
+    entityService.scheduleDisposal(entity);
+    entityService.update();
+    entityService.update();
+
+    verify(entity, times(1)).dispose();
+  }
 }

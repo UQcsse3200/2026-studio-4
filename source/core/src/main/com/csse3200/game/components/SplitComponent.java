@@ -2,6 +2,7 @@ package com.csse3200.game.components;
 
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.services.ServiceLocator;
 
 /**
  * Component that splits an enemy into two weaker copies when attacked by the player. This should
@@ -47,7 +48,8 @@ public class SplitComponent extends Component {
     spawnChild(-0.5f, halfHealth, halfAttack);
     spawnChild(0.5f, halfHealth, halfAttack);
 
-    entity.dispose();
+    // Hit reactions fire from collisions, so the original cannot be disposed until the update ends.
+    ServiceLocator.getEntityService().scheduleDisposal(entity);
   }
 
   /**

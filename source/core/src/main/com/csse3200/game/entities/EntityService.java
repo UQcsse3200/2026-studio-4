@@ -16,6 +16,7 @@ public class EntityService {
   private static final int INITIAL_CAPACITY = 16;
 
   private final Array<Entity> entities = new Array<>(false, INITIAL_CAPACITY);
+  private final Array<Entity> pendingDisposal = new Array<>(false, INITIAL_CAPACITY);
 
   /**
    * Register a new entity with the entity service. The entity will be created and start updating.
@@ -38,11 +39,41 @@ public class EntityService {
     entities.removeValue(entity, true);
   }
 
+  /**
+   * Queue an entity for disposal once the current update has finished. Collision events are fired
+   * while the physics world is locked, and a locked world cannot destroy the bodies and fixtures
+   * that {@link Entity#dispose()} removes. Use this instead of {@link Entity#dispose()} whenever an
+   * entity is removed in response to a collision.
+   *
+   * <p>The entity is disabled immediately, so it stops updating before it is disposed.
+   *
+   * @param entity entity to dispose, ignored if null or already queued.
+   */
+  public void scheduleDisposal(Entity entity) {
+    if (entity == null || pendingDisposal.contains(entity, false)) {
+      return;
+    }
+    logger.debug("Scheduling {} for disposal in entity service", entity);
+    entity.setEnabled(false);
+    pendingDisposal.add(entity);
+  }
+
   /** Update all registered entities. Should only be called from the main game loop. */
   public void update() {
     for (Entity entity : entities) {
       entity.earlyUpdate();
       entity.update();
+    }
+    disposeQueuedEntities();
+  }
+
+  /**
+   * Dispose every entity queued by {@link #scheduleDisposal(Entity)}. Disposing an entity may queue
+   * further entities, so the queue is drained until it is empty.
+   */
+  private void disposeQueuedEntities() {
+    while (pendingDisposal.notEmpty()) {
+      pendingDisposal.pop().dispose();
     }
   }
 
