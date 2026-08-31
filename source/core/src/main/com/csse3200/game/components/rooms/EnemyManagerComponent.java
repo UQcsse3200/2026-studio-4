@@ -1,20 +1,48 @@
 package com.csse3200.game.components.rooms;
 
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.SplitComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.items.ItemType;
 import com.csse3200.game.utils.math.RandomUtils;
+import java.util.ArrayDeque;
+import java.util.HashSet;
+import java.util.Queue;
 import java.util.Random;
+import java.util.Set;
+import java.util.function.Function;
 
 /** Spawns a random group of ghosts when its room is started. */
 public class EnemyManagerComponent extends EntityManagerComponent {
   private final int numberOfBombEnemies = new Random().nextInt(10, 20);
+  private final Function<Vector2, Entity> dropFactory;
+  private final Set<Entity> defeatedEnemies = new HashSet<>();
+  private final Queue<Vector2> pendingDropPositions = new ArrayDeque<>();
   private int numEnemies = 0;
+
+  public EnemyManagerComponent() {
+    this(position -> ItemFactory.createDrop(ItemType.STRENGTH_CHARM, position));
+  }
+
+  EnemyManagerComponent(Function<Vector2, Entity> dropFactory) {
+    this.dropFactory = dropFactory;
+  }
 
   @Override
   public void create() {
     entity.getEvents().addListener("RoomCreated", this::spawnEnemies);
+  }
+
+  /** Creates queued drops after the physics step has finished and the Box2D world is unlocked. */
+  @Override
+  public void update() {
+    while (!pendingDropPositions.isEmpty()) {
+      Entity drop = dropFactory.apply(pendingDropPositions.remove());
+      spawnEntity(drop);
+    }
   }
 
   public void spawnEnemies(Entity target) {
@@ -52,11 +80,19 @@ public class EnemyManagerComponent extends EntityManagerComponent {
    */
   void track(Entity enemy) { // set to not private for testing reasons
     numEnemies++;
-    enemy.getEvents().addListener("entityDied", this::onEnemyDefeated);
+    enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy));
   }
 
-  /** Decreases numEnemies and triggers roomCleared when all enemies are dead. */
-  private void onEnemyDefeated() {
+  /** Queues one item drop, then updates enemy tracking and room-cleared state. */
+  private void onEnemyDefeated(Entity enemy) {
+    if (!defeatedEnemies.add(enemy)) {
+      return;
+    }
+
+    // Death usually fires from a Box2D collision callback. Creating the drop here would construct
+    // its PhysicsComponent while the world is locked, so defer factory invocation until update().
+    pendingDropPositions.add(enemy.getPosition());
+
     numEnemies--;
     if (numEnemies <= 0) {
       entity.getEvents().trigger("roomCleared");
