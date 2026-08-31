@@ -1,5 +1,6 @@
 package com.csse3200.game.components;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -73,6 +74,6 @@ class KnockbackComponentTest {
     Entity attacker = new Entity();
     attacker.setPosition(new Vector2(0, 0.5f));
 
-    entity.getEvents().trigger("hitReaction", attacker);
+    assertDoesNotThrow(() -> entity.getEvents().trigger("hitReaction", attacker));
   }
 }
