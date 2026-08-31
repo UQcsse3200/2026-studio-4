@@ -25,8 +25,8 @@ import com.badlogic.gdx.audio.Sound;
 public class DeathScreen extends ScreenAdapter {
   private final GdxGame game;
   private Renderer renderer;
-  private static final String[] deathTextures = {"images/game_over.png"};
-  private static final String[] deathSounds = {"sounds/death_sound.mp3"};
+  private static final String[] DEATH_TEXTURES = {"images/game_over.png"};
+  private static final String[] DEATH_SOUND = {"sounds/death_sound.mp3"};
 
   public DeathScreen(GdxGame game) {
     this.game = game;
@@ -45,8 +45,8 @@ public class DeathScreen extends ScreenAdapter {
 
   private void loadAssets() {
     ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.loadTextures(deathTextures);
-    resourceService.loadSounds(deathSounds);
+    resourceService.loadTextures(DEATH_TEXTURES);
+    resourceService.loadSounds(DEATH_SOUND);
     resourceService.loadAll();
   }
 

@@ -1,6 +1,5 @@
 package com.csse3200.game.screens;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -83,7 +82,7 @@ public class MainGameScreen extends ScreenAdapter {
     renderer.render();
      if (!deathScreenTriggered && player != null) {
       CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
-    if (stats != null && stats.getHealth() <= 0) {           // <-- exactly as you said
+    if (stats != null && stats.getHealth() <= 0) {
       deathScreenTriggered = true;
       game.setScreen(GdxGame.ScreenType.DEATH_SCREEN);
      }
