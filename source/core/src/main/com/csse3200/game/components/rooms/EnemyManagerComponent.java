@@ -37,10 +37,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     enemy.getEvents().addListener("entityDied", this::onEnemyDefeated);
   }
 
-  /**
-   * Decreases numEnemies and triggers roomCleared when all enemies are dead
-   *
-   */
+  /** Decreases numEnemies and triggers roomCleared when all enemies are dead.*/
   private void onEnemyDefeated() {
     numEnemies--;
     if (numEnemies <= 0) {
