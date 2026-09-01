@@ -1,100 +1,125 @@
 package com.csse3200.game.components;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.rendering.DebugRenderer;
+import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockedStatic;
+import org.mockito.ArgumentCaptor;
 
+/**
+ * Splitting is triggered by hit reactions, which fire from collision events while the physics world
+ * is locked. A locked world cannot create the children's bodies, so the split must be deferred
+ * until the entity service runs its update.
+ */
 @ExtendWith(GameExtension.class)
 class SplitComponentTest {
-
-  private MockedStatic<NPCFactory> npcFactoryMock;
   private EntityService entityService;
 
   @BeforeEach
-  void setUp() {
-    entityService = mock(EntityService.class);
+  void beforeEach() {
+    RenderService renderService = new RenderService();
+    renderService.setDebug(mock(DebugRenderer.class));
+    ServiceLocator.registerRenderService(renderService);
+
+    GameTime gameTime = mock(GameTime.class);
+    when(gameTime.getDeltaTime()).thenReturn(20f / 1000);
+    ServiceLocator.registerTimeSource(gameTime);
+
+    ServiceLocator.registerPhysicsService(new PhysicsService());
+
+    entityService = spy(new EntityService());
     ServiceLocator.registerEntityService(entityService);
-    npcFactoryMock = mockStatic(NPCFactory.class);
+
+    ResourceService resourceService = new ResourceService();
+    resourceService.loadTextureAtlases(new String[] {"images/chaseEnemy.atlas"});
+    resourceService.loadAll();
+    ServiceLocator.registerResourceService(resourceService);
   }
 
-  @AfterEach
-  void tearDown() {
-    npcFactoryMock.close();
+  private Entity createSplitEnemy() {
+    Entity enemy = NPCFactory.createChaseEnemy(new Entity());
+    enemy.create();
+    return enemy;
   }
 
-  @Test
-  void shouldSplitIntoTwoOnFirstHit() {
-    Entity target = new Entity();
-
-    Entity original = new Entity();
-    original.addComponent(new CombatStatsComponent(40, 10));
-    original.addComponent(new SplitComponent(target));
-    original.create();
-
-    Entity childStub = new Entity();
-    childStub.addComponent(new CombatStatsComponent(1, 1));
-
-    npcFactoryMock.when(() -> NPCFactory.createChaseEnemy(target)).thenReturn(childStub);
-
-    int[] spawnedChildren = {0};
-    original.getEvents().addListener("spawnChildren", (Entity child) -> spawnedChildren[0]++);
-
-    original.getEvents().trigger("hitReaction", target);
-
-    assertEquals(2, spawnedChildren[0]);
-    npcFactoryMock.verify(() -> NPCFactory.createChaseEnemy(target), times(2));
+  @SuppressWarnings("unchecked")
+  private static EventListener1<Entity> addChildListener(Entity enemy) {
+    EventListener1<Entity> childListener = mock(EventListener1.class);
+    enemy.getEvents().addListener("spawnChildren", childListener);
+    return childListener;
   }
 
   @Test
-  void shouldOnlySplitOnce() {
-    Entity target = new Entity();
+  void shouldNotSpawnChildrenBeforeEntityServiceUpdate() {
+    Entity enemy = createSplitEnemy();
+    EventListener1<Entity> childListener = addChildListener(enemy);
 
-    Entity original = new Entity();
-    original.addComponent(new CombatStatsComponent(40, 10));
-    original.addComponent(new SplitComponent(target));
-    original.create();
+    enemy.getEvents().trigger("hitReaction", (Entity) null);
 
-    Entity childStub = new Entity();
-    childStub.addComponent(new CombatStatsComponent(1, 1));
-
-    npcFactoryMock.when(() -> NPCFactory.createChaseEnemy(target)).thenReturn(childStub);
-
-    int[] spawnedChildren = {0};
-    original.getEvents().addListener("spawnChildren", (Entity child) -> spawnedChildren[0]++);
-
-    original.getEvents().trigger("hitReaction", target);
-    original.getEvents().trigger("hitReaction", target);
-
-    assertEquals(2, spawnedChildren[0]);
-    npcFactoryMock.verify(() -> NPCFactory.createChaseEnemy(target), times(2));
+    verify(childListener, times(0)).handle(any());
   }
 
   @Test
-  void shouldDoNothingIfNoCombatStatsComponent() {
-    Entity target = new Entity();
+  void shouldSpawnTwoHalvedChildrenOnEntityServiceUpdate() {
+    Entity enemy = createSplitEnemy();
+    EventListener1<Entity> childListener = addChildListener(enemy);
+    CombatStatsComponent enemyStats = enemy.getComponent(CombatStatsComponent.class);
+    int halfHealth = Math.max(1, enemyStats.getMaxHealth() / 2);
+    int halfAttack = Math.max(1, enemyStats.getBaseAttack() / 2);
 
-    Entity original = new Entity();
-    original.addComponent(new SplitComponent(target));
-    original.create();
+    enemy.getEvents().trigger("hitReaction", (Entity) null);
+    entityService.update();
 
-    int[] spawnedChildren = {0};
-    original.getEvents().addListener("spawnChildren", (Entity child) -> spawnedChildren[0]++);
+    ArgumentCaptor<Entity> childCaptor = ArgumentCaptor.forClass(Entity.class);
+    verify(childListener, times(2)).handle(childCaptor.capture());
+    for (Entity child : childCaptor.getAllValues()) {
+      CombatStatsComponent childStats = child.getComponent(CombatStatsComponent.class);
+      assertEquals(halfHealth, childStats.getHealth());
+      assertEquals(halfHealth, childStats.getMaxHealth());
+      assertEquals(halfAttack, childStats.getBaseAttack());
+    }
+  }
 
-    original.getEvents().trigger("hitReaction", target);
+  @Test
+  void shouldSplitOnlyOnce() {
+    Entity enemy = createSplitEnemy();
+    EventListener1<Entity> childListener = addChildListener(enemy);
 
-    assertEquals(0, spawnedChildren[0]);
-    npcFactoryMock.verifyNoInteractions();
+    enemy.getEvents().trigger("hitReaction", (Entity) null);
+    enemy.getEvents().trigger("hitReaction", (Entity) null);
+    entityService.update();
+    enemy.getEvents().trigger("hitReaction", (Entity) null);
+    entityService.update();
+
+    verify(childListener, times(2)).handle(any());
+  }
+
+  @Test
+  void shouldDisposeOriginalOnEntityServiceUpdate() {
+    Entity enemy = createSplitEnemy();
+
+    enemy.getEvents().trigger("hitReaction", (Entity) null);
+    verify(entityService, times(0)).unregister(enemy);
+
+    entityService.update();
+    verify(entityService, times(1)).unregister(enemy);
   }
 }

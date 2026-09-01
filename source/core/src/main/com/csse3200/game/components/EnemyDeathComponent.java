@@ -1,5 +1,7 @@
 package com.csse3200.game.components;
 
+import com.csse3200.game.services.ServiceLocator;
+
 /**
  * Handles the disposal of an enemy entity when its death event is triggered.
  *
@@ -49,7 +51,7 @@ public class EnemyDeathComponent extends Component {
     if (hasDeathAnimation) {
       entity.getEvents().trigger("dieAnimation");
     } else {
-      entity.dispose();
+      ServiceLocator.getEntityService().scheduleDisposal(this.getEntity());
     }
   }
 }

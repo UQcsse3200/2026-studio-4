@@ -32,50 +32,60 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   /** Creates bomb enemies at random valid tiles and sets the player as their target. */
   public void spawnBombEnemies(Entity target) {
-    GridPoint2 maxPosition = spawnableArea();
-    for (int i = 0; i < numberOfBombEnemies; i++) {
-      GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
-      Entity bombEnemy = NPCFactory.createBombEnemy(target);
-      track(bombEnemy);
-      spawnEntityAt(bombEnemy, position, true, true);
-    }
+    spawnableArea()
+        .ifPresent(
+            maxPosition -> {
+              for (int i = 0; i < numberOfBombEnemies; i++) {
+                GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
+                Entity bombEnemy = NPCFactory.createBombEnemy(target);
+                track(bombEnemy);
+                spawnEntityAt(bombEnemy, position, true, true);
+              }
+            });
   }
 
   /** Creates bomb enemies at random valid tiles and sets the player as their target. */
   public void spawnChaseEnemies(Entity target) {
-    GridPoint2 maxPosition = spawnableArea();
-    for (int i = 0; i < numberOfChaseEnemies; i++) {
-      GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
-      Entity chaseEnemies = NPCFactory.createChaseEnemy(target);
-      track(chaseEnemies);
-      spawnEntityAt(chaseEnemies, position, true, true);
-    }
+    spawnableArea()
+        .ifPresent(
+            maxPosition -> {
+              for (int i = 0; i < numberOfChaseEnemies; i++) {
+                GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
+                Entity bombEnemy = NPCFactory.createChaseEnemy(target);
+                track(bombEnemy);
+                spawnEntityAt(bombEnemy, position, true, true);
+              }
+            });
   }
 
   /** Creates floating demons at random positions with local triangle patrol paths. */
   private void spawnFloatingDemons(Entity target) {
-    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
-    float mapWidth = terrain.getMapBounds(0).x * terrain.getTileSize();
-    float mapHeight = terrain.getMapBounds(0).y * terrain.getTileSize();
-    GridPoint2 maxPosition = spawnableArea();
+    spawnableArea()
+        .ifPresent(
+            maxPosition -> {
+          TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+          float mapWidth = terrain.getMapBounds(0).x * terrain.getTileSize();
+          float mapHeight = terrain.getMapBounds(0).y * terrain.getTileSize();
 
-    for (int i = 0; i < FLOATING_DEMON_CONFIG.spawnCount; i++) {
-      GridPoint2 tilePosition = RandomUtils.random(new GridPoint2(1, 1), maxPosition);
-      Vector2 spawnPosition = terrain.tileToWorldPosition(tilePosition);
+          for (int i = 0; i < FLOATING_DEMON_CONFIG.spawnCount; i++) {
+            GridPoint2 tilePosition = RandomUtils.random(new GridPoint2(1, 1), maxPosition);
+            Vector2 spawnPosition = terrain.tileToWorldPosition(tilePosition);
 
-      float leftX = Math.max(1f, spawnPosition.x - FLOATING_DEMON_CONFIG.patrolRange);
-      float rightX = Math.min(mapWidth - 1f, spawnPosition.x + FLOATING_DEMON_CONFIG.patrolRange);
-      float topY = Math.min(mapHeight - 1f, spawnPosition.y + FLOATING_DEMON_CONFIG.patrolHeight);
+            float leftX = Math.max(1f, spawnPosition.x - FLOATING_DEMON_CONFIG.patrolRange);
+            float rightX = Math.min(mapWidth - 1f, spawnPosition.x + FLOATING_DEMON_CONFIG.patrolRange);
+            float topY = Math.min(mapHeight - 1f, spawnPosition.y + FLOATING_DEMON_CONFIG.patrolHeight);
 
-      Vector2 leftPoint = new Vector2(leftX, spawnPosition.y);
-      Vector2 topPoint = new Vector2(spawnPosition.x, topY);
-      Vector2 rightPoint = new Vector2(rightX, spawnPosition.y);
+            Vector2 leftPoint = new Vector2(leftX, spawnPosition.y);
+            Vector2 topPoint = new Vector2(spawnPosition.x, topY);
+            Vector2 rightPoint = new Vector2(rightX, spawnPosition.y);
 
-      Entity demon = NPCFactory.createFloatingDemon(target, leftPoint, topPoint, rightPoint);
+            Entity demon = NPCFactory.createFloatingDemon(target, leftPoint, topPoint, rightPoint);
 
-      track(demon);
-      spawnEntityAt(demon, tilePosition, true, true);
-    }
+            track(demon);
+            spawnEntityAt(demon, tilePosition, true, true);
+          }
+            });
+
   }
 
   /**
