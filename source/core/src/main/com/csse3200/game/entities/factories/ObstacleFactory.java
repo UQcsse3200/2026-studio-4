@@ -1,12 +1,17 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.csse3200.game.areas.terrain.DreamlandTile;
+import com.csse3200.game.areas.terrain.TileSheet;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /**
  * Factory to create obstacle entities.
@@ -14,6 +19,7 @@ import com.csse3200.game.rendering.TextureRenderComponent;
  * <p>Each obstacle entity type should have a creation method that returns a corresponding entity.
  */
 public class ObstacleFactory {
+  private static final String DUNGEON_TILESET = "images/dungeons/fantasy_dreamland_16.png";
 
   /**
    * Creates a tree entity.
@@ -36,19 +42,23 @@ public class ObstacleFactory {
 
   /** Creates a rock obstacle. */
   public static Entity createRock() {
-    return createRenderedObstacle("images/rock.png", 0.6f, 0.7f);
+    Texture texture =
+        ServiceLocator.getResourceService().getAsset("images/rock.png", Texture.class);
+    return createRenderedObstacle(new TextureRegion(texture), 0.6f, 0.7f);
   }
 
   /** Creates a hole obstacle. */
   public static Entity createHole() {
-    return createRenderedObstacle("images/hole.png", 0.7f, 0.9f);
+    Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
+    return createRenderedObstacle(
+        DreamlandTile.OPEN_BARREL.region(new TileSheet(texture, 16)), 0.7f, 0.9f);
   }
 
   private static Entity createRenderedObstacle(
-      String texture, float colliderWidth, float colliderHeight) {
+      TextureRegion region, float colliderWidth, float colliderHeight) {
     Entity obstacle =
         new Entity()
-            .addComponent(new TextureRenderComponent(texture))
+            .addComponent(new TextureRenderComponent(region))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
     obstacle.getComponent(TextureRenderComponent.class).scaleEntity();
