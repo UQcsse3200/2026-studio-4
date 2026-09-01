@@ -35,10 +35,10 @@ public class TextureRenderComponent extends RenderComponent {
   }
 
   /**
-   * @return the texture being rendered, or the sheet backing the rendered region
+   * @return the region being rendered; spans the whole texture when one was given directly
    */
-  public Texture getTexture() {
-    return texture != null ? texture : textureRegion.getTexture();
+  public TextureRegion getTextureRegion() {
+    return textureRegion;
   }
 
   /** Scale the entity to a width of 1 and a height matching the texture's ratio */

@@ -1,9 +1,12 @@
 package com.csse3200.game.components.weapons;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.csse3200.game.areas.terrain.DreamlandTile;
+import com.csse3200.game.areas.terrain.TileSheet;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -29,10 +32,12 @@ public class ProjectileComponent extends Component {
   private static final short STOP_LAYERS = PhysicsLayer.NPC | PhysicsLayer.OBSTACLE;
 
   /**
-   * Holes share the obstacle layer with walls, so they are identified by what they render: holes
-   * are currently the only obstacle drawn from the dungeon tile sheet.
+   * Holes share the obstacle layer with walls, so they are identified by what they render: the
+   * hole's exact barrel tile from this sheet. Every other obstacle stops the arrow by default.
    */
   private static final String HOLE_TILE_SHEET = "images/dungeons/fantasy_dreamland_16.png";
+
+  private static final int HOLE_TILE_SIZE = 16;
 
   private final Vector2 velocity;
   private HitboxComponent hitboxComponent;
@@ -99,7 +104,7 @@ public class ProjectileComponent extends Component {
     return false;
   }
 
-  /** True if the fixture belongs to an entity rendering from the hole tile sheet. */
+  /** True if the fixture belongs to an entity rendering the hole's barrel tile. */
   private static boolean isHole(Fixture fixture) {
     Object userData = fixture.getBody().getUserData();
     if (!(userData instanceof BodyUserData bodyUserData) || bodyUserData.entity == null) {
@@ -107,10 +112,18 @@ public class ProjectileComponent extends Component {
     }
     TextureRenderComponent render = bodyUserData.entity.getComponent(TextureRenderComponent.class);
     ResourceService resources = ServiceLocator.getResourceService();
-    return render != null
-        && resources != null
-        && resources.containsAsset(HOLE_TILE_SHEET, Texture.class)
-        && render.getTexture() == resources.getAsset(HOLE_TILE_SHEET, Texture.class);
+    if (render == null
+        || resources == null
+        || !resources.containsAsset(HOLE_TILE_SHEET, Texture.class)) {
+      return false;
+    }
+
+    Texture sheet = resources.getAsset(HOLE_TILE_SHEET, Texture.class);
+    TextureRegion holeTile = DreamlandTile.OPEN_BARREL.region(new TileSheet(sheet, HOLE_TILE_SIZE));
+    TextureRegion rendered = render.getTextureRegion();
+    return rendered.getTexture() == sheet
+        && rendered.getRegionX() == holeTile.getRegionX()
+        && rendered.getRegionY() == holeTile.getRegionY();
   }
 
   private void onCollisionStart(Fixture me, Fixture other) {

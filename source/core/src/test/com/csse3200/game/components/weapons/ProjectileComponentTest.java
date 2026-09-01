@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.csse3200.game.areas.terrain.DreamlandTile;
+import com.csse3200.game.areas.terrain.TileSheet;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -70,11 +72,25 @@ class ProjectileComponentTest {
   /** Registers a mock hole tile sheet and returns it, so hole entities can be recognised. */
   private static Texture registerHoleTileSheet() {
     Texture tileSheet = mock(Texture.class);
+    when(tileSheet.getWidth()).thenReturn(512);
+    when(tileSheet.getHeight()).thenReturn(512);
     ResourceService resourceService = mock(ResourceService.class);
     when(resourceService.containsAsset(HOLE_TILE_SHEET, Texture.class)).thenReturn(true);
     when(resourceService.getAsset(HOLE_TILE_SHEET, Texture.class)).thenReturn(tileSheet);
     ServiceLocator.registerResourceService(resourceService);
     return tileSheet;
+  }
+
+  /** A static obstacle rendering the given region, positioned in the projectile's path. */
+  private static Entity createRenderedObstacle(TextureRegion region) {
+    Entity obstacle =
+        new Entity()
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new TextureRenderComponent(region));
+    obstacle.setPosition(0.8f, 0f);
+    obstacle.create();
+    return obstacle;
   }
 
   @Test
@@ -119,19 +135,25 @@ class ProjectileComponentTest {
 
   @Test
   void shouldFlyOverHole() {
-    // Real holes render a region of the tile sheet, so build this one the same way.
-    TextureRegion holeRegion = new TextureRegion(registerHoleTileSheet());
-    Entity hole =
-        new Entity()
-            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(new TextureRenderComponent(holeRegion));
-    hole.setPosition(0.8f, 0f);
-    hole.create();
+    // Real holes render the barrel tile of the sheet, so build this one the same way.
+    Texture sheet = registerHoleTileSheet();
+    createRenderedObstacle(DreamlandTile.OPEN_BARREL.region(new TileSheet(sheet, 16)));
 
     Entity projectile = createProjectile(new Vector2(1f, 0f), 5f);
     projectile.update();
 
     verify(entityService, never()).scheduleDisposal(projectile);
+  }
+
+  @Test
+  void shouldStopOnOtherTilesFromTheHoleSheet() {
+    // Only the barrel tile is a hole; any other tile from the same sheet is solid.
+    Texture sheet = registerHoleTileSheet();
+    createRenderedObstacle(DreamlandTile.WALL_STONE.region(new TileSheet(sheet, 16)));
+
+    Entity projectile = createProjectile(new Vector2(1f, 0f), 5f);
+    projectile.update();
+
+    verify(entityService).scheduleDisposal(projectile);
   }
 }
