@@ -8,7 +8,6 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,12 +51,12 @@ public abstract class EntityManagerComponent extends Component {
   }
 
   /** Returns the largest safe tile position for random room content. */
-  protected Optional<GridPoint2> spawnableArea() {
+  protected GridPoint2 spawnableArea() {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
     if (terrain == null) {
       logger.error("Cannot find a spawnable area in a room without terrain");
-      return Optional.empty();
+      return null;
     }
-    return Optional.of(terrain.getMapBounds(0).sub(2, 2));
+    return terrain.getMapBounds(0).sub(2, 2);
   }
 }

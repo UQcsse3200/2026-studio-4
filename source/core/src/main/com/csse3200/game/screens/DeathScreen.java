@@ -89,6 +89,7 @@ public class DeathScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
+    Gdx.gl.glClearColor(248f / 255f, 249f / 255f, 178f / 255f, 1f);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     ServiceLocator.getEntityService().update();
     renderer.render();

@@ -32,16 +32,13 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   /** Creates bomb enemies at random valid tiles and sets the player as their target. */
   public void spawnBombEnemies(Entity target) {
-    spawnableArea()
-        .ifPresent(
-            maxPosition -> {
-              for (int i = 0; i < numberOfBombEnemies; i++) {
-                GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
-                Entity bombEnemy = NPCFactory.createBombEnemy(target);
-                track(bombEnemy);
-                spawnEntityAt(bombEnemy, position, true, true);
-              }
-            });
+    GridPoint2 maxPosition = spawnableArea();
+    for (int i = 0; i < numberOfBombEnemies; i++) {
+      GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
+      Entity bombEnemy = NPCFactory.createBombEnemy(target);
+      track(bombEnemy);
+      spawnEntityAt(bombEnemy, position, true, true);
+    }
   }
 
   /** Creates bomb enemies at random valid tiles and sets the player as their target. */

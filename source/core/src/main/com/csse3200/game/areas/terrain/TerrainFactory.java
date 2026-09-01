@@ -19,10 +19,6 @@ import com.csse3200.game.utils.math.RandomUtils;
 
 /** Factory for creating game terrains. */
 public class TerrainFactory {
-  private static final String FANTASY_DUNGEON_TILESET = "images/dungeons/fantasy_dreamland_16.png";
-  private static final int DUNGEON_TILE_SIZE = 16;
-  private static final int FLOOR_VARIANT_ONE_COUNT = 100;
-  private static final int FLOOR_VARIANT_TWO_COUNT = 80;
   private static final GridPoint2 MAP_SIZE = new GridPoint2(30, 30);
   private static final int TUFT_TILE_COUNT = 30;
   private static final int ROCK_TILE_COUNT = 30;
@@ -48,30 +44,6 @@ public class TerrainFactory {
   public TerrainFactory(CameraComponent cameraComponent, TerrainOrientation orientation) {
     this.camera = (OrthographicCamera) cameraComponent.getCamera();
     this.orientation = orientation;
-  }
-
-  /** Creates dungeon terrain using the Fantasy Dreamland tileset. */
-  public TerrainComponent createDungeonTerrain() {
-    GridPoint2 mapSize = new GridPoint2(50, 50);
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    Texture texture = resourceService.getAsset(FANTASY_DUNGEON_TILESET, Texture.class);
-    texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-
-    TileSheet tileSheet = new TileSheet(texture, DUNGEON_TILE_SIZE);
-    TerrainTile floor = new TerrainTile(DreamlandTile.FLOOR_STONE.region(tileSheet));
-    TerrainTile firstVariant =
-        new TerrainTile(DreamlandTile.PURPLE_STONE_FLOOR_VARIANT.region(tileSheet));
-    TerrainTile secondVariant = new TerrainTile(DreamlandTile.BLUE_STONE_FLOOR.region(tileSheet));
-    TiledMapTileLayer layer =
-        new TiledMapTileLayer(mapSize.x, mapSize.y, DUNGEON_TILE_SIZE, DUNGEON_TILE_SIZE);
-    fillTiles(layer, mapSize, floor);
-    fillTilesAtRandom(layer, mapSize, firstVariant, FLOOR_VARIANT_ONE_COUNT);
-    fillTilesAtRandom(layer, mapSize, secondVariant, FLOOR_VARIANT_TWO_COUNT);
-
-    TiledMap tiledMap = new TiledMap();
-    tiledMap.getLayers().add(layer);
-    TiledMapRenderer renderer = new OrthogonalTiledMapRenderer(tiledMap, 0.5f / DUNGEON_TILE_SIZE);
-    return new TerrainComponent(camera, tiledMap, renderer, TerrainOrientation.ORTHOGONAL, 0.5f);
   }
 
   /**
