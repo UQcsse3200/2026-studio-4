@@ -102,11 +102,10 @@ public class ProjectileComponent extends Component {
   /** True if the fixture belongs to an entity rendering from the hole tile sheet. */
   private static boolean isHole(Fixture fixture) {
     Object userData = fixture.getBody().getUserData();
-    if (!(userData instanceof BodyUserData) || ((BodyUserData) userData).entity == null) {
+    if (!(userData instanceof BodyUserData bodyUserData) || bodyUserData.entity == null) {
       return false;
     }
-    TextureRenderComponent render =
-        ((BodyUserData) userData).entity.getComponent(TextureRenderComponent.class);
+    TextureRenderComponent render = bodyUserData.entity.getComponent(TextureRenderComponent.class);
     ResourceService resources = ServiceLocator.getResourceService();
     return render != null
         && resources != null
