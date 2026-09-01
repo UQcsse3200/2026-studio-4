@@ -3,7 +3,6 @@ package com.csse3200.game.components.rooms;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
-import com.csse3200.game.components.SplitComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FloatingDemonConfig;
 import com.csse3200.game.entities.configs.NPCConfigs;
@@ -17,6 +16,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   private static final FloatingDemonConfig FLOATING_DEMON_CONFIG =
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json").floatingDemon;
   private final int numberOfBombEnemies = new Random().nextInt(10, 20);
+  private final int numberOfChaseEnemies = 2;
   private int numEnemies = 0;
 
   @Override
@@ -38,6 +38,17 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       Entity bombEnemy = NPCFactory.createBombEnemy(target);
       track(bombEnemy);
       spawnEntityAt(bombEnemy, position, true, true);
+    }
+  }
+
+  /** Creates bomb enemies at random valid tiles and sets the player as their target. */
+  public void spawnChaseEnemies(Entity target) {
+    GridPoint2 maxPosition = spawnableArea();
+    for (int i = 0; i < numberOfChaseEnemies; i++) {
+      GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
+      Entity chaseEnemies = NPCFactory.createChaseEnemy(target);
+      track(chaseEnemies);
+      spawnEntityAt(chaseEnemies, position, true, true);
     }
   }
 
@@ -65,19 +76,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       track(demon);
       spawnEntityAt(demon, tilePosition, true, true);
     }
-  }
-
-  public void spawnChaseEnemies(Entity target) {
-    GridPoint2 maxPosition = spawnableArea();
-    GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
-
-    Entity chaseEnemy = NPCFactory.createChaseEnemy(target);
-    chaseEnemy.addComponent(new SplitComponent(target));
-
-    track(chaseEnemy);
-    chaseEnemy.getEvents().addListener("spawnChildren", this::enemyTriggerSpawn);
-
-    spawnEntityAt(chaseEnemy, position, true, true);
   }
 
   /**
