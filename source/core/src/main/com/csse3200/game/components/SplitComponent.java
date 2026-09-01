@@ -2,6 +2,7 @@ package com.csse3200.game.components;
 
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.services.ServiceLocator;
 
 /**
  * Component that splits an enemy into two weaker copies when attacked by the player. This should
@@ -25,8 +26,8 @@ public class SplitComponent extends Component {
   }
 
   /**
-   * Runs whenever this entity is hit and survives. Splits the entity into two smaller copies
-   * exactly once, then disposes of the original.
+   * Runs whenever this entity is hit and survives. Queues a split into two smaller copies exactly
+   * once, along with disposal of the original; both run once the current update ends.
    *
    * @param attacker The entity that caused the damage (can be null).
    */
@@ -44,10 +45,15 @@ public class SplitComponent extends Component {
     int halfHealth = Math.max(1, stats.getMaxHealth() / 2);
     int halfAttack = Math.max(1, stats.getBaseAttack() / 2);
 
-    spawnChild(-0.5f, halfHealth, halfAttack);
-    spawnChild(0.5f, halfHealth, halfAttack);
-
-    entity.dispose();
+    // Hit reactions fire from collisions while the physics world is locked. A locked world can
+    // neither create the children's bodies nor destroy the original's, so both are deferred.
+    ServiceLocator.getEntityService()
+        .schedule(
+            () -> {
+              spawnChild(-0.5f, halfHealth, halfAttack);
+              spawnChild(0.5f, halfHealth, halfAttack);
+            });
+    ServiceLocator.getEntityService().scheduleDisposal(entity);
   }
 
   /**

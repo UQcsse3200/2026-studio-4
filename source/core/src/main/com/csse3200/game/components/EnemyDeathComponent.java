@@ -1,5 +1,7 @@
 package com.csse3200.game.components;
 
+import com.csse3200.game.services.ServiceLocator;
+
 /**
  * Listens for the enemy's death event and disposes the entity when it fires. This keeps death
  * handling separate from health tracking so that CombatStatsComponent does not need to dispose
@@ -12,7 +14,11 @@ public class EnemyDeathComponent extends Component {
     entity.getEvents().addListener("entityDied", this::disposal);
   }
 
+  /**
+   * Queues the entity for disposal rather than disposing it here, because death usually fires from
+   * a collision event where the physics world cannot destroy the entity's body yet.
+   */
   private void disposal() {
-    this.getEntity().dispose();
+    ServiceLocator.getEntityService().scheduleDisposal(this.getEntity());
   }
 }
