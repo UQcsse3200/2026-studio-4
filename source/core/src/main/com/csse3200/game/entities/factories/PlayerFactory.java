@@ -49,11 +49,14 @@ public class PlayerFactory {
     animator.addAnimation("idle_left", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle_right", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle_up", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("walk_down", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("walk_left", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("walk_right", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("walk_up", 0.1f, Animation.PlayMode.LOOP);
 
     Entity player =
         new Entity()
             .addComponent(animator)
-            // .addComponent(new TriggeredRenderComponent("images/box_boy_leaf.png"))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))

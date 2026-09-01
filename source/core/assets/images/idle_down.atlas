@@ -453,8 +453,8 @@ walk_up
     index: 7
 default
     rotate: false
-    xy: 30, 663
-    size: 36, 36
-    orig: 20, 20
+    xy: 0, 0
+    size: 50, 50
+    orig: 50, 50
     offset: 0, 0
     index: 0
