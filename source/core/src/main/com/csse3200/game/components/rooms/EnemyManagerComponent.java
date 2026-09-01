@@ -113,8 +113,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
    *
    * @param newEnemy the new enemy should not already be registered
    */
-  private void enemyTriggerSpawn(Entity newEnemy) {
-    track(newEnemy);
-    spawnEntity(newEnemy);
-  }
+  /**
+   * :private void enemyTriggerSpawn(Entity newEnemy) { track(newEnemy); spawnEntity(newEnemy); }
+   */
 }
