@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.entities.Entity;
@@ -29,7 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class ProjectileComponentTest {
-  private static final String HOLE_TEXTURE = "images/hole.png";
+  private static final String HOLE_TILE_SHEET = "images/dungeons/fantasy_dreamland_16.png";
 
   private EntityService entityService;
 
@@ -66,14 +67,14 @@ class ProjectileComponentTest {
     return wall;
   }
 
-  /** Registers a mock hole texture and returns it, so hole entities can be recognised. */
-  private static Texture registerHoleTexture() {
-    Texture holeTexture = mock(Texture.class);
+  /** Registers a mock hole tile sheet and returns it, so hole entities can be recognised. */
+  private static Texture registerHoleTileSheet() {
+    Texture tileSheet = mock(Texture.class);
     ResourceService resourceService = mock(ResourceService.class);
-    when(resourceService.containsAsset(HOLE_TEXTURE, Texture.class)).thenReturn(true);
-    when(resourceService.getAsset(HOLE_TEXTURE, Texture.class)).thenReturn(holeTexture);
+    when(resourceService.containsAsset(HOLE_TILE_SHEET, Texture.class)).thenReturn(true);
+    when(resourceService.getAsset(HOLE_TILE_SHEET, Texture.class)).thenReturn(tileSheet);
     ServiceLocator.registerResourceService(resourceService);
-    return holeTexture;
+    return tileSheet;
   }
 
   @Test
@@ -118,12 +119,13 @@ class ProjectileComponentTest {
 
   @Test
   void shouldFlyOverHole() {
-    Texture holeTexture = registerHoleTexture();
+    // Real holes render a region of the tile sheet, so build this one the same way.
+    TextureRegion holeRegion = new TextureRegion(registerHoleTileSheet());
     Entity hole =
         new Entity()
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(new TextureRenderComponent(holeTexture));
+            .addComponent(new TextureRenderComponent(holeRegion));
     hole.setPosition(0.8f, 0f);
     hole.create();
 

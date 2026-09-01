@@ -28,8 +28,11 @@ public class ProjectileComponent extends Component {
   /** Enemies and solid walls/rocks. */
   private static final short STOP_LAYERS = PhysicsLayer.NPC | PhysicsLayer.OBSTACLE;
 
-  /** Holes share the obstacle layer, so they are identified by the texture they render. */
-  private static final String HOLE_TEXTURE = "images/hole.png";
+  /**
+   * Holes share the obstacle layer with walls, so they are identified by what they render: holes
+   * are currently the only obstacle drawn from the dungeon tile sheet.
+   */
+  private static final String HOLE_TILE_SHEET = "images/dungeons/fantasy_dreamland_16.png";
 
   private final Vector2 velocity;
   private HitboxComponent hitboxComponent;
@@ -96,7 +99,7 @@ public class ProjectileComponent extends Component {
     return false;
   }
 
-  /** True if the fixture belongs to an entity rendering the hole texture. */
+  /** True if the fixture belongs to an entity rendering from the hole tile sheet. */
   private static boolean isHole(Fixture fixture) {
     Object userData = fixture.getBody().getUserData();
     if (!(userData instanceof BodyUserData) || ((BodyUserData) userData).entity == null) {
@@ -107,8 +110,8 @@ public class ProjectileComponent extends Component {
     ResourceService resources = ServiceLocator.getResourceService();
     return render != null
         && resources != null
-        && resources.containsAsset(HOLE_TEXTURE, Texture.class)
-        && render.getTexture() == resources.getAsset(HOLE_TEXTURE, Texture.class);
+        && resources.containsAsset(HOLE_TILE_SHEET, Texture.class)
+        && render.getTexture() == resources.getAsset(HOLE_TILE_SHEET, Texture.class);
   }
 
   private void onCollisionStart(Fixture me, Fixture other) {
