@@ -23,26 +23,29 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   /** Creates ghosts at random valid tiles and sets the player as their target. */
   public void spawnBombEnemies(Entity target) {
-    GridPoint2 maxPosition = spawnableArea();
-    for (int i = 0; i < numberOfBombEnemies; i++) {
-      GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
-      Entity bombEnemy = NPCFactory.createBombEnemy(target);
-      track(bombEnemy);
-      spawnEntityAt(bombEnemy, position, true, true);
-    }
+    spawnableArea()
+        .ifPresent(
+            maxPosition -> {
+              for (int i = 0; i < numberOfBombEnemies; i++) {
+                GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
+                Entity bombEnemy = NPCFactory.createBombEnemy(target);
+                track(bombEnemy);
+                spawnEntityAt(bombEnemy, position, true, true);
+              }
+            });
   }
 
   public void spawnSplitEnemy(Entity target) {
-    GridPoint2 maxPosition = spawnableArea();
-    GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
-
-    Entity splitEnemy = NPCFactory.createBombEnemy(target);
-    splitEnemy.addComponent(new SplitComponent(target));
-
-    track(splitEnemy);
-    splitEnemy.getEvents().addListener("spawnChildren", this::enemyTriggerSpawn);
-
-    spawnEntityAt(splitEnemy, position, true, true);
+    spawnableArea()
+        .ifPresent(
+            maxPosition -> {
+              GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
+              Entity splitEnemy = NPCFactory.createBombEnemy(target);
+              splitEnemy.addComponent(new SplitComponent(target));
+              track(splitEnemy);
+              splitEnemy.getEvents().addListener("spawnChildren", this::enemyTriggerSpawn);
+              spawnEntityAt(splitEnemy, position, true, true);
+            });
   }
 
   /**

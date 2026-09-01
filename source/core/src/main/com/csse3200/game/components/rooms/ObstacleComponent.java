@@ -6,10 +6,11 @@ import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.utils.math.RandomUtils;
 import java.util.Random;
 
-/** Spawns rocks and holes at random safe positions in a room. */
+/** Spawns rocks and barrels at random safe positions in a room. */
 public class ObstacleComponent extends EntityManagerComponent {
   private static final int MINIMUM_OBSTACLES = 10;
   private static final int MAXIMUM_OBSTACLES = 20;
+  private static final GridPoint2 MINIMUM_POSITION = new GridPoint2(1, 1);
 
   private final int numberOfObstacles = new Random().nextInt(MINIMUM_OBSTACLES, MAXIMUM_OBSTACLES);
 
@@ -20,11 +21,16 @@ public class ObstacleComponent extends EntityManagerComponent {
   }
 
   private void spawnObstacles(boolean rock) {
-    GridPoint2 maxPosition = spawnableArea();
-    for (int i = 0; i < numberOfObstacles; i++) {
-      GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
-      Entity obstacle = rock ? ObstacleFactory.createRock() : ObstacleFactory.createHole();
-      spawnEntityAt(obstacle, position, true, false);
-    }
+    spawnableArea()
+        .ifPresent(
+            area -> {
+              GridPoint2 maxPosition = area.sub(1, 1);
+              for (int i = 0; i < numberOfObstacles; i++) {
+                GridPoint2 position = RandomUtils.random(MINIMUM_POSITION, maxPosition);
+                Entity obstacle =
+                    rock ? ObstacleFactory.createRock() : ObstacleFactory.createBarrel();
+                spawnEntityAt(obstacle, position, true, false);
+              }
+            });
   }
 }
