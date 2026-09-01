@@ -1,9 +1,9 @@
 package com.csse3200.game.components;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 
 @ExtendWith(GameExtension.class)
-class SpiltComponentTest {
+class SplitComponentTest {
 
   private MockedStatic<NPCFactory> npcFactoryMock;
   private EntityService entityService;
@@ -39,18 +39,22 @@ class SpiltComponentTest {
     Entity target = new Entity();
 
     Entity original = new Entity();
-    CombatStatsComponent stats = new CombatStatsComponent(40, 10);
-    original.addComponent(stats);
-    original.addComponent(new SpiltComponent(target));
+    original.addComponent(new CombatStatsComponent(40, 10));
+    original.addComponent(new SplitComponent(target));
     original.create();
 
     Entity childStub = new Entity();
     childStub.addComponent(new CombatStatsComponent(1, 1));
+
     npcFactoryMock.when(() -> NPCFactory.createChaseEnemy(target)).thenReturn(childStub);
+
+    int[] spawnedChildren = {0};
+    original.getEvents().addListener("spawnChildren", (Entity child) -> spawnedChildren[0]++);
 
     original.getEvents().trigger("hitReaction", target);
 
-    verify(entityService, times(2)).register(childStub);
+    assertEquals(2, spawnedChildren[0]);
+    npcFactoryMock.verify(() -> NPCFactory.createChaseEnemy(target), times(2));
   }
 
   @Test
@@ -59,17 +63,22 @@ class SpiltComponentTest {
 
     Entity original = new Entity();
     original.addComponent(new CombatStatsComponent(40, 10));
-    original.addComponent(new SpiltComponent(target));
+    original.addComponent(new SplitComponent(target));
     original.create();
 
     Entity childStub = new Entity();
     childStub.addComponent(new CombatStatsComponent(1, 1));
+
     npcFactoryMock.when(() -> NPCFactory.createChaseEnemy(target)).thenReturn(childStub);
 
+    int[] spawnedChildren = {0};
+    original.getEvents().addListener("spawnChildren", (Entity child) -> spawnedChildren[0]++);
+
     original.getEvents().trigger("hitReaction", target);
     original.getEvents().trigger("hitReaction", target);
 
-    verify(entityService, times(2)).register(childStub);
+    assertEquals(2, spawnedChildren[0]);
+    npcFactoryMock.verify(() -> NPCFactory.createChaseEnemy(target), times(2));
   }
 
   @Test
@@ -77,11 +86,15 @@ class SpiltComponentTest {
     Entity target = new Entity();
 
     Entity original = new Entity();
-    original.addComponent(new SpiltComponent(target));
+    original.addComponent(new SplitComponent(target));
     original.create();
+
+    int[] spawnedChildren = {0};
+    original.getEvents().addListener("spawnChildren", (Entity child) -> spawnedChildren[0]++);
 
     original.getEvents().trigger("hitReaction", target);
 
+    assertEquals(0, spawnedChildren[0]);
     npcFactoryMock.verifyNoInteractions();
   }
 }

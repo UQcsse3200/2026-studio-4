@@ -17,7 +17,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
   private final Entity target;
   private final int damage;
-  private PhysicsMovementComponent movementComponent;
+
   private float cooldownLeft;
 
   public RangedAttackTask(Entity target, int damage) {
@@ -41,7 +41,8 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   @Override
   public void start() {
     super.start();
-    movementComponent = owner.getEntity().getComponent(PhysicsMovementComponent.class);
+    PhysicsMovementComponent movementComponent =
+        owner.getEntity().getComponent(PhysicsMovementComponent.class);
     movementComponent.setMoving(false);
     cooldownLeft = 0f;
   }

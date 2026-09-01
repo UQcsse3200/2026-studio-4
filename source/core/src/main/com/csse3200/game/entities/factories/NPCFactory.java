@@ -7,7 +7,7 @@ import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.ExplodeComponent;
-import com.csse3200.game.components.SpiltComponent;
+import com.csse3200.game.components.SplitComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.FloatingDemonAnimationController;
@@ -45,6 +45,7 @@ public class NPCFactory {
       FileLoader.readClass(PlayerConfig.class, "configs/player.json");
 
   private static final float CHASE_SPEED = 2.5f;
+  private static final String DIE_ANIMATION = "dieAnimation";
 
   /**
    * Creates a bomb Enemy entity.
@@ -67,7 +68,7 @@ public class NPCFactory {
                 .getAsset("images/bombEnemy.atlas", TextureAtlas.class));
     animator.addAnimation("move", 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("dieAnimation", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
 
     bombEnemy
@@ -99,7 +100,7 @@ public class NPCFactory {
         new AITaskComponent()
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new ChaseTask(target, 10, 3f, 10f))
-            .addTask(new LungeAttackTask(target, 20, 3f, 0.5f, 6f, 4f, 0.4f, 2f, CHASE_SPEED));
+            .addTask(new LungeAttackTask(target, CHASE_SPEED));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -108,7 +109,7 @@ public class NPCFactory {
     animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("dieAnimation", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
 
     chaseEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
@@ -116,7 +117,7 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(animator)
         .addComponent(new EnemyAnimationController())
-        .addComponent(new SpiltComponent(target));
+        .addComponent(new SplitComponent(target));
 
     chaseEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
     chaseEnemy
@@ -148,7 +149,7 @@ public class NPCFactory {
                 .getAsset("images/floatingDemon.atlas", TextureAtlas.class));
     animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.08f);
-    animator.addAnimation("dieAnimation", 0.1f);
+    animator.addAnimation(DIE_ANIMATION, 0.1f);
 
     Entity demon =
         new Entity()

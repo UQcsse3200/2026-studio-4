@@ -3,6 +3,7 @@ package com.csse3200.game.components.rooms;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.components.SplitComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FloatingDemonConfig;
 import com.csse3200.game.entities.configs.NPCConfigs;
@@ -16,13 +17,17 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   private static final FloatingDemonConfig FLOATING_DEMON_CONFIG =
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json").floatingDemon;
   private final int numberOfBombEnemies = new Random().nextInt(10, 20);
-  private final int numberOfChaseEnemies = new Random().nextInt(10, 20);
+  private int numEnemies = 0;
 
   @Override
   public void create() {
-    entity.getEvents().addListener("RoomCreated", this::spawnBombEnemies);
-    //  entity.getEvents().addListener("RoomCreated", this::spawnChaseEnemies);
-    entity.getEvents().addListener("RoomCreated", this::spawnFloatingDemons);
+    entity.getEvents().addListener("RoomCreated", this::spawnEnemies);
+  }
+
+  public void spawnEnemies(Entity target) {
+    spawnBombEnemies(target);
+    spawnChaseEnemies(target);
+    spawnFloatingDemons(target);
   }
 
   /** Creates bomb enemies at random valid tiles and sets the player as their target. */
@@ -31,17 +36,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     for (int i = 0; i < numberOfBombEnemies; i++) {
       GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
       Entity bombEnemy = NPCFactory.createBombEnemy(target);
+      track(bombEnemy);
       spawnEntityAt(bombEnemy, position, true, true);
-    }
-  }
-
-  /** Creates chase enemies at random valid tiles and sets the player as their target. */
-  public void spawnChaseEnemies(Entity target) {
-    GridPoint2 maxPosition = spawnableArea();
-    for (int i = 0; i < numberOfChaseEnemies; i++) {
-      GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
-      Entity chaseEnemy = NPCFactory.createChaseEnemy(target);
-      spawnEntityAt(chaseEnemy, position, true, true);
     }
   }
 
@@ -63,8 +59,52 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       Vector2 leftPoint = new Vector2(leftX, spawnPosition.y);
       Vector2 topPoint = new Vector2(spawnPosition.x, topY);
       Vector2 rightPoint = new Vector2(rightX, spawnPosition.y);
+
       Entity demon = NPCFactory.createFloatingDemon(target, leftPoint, topPoint, rightPoint);
+
+      track(demon);
       spawnEntityAt(demon, tilePosition, true, true);
     }
+  }
+
+  public void spawnChaseEnemies(Entity target) {
+    GridPoint2 maxPosition = spawnableArea();
+    GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
+
+    Entity chaseEnemy = NPCFactory.createChaseEnemy(target);
+    chaseEnemy.addComponent(new SplitComponent(target));
+
+    track(chaseEnemy);
+    chaseEnemy.getEvents().addListener("spawnChildren", this::enemyTriggerSpawn);
+
+    spawnEntityAt(chaseEnemy, position, true, true);
+  }
+
+  /**
+   * Tracks an enemy by incrementing numEnemies and listening for its death.
+   *
+   * @param enemy The enemy being tracked.
+   */
+  void track(Entity enemy) {
+    numEnemies++;
+    enemy.getEvents().addListener("entityDied", this::onEnemyDefeated);
+  }
+
+  /** Decreases numEnemies and triggers roomCleared when all enemies are dead. */
+  private void onEnemyDefeated() {
+    numEnemies--;
+    if (numEnemies <= 0) {
+      entity.getEvents().trigger("roomCleared");
+    }
+  }
+
+  /**
+   * Callback function for when an enemy wishes to spawn another enemy.
+   *
+   * @param newEnemy the new enemy should not already be registered
+   */
+  private void enemyTriggerSpawn(Entity newEnemy) {
+    track(newEnemy);
+    spawnEntity(newEnemy);
   }
 }

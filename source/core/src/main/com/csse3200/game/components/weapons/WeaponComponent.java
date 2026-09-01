@@ -12,6 +12,13 @@ import com.csse3200.game.entities.factories.HitboxSpec;
  *
  * <p>The same entity must also have a {@link WeaponStatsComponent}.
  *
+ * <p>Listens for a {@code "weaponAttack"} event carrying a {@link Vector2} direction (triggered by,
+ * e.g., a player action or AI controller), and calls {@link #attack(Vector2, Vector2)} using the
+ * wielder's own centre position as the attack origin. Callers should trigger {@code "weaponAttack"}
+ * rather than looking this component up by its concrete subclass and calling {@code attack}
+ * directly &mdash; {@code entity.getComponent} in this engine matches by exact class, so a lookup
+ * by the abstract {@code WeaponComponent} type will not find a subclass instance.
+ *
  * <p>Example melee subclass:
  *
  * <pre>
@@ -47,7 +54,8 @@ public abstract class WeaponComponent extends Component {
   private WeaponStatsComponent stats;
 
   /**
-   * Caches {@link WeaponStatsComponent} from the same entity.
+   * Caches {@link WeaponStatsComponent} from the same entity and subscribes to the {@code
+   * "weaponAttack"} event.
    *
    * @throws IllegalStateException if the entity has no {@link WeaponStatsComponent}
    */
@@ -58,6 +66,12 @@ public abstract class WeaponComponent extends Component {
       throw new IllegalStateException(
           "WeaponComponent requires a WeaponStatsComponent on the same entity");
     }
+    // listens for weaponAttack event triggered when the player presses the attack key
+    entity.getEvents().addListener("weaponAttack", this::onWeaponAttack);
+  }
+
+  private void onWeaponAttack(Vector2 direction) {
+    attack(entity.getCenterPosition(), direction);
   }
 
   /**
