@@ -254,14 +254,14 @@ public class Entity {
    * Perform an update on all components. This is called by the entity service and should not be
    * called manually.
    */
+  // Components may disable their owning entity during triggerUpdate().
+  @SuppressWarnings("java:S2583")
   public void update() {
     if (!enabled) {
       return;
     }
-
     for (Component component : createdComponents) {
       component.triggerUpdate();
-
       if (!enabled) {
         break;
       }
