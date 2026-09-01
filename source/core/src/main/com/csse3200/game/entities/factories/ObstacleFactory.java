@@ -47,8 +47,8 @@ public class ObstacleFactory {
     return createRenderedObstacle(new TextureRegion(texture), 0.6f, 0.7f);
   }
 
-  /** Creates a hole obstacle. */
-  public static Entity createHole() {
+  /** Creates a barrel obstacle. */
+  public static Entity createBarrel() {
     Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
     return createRenderedObstacle(
         DreamlandTile.OPEN_BARREL.region(new TileSheet(texture, 16)), 0.7f, 0.9f);
