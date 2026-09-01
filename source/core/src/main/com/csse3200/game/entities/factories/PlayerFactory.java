@@ -3,10 +3,13 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.FollowingCameraComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
+import com.csse3200.game.components.weapons.SwordWeaponComponent;
+import com.csse3200.game.components.weapons.WeaponStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
 import com.csse3200.game.files.FileLoader;
@@ -46,14 +49,11 @@ public class PlayerFactory {
     animator.addAnimation("idle_left", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle_right", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle_up", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("walk_down", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("walk_left", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("walk_right", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("walk_up", 0.1f, Animation.PlayMode.LOOP);
 
     Entity player =
         new Entity()
             .addComponent(animator)
+            // .addComponent(new TriggeredRenderComponent("images/box_boy_leaf.png"))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
@@ -64,12 +64,14 @@ public class PlayerFactory {
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())
-            .addComponent(new PlayerStatsDisplay());
+            .addComponent(new PlayerStatsDisplay())
+            .addComponent(new WeaponStatsComponent(0.5f, 10, 2f))
+            .addComponent(new SwordWeaponComponent())
+            .addComponent(new FollowingCameraComponent());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
-
     player.getComponent(AnimationRenderComponent.class).startAnimation("idle_down");
     return player;
   }

@@ -3,6 +3,7 @@ package com.csse3200.game.components.player;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.GameTime;
@@ -14,14 +15,15 @@ import java.util.Objects;
  * and when triggered should call methods within this class.
  */
 public class PlayerActions extends Component {
-  private static final Vector2 MAX_SPEED = new Vector2(3f, 3f); // Metres per second
-  private static final Vector2 DASH_SPEED = new Vector2(15f, 15f);
+  private static final float DASH_SPEED_MULTIPLIER = 5;
 
   private String animation;
 
   private PhysicsComponent physicsComponent;
+  private CombatStatsComponent combatStats;
   private Vector2 walkDirection = Vector2.Zero.cpy();
   private Vector2 dashDirection = Vector2.Zero.cpy();
+  private Vector2 facingDirection = new Vector2(0f, -1f);
   private boolean moving = false;
 
   private long dashInit;
@@ -32,10 +34,12 @@ public class PlayerActions extends Component {
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
+    combatStats = entity.getComponent(CombatStatsComponent.class);
     entity.getEvents().addListener("walk", this::walk);
     entity.getEvents().addListener("walkStop", this::stopWalking);
-    entity.getEvents().addListener("attack", this::attack);
     entity.getEvents().addListener("dash", this::dash);
+    entity.getEvents().addListener("attack", this::attack);
+    entity.getEvents().addListener("specialAttack", this::specialAttack);
   }
 
   @Override
@@ -80,17 +84,20 @@ public class PlayerActions extends Component {
       entity.getEvents().trigger("walkRight");
       animation = "walkRight";
     }
-    // else {entity.getEvents().trigger("idleUp");}
   }
 
   private void updateSpeed() {
     Body body = physicsComponent.getBody();
     Vector2 velocity = body.getLinearVelocity();
     Vector2 desiredVelocity;
+
+    float movementSpeed = combatStats.getMovementSpeed();
+
     if (dashOn) {
-      desiredVelocity = dashDirection.cpy().scl(DASH_SPEED);
+      float dashSpeed = DASH_SPEED_MULTIPLIER * movementSpeed;
+      desiredVelocity = dashDirection.cpy().scl(new Vector2(dashSpeed, dashSpeed));
     } else {
-      desiredVelocity = walkDirection.cpy().scl(MAX_SPEED);
+      desiredVelocity = walkDirection.cpy().scl(new Vector2(movementSpeed, movementSpeed));
     }
     // impulse = (desiredVel - currentVel) * mass
     Vector2 impulse = desiredVelocity.sub(velocity).scl(body.getMass());
@@ -106,6 +113,10 @@ public class PlayerActions extends Component {
     if (!dashOn) {
       this.walkDirection = direction;
       moving = true;
+
+      if (!direction.epsilonEquals(Vector2.Zero)) {
+        this.facingDirection = this.walkDirection.cpy();
+      }
     }
   }
 
@@ -120,6 +131,15 @@ public class PlayerActions extends Component {
 
   /** Makes the player attack. */
   void attack() {
+    entity.getEvents().trigger("weaponAttack", facingDirection);
+    Sound attackSound =
+        ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
+    attackSound.play();
+  }
+
+  /** Makes the player to do special attack. */
+  void specialAttack() {
+
     Sound attackSound =
         ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
     attackSound.play();

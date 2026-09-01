@@ -10,15 +10,6 @@ public class TriggeredRenderComponent extends RenderComponent {
   private Texture texture;
 
   /**
-   * @param texturePath Internal path of initial texture to render. Will be scaled to the entity's
-   *     scale.
-   */
-  public TriggeredRenderComponent(String texturePath) {
-    this(ServiceLocator.getResourceService().getAsset(texturePath, Texture.class));
-  }
-
-  // ...
-  /**
    * @param texture Initial texture to render. Will be scaled to the entity's scale.
    */
   public TriggeredRenderComponent(Texture texture) {
@@ -45,7 +36,7 @@ public class TriggeredRenderComponent extends RenderComponent {
    */
   public void addTexture(Texture texture, String trigger, int argNum) {
     if (argNum == 1) {
-      entity.getEvents().addListener(trigger, (n) -> changeTexture(texture));
+      entity.getEvents().addListener(trigger, n -> changeTexture(texture));
     } else if (argNum == 2) {
       entity.getEvents().addListener(trigger, (n, m) -> changeTexture(texture));
     } else if (argNum == 3) {
