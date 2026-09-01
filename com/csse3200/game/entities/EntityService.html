@@ -134,6 +134,16 @@ loadScripts(document, 'script');</script>
 <div class="block">Register a new entity with the entity service.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#schedule(java.lang.Runnable)" class="member-name-link">schedule</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;task)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Queue a task to run once the current update has finished.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#scheduleDisposal(com.csse3200.game.entities.Entity)" class="member-name-link">scheduleDisposal</a><wbr>(<a href="Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Queue an entity for disposal once the current update has finished.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unregister(com.csse3200.game.entities.Entity)" class="member-name-link">unregister</a><wbr>(<a href="Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Unregister an entity with the entity service.</div>
@@ -193,6 +203,36 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>entity</code> - entity to be removed.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="scheduleDisposal(com.csse3200.game.entities.Entity)">
+<h3>scheduleDisposal</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">scheduleDisposal</span><wbr><span class="parameters">(<a href="Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</span></div>
+<div class="block">Queue an entity for disposal once the current update has finished. Collision events are fired
+ while the physics world is locked, and a locked world cannot destroy the bodies and fixtures
+ that <a href="Entity.html#dispose()"><code>Entity.dispose()</code></a> removes. Use this instead of <a href="Entity.html#dispose()"><code>Entity.dispose()</code></a> whenever an
+ entity is removed in response to a collision.
+
+ <p>The entity is disabled immediately, so it stops updating before it is disposed.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>entity</code> - entity to dispose, ignored if null or already queued.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="schedule(java.lang.Runnable)">
+<h3>schedule</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">schedule</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;task)</span></div>
+<div class="block">Queue a task to run once the current update has finished. Collision events are fired while the
+ physics world is locked, and a locked world cannot create or destroy bodies, fixtures, or
+ joints. Use this to defer such work (e.g. spawning a new entity) from a collision event until
+ it is safe.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>task</code> - task to run after the current update, ignored if null.</dd>
 </dl>
 </section>
 </li>
