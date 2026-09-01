@@ -34,13 +34,6 @@ public class TextureRenderComponent extends RenderComponent {
     this.textureRegion = textureRegion;
   }
 
-  /**
-   * @return the region being rendered; spans the whole texture when one was given directly
-   */
-  public TextureRegion getTextureRegion() {
-    return textureRegion;
-  }
-
   /** Scale the entity to a width of 1 and a height matching the texture's ratio */
   public void scaleEntity() {
     entity.setScale(1f, (float) textureRegion.getRegionHeight() / textureRegion.getRegionWidth());

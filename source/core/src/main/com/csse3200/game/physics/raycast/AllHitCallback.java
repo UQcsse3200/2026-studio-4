@@ -14,8 +14,7 @@ public class AllHitCallback implements RayCastCallback {
   public short layerMask = ~0;
 
   public AllHitCallback() {
-    // The element class is required so toArray() can return a typed RaycastHit[].
-    this.raycastHits = new Array<>(false, 4, RaycastHit.class);
+    this.raycastHits = new Array<>(false, 4);
   }
 
   public RaycastHit[] getHitsAndClear() {

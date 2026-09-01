@@ -1,43 +1,26 @@
 package com.csse3200.game.components.weapons;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.csse3200.game.areas.terrain.DreamlandTile;
-import com.csse3200.game.areas.terrain.TileSheet;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
-import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.GameTime;
-import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
  * Moves a weapon hitbox in a straight line and removes it on its first hit.
  *
- * <p>Stops on enemies and solid obstacles (walls, rocks). Holes are pits, not walls, so arrows fly
- * over them; they are recognised by their texture until they get a physics layer of their own.
- * Removal is queued via {@link
+ * <p>Stops on enemies and solid obstacles (walls, barrels, rocks). Removal is queued via {@link
  * com.csse3200.game.entities.EntityService#scheduleDisposal(com.csse3200.game.entities.Entity)}
  * because collision events fire while the physics world is locked.
  */
 public class ProjectileComponent extends Component {
   /** Enemies and solid walls/rocks. */
   private static final short STOP_LAYERS = PhysicsLayer.NPC | PhysicsLayer.OBSTACLE;
-
-  /**
-   * Holes share the obstacle layer with walls, so they are identified by what they render: the
-   * hole's exact barrel tile from this sheet. Every other obstacle stops the arrow by default.
-   */
-  private static final String HOLE_TILE_SHEET = "images/dungeons/fantasy_dreamland_16.png";
-
-  private static final int HOLE_TILE_SIZE = 16;
 
   private final Vector2 velocity;
   private HitboxComponent hitboxComponent;
@@ -87,43 +70,16 @@ public class ProjectileComponent extends Component {
   }
 
   /**
-   * Whether a solid obstacle lies between two points. Holes do not count: arrows fly over them.
+   * Whether a solid obstacle lies between two points.
    *
    * @param from start of the path, in world coordinates
    * @param to end of the path, in world coordinates
    * @return true if a wall or other solid obstacle is in the way
    */
   static boolean isPathBlocked(Vector2 from, Vector2 to) {
-    RaycastHit[] hits =
-        ServiceLocator.getPhysicsService().getPhysics().raycastAll(from, to, PhysicsLayer.OBSTACLE);
-    for (RaycastHit hit : hits) {
-      if (!isHole(hit.fixture)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /** True if the fixture belongs to an entity rendering the hole's barrel tile. */
-  private static boolean isHole(Fixture fixture) {
-    Object userData = fixture.getBody().getUserData();
-    if (!(userData instanceof BodyUserData bodyUserData) || bodyUserData.entity == null) {
-      return false;
-    }
-    TextureRenderComponent render = bodyUserData.entity.getComponent(TextureRenderComponent.class);
-    ResourceService resources = ServiceLocator.getResourceService();
-    if (render == null
-        || resources == null
-        || !resources.containsAsset(HOLE_TILE_SHEET, Texture.class)) {
-      return false;
-    }
-
-    Texture sheet = resources.getAsset(HOLE_TILE_SHEET, Texture.class);
-    TextureRegion holeTile = DreamlandTile.OPEN_BARREL.region(new TileSheet(sheet, HOLE_TILE_SIZE));
-    TextureRegion rendered = render.getTextureRegion();
-    return rendered.getTexture() == sheet
-        && rendered.getRegionX() == holeTile.getRegionX()
-        && rendered.getRegionY() == holeTile.getRegionY();
+    return ServiceLocator.getPhysicsService()
+        .getPhysics()
+        .raycast(from, to, PhysicsLayer.OBSTACLE, new RaycastHit());
   }
 
   private void onCollisionStart(Fixture me, Fixture other) {
