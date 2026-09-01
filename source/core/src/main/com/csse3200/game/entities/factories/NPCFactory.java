@@ -41,8 +41,6 @@ import com.csse3200.game.services.ServiceLocator;
 public class NPCFactory {
   private static final NPCConfigs configs =
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
-  private static final PlayerConfig targetConfig =
-      FileLoader.readClass(PlayerConfig.class, "configs/player.json");
 
   private static final float CHASE_SPEED = 2.5f;
   private static final String DIE_ANIMATION = "dieAnimation";

@@ -90,6 +90,7 @@ public class EntityService {
       action.run();
     }
     afterUpdateActions.clear();
+    drainQueues();
   }
 
   /** Runs an action after the current entity update has finished. */
