@@ -470,6 +470,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Spawn this weapon's hitbox.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/factories/ObstacleFactory.html#createBarrel()" class="member-name-link">createBarrel()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ObstacleFactory.html" title="class in com.csse3200.game.entities.factories">ObstacleFactory</a></dt>
+<dd>
+<div class="block">Creates a barrel obstacle.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/factories/NPCFactory.html#createBaseNPC()" class="member-name-link">createBaseNPC()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/NPCFactory.html" title="class in com.csse3200.game.entities.factories">NPCFactory</a></dt>
 <dd>
 <div class="block">Creates a generic NPC to be used as a base entity by more specific NPC creation methods.</div>
@@ -519,10 +523,6 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/factories/HitboxFactory.html#createHitbox(com.csse3200.game.entities.factories.HitboxSpec)" class="member-name-link">createHitbox(HitboxSpec)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HitboxFactory.html" title="class in com.csse3200.game.entities.factories">HitboxFactory</a></dt>
 <dd>
 <div class="block">Create an unregistered kinematic sensor that damages <code>spec.targetLayer</code> on contact.</div>
-</dd>
-<dt><a href="com/csse3200/game/entities/factories/ObstacleFactory.html#createHole()" class="member-name-link">createHole()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ObstacleFactory.html" title="class in com.csse3200.game.entities.factories">ObstacleFactory</a></dt>
-<dd>
-<div class="block">Creates a hole obstacle.</div>
 </dd>
 <dt><a href="com/csse3200/game/physics/PhysicsEngine.html#createJoint(com.badlogic.gdx.physics.box2d.JointDef)" class="member-name-link">createJoint(JointDef)</a> - Method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsEngine.html" title="class in com.csse3200.game.physics">PhysicsEngine</a></dt>
 <dd>&nbsp;</dd>
@@ -1565,7 +1565,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/ObstacleComponent.html" class="type-name-link" title="class in com.csse3200.game.components.rooms">ObstacleComponent</a> - Class in <a href="com/csse3200/game/components/rooms/package-summary.html">com.csse3200.game.components.rooms</a></dt>
 <dd>
-<div class="block">Spawns rocks and holes at random safe positions in a room.</div>
+<div class="block">Spawns rocks and barrels at random safe positions in a room.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/rooms/ObstacleComponent.html#%3Cinit%3E()" class="member-name-link">ObstacleComponent()</a> - Constructor for class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/ObstacleComponent.html" title="class in com.csse3200.game.components.rooms">ObstacleComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -2146,10 +2146,6 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/physics/components/PhysicsMovementComponent.html#setTarget(com.badlogic.gdx.math.Vector2)" class="member-name-link">setTarget(Vector2)</a> - Method in class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsMovementComponent.html" title="class in com.csse3200.game.physics.components">PhysicsMovementComponent</a></dt>
 <dd>
 <div class="block">Set a target to move towards.</div>
-</dd>
-<dt><a href="com/csse3200/game/components/rooms/RoomAssetsComponent.html#setTerrainConfig(com.csse3200.game.areas.terrain.TerrainConfig)" class="member-name-link">setTerrainConfig(TerrainConfig)</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomAssetsComponent.html" title="class in com.csse3200.game.components.rooms">RoomAssetsComponent</a></dt>
-<dd>
-<div class="block">Supplies this room's terrain configuration with its loaded floor texture paths.</div>
 </dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainTile.html#setTextureRegion(com.badlogic.gdx.graphics.g2d.TextureRegion)" class="member-name-link">setTextureRegion(TextureRegion)</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainTile.html" title="class in com.csse3200.game.areas.terrain">TerrainTile</a></dt>
 <dd>&nbsp;</dd>
