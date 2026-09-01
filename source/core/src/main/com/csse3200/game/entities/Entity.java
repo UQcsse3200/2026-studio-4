@@ -258,13 +258,8 @@ public class Entity {
     if (!enabled) {
       return;
     }
-
     for (Component component : createdComponents) {
       component.triggerUpdate();
-
-      if (!enabled) {
-        break;
-      }
     }
   }
 
