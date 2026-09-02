@@ -23,6 +23,6 @@ public class RoomFactory {
         .addComponent(new WallComponent())
         .addComponent(new ObstacleComponent())
         .addComponent(new EnemyManagerComponent())
-            .addComponent(new FollowingCameraComponent());
+        .addComponent(new FollowingCameraComponent());
   }
 }

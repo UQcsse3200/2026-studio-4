@@ -14,7 +14,6 @@ public class WallComponent extends EntityManagerComponent {
   private static final float WALL_WIDTH = 0.1f;
   private Vector2 WALLBOUND;
 
-
   public Vector2 getWallBounds() {
     return WALLBOUND;
   }

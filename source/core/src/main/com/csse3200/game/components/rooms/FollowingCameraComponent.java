@@ -16,7 +16,7 @@ public class FollowingCameraComponent extends Component {
 
   @Override
   public void create() {
-    cameraPosition = entity.getPosition();
+    cameraPosition = entity.getCenterPosition();
   }
 
   @Override
@@ -26,7 +26,7 @@ public class FollowingCameraComponent extends Component {
     }
 
     if (target != null) {
-      setGoal(target.getCenterPosition());
+      this.setGoal(target.getCenterPosition());
     }
 
     Vector2 maxWallBounds = entity.getComponent(WallComponent.class).getWallBounds();
@@ -36,16 +36,16 @@ public class FollowingCameraComponent extends Component {
     Vector2 cameraSize = camera.getCameraSize();
     cameraSize.scl(0.5f);
 
-    if ((maxWallBounds.x < (futureLocation.x + cameraSize.x))){
+    if ((maxWallBounds.x < (futureLocation.x + cameraSize.x))) {
       futureLocation.set(maxWallBounds.x - cameraSize.x, futureLocation.y);
     }
-    if ((minWallBounds.x > (futureLocation.x - cameraSize.x))){
+    if ((minWallBounds.x > (futureLocation.x - cameraSize.x))) {
       futureLocation.set(minWallBounds.x + cameraSize.x, futureLocation.y);
     }
-    if ((maxWallBounds.y < (futureLocation.y + cameraSize.y))){
+    if ((maxWallBounds.y < (futureLocation.y + cameraSize.y))) {
       futureLocation.set(futureLocation.x, maxWallBounds.y - cameraSize.y);
     }
-    if ((minWallBounds.y > (futureLocation.y - cameraSize.y))){
+    if ((minWallBounds.y > (futureLocation.y - cameraSize.y))) {
       futureLocation.set(futureLocation.x, minWallBounds.y + cameraSize.y);
     }
     cameraPosition = futureLocation;
@@ -57,9 +57,15 @@ public class FollowingCameraComponent extends Component {
     this.camera = camera;
   }
 
-  public void setTarget(Entity entity) {this.target = entity;}
+  public void setTarget(Entity entity) {
+    this.target = entity;
+  }
 
-  public void setGoal(Vector2 goal) {this.goal = goal;}
+  public void setGoal(Vector2 goal) {
+    this.goal = goal;
+  }
 
-  public void removeTarget() {this.target = null;}
+  public void removeTarget() {
+    this.target = null;
+  }
 }
