@@ -12,6 +12,9 @@ import com.csse3200.game.services.ServiceLocator;
  * its brief lifetime.
  */
 public class KnifeWeaponComponent extends WeaponComponent {
+  /** Sprite drawn for the knife's stab. Loaded by {@link WeaponAssetsComponent}. */
+  public static final String TEXTURE = "images/weapons/knife.png";
+
   private static final float BLADE_LENGTH = 1.0f;
   private static final float BLADE_WIDTH = 0.5f;
   // Must stay below the attack cooldown (0.5s at attackSpeed 1.0). A longer-lived stab is still
@@ -67,7 +70,7 @@ public class KnifeWeaponComponent extends WeaponComponent {
             .knockback(stats.getKnockback())
             .owner(entity)
             .localOffset(offset)
-            .texture("images/weapons/knife.png")
+            .texture(TEXTURE)
             .visualScale(new Vector2(SPRITE_SIZE, SPRITE_SIZE))
             .visualOffset(new Vector2(SPRITE_PULL_IN, 0f))
             .rotation(cardinalDir.angleDeg())

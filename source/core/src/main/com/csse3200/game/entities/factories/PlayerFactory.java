@@ -12,6 +12,7 @@ import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.components.weapons.BowWeaponComponent;
 import com.csse3200.game.components.weapons.KnifeWeaponComponent;
 import com.csse3200.game.components.weapons.SwordWeaponComponent;
+import com.csse3200.game.components.weapons.WeaponAssetsComponent;
 import com.csse3200.game.components.weapons.WeaponStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
@@ -72,6 +73,7 @@ public class PlayerFactory {
             .addComponent(new PlayerStatsDisplay())
             // Weapon damage = round(baseAttack * multiplier); charms that raise base attack
             // therefore scale weapon hits too.
+            .addComponent(new WeaponAssetsComponent())
             .addComponent(new WeaponStatsComponent(0.5f, 1f, 2f))
             .addComponent(new SwordWeaponComponent())
             .addComponent(new KnifeWeaponComponent())

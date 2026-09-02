@@ -12,6 +12,9 @@ import com.csse3200.game.services.ServiceLocator;
  * attack using SweepComponent.
  */
 public class SwordWeaponComponent extends WeaponComponent {
+  /** Sprite drawn for the sword's sweeping attack. Loaded by {@link WeaponAssetsComponent}. */
+  public static final String TEXTURE = "images/weapons/sword.png";
+
   // weapon attributes
   private static final float LIFETIME = 0.5f; // How long the sweep attack takes
   private static final float BLADE_LENGTH = 1.0f; // the length of the hitbox when sweeping
@@ -67,7 +70,7 @@ public class SwordWeaponComponent extends WeaponComponent {
             .knockback(stats.getKnockback())
             .owner(entity)
             .localOffset(offset)
-            .texture("images/weapons/sword.png")
+            .texture(TEXTURE)
             .visualScale(new Vector2(SPRITE_SIZE, SPRITE_SIZE))
             .visualOffset(new Vector2(SPRITE_PULL_IN, 0f))
             .rotation(startAngle)

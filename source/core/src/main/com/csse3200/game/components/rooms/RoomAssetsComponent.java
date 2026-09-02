@@ -12,17 +12,9 @@ public class RoomAssetsComponent extends Component {
   private static final String ROCK_TEXTURE = "images/rock.png";
   private static final String FANTASY_DUNGEON_TILESET = "images/dungeons/fantasy_dreamland_16.png";
   private static final String FANTASY_DUNGEON_DOOR = "images/dungeons/fantasy_dreamland_door.png";
-  private static final String SWORD_TEXTURE = "images/weapons/sword.png";
-  private static final String KNIFE_TEXTURE = "images/weapons/knife.png";
-  private static final String THROWING_KNIFE_TEXTURE = "images/weapons/throwing_knife.png";
 
   private static final String[] TEXTURES = {
-    ROCK_TEXTURE,
-    FANTASY_DUNGEON_TILESET,
-    FANTASY_DUNGEON_DOOR,
-    SWORD_TEXTURE,
-    KNIFE_TEXTURE,
-    THROWING_KNIFE_TEXTURE
+    ROCK_TEXTURE, FANTASY_DUNGEON_TILESET, FANTASY_DUNGEON_DOOR
   };
   private static final String[] MUSIC = {BACKGROUND_MUSIC};
   private static final String[] SOUNDS = {IMPACT_SOUND};

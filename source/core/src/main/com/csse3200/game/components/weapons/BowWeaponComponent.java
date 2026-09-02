@@ -15,6 +15,9 @@ import com.csse3200.game.services.ServiceLocator;
  * obstacle hit, or when its lifetime runs out.
  */
 public class BowWeaponComponent extends WeaponComponent {
+  /** Sprite drawn for the thrown blade in flight. Loaded by {@link WeaponAssetsComponent}. */
+  public static final String TEXTURE = "images/weapons/throwing_knife.png";
+
   private static final float ARROW_SIZE = 0.25f;
   private static final float ARROW_SPEED = 5f; // metres per second
   private static final float LIFETIME = 1.5f; // maximum flight time, caps range
@@ -52,7 +55,7 @@ public class BowWeaponComponent extends WeaponComponent {
             .targetLayer(PhysicsLayer.NPC)
             .damage(resolveHitboxDamage())
             .knockback(stats.getKnockback())
-            .texture("images/weapons/throwing_knife.png")
+            .texture(TEXTURE)
             .visualScale(new Vector2(SPRITE_SIZE, SPRITE_SIZE))
             .rotation(dir.angleDeg())
             .rotationOffset(SPRITE_ANGLE_OFFSET);
