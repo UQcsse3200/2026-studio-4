@@ -66,7 +66,7 @@ public class LifetimeComponent extends Component {
       return;
     }
 
-    ServiceLocator.getEntityService().runAfterUpdate(this::removeNow);
+    ServiceLocator.getEntityService().runAfterUpdate(entity::dispose);
   }
 
   private void removeNow() {

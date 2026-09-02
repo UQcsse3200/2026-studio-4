@@ -50,9 +50,8 @@ public class TerrainFactory {
     this.orientation = orientation;
   }
 
-  /** Creates dungeon terrain using the Fantasy Dreamland tileset. */
-  public TerrainComponent createDungeonTerrain() {
-    GridPoint2 mapSize = new GridPoint2(50, 50);
+  /** Creates dungeon terrain using the Fantasy Dreamland tileset at the supplied tile bounds. */
+  public TerrainComponent createDungeonTerrain(GridPoint2 mapSize) {
     ResourceService resourceService = ServiceLocator.getResourceService();
     Texture texture = resourceService.getAsset(FANTASY_DUNGEON_TILESET, Texture.class);
     texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,5 +79,17 @@ class LifetimeComponentTest {
 
     entity.update();
     verify(ServiceLocator.getEntityService(), times(1)).unregister(entity);
+  }
+
+  @Test
+  void shouldNotDisposePhysicsAgainWhenOwningRoomIsDisposed() {
+    PhysicsComponent physics = mock(PhysicsComponent.class);
+    Entity projectile = new Entity().addComponent(physics).addComponent(new LifetimeComponent(0f));
+    ServiceLocator.getEntityService().register(projectile);
+
+    projectile.update();
+    projectile.dispose();
+
+    verify(physics, times(1)).dispose();
   }
 }

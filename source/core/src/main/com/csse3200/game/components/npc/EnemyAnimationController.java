@@ -2,6 +2,7 @@ package com.csse3200.game.components.npc;
 
 import com.csse3200.game.components.Component;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /**
  * This class listens to events relevant to a ghost entity's state and plays the animation when one
@@ -30,7 +31,7 @@ public class EnemyAnimationController extends Component {
   public void update() {
     if (dying && animator.isFinished()) {
       dying = false;
-      entity.dispose();
+      ServiceLocator.getEntityService().scheduleDisposal(entity);
     }
   }
 
@@ -44,12 +45,5 @@ public class EnemyAnimationController extends Component {
 
   private void animatePause() {
     animator.startAnimation("default");
-  }
-
-  @Override
-  public void dispose() {
-    if (!animator.isFinished()) {
-      animator.dispose();
-    }
   }
 }
