@@ -5,12 +5,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.items.Charm;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
 /** A ui component for displaying player stats, e.g. health. */
 public class PlayerStatsDisplay extends UIComponent {
   Table table;
   private Label healthLabel;
+  private Label strengthLabel;
+  private Label charmCountLabel;
   private Label movementSpeedLabel;
   private Label attackSpeedLabel;
   private ProgressBar healthBar;
@@ -26,9 +30,12 @@ public class PlayerStatsDisplay extends UIComponent {
     addActors();
 
     entity.getEvents().addListener("updateHealth", this::updatePlayerHealthUI);
+    entity.getEvents().addListener("updateBaseAttack", this::updatePlayerStrengthUI);
     entity.getEvents().addListener("updateMovementSpeed", this::updatePlayerMovementSpeedUI);
     entity.getEvents().addListener("updateAttackSpeed", this::updatePlayerAttackSpeedUI);
     entity.getEvents().addListener("updateMaxHealth", this::updatePlayerMaxHealthUI);
+      entity.getEvents().addListener("charmAdded", this::updateCharmCountUI);
+      entity.getEvents().addListener("charmRemoved", this::updateCharmCountUI);
   }
 
   /**
@@ -51,17 +58,22 @@ public class PlayerStatsDisplay extends UIComponent {
     healthBar.setValue(health);
     healthBar.setAnimateDuration(0.3f);
 
+    int charmCount = entity.getComponent(InventoryComponent.class).getCharmCount();
+
     // Labels
     healthLabel =
         new Label(
             String.format("Health: %d / %d", stats.getHealth(), stats.getMaxHealth()),
             skin,
             LABEL_STYLE);
+    strengthLabel = new Label(
+            String.format("Strength: %d", stats.getBaseAttack()), skin, LABEL_STYLE);
     movementSpeedLabel =
         new Label(
             String.format("Movement Speed: %.2f", stats.getMovementSpeed()), skin, LABEL_STYLE);
     attackSpeedLabel =
         new Label(String.format("Attack Speed: %.2f", stats.getAttackSpeed()), skin, LABEL_STYLE);
+    charmCountLabel = new Label(String.format("Strength Charms: %d", charmCount), skin, LABEL_STYLE);
 
     table.add(healthLabel).left();
     table.row();
@@ -70,6 +82,10 @@ public class PlayerStatsDisplay extends UIComponent {
     table.add(movementSpeedLabel).left();
     table.row();
     table.add(attackSpeedLabel).left();
+    table.row();
+    table.add(strengthLabel).left();
+    table.row();
+    table.add(charmCountLabel).left();
 
     stage.addActor(table);
   }
@@ -119,6 +135,23 @@ public class PlayerStatsDisplay extends UIComponent {
   public void updatePlayerMaxHealthUI(int maxHealth) {
     this.maxHealth = maxHealth;
     healthBar.setRange(0, maxHealth);
+  }
+
+  /**
+   * Updates the player's strength on the ui.
+   *
+   * @param strength player strength, represented by base attack damage
+   */
+  public void updatePlayerStrengthUI(int strength) {
+    CharSequence text = String.format("Strength: %d", strength);
+    strengthLabel.setText(text);
+  }
+
+  /** Updates the displayed charm count after a charm is added to or removed from the inventory. */
+  public void updateCharmCountUI(Charm charm) {
+    int charmCount = entity.getComponent(InventoryComponent.class).getCharmCount();
+    CharSequence text = String.format("Strength Charms: %d", charmCount);
+    charmCountLabel.setText(text);
   }
 
   @Override
