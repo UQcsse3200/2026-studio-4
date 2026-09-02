@@ -43,7 +43,7 @@ public class GameAreaDisplay extends UIComponent {
     float offsetY = 30f;
 
     title.setPosition(offsetX, screenHeight - offsetY);
-    status.setPosition(offsetX, screenHeight - offsetY - 28f);
+    status.setPosition(offsetX + 900f, screenHeight - offsetY - 28f);
     if (statusExpiryMillis > 0 && TimeUtils.millis() >= statusExpiryMillis) {
       status.setText("");
       statusExpiryMillis = 0;
