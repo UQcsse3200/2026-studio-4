@@ -25,14 +25,30 @@ public class FollowingCameraComponent extends Component {
       return;
     }
 
-    if (target!= null) {
-     setGoal(target.getCenterPosition());
+    if (target != null) {
+      setGoal(target.getCenterPosition());
     }
 
-    //entity.getComponent(WallComponent.class);
-
+    Vector2 maxWallBounds = entity.getComponent(WallComponent.class).getWallBounds();
+    Vector2 minWallBounds = entity.getCenterPosition();
     Vector2 velocity = goal.sub(cameraPosition).scl(CAMERA_SPEED);
-    cameraPosition.add(velocity);
+    Vector2 futureLocation = new Vector2(cameraPosition.x, cameraPosition.y).add(velocity);
+    Vector2 cameraSize = camera.getCameraSize();
+    cameraSize.scl(0.5f);
+
+    if ((maxWallBounds.x < (futureLocation.x + cameraSize.x))){
+      futureLocation.set(maxWallBounds.x - cameraSize.x, futureLocation.y);
+    }
+    if ((minWallBounds.x > (futureLocation.x - cameraSize.x))){
+      futureLocation.set(minWallBounds.x + cameraSize.x, futureLocation.y);
+    }
+    if ((maxWallBounds.y < (futureLocation.y + cameraSize.y))){
+      futureLocation.set(futureLocation.x, maxWallBounds.y - cameraSize.y);
+    }
+    if ((minWallBounds.y > (futureLocation.y - cameraSize.y))){
+      futureLocation.set(futureLocation.x, minWallBounds.y + cameraSize.y);
+    }
+    cameraPosition = futureLocation;
     camera.getEntity().setPosition(cameraPosition);
   }
 
