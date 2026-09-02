@@ -96,6 +96,22 @@ class CombatStatsComponentTest {
     assertEquals(5f, combat.getMovementSpeed());
   }
 
+
+  @Test
+  void shouldTriggerMovementSpeedUpdate() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 20, 4.0f,6.0f);
+    Entity entity = new Entity().addComponent(combat);
+    entity.create();
+    float[] updatedMovementSpeed = {0};
+    entity
+            .getEvents()
+            .addListener("updateMovementSpeed", movementSpeed -> updatedMovementSpeed[0] = (float)movementSpeed);
+
+    combat.addMovementSpeed(2.0f);
+
+    assertEquals(6.0f, updatedMovementSpeed[0]);
+  }
+
   @Test
   void shouldAddMovementSpeed() {
     CombatStatsComponent combat = new CombatStatsComponent(100, 20, 4f, 7f);
@@ -128,5 +144,20 @@ class CombatStatsComponentTest {
     combat.addAttackSpeed(6f);
     combat.addAttackSpeed(-2F);
     assertEquals(4f, combat.getAttackSpeed());
+  }
+
+  @Test
+  void shouldTriggerAttackSpeedUpdate() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 20, 4.0f,6.0f);
+    Entity entity = new Entity().addComponent(combat);
+    entity.create();
+    float[] updateAttackSpeed = {0};
+    entity
+            .getEvents()
+            .addListener("updateAttackSpeed", attackSpeed -> updateAttackSpeed[0] = (float)attackSpeed);
+
+    combat.addAttackSpeed(1.0f);
+
+    assertEquals(7.0f, updateAttackSpeed[0]);
   }
 }
