@@ -1,5 +1,6 @@
 package com.csse3200.game.components.weapons;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,6 +11,7 @@ import static org.mockito.Mockito.verify;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -39,7 +41,10 @@ class BowWeaponComponentTest {
   void shouldSpawnTravellingHitboxOnAttack() {
     BowWeaponComponent bow = new BowWeaponComponent();
     Entity wielder =
-        new Entity().addComponent(new WeaponStatsComponent(0.5f, 10, 0f)).addComponent(bow);
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new WeaponStatsComponent(0.5f, 0.8f, 0f))
+            .addComponent(bow);
     wielder.create();
 
     assertTrue(bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
@@ -51,6 +56,8 @@ class BowWeaponComponentTest {
     assertNotNull(arrow.getComponent(HitboxComponent.class));
     assertNotNull(arrow.getComponent(ProjectileComponent.class));
     assertNull(arrow.getComponent(FollowComponent.class));
+    // Arrow damage is the wielder's base attack scaled by the weapon multiplier: round(10 * 0.8).
+    assertEquals(8, arrow.getComponent(CombatStatsComponent.class).getBaseAttack());
   }
 
   @Test
@@ -65,7 +72,7 @@ class BowWeaponComponentTest {
 
     BowWeaponComponent bow = new BowWeaponComponent();
     Entity wielder =
-        new Entity().addComponent(new WeaponStatsComponent(0.5f, 10, 0f)).addComponent(bow);
+        new Entity().addComponent(new WeaponStatsComponent(0.5f, 1f, 0f)).addComponent(bow);
     wielder.create();
 
     bow.attack(new Vector2(0.5f, 0.5f), new Vector2(1f, 0f));

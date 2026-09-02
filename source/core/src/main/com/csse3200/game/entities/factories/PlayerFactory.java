@@ -71,7 +71,9 @@ public class PlayerFactory {
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())
             .addComponent(new PlayerStatsDisplay())
-            .addComponent(new WeaponStatsComponent(0.5f, 10, 2f))
+            // Weapon damage = round(baseAttack * multiplier); charms that raise base attack
+            // therefore scale weapon hits too.
+            .addComponent(new WeaponStatsComponent(0.5f, 1f, 2f))
             .addComponent(new SwordWeaponComponent())
             .addComponent(new KnifeWeaponComponent())
             .addComponent(new BowWeaponComponent())

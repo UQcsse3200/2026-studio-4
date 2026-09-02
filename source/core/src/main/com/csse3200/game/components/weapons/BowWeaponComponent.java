@@ -44,7 +44,7 @@ public class BowWeaponComponent extends WeaponComponent {
             .lifetime(LIFETIME)
             .layer(PhysicsLayer.WEAPON)
             .targetLayer(PhysicsLayer.NPC)
-            .damage(stats.getDamage())
+            .damage(resolveHitboxDamage())
             .knockback(stats.getKnockback());
 
     Entity arrow = HitboxFactory.createHitbox(spec);

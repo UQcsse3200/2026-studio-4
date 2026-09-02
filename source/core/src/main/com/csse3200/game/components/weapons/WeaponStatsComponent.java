@@ -6,7 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stores cooldown, damage, and knockback for a wielder's current weapon.
+ * Stores cooldown, damage multiplier, and knockback for a wielder's current weapon.
+ *
+ * <p>Hitbox damage is {@code round(wielder.baseAttack * multiplier)}, so buffs to the wielder's
+ * base attack (e.g. the Strength Charm) scale every weapon's damage.
  *
  * <p>Cooldown is a countdown in seconds. Call {@link #triggerCooldown()} after a successful attack
  * and {@link #update(float)} (or the no-arg {@link #update()} from the entity loop) to tick it
@@ -16,7 +19,7 @@ public class WeaponStatsComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(WeaponStatsComponent.class);
 
   private float cooldown;
-  private int damage;
+  private float multiplier;
   private float knockback;
   private float remainingCooldown;
 
@@ -24,14 +27,14 @@ public class WeaponStatsComponent extends Component {
    * Create weapon stats.
    *
    * @param cooldown seconds between attacks
-   * @param damage damage applied by spawned hitboxes
+   * @param multiplier scales the wielder's base attack onto spawned hitboxes
    * @param knockback knockback impulse magnitude; 0 for none
-   * @require cooldown &gt;= 0 &amp;&amp; damage &gt;= 0 &amp;&amp; knockback &gt;= 0
+   * @require cooldown &gt;= 0 &amp;&amp; multiplier &gt;= 0 &amp;&amp; knockback &gt;= 0
    * @throws IllegalArgumentException if any argument is negative
    */
-  public WeaponStatsComponent(float cooldown, int damage, float knockback) {
+  public WeaponStatsComponent(float cooldown, float multiplier, float knockback) {
     setCooldown(cooldown);
-    setDamage(damage);
+    setMultiplier(multiplier);
     setKnockback(knockback);
   }
 
@@ -97,23 +100,33 @@ public class WeaponStatsComponent extends Component {
   }
 
   /**
-   * @return damage dealt by this weapon's hitboxes
+   * @return multiplier applied to the wielder's base attack
    */
-  public int getDamage() {
-    return damage;
+  public float getMultiplier() {
+    return multiplier;
   }
 
   /**
-   * @param damage damage dealt by this weapon's hitboxes
-   * @require damage &gt;= 0
-   * @throws IllegalArgumentException if damage is negative
+   * @param multiplier scales the wielder's base attack onto spawned hitboxes
+   * @require multiplier &gt;= 0
+   * @throws IllegalArgumentException if multiplier is negative
    */
-  public void setDamage(int damage) {
-    if (damage < 0) {
-      logger.error("Cannot set weapon damage to a negative value: {}", damage);
-      throw new IllegalArgumentException("damage must be >= 0");
+  public void setMultiplier(float multiplier) {
+    if (multiplier < 0f) {
+      logger.error("Cannot set weapon multiplier to a negative value: {}", multiplier);
+      throw new IllegalArgumentException("multiplier must be >= 0");
     }
-    this.damage = damage;
+    this.multiplier = multiplier;
+  }
+
+  /**
+   * Hitbox damage copied onto a spawned sensor.
+   *
+   * @param baseAttack wielder's {@code CombatStatsComponent.getBaseAttack()}
+   * @return {@code round(baseAttack * multiplier)}
+   */
+  public int resolveHitboxDamage(int baseAttack) {
+    return Math.round(baseAttack * multiplier);
   }
 
   /**

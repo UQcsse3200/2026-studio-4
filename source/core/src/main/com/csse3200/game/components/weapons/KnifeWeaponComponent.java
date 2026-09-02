@@ -53,7 +53,7 @@ public class KnifeWeaponComponent extends WeaponComponent {
             .lifetime(LIFETIME)
             .layer(PhysicsLayer.WEAPON)
             .targetLayer(PhysicsLayer.NPC)
-            .damage(stats.getDamage())
+            .damage(resolveHitboxDamage())
             .knockback(stats.getKnockback())
             .owner(entity)
             .localOffset(offset);
