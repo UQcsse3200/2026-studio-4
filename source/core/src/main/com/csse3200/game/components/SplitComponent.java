@@ -64,7 +64,7 @@ public class SplitComponent extends Component {
    * @param attack attack damage to assign to the new, smaller enemy
    */
   private void spawnChild(float xOffset, int health, int attack) {
-    Entity child = NPCFactory.createChaseEnemy(target);
+    Entity child = NPCFactory.createChaseEnemy(target, false);
 
     CombatStatsComponent childStats = child.getComponent(CombatStatsComponent.class);
     if (childStats != null) {

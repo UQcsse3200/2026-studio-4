@@ -1,6 +1,7 @@
 package com.csse3200.game.components.weapons;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.factories.HitboxFactory;
 import com.csse3200.game.entities.factories.HitboxSpec;
@@ -10,7 +11,9 @@ import com.csse3200.game.entities.factories.HitboxSpec;
  * subclasses cannot skip cooldown. Override {@link #createAttack(Vector2, Vector2)} to spawn the
  * weapon-specific hitbox.
  *
- * <p>The same entity must also have a {@link WeaponStatsComponent}.
+ * <p>The same entity must also have a {@link WeaponStatsComponent}. Hitbox damage is {@code
+ * round(wielder.baseAttack * weapon.multiplier)}; use {@link #resolveHitboxDamage()} when filling
+ * {@link HitboxSpec#damage(int)}.
  *
  * <p>Listens for a {@code "weaponAttack"} event carrying a {@link Vector2} direction (triggered by,
  * e.g., a player action or AI controller), and calls {@link #attack(Vector2, Vector2)} using the
@@ -34,7 +37,7 @@ import com.csse3200.game.entities.factories.HitboxSpec;
  *             .lifetime(0.15f)
  *             .layer(com.csse3200.game.physics.PhysicsLayer.WEAPON)
  *             .targetLayer(com.csse3200.game.physics.PhysicsLayer.NPC)
- *             .damage(stats.getDamage())
+ *             .damage(resolveHitboxDamage())
  *             .knockback(stats.getKnockback())
  *             .owner(entity)
  *             .localOffset(offset);
@@ -71,6 +74,10 @@ public abstract class WeaponComponent extends Component {
   }
 
   private void onWeaponAttack(Vector2 direction) {
+    // An entity can carry several weapons; only the enabled one responds to attack input.
+    if (!enabled) {
+      return;
+    }
     attack(entity.getCenterPosition(), direction);
   }
 
@@ -92,7 +99,7 @@ public abstract class WeaponComponent extends Component {
       return false;
     }
     createAttack(origin, direction);
-    stats.triggerCooldown();
+    stats.triggerCooldown(resolveCooldown());
     return true;
   }
 
@@ -105,4 +112,28 @@ public abstract class WeaponComponent extends Component {
    * @require origin != null &amp;&amp; direction != null
    */
   protected abstract void createAttack(Vector2 origin, Vector2 direction);
+
+  /**
+   * Damage for this weapon's spawned hitboxes: the wielder's base attack scaled by the weapon
+   * multiplier, rounded. A wielder without combat stats is treated as 0 base attack.
+   *
+   * @return {@code round(wielder.baseAttack * multiplier)}
+   */
+  protected int resolveHitboxDamage() {
+    CombatStatsComponent combat = entity.getComponent(CombatStatsComponent.class);
+    int baseAttack = combat == null ? 0 : combat.getBaseAttack();
+    return stats.resolveHitboxDamage(baseAttack);
+  }
+
+  /**
+   * Cooldown for this weapon scaled by the wielder's attack speed, so attack-speed buffs make every
+   * weapon fire faster. A wielder without combat stats uses the weapon's base cooldown.
+   *
+   * @return {@code weapon.cooldown / wielder.attackSpeed}
+   */
+  protected float resolveCooldown() {
+    CombatStatsComponent combat = entity.getComponent(CombatStatsComponent.class);
+    float attackSpeed = combat == null ? 1f : combat.getAttackSpeed();
+    return stats.resolveCooldown(attackSpeed);
+  }
 }
