@@ -1,11 +1,13 @@
 package com.csse3200.game.components.player;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CombatStatsComponent;
@@ -13,6 +15,8 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.services.ResourceService;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.Vector2Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +35,10 @@ class PlayerActionsTest {
     when(body.getLinearVelocity()).thenReturn(new Vector2());
     when(body.getMass()).thenReturn(1f);
     when(body.getWorldCenter()).thenReturn(new Vector2());
+
+    ResourceService resources = mock(ResourceService.class);
+    when(resources.getAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(mock(Sound.class));
+    ServiceLocator.registerResourceService(resources);
 
     animator = mock(AnimationRenderComponent.class);
     player =
@@ -85,6 +93,29 @@ class PlayerActionsTest {
     walk(Vector2Utils.DOWN);
     walk(Vector2Utils.DOWN);
     verify(animator, times(1)).startAnimation("walk_down");
+  }
+
+  @Test
+  void shouldAttackDownByDefault() {
+    Vector2[] facing = {null};
+    player.getEvents().addListener("weaponAttack", (Vector2 direction) -> facing[0] = direction);
+
+    player.getEvents().trigger("attack");
+
+    assertEquals(0f, facing[0].x, 0.001f);
+    assertEquals(-1f, facing[0].y, 0.001f);
+    verify(animator).startAnimation("attack_down");
+  }
+
+  @Test
+  void shouldAttackInLastWalkFacing() {
+    walk(Vector2Utils.LEFT);
+    player.getEvents().trigger("walkStop");
+    player.update();
+
+    player.getEvents().trigger("attack");
+
+    verify(animator).startAnimation("attack_left");
   }
 
   private void walk(Vector2 direction) {
