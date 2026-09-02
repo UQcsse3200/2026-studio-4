@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.enemy;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -7,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.NPCFactory;
@@ -15,6 +17,7 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
@@ -101,5 +104,22 @@ class ChaseEnemyTest {
     chaseEnemy.getEvents().trigger("collisionStart", chaseFixture, otherFixture);
 
     verify(hitReactionListener, times(0)).handle(any(Entity.class));
+  }
+
+  @Test
+  void shouldUseConfiguredHealth() {
+    Entity chaseEnemy = NPCFactory.createChaseEnemy(new Entity(), true);
+    CombatStatsComponent stats = chaseEnemy.getComponent(CombatStatsComponent.class);
+
+    assertEquals(60, stats.getHealth());
+    assertEquals(60, stats.getMaxHealth());
+  }
+
+  @Test
+  void shouldStartDefaultAnimationImmediately() {
+    Entity chaseChild = NPCFactory.createChaseEnemy(new Entity(), false);
+    AnimationRenderComponent animator = chaseChild.getComponent(AnimationRenderComponent.class);
+
+    assertEquals("default", animator.getCurrentAnimation());
   }
 }

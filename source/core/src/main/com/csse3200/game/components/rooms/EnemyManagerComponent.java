@@ -6,15 +6,20 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.items.ItemType;
+import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /** Spawns configured enemies and tracks when the room has been cleared. */
 public class EnemyManagerComponent extends EntityManagerComponent {
   private final EnemySpawnConfig[] spawnConfigs;
   private final Set<Entity> activeEnemies = new HashSet<>();
+  private final List<Entity> droppedItems = new ArrayList<>();
 
   /** Creates an empty manager for tests and rooms with no enemies. */
   public EnemyManagerComponent() {
@@ -70,12 +75,21 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     if (activeEnemies.remove(enemy) && activeEnemies.isEmpty()) {
       entity.getEvents().trigger("roomCleared");
     }
+    ServiceLocator.getEntityService().schedule(() -> spawnItemDrop(enemy));
   }
 
   private void replaceWithChild(Entity parent, Entity child) {
     track(child);
     activeEnemies.remove(parent);
     spawnEntity(child);
+  }
+
+  private void spawnItemDrop(Entity enemy) {
+    Entity item = ItemFactory.createDrop(ItemType.STRENGTH_CHARM, enemy.getPosition());
+
+    // spawning item should not use the spawnEntity as items are stored in their own list.
+    droppedItems.add(item);
+    ServiceLocator.getEntityService().register(item);
   }
 
   /** Returns whether the room has any living enemies. */
@@ -91,5 +105,13 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         stats.setHealth(0);
       }
     }
+  }
+
+  @Override
+  public void dispose() {
+    for (Entity item : droppedItems) {
+      item.dispose();
+    }
+    super.dispose();
   }
 }
