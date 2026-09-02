@@ -44,6 +44,7 @@ public class NPCFactory {
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
 
   private static final float CHASE_SPEED = 2.5f;
+  private static final String DEFAULT_ANIMATION = "default";
   private static final String DIE_ANIMATION = "dieAnimation";
 
   /**
@@ -68,7 +69,7 @@ public class NPCFactory {
     animator.addAnimation("move", 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
-    animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     bombEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
@@ -106,7 +107,7 @@ public class NPCFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/chaseEnemy.atlas", TextureAtlas.class));
-    animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
@@ -123,7 +124,7 @@ public class NPCFactory {
     }
 
     animator.scaleEntity();
-    animator.startAnimation("default");
+    animator.startAnimation(DEFAULT_ANIMATION);
 
     chaseEnemy
         .getComponent(PhysicsMovementComponent.class)
