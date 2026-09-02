@@ -122,7 +122,9 @@ public class NPCFactory {
       chaseEnemy.addComponent(new SplitComponent(target));
     }
 
-    chaseEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
+    animator.scaleEntity();
+    animator.startAnimation("default");
+
     chaseEnemy
         .getComponent(PhysicsMovementComponent.class)
         .setMaxSpeed(new Vector2(CHASE_SPEED, CHASE_SPEED));
