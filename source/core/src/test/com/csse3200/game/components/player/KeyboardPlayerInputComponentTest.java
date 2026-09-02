@@ -82,6 +82,28 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
+  void shouldWalkLeftOnA() {
+    assertTrue(input.keyDown(Keys.A));
+    assertEquals(-1f, lastWalkDirection.x, 0.001f);
+    assertEquals(0f, lastWalkDirection.y, 0.001f);
+  }
+
+  @Test
+  void shouldWalkDownOnS() {
+    assertTrue(input.keyDown(Keys.S));
+    assertEquals(0f, lastWalkDirection.x, 0.001f);
+    assertEquals(-1f, lastWalkDirection.y, 0.001f);
+  }
+
+  @Test
+  void shouldWalkDiagonallyWhenTwoKeysHeld() {
+    input.keyDown(Keys.W);
+    input.keyDown(Keys.D);
+    assertEquals(1f, lastWalkDirection.x, 0.001f);
+    assertEquals(1f, lastWalkDirection.y, 0.001f);
+  }
+
+  @Test
   void shouldTriggerAttackOnJ() {
     assertTrue(input.keyDown(Keys.J));
     assertEquals(1, attackCount);
@@ -104,6 +126,7 @@ class KeyboardPlayerInputComponentTest {
   @Test
   void shouldIgnoreUnboundKeys() {
     assertFalse(input.keyDown(Keys.Q));
+    assertFalse(input.keyUp(Keys.Q));
     assertEquals(0, walkCount);
     assertEquals(0, attackCount);
   }

@@ -86,6 +86,13 @@ class PlayerAnimationControllerTest {
   }
 
   @Test
+  void shouldPreferUpWhenAttackingDiagonallyUp() {
+    player.getEvents().trigger("weaponAttack", new Vector2(1f, 1f));
+    verify(animator).startAnimation("attack_up");
+    verify(animator, never()).startAnimation("attack_right");
+  }
+
+  @Test
   void shouldIgnoreIdleAndWalkEventsWhileAttacking() {
     player.getEvents().trigger("weaponAttack", Vector2Utils.DOWN);
     when(animator.isFinished()).thenReturn(false);

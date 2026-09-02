@@ -1,6 +1,8 @@
 package com.csse3200.game.components.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -21,16 +23,18 @@ import com.csse3200.game.utils.math.Vector2Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 
 @ExtendWith(GameExtension.class)
 class PlayerActionsTest {
   private AnimationRenderComponent animator;
+  private Body body;
   private Entity player;
 
   @BeforeEach
   void setUp() {
     PhysicsComponent physics = mock(PhysicsComponent.class);
-    Body body = mock(Body.class);
+    body = mock(Body.class);
     when(physics.getBody()).thenReturn(body);
     when(body.getLinearVelocity()).thenReturn(new Vector2());
     when(body.getMass()).thenReturn(1f);
@@ -116,6 +120,56 @@ class PlayerActionsTest {
     player.getEvents().trigger("attack");
 
     verify(animator).startAnimation("attack_left");
+  }
+
+  @Test
+  void shouldNotTriggerWeaponAttackOnSpecialAttack() {
+    int[] weaponAttacks = {0};
+    player.getEvents().addListener("weaponAttack", (Vector2 direction) -> weaponAttacks[0]++);
+
+    player.getEvents().trigger("specialAttack");
+
+    assertEquals(0, weaponAttacks[0]);
+    verify(animator, never()).startAnimation("attack_down");
+    verify(animator, never()).startAnimation("attack_left");
+    verify(animator, never()).startAnimation("attack_right");
+    verify(animator, never()).startAnimation("attack_up");
+  }
+
+  @Test
+  void shouldDashFasterThanWalk() {
+    walk(Vector2Utils.RIGHT);
+    ArgumentCaptor<Vector2> walkImpulse = ArgumentCaptor.forClass(Vector2.class);
+    verify(body).applyLinearImpulse(walkImpulse.capture(), any(Vector2.class), eq(true));
+
+    player.getEvents().trigger("dash", Vector2Utils.RIGHT.cpy());
+    player.update();
+
+    ArgumentCaptor<Vector2> dashImpulse = ArgumentCaptor.forClass(Vector2.class);
+    verify(body, times(2)).applyLinearImpulse(dashImpulse.capture(), any(Vector2.class), eq(true));
+    assertEquals(walkImpulse.getValue().x * 5f, dashImpulse.getAllValues().get(1).x, 0.001f);
+  }
+
+  @Test
+  void shouldIgnoreSecondDashWhileDashActive() {
+    player.getEvents().trigger("dash", Vector2Utils.RIGHT.cpy());
+    player.getEvents().trigger("dash", Vector2Utils.LEFT.cpy());
+    player.update();
+
+    ArgumentCaptor<Vector2> impulse = ArgumentCaptor.forClass(Vector2.class);
+    verify(body).applyLinearImpulse(impulse.capture(), any(Vector2.class), eq(true));
+    assertEquals(15f, impulse.getValue().x, 0.001f);
+  }
+
+  @Test
+  void shouldIgnoreWalkStopDuringDash() {
+    player.getEvents().trigger("dash", Vector2Utils.RIGHT.cpy());
+    player.getEvents().trigger("walkStop");
+    player.update();
+
+    ArgumentCaptor<Vector2> impulse = ArgumentCaptor.forClass(Vector2.class);
+    verify(body).applyLinearImpulse(impulse.capture(), any(Vector2.class), eq(true));
+    assertEquals(15f, impulse.getValue().x, 0.001f);
   }
 
   private void walk(Vector2 direction) {
