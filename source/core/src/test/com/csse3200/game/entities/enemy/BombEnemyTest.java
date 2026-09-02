@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.enemy;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -16,6 +17,7 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
@@ -46,6 +48,16 @@ class BombEnemyTest {
     resourceService.loadTextureAtlases(new String[] {"images/bombEnemy.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
+  }
+
+  @Test
+  void shouldHaveBombEnemyAnimations() {
+    Entity bombEnemy = NPCFactory.createBombEnemy(new Entity());
+    AnimationRenderComponent animator = bombEnemy.getComponent(AnimationRenderComponent.class);
+
+    assertTrue(animator.hasAnimation("move"));
+    assertTrue(animator.hasAnimation("chase"));
+    assertTrue(animator.hasAnimation("dieAnimation"));
   }
 
   @Test
