@@ -21,8 +21,8 @@ public class FollowingCameraComponent extends Component {
 
   @Override
   public void update() {
-    if (camera != null && target!= null) {
-        this.setGoal(target.getCenterPosition());
+    if (camera != null && target != null) {
+      this.setGoal(target.getCenterPosition());
       Vector2 maxWallBounds = entity.getComponent(WallComponent.class).getWallBounds();
       Vector2 minWallBounds = entity.getCenterPosition();
       Vector2 velocity = goal.sub(cameraPosition).scl(CAMERA_SPEED);
