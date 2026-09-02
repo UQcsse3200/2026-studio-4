@@ -16,6 +16,17 @@ import java.util.Objects;
  */
 public class PlayerActions extends Component {
   private static final float DASH_SPEED_MULTIPLIER = 5;
+  private static final long DASH_DURATION_MS = 75;
+  private static final long DASH_COOLDOWN_MS = 575;
+
+  private final String WALK_UP = "walkUp";
+  private final String WALK_DOWN = "walkDown";
+  private final String WALK_LEFT = "walkLeft";
+  private final String WALK_RIGHT = "walkRight";
+  private static final String IDLE_UP = "idleUp";
+  private static final String IDLE_DOWN = "idleDown";
+  private static final String IDLE_LEFT = "idleLeft";
+  private static final String IDLE_RIGHT = "idleRight";
 
   private PhysicsComponent physicsComponent;
   private CombatStatsComponent combatStats;
@@ -44,45 +55,71 @@ public class PlayerActions extends Component {
 
   @Override
   public void update() {
-    if (time.getTimeSince(dashInit) >= 75) {
-      dashOn = false;
-      entity.getEvents().trigger("dashStop");
-    }
-    if (time.getTimeSince(dashInit) >= 575) {
-      dashCooldown = false;
-    }
+    updateDashState();
     if (moving) {
       updateSpeed();
     }
-    if (!moving && Objects.equals(animation, "walkDown")) {
-      entity.getEvents().trigger("idleDown");
-      animation = "idleDown";
-    } else if (!moving && Objects.equals(animation, "walkUp")) {
-      entity.getEvents().trigger("idleUp");
-      animation = "idleUp";
-    } else if (!moving && Objects.equals(animation, "walkLeft")) {
-      entity.getEvents().trigger("idleLeft");
-      animation = "idleLeft";
-    } else if (!moving && Objects.equals(animation, "walkRight")) {
-      entity.getEvents().trigger("idleRight");
-      animation = "idleRight";
-    } else if (walkDirection.y < 0 && !Objects.equals(animation, "walkDown")) {
-      entity.getEvents().trigger("walkDown");
-      animation = "walkDown";
-    } else if (walkDirection.y > 0 && !Objects.equals(animation, "walkUp")) {
-      entity.getEvents().trigger("walkUp");
-      animation = "walkUp";
-    } else if (walkDirection.x < 0
-        && !Objects.equals(animation, "walkLeft")
-        && walkDirection.y == 0) {
-      entity.getEvents().trigger("walkLeft");
-      animation = "walkLeft";
-    } else if (walkDirection.x > 0
-        && !Objects.equals(animation, "walkRight")
-        && walkDirection.y == 0) {
-      entity.getEvents().trigger("walkRight");
-      animation = "walkRight";
+    updateAnimation();
+  }
+
+  /** Ends the dash and clears the dash cooldown once their respective durations have elapsed. */
+  private void updateDashState() {
+    if (time.getTimeSince(dashInit) >= DASH_DURATION_MS) {
+      dashOn = false;
+      entity.getEvents().trigger("dashStop");
     }
+    if (time.getTimeSince(dashInit) >= DASH_COOLDOWN_MS) {
+      dashCooldown = false;
+    }
+  }
+
+  /** Chooses between idle and walk animation logic based on whether the player is moving. */
+  private void updateAnimation() {
+    if (!moving) {
+      updateIdleAnimation();
+    } else {
+      updateWalkAnimation();
+    }
+  }
+
+  /** Switches to the matching idle animation once the player has stopped walking. */
+  private void updateIdleAnimation() {
+    if (Objects.equals(animation, WALK_DOWN)) {
+      triggerAnimation(IDLE_DOWN);
+    } else if (Objects.equals(animation, WALK_UP)) {
+      triggerAnimation(IDLE_UP);
+    } else if (Objects.equals(animation, WALK_LEFT)) {
+      triggerAnimation(IDLE_LEFT);
+    } else if (Objects.equals(animation, WALK_RIGHT)) {
+      triggerAnimation(IDLE_RIGHT);
+    }
+  }
+
+  /** Switches to the matching walk animation based on the player's current walk direction. */
+  private void updateWalkAnimation() {
+    if (walkDirection.y < 0 && !Objects.equals(animation, WALK_DOWN)) {
+      triggerAnimation(WALK_DOWN);
+    } else if (walkDirection.y > 0 && !Objects.equals(animation, WALK_UP)) {
+      triggerAnimation(WALK_UP);
+    } else if (walkDirection.x < 0
+        && !Objects.equals(animation, WALK_LEFT)
+        && walkDirection.y == 0) {
+      triggerAnimation(WALK_LEFT);
+    } else if (walkDirection.x > 0
+        && !Objects.equals(animation, WALK_RIGHT)
+        && walkDirection.y == 0) {
+      triggerAnimation(WALK_RIGHT);
+    }
+  }
+
+  /**
+   * Fires the given animation event and records it as the current animation.
+   *
+   * @param animationName animation event/name to trigger
+   */
+  private void triggerAnimation(String animationName) {
+    entity.getEvents().trigger(animationName);
+    animation = animationName;
   }
 
   private void updateSpeed() {

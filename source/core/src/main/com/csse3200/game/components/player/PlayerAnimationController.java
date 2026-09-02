@@ -11,7 +11,8 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
 public class PlayerAnimationController extends Component {
   private AnimationRenderComponent animator;
   private boolean attacking;
-  private String animation = "idle_down";
+  private final String IDLE_ANIM = "idle_down";
+  private String animation = IDLE_ANIM;
 
   @Override
   public void create() {
