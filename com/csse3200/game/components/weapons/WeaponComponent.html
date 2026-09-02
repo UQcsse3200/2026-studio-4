@@ -92,7 +92,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="KnifeWeaponComponent.html" title="class in com.csse3200.game.components.weapons">KnifeWeaponComponent</a></code>, <code><a href="SwordWeaponComponent.html" title="class in com.csse3200.game.components.weapons">SwordWeaponComponent</a></code></dd>
+<dd><code><a href="BowWeaponComponent.html" title="class in com.csse3200.game.components.weapons">BowWeaponComponent</a></code>, <code><a href="KnifeWeaponComponent.html" title="class in com.csse3200.game.components.weapons">KnifeWeaponComponent</a></code>, <code><a href="SwordWeaponComponent.html" title="class in com.csse3200.game.components.weapons">SwordWeaponComponent</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public abstract class </span><span class="element-name type-name-label">WeaponComponent</span>
@@ -101,7 +101,9 @@ loadScripts(document, 'script');</script>
  subclasses cannot skip cooldown. Override <a href="#createAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)"><code>createAttack(Vector2, Vector2)</code></a> to spawn the
  weapon-specific hitbox.
 
- <p>The same entity must also have a <a href="WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponStatsComponent</code></a>.
+ <p>The same entity must also have a <a href="WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponStatsComponent</code></a>. Hitbox damage is <code>
+ round(wielder.baseAttack * weapon.multiplier)</code>; use <a href="#resolveHitboxDamage()"><code>resolveHitboxDamage()</code></a> when filling
+ <a href="../../entities/factories/HitboxSpec.html#damage(int)"><code>HitboxSpec.damage(int)</code></a>.
 
  <p>Listens for a <code>"weaponAttack"</code> event carrying a <code>Vector2</code> direction (triggered by,
  e.g., a player action or AI controller), and calls <a href="#attack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)"><code>attack(Vector2, Vector2)</code></a> using the
@@ -125,7 +127,7 @@ loadScripts(document, 'script');</script>
              .lifetime(0.15f)
              .layer(com.csse3200.game.physics.PhysicsLayer.WEAPON)
              .targetLayer(com.csse3200.game.physics.PhysicsLayer.NPC)
-             .damage(stats.getDamage())
+             .damage(resolveHitboxDamage())
              .knockback(stats.getKnockback())
              .owner(entity)
              .localOffset(offset);
@@ -199,6 +201,18 @@ loadScripts(document, 'script');</script>
  com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Spawn this weapon's hitbox.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected float</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveCooldown()" class="member-name-link">resolveCooldown</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Cooldown for this weapon scaled by the wielder's attack speed, so attack-speed buffs make every
+ weapon fire faster.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveHitboxDamage()" class="member-name-link">resolveHitboxDamage</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Damage for this weapon's spawned hitboxes: the wielder's base attack scaled by the weapon
+ multiplier, rounded.</div>
 </div>
 </div>
 </div>
@@ -281,6 +295,30 @@ loadScripts(document, 'script');</script>
 <dd><code>direction</code> - facing or aim direction</dd>
 <dt>Require:</dt>
 <dd>origin != null &amp;&amp; direction != null</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="resolveHitboxDamage()">
+<h3>resolveHitboxDamage</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">resolveHitboxDamage</span>()</div>
+<div class="block">Damage for this weapon's spawned hitboxes: the wielder's base attack scaled by the weapon
+ multiplier, rounded. A wielder without combat stats is treated as 0 base attack.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd><code>round(wielder.baseAttack * multiplier)</code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="resolveCooldown()">
+<h3>resolveCooldown</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">resolveCooldown</span>()</div>
+<div class="block">Cooldown for this weapon scaled by the wielder's attack speed, so attack-speed buffs make every
+ weapon fire faster. A wielder without combat stats uses the weapon's base cooldown.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd><code>weapon.cooldown / wielder.attackSpeed</code></dd>
 </dl>
 </section>
 </li>

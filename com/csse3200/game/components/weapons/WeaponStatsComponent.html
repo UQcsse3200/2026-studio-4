@@ -93,7 +93,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">WeaponStatsComponent</span>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">Stores cooldown, damage, and knockback for a wielder's current weapon.
+<div class="block">Stores cooldown, damage multiplier, and knockback for a wielder's current weapon.
+
+ <p>Hitbox damage is <code>round(wielder.baseAttack * multiplier)</code>, so buffs to the wielder's
+ base attack (e.g. the Strength Charm) scale every weapon's damage. Likewise the effective
+ cooldown is <code>cooldown / wielder.attackSpeed</code>, so attack-speed buffs speed up every weapon.
 
  <p>Cooldown is a countdown in seconds. Call <a href="#triggerCooldown()"><code>triggerCooldown()</code></a> after a successful attack
  and <a href="#update(float)"><code>update(float)</code></a> (or the no-arg <a href="#update()"><code>update()</code></a> from the entity loop) to tick it
@@ -118,8 +122,8 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(float,int,float)" class="member-name-link">WeaponStatsComponent</a><wbr>(float&nbsp;cooldown,
- int&nbsp;damage,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(float,float,float)" class="member-name-link">WeaponStatsComponent</a><wbr>(float&nbsp;cooldown,
+ float&nbsp;multiplier,
  float&nbsp;knockback)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Create weapon stats.</div>
@@ -144,23 +148,33 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCooldown()" class="member-name-link">getCooldown</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDamage()" class="member-name-link">getDamage</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getKnockback()" class="member-name-link">getKnockback</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getKnockback()" class="member-name-link">getKnockback</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMultiplier()" class="member-name-link">getMultiplier</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRemainingCooldown()" class="member-name-link">getRemainingCooldown</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveCooldown(float)" class="member-name-link">resolveCooldown</a><wbr>(float&nbsp;attackSpeed)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Cooldown scaled by the wielder's attack speed: faster wielders attack more often.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveHitboxDamage(int)" class="member-name-link">resolveHitboxDamage</a><wbr>(int&nbsp;baseAttack)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Hitbox damage copied onto a spawned sensor.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setCooldown(float)" class="member-name-link">setCooldown</a><wbr>(float&nbsp;cooldown)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDamage(int)" class="member-name-link">setDamage</a><wbr>(int&nbsp;damage)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setKnockback(float)" class="member-name-link">setKnockback</a><wbr>(float&nbsp;knockback)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setKnockback(float)" class="member-name-link">setKnockback</a><wbr>(float&nbsp;knockback)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMultiplier(float)" class="member-name-link">setMultiplier</a><wbr>(float&nbsp;multiplier)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#triggerCooldown()" class="member-name-link">triggerCooldown</a>()</code></div>
@@ -168,13 +182,18 @@ loadScripts(document, 'script');</script>
 <div class="block">Start the cooldown countdown from <a href="#getCooldown()"><code>getCooldown()</code></a>.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#triggerCooldown(float)" class="member-name-link">triggerCooldown</a><wbr>(float&nbsp;seconds)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Tick remaining cooldown using the registered time source.</div>
+<div class="block">Start the cooldown countdown from a resolved duration, e.g.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update(float)" class="member-name-link">update</a><wbr>(float&nbsp;dt)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Tick remaining cooldown using the registered time source.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update(float)" class="member-name-link">update</a><wbr>(float&nbsp;dt)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Tick remaining cooldown by <code>dt</code> seconds.</div>
 </div>
 </div>
@@ -198,21 +217,21 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(float,int,float)">
+<section class="detail" id="&lt;init&gt;(float,float,float)">
 <h3>WeaponStatsComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">WeaponStatsComponent</span><wbr><span class="parameters">(float&nbsp;cooldown,
- int&nbsp;damage,
+ float&nbsp;multiplier,
  float&nbsp;knockback)</span></div>
 <div class="block">Create weapon stats.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>cooldown</code> - seconds between attacks</dd>
-<dd><code>damage</code> - damage applied by spawned hitboxes</dd>
+<dd><code>multiplier</code> - scales the wielder's base attack onto spawned hitboxes</dd>
 <dd><code>knockback</code> - knockback impulse magnitude; 0 for none</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if any argument is negative</dd>
 <dt>Require:</dt>
-<dd>cooldown &gt;= 0 &amp;&amp; damage &gt;= 0 &amp;&amp; knockback &gt;= 0</dd>
+<dd>cooldown &gt;= 0 &amp;&amp; multiplier &gt;= 0 &amp;&amp; knockback &gt;= 0</dd>
 </dl>
 </section>
 </li>
@@ -244,6 +263,31 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Ensure:</dt>
 <dd>getRemainingCooldown() == getCooldown()</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="triggerCooldown(float)">
+<h3>triggerCooldown</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">triggerCooldown</span><wbr><span class="parameters">(float&nbsp;seconds)</span></div>
+<div class="block">Start the cooldown countdown from a resolved duration, e.g. <a href="#resolveCooldown(float)"><code>resolveCooldown(float)</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>seconds</code> - cooldown duration; negative values are treated as 0</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="resolveCooldown(float)">
+<h3>resolveCooldown</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">resolveCooldown</span><wbr><span class="parameters">(float&nbsp;attackSpeed)</span></div>
+<div class="block">Cooldown scaled by the wielder's attack speed: faster wielders attack more often.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>attackSpeed</code> - wielder's <code>CombatStatsComponent.getAttackSpeed()</code>; values &lt;= 0 are
+     treated as 1 (unscaled) so a zeroed stat cannot disable attacking forever</dd>
+<dt>Returns:</dt>
+<dd><code>cooldown / attackSpeed</code></dd>
 </dl>
 </section>
 </li>
@@ -298,26 +342,39 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="getDamage()">
-<h3>getDamage</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getDamage</span>()</div>
+<section class="detail" id="getMultiplier()">
+<h3>getMultiplier</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getMultiplier</span>()</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>damage dealt by this weapon's hitboxes</dd>
+<dd>multiplier applied to the wielder's base attack</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="setDamage(int)">
-<h3>setDamage</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setDamage</span><wbr><span class="parameters">(int&nbsp;damage)</span></div>
+<section class="detail" id="setMultiplier(float)">
+<h3>setMultiplier</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setMultiplier</span><wbr><span class="parameters">(float&nbsp;multiplier)</span></div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>damage</code> - damage dealt by this weapon's hitboxes</dd>
+<dd><code>multiplier</code> - scales the wielder's base attack onto spawned hitboxes</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if damage is negative</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if multiplier is negative</dd>
 <dt>Require:</dt>
-<dd>damage &gt;= 0</dd>
+<dd>multiplier &gt;= 0</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="resolveHitboxDamage(int)">
+<h3>resolveHitboxDamage</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">resolveHitboxDamage</span><wbr><span class="parameters">(int&nbsp;baseAttack)</span></div>
+<div class="block">Hitbox damage copied onto a spawned sensor.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>baseAttack</code> - wielder's <code>CombatStatsComponent.getBaseAttack()</code></dd>
+<dt>Returns:</dt>
+<dd><code>round(baseAttack * multiplier)</code></dd>
 </dl>
 </section>
 </li>
