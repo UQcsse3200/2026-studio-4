@@ -14,7 +14,10 @@ import com.csse3200.game.services.ServiceLocator;
 public class KnifeWeaponComponent extends WeaponComponent {
   private static final float BLADE_LENGTH = 1.0f;
   private static final float BLADE_WIDTH = 0.5f;
-  private static final float LIFETIME = 1.0f;
+  // Must stay below the attack cooldown (0.5s at attackSpeed 1.0). A longer-lived stab is still
+  // alive when the next one spawns, and an enemy entering the zone takes a hit from every live
+  // hitbox at once -- an overlap that grows with attack-speed buffs.
+  private static final float LIFETIME = 0.2f;
   private static final float GAP = 0.05f;
 
   /**
