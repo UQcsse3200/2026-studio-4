@@ -19,10 +19,11 @@ public class PlayerActions extends Component {
   private static final long DASH_DURATION_MS = 75;
   private static final long DASH_COOLDOWN_MS = 575;
 
-  private final String WALK_UP = "walkUp";
-  private final String WALK_DOWN = "walkDown";
-  private final String WALK_LEFT = "walkLeft";
-  private final String WALK_RIGHT = "walkRight";
+  // Event / animation names
+  private static final String WALK_UP = "walkUp";
+  private static final String WALK_DOWN = "walkDown";
+  private static final String WALK_LEFT = "walkLeft";
+  private static final String WALK_RIGHT = "walkRight";
   private static final String IDLE_UP = "idleUp";
   private static final String IDLE_DOWN = "idleDown";
   private static final String IDLE_LEFT = "idleLeft";
@@ -175,7 +176,6 @@ public class PlayerActions extends Component {
 
   /** Makes the player to do special attack. */
   void specialAttack() {
-
     Sound attackSound =
         ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
     attackSound.play();

@@ -41,7 +41,8 @@ class PlayerActionsTest {
     when(body.getWorldCenter()).thenReturn(new Vector2());
 
     ResourceService resources = mock(ResourceService.class);
-    when(resources.getAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(mock(Sound.class));
+    Sound mockSound = mock(Sound.class);
+    when(resources.getAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(mockSound);
     ServiceLocator.registerResourceService(resources);
 
     animator = mock(AnimationRenderComponent.class);

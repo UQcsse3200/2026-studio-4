@@ -9,24 +9,47 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
  * of the events is triggered.
  */
 public class PlayerAnimationController extends Component {
+  // Event names
+  private static final String EVENT_IDLE_DOWN = "idleDown";
+  private static final String EVENT_IDLE_LEFT = "idleLeft";
+  private static final String EVENT_IDLE_RIGHT = "idleRight";
+  private static final String EVENT_IDLE_UP = "idleUp";
+  private static final String EVENT_WALK_DOWN = "walkDown";
+  private static final String EVENT_WALK_LEFT = "walkLeft";
+  private static final String EVENT_WALK_RIGHT = "walkRight";
+  private static final String EVENT_WALK_UP = "walkUp";
+  private static final String EVENT_WEAPON_ATTACK = "weaponAttack";
+
+  // Animation names
+  private static final String ANIM_IDLE_DOWN = "idle_down";
+  private static final String ANIM_IDLE_LEFT = "idle_left";
+  private static final String ANIM_IDLE_RIGHT = "idle_right";
+  private static final String ANIM_IDLE_UP = "idle_up";
+  private static final String ANIM_WALK_DOWN = "walk_down";
+  private static final String ANIM_WALK_LEFT = "walk_left";
+  private static final String ANIM_WALK_RIGHT = "walk_right";
+  private static final String ANIM_WALK_UP = "walk_up";
+  private static final String ANIM_ATTACK_DOWN = "attack_down";
+  private static final String ANIM_ATTACK_UP = "attack_up";
+  private static final String ANIM_ATTACK_LEFT = "attack_left";
+  private static final String ANIM_ATTACK_RIGHT = "attack_right";
+
   private AnimationRenderComponent animator;
   private boolean attacking;
-  private final String IDLE_ANIM = "idle_down";
-  private String animation = IDLE_ANIM;
+  private String animation = ANIM_IDLE_DOWN;
 
   @Override
   public void create() {
-    super.create();
     animator = this.entity.getComponent(AnimationRenderComponent.class);
-    entity.getEvents().addListener("idleDown", this::animateIdleDown);
-    entity.getEvents().addListener("idleLeft", this::animateIdleLeft);
-    entity.getEvents().addListener("idleRight", this::animateIdleRight);
-    entity.getEvents().addListener("idleUp", this::animateIdleUp);
-    entity.getEvents().addListener("walkDown", this::animateWalkDown);
-    entity.getEvents().addListener("walkLeft", this::animateWalkLeft);
-    entity.getEvents().addListener("walkRight", this::animateWalkRight);
-    entity.getEvents().addListener("walkUp", this::animateWalkUp);
-    entity.getEvents().addListener("weaponAttack", this::animateAttack);
+    entity.getEvents().addListener(EVENT_IDLE_DOWN, this::animateIdleDown);
+    entity.getEvents().addListener(EVENT_IDLE_LEFT, this::animateIdleLeft);
+    entity.getEvents().addListener(EVENT_IDLE_RIGHT, this::animateIdleRight);
+    entity.getEvents().addListener(EVENT_IDLE_UP, this::animateIdleUp);
+    entity.getEvents().addListener(EVENT_WALK_DOWN, this::animateWalkDown);
+    entity.getEvents().addListener(EVENT_WALK_LEFT, this::animateWalkLeft);
+    entity.getEvents().addListener(EVENT_WALK_RIGHT, this::animateWalkRight);
+    entity.getEvents().addListener(EVENT_WALK_UP, this::animateWalkUp);
+    entity.getEvents().addListener(EVENT_WEAPON_ATTACK, this::animateAttack);
   }
 
   @Override
@@ -38,58 +61,47 @@ public class PlayerAnimationController extends Component {
   }
 
   private void animateIdleDown() {
-    animation = "idle_down";
-    if (!attacking) {
-      animator.startAnimation("idle_down");
-    }
+    setIdleAnimation(ANIM_IDLE_DOWN);
   }
 
   private void animateIdleLeft() {
-    animation = "idle_left";
-    if (!attacking) {
-      animator.startAnimation("idle_left");
-    }
+    setIdleAnimation(ANIM_IDLE_LEFT);
   }
 
   private void animateIdleRight() {
-    animation = "idle_right";
-    if (!attacking) {
-      animator.startAnimation("idle_right");
-    }
+    setIdleAnimation(ANIM_IDLE_RIGHT);
   }
 
   private void animateIdleUp() {
-    animation = "idle_up";
-    if (!attacking) {
-      animator.startAnimation("idle_up");
-    }
+    setIdleAnimation(ANIM_IDLE_UP);
   }
 
   private void animateWalkDown() {
-    animation = "walk_down";
-    if (!attacking) {
-      animator.startAnimation("walk_down");
-    }
+    setIdleAnimation(ANIM_WALK_DOWN);
   }
 
   private void animateWalkLeft() {
-    animation = "walk_left";
-    if (!attacking) {
-      animator.startAnimation("walk_left");
-    }
+    setIdleAnimation(ANIM_WALK_LEFT);
   }
 
   private void animateWalkRight() {
-    animation = "walk_right";
-    if (!attacking) {
-      animator.startAnimation("walk_right");
-    }
+    setIdleAnimation(ANIM_WALK_RIGHT);
   }
 
   private void animateWalkUp() {
-    animation = "walk_up";
+    setIdleAnimation(ANIM_WALK_UP);
+  }
+
+  /**
+   * Sets the current non-attack animation, and plays it immediately unless an attack animation is
+   * in progress.
+   *
+   * @param animationName animation to switch to
+   */
+  private void setIdleAnimation(String animationName) {
+    animation = animationName;
     if (!attacking) {
-      animator.startAnimation("walk_up");
+      animator.startAnimation(animationName);
     }
   }
 
@@ -99,15 +111,15 @@ public class PlayerAnimationController extends Component {
     }
     attacking = true;
     if (direction.y < 0) {
-      animator.startAnimation("attack_down");
+      animator.startAnimation(ANIM_ATTACK_DOWN);
     } else if (direction.y > 0) {
-      animator.startAnimation("attack_up");
+      animator.startAnimation(ANIM_ATTACK_UP);
     } else if (direction.x < 0) {
-      animator.startAnimation("attack_left");
+      animator.startAnimation(ANIM_ATTACK_LEFT);
     } else if (direction.x > 0) {
-      animator.startAnimation("attack_right");
+      animator.startAnimation(ANIM_ATTACK_RIGHT);
     } else {
-      animator.startAnimation("attack_down");
+      animator.startAnimation(ANIM_ATTACK_DOWN);
     }
   }
 }
