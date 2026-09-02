@@ -7,6 +7,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.FloatingDemonProjectileFactory;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.function.Consumer;
 
 /** Makes the floating demon fire three projectiles when the player is close. */
 public class RangedAttackTask extends DefaultTask implements PriorityTask {
@@ -17,12 +18,19 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
   private final Entity target;
   private final int damage;
+  private final Consumer<Entity> projectileSpawner;
 
   private float cooldownLeft;
 
   public RangedAttackTask(Entity target, int damage) {
+    this(target, damage, projectile -> ServiceLocator.getEntityService().register(projectile));
+  }
+
+  /** Creates a ranged attack whose projectiles are registered by the supplied owner. */
+  public RangedAttackTask(Entity target, int damage, Consumer<Entity> projectileSpawner) {
     this.target = target;
     this.damage = damage;
+    this.projectileSpawner = projectileSpawner;
   }
 
   @Override
@@ -74,7 +82,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
             () -> {
               Entity projectile =
                   FloatingDemonProjectileFactory.createProjectile(position, direction, damage);
-              ServiceLocator.getEntityService().register(projectile);
+              projectileSpawner.accept(projectile);
             });
   }
 }

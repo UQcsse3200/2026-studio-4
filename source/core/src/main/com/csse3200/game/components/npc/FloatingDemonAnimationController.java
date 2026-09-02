@@ -4,6 +4,7 @@ import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /** Starts the floating demon's flying animation when it begins patrolling. */
 public class FloatingDemonAnimationController extends Component {
@@ -41,7 +42,7 @@ public class FloatingDemonAnimationController extends Component {
   @Override
   public void update() {
     if (dying && animator.isFinished()) {
-      entity.dispose();
+      ServiceLocator.getEntityService().scheduleDisposal(entity);
       return;
     }
 
