@@ -1,7 +1,8 @@
 # Item/Charm System — Sprint 1 Test Evidence
 
-> Verified against `main@7632062` on 3 September 2026 (Australia/Brisbane). Enemy-drop
-> integration was merged in PR #74 at `a0adad1`.
+> Baseline: `main@7632062`. Actual verification commit: `items@ef9ce50`, with the follow-up
+> assertion correction recorded by the next normal `items` commit. Verified on 3 September 2026
+> (Australia/Brisbane). Enemy-drop integration was merged in PR #74 at `a0adad1`.
 
 ## Scope
 
@@ -44,9 +45,9 @@ Run from the `source` directory with JDK 21:
 ./gradlew clean core:test
 ```
 
-Local result on 3 September 2026: **355 tests passed**, including the new scene-integration
-regression test. GitHub Actions also reports successful Game Unit Tests, Java Format, and Build and
-Release workflows for the exact verified `main@7632062` baseline.
+Local result on 3 September 2026: **355 tests passed**, including the new component integration
+regression test. GitHub Actions reports successful Game Unit Tests and Java Format for the actual
+verification commit `items@ef9ce50`.
 
 The focused tests are:
 
@@ -105,4 +106,4 @@ still required if the Sprint evidence must visually prove the exact death positi
 - Desktop runtime: reached `MAIN_GAME`; four successful pickups; base attack increased once to 20.
 - Local `spotlessCheck`: blocked by a `google-java-format`/JDK tool incompatibility that raises
   `NoSuchMethodError` across all 115 Java files, including unchanged files.
-- GitHub Java Format workflow: passed for `main@7632062`.
+- GitHub Game Unit Tests and Java Format workflows: passed for `items@ef9ce50`.

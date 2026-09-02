@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -119,10 +121,12 @@ class EnemyManagerComponentTest {
     enemyManager.track(enemy);
 
     enemy.getEvents().trigger("entityDied");
+    verify(entityService, never()).register(Mockito.any(Entity.class));
+
     entityService.update();
 
     ArgumentCaptor<Entity> dropCaptor = ArgumentCaptor.forClass(Entity.class);
-    verify(entityService).register(dropCaptor.capture());
+    verify(entityService, times(1)).register(dropCaptor.capture());
     Entity drop = dropCaptor.getValue();
     ItemComponent item = drop.getComponent(ItemComponent.class);
 
@@ -130,6 +134,9 @@ class EnemyManagerComponentTest {
     assertNotNull(item);
     assertEquals("Strength Charm", item.getCharm().getName());
     assertEquals(PhysicsLayer.ITEM, drop.getComponent(HitboxComponent.class).getLayer());
+
+    entityService.update();
+    verify(entityService, times(1)).register(Mockito.any(Entity.class));
   }
 
   @Test
