@@ -10,9 +10,8 @@ import org.slf4j.LoggerFactory;
  * Removes a short-lived entity from the world once {@code lifetime} seconds have elapsed. Used by
  * weapon hitboxes so they do not linger.
  *
- * <p>Does not call {@code entity.dispose()} from {@code update()}, because {@code Entity.update()}
- * iterates components with a LibGDX for-each and nested dispose would throw. Instead this
- * unregisters the entity and destroys its physics body.
+ * <p>Queues removal until the current entity update has finished so that no component tries to use
+ * a destroyed physics body.
  */
 public class LifetimeComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(LifetimeComponent.class);
@@ -62,6 +61,15 @@ public class LifetimeComponent extends Component {
 
   private void removeFromWorld() {
     entity.setEnabled(false);
+    if (ServiceLocator.getEntityService() == null) {
+      removeNow();
+      return;
+    }
+
+    ServiceLocator.getEntityService().runAfterUpdate(this::removeNow);
+  }
+
+  private void removeNow() {
     PhysicsComponent physics = entity.getComponent(PhysicsComponent.class);
     if (physics != null) {
       physics.dispose();
