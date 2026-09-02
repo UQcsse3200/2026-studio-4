@@ -55,7 +55,7 @@ class SplitComponentTest {
   }
 
   private Entity createSplitEnemy() {
-    Entity enemy = NPCFactory.createChaseEnemy(new Entity());
+    Entity enemy = NPCFactory.createChaseEnemy(new Entity(), true);
     enemy.create();
     return enemy;
   }

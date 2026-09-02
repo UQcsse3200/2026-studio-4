@@ -44,7 +44,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case BOMB:
         return NPCFactory.createBombEnemy(target);
       case CHASE:
-        return NPCFactory.createChaseEnemy(target);
+        return NPCFactory.createChaseEnemy(target, true);
       case FLOATING_DEMON:
         TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
         Vector2 leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);

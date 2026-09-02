@@ -91,7 +91,7 @@ public class NPCFactory {
    * @param target entity to chase
    * @return entity
    */
-  public static Entity createChaseEnemy(Entity target) {
+  public static Entity createChaseEnemy(Entity target, boolean shouldSplit) {
     Entity chaseEnemy = createBaseNPC();
     ChaseEnemyConfig config = configs.chaseEnemy;
 
@@ -115,8 +115,11 @@ public class NPCFactory {
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
         .addComponent(aiComponent)
         .addComponent(animator)
-        .addComponent(new EnemyAnimationController())
-        .addComponent(new SplitComponent(target));
+        .addComponent(new EnemyAnimationController());
+
+    if (shouldSplit) {
+      chaseEnemy.addComponent(new SplitComponent(target));
+    }
 
     chaseEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
     chaseEnemy

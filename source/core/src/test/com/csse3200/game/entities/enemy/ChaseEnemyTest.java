@@ -56,7 +56,7 @@ class ChaseEnemyTest {
             .addComponent(new com.csse3200.game.components.CombatStatsComponent(20, 0));
     player.create();
 
-    Entity chaseEnemy = NPCFactory.createChaseEnemy(player);
+    Entity chaseEnemy = NPCFactory.createChaseEnemy(player, true);
     chaseEnemy.create();
 
     Fixture chaseFixture = chaseEnemy.getComponent(HitboxComponent.class).getFixture();
@@ -80,7 +80,7 @@ class ChaseEnemyTest {
             .addComponent(new com.csse3200.game.components.CombatStatsComponent(20, 0));
     player.create();
 
-    Entity chaseEnemy = NPCFactory.createChaseEnemy(player);
+    Entity chaseEnemy = NPCFactory.createChaseEnemy(player, true);
     chaseEnemy.create();
 
     Entity otherEntity =
