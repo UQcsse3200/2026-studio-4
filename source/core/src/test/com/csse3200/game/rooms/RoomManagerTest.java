@@ -88,7 +88,7 @@ class RoomManagerTest {
     when(room.getComponent(TerrainComponent.class)).thenReturn(terrain);
     when(room.getComponent(EnemyManagerComponent.class)).thenReturn(enemies);
     when(room.getEvents()).thenReturn(events);
-    when (room.getComponent(FollowingCameraComponent.class)).thenReturn(followingCameraComponent);
+    when(room.getComponent(FollowingCameraComponent.class)).thenReturn(followingCameraComponent);
     return room;
   }
 }

@@ -21,38 +21,37 @@ public class FollowingCameraComponent extends Component {
 
   @Override
   public void update() {
-    if (camera == null) {
-      return;
-    }
+    if (camera != null) {
+      if (target != null) {
+        this.setGoal(target.getCenterPosition());
 
-    if (target != null) {
-      this.setGoal(target.getCenterPosition());
-    }
 
-    Vector2 maxWallBounds = entity.getComponent(WallComponent.class).getWallBounds();
-    Vector2 minWallBounds = entity.getCenterPosition();
-    Vector2 velocity = goal.sub(cameraPosition).scl(CAMERA_SPEED);
-    Vector2 futureLocation = new Vector2(cameraPosition.x, cameraPosition.y).add(velocity);
-    Vector2 cameraSize = camera.getCameraSize();
-    cameraSize.scl(0.5f);
+        Vector2 maxWallBounds = entity.getComponent(WallComponent.class).getWallBounds();
+        Vector2 minWallBounds = entity.getCenterPosition();
+        Vector2 velocity = goal.sub(cameraPosition).scl(CAMERA_SPEED);
+        Vector2 futureLocation = new Vector2(cameraPosition.x, cameraPosition.y).add(velocity);
+        Vector2 cameraSize = camera.getCameraSize();
+        cameraSize.scl(0.5f);
 
-    if ((maxWallBounds.x < (futureLocation.x + cameraSize.x))) {
-      futureLocation.set(maxWallBounds.x - cameraSize.x, futureLocation.y);
+        if ((maxWallBounds.x < (futureLocation.x + cameraSize.x))) {
+          futureLocation.set(maxWallBounds.x - cameraSize.x, futureLocation.y);
+        }
+        if ((minWallBounds.x > (futureLocation.x - cameraSize.x))) {
+          futureLocation.set(minWallBounds.x + cameraSize.x, futureLocation.y);
+        }
+        if ((maxWallBounds.x / 2) < cameraSize.x) {
+          futureLocation.set(target.getCenterPosition());
+        }
+        if ((maxWallBounds.y < (futureLocation.y + cameraSize.y))) {
+          futureLocation.set(futureLocation.x, maxWallBounds.y - cameraSize.y);
+        }
+        if ((minWallBounds.y > (futureLocation.y - cameraSize.y))) {
+          futureLocation.set(futureLocation.x, minWallBounds.y + cameraSize.y);
+        }
+        cameraPosition = futureLocation;
+        camera.getEntity().setPosition(cameraPosition);
+      }
     }
-    if ((minWallBounds.x > (futureLocation.x - cameraSize.x))) {
-      futureLocation.set(minWallBounds.x + cameraSize.x, futureLocation.y);
-    }
-    if ((maxWallBounds.x / 2) < cameraSize.x) {
-      futureLocation.set(target.getCenterPosition());
-    }
-    if ((maxWallBounds.y < (futureLocation.y + cameraSize.y))) {
-      futureLocation.set(futureLocation.x, maxWallBounds.y - cameraSize.y);
-    }
-    if ((minWallBounds.y > (futureLocation.y - cameraSize.y))) {
-      futureLocation.set(futureLocation.x, minWallBounds.y + cameraSize.y);
-    }
-    cameraPosition = futureLocation;
-    camera.getEntity().setPosition(cameraPosition);
   }
 
   /** Sets the camera that follows this entity. */

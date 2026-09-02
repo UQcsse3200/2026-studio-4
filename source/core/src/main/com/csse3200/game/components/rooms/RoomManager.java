@@ -45,7 +45,8 @@ public class RoomManager {
     initialEntryPoint = currentConfig.getEntryPoint(world.startEntryPointId);
     currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
     player.getEvents().addListener("interact", this::interact);
-    FollowingCameraComponent cameraFollowingComponent = currentRoom.getComponent(FollowingCameraComponent.class);
+    FollowingCameraComponent cameraFollowingComponent =
+        currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
   }
@@ -156,7 +157,8 @@ public class RoomManager {
     currentRoom = nextRoom;
     ServiceLocator.getEntityService().register(currentRoom);
     start(arrivalPosition);
-    FollowingCameraComponent cameraFollowingComponent = currentRoom.getComponent(FollowingCameraComponent.class);
+    FollowingCameraComponent cameraFollowingComponent =
+        currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
   }

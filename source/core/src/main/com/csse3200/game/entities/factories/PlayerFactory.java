@@ -3,7 +3,6 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.rooms.FollowingCameraComponent;
 import com.csse3200.game.components.items.CharmPickupComponent;
 import com.csse3200.game.components.player.CharmEffectComponent;
 import com.csse3200.game.components.player.InventoryComponent;
