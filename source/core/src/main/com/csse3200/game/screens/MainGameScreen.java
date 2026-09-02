@@ -158,7 +158,8 @@ public class MainGameScreen extends ScreenAdapter {
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
-    Terminal terminal = new Terminal();
+    // Register on the shared terminal field: commands added elsewhere (e.g. "room" in the
+    // constructor) must end up on the same Terminal instance that is attached to the UI below.
     terminal.addCommand("weapon", new WeaponCommand(player));
 
     Entity ui = new Entity();

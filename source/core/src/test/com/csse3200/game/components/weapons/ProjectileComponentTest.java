@@ -70,14 +70,14 @@ class ProjectileComponentTest {
 
   @Test
   void constructorRejectsZeroDirection() {
-    assertThrows(
-        IllegalArgumentException.class, () -> new ProjectileComponent(new Vector2(0f, 0f), 1f));
+    Vector2 zeroDirection = new Vector2(0f, 0f);
+    assertThrows(IllegalArgumentException.class, () -> new ProjectileComponent(zeroDirection, 1f));
   }
 
   @Test
   void constructorRejectsNonPositiveSpeed() {
-    assertThrows(
-        IllegalArgumentException.class, () -> new ProjectileComponent(new Vector2(1f, 0f), 0f));
+    Vector2 direction = new Vector2(1f, 0f);
+    assertThrows(IllegalArgumentException.class, () -> new ProjectileComponent(direction, 0f));
   }
 
   @Test
