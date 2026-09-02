@@ -19,6 +19,12 @@ public class BowWeaponComponent extends WeaponComponent {
   private static final float ARROW_SPEED = 5f; // metres per second
   private static final float LIFETIME = 1.5f; // maximum flight time, caps range
   private static final float GAP = 0.05f; // spawn gap between wielder and arrow
+  // Drawn larger than the hitbox so the blade reads at speed without widening what it hits.
+  private static final float SPRITE_SIZE = 0.5f;
+  // The pack draws every weapon as an icon pointing up and to the LEFT: hilt at the bottom-right,
+  // tip at the top-left, a measured 135 degrees. Correcting it here keeps the pixel art crisp,
+  // where rotating the PNG off-axis would resample and soften it.
+  private static final float SPRITE_ANGLE_OFFSET = -135f;
 
   @Override
   protected void createAttack(Vector2 origin, Vector2 direction) {
@@ -46,7 +52,10 @@ public class BowWeaponComponent extends WeaponComponent {
             .targetLayer(PhysicsLayer.NPC)
             .damage(resolveHitboxDamage())
             .knockback(stats.getKnockback())
-                .texture("images/weapons/throwing_knife.png");
+            .texture("images/weapons/throwing_knife.png")
+            .visualScale(new Vector2(SPRITE_SIZE, SPRITE_SIZE))
+            .rotation(dir.angleDeg())
+            .rotationOffset(SPRITE_ANGLE_OFFSET);
 
     Entity arrow = HitboxFactory.createHitbox(spec);
     arrow.addComponent(new ProjectileComponent(dir, ARROW_SPEED));

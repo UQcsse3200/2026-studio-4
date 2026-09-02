@@ -18,6 +18,16 @@ public class SwordWeaponComponent extends WeaponComponent {
   private static final float BLADE_WIDTH = 0.4f; // the width of the hitbox when sweeping
   private static final float ARC_DEGREES = 90f; // the arc of the sweep attack
   private static final float GAP = 0.05f; // hitbox min distance from the player
+  // Drawn square so the blade keeps its shape; the hitbox stays long and thin for collision.
+  private static final float SPRITE_SIZE = 1.0f;
+  // The hitbox rides the arc at full reach, so drawing there would put the blade's midpoint on the
+  // arc and leave the handle floating. Pull it back along the swing so the handle sits at the
+  // wielder and the blade points outward through the sweep.
+  private static final float SPRITE_PULL_IN = -0.45f;
+  // The pack draws every weapon as an icon pointing up and to the LEFT: hilt at the bottom-right,
+  // tip at the top-left, a measured 135 degrees. Correcting it here keeps the pixel art crisp,
+  // where rotating the PNG off-axis would resample and soften it.
+  private static final float SPRITE_ANGLE_OFFSET = -135f;
 
   @Override
   protected void createAttack(Vector2 origin, Vector2 direction) {
@@ -57,7 +67,11 @@ public class SwordWeaponComponent extends WeaponComponent {
             .knockback(stats.getKnockback())
             .owner(entity)
             .localOffset(offset)
-                .texture("images/weapons/sword.png");
+            .texture("images/weapons/sword.png")
+            .visualScale(new Vector2(SPRITE_SIZE, SPRITE_SIZE))
+            .visualOffset(new Vector2(SPRITE_PULL_IN, 0f))
+            .rotation(startAngle)
+            .rotationOffset(SPRITE_ANGLE_OFFSET);
 
     Entity hitbox = HitboxFactory.createHitbox(spec);
     hitbox.addComponent(new SweepComponent(LIFETIME, startAngle, endAngle, reach));

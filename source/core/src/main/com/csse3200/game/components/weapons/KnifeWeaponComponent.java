@@ -19,6 +19,13 @@ public class KnifeWeaponComponent extends WeaponComponent {
   // hitbox at once -- an overlap that grows with attack-speed buffs.
   private static final float LIFETIME = 0.2f;
   private static final float GAP = 0.05f;
+  private static final float SPRITE_SIZE = 0.8f;
+  // Anchor the grip toward the wielder so the blade reads as a thrust rather than a floating edge.
+  private static final float SPRITE_PULL_IN = -0.35f;
+  // The pack draws every weapon as an icon pointing up and to the LEFT: hilt at the bottom-right,
+  // tip at the top-left, a measured 135 degrees. Correcting it here keeps the pixel art crisp,
+  // where rotating the PNG off-axis would resample and soften it.
+  private static final float SPRITE_ANGLE_OFFSET = -135f;
 
   /**
    * Spawn this weapon's hitbox. Melee implementations should pass the wielder as hitbox owner;
@@ -60,7 +67,11 @@ public class KnifeWeaponComponent extends WeaponComponent {
             .knockback(stats.getKnockback())
             .owner(entity)
             .localOffset(offset)
-                .texture("images/weapons/knife.png");
+            .texture("images/weapons/knife.png")
+            .visualScale(new Vector2(SPRITE_SIZE, SPRITE_SIZE))
+            .visualOffset(new Vector2(SPRITE_PULL_IN, 0f))
+            .rotation(cardinalDir.angleDeg())
+            .rotationOffset(SPRITE_ANGLE_OFFSET);
 
     Entity hitbox = HitboxFactory.createHitbox(spec);
     ServiceLocator.getEntityService().register(hitbox);
