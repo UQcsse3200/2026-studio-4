@@ -51,6 +51,10 @@ public class PlayerFactory {
     animator.addAnimation("idle_left", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle_right", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle_up", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("attack_down", 0.06f, Animation.PlayMode.NORMAL);
+    animator.addAnimation("attack_left", 0.06f, Animation.PlayMode.NORMAL);
+    animator.addAnimation("attack_right", 0.06f, Animation.PlayMode.NORMAL);
+    animator.addAnimation("attack_up", 0.06f, Animation.PlayMode.NORMAL);
     animator.addAnimation("walk_down", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("walk_left", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("walk_right", 0.1f, Animation.PlayMode.LOOP);

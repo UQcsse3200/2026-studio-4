@@ -1,5 +1,6 @@
 package com.csse3200.game.components.player;
 
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 
@@ -8,7 +9,9 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
  * of the events is triggered.
  */
 public class PlayerAnimationController extends Component {
-  AnimationRenderComponent animator;
+  private AnimationRenderComponent animator;
+  private boolean attacking;
+  private String animation = "idle_down";
 
   @Override
   public void create() {
@@ -22,37 +25,88 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("walkLeft", this::animateWalkLeft);
     entity.getEvents().addListener("walkRight", this::animateWalkRight);
     entity.getEvents().addListener("walkUp", this::animateWalkUp);
+    entity.getEvents().addListener("weaponAttack", this::animateAttack);
   }
 
-  void animateIdleDown() {
-    animator.startAnimation("idle_down");
+  @Override
+  public void update() {
+    if (attacking && animator.isFinished()) {
+      attacking = false;
+      animator.startAnimation(animation);
+    }
   }
 
-  void animateIdleLeft() {
-    animator.startAnimation("idle_left");
+  private void animateIdleDown() {
+    animation = "idle_down";
+    if (!attacking) {
+      animator.startAnimation("idle_down");
+    }
   }
 
-  void animateIdleRight() {
-    animator.startAnimation("idle_right");
+  private void animateIdleLeft() {
+    animation = "idle_left";
+    if (!attacking) {
+      animator.startAnimation("idle_left");
+    }
   }
 
-  void animateIdleUp() {
-    animator.startAnimation("idle_up");
+  private void animateIdleRight() {
+    animation = "idle_right";
+    if (!attacking) {
+      animator.startAnimation("idle_right");
+    }
   }
 
-  void animateWalkDown() {
-    animator.startAnimation("walk_down");
+  private void animateIdleUp() {
+    animation = "idle_up";
+    if (!attacking) {
+      animator.startAnimation("idle_up");
+    }
   }
 
-  void animateWalkLeft() {
-    animator.startAnimation("walk_left");
+  private void animateWalkDown() {
+    animation = "walk_down";
+    if (!attacking) {
+      animator.startAnimation("walk_down");
+    }
   }
 
-  void animateWalkRight() {
-    animator.startAnimation("walk_right");
+  private void animateWalkLeft() {
+    animation = "walk_left";
+    if (!attacking) {
+      animator.startAnimation("walk_left");
+    }
   }
 
-  void animateWalkUp() {
-    animator.startAnimation("walk_up");
+  private void animateWalkRight() {
+    animation = "walk_right";
+    if (!attacking) {
+      animator.startAnimation("walk_right");
+    }
+  }
+
+  private void animateWalkUp() {
+    animation = "walk_up";
+    if (!attacking) {
+      animator.startAnimation("walk_up");
+    }
+  }
+
+  private void animateAttack(Vector2 direction) {
+    if (attacking) {
+      return;
+    }
+    attacking = true;
+    if (direction.y < 0) {
+      animator.startAnimation("attack_down");
+    } else if (direction.y > 0) {
+      animator.startAnimation("attack_up");
+    } else if (direction.x < 0) {
+      animator.startAnimation("attack_left");
+    } else if (direction.x > 0) {
+      animator.startAnimation("attack_right");
+    } else {
+      animator.startAnimation("attack_down");
+    }
   }
 }
