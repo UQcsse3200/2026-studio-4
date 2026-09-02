@@ -1,6 +1,9 @@
-package com.csse3200.game.components;
+package com.csse3200.game.components.rooms;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.Component;
+import com.csse3200.game.entities.Entity;
 
 /** Moves a camera smoothly toward the entity this component is attached to. */
 public class FollowingCameraComponent extends Component {
@@ -8,6 +11,8 @@ public class FollowingCameraComponent extends Component {
 
   private CameraComponent camera;
   private Vector2 cameraPosition;
+  private Entity target;
+  private Vector2 goal;
 
   @Override
   public void create() {
@@ -20,7 +25,13 @@ public class FollowingCameraComponent extends Component {
       return;
     }
 
-    Vector2 velocity = entity.getPosition().sub(cameraPosition).scl(CAMERA_SPEED);
+    if (target!= null) {
+     setGoal(target.getCenterPosition());
+    }
+
+    //entity.getComponent(WallComponent.class);
+
+    Vector2 velocity = goal.sub(cameraPosition).scl(CAMERA_SPEED);
     cameraPosition.add(velocity);
     camera.getEntity().setPosition(cameraPosition);
   }
@@ -29,4 +40,10 @@ public class FollowingCameraComponent extends Component {
   public void setCamera(CameraComponent camera) {
     this.camera = camera;
   }
+
+  public void setTarget(Entity entity) {this.target = entity;}
+
+  public void setGoal(Vector2 goal) {this.goal = goal;}
+
+  public void removeTarget() {this.target = null;}
 }
