@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.items.Charm;
-import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
 /** A ui component for displaying player stats, e.g. health. */
@@ -34,8 +33,8 @@ public class PlayerStatsDisplay extends UIComponent {
     entity.getEvents().addListener("updateMovementSpeed", this::updatePlayerMovementSpeedUI);
     entity.getEvents().addListener("updateAttackSpeed", this::updatePlayerAttackSpeedUI);
     entity.getEvents().addListener("updateMaxHealth", this::updatePlayerMaxHealthUI);
-      entity.getEvents().addListener("charmAdded", this::updateCharmCountUI);
-      entity.getEvents().addListener("charmRemoved", this::updateCharmCountUI);
+    entity.getEvents().addListener("charmAdded", this::updateCharmCountUI);
+    entity.getEvents().addListener("charmRemoved", this::updateCharmCountUI);
   }
 
   /**
@@ -66,14 +65,15 @@ public class PlayerStatsDisplay extends UIComponent {
             String.format("Health: %d / %d", stats.getHealth(), stats.getMaxHealth()),
             skin,
             LABEL_STYLE);
-    strengthLabel = new Label(
-            String.format("Strength: %d", stats.getBaseAttack()), skin, LABEL_STYLE);
+    strengthLabel =
+        new Label(String.format("Strength: %d", stats.getBaseAttack()), skin, LABEL_STYLE);
     movementSpeedLabel =
         new Label(
             String.format("Movement Speed: %.2f", stats.getMovementSpeed()), skin, LABEL_STYLE);
     attackSpeedLabel =
         new Label(String.format("Attack Speed: %.2f", stats.getAttackSpeed()), skin, LABEL_STYLE);
-    charmCountLabel = new Label(String.format("Strength Charms: %d", charmCount), skin, LABEL_STYLE);
+    charmCountLabel =
+        new Label(String.format("Strength Charms: %d", charmCount), skin, LABEL_STYLE);
 
     table.add(healthLabel).left();
     table.row();
