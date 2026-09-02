@@ -42,6 +42,9 @@ public class FollowingCameraComponent extends Component {
     if ((minWallBounds.x > (futureLocation.x - cameraSize.x))) {
       futureLocation.set(minWallBounds.x + cameraSize.x, futureLocation.y);
     }
+    if ((maxWallBounds.x / 2) < cameraSize.x) {
+      futureLocation.set(target.getCenterPosition());
+    }
     if ((maxWallBounds.y < (futureLocation.y + cameraSize.y))) {
       futureLocation.set(futureLocation.x, maxWallBounds.y - cameraSize.y);
     }

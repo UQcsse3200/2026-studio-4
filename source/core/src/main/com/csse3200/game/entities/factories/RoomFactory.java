@@ -29,7 +29,6 @@ public class RoomFactory {
         .addComponent(
             terrainFactory.createDungeonTerrain(new GridPoint2(room.mapWidth, room.mapHeight)))
         .addComponent(new WallComponent())
-        .addComponent(new EnemyManagerComponent())
         .addComponent(new FollowingCameraComponent())
         .addComponent(new ObstacleComponent(room.obstacles))
         .addComponent(new ExitComponent(room.exits))

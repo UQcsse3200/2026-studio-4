@@ -47,7 +47,7 @@ public class RoomManager {
     player.getEvents().addListener("interact", this::interact);
     FollowingCameraComponent cameraFollowingComponent = currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
-    cameraFollowingComponent.setGoal(currentRoom.getCenterPosition());
+    cameraFollowingComponent.setTarget(player);
   }
 
   /** Registers the active room and player, then positions the player at its entry point. */
