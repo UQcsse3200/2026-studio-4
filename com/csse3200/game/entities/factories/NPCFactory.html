@@ -124,7 +124,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates a bomb Enemy entity.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createChaseEnemy(com.csse3200.game.entities.Entity)" class="member-name-link">createChaseEnemy</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createChaseEnemy(com.csse3200.game.entities.Entity,boolean)" class="member-name-link">createChaseEnemy</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ boolean&nbsp;shouldSplit)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates a chase enemy entity.</div>
 </div>
@@ -176,15 +177,17 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="createChaseEnemy(com.csse3200.game.entities.Entity)">
+<section class="detail" id="createChaseEnemy(com.csse3200.game.entities.Entity,boolean)">
 <h3>createChaseEnemy</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createChaseEnemy</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createChaseEnemy</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ boolean&nbsp;shouldSplit)</span></div>
 <div class="block">Creates a chase enemy entity. Moves quickly toward the player, performs a telegraphed
  lunge/dash attack when close enough, and splits into two weaker copies the first time it is hit
  and survives.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>target</code> - entity to chase</dd>
+<dd><code>shouldSplit</code> - whether the enemy should receive a <a href="../../components/SplitComponent.html" title="class in com.csse3200.game.components"><code>SplitComponent</code></a></dd>
 <dt>Returns:</dt>
 <dd>entity</dd>
 </dl>
