@@ -45,6 +45,10 @@ public class RoomManager {
     initialEntryPoint = currentConfig.getEntryPoint(world.startEntryPointId);
     currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
     player.getEvents().addListener("interact", this::interact);
+    FollowingCameraComponent cameraFollowingComponent =
+        currentRoom.getComponent(FollowingCameraComponent.class);
+    cameraFollowingComponent.setCamera(camera);
+    cameraFollowingComponent.setTarget(player);
   }
 
   /** Registers the active room and player, then positions the player at its entry point. */
@@ -153,6 +157,10 @@ public class RoomManager {
     currentRoom = nextRoom;
     ServiceLocator.getEntityService().register(currentRoom);
     start(arrivalPosition);
+    FollowingCameraComponent cameraFollowingComponent =
+        currentRoom.getComponent(FollowingCameraComponent.class);
+    cameraFollowingComponent.setCamera(camera);
+    cameraFollowingComponent.setTarget(player);
   }
 
   private PositionConfig arrivalInsideDoor(ExitConfig door) {

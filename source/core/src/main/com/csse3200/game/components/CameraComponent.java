@@ -42,4 +42,8 @@ public class CameraComponent extends Component {
     camera.viewportHeight = gameWidth * ratio;
     camera.update();
   }
+
+  public Vector2 getCameraSize() {
+    return new Vector2(camera.viewportWidth, camera.viewportHeight);
+  }
 }

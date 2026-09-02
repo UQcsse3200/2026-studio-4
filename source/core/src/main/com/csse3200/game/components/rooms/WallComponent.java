@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 public class WallComponent extends EntityManagerComponent {
   private static final Logger logger = LoggerFactory.getLogger(WallComponent.class);
   private static final float WALL_WIDTH = 0.1f;
+  private Vector2 wallBound;
+
+  public Vector2 getWallBounds() {
+    return wallBound;
+  }
 
   @Override
   public void create() {
@@ -23,21 +28,21 @@ public class WallComponent extends EntityManagerComponent {
 
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
-    Vector2 worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+    wallBound = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
 
     spawnEntityAt(
-        ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), GridPoint2Utils.ZERO, false, false);
+        ObstacleFactory.createWall(WALL_WIDTH, wallBound.y), GridPoint2Utils.ZERO, false, false);
     spawnEntityAt(
-        ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y),
+        ObstacleFactory.createWall(WALL_WIDTH, wallBound.y),
         new GridPoint2(tileBounds.x, 0),
         false,
         false);
     spawnEntityAt(
-        ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH),
+        ObstacleFactory.createWall(wallBound.x, WALL_WIDTH),
         new GridPoint2(0, tileBounds.y),
         false,
         false);
     spawnEntityAt(
-        ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
+        ObstacleFactory.createWall(wallBound.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
   }
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.rooms.*;
 import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.components.rooms.ExitComponent;
 import com.csse3200.game.components.rooms.ObstacleComponent;
@@ -28,6 +29,7 @@ public class RoomFactory {
         .addComponent(
             terrainFactory.createDungeonTerrain(new GridPoint2(room.mapWidth, room.mapHeight)))
         .addComponent(new WallComponent())
+        .addComponent(new FollowingCameraComponent())
         .addComponent(new ObstacleComponent(room.obstacles))
         .addComponent(new ExitComponent(room.exits))
         .addComponent(

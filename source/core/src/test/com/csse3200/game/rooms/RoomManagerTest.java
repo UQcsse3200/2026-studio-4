@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.rooms.EnemyManagerComponent;
+import com.csse3200.game.components.rooms.FollowingCameraComponent;
 import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.components.rooms.configs.WorldConfig;
@@ -75,6 +76,7 @@ class RoomManagerTest {
     Entity room = mock(Entity.class);
     TerrainComponent terrain = mock(TerrainComponent.class);
     EnemyManagerComponent enemies = mock(EnemyManagerComponent.class);
+    FollowingCameraComponent followingCameraComponent = mock(FollowingCameraComponent.class);
     EventHandler events = mock(EventHandler.class);
     when(terrain.tileToWorldPosition(any(GridPoint2.class)))
         .thenAnswer(
@@ -86,6 +88,7 @@ class RoomManagerTest {
     when(room.getComponent(TerrainComponent.class)).thenReturn(terrain);
     when(room.getComponent(EnemyManagerComponent.class)).thenReturn(enemies);
     when(room.getEvents()).thenReturn(events);
+    when(room.getComponent(FollowingCameraComponent.class)).thenReturn(followingCameraComponent);
     return room;
   }
 }
