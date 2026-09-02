@@ -30,6 +30,32 @@ class PlayerAnimationControllerTest {
   }
 
   @Test
+  void shouldPlayIdleAnimations() {
+    player.getEvents().trigger("idleDown");
+    player.getEvents().trigger("idleLeft");
+    player.getEvents().trigger("idleRight");
+    player.getEvents().trigger("idleUp");
+
+    verify(animator).startAnimation("idle_down");
+    verify(animator).startAnimation("idle_left");
+    verify(animator).startAnimation("idle_right");
+    verify(animator).startAnimation("idle_up");
+  }
+
+  @Test
+  void shouldPlayWalkAnimations() {
+    player.getEvents().trigger("walkDown");
+    player.getEvents().trigger("walkLeft");
+    player.getEvents().trigger("walkRight");
+    player.getEvents().trigger("walkUp");
+
+    verify(animator).startAnimation("walk_down");
+    verify(animator).startAnimation("walk_left");
+    verify(animator).startAnimation("walk_right");
+    verify(animator).startAnimation("walk_up");
+  }
+
+  @Test
   void shouldPlayAttackDown() {
     player.getEvents().trigger("weaponAttack", Vector2Utils.DOWN);
     verify(animator).startAnimation("attack_down");
