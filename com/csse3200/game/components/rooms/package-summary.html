@@ -78,6 +78,8 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><a href="../package-summary.html">com.csse3200.game.components</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="configs/package-summary.html">com.csse3200.game.components.rooms.configs</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </div>
 </li>
@@ -89,23 +91,29 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="EnemyManagerComponent.html" title="class in com.csse3200.game.components.rooms">EnemyManagerComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">Spawns a random group of ghosts when its room is started.</div>
+<div class="block">Spawns configured enemies and tracks when the room has been cleared.</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="EntityManagerComponent.html" title="class in com.csse3200.game.components.rooms">EntityManagerComponent</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Base component for creating entities owned by a room.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="ObstacleComponent.html" title="class in com.csse3200.game.components.rooms">ObstacleComponent</a></div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="ExitComponent.html" title="class in com.csse3200.game.components.rooms">ExitComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">Spawns rocks and barrels at random safe positions in a room.</div>
+<div class="block">Spawns the visible door and bookshelf forms of a room's configured exits.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="RoomAssetsComponent.html" title="class in com.csse3200.game.components.rooms">RoomAssetsComponent</a></div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="ObstacleComponent.html" title="class in com.csse3200.game.components.rooms">ObstacleComponent</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
-<div class="block">Loads the terrain, audio, and player-action assets used by a basic room.</div>
+<div class="block">Spawns the fixed rocks and barrels declared for a room.</div>
 </div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="RoomAssetsComponent.html" title="class in com.csse3200.game.components.rooms">RoomAssetsComponent</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">Loads the terrain, fixtures, audio, and enemy assets used by a room.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="RoomCommand.html" title="class in com.csse3200.game.components.rooms">RoomCommand</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">&nbsp;</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="RoomManager.html" title="class in com.csse3200.game.components.rooms">RoomManager</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">Registers one active room and positions the player at that room's spawn point.</div>
+<div class="block">Owns the active room and applies the room graph specified by <a href="configs/WorldConfig.html" title="class in com.csse3200.game.components.rooms.configs"><code>WorldConfig</code></a>.</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="WallComponent.html" title="class in com.csse3200.game.components.rooms">WallComponent</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">

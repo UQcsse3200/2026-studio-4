@@ -63,6 +63,7 @@ loadScripts(document, 'script');</script>
 <li><a href="com/csse3200/game/components/npc/package-tree.html">com.csse3200.game.components.npc</a>, </li>
 <li><a href="com/csse3200/game/components/player/package-tree.html">com.csse3200.game.components.player</a>, </li>
 <li><a href="com/csse3200/game/components/rooms/package-tree.html">com.csse3200.game.components.rooms</a>, </li>
+<li><a href="com/csse3200/game/components/rooms/configs/package-tree.html">com.csse3200.game.components.rooms.configs</a>, </li>
 <li><a href="com/csse3200/game/components/settingsmenu/package-tree.html">com.csse3200.game.components.settingsmenu</a>, </li>
 <li><a href="com/csse3200/game/components/tasks/package-tree.html">com.csse3200.game.components.tasks</a>, </li>
 <li><a href="com/csse3200/game/components/weapons/package-tree.html">com.csse3200.game.components.weapons</a>, </li>
@@ -116,6 +117,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/EntityManagerComponent.html" class="type-name-link" title="class in com.csse3200.game.components.rooms">EntityManagerComponent</a>
 <ul>
 <li class="circle">com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/EnemyManagerComponent.html" class="type-name-link" title="class in com.csse3200.game.components.rooms">EnemyManagerComponent</a></li>
+<li class="circle">com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/ExitComponent.html" class="type-name-link" title="class in com.csse3200.game.components.rooms">ExitComponent</a></li>
 <li class="circle">com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/ObstacleComponent.html" class="type-name-link" title="class in com.csse3200.game.components.rooms">ObstacleComponent</a></li>
 <li class="circle">com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/WallComponent.html" class="type-name-link" title="class in com.csse3200.game.components.rooms">WallComponent</a></li>
 </ul>
@@ -222,12 +224,22 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsService.html" class="type-name-link" title="class in com.csse3200.game.physics">PhysicsService</a></li>
 <li class="circle">com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsUtils.html" class="type-name-link" title="class in com.csse3200.game.physics">PhysicsUtils</a></li>
 <li class="circle">com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/PlayerFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">PlayerFactory</a></li>
+<li class="circle">com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/PositionConfig.html" class="type-name-link" title="class in com.csse3200.game.components.rooms.configs">PositionConfig</a>
+<ul>
+<li class="circle">com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.html" class="type-name-link" title="class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig</a></li>
+<li class="circle">com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/EntryPointConfig.html" class="type-name-link" title="class in com.csse3200.game.components.rooms.configs">EntryPointConfig</a></li>
+<li class="circle">com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/ExitConfig.html" class="type-name-link" title="class in com.csse3200.game.components.rooms.configs">ExitConfig</a></li>
+<li class="circle">com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/ObstacleConfig.html" class="type-name-link" title="class in com.csse3200.game.components.rooms.configs">ObstacleConfig</a></li>
+</ul>
+</li>
 <li class="circle">com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/RandomUtils.html" class="type-name-link" title="class in com.csse3200.game.utils.math">RandomUtils</a></li>
 <li class="circle">com.csse3200.game.physics.raycast.<a href="com/csse3200/game/physics/raycast/RaycastHit.html" class="type-name-link" title="class in com.csse3200.game.physics.raycast">RaycastHit</a></li>
 <li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/Renderer.html" class="type-name-link" title="class in com.csse3200.game.rendering">Renderer</a> (implements com.badlogic.gdx.utils.Disposable)</li>
 <li class="circle">com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/RenderFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">RenderFactory</a></li>
 <li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RenderService.html" class="type-name-link" title="class in com.csse3200.game.rendering">RenderService</a> (implements com.badlogic.gdx.utils.Disposable)</li>
 <li class="circle">com.csse3200.game.services.<a href="com/csse3200/game/services/ResourceService.html" class="type-name-link" title="class in com.csse3200.game.services">ResourceService</a> (implements com.badlogic.gdx.utils.Disposable)</li>
+<li class="circle">com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomCommand.html" class="type-name-link" title="class in com.csse3200.game.components.rooms">RoomCommand</a> (implements com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/Command.html" title="interface in com.csse3200.game.ui.terminal.commands">Command</a>)</li>
+<li class="circle">com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/RoomConfig.html" class="type-name-link" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a></li>
 <li class="circle">com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/RoomFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">RoomFactory</a></li>
 <li class="circle">com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomManager.html" class="type-name-link" title="class in com.csse3200.game.components.rooms">RoomManager</a></li>
 <li class="circle">com.badlogic.gdx.ScreenAdapter (implements com.badlogic.gdx.Screen)
@@ -250,6 +262,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.DisplaySettings.html" class="type-name-link" title="class in com.csse3200.game.files">UserSettings.DisplaySettings</a></li>
 <li class="circle">com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.Settings.html" class="type-name-link" title="class in com.csse3200.game.files">UserSettings.Settings</a></li>
 <li class="circle">com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/Vector2Utils.html" class="type-name-link" title="class in com.csse3200.game.utils.math">Vector2Utils</a></li>
+<li class="circle">com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/WorldConfig.html" class="type-name-link" title="class in com.csse3200.game.components.rooms.configs">WorldConfig</a></li>
 </ul>
 </li>
 </ul>
@@ -288,9 +301,11 @@ loadScripts(document, 'script');</script>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Enum.html" class="type-name-link external-link" title="class or interface in java.lang">Enum</a>&lt;E&gt; (implements java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Comparable.html" title="class or interface in java.lang" class="external-link">Comparable</a>&lt;T&gt;, java.lang.constant.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/constant/Constable.html" title="class or interface in java.lang.constant" class="external-link">Constable</a>, java.io.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/Serializable.html" title="class or interface in java.io" class="external-link">Serializable</a>)
 <ul>
 <li class="circle">com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/DreamlandTile.html" class="type-name-link" title="enum class in com.csse3200.game.areas.terrain">DreamlandTile</a></li>
+<li class="circle">com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html" class="type-name-link" title="enum class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig.EnemyType</a></li>
 <li class="circle">com.csse3200.game.files.<a href="com/csse3200/game/files/FileLoader.Location.html" class="type-name-link" title="enum class in com.csse3200.game.files">FileLoader.Location</a></li>
 <li class="circle">com.csse3200.game.<a href="com/csse3200/game/GdxGame.ScreenType.html" class="type-name-link" title="enum class in com.csse3200.game">GdxGame.ScreenType</a></li>
 <li class="circle">com.csse3200.game.input.<a href="com/csse3200/game/input/InputFactory.InputType.html" class="type-name-link" title="enum class in com.csse3200.game.input">InputFactory.InputType</a></li>
+<li class="circle">com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/ObstacleConfig.ObstacleType.html" class="type-name-link" title="enum class in com.csse3200.game.components.rooms.configs">ObstacleConfig.ObstacleType</a></li>
 <li class="circle">com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsComponent.AlignX.html" class="type-name-link" title="enum class in com.csse3200.game.physics.components">PhysicsComponent.AlignX</a></li>
 <li class="circle">com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsComponent.AlignY.html" class="type-name-link" title="enum class in com.csse3200.game.physics.components">PhysicsComponent.AlignY</a></li>
 <li class="circle">com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/Task.Status.html" class="type-name-link" title="enum class in com.csse3200.game.ai.tasks">Task.Status</a></li>
