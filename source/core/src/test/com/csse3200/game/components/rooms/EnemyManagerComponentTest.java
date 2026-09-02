@@ -2,24 +2,33 @@ package com.csse3200.game.components.rooms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 @ExtendWith(GameExtension.class)
@@ -46,6 +55,17 @@ class EnemyManagerComponentTest {
   void setUp() {
     entityService = spy(new EntityService());
     ServiceLocator.registerEntityService(entityService);
+    ServiceLocator.registerPhysicsService(new PhysicsService());
+    ServiceLocator.registerRenderService(mock(RenderService.class));
+
+    ResourceService resourceService = mock(ResourceService.class);
+    Texture texture = mock(Texture.class);
+    when(resourceService.getAsset("images/strength_charm_pixel.png", Texture.class))
+        .thenReturn(texture);
+    when(texture.getWidth()).thenReturn(1270);
+    when(texture.getHeight()).thenReturn(1239);
+    ServiceLocator.registerResourceService(resourceService);
+
     room = createMockRoom();
     enemyManager = new EnemyManagerComponent();
     enemyManager.setEntity(room);
@@ -89,6 +109,27 @@ class EnemyManagerComponentTest {
 
     assertEquals(1, cleared[0], "roomCleared should fire once all enemies are dead");
     assertTrue(enemyManager.isCleared());
+  }
+
+  @Test
+  void shouldRegisterStrengthCharmAtDefeatedEnemyPosition() {
+    Vector2 deathPosition = new Vector2(4f, 6f);
+    Entity enemy = new Entity();
+    enemy.setPosition(deathPosition);
+    enemyManager.track(enemy);
+
+    enemy.getEvents().trigger("entityDied");
+    entityService.update();
+
+    ArgumentCaptor<Entity> dropCaptor = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService).register(dropCaptor.capture());
+    Entity drop = dropCaptor.getValue();
+    ItemComponent item = drop.getComponent(ItemComponent.class);
+
+    assertEquals(deathPosition, drop.getPosition());
+    assertNotNull(item);
+    assertEquals("Strength Charm", item.getCharm().getName());
+    assertEquals(PhysicsLayer.ITEM, drop.getComponent(HitboxComponent.class).getLayer());
   }
 
   @Test
