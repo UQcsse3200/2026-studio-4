@@ -56,7 +56,8 @@ public class KnifeWeaponComponent extends WeaponComponent {
             .damage(resolveHitboxDamage())
             .knockback(stats.getKnockback())
             .owner(entity)
-            .localOffset(offset);
+            .localOffset(offset)
+                .texture("images/rock.png");
 
     Entity hitbox = HitboxFactory.createHitbox(spec);
     ServiceLocator.getEntityService().register(hitbox);

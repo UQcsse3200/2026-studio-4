@@ -20,6 +20,7 @@ public class HitboxSpec {
   private float knockback;
   private Entity owner;
   private Vector2 localOffset = new Vector2();
+  private String texturePath;
 
   /**
    * @param position world position of the hitbox entity
@@ -91,6 +92,16 @@ public class HitboxSpec {
     return this;
   }
 
+  /**
+   * Texture drawn across the hitbox.
+   *
+   * @param texturePath asset path, or null for no sprite
+   * @return this spec
+   */
+public HitboxSpec texture(String texturePath) {
+    this.texturePath = texturePath;
+    return this;
+}
   /**
    * When set, the factory attaches a follow component so the hitbox tracks this entity.
    *
@@ -174,5 +185,12 @@ public class HitboxSpec {
    */
   public Vector2 getLocalOffset() {
     return localOffset.cpy();
+  }
+
+  /**
+   * @return texture asset path
+   */
+  public String getTexture() {
+      return texturePath;
   }
 }
