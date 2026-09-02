@@ -17,6 +17,7 @@ public class PlayerStatsDisplay extends UIComponent {
   private Label healthLabel;
   private Label strengthLabel;
   private Label charmCountLabel;
+  private static final String LABEL_STYLE = "large";
 
   /** Creates reusable ui styles and adds actors to the stage. */
   @Override
@@ -49,15 +50,15 @@ public class PlayerStatsDisplay extends UIComponent {
     // Health text
     int health = entity.getComponent(CombatStatsComponent.class).getHealth();
     CharSequence healthText = String.format("Health: %d", health);
-    healthLabel = new Label(healthText, skin, "large");
+    healthLabel = new Label(healthText, skin, LABEL_STYLE);
 
     int strength = entity.getComponent(CombatStatsComponent.class).getStrength();
     CharSequence strengthText = String.format("Strength: %d", strength);
-    strengthLabel = new Label(strengthText, skin, "large");
+    strengthLabel = new Label(strengthText, skin, LABEL_STYLE);
 
     int charmCount = entity.getComponent(InventoryComponent.class).getCharmCount();
     CharSequence charmCountText = String.format("Strength Charms: %d", charmCount);
-    charmCountLabel = new Label(charmCountText, skin, "large");
+    charmCountLabel = new Label(charmCountText, skin, LABEL_STYLE);
 
     table.add(heartImage).size(heartSideLength).pad(5);
     table.add(healthLabel);

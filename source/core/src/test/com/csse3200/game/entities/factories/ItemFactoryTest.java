@@ -60,8 +60,8 @@ class ItemFactoryTest {
 
   @Test
   void shouldRejectInvalidDropRequest() {
-    assertThrows(
-        NullPointerException.class, () -> ItemFactory.createDrop(null, new Vector2(1f, 2f)));
+    Vector2 validPosition = new Vector2(1f, 2f);
+    assertThrows(NullPointerException.class, () -> ItemFactory.createDrop(null, validPosition));
     assertThrows(
         NullPointerException.class, () -> ItemFactory.createDrop(ItemType.STRENGTH_CHARM, null));
   }
@@ -71,7 +71,7 @@ class ItemFactoryTest {
     Entity item = ItemFactory.createStrengthCharm();
 
     ItemComponent itemComponent = item.getComponent(ItemComponent.class);
-    assertEquals((short) (1 << 5), PhysicsLayer.ITEM);
+    assertEquals(PhysicsLayer.ITEM, (short) (1 << 5));
     assertNotNull(itemComponent);
     assertEquals("Strength Charm", itemComponent.getCharm().getName());
     assertNotNull(item.getComponent(PhysicsComponent.class));
