@@ -57,7 +57,7 @@ public class SwordWeaponComponent extends WeaponComponent {
             .knockback(stats.getKnockback())
             .owner(entity)
             .localOffset(offset)
-                .texture("images/rock.png");
+                .texture("images/weapons/sword.png");
 
     Entity hitbox = HitboxFactory.createHitbox(spec);
     hitbox.addComponent(new SweepComponent(LIFETIME, startAngle, endAngle, reach));

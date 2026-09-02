@@ -46,7 +46,7 @@ public class BowWeaponComponent extends WeaponComponent {
             .targetLayer(PhysicsLayer.NPC)
             .damage(resolveHitboxDamage())
             .knockback(stats.getKnockback())
-                .texture("images/rock.png");
+                .texture("images/weapons/throwing_knife.png");
 
     Entity arrow = HitboxFactory.createHitbox(spec);
     arrow.addComponent(new ProjectileComponent(dir, ARROW_SPEED));
