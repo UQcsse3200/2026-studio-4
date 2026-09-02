@@ -1,12 +1,17 @@
 package com.csse3200.game.components.rooms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.EventHandler;
@@ -21,6 +26,7 @@ import org.mockito.Mockito;
 class EnemyManagerComponentTest {
   private Entity room;
   private EnemyManagerComponent enemyManager;
+  private EntityService entityService;
 
   private static Entity createMockRoom() {
     Entity room = mock(Entity.class);
@@ -38,7 +44,8 @@ class EnemyManagerComponentTest {
 
   @BeforeEach
   void setUp() {
-    ServiceLocator.registerEntityService(new EntityService());
+    entityService = spy(new EntityService());
+    ServiceLocator.registerEntityService(entityService);
     room = createMockRoom();
     enemyManager = new EnemyManagerComponent();
     enemyManager.setEntity(room);
@@ -67,6 +74,7 @@ class EnemyManagerComponentTest {
     enemies[1].getEvents().trigger("entityDied");
 
     assertEquals(0, cleared[0], "roomCleared fired before the last enemy died");
+    assertFalse(enemyManager.isCleared());
   }
 
   @Test
@@ -80,5 +88,55 @@ class EnemyManagerComponentTest {
     }
 
     assertEquals(1, cleared[0], "roomCleared should fire once all enemies are dead");
+    assertTrue(enemyManager.isCleared());
+  }
+
+  @Test
+  void shouldReplaceSplitParentWithTrackedChildren() {
+    Entity parent = enemyMock();
+    Entity firstChild = enemyMock();
+    Entity secondChild = enemyMock();
+    int[] cleared = {0};
+    room.getEvents().addListener("roomCleared", () -> cleared[0]++);
+    enemyManager.track(parent);
+
+    parent.getEvents().trigger("spawnChildren", firstChild);
+    parent.getEvents().trigger("spawnChildren", secondChild);
+    firstChild.getEvents().trigger("entityDied");
+
+    assertFalse(enemyManager.isCleared());
+    assertEquals(0, cleared[0]);
+    secondChild.getEvents().trigger("entityDied");
+    assertTrue(enemyManager.isCleared());
+    assertEquals(1, cleared[0]);
+    verify(entityService).register(firstChild);
+    verify(entityService).register(secondChild);
+  }
+
+  @Test
+  void shouldClearEveryLivingEnemy() {
+    Entity first = combatEnemy();
+    Entity second = combatEnemy();
+    enemyManager.track(first);
+    enemyManager.track(second);
+
+    enemyManager.clear();
+
+    assertTrue(first.getComponent(CombatStatsComponent.class).isDead());
+    assertTrue(second.getComponent(CombatStatsComponent.class).isDead());
+    assertTrue(enemyManager.isCleared());
+  }
+
+  private Entity combatEnemy() {
+    Entity enemy = new Entity().addComponent(new CombatStatsComponent(10, 1));
+    entityService.register(enemy);
+    return enemy;
+  }
+
+  private static Entity enemyMock() {
+    Entity enemy = mock(Entity.class);
+    when(enemy.getEvents()).thenReturn(new EventHandler());
+    when(enemy.getCenterPosition()).thenReturn(new Vector2());
+    return enemy;
   }
 }

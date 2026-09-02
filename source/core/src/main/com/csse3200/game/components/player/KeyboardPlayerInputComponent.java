@@ -51,7 +51,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.K:
         entity.getEvents().trigger("specialAttack");
         return true;
-
+      case Keys.E:
+        entity.getEvents().trigger("interact");
+        return true;
       default:
         return false;
     }

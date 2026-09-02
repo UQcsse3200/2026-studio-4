@@ -3,117 +3,93 @@ package com.csse3200.game.components.rooms;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.configs.FloatingDemonConfig;
-import com.csse3200.game.entities.configs.NPCConfigs;
 import com.csse3200.game.entities.factories.NPCFactory;
-import com.csse3200.game.files.FileLoader;
-import com.csse3200.game.utils.math.RandomUtils;
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
-/** Spawns a random group of ghosts when its room is started. */
+/** Spawns configured enemies and tracks when the room has been cleared. */
 public class EnemyManagerComponent extends EntityManagerComponent {
-  private static final FloatingDemonConfig FLOATING_DEMON_CONFIG =
-      FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json").floatingDemon;
-  private static final int NUMBER_OF_CHASE_ENEMIES = 2;
-  private final int numberOfBombEnemies = new Random().nextInt(10, 20);
-  private int numEnemies = 0;
+  private final EnemySpawnConfig[] spawnConfigs;
+  private final Set<Entity> activeEnemies = new HashSet<>();
+
+  /** Creates an empty manager for tests and rooms with no enemies. */
+  public EnemyManagerComponent() {
+    this(new EnemySpawnConfig[0]);
+  }
+
+  public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs) {
+    this.spawnConfigs = spawnConfigs;
+  }
 
   @Override
   public void create() {
     entity.getEvents().addListener("RoomCreated", this::spawnEnemies);
   }
 
+  /** Spawns each enemy declared by the room. */
   public void spawnEnemies(Entity target) {
-    spawnBombEnemies(target);
-    spawnChaseEnemies(target);
-    spawnFloatingDemons(target);
+    for (EnemySpawnConfig spawn : spawnConfigs) {
+      Entity enemy = createEnemy(spawn, target);
+      track(enemy);
+      spawnEntityAt(enemy, new GridPoint2(spawn.x, spawn.y), true, true);
+    }
   }
 
-  /** Creates bomb enemies at random valid tiles and sets the player as their target. */
-  public void spawnBombEnemies(Entity target) {
-    spawnableArea()
-        .ifPresent(
-            maxPosition -> {
-              for (int i = 0; i < numberOfBombEnemies; i++) {
-                GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
-                Entity bombEnemy = NPCFactory.createBombEnemy(target);
-                track(bombEnemy);
-                spawnEntityAt(bombEnemy, position, true, true);
-              }
-            });
+  private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
+    switch (spawn.type) {
+      case BOMB:
+        return NPCFactory.createBombEnemy(target);
+      case CHASE:
+        return NPCFactory.createChaseEnemy(target);
+      case FLOATING_DEMON:
+        TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+        Vector2 leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);
+        Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
+        Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
+        return NPCFactory.createFloatingDemon(
+            target, leftPoint, topPoint, rightPoint, this::spawnEntity);
+      default:
+        throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
+    }
   }
 
-  /** Creates chase enemies at random valid tiles and sets the player as their target. */
-  public void spawnChaseEnemies(Entity target) {
-    spawnableArea()
-        .ifPresent(
-            maxPosition -> {
-              for (int i = 0; i < NUMBER_OF_CHASE_ENEMIES; i++) {
-                GridPoint2 position = RandomUtils.random(new GridPoint2(0, 0), maxPosition);
-                Entity chaseEnemy = NPCFactory.createChaseEnemy(target);
-                track(chaseEnemy);
-                spawnEntityAt(chaseEnemy, position, true, true);
-              }
-            });
-  }
-
-  /** Creates floating demons at random positions with local triangle patrol paths. */
-  private void spawnFloatingDemons(Entity target) {
-    spawnableArea()
-        .ifPresent(
-            maxPosition -> {
-              TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
-              float mapWidth = terrain.getMapBounds(0).x * terrain.getTileSize();
-              float mapHeight = terrain.getMapBounds(0).y * terrain.getTileSize();
-
-              for (int i = 0; i < FLOATING_DEMON_CONFIG.spawnCount; i++) {
-                GridPoint2 tilePosition = RandomUtils.random(new GridPoint2(1, 1), maxPosition);
-                Vector2 spawnPosition = terrain.tileToWorldPosition(tilePosition);
-
-                float leftX = Math.max(1f, spawnPosition.x - FLOATING_DEMON_CONFIG.patrolRange);
-                float rightX =
-                    Math.min(mapWidth - 1f, spawnPosition.x + FLOATING_DEMON_CONFIG.patrolRange);
-                float topY =
-                    Math.min(mapHeight - 1f, spawnPosition.y + FLOATING_DEMON_CONFIG.patrolHeight);
-
-                Vector2 leftPoint = new Vector2(leftX, spawnPosition.y);
-                Vector2 topPoint = new Vector2(spawnPosition.x, topY);
-                Vector2 rightPoint = new Vector2(rightX, spawnPosition.y);
-
-                Entity demon =
-                    NPCFactory.createFloatingDemon(target, leftPoint, topPoint, rightPoint);
-
-                track(demon);
-                spawnEntityAt(demon, tilePosition, true, true);
-              }
-            });
-  }
-
-  /**
-   * Tracks an enemy by incrementing numEnemies and listening for its death.
-   *
-   * @param enemy The enemy being tracked.
-   */
+  /** Tracks an enemy and any children it spawns. Package-private for testing. */
   void track(Entity enemy) {
-    numEnemies++;
-    enemy.getEvents().addListener("entityDied", this::onEnemyDefeated);
+    activeEnemies.add(enemy);
+    enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy));
+    enemy
+        .getEvents()
+        .addListener("spawnChildren", (Entity child) -> replaceWithChild(enemy, child));
   }
 
-  /** Decreases numEnemies and triggers roomCleared when all enemies are dead. */
-  private void onEnemyDefeated() {
-    numEnemies--;
-    if (numEnemies <= 0) {
+  private void onEnemyDefeated(Entity enemy) {
+    if (activeEnemies.remove(enemy) && activeEnemies.isEmpty()) {
       entity.getEvents().trigger("roomCleared");
     }
   }
 
-  /**
-   * Callback function for when an enemy wishes to spawn another enemy.
-   *
-   * @param newEnemy the new enemy should not already be registered
-   */
-  /**
-   * :private void enemyTriggerSpawn(Entity newEnemy) { track(newEnemy); spawnEntity(newEnemy); }
-   */
+  private void replaceWithChild(Entity parent, Entity child) {
+    track(child);
+    activeEnemies.remove(parent);
+    spawnEntity(child);
+  }
+
+  /** Returns whether the room has any living enemies. */
+  public boolean isCleared() {
+    return activeEnemies.isEmpty();
+  }
+
+  /** Defeats all living enemies for temporary transition testing. */
+  public void clear() {
+    for (Entity enemy : new ArrayList<>(activeEnemies)) {
+      CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
+      if (stats != null && !stats.isDead()) {
+        stats.setHealth(0);
+      }
+    }
+  }
 }
