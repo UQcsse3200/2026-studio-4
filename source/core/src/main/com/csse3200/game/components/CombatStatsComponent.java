@@ -220,9 +220,7 @@ public class CombatStatsComponent extends Component {
   public void takeDamage(int damage, Entity attacker) {
     if (damage > 0) {
       addHealth(-damage);
-      if (!isDead()) {
-        applyHitreaction(attacker);
-      }
+      applyHitreaction(attacker);
     }
   }
 

@@ -8,12 +8,14 @@ import com.csse3200.game.components.FollowingCameraComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.components.rooms.RoomCommand;
 import com.csse3200.game.components.rooms.RoomManager;
+import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.RenderFactory;
-import com.csse3200.game.entities.factories.RoomFactory;
+import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
@@ -37,8 +39,9 @@ import org.slf4j.LoggerFactory;
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
   private static final String[] mainGameTextures = {
-    "images/heart.png", "images/idle_down.png", "images/strength_charm_pixel.png"
+    "images/heart.png", "images/strength_charm_pixel.png"
   };
+  private static final String[] mainGameTextureAtlases = {"images/idle_down.atlas"};
 
   private final GdxGame game;
   private final Renderer renderer;
@@ -46,11 +49,13 @@ public class MainGameScreen extends ScreenAdapter {
   private RoomManager roomManager;
   private Entity player;
   private boolean deathScreenTriggered = false; // prevents screen-setting every frame
+  private final Terminal terminal;
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
 
     logger.debug("Initialising main game screen services");
+    terminal = new Terminal();
     ServiceLocator.registerTimeSource(new GameTime());
 
     PhysicsService physicsService = new PhysicsService();
@@ -68,12 +73,17 @@ public class MainGameScreen extends ScreenAdapter {
 
     loadAssets();
     logger.debug("Initialising main game screen entities");
-    Entity room = RoomFactory.createRoom("First Room", renderer.getCamera());
     player = PlayerFactory.createPlayer();
-    roomManager = new RoomManager(room, player);
     player.getComponent(FollowingCameraComponent.class).setCamera(renderer.getCamera());
+    WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
+    if (world == null) {
+      throw new IllegalStateException("Unable to load configs/rooms.json");
+    }
+    roomManager = new RoomManager(world, player, renderer.getCamera());
     roomManager.create();
 
+    RoomCommand roomCommand = new RoomCommand(roomManager);
+    terminal.addCommand("room", roomCommand);
     createUI();
   }
 
@@ -81,6 +91,7 @@ public class MainGameScreen extends ScreenAdapter {
   public void render(float delta) {
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
+    roomManager.update();
     renderer.render();
     if (!deathScreenTriggered && player != null) {
       CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
@@ -125,13 +136,15 @@ public class MainGameScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(mainGameTextures);
-    ServiceLocator.getResourceService().loadAll();
+    resourceService.loadTextureAtlases(mainGameTextureAtlases);
+    resourceService.loadAll();
   }
 
   private void unloadAssets() {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(mainGameTextures);
+    resourceService.unloadAssets(mainGameTextureAtlases);
   }
 
   /**
@@ -149,7 +162,7 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(new PerformanceDisplay())
         .addComponent(new MainGameActions(this.game))
         .addComponent(new MainGameExitDisplay())
-        .addComponent(new Terminal())
+        .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay());
 

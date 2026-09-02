@@ -5,6 +5,6 @@ package com.csse3200.game.entities.configs;
  * Factories.
  */
 public class BaseEntityConfig {
-  public int health = 1;
-  public int baseAttack = 0;
+  public int health = 10;
+  public int baseAttack = 3;
 }

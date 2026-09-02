@@ -5,18 +5,21 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 
-/** Loads the terrain, audio, and player-action assets used by a basic room. */
+/** Loads the terrain, fixtures, audio, and enemy assets used by a room. */
 public class RoomAssetsComponent extends Component {
   private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
   private static final String IMPACT_SOUND = "sounds/Impact4.ogg";
   private static final String ROCK_TEXTURE = "images/rock.png";
   private static final String FANTASY_DUNGEON_TILESET = "images/dungeons/fantasy_dreamland_16.png";
+  private static final String FANTASY_DUNGEON_DOOR = "images/dungeons/fantasy_dreamland_door.png";
 
-  private static final String[] TEXTURES = {ROCK_TEXTURE, FANTASY_DUNGEON_TILESET};
+  private static final String[] TEXTURES = {
+    ROCK_TEXTURE, FANTASY_DUNGEON_TILESET, FANTASY_DUNGEON_DOOR
+  };
   private static final String[] MUSIC = {BACKGROUND_MUSIC};
   private static final String[] SOUNDS = {IMPACT_SOUND};
   private static final String[] TEXTURE_ATLASES = {
-    "images/bombEnemy.atlas", "images/chaseEnemy.atlas", "images/idle_down.atlas"
+    "images/bombEnemy.atlas", "images/chaseEnemy.atlas", "images/floatingDemon.atlas"
   };
 
   public RoomAssetsComponent() {
