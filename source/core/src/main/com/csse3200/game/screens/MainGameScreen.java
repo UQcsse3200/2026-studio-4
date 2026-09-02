@@ -38,7 +38,9 @@ import org.slf4j.LoggerFactory;
  */
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
-  private static final String[] mainGameTextures = {"images/heart.png"};
+  private static final String[] mainGameTextures = {
+    "images/heart.png", "images/strength_charm_pixel.png"
+  };
   private static final String[] mainGameTextureAtlases = {"images/idle_down.atlas"};
 
   private final GdxGame game;
