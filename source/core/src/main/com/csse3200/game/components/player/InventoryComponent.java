@@ -1,6 +1,9 @@
 package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
+import com.csse3200.game.items.Charm;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,9 +16,12 @@ import org.slf4j.LoggerFactory;
 public class InventoryComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(InventoryComponent.class);
   private int gold;
+  // Stores charms currently held by the player
+  private final List<Charm> charms;
 
   public InventoryComponent(int gold) {
     setGold(gold);
+    this.charms = new ArrayList<>();
   }
 
   /**
@@ -54,5 +60,66 @@ public class InventoryComponent extends Component {
    */
   public void addGold(int gold) {
     setGold(this.gold + gold);
+  }
+
+  /**
+   * Returns the charms currently stored in the inventory.
+   *
+   * @return stored charms
+   */
+  public List<Charm> getCharms() {
+    return this.charms;
+  }
+
+  /**
+   * Adds a charm to the player's inventory. Used when the player picks up a charm.
+   *
+   * @param charm charm to add
+   */
+  public void addCharm(Charm charm) {
+    this.charms.add(charm);
+
+    // Notify other components when a charm is added
+    if (entity != null) {
+      entity.getEvents().trigger("charmAdded", charm);
+    }
+  }
+
+  /**
+   * Removes a charm from the player's inventory. Used when a charm is dropped or removed.
+   *
+   * @param charm charm to remove
+   * @return true if the charm was successfully removed
+   */
+  public boolean removeCharm(Charm charm) {
+    boolean removed = this.charms.remove(charm);
+
+    // Notify other components only when the charm is successfully removed
+    if (removed && entity != null) {
+      entity.getEvents().trigger("charmRemoved", charm);
+    }
+
+    return removed;
+  }
+
+  /**
+   * Checks whether the player currently has a specific charm. This can be used later when checking
+   * charm effects or buffs.
+   *
+   * @param charm charm to check
+   * @return true if the charm is stored in the inventory
+   */
+  public boolean hasCharm(Charm charm) {
+    return this.charms.contains(charm);
+  }
+
+  /**
+   * Returns the number of charms currently held by the player. Useful for checking and testing the
+   * inventory.
+   *
+   * @return number of stored charms
+   */
+  public int getCharmCount() {
+    return this.charms.size();
   }
 }

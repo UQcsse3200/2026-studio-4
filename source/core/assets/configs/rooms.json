@@ -1,0 +1,101 @@
+{
+  "startRoomId": "selection",
+  "startEntryPointId": "start",
+  "rooms": [
+    {
+      "id": "selection",
+      "title": "Dungeon Selection",
+      "mapWidth": 28,
+      "mapHeight": 28,
+      "entryPoints": [
+        { "id": "start", "x": 14, "y": 14 },
+        { "id": "fromDungeonOne", "x": 14, "y": 14 }
+      ],
+      "enemySpawns": [],
+      "obstacles": [
+        { "type": "ROCK", "x": 6, "y": 22 },
+        { "type": "ROCK", "x": 8, "y": 21 },
+        { "type": "BARREL", "x": 7, "y": 7 },
+        { "type": "BARREL", "x": 9, "y": 7 }
+      ],
+      "exits": [
+        { "id": "dungeonOneShelf", "kind": "BOOKSHELF", "x": 20, "y": 21,
+          "destinationRoomId": "dungeonOneEntrance", "destinationEntryPointId": "fromSelection" },
+        { "id": "dungeonTwoShelf", "kind": "BOOKSHELF", "x": 20, "y": 16,
+          "available": false, "message": "This dungeon is not available yet." },
+        { "id": "dungeonThreeShelf", "kind": "BOOKSHELF", "x": 20, "y": 11,
+          "available": false, "message": "This dungeon is not available yet." },
+        { "id": "dungeonFourShelf", "kind": "BOOKSHELF", "x": 20, "y": 6,
+          "available": false, "message": "This dungeon is not available yet." }
+      ]
+    },
+    {
+      "id": "dungeonOneEntrance",
+      "dungeonId": "dungeonOne",
+      "title": "Dungeon One: Entrance",
+      "entryPoints": [{ "id": "fromSelection", "x": 10, "y": 10 }],
+      "enemySpawns": [
+        { "type": "BOMB", "x": 22, "y": 20 },
+        { "type": "CHASE", "x": 30, "y": 28 }
+      ],
+      "obstacles": [
+        { "type": "BARREL", "x": 17, "y": 14 }, { "type": "BARREL", "x": 19, "y": 14 },
+        { "type": "ROCK", "x": 25, "y": 20 }, { "type": "ROCK", "x": 27, "y": 20 },
+        { "type": "BARREL", "x": 34, "y": 26 }, { "type": "BARREL", "x": 36, "y": 26 }
+      ],
+      "exits": [
+        { "id": "sideDoor", "kind": "DOOR", "x": 48, "y": 14, "side": "RIGHT",
+          "destinationRoomId": "dungeonOneSide", "destinationExitId": "returnDoor", "requiresClear": true },
+        { "id": "endDoor", "kind": "DOOR", "x": 48, "y": 34, "side": "RIGHT",
+          "destinationRoomId": "dungeonOneEnd", "destinationExitId": "returnDoor", "requiresClear": true }
+      ]
+    },
+    {
+      "id": "dungeonOneSide",
+      "dungeonId": "dungeonOne",
+      "title": "Dungeon One: Side Room",
+      "entryPoints": [],
+      "enemySpawns": [
+        { "type": "BOMB", "x": 19, "y": 18 },
+        { "type": "CHASE", "x": 27, "y": 25 },
+        { "type": "BOMB", "x": 34, "y": 20 },
+        { "type": "FLOATING_DEMON", "x": 31, "y": 32 }
+      ],
+      "obstacles": [
+        { "type": "BARREL", "x": 13, "y": 12 }, { "type": "BARREL", "x": 15, "y": 12 },
+        { "type": "ROCK", "x": 23, "y": 21 }, { "type": "ROCK", "x": 25, "y": 21 },
+        { "type": "BARREL", "x": 38, "y": 28 }
+      ],
+      "exits": [
+        { "id": "returnDoor", "kind": "DOOR", "x": 2, "y": 14, "side": "LEFT",
+          "destinationRoomId": "dungeonOneEntrance", "destinationExitId": "sideDoor", "requiresClear": true }
+      ]
+    },
+    {
+      "id": "dungeonOneEnd",
+      "dungeonId": "dungeonOne",
+      "title": "Dungeon One: End",
+      "entryPoints": [],
+      "enemySpawns": [
+        { "type": "BOMB", "x": 18, "y": 17 },
+        { "type": "BOMB", "x": 25, "y": 26 },
+        { "type": "CHASE", "x": 32, "y": 18 },
+        { "type": "CHASE", "x": 36, "y": 30 },
+        { "type": "FLOATING_DEMON", "x": 24, "y": 35 }
+      ],
+      "obstacles": [
+        { "type": "BARREL", "x": 14, "y": 30 }, { "type": "BARREL", "x": 16, "y": 30 },
+        { "type": "ROCK", "x": 21, "y": 23 }, { "type": "ROCK", "x": 23, "y": 23 },
+        { "type": "ROCK", "x": 25, "y": 23 }, { "type": "BARREL", "x": 30, "y": 34 },
+        { "type": "BARREL", "x": 32, "y": 34 }
+      ],
+      "exits": [
+        { "id": "returnDoor", "kind": "DOOR", "x": 2, "y": 34, "side": "LEFT",
+          "destinationRoomId": "dungeonOneEntrance", "destinationExitId": "endDoor", "requiresClear": true },
+        { "id": "returnShelf", "kind": "BOOKSHELF", "x": 36, "y": 28,
+          "destinationRoomId": "selection", "destinationEntryPointId": "fromDungeonOne",
+          "requiresClear": true, "completesDungeon": true }
+      ]
+    }
+  ]
+}

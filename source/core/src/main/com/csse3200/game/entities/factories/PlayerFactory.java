@@ -3,10 +3,15 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.rooms.FollowingCameraComponent;
+import com.csse3200.game.components.items.CharmPickupComponent;
+import com.csse3200.game.components.player.CharmEffectComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
+import com.csse3200.game.components.weapons.BowWeaponComponent;
+import com.csse3200.game.components.weapons.KnifeWeaponComponent;
 import com.csse3200.game.components.weapons.SwordWeaponComponent;
 import com.csse3200.game.components.weapons.WeaponStatsComponent;
 import com.csse3200.game.entities.Entity;
@@ -60,12 +65,22 @@ public class PlayerFactory {
             .addComponent(
                 new CombatStatsComponent(
                     stats.health, stats.baseAttack, stats.movementSpeed, stats.attackSpeed))
+            .addComponent(new CharmEffectComponent())
             .addComponent(new InventoryComponent(stats.gold))
+            .addComponent(new CharmPickupComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())
             .addComponent(new PlayerStatsDisplay())
-            .addComponent(new WeaponStatsComponent(0.5f, 10, 2f))
-            .addComponent(new SwordWeaponComponent());
+            // Weapon damage = round(baseAttack * multiplier); charms that raise base attack
+            // therefore scale weapon hits too.
+            .addComponent(new WeaponStatsComponent(0.5f, 1f, 2f))
+            .addComponent(new SwordWeaponComponent())
+            .addComponent(new KnifeWeaponComponent())
+            .addComponent(new BowWeaponComponent());
+
+    // Sword is equipped by default; the "weapon" terminal command switches at runtime.
+    player.getComponent(KnifeWeaponComponent.class).setEnabled(false);
+    player.getComponent(BowWeaponComponent.class).setEnabled(false);
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);

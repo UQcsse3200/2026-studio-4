@@ -211,10 +211,9 @@ public class ColliderComponent extends Component {
   @Override
   public void dispose() {
     super.dispose();
-    Body physBody = entity.getComponent(PhysicsComponent.class).getBody();
-    if (physBody.getFixtureList().contains(fixture, true)) {
-      physBody.destroyFixture(fixture);
-    }
+    // Destroying the PhysicsComponent body also destroys all of its fixtures. Doing that here as
+    // well is unsafe because entity component disposal order is not guaranteed.
+    fixture = null;
   }
 
   private Shape makeBoundingBox() {

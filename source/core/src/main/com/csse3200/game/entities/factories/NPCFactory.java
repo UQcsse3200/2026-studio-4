@@ -27,6 +27,7 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.function.Consumer;
 
 /**
  * Factory to create non-playable character (NPC) entities with predefined components.
@@ -88,9 +89,10 @@ public class NPCFactory {
    * and survives.
    *
    * @param target entity to chase
+   * @param shouldSplit whether the enemy should receive a {@link SplitComponent}
    * @return entity
    */
-  public static Entity createChaseEnemy(Entity target) {
+  public static Entity createChaseEnemy(Entity target, boolean shouldSplit) {
     Entity chaseEnemy = createBaseNPC();
     ChaseEnemyConfig config = configs.chaseEnemy;
 
@@ -114,8 +116,11 @@ public class NPCFactory {
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
         .addComponent(aiComponent)
         .addComponent(animator)
-        .addComponent(new EnemyAnimationController())
-        .addComponent(new SplitComponent(target));
+        .addComponent(new EnemyAnimationController());
+
+    if (shouldSplit) {
+      chaseEnemy.addComponent(new SplitComponent(target));
+    }
 
     chaseEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
     chaseEnemy
@@ -135,11 +140,26 @@ public class NPCFactory {
    */
   public static Entity createFloatingDemon(
       Entity target, Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint) {
+    return createFloatingDemon(
+        target,
+        leftPoint,
+        topPoint,
+        rightPoint,
+        projectile -> ServiceLocator.getEntityService().register(projectile));
+  }
+
+  /** Creates a floating demon and delegates ownership of its projectiles to the given spawner. */
+  public static Entity createFloatingDemon(
+      Entity target,
+      Vector2 leftPoint,
+      Vector2 topPoint,
+      Vector2 rightPoint,
+      Consumer<Entity> projectileSpawner) {
     FloatingDemonConfig config = configs.floatingDemon;
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(new PatrolTask(leftPoint, topPoint, rightPoint))
-            .addTask(new RangedAttackTask(target, config.baseAttack));
+            .addTask(new RangedAttackTask(target, config.baseAttack, projectileSpawner));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(

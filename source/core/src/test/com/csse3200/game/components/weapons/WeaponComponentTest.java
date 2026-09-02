@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class WeaponComponentTest {
   @Test
   void shouldCallCreateAttackWhenReady() {
-    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 10, 0f);
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
     RecordingWeapon weapon = new RecordingWeapon();
     Entity wielder = new Entity().addComponent(stats).addComponent(weapon);
     wielder.create();
@@ -30,7 +31,7 @@ class WeaponComponentTest {
 
   @Test
   void shouldNotCreateAttackWhileCoolingDown() {
-    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 10, 0f);
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
     RecordingWeapon weapon = new RecordingWeapon();
     Entity wielder = new Entity().addComponent(stats).addComponent(weapon);
     wielder.create();
@@ -44,7 +45,7 @@ class WeaponComponentTest {
 
   @Test
   void shouldCreateAttackAgainAfterCooldown() {
-    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 10, 0f);
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
     RecordingWeapon weapon = new RecordingWeapon();
     Entity wielder = new Entity().addComponent(stats).addComponent(weapon);
     wielder.create();
@@ -66,7 +67,7 @@ class WeaponComponentTest {
 
   @Test
   void shouldRejectNullOriginOrDirection() {
-    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 10, 0f);
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
     RecordingWeapon weapon = new RecordingWeapon();
     Entity wielder = new Entity().addComponent(stats).addComponent(weapon);
     wielder.create();
@@ -75,6 +76,75 @@ class WeaponComponentTest {
     Vector2 origin = new Vector2(0f, 0f);
     assertThrows(IllegalArgumentException.class, () -> weapon.attack(null, direction));
     assertThrows(IllegalArgumentException.class, () -> weapon.attack(origin, null));
+  }
+
+  @Test
+  void shouldScaleHitboxDamageByWielderBaseAttack() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 0.8f, 0f);
+    RecordingWeapon weapon = new RecordingWeapon();
+    Entity wielder =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(stats)
+            .addComponent(weapon);
+    wielder.create();
+
+    assertEquals(8, weapon.resolveHitboxDamage()); // round(10 * 0.8)
+  }
+
+  @Test
+  void shouldFollowBaseAttackBuffs() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
+    RecordingWeapon weapon = new RecordingWeapon();
+    CombatStatsComponent combat = new CombatStatsComponent(100, 10);
+    Entity wielder = new Entity().addComponent(combat).addComponent(stats).addComponent(weapon);
+    wielder.create();
+
+    assertEquals(10, weapon.resolveHitboxDamage());
+    combat.setBaseAttack(20); // e.g. Strength Charm picked up
+    assertEquals(20, weapon.resolveHitboxDamage());
+  }
+
+  @Test
+  void shouldScaleCooldownByWielderAttackSpeed() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
+    RecordingWeapon weapon = new RecordingWeapon();
+    Entity wielder =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10, 3f, 2f)) // attack speed 2x
+            .addComponent(stats)
+            .addComponent(weapon);
+    wielder.create();
+
+    Vector2 origin = new Vector2(0f, 0f);
+    Vector2 direction = new Vector2(1f, 0f);
+    assertTrue(weapon.attack(origin, direction));
+    assertEquals(0.25f, stats.getRemainingCooldown(), 1e-4f); // 0.5s cooldown halved
+
+    stats.update(0.25f);
+    assertTrue(weapon.attack(origin, direction));
+    assertEquals(2, weapon.createAttackCalls);
+  }
+
+  @Test
+  void shouldUseBaseCooldownWithoutCombatStats() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
+    RecordingWeapon weapon = new RecordingWeapon();
+    Entity wielder = new Entity().addComponent(stats).addComponent(weapon);
+    wielder.create();
+
+    assertTrue(weapon.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    assertEquals(0.5f, stats.getRemainingCooldown(), 1e-4f);
+  }
+
+  @Test
+  void shouldResolveZeroDamageWithoutCombatStats() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
+    RecordingWeapon weapon = new RecordingWeapon();
+    Entity wielder = new Entity().addComponent(stats).addComponent(weapon);
+    wielder.create();
+
+    assertEquals(0, weapon.resolveHitboxDamage());
   }
 
   private static class RecordingWeapon extends WeaponComponent {
