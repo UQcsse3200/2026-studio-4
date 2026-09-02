@@ -12,12 +12,14 @@ import com.csse3200.game.items.ItemType;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /** Spawns configured enemies and tracks when the room has been cleared. */
 public class EnemyManagerComponent extends EntityManagerComponent {
   private final EnemySpawnConfig[] spawnConfigs;
   private final Set<Entity> activeEnemies = new HashSet<>();
+  private final List<Entity> droppedItems = new ArrayList<>();
 
   /** Creates an empty manager for tests and rooms with no enemies. */
   public EnemyManagerComponent() {
@@ -68,7 +70,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         .addListener(
             "entityDied",
             () -> {
-              ServiceLocator.getEntityService().schedule(() -> onEnemyDefeated(enemy));
+              onEnemyDefeated(enemy);
             });
     enemy
         .getEvents()
@@ -79,7 +81,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     if (activeEnemies.remove(enemy) && activeEnemies.isEmpty()) {
       entity.getEvents().trigger("roomCleared");
     }
-    spawnItemDrop(enemy);
+    ServiceLocator.getEntityService().schedule(() -> spawnItemDrop(enemy));
   }
 
   private void replaceWithChild(Entity parent, Entity child) {
@@ -90,7 +92,10 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   private void spawnItemDrop(Entity enemy) {
     Entity item = ItemFactory.createDrop(ItemType.STRENGTH_CHARM, enemy.getPosition());
-    spawnEntity(item);
+
+    // spawning item should not use the spawnEntity as items are stored in their own list.
+    droppedItems.add(item);
+    ServiceLocator.getEntityService().register(item);
   }
 
   /** Returns whether the room has any living enemies. */
@@ -106,5 +111,13 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         stats.setHealth(0);
       }
     }
+  }
+
+  @Override
+  public void dispose() {
+    for (Entity item : droppedItems) {
+      item.dispose();
+    }
+    super.dispose();
   }
 }
