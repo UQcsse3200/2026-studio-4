@@ -18,7 +18,7 @@ class CharmEffectComponentTest {
 
     player.getEvents().trigger("charmAdded", new Charm("Strength Charm"));
 
-    assertEquals(20, player.getComponent(CombatStatsComponent.class).getStrength());
+    assertEquals(20, player.getComponent(CombatStatsComponent.class).getBaseAttack());
   }
 
   @Test
@@ -28,7 +28,7 @@ class CharmEffectComponentTest {
     player.getEvents().trigger("charmAdded", new Charm("Strength Charm"));
     player.getEvents().trigger("charmRemoved", new Charm("Strength Charm"));
 
-    assertEquals(10, player.getComponent(CombatStatsComponent.class).getStrength());
+    assertEquals(10, player.getComponent(CombatStatsComponent.class).getBaseAttack());
   }
 
   @Test
@@ -37,7 +37,7 @@ class CharmEffectComponentTest {
 
     player.getEvents().trigger("charmAdded", new Charm("Health Charm"));
 
-    assertEquals(10, player.getComponent(CombatStatsComponent.class).getStrength());
+    assertEquals(10, player.getComponent(CombatStatsComponent.class).getBaseAttack());
   }
 
   @Test
@@ -49,7 +49,7 @@ class CharmEffectComponentTest {
     player.getEvents().trigger("charmAdded", new Charm("Strength Charm"));
 
     // Buff should only apply once, not stack to +20
-    assertEquals(20, player.getComponent(CombatStatsComponent.class).getStrength());
+    assertEquals(20, player.getComponent(CombatStatsComponent.class).getBaseAttack());
   }
 
   @Test
@@ -61,12 +61,26 @@ class CharmEffectComponentTest {
     player.getEvents().trigger("charmRemoved", new Charm("Strength Charm"));
 
     // One Strength Charm still held, so the buff should remain active
-    assertEquals(20, player.getComponent(CombatStatsComponent.class).getStrength());
+    assertEquals(20, player.getComponent(CombatStatsComponent.class).getBaseAttack());
 
     player.getEvents().trigger("charmRemoved", new Charm("Strength Charm"));
 
     // Last Strength Charm removed, buff should now be gone
-    assertEquals(10, player.getComponent(CombatStatsComponent.class).getStrength());
+    assertEquals(10, player.getComponent(CombatStatsComponent.class).getBaseAttack());
+  }
+
+  @Test
+  void shouldIncreaseDamageWhileStrengthCharmHeld() {
+    Entity player = createPlayer();
+    CombatStatsComponent playerStats = player.getComponent(CombatStatsComponent.class);
+    Entity target = new Entity().addComponent(new CombatStatsComponent(100, 0));
+    target.create();
+    CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
+
+    player.getEvents().trigger("charmAdded", new Charm("Strength Charm"));
+    targetStats.hit(playerStats);
+
+    assertEquals(80, targetStats.getHealth());
   }
 
   private Entity createPlayer() {
@@ -75,7 +89,6 @@ class CharmEffectComponentTest {
             .addComponent(new CombatStatsComponent(100, 10))
             .addComponent(new CharmEffectComponent());
     player.create();
-    player.getComponent(CombatStatsComponent.class).setStrength(10); // simulate base Strength
     return player;
   }
 }

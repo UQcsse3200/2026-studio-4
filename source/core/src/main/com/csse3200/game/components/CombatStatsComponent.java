@@ -15,7 +15,6 @@ public class CombatStatsComponent extends Component {
   private int health;
   private int maxHealth;
   private int baseAttack;
-  private int strength;
   private float movementSpeed;
   private float attackSpeed;
 
@@ -123,43 +122,21 @@ public class CombatStatsComponent extends Component {
   public void setBaseAttack(int attack) {
     if (attack >= 0) {
       this.baseAttack = attack;
+      if (entity != null) {
+        entity.getEvents().trigger("updateBaseAttack", this.baseAttack);
+      }
     } else {
       logger.error("Can not set base attack to a negative attack value");
     }
   }
 
   /**
-   * Returns the entity's strength.
+   * Adds to the entity's base attack damage. The amount added can be negative.
    *
-   * @return entity's strength
+   * @param attack attack damage to add
    */
-  public int getStrength() {
-    return strength;
-  }
-
-  /**
-   * Sets the entity's strength. Strength has a minimum bound of 0.
-   *
-   * @param strength strength
-   */
-  public void setStrength(int strength) {
-    if (strength >= 0) {
-      this.strength = strength;
-    } else {
-      this.strength = 0;
-    }
-    if (entity != null) {
-      entity.getEvents().trigger("updateStrength", this.strength);
-    }
-  }
-
-  /**
-   * Adds to the entity's strength. The amount added can be negative.
-   *
-   * @param strength strength to add
-   */
-  public void addStrength(int strength) {
-    setStrength(this.strength + strength);
+  public void addBaseAttack(int attack) {
+    setBaseAttack(this.baseAttack + attack);
   }
 
   /**

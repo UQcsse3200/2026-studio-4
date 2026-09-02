@@ -45,7 +45,7 @@ class ItemFlowIntegrationTest {
   }
 
   @Test
-  void shouldPickUpFactoryDropApplyBuffAndRestoreStrengthOnRemoval() {
+  void shouldPickUpFactoryDropApplyBuffAndRestoreBaseAttackOnRemoval() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     CombatStatsComponent combatStats = player.getComponent(CombatStatsComponent.class);
@@ -60,12 +60,12 @@ class ItemFlowIntegrationTest {
 
     assertEquals(1, inventory.getCharmCount());
     assertSame(droppedCharm, inventory.getCharms().get(0));
-    assertEquals(20, combatStats.getStrength());
+    assertEquals(20, combatStats.getBaseAttack());
 
     inventory.removeCharm(droppedCharm);
 
     assertEquals(0, inventory.getCharmCount());
-    assertEquals(10, combatStats.getStrength());
+    assertEquals(10, combatStats.getBaseAttack());
   }
 
   private Entity createPlayer() {
@@ -78,7 +78,6 @@ class ItemFlowIntegrationTest {
             .addComponent(new CharmEffectComponent())
             .addComponent(new CharmPickupComponent());
     player.create();
-    player.getComponent(CombatStatsComponent.class).setStrength(10);
     return player;
   }
 }

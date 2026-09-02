@@ -26,7 +26,7 @@ public class PlayerStatsDisplay extends UIComponent {
     addActors();
 
     entity.getEvents().addListener("updateHealth", this::updatePlayerHealthUI);
-    entity.getEvents().addListener("updateStrength", this::updatePlayerStrengthUI);
+    entity.getEvents().addListener("updateBaseAttack", this::updatePlayerStrengthUI);
     entity.getEvents().addListener("charmAdded", this::updateCharmCountUI);
     entity.getEvents().addListener("charmRemoved", this::updateCharmCountUI);
   }
@@ -52,7 +52,7 @@ public class PlayerStatsDisplay extends UIComponent {
     CharSequence healthText = String.format("Health: %d", health);
     healthLabel = new Label(healthText, skin, LABEL_STYLE);
 
-    int strength = entity.getComponent(CombatStatsComponent.class).getStrength();
+    int strength = entity.getComponent(CombatStatsComponent.class).getBaseAttack();
     CharSequence strengthText = String.format("Strength: %d", strength);
     strengthLabel = new Label(strengthText, skin, LABEL_STYLE);
 
@@ -87,7 +87,7 @@ public class PlayerStatsDisplay extends UIComponent {
   /**
    * Updates the player's strength on the ui.
    *
-   * @param strength player strength
+   * @param strength player strength, represented by base attack damage
    */
   public void updatePlayerStrengthUI(int strength) {
     CharSequence text = String.format("Strength: %d", strength);

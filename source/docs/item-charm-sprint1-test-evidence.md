@@ -12,8 +12,9 @@ The intended flow is:
 3. The room sets the drop position and registers the entity.
 4. The player overlaps the item's `PhysicsLayer.ITEM` hitbox and triggers `interact`.
 5. `CharmPickupComponent` transfers the Charm to `InventoryComponent` and disposes the world entity.
-6. `CharmEffectComponent` increases Strength by 10 while at least one Strength Charm is owned.
-7. Removing the last Strength Charm restores the original Strength value.
+6. `CharmEffectComponent` increases the player's base attack by 10 while at least one Strength Charm
+   is owned, so the buff affects weapon damage.
+7. Removing the last Strength Charm restores the original base attack value.
 
 ## Component contract
 
@@ -41,23 +42,23 @@ The focused tests are:
   components/layer.
 - `CharmPickupComponentTest`: verifies interaction-gated pickup, collision filtering, and leaving pickup
   range.
-- `ItemFlowIntegrationTest`: verifies Factory → ITEM collision → interact → Inventory → +10 Strength →
-  removal → base Strength restoration.
+- `ItemFlowIntegrationTest`: verifies Factory → ITEM collision → interact → Inventory → +10
+  base attack → removal → base attack restoration.
 - `InventoryComponentTest`: verifies Charm add, lookup, count, and removal behaviour.
 - `CharmEffectComponentTest`: verifies buff application/removal and duplicate handling.
 
 ## Manual Sprint demonstration
 
-1. Start from a player with base Strength 10 and an empty Charm inventory.
+1. Start from a player with base attack 10 and an empty Charm inventory.
 2. Trigger an enemy death in a room that requests
    `ItemFactory.createDrop(ItemType.STRENGTH_CHARM, enemyPosition)`.
 3. Confirm a Strength Charm entity appears at the enemy death position.
 4. Move the player into the item's pickup range; confirm contact alone does not collect it.
 5. Trigger the player's interact action.
 6. Confirm the item disappears from the world and the inventory count becomes 1.
-7. Confirm player Strength becomes 20.
+7. Confirm player Strength (base attack) becomes 20 and weapon damage increases accordingly.
 8. Remove the Strength Charm from the inventory.
-9. Confirm inventory count becomes 0 and Strength returns to 10.
+9. Confirm inventory count becomes 0 and base attack returns to 10.
 10. Repeat pickup/removal to confirm the buff does not stack or persist incorrectly.
 
 ## Integration status

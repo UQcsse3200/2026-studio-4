@@ -56,8 +56,8 @@ public class CharmEffectComponent extends Component {
       logger.error("Cannot apply charm buff: entity has no CombatStatsComponent");
       return;
     }
-    combatStats.addStrength(STRENGTH_CHARM_BONUS);
-    logger.info("Strength Charm added: Strength now {}", combatStats.getStrength());
+    combatStats.addBaseAttack(STRENGTH_CHARM_BONUS);
+    logger.info("Strength Charm added: base attack now {}", combatStats.getBaseAttack());
   }
 
   /**
@@ -88,8 +88,8 @@ public class CharmEffectComponent extends Component {
       logger.error("Cannot remove charm buff: entity has no CombatStatsComponent");
       return;
     }
-    combatStats.addStrength(-STRENGTH_CHARM_BONUS);
-    logger.info("Strength Charm removed: Strength now {}", combatStats.getStrength());
+    combatStats.addBaseAttack(-STRENGTH_CHARM_BONUS);
+    logger.info("Strength Charm removed: base attack now {}", combatStats.getBaseAttack());
   }
 
   private static boolean isStrengthCharm(Charm charm) {
