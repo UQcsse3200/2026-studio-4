@@ -1,7 +1,8 @@
 # Item/Charm System — Sprint 1 Test Evidence
 
 > Baseline: `main@7632062`. Verification branch: `items`. Verified on 3 September 2026
-> (Australia/Brisbane). Enemy-drop integration was merged in PR #74 at `a0adad1`.
+> (Australia/Brisbane). Enemy-drop integration was merged in PR #74 at `a0adad1`; the final
+> regression test and this evidence update are submitted in PR #88.
 
 ## Scope
 
@@ -45,8 +46,8 @@ Run from the `source` directory with JDK 21:
 ```
 
 Local result on 3 September 2026: **355 tests passed**, including the new component integration
-regression test. GitHub Actions reports successful Game Unit Tests and Java Format for the Team 5
-`items` verification branch.
+regression test, and `spotlessCheck` passed. All GitHub Actions checks on PR #88 passed, including
+Game Unit Tests, Java Format, build, Javadoc, and SonarCloud checks.
 
 The focused tests are:
 
@@ -103,7 +104,5 @@ still required if the Sprint evidence must visually prove the exact death positi
 - Local `core:test`: passed on Microsoft OpenJDK 21.0.12.1; 355 tests.
 - Focused `EnemyManagerComponentTest`: 5 tests passed, including the new drop-registration check.
 - Desktop runtime: reached `MAIN_GAME`; four successful pickups; base attack increased once to 20.
-- Local `spotlessCheck`: blocked by a `google-java-format`/JDK tool incompatibility that raises
-  `NoSuchMethodError` across all 115 Java files, including unchanged files.
-- GitHub Game Unit Tests and Java Format workflows: passed for the Team 5 `items` verification
-  branch.
+- Local `spotlessCheck`: passed on the verification branch.
+- PR #88 GitHub checks: Game Unit Tests, Java Format, build, Javadoc, and SonarCloud passed.
