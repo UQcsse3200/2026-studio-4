@@ -78,6 +78,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Adds to the player's attack speed.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/CombatStatsComponent.html#addBaseAttack(int)" class="member-name-link">addBaseAttack(int)</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/CombatStatsComponent.html" title="class in com.csse3200.game.components">CombatStatsComponent</a></dt>
+<dd>
+<div class="block">Adds to the entity's base attack damage.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/player/InventoryComponent.html#addCharm(com.csse3200.game.items.Charm)" class="member-name-link">addCharm(Charm)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
+<dd>
+<div class="block">Adds a charm to the player's inventory.</div>
+</dd>
 <dt><a href="com/csse3200/game/ui/terminal/Terminal.html#addCommand(java.lang.String,com.csse3200.game.ui.terminal.commands.Command)" class="member-name-link">addCommand(String, Command)</a> - Method in class com.csse3200.game.ui.terminal.<a href="com/csse3200/game/ui/terminal/Terminal.html" title="class in com.csse3200.game.ui.terminal">Terminal</a></dt>
 <dd>
 <div class="block">Adds a command to the list of valid terminal commands.</div>
@@ -241,6 +249,25 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/components/PhysicsComponent.AlignY.html#CENTER" class="member-name-link">CENTER</a> - Enum constant in enum class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsComponent.AlignY.html" title="enum class in com.csse3200.game.physics.components">PhysicsComponent.AlignY</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/Charm.html" class="type-name-link" title="class in com.csse3200.game.items">Charm</a> - Class in <a href="com/csse3200/game/items/package-summary.html">com.csse3200.game.items</a></dt>
+<dd>
+<div class="block">Represents a charm item that can be stored in the player's inventory.</div>
+</dd>
+<dt><a href="com/csse3200/game/items/Charm.html#%3Cinit%3E(java.lang.String)" class="member-name-link">Charm(String)</a> - Constructor for class com.csse3200.game.items.<a href="com/csse3200/game/items/Charm.html" title="class in com.csse3200.game.items">Charm</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/CharmEffectComponent.html" class="type-name-link" title="class in com.csse3200.game.components.player">CharmEffectComponent</a> - Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
+<dd>
+<div class="block">Listens for charm add/remove events on the player entity and applies or removes the corresponding
+ stat buff via <a href="com/csse3200/game/components/CombatStatsComponent.html" title="class in com.csse3200.game.components"><code>CombatStatsComponent</code></a>.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/player/CharmEffectComponent.html#%3Cinit%3E()" class="member-name-link">CharmEffectComponent()</a> - Constructor for class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/CharmEffectComponent.html" title="class in com.csse3200.game.components.player">CharmEffectComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/items/CharmPickupComponent.html" class="type-name-link" title="class in com.csse3200.game.components.items">CharmPickupComponent</a> - Class in <a href="com/csse3200/game/components/items/package-summary.html">com.csse3200.game.components.items</a></dt>
+<dd>
+<div class="block">Lets an entity (the player) pick up charms dropped in the game world.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/items/CharmPickupComponent.html#%3Cinit%3E()" class="member-name-link">CharmPickupComponent()</a> - Constructor for class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/CharmPickupComponent.html" title="class in com.csse3200.game.components.items">CharmPickupComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html#CHASE" class="member-name-link">CHASE</a> - Enum constant in enum class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html" title="enum class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig.EnemyType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/NPCConfigs.html#chaseEnemy" class="member-name-link">chaseEnemy</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/NPCConfigs.html" title="class in com.csse3200.game.entities.configs">NPCConfigs</a></dt>
@@ -297,6 +324,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/gamearea/package-summary.html">com.csse3200.game.components.gamearea</a> - package com.csse3200.game.components.gamearea</dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/items/package-summary.html">com.csse3200.game.components.items</a> - package com.csse3200.game.components.items</dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/package-summary.html">com.csse3200.game.components.maingame</a> - package com.csse3200.game.components.maingame</dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/mainmenu/package-summary.html">com.csse3200.game.components.mainmenu</a> - package com.csse3200.game.components.mainmenu</dt>
@@ -330,6 +359,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/files/package-summary.html">com.csse3200.game.files</a> - package com.csse3200.game.files</dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/input/package-summary.html">com.csse3200.game.input</a> - package com.csse3200.game.input</dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/package-summary.html">com.csse3200.game.items</a> - package com.csse3200.game.items</dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/package-summary.html">com.csse3200.game.physics</a> - package com.csse3200.game.physics</dt>
 <dd>&nbsp;</dd>
@@ -411,6 +442,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.gamearea.<a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html" title="class in com.csse3200.game.components.gamearea">PerformanceDisplay</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/items/CharmPickupComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/CharmPickupComponent.html" title="class in com.csse3200.game.components.items">CharmPickupComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/items/ItemDropOnDeathComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/ItemDropOnDeathComponent.html" title="class in com.csse3200.game.components.items">ItemDropOnDeathComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/KnockbackComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/KnockbackComponent.html" title="class in com.csse3200.game.components">KnockbackComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/MainGameActions.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/MainGameActions.html" title="class in com.csse3200.game.components.maingame">MainGameActions</a></dt>
@@ -424,6 +459,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/npc/EnemyAnimationController.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/EnemyAnimationController.html" title="class in com.csse3200.game.components.npc">EnemyAnimationController</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/npc/FloatingDemonAnimationController.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/FloatingDemonAnimationController.html" title="class in com.csse3200.game.components.npc">FloatingDemonAnimationController</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/CharmEffectComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/CharmEffectComponent.html" title="class in com.csse3200.game.components.player">CharmEffectComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerActions.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerActions.html" title="class in com.csse3200.game.components.player">PlayerActions</a></dt>
 <dd>&nbsp;</dd>
@@ -520,6 +557,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a chase enemy entity.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/factories/ItemFactory.html#createDrop(com.csse3200.game.items.ItemType,com.badlogic.gdx.math.Vector2)" class="member-name-link">createDrop(ItemType, Vector2)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ItemFactory.html" title="class in com.csse3200.game.entities.factories">ItemFactory</a></dt>
+<dd>
+<div class="block">Creates the requested item at a world position.</div>
+</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainFactory.html#createDungeonTerrain(com.badlogic.gdx.math.GridPoint2)" class="member-name-link">createDungeonTerrain(GridPoint2)</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainFactory.html" title="class in com.csse3200.game.areas.terrain">TerrainFactory</a></dt>
 <dd>
 <div class="block">Creates dungeon terrain using the Fantasy Dreamland tileset at the supplied tile bounds.</div>
@@ -579,6 +620,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/factories/RoomFactory.html#createRoom(com.csse3200.game.components.rooms.configs.RoomConfig,com.csse3200.game.components.CameraComponent,boolean)" class="member-name-link">createRoom(RoomConfig, CameraComponent, boolean)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/RoomFactory.html" title="class in com.csse3200.game.entities.factories">RoomFactory</a></dt>
 <dd>
 <div class="block">Creates a room entity from its declarative definition.</div>
+</dd>
+<dt><a href="com/csse3200/game/entities/factories/ItemFactory.html#createStrengthCharm()" class="member-name-link">createStrengthCharm()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ItemFactory.html" title="class in com.csse3200.game.entities.factories">ItemFactory</a></dt>
+<dd>
+<div class="block">Creates the Strength Charm used for Sprint 1 item drops.</div>
 </dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainFactory.html#createTerrain(com.csse3200.game.areas.terrain.TerrainConfig)" class="member-name-link">createTerrain(TerrainConfig)</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainFactory.html" title="class in com.csse3200.game.areas.terrain">TerrainFactory</a></dt>
 <dd>
@@ -1054,6 +1099,18 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the entity's center position</div>
 </dd>
+<dt><a href="com/csse3200/game/components/items/ItemComponent.html#getCharm()" class="member-name-link">getCharm()</a> - Method in class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/ItemComponent.html" title="class in com.csse3200.game.components.items">ItemComponent</a></dt>
+<dd>
+<div class="block">Returns the charm represented by the entity.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/player/InventoryComponent.html#getCharmCount()" class="member-name-link">getCharmCount()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
+<dd>
+<div class="block">Returns the number of charms currently held by the player.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/player/InventoryComponent.html#getCharms()" class="member-name-link">getCharms()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
+<dd>
+<div class="block">Returns the charms currently stored in the inventory.</div>
+</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TileSheet.html#getColumns()" class="member-name-link">getColumns()</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TileSheet.html" title="class in com.csse3200.game.areas.terrain">TileSheet</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/Entity.html#getComponent(java.lang.Class)" class="member-name-link">getComponent(Class&lt;T&gt;)</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
@@ -1165,6 +1222,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/ai/movement/MovementController.html#getMoving()" class="member-name-link">getMoving()</a> - Method in interface com.csse3200.game.ai.movement.<a href="com/csse3200/game/ai/movement/MovementController.html" title="interface in com.csse3200.game.ai.movement">MovementController</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/components/PhysicsMovementComponent.html#getMoving()" class="member-name-link">getMoving()</a> - Method in class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsMovementComponent.html" title="class in com.csse3200.game.physics.components">PhysicsMovementComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/Charm.html#getName()" class="member-name-link">getName()</a> - Method in class com.csse3200.game.items.<a href="com/csse3200/game/items/Charm.html" title="class in com.csse3200.game.items">Charm</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainTile.html#getObjects()" class="member-name-link">getObjects()</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainTile.html" title="class in com.csse3200.game.areas.terrain">TerrainTile</a></dt>
 <dd>
@@ -1305,6 +1364,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Whether the animator has added the given animation.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/player/InventoryComponent.html#hasCharm(com.csse3200.game.items.Charm)" class="member-name-link">hasCharm(Charm)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
+<dd>
+<div class="block">Checks whether the player currently has a specific charm.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/player/InventoryComponent.html#hasGold(int)" class="member-name-link">hasGold(int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
 <dd>
 <div class="block">Returns if the player has a certain amount of gold.</div>
@@ -1414,6 +1477,32 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/terminal/Terminal.html#isOpen()" class="member-name-link">isOpen()</a> - Method in class com.csse3200.game.ui.terminal.<a href="com/csse3200/game/ui/terminal/Terminal.html" title="class in com.csse3200.game.ui.terminal">Terminal</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/physics/PhysicsLayer.html#ITEM" class="member-name-link">ITEM</a> - Static variable in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsLayer.html" title="class in com.csse3200.game.physics">PhysicsLayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/items/ItemComponent.html" class="type-name-link" title="class in com.csse3200.game.components.items">ItemComponent</a> - Class in <a href="com/csse3200/game/components/items/package-summary.html">com.csse3200.game.components.items</a></dt>
+<dd>
+<div class="block">Stores the item data represented by an item entity.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/items/ItemComponent.html#%3Cinit%3E(com.csse3200.game.items.Charm)" class="member-name-link">ItemComponent(Charm)</a> - Constructor for class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/ItemComponent.html" title="class in com.csse3200.game.components.items">ItemComponent</a></dt>
+<dd>
+<div class="block">Creates an item component for a charm.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/items/ItemDropOnDeathComponent.html" class="type-name-link" title="class in com.csse3200.game.components.items">ItemDropOnDeathComponent</a> - Class in <a href="com/csse3200/game/components/items/package-summary.html">com.csse3200.game.components.items</a></dt>
+<dd>
+<div class="block">Creates and registers one item drop when this component's entity dies.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/items/ItemDropOnDeathComponent.html#%3Cinit%3E(com.csse3200.game.items.ItemType)" class="member-name-link">ItemDropOnDeathComponent(ItemType)</a> - Constructor for class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/ItemDropOnDeathComponent.html" title="class in com.csse3200.game.components.items">ItemDropOnDeathComponent</a></dt>
+<dd>
+<div class="block">Creates a component that drops the requested item type through <a href="com/csse3200/game/entities/factories/ItemFactory.html" title="class in com.csse3200.game.entities.factories"><code>ItemFactory</code></a>.</div>
+</dd>
+<dt><a href="com/csse3200/game/entities/factories/ItemFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">ItemFactory</a> - Class in <a href="com/csse3200/game/entities/factories/package-summary.html">com.csse3200.game.entities.factories</a></dt>
+<dd>
+<div class="block">Factory for creating item entities.</div>
+</dd>
+<dt><a href="com/csse3200/game/items/ItemType.html" class="type-name-link" title="enum class in com.csse3200.game.items">ItemType</a> - Enum Class in <a href="com/csse3200/game/items/package-summary.html">com.csse3200.game.items</a></dt>
+<dd>
+<div class="block">Item types that can be created by the item factory.</div>
+</dd>
 <dt><a href="com/csse3200/game/utils/SortedIntMap.html#iterator()" class="member-name-link">iterator()</a> - Method in class com.csse3200.game.utils.<a href="com/csse3200/game/utils/SortedIntMap.html" title="class in com.csse3200.game.utils">SortedIntMap</a></dt>
 <dd>&nbsp;</dd>
 </dl>
@@ -2020,6 +2109,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Remove an animation from this animator.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/player/InventoryComponent.html#removeCharm(com.csse3200.game.items.Charm)" class="member-name-link">removeCharm(Charm)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
+<dd>
+<div class="block">Removes a charm from the player's inventory.</div>
+</dd>
 <dt><a href="com/csse3200/game/rendering/Renderer.html#render()" class="member-name-link">render()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/Renderer.html" title="class in com.csse3200.game.rendering">Renderer</a></dt>
 <dd>
 <div class="block">Render everything to the render service.</div>
@@ -2503,6 +2596,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Stop the currently running animation.</div>
 </dd>
+<dt><a href="com/csse3200/game/items/ItemType.html#STRENGTH_CHARM" class="member-name-link">STRENGTH_CHARM</a> - Enum constant in enum class com.csse3200.game.items.<a href="com/csse3200/game/items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/StringDecorator.html" class="type-name-link" title="class in com.csse3200.game.utils">StringDecorator&lt;T&gt;</a> - Class in <a href="com/csse3200/game/utils/package-summary.html">com.csse3200.game.utils</a></dt>
 <dd>
 <div class="block">Apply a custom toString() for a class without overriding the class, using a decorator.</div>
@@ -2865,9 +2960,17 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Tick remaining cooldown by <code>dt</code> seconds.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/player/PlayerStatsDisplay.html#updateCharmCountUI(com.csse3200.game.items.Charm)" class="member-name-link">updateCharmCountUI(Charm)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></dt>
+<dd>
+<div class="block">Updates the displayed charm count after a charm is added to or removed from the inventory.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerStatsDisplay.html#updatePlayerHealthUI(int)" class="member-name-link">updatePlayerHealthUI(int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></dt>
 <dd>
 <div class="block">Updates the player's health on the ui.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/player/PlayerStatsDisplay.html#updatePlayerStrengthUI(int)" class="member-name-link">updatePlayerStrengthUI(int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></dt>
+<dd>
+<div class="block">Updates the player's strength on the ui.</div>
 </dd>
 <dt><a href="com/csse3200/game/files/UserSettings.html" class="type-name-link" title="class in com.csse3200.game.files">UserSettings</a> - Class in <a href="com/csse3200/game/files/package-summary.html">com.csse3200.game.files</a></dt>
 <dd>
@@ -2924,6 +3027,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
 </dd>
+<dt><a href="com/csse3200/game/items/ItemType.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class com.csse3200.game.items.<a href="com/csse3200/game/items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a></dt>
+<dd>
+<div class="block">Returns the enum constant of this class with the specified name.</div>
+</dd>
 <dt><a href="com/csse3200/game/physics/components/PhysicsComponent.AlignX.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsComponent.AlignX.html" title="enum class in com.csse3200.game.physics.components">PhysicsComponent.AlignX</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
@@ -2973,6 +3080,11 @@ the order they are declared.</div>
 the order they are declared.</div>
 </dd>
 <dt><a href="com/csse3200/game/input/InputFactory.InputType.html#values()" class="member-name-link">values()</a> - Static method in enum class com.csse3200.game.input.<a href="com/csse3200/game/input/InputFactory.InputType.html" title="enum class in com.csse3200.game.input">InputFactory.InputType</a></dt>
+<dd>
+<div class="block">Returns an array containing the constants of this enum class, in
+the order they are declared.</div>
+</dd>
+<dt><a href="com/csse3200/game/items/ItemType.html#values()" class="member-name-link">values()</a> - Static method in enum class com.csse3200.game.items.<a href="com/csse3200/game/items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a></dt>
 <dd>
 <div class="block">Returns an array containing the constants of this enum class, in
 the order they are declared.</div>
