@@ -89,6 +89,7 @@ public class NPCFactory {
    * and survives.
    *
    * @param target entity to chase
+   * @param shouldSplit whether the enemy should receive a {@link SplitComponent}
    * @return entity
    */
   public static Entity createChaseEnemy(Entity target, boolean shouldSplit) {

@@ -1,6 +1,7 @@
 package com.csse3200.game.components;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -95,6 +96,22 @@ class SplitComponentTest {
       assertEquals(halfHealth, childStats.getHealth());
       assertEquals(halfHealth, childStats.getMaxHealth());
       assertEquals(halfAttack, childStats.getBaseAttack());
+    }
+  }
+
+  @Test
+  void shouldCreateChildrenWithoutSplitComponent() {
+    Entity enemy = createSplitEnemy();
+    EventListener1<Entity> childListener = addChildListener(enemy);
+
+    enemy.getEvents().trigger("hitReaction", (Entity) null);
+    entityService.update();
+
+    ArgumentCaptor<Entity> childCaptor = ArgumentCaptor.forClass(Entity.class);
+    verify(childListener, times(2)).handle(childCaptor.capture());
+
+    for (Entity child : childCaptor.getAllValues()) {
+      assertNull(child.getComponent(SplitComponent.class));
     }
   }
 
