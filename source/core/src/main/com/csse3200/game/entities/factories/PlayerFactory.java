@@ -10,6 +10,8 @@ import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
+import com.csse3200.game.components.weapons.BowWeaponComponent;
+import com.csse3200.game.components.weapons.KnifeWeaponComponent;
 import com.csse3200.game.components.weapons.SwordWeaponComponent;
 import com.csse3200.game.components.weapons.WeaponStatsComponent;
 import com.csse3200.game.entities.Entity;
@@ -69,9 +71,17 @@ public class PlayerFactory {
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())
             .addComponent(new PlayerStatsDisplay())
-            .addComponent(new WeaponStatsComponent(0.5f, 10, 2f))
+            // Weapon damage = round(baseAttack * multiplier); charms that raise base attack
+            // therefore scale weapon hits too.
+            .addComponent(new WeaponStatsComponent(0.5f, 1f, 2f))
             .addComponent(new SwordWeaponComponent())
+            .addComponent(new KnifeWeaponComponent())
+            .addComponent(new BowWeaponComponent())
             .addComponent(new FollowingCameraComponent());
+
+    // Sword is equipped by default; the "weapon" terminal command switches at runtime.
+    player.getComponent(KnifeWeaponComponent.class).setEnabled(false);
+    player.getComponent(BowWeaponComponent.class).setEnabled(false);
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);

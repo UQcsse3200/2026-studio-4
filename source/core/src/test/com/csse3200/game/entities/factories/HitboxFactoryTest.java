@@ -132,7 +132,7 @@ class HitboxFactoryTest {
 
   @Test
   void stubWeaponShouldSpawnHitboxThroughFactory() {
-    WeaponStatsComponent stats = new WeaponStatsComponent(0.2f, 8, 0f);
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.2f, 0.8f, 0f);
     FactoryWeapon weapon = new FactoryWeapon();
     Entity wielder = new Entity().addComponent(stats).addComponent(weapon);
     wielder.setPosition(0f, 0f);
@@ -177,7 +177,7 @@ class HitboxFactoryTest {
               .lifetime(0.15f)
               .layer(PhysicsLayer.WEAPON)
               .targetLayer(PhysicsLayer.NPC)
-              .damage(stats.getDamage())
+              .damage(resolveHitboxDamage())
               .knockback(stats.getKnockback())
               .owner(entity)
               .localOffset(direction.cpy().nor().scl(0.5f));

@@ -28,6 +28,7 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
+import com.csse3200.game.ui.terminal.commands.WeaponCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,6 +157,10 @@ public class MainGameScreen extends ScreenAdapter {
     Stage stage = ServiceLocator.getRenderService().getStage();
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForTerminal();
+
+    // Register on the shared terminal field: commands added elsewhere (e.g. "room" in the
+    // constructor) must end up on the same Terminal instance that is attached to the UI below.
+    terminal.addCommand("weapon", new WeaponCommand(player));
 
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
