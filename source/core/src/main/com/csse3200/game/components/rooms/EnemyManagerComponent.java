@@ -6,7 +6,10 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.items.ItemType;
+import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -60,7 +63,13 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   /** Tracks an enemy and any children it spawns. Package-private for testing. */
   void track(Entity enemy) {
     activeEnemies.add(enemy);
-    enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy));
+    enemy
+        .getEvents()
+        .addListener(
+            "entityDied",
+            () -> {
+              ServiceLocator.getEntityService().schedule(() -> onEnemyDefeated(enemy));
+            });
     enemy
         .getEvents()
         .addListener("spawnChildren", (Entity child) -> replaceWithChild(enemy, child));
@@ -70,12 +79,18 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     if (activeEnemies.remove(enemy) && activeEnemies.isEmpty()) {
       entity.getEvents().trigger("roomCleared");
     }
+    spawnItemDrop(enemy);
   }
 
   private void replaceWithChild(Entity parent, Entity child) {
     track(child);
     activeEnemies.remove(parent);
     spawnEntity(child);
+  }
+
+  private void spawnItemDrop(Entity enemy) {
+    Entity item = ItemFactory.createDrop(ItemType.STRENGTH_CHARM, enemy.getPosition());
+    spawnEntity(item);
   }
 
   /** Returns whether the room has any living enemies. */
