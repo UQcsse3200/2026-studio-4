@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.FollowingCameraComponent;
+import com.csse3200.game.components.items.CharmPickupComponent;
+import com.csse3200.game.components.player.CharmEffectComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
@@ -63,7 +65,9 @@ public class PlayerFactory {
             .addComponent(
                 new CombatStatsComponent(
                     stats.health, stats.baseAttack, stats.movementSpeed, stats.attackSpeed))
+            .addComponent(new CharmEffectComponent())
             .addComponent(new InventoryComponent(stats.gold))
+            .addComponent(new CharmPickupComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())
             .addComponent(new PlayerStatsDisplay())

@@ -51,7 +51,11 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.K:
         entity.getEvents().trigger("specialAttack");
         return true;
-
+      case Keys.E:
+        // Keep Room navigation and Team 5 item pickup on separate event contracts.
+        entity.getEvents().trigger("interact");
+        entity.getEvents().trigger("itemPickup");
+        return true;
       default:
         return false;
     }

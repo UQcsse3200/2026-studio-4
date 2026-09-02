@@ -25,6 +25,9 @@ public class PhysicsLayer {
    */
   public static final short WEAPON = (1 << 4);
 
+  // World items, e.g. dropped charms, that the player can pick up.
+  public static final short ITEM = (1 << 5);
+
   public static final short ALL = ~0;
 
   public static boolean contains(short filterBits, short layer) {

@@ -16,6 +16,8 @@ public class EntityService {
   private static final int INITIAL_CAPACITY = 16;
 
   private final Array<Entity> entities = new Array<>(false, INITIAL_CAPACITY);
+  private final Array<Runnable> afterUpdateActions = new Array<>();
+  private boolean updating;
   private final Array<Entity> pendingDisposal = new Array<>(false, INITIAL_CAPACITY);
   private final Array<Runnable> pendingTasks = new Array<>(false, INITIAL_CAPACITY);
 
@@ -77,11 +79,28 @@ public class EntityService {
 
   /** Update all registered entities. Should only be called from the main game loop. */
   public void update() {
+    updating = true;
     for (Entity entity : entities) {
       entity.earlyUpdate();
       entity.update();
     }
+    updating = false;
+
+    for (Runnable action : afterUpdateActions) {
+      action.run();
+    }
+    afterUpdateActions.clear();
     drainQueues();
+  }
+
+  /** Runs an action after the current entity update has finished. */
+  public void runAfterUpdate(Runnable action) {
+    if (updating) {
+      afterUpdateActions.add(action);
+    } else {
+      action.run();
+      drainQueues();
+    }
   }
 
   /**

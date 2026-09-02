@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,6 +57,31 @@ class CombatStatsComponentTest {
 
     combat.setBaseAttack(-50);
     assertEquals(150, combat.getBaseAttack());
+  }
+
+  @Test
+  void shouldAddBaseAttack() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 20);
+    combat.addBaseAttack(10);
+    assertEquals(30, combat.getBaseAttack());
+
+    combat.addBaseAttack(-10);
+    assertEquals(20, combat.getBaseAttack());
+  }
+
+  @Test
+  void shouldTriggerBaseAttackUpdate() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 20);
+    Entity entity = new Entity().addComponent(combat);
+    entity.create();
+    int[] updatedAttack = {0};
+    entity
+        .getEvents()
+        .addListener("updateBaseAttack", attack -> updatedAttack[0] = (Integer) attack);
+
+    combat.addBaseAttack(10);
+
+    assertEquals(30, updatedAttack[0]);
   }
 
   @Test

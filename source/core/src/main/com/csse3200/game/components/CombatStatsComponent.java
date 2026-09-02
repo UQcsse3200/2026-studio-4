@@ -122,9 +122,21 @@ public class CombatStatsComponent extends Component {
   public void setBaseAttack(int attack) {
     if (attack >= 0) {
       this.baseAttack = attack;
+      if (entity != null) {
+        entity.getEvents().trigger("updateBaseAttack", this.baseAttack);
+      }
     } else {
       logger.error("Can not set base attack to a negative attack value");
     }
+  }
+
+  /**
+   * Adds to the entity's base attack damage. The amount added can be negative.
+   *
+   * @param attack attack damage to add
+   */
+  public void addBaseAttack(int attack) {
+    setBaseAttack(this.baseAttack + attack);
   }
 
   /**
@@ -208,9 +220,7 @@ public class CombatStatsComponent extends Component {
   public void takeDamage(int damage, Entity attacker) {
     if (damage > 0) {
       addHealth(-damage);
-      if (!isDead()) {
-        applyHitreaction(attacker);
-      }
+      applyHitreaction(attacker);
     }
   }
 
