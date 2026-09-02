@@ -20,8 +20,9 @@ import org.slf4j.LoggerFactory;
  * com.csse3200.game.components.TouchAttackComponent}: it listens for {@code collisionStart} /
  * {@code collisionEnd} on its own {@link HitboxComponent} to track which item entities (on the
  * {@link PhysicsLayer#ITEM} layer) are currently in range. Nothing happens on contact alone &mdash;
- * the charm is only picked up once an {@code "interact"} event fires while at least one item is in
- * range (see the Core Player Actions feature, which owns the interact key binding).
+ * the charm is only picked up once an {@code "itemPickup"} event fires while at least one item is
+ * in range. The dedicated event keeps item pickup independent from the Room feature's {@code
+ * "interact"} event while allowing both actions to share the E key binding.
  *
  * <p>Item entities are expected to carry an {@link ItemComponent} (see {@link
  * com.csse3200.game.entities.factories.ItemFactory}), which is where this component reads the
@@ -42,7 +43,7 @@ public class CharmPickupComponent extends Component {
     inventoryComponent = entity.getComponent(InventoryComponent.class);
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
     entity.getEvents().addListener("collisionEnd", this::onCollisionEnd);
-    entity.getEvents().addListener("interact", this::onInteract);
+    entity.getEvents().addListener("itemPickup", this::onItemPickup);
   }
 
   private void onCollisionStart(Fixture me, Fixture other) {
@@ -70,7 +71,7 @@ public class CharmPickupComponent extends Component {
   }
 
   /** Picks up the first item currently in range, if any. */
-  private void onInteract() {
+  private void onItemPickup() {
     if (nearbyItems.isEmpty()) {
       return;
     }

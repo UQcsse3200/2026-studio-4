@@ -20,6 +20,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class CharmPickupComponentTest {
+  private static final String ITEM_PICKUP_EVENT = "itemPickup";
+
   @BeforeEach
   void beforeEach() {
     ServiceLocator.registerPhysicsService(new PhysicsService());
@@ -27,7 +29,7 @@ class CharmPickupComponentTest {
   }
 
   @Test
-  void shouldPickUpNearbyCharmOnInteract() {
+  void shouldPickUpNearbyCharmOnItemPickup() {
     Charm charm = new Charm("Strength Charm");
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
@@ -36,13 +38,13 @@ class CharmPickupComponentTest {
     Fixture itemFixture = itemEntity.getComponent(HitboxComponent.class).getFixture();
 
     player.getEvents().trigger("collisionStart", playerFixture, itemFixture);
-    player.getEvents().trigger("interact");
+    player.getEvents().trigger(ITEM_PICKUP_EVENT);
 
     assertTrue(player.getComponent(InventoryComponent.class).getCharms().contains(charm));
   }
 
   @Test
-  void shouldNotPickUpWithoutInteract() {
+  void shouldNotPickUpWithoutItemPickup() {
     Charm charm = new Charm("Strength Charm");
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
@@ -52,6 +54,21 @@ class CharmPickupComponentTest {
 
     // Just walking near the item should not pick it up on its own.
     player.getEvents().trigger("collisionStart", playerFixture, itemFixture);
+
+    assertEquals(0, player.getComponent(InventoryComponent.class).getCharmCount());
+  }
+
+  @Test
+  void shouldNotPickUpOnRoomInteract() {
+    Charm charm = new Charm("Strength Charm");
+    Entity player = createPlayer();
+    Entity itemEntity = createItemEntity(charm);
+
+    Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
+    Fixture itemFixture = itemEntity.getComponent(HitboxComponent.class).getFixture();
+
+    player.getEvents().trigger("collisionStart", playerFixture, itemFixture);
+    player.getEvents().trigger("interact");
 
     assertEquals(0, player.getComponent(InventoryComponent.class).getCharmCount());
   }
@@ -67,7 +84,7 @@ class CharmPickupComponentTest {
 
     player.getEvents().trigger("collisionStart", playerFixture, itemFixture);
     player.getEvents().trigger("collisionEnd", playerFixture, itemFixture);
-    player.getEvents().trigger("interact");
+    player.getEvents().trigger(ITEM_PICKUP_EVENT);
 
     assertEquals(0, player.getComponent(InventoryComponent.class).getCharmCount());
   }
@@ -86,7 +103,7 @@ class CharmPickupComponentTest {
 
     // Should not throw, and should not register anything to pick up.
     player.getEvents().trigger("collisionStart", playerFixture, otherFixture);
-    player.getEvents().trigger("interact");
+    player.getEvents().trigger(ITEM_PICKUP_EVENT);
 
     assertEquals(0, player.getComponent(InventoryComponent.class).getCharmCount());
   }

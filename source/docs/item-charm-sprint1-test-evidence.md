@@ -10,11 +10,14 @@ The intended flow is:
 2. `ItemFactory.createDrop(ItemType.STRENGTH_CHARM, position)` returns a new, positioned,
    unregistered Strength Charm entity.
 3. The room sets the drop position and registers the entity.
-4. The player overlaps the item's `PhysicsLayer.ITEM` hitbox and triggers `interact`.
+4. The player overlaps the item's `PhysicsLayer.ITEM` hitbox and triggers `itemPickup`.
 5. `CharmPickupComponent` transfers the Charm to `InventoryComponent` and disposes the world entity.
 6. `CharmEffectComponent` increases the player's base attack by 10 while at least one Strength Charm
    is owned, so the buff affects weapon damage.
 7. Removing the last Strength Charm restores the original base attack value.
+
+Room navigation continues to use `interact`; item pickup uses the separate `itemPickup` event. The
+keyboard input emits both events for the E key without coupling their listener contracts.
 
 ## Component contract
 
@@ -42,7 +45,7 @@ The focused tests are:
   components/layer.
 - `CharmPickupComponentTest`: verifies interaction-gated pickup, collision filtering, and leaving pickup
   range.
-- `ItemFlowIntegrationTest`: verifies Factory → ITEM collision → interact → Inventory → +10
+- `ItemFlowIntegrationTest`: verifies Factory → ITEM collision → itemPickup → Inventory → +10
   base attack → removal → base attack restoration.
 - `InventoryComponentTest`: verifies Charm add, lookup, count, and removal behaviour.
 - `CharmEffectComponentTest`: verifies buff application/removal and duplicate handling.
@@ -54,7 +57,7 @@ The focused tests are:
    `ItemFactory.createDrop(ItemType.STRENGTH_CHARM, enemyPosition)`.
 3. Confirm a Strength Charm entity appears at the enemy death position.
 4. Move the player into the item's pickup range; confirm contact alone does not collect it.
-5. Trigger the player's interact action.
+5. Trigger the player's item-pickup action.
 6. Confirm the item disappears from the world and the inventory count becomes 1.
 7. Confirm player Strength (base attack) becomes 20 and weapon damage increases accordingly.
 8. Remove the Strength Charm from the inventory.

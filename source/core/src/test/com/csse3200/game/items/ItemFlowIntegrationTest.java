@@ -56,7 +56,7 @@ class ItemFlowIntegrationTest {
     Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
     Fixture itemFixture = droppedItem.getComponent(HitboxComponent.class).getFixture();
     player.getEvents().trigger("collisionStart", playerFixture, itemFixture);
-    player.getEvents().trigger("interact");
+    player.getEvents().trigger("itemPickup");
 
     assertEquals(1, inventory.getCharmCount());
     assertSame(droppedCharm, inventory.getCharms().get(0));
