@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -23,6 +24,14 @@ public class ProjectileComponent extends Component {
   private static final short STOP_LAYERS = PhysicsLayer.NPC | PhysicsLayer.OBSTACLE;
 
   private final Vector2 velocity;
+
+  /**
+   * Last centre position confirmed to be outside every obstacle. Box2D rays never report the
+   * fixture they start inside, so each sweep must begin from a point known to be clear or a wall
+   * that was already penetrated becomes invisible to it.
+   */
+  private final Vector2 lastClearCenter = new Vector2();
+
   private HitboxComponent hitboxComponent;
 
   /**
@@ -47,11 +56,20 @@ public class ProjectileComponent extends Component {
     Body body = entity.getComponent(PhysicsComponent.class).getBody();
     body.setLinearDamping(0f);
     body.setLinearVelocity(velocity);
+
+    lastClearCenter.set(entity.getCenterPosition());
   }
 
   /**
-   * Kinematic sensors do not contact static walls, so raycast the next movement step and despawn if
-   * a solid obstacle is ahead.
+   * Kinematic sensors do not contact static walls, so sweep a ray along the flight path and despawn
+   * if a solid obstacle is on it.
+   *
+   * <p>The sweep runs from the last known-clear position to one physics step beyond the current
+   * frame. Physics advances on a fixed timestep, so in a single render frame the body can move up
+   * to (deltaTime + one physics step) worth of distance — more than a ray covering only deltaTime.
+   * The previous version swept exactly deltaTime ahead of the current centre, which let the body
+   * step past the ray's end and into a wall; once inside, later rays started inside the wall's
+   * fixture and could never see it, so the arrow escaped out the far side.
    */
   @Override
   public void update() {
@@ -59,14 +77,19 @@ public class ProjectileComponent extends Component {
     if (time == null) {
       return;
     }
-    Vector2 from = entity.getCenterPosition();
-    Vector2 to = from.cpy().mulAdd(velocity, time.getDeltaTime());
-    if (from.epsilonEquals(to)) {
+    float deltaTime = time.getDeltaTime();
+    if (deltaTime <= 0f) {
+      return; // Time is paused, so the body is not moving.
+    }
+
+    Vector2 center = entity.getCenterPosition();
+    float lookahead = deltaTime + PhysicsEngine.PHYSICS_TIMESTEP;
+    Vector2 to = center.cpy().mulAdd(velocity, lookahead);
+    if (isPathBlocked(lastClearCenter, to)) {
+      ServiceLocator.getEntityService().scheduleDisposal(entity);
       return;
     }
-    if (isPathBlocked(from, to)) {
-      ServiceLocator.getEntityService().scheduleDisposal(entity);
-    }
+    lastClearCenter.set(center);
   }
 
   /**
