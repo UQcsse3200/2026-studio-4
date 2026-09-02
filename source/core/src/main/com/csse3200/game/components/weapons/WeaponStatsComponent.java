@@ -9,7 +9,8 @@ import org.slf4j.LoggerFactory;
  * Stores cooldown, damage multiplier, and knockback for a wielder's current weapon.
  *
  * <p>Hitbox damage is {@code round(wielder.baseAttack * multiplier)}, so buffs to the wielder's
- * base attack (e.g. the Strength Charm) scale every weapon's damage.
+ * base attack (e.g. the Strength Charm) scale every weapon's damage. Likewise the effective
+ * cooldown is {@code cooldown / wielder.attackSpeed}, so attack-speed buffs speed up every weapon.
  *
  * <p>Cooldown is a countdown in seconds. Call {@link #triggerCooldown()} after a successful attack
  * and {@link #update(float)} (or the no-arg {@link #update()} from the entity loop) to tick it
@@ -52,7 +53,27 @@ public class WeaponStatsComponent extends Component {
    * @ensure getRemainingCooldown() == getCooldown()
    */
   public void triggerCooldown() {
-    remainingCooldown = cooldown;
+    triggerCooldown(cooldown);
+  }
+
+  /**
+   * Start the cooldown countdown from a resolved duration, e.g. {@link #resolveCooldown(float)}.
+   *
+   * @param seconds cooldown duration; negative values are treated as 0
+   */
+  public void triggerCooldown(float seconds) {
+    remainingCooldown = Math.max(0f, seconds);
+  }
+
+  /**
+   * Cooldown scaled by the wielder's attack speed: faster wielders attack more often.
+   *
+   * @param attackSpeed wielder's {@code CombatStatsComponent.getAttackSpeed()}; values &lt;= 0 are
+   *     treated as 1 (unscaled) so a zeroed stat cannot disable attacking forever
+   * @return {@code cooldown / attackSpeed}
+   */
+  public float resolveCooldown(float attackSpeed) {
+    return attackSpeed > 0f ? cooldown / attackSpeed : cooldown;
   }
 
   /**

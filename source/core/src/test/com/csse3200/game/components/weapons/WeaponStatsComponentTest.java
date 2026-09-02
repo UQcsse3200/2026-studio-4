@@ -44,6 +44,42 @@ class WeaponStatsComponentTest {
   }
 
   @Test
+  void shouldShortenCooldownForFasterAttackSpeed() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.4f, 1f, 0f);
+    assertEquals(0.2f, stats.resolveCooldown(2f), 1e-4f);
+  }
+
+  @Test
+  void shouldLengthenCooldownForSlowerAttackSpeed() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.4f, 1f, 0f);
+    assertEquals(0.8f, stats.resolveCooldown(0.5f), 1e-4f);
+  }
+
+  @Test
+  void shouldIgnoreNonPositiveAttackSpeedWhenResolvingCooldown() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.4f, 1f, 0f);
+    assertEquals(0.4f, stats.resolveCooldown(0f), 1e-4f);
+    assertEquals(0.4f, stats.resolveCooldown(-1f), 1e-4f);
+  }
+
+  @Test
+  void shouldGateAttackByResolvedCooldownDuration() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.4f, 1f, 0f);
+    stats.triggerCooldown(0.2f);
+    assertFalse(stats.canAttack());
+    stats.update(0.2f);
+    assertTrue(stats.canAttack());
+  }
+
+  @Test
+  void shouldTreatNegativeTriggeredCooldownAsZero() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.4f, 1f, 0f);
+    stats.triggerCooldown(-0.5f);
+    assertTrue(stats.canAttack());
+    assertEquals(0f, stats.getRemainingCooldown());
+  }
+
+  @Test
   void shouldGateAttackAfterTriggerCooldown() {
     WeaponStatsComponent stats = new WeaponStatsComponent(0.4f, 1f, 0f);
     stats.triggerCooldown();

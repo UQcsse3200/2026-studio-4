@@ -99,7 +99,7 @@ public abstract class WeaponComponent extends Component {
       return false;
     }
     createAttack(origin, direction);
-    stats.triggerCooldown();
+    stats.triggerCooldown(resolveCooldown());
     return true;
   }
 
@@ -123,5 +123,17 @@ public abstract class WeaponComponent extends Component {
     CombatStatsComponent combat = entity.getComponent(CombatStatsComponent.class);
     int baseAttack = combat == null ? 0 : combat.getBaseAttack();
     return stats.resolveHitboxDamage(baseAttack);
+  }
+
+  /**
+   * Cooldown for this weapon scaled by the wielder's attack speed, so attack-speed buffs make every
+   * weapon fire faster. A wielder without combat stats uses the weapon's base cooldown.
+   *
+   * @return {@code weapon.cooldown / wielder.attackSpeed}
+   */
+  protected float resolveCooldown() {
+    CombatStatsComponent combat = entity.getComponent(CombatStatsComponent.class);
+    float attackSpeed = combat == null ? 1f : combat.getAttackSpeed();
+    return stats.resolveCooldown(attackSpeed);
   }
 }

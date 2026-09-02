@@ -106,6 +106,38 @@ class WeaponComponentTest {
   }
 
   @Test
+  void shouldScaleCooldownByWielderAttackSpeed() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
+    RecordingWeapon weapon = new RecordingWeapon();
+    Entity wielder =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10, 3f, 2f)) // attack speed 2x
+            .addComponent(stats)
+            .addComponent(weapon);
+    wielder.create();
+
+    Vector2 origin = new Vector2(0f, 0f);
+    Vector2 direction = new Vector2(1f, 0f);
+    assertTrue(weapon.attack(origin, direction));
+    assertEquals(0.25f, stats.getRemainingCooldown(), 1e-4f); // 0.5s cooldown halved
+
+    stats.update(0.25f);
+    assertTrue(weapon.attack(origin, direction));
+    assertEquals(2, weapon.createAttackCalls);
+  }
+
+  @Test
+  void shouldUseBaseCooldownWithoutCombatStats() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
+    RecordingWeapon weapon = new RecordingWeapon();
+    Entity wielder = new Entity().addComponent(stats).addComponent(weapon);
+    wielder.create();
+
+    assertTrue(weapon.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    assertEquals(0.5f, stats.getRemainingCooldown(), 1e-4f);
+  }
+
+  @Test
   void shouldResolveZeroDamageWithoutCombatStats() {
     WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
     RecordingWeapon weapon = new RecordingWeapon();
