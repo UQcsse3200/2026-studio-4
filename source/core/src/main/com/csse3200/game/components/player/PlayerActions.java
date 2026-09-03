@@ -65,11 +65,12 @@ public class PlayerActions extends Component {
 
   /** Ends the dash and clears the dash cooldown once their respective durations have elapsed. */
   private void updateDashState() {
-    if (time.getTimeSince(dashInit) >= DASH_DURATION_MS) {
+    // dashInit is 0 until the first dash. Do not treat that as an expired dash.
+    if (dashOn && time.getTimeSince(dashInit) >= DASH_DURATION_MS) {
       dashOn = false;
       entity.getEvents().trigger("dashStop");
     }
-    if (time.getTimeSince(dashInit) >= DASH_COOLDOWN_MS) {
+    if (dashCooldown && time.getTimeSince(dashInit) >= DASH_COOLDOWN_MS) {
       dashCooldown = false;
     }
   }
@@ -148,10 +149,10 @@ public class PlayerActions extends Component {
    */
   void walk(Vector2 direction) {
     if (!dashOn) {
-      this.walkDirection = direction;
+      this.walkDirection = direction.cpy();
       moving = true;
 
-      if (!direction.epsilonEquals(Vector2.Zero)) {
+      if (!this.walkDirection.epsilonEquals(Vector2.Zero)) {
         this.facingDirection = this.walkDirection.cpy();
       }
     }
@@ -186,7 +187,8 @@ public class PlayerActions extends Component {
    */
   void dash(Vector2 direction) {
     if (!dashOn && !dashCooldown) {
-      this.dashDirection = direction.cpy();
+      this.dashDirection =
+          direction.epsilonEquals(Vector2.Zero) ? facingDirection.cpy() : direction.cpy();
       moving = true;
       dashOn = true;
       dashInit = time.getTime();
