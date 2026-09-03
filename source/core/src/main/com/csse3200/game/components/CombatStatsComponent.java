@@ -67,6 +67,9 @@ public class CombatStatsComponent extends Component {
   public void setMaxHealth(int maxHealth) {
     if (maxHealth >= 0) {
       this.maxHealth = maxHealth;
+      if (entity != null) {
+        entity.getEvents().trigger("updateMaxHealth", this.maxHealth);
+      }
     } else {
       logger.error("cannot set health to a negative value");
     }
@@ -156,6 +159,9 @@ public class CombatStatsComponent extends Component {
   public void setMovementSpeed(float newSpeed) {
     if (newSpeed >= 0) {
       this.movementSpeed = newSpeed;
+      if (entity != null) {
+        entity.getEvents().trigger("updateMovementSpeed", this.movementSpeed);
+      }
     } else {
       logger.error("Can not set movement speed of entity to a negative value");
     }
@@ -187,6 +193,9 @@ public class CombatStatsComponent extends Component {
   public void setAttackSpeed(float newSpeed) {
     if (newSpeed >= 0) {
       this.attackSpeed = newSpeed;
+      if (entity != null) {
+        entity.getEvents().trigger("updateAttackSpeed", this.attackSpeed);
+      }
     } else {
       logger.error("Can not set attack speed of entity to a negative value");
     }
