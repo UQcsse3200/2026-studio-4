@@ -163,6 +163,27 @@ class PlayerActionsTest {
   }
 
   @Test
+  void shouldNotEmitDashStopBeforeAnyDash() {
+    int[] dashStops = {0};
+    player.getEvents().addListener("dashStop", () -> dashStops[0]++);
+
+    player.update();
+
+    assertEquals(0, dashStops[0]);
+  }
+
+  @Test
+  void shouldDashInFacingDirectionWhenStandstill() {
+    player.getEvents().trigger("dash", Vector2.Zero.cpy());
+    player.update();
+
+    ArgumentCaptor<Vector2> impulse = ArgumentCaptor.forClass(Vector2.class);
+    verify(body).applyLinearImpulse(impulse.capture(), any(Vector2.class), eq(true));
+    assertEquals(0f, impulse.getValue().x, 0.001f);
+    assertEquals(-15f, impulse.getValue().y, 0.001f);
+  }
+
+  @Test
   void shouldIgnoreWalkStopDuringDash() {
     player.getEvents().trigger("dash", Vector2Utils.RIGHT.cpy());
     player.getEvents().trigger("walkStop");
