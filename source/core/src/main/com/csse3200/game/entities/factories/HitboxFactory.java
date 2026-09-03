@@ -10,6 +10,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 
 /**
  * Builds short-lived weapon sensor entities. The returned entity is <strong>not</strong>
@@ -45,6 +46,14 @@ public class HitboxFactory {
 
     if (spec.getOwner() != null) {
       hitbox.addComponent(new FollowComponent(spec.getOwner(), spec.getLocalOffset()));
+    }
+    if (spec.getTexture() != null) {
+      RotatingTextureRenderComponent render = new RotatingTextureRenderComponent(spec.getTexture());
+      render.setVisualScale(spec.getVisualScale());
+      render.setVisualOffset(spec.getVisualOffset());
+      render.setRotation(spec.getRotation());
+      render.setRotationOffset(spec.getRotationOffset());
+      hitbox.addComponent(render);
     }
 
     Vector2 size = spec.getSize();

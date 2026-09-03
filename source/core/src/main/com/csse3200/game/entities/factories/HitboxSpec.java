@@ -20,6 +20,11 @@ public class HitboxSpec {
   private float knockback;
   private Entity owner;
   private Vector2 localOffset = new Vector2();
+  private String texturePath;
+  private Vector2 visualScale;
+  private Vector2 visualOffset;
+  private float rotationDeg;
+  private float rotationOffsetDeg;
 
   /**
    * @param position world position of the hitbox entity
@@ -88,6 +93,62 @@ public class HitboxSpec {
    */
   public HitboxSpec knockback(float knockback) {
     this.knockback = knockback;
+    return this;
+  }
+
+  /**
+   * Texture drawn across the hitbox.
+   *
+   * @param texturePath asset path, or null for no sprite
+   * @return this spec
+   */
+  public HitboxSpec texture(String texturePath) {
+    this.texturePath = texturePath;
+    return this;
+  }
+
+  /**
+   * Draw size for the sprite, independent of {@link #size(Vector2)}. Hitboxes are sized for
+   * collision, so without this a square sprite is squashed into an oblong sensor.
+   *
+   * @param visualScale width and height in metres, or null to follow the hitbox size
+   * @return this spec
+   */
+  public HitboxSpec visualScale(Vector2 visualScale) {
+    this.visualScale = visualScale == null ? null : visualScale.cpy();
+    return this;
+  }
+
+  /**
+   * Shifts the sprite along its facing direction, without moving the hitbox.
+   *
+   * @param visualOffset offset in metres relative to the facing, or null for none
+   * @return this spec
+   */
+  public HitboxSpec visualOffset(Vector2 visualOffset) {
+    this.visualOffset = visualOffset == null ? null : visualOffset.cpy();
+    return this;
+  }
+
+  /**
+   * Initial facing of the sprite. Components such as a sweep may change it afterwards.
+   *
+   * @param rotationDeg rotation in degrees, counter-clockwise
+   * @return this spec
+   */
+  public HitboxSpec rotation(float rotationDeg) {
+    this.rotationDeg = rotationDeg;
+    return this;
+  }
+
+  /**
+   * Constant correction for a sprite not drawn pointing right at 0 degrees.
+   *
+   * @param rotationOffsetDeg degrees added to every rotation
+   * @return this spec
+   */
+  public HitboxSpec rotationOffset(float rotationOffsetDeg) {
+    this.rotationOffsetDeg = rotationOffsetDeg;
     return this;
   }
 
@@ -174,5 +235,40 @@ public class HitboxSpec {
    */
   public Vector2 getLocalOffset() {
     return localOffset.cpy();
+  }
+
+  /**
+   * @return texture asset path
+   */
+  public String getTexture() {
+    return texturePath;
+  }
+
+  /**
+   * @return copy of the sprite draw size, or null when it follows the hitbox size
+   */
+  public Vector2 getVisualScale() {
+    return visualScale == null ? null : visualScale.cpy();
+  }
+
+  /**
+   * @return copy of the facing-relative sprite offset, or null for none
+   */
+  public Vector2 getVisualOffset() {
+    return visualOffset == null ? null : visualOffset.cpy();
+  }
+
+  /**
+   * @return initial sprite rotation in degrees
+   */
+  public float getRotation() {
+    return rotationDeg;
+  }
+
+  /**
+   * @return constant rotation correction in degrees
+   */
+  public float getRotationOffset() {
+    return rotationOffsetDeg;
   }
 }

@@ -2,6 +2,7 @@ package com.csse3200.game.components.weapons;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -45,5 +46,12 @@ public class SweepComponent extends Component {
     float angle = startAngleDeg + (endAngleDeg - startAngleDeg) * t;
     Vector2 offset = new Vector2(radius, 0f).setAngleDeg(angle);
     follow.setLocalOffset(offset);
+
+    // Turn the blade with the arc so it points along the swing rather than staying axis-aligned.
+    RotatingTextureRenderComponent render =
+        entity.getComponent(RotatingTextureRenderComponent.class);
+    if (render != null) {
+      render.setRotation(angle);
+    }
   }
 }
