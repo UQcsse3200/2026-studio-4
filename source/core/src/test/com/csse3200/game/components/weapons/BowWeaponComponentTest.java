@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -20,6 +21,9 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.rendering.DebugRenderer;
+import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +39,16 @@ class BowWeaponComponentTest {
     ServiceLocator.registerPhysicsService(new PhysicsService());
     entityService = spy(new EntityService());
     ServiceLocator.registerEntityService(entityService);
+
+    // The arrow hitbox now carries a sprite, so it needs somewhere to load and register it.
+    RenderService renderService = new RenderService();
+    renderService.setDebug(mock(DebugRenderer.class));
+    ServiceLocator.registerRenderService(renderService);
+
+    ResourceService resourceService = new ResourceService();
+    resourceService.loadTextures(new String[] {"images/weapons/throwing_knife.png"});
+    resourceService.loadAll();
+    ServiceLocator.registerResourceService(resourceService);
   }
 
   @Test
