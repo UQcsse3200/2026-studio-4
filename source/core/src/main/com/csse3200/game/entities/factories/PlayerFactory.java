@@ -3,6 +3,7 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.items.CharmPickupComponent;
 import com.csse3200.game.components.player.CharmEffectComponent;
 import com.csse3200.game.components.player.InventoryComponent;
@@ -84,6 +85,7 @@ public class PlayerFactory {
             .addComponent(new WeaponStatsComponent(0.5f, 1f, 2f))
             .addComponent(new SwordWeaponComponent())
             .addComponent(new KnifeWeaponComponent())
+            .addComponent(new StatusEffectsControllerComponent())
             .addComponent(new BowWeaponComponent());
 
     // Sword is equipped by default; the "weapon" terminal command switches at runtime.
@@ -94,6 +96,10 @@ public class PlayerFactory {
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
     player.getComponent(AnimationRenderComponent.class).startAnimation("idle_down");
+
+    // player.getComponent(StatusEffectsControllerComponent.class).burningOn(1);
+    // Uncomment above line if you want to test burning.
+
     return player;
   }
 
