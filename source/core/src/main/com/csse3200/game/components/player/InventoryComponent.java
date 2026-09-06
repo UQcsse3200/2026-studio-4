@@ -1,21 +1,11 @@
 package com.csse3200.game.components.player;
 
-import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.maingame.InventoryDisplay;
-import com.csse3200.game.components.weapons.ProjectileComponent;
-import com.csse3200.game.components.weapons.WeaponStatsComponent;
-import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.HitboxFactory;
-import com.csse3200.game.entities.factories.HitboxSpec;
 import com.csse3200.game.items.Charm;
-
-import java.security.Provider;
+import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.csse3200.game.physics.PhysicsLayer;
-import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,7 +129,7 @@ public class InventoryComponent extends Component {
     return this.charms.size();
   }
 
-  public void setDisplay(InventoryDisplay display){
+  public void setDisplay(InventoryDisplay display) {
     this.display = display;
   }
 

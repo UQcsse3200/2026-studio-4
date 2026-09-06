@@ -170,7 +170,7 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay())
-                .addComponent(inventoryDisplay);
+        .addComponent(inventoryDisplay);
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     ServiceLocator.getEntityService().register(ui);
   }
