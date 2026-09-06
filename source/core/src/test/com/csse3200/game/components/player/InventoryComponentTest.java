@@ -5,7 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.items.Charm;
+import com.csse3200.game.items.StatCharm;
+import com.csse3200.game.items.StrengthCharm;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -52,8 +53,7 @@ class InventoryComponentTest {
   @Test
   void shouldAddCharm() {
     InventoryComponent inventory = new InventoryComponent(100);
-    Charm charm = new Charm("Strength Charm");
-
+    StatCharm<?> charm = new StrengthCharm();
     inventory.addCharm(charm);
 
     assertTrue(inventory.hasCharm(charm));
@@ -63,7 +63,7 @@ class InventoryComponentTest {
   @Test
   void shouldRemoveCharm() {
     InventoryComponent inventory = new InventoryComponent(100);
-    Charm charm = new Charm("Strength Charm");
+    StatCharm<?> charm = new StrengthCharm();
 
     inventory.addCharm(charm);
     assertTrue(inventory.removeCharm(charm));
@@ -75,7 +75,7 @@ class InventoryComponentTest {
   @Test
   void shouldCheckHasCharm() {
     InventoryComponent inventory = new InventoryComponent(100);
-    Charm charm = new Charm("Strength Charm");
+    StatCharm<?> charm = new StrengthCharm();
 
     assertFalse(inventory.hasCharm(charm));
 

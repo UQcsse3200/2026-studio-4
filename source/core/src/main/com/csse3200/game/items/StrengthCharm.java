@@ -22,6 +22,8 @@ public class StrengthCharm extends StatCharm<Integer> {
 
   @Override
   public void removeStatChange(CombatStatsComponent combatStats) {
+    if (!applied) return; // cannot use checkApplied() because it will send an error message to log
     combatStats.addBaseAttack(-value);
+    applied = false;
   }
 }

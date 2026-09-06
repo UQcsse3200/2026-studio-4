@@ -11,7 +11,6 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.items.CharmPickupComponent;
 import com.csse3200.game.components.items.ItemComponent;
-import com.csse3200.game.components.player.CharmEffectComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -50,7 +49,7 @@ class ItemFlowIntegrationTest {
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     CombatStatsComponent combatStats = player.getComponent(CombatStatsComponent.class);
     Entity droppedItem = ItemFactory.createDrop(ItemType.STRENGTH_CHARM, Vector2.Zero);
-    Charm droppedCharm = droppedItem.getComponent(ItemComponent.class).getCharm();
+    StatCharm<?> droppedCharm = droppedItem.getComponent(ItemComponent.class).getCharm();
     droppedItem.create();
 
     Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
@@ -75,7 +74,6 @@ class ItemFlowIntegrationTest {
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
             .addComponent(new CombatStatsComponent(100, 10))
             .addComponent(new InventoryComponent(0))
-            .addComponent(new CharmEffectComponent())
             .addComponent(new CharmPickupComponent());
     player.create();
     return player;

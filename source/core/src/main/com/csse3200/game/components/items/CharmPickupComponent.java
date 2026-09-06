@@ -4,7 +4,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.items.Charm;
+import com.csse3200.game.items.StatCharm;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Item entities are expected to carry an {@link ItemComponent} (see {@link
  * com.csse3200.game.entities.factories.ItemFactory}), which is where this component reads the
- * {@link Charm} from.
+ * {@link StatCharm} from.
  *
  * <p>Requires {@link HitboxComponent} and {@link InventoryComponent} on this entity.
  */
@@ -84,7 +84,7 @@ public class CharmPickupComponent extends Component {
       return;
     }
 
-    Charm charm = itemComponent.getCharm();
+    StatCharm<?> charm = itemComponent.getCharm();
     inventoryComponent.addCharm(charm);
     nearbyItems.remove(itemEntity);
     itemEntity.dispose();

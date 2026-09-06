@@ -18,6 +18,8 @@ public class SpeedCharm extends StatCharm<Float> {
 
   @Override
   public void removeStatChange(CombatStatsComponent combatStats) {
+    if (!applied) return;
     combatStats.addMovementSpeed(-value);
+    applied = false;
   }
 }

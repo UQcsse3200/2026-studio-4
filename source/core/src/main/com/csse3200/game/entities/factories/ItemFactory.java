@@ -3,8 +3,8 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.items.Charm;
 import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.StrengthCharm;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -13,8 +13,6 @@ import java.util.Objects;
 
 /** Factory for creating item entities. */
 public final class ItemFactory {
-  private static final String STRENGTH_CHARM_NAME = "Strength Charm";
-  private static final String STRENGTH_CHARM_TEXTURE = "images/strength_charm_pixel.png";
 
   /**
    * Creates the requested item at a world position.
@@ -47,10 +45,10 @@ public final class ItemFactory {
    * @return an unregistered Strength Charm entity
    */
   public static Entity createStrengthCharm() {
-    Charm strengthCharm = new Charm(STRENGTH_CHARM_NAME);
+    StrengthCharm strengthCharm = new StrengthCharm();
     Entity item =
         new Entity()
-            .addComponent(new TextureRenderComponent(STRENGTH_CHARM_TEXTURE))
+            .addComponent(new TextureRenderComponent(strengthCharm.getTexture()))
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ITEM))
             .addComponent(new ItemComponent(strengthCharm));

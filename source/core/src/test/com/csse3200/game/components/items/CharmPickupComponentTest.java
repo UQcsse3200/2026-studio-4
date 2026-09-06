@@ -8,7 +8,8 @@ import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.items.Charm;
+import com.csse3200.game.items.StatCharm;
+import com.csse3200.game.items.StrengthCharm;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -30,7 +31,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldPickUpNearbyCharmOnItemPickup() {
-    Charm charm = new Charm("Strength Charm");
+    StatCharm<?> charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -45,7 +46,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldNotPickUpWithoutItemPickup() {
-    Charm charm = new Charm("Strength Charm");
+    StatCharm<?> charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -60,7 +61,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldNotPickUpOnRoomInteract() {
-    Charm charm = new Charm("Strength Charm");
+    StatCharm<?> charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -75,7 +76,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldNotPickUpAfterLeavingRange() {
-    Charm charm = new Charm("Strength Charm");
+    StatCharm<?> charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -123,7 +124,7 @@ class CharmPickupComponentTest {
    * Builds a world entity carrying an {@link ItemComponent}, the same way the Item Factory's output
    * is expected to look once the Room Team spawns it (physics body + an ITEM-layer hitbox).
    */
-  private Entity createItemEntity(Charm charm) {
+  private Entity createItemEntity(StatCharm<?> charm) {
     Entity itemEntity =
         new Entity()
             .addComponent(new PhysicsComponent())

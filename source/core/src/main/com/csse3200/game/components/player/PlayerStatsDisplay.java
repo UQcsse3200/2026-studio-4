@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.items.Charm;
+import com.csse3200.game.items.StatCharm;
 import com.csse3200.game.ui.UIComponent;
 
 /** A ui component for displaying player stats, e.g. health. */
@@ -148,7 +148,7 @@ public class PlayerStatsDisplay extends UIComponent {
   }
 
   /** Updates the displayed charm count after a charm is added to or removed from the inventory. */
-  public void updateCharmCountUI(Charm charm) {
+  public void updateCharmCountUI(StatCharm<?> charm) {
     int charmCount = entity.getComponent(InventoryComponent.class).getCharmCount();
     CharSequence text = String.format("Strength Charms: %d", charmCount);
     charmCountLabel.setText(text);
