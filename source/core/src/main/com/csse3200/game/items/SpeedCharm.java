@@ -5,7 +5,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 public class SpeedCharm extends StatCharm<Float> {
 
   public SpeedCharm() {
-    super("Speed Charm", "You feel kinda fast", 0.3f);
+    super("Speed Charm", "You feel kinda fast", 0.3f, "");
   }
 
   @Override
