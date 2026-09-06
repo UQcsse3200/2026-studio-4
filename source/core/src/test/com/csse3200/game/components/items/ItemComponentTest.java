@@ -1,10 +1,10 @@
 package com.csse3200.game.components.items;
 
-import com.csse3200.game.items.StatCharm;
-import com.csse3200.game.items.StrengthCharm;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.csse3200.game.items.StatCharm;
+import com.csse3200.game.items.StrengthCharm;
 import org.junit.jupiter.api.Test;
 
 class ItemComponentTest {
