@@ -1,9 +1,21 @@
 package com.csse3200.game.components.player;
 
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.maingame.InventoryDisplay;
+import com.csse3200.game.components.weapons.ProjectileComponent;
+import com.csse3200.game.components.weapons.WeaponStatsComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.HitboxFactory;
+import com.csse3200.game.entities.factories.HitboxSpec;
 import com.csse3200.game.items.Charm;
+
+import java.security.Provider;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +30,10 @@ public class InventoryComponent extends Component {
   private int gold;
   // Stores charms currently held by the player
   private final List<Charm> charms;
+
+  private InventoryDisplay display;
+
+  private boolean displayed;
 
   public InventoryComponent(int gold) {
     setGold(gold);
@@ -121,5 +137,20 @@ public class InventoryComponent extends Component {
    */
   public int getCharmCount() {
     return this.charms.size();
+  }
+
+  public void setDisplay(InventoryDisplay display){
+    this.display = display;
+  }
+
+  public void toggleDisplay() {
+    if (displayed) {
+      this.display.setVisible(false);
+      displayed = false;
+    } else {
+      this.display.setVisible(true);
+      displayed = true;
+    }
+    ServiceLocator.getEntityService().toggleUpdate();
   }
 }

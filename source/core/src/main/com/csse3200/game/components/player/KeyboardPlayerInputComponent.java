@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.input.InputComponent;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.Vector2Utils;
 
 /**
@@ -56,6 +57,8 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("interact");
         entity.getEvents().trigger("itemPickup");
         return true;
+      case Keys.I:
+        entity.getComponent(InventoryComponent.class).toggleDisplay();
       default:
         return false;
     }

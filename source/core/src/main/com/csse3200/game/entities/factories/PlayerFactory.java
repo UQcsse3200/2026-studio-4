@@ -94,6 +94,7 @@ public class PlayerFactory {
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
     player.getComponent(AnimationRenderComponent.class).startAnimation("idle_down");
+
     return player;
   }
 

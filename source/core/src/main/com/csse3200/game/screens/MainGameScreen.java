@@ -5,8 +5,10 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.components.maingame.InventoryDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.rooms.RoomCommand;
 import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.components.rooms.configs.WorldConfig;
@@ -157,6 +159,9 @@ public class MainGameScreen extends ScreenAdapter {
     // constructor) must end up on the same Terminal instance that is attached to the UI below.
     terminal.addCommand("weapon", new WeaponCommand(player));
 
+    InventoryDisplay inventoryDisplay = new InventoryDisplay();
+    player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
+
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
@@ -164,8 +169,9 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(new MainGameExitDisplay())
         .addComponent(terminal)
         .addComponent(inputComponent)
-        .addComponent(new TerminalDisplay());
-
+        .addComponent(new TerminalDisplay())
+                .addComponent(inventoryDisplay);
+    ui.getComponent(InventoryDisplay.class).setEnabled(false);
     ServiceLocator.getEntityService().register(ui);
   }
 }
