@@ -84,11 +84,6 @@ public class InventoryComponent extends Component {
     if (combatStats != null) {
       charm.applyStatChange(combatStats);
     }
-
-    // Notify other components when a charm is added
-    if (entity != null) {
-      entity.getEvents().trigger("charmAdded", charm);
-    }
   }
 
   /**
@@ -107,12 +102,6 @@ public class InventoryComponent extends Component {
     if (combatStats != null) {
       charm.removeStatChange(combatStats);
     }
-
-    // Notify other components only when the charm is successfully removed
-    if (removed && entity != null) {
-      entity.getEvents().trigger("charmRemoved", charm);
-    }
-
     return true;
   }
 
