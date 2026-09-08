@@ -71,7 +71,7 @@ class CollisionSpawnTest {
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new CombatStatsComponent(ENEMY_HEALTH, 0))
-            .addComponent(new SplitComponent(new Entity()));
+            .addComponent(new SplitComponent(new Entity(), "images/chaseEnemy.atlas"));
     enemy.setPosition(SHARED_POSITION);
     entityService.register(enemy);
     return enemy;

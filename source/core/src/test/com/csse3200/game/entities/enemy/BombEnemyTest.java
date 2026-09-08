@@ -52,7 +52,7 @@ class BombEnemyTest {
 
   @Test
   void shouldHaveBombEnemyAnimations() {
-    Entity bombEnemy = NPCFactory.createBombEnemy(new Entity());
+    Entity bombEnemy = NPCFactory.createBombEnemy(new Entity(), "images/bombEnemy.atlas");
     AnimationRenderComponent animator = bombEnemy.getComponent(AnimationRenderComponent.class);
 
     assertTrue(animator.hasAnimation("move"));
@@ -66,7 +66,7 @@ class BombEnemyTest {
         new Entity().addComponent(new PhysicsComponent()).addComponent(new HitboxComponent());
     player.create();
 
-    Entity bombEnemy = NPCFactory.createBombEnemy(player);
+    Entity bombEnemy = NPCFactory.createBombEnemy(player,"images/bombEnemy.atlas");
     bombEnemy.create();
 
     ExplodeComponent explodeComponent = bombEnemy.getComponent(ExplodeComponent.class);
@@ -92,7 +92,7 @@ class BombEnemyTest {
         new Entity().addComponent(new PhysicsComponent()).addComponent(new HitboxComponent());
     player.create();
 
-    Entity bombEnemy = NPCFactory.createBombEnemy(player);
+    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas");
     bombEnemy.create();
 
     ExplodeComponent explodeComponent = bombEnemy.getComponent(ExplodeComponent.class);

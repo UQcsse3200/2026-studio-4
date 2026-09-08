@@ -56,7 +56,7 @@ class SplitComponentTest {
   }
 
   private Entity createSplitEnemy() {
-    Entity enemy = NPCFactory.createChaseEnemy(new Entity(), true);
+    Entity enemy = NPCFactory.createChaseEnemy(new Entity(), true, "images/chaseEnemy.atlas");
     enemy.create();
     return enemy;
   }
@@ -74,6 +74,7 @@ class SplitComponentTest {
     EventListener1<Entity> childListener = addChildListener(enemy);
 
     enemy.getEvents().trigger("hitReaction", (Entity) null);
+    enemy.getComponent(CombatStatsComponent.class).setHealth(0);
 
     verify(childListener, times(0)).handle(any());
   }

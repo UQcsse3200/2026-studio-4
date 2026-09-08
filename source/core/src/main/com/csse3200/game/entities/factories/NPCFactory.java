@@ -53,7 +53,7 @@ public class NPCFactory {
    * @param target entity to chase
    * @return entity
    */
-  public static Entity createBombEnemy(Entity target) {
+  public static Entity createBombEnemy(Entity target, String skin) {
     Entity bombEnemy = createBaseNPC();
     BombEnemyConfig config = configs.bombEnemy;
 
@@ -65,7 +65,7 @@ public class NPCFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/bombEnemy.atlas", TextureAtlas.class));
+                .getAsset(skin, TextureAtlas.class));
     animator.addAnimation("move", 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
@@ -93,7 +93,7 @@ public class NPCFactory {
    * @param shouldSplit whether the enemy should receive a {@link SplitComponent}
    * @return entity
    */
-  public static Entity createChaseEnemy(Entity target, boolean shouldSplit) {
+  public static Entity createChaseEnemy(Entity target, boolean shouldSplit, String skin) {
     Entity chaseEnemy = createBaseNPC();
     ChaseEnemyConfig config = configs.chaseEnemy;
 
@@ -106,7 +106,7 @@ public class NPCFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/chaseEnemy.atlas", TextureAtlas.class));
+                .getAsset(skin, TextureAtlas.class));
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
@@ -120,7 +120,7 @@ public class NPCFactory {
         .addComponent(new EnemyAnimationController());
 
     if (shouldSplit) {
-      chaseEnemy.addComponent(new SplitComponent(target));
+      chaseEnemy.addComponent(new SplitComponent(target, skin));
     }
 
     animator.scaleEntity();
@@ -196,10 +196,11 @@ public class NPCFactory {
   public static Entity createBaseNPC() {
     Entity npc =
         new Entity()
+
             .addComponent(new PhysicsComponent())
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+    .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new EnemyDeathComponent(true));
 
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);
