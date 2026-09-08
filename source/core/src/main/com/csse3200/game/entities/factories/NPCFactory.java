@@ -142,13 +142,13 @@ public class NPCFactory {
    * @return floating demon entity
    */
   public static Entity createFloatingDemon(
-      Entity target, Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint) {
+      Entity target, Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint, String skin) {
     return createFloatingDemon(
         target,
         leftPoint,
         topPoint,
         rightPoint,
-        projectile -> ServiceLocator.getEntityService().register(projectile));
+        projectile -> ServiceLocator.getEntityService().register(projectile), skin);
   }
 
   /** Creates a floating demon and delegates ownership of its projectiles to the given spawner. */
@@ -157,7 +157,7 @@ public class NPCFactory {
       Vector2 leftPoint,
       Vector2 topPoint,
       Vector2 rightPoint,
-      Consumer<Entity> projectileSpawner) {
+      Consumer<Entity> projectileSpawner, String skin) {
     FloatingDemonConfig config = configs.floatingDemon;
     AITaskComponent aiComponent =
         new AITaskComponent()
@@ -167,7 +167,7 @@ public class NPCFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/floatingDemon.atlas", TextureAtlas.class));
+                .getAsset(skin, TextureAtlas.class));
     animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.08f);
     animator.addAnimation(DIE_ANIMATION, 0.1f);
