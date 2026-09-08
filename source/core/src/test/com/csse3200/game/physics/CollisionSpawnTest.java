@@ -115,6 +115,7 @@ class CollisionSpawnTest {
   @Test
   void shouldSpawnChildrenAfterPhysicsStepThatSplitsEnemy() {
     Entity enemy = registerSplitEnemy();
+    enemy.getComponent(CombatStatsComponent.class).setHealth(0);
     EventListener1<Entity> childListener = addChildListener(enemy);
     registerWeaponHitbox();
 
@@ -130,6 +131,7 @@ class CollisionSpawnTest {
     Entity enemy = registerSplitEnemy();
     enemy.getEvents().addListener("spawnChildren", (Entity child) -> entityService.register(child));
     registerWeaponHitbox();
+    enemy.getComponent(CombatStatsComponent.class).setHealth(0);
 
     physicsEngine.update();
     entityService.update();

@@ -34,13 +34,8 @@ public class SplitComponent extends Component {
    * @param attacker The entity that caused the damage (can be null).
    */
   private void onHitReaction(Entity attacker) {
-    if (hasSplit || entity == null) {
-      return;
-    }
-    hasSplit = true;
-
     CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
-    if (stats == null || stats.getHealth() == 0) {
+    if (hasSplit || entity == null || stats == null || stats.getHealth() != 0) {
       return;
     }
     int halfHealth = Math.max(1, stats.getMaxHealth() / 2);
@@ -50,10 +45,11 @@ public class SplitComponent extends Component {
     ServiceLocator.getEntityService()
         .schedule(
             () -> {
-              spawnChild(-1f, halfHealth, halfAttack);
-              spawnChild(1f, halfHealth, halfAttack);
+              spawnChild(-0.8f, halfHealth, halfAttack);
+              spawnChild(0.8f, halfHealth, halfAttack);
             });
     ServiceLocator.getEntityService().scheduleDisposal(entity);
+    hasSplit = true;
   }
 
   /**
