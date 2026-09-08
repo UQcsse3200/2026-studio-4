@@ -44,7 +44,8 @@ class ChaseEnemyTest {
     ServiceLocator.registerEntityService(entityService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/chaseEnemy.atlas", "images.miniEnemy.atlas"});
+    resourceService.loadTextureAtlases(
+        new String[] {"images/chaseEnemy.atlas", "images.miniEnemy.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }

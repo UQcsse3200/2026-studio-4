@@ -64,8 +64,7 @@ public class NPCFactory {
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset(skin, TextureAtlas.class));
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation("move", 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
@@ -105,8 +104,7 @@ public class NPCFactory {
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset(skin, TextureAtlas.class));
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
@@ -148,7 +146,8 @@ public class NPCFactory {
         leftPoint,
         topPoint,
         rightPoint,
-        projectile -> ServiceLocator.getEntityService().register(projectile), skin);
+        projectile -> ServiceLocator.getEntityService().register(projectile),
+        skin);
   }
 
   /** Creates a floating demon and delegates ownership of its projectiles to the given spawner. */
@@ -157,7 +156,8 @@ public class NPCFactory {
       Vector2 leftPoint,
       Vector2 topPoint,
       Vector2 rightPoint,
-      Consumer<Entity> projectileSpawner, String skin) {
+      Consumer<Entity> projectileSpawner,
+      String skin) {
     FloatingDemonConfig config = configs.floatingDemon;
     AITaskComponent aiComponent =
         new AITaskComponent()
@@ -166,8 +166,7 @@ public class NPCFactory {
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset(skin, TextureAtlas.class));
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.08f);
     animator.addAnimation(DIE_ANIMATION, 0.1f);
@@ -196,11 +195,10 @@ public class NPCFactory {
   public static Entity createBaseNPC() {
     Entity npc =
         new Entity()
-
             .addComponent(new PhysicsComponent())
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
-    .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new EnemyDeathComponent(true));
 
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);

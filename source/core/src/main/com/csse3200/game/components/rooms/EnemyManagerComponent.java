@@ -56,7 +56,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
         Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
         return NPCFactory.createFloatingDemon(
-            target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/floatingDemon.atlas");
+            target,
+            leftPoint,
+            topPoint,
+            rightPoint,
+            this::spawnEntity,
+            "images/floatingDemon.atlas");
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
     }

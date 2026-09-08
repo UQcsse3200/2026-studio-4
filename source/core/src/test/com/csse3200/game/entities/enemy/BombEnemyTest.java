@@ -66,7 +66,7 @@ class BombEnemyTest {
         new Entity().addComponent(new PhysicsComponent()).addComponent(new HitboxComponent());
     player.create();
 
-    Entity bombEnemy = NPCFactory.createBombEnemy(player,"images/bombEnemy.atlas");
+    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas");
     bombEnemy.create();
 
     ExplodeComponent explodeComponent = bombEnemy.getComponent(ExplodeComponent.class);
