@@ -27,12 +27,12 @@ public class InventoryDisplay extends UIComponent {
     table.setFillParent(true);
     stage.addActor(table);
 
-    //Right side of inventory
+    // Right side of inventory
     Table charmsTable = new Table().background(skin.getDrawable("white"));
     Table consumablesTable = new Table().background(skin.getDrawable("white"));
     Table weaponsTable = new Table().background(skin.getDrawable("white"));
 
-    //Left side of inventory
+    // Left side of inventory
     Table goldCount = new Table().background(skin.getDrawable("white"));
     Table weaponDisplayTable = new Table().background(skin.getDrawable("white"));
 
@@ -60,8 +60,7 @@ public class InventoryDisplay extends UIComponent {
     consumablesTable.row();
     tableDraw(consumablesTable);
 
-
-    //Created to have the two row on left column and one row on right column
+    // Created to have the two row on left column and one row on right column
     leftStack.add(goldCount).fill();
     leftStack.row();
     leftStack.add(weaponDisplayTable).expand().fill();
