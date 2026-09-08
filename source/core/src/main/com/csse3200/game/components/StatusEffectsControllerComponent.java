@@ -28,12 +28,19 @@ public class StatusEffectsControllerComponent extends Component {
    *
    * @param stacks the number of stacks of burning to add.
    */
-  public void burningOn(int stacks) {
+  public void addStatusEffect(int stacks, char statusEffect) {
     if (stacks <= 0) {
-      throw new IllegalArgumentException("Stacks of burning must be > 0");
+      throw new IllegalArgumentException("Stacks must be > 0");
     }
-    for (int i = 0; i < stacks; i++) {
-      statusEffects.addLast(StatusEffectsFactory.CreateBurn(combatStatsComponent));
+    switch (statusEffect) {
+      case 'b':
+        for (int i = 0; i < stacks; i++) {
+          statusEffects.addLast(StatusEffectsFactory.CreateBurn(combatStatsComponent));
+        }
+      case 'r':
+        for (int i = 0; i < stacks; i++) {
+          statusEffects.addLast(StatusEffectsFactory.CreateRegeneration(combatStatsComponent));
+        }
     }
   }
 

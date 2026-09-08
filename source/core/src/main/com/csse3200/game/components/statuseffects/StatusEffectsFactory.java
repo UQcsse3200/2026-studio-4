@@ -13,4 +13,8 @@ public class StatusEffectsFactory {
   public static StatusEffect CreateBurn(CombatStatsComponent combatStats) {
     return new Burning(1, 1000, 10000, combatStats);
   }
+
+  public static StatusEffect CreateRegeneration(CombatStatsComponent combatStats) {
+    return new Regeneration(1, 1000, 10000, combatStats);
+  }
 }
