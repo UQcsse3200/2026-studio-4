@@ -22,11 +22,25 @@ public class InventoryDisplay extends UIComponent {
 
   private void addActors() {
     table = new Table();
-    table.top().right();
     table.setFillParent(true);
-    TextButton mainMenuBtn = new TextButton("INVENTORY TEST", skin);
-    table.add(mainMenuBtn).padTop(100f).padRight(100f);
     stage.addActor(table);
+
+    Table gridTable = new Table();
+    int columns = 5;
+    int totalSlots = 20;
+    int slotSize = 64;
+
+    for (int i = 0; i < totalSlots; i++) {
+      TextButton slotBackground = new TextButton("PlaceHOLDER", skin);
+
+      gridTable.add(slotBackground).size(slotSize).pad(5);
+
+      // Break to a new row after reaching the column limit
+      if ((i + 1) % columns == 0) {
+        gridTable.row();
+      }
+    }
+    table.add(gridTable);
     table.setVisible(false);
   }
 
