@@ -10,6 +10,7 @@ import com.csse3200.game.components.ExplodeComponent;
 import com.csse3200.game.components.SplitComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
+import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.components.npc.FloatingDemonAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
@@ -200,7 +201,8 @@ public class NPCFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new EnemyDeathComponent(true));
+            .addComponent(new EnemyDeathComponent(true))
+            .addComponent(new EnemyStatDisplay());
 
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);
     return npc;
