@@ -182,7 +182,8 @@ public class NPCFactory {
             .addComponent(new EnemyDeathComponent(true))
             .addComponent(aiComponent)
             .addComponent(animator)
-            .addComponent(new FloatingDemonAnimationController());
+            .addComponent(new FloatingDemonAnimationController())
+            .addComponent(new EnemyStatDisplay());
 
     animator.scaleEntity();
     demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
