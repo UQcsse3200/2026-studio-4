@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.items.CharmPickupComponent;
 import com.csse3200.game.components.items.CurrencyPickupComponent;
+import com.csse3200.game.components.items.HealthPotionPickupComponent;
 import com.csse3200.game.components.player.CharmEffectComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.PlayerActions;
@@ -78,6 +79,7 @@ public class PlayerFactory {
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(new CharmPickupComponent())
             .addComponent(new CurrencyPickupComponent())
+            .addComponent(new HealthPotionPickupComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())
             .addComponent(new PlayerStatsDisplay())
