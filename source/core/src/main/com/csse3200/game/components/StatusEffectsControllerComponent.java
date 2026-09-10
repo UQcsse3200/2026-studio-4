@@ -26,7 +26,8 @@ public class StatusEffectsControllerComponent extends Component {
   /**
    * Adds stacks to a status effect. Throws IllegalArgumentException if stacks <= 0.
    *
-   * @param statusEffect the status effect to add stacks of. A single character indicator for each effect. 'b' for burning. 'r' for regeneration.
+   * @param statusEffect the status effect to add stacks of. A single character indicator for each
+   *     effect. 'b' for burning. 'r' for regeneration.
    * @param stacks the number of stacks to add.
    */
   public void addStatusEffect(int stacks, char statusEffect) {
@@ -38,10 +39,15 @@ public class StatusEffectsControllerComponent extends Component {
         for (int i = 0; i < stacks; i++) {
           statusEffects.addLast(StatusEffectsFactory.CreateBurn(combatStatsComponent));
         }
+        break;
       case 'r':
         for (int i = 0; i < stacks; i++) {
           statusEffects.addLast(StatusEffectsFactory.CreateRegeneration(combatStatsComponent));
         }
+        break;
+      default:
+        throw new IllegalArgumentException(
+            "statusEffect must be a valid character representation of a status effect.");
     }
   }
 
