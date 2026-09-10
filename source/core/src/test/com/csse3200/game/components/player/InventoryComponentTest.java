@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.Charm;
+import com.csse3200.game.items.ItemType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -82,5 +83,60 @@ class InventoryComponentTest {
     inventory.addCharm(charm);
 
     assertTrue(inventory.hasCharm(charm));
+  }
+
+  @Test
+  void shouldAddConsumable() {
+    InventoryComponent inventory = new InventoryComponent(0);
+
+    inventory.addConsumable(ItemType.HEALTH_POTION);
+
+    assertEquals(1, inventory.getConsumableCount(ItemType.HEALTH_POTION));
+    assertTrue(inventory.hasConsumable(ItemType.HEALTH_POTION));
+  }
+
+  @Test
+  void shouldStackConsumables() {
+    InventoryComponent inventory = new InventoryComponent(0);
+
+    inventory.addConsumable(ItemType.HEALTH_POTION);
+    inventory.addConsumable(ItemType.HEALTH_POTION);
+
+    assertEquals(2, inventory.getConsumableCount(ItemType.HEALTH_POTION));
+  }
+
+  @Test
+  void shouldRemoveConsumable() {
+    InventoryComponent inventory = new InventoryComponent(0);
+
+    inventory.addConsumable(ItemType.HEALTH_POTION);
+    boolean removed = inventory.removeConsumable(ItemType.HEALTH_POTION);
+
+    assertTrue(removed);
+    assertEquals(0, inventory.getConsumableCount(ItemType.HEALTH_POTION));
+    assertFalse(inventory.hasConsumable(ItemType.HEALTH_POTION));
+  }
+
+  @Test
+  void shouldNotRemoveMissingConsumable() {
+    InventoryComponent inventory = new InventoryComponent(0);
+
+    boolean removed = inventory.removeConsumable(ItemType.HEALTH_POTION);
+
+    assertFalse(removed);
+    assertEquals(0, inventory.getConsumableCount(ItemType.HEALTH_POTION));
+  }
+
+  @Test
+  void shouldStoreDifferentConsumablesSeparately() {
+    InventoryComponent inventory = new InventoryComponent(0);
+
+    inventory.addConsumable(ItemType.HEALTH_POTION);
+    inventory.addConsumable(ItemType.SPEED_POTION);
+    inventory.addConsumable(ItemType.SPEED_POTION);
+
+    assertEquals(1, inventory.getConsumableCount(ItemType.HEALTH_POTION));
+    assertEquals(2, inventory.getConsumableCount(ItemType.SPEED_POTION));
+    assertEquals(0, inventory.getConsumableCount(ItemType.SHIELD));
   }
 }
