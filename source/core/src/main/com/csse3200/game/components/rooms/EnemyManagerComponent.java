@@ -50,18 +50,13 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         return NPCFactory.createBombEnemy(target, "images/bombEnemy.atlas");
       case CHASE:
         return NPCFactory.createChaseEnemy(target, true, "images/chaseEnemy.atlas");
-      case FLOATING_DEMON:
+      case GREEK_FLYING:
         TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
         Vector2 leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);
         Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
         Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
         return NPCFactory.createFloatingDemon(
-            target,
-            leftPoint,
-            topPoint,
-            rightPoint,
-            this::spawnEntity,
-            "images/floatingDemon.atlas");
+            target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/harpy.atlas");
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
     }

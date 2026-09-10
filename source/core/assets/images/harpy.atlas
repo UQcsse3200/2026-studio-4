@@ -1,0 +1,811 @@
+harpy/move/frame_0000.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+default
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 3
+move
+    rotate: false
+    xy: 0, 0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 0
+
+harpy/move/frame_0001.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 1
+
+harpy/move/frame_0002.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 2
+
+harpy/move/frame_0003.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 3
+
+harpy/move/frame_0004.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 4
+
+harpy/move/frame_0005.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 5
+
+harpy/move/frame_0006.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 6
+
+harpy/move/frame_0007.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 7
+
+harpy/move/frame_0008.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 8
+
+harpy/move/frame_0009.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 9
+
+harpy/move/frame_0010.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 10
+
+harpy/move/frame_0011.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 11
+
+harpy/move/frame_0012.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 12
+
+harpy/move/frame_0013.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 13
+
+harpy/move/frame_0014.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 14
+
+harpy/move/frame_0015.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 15
+
+harpy/move/frame_0016.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 16
+
+harpy/move/frame_0017.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 17
+
+harpy/move/frame_0018.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 18
+
+harpy/move/frame_0019.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 19
+
+harpy/move/frame_0020.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 20
+
+harpy/move/frame_0021.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 21
+
+harpy/move/frame_0022.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 22
+
+harpy/move/frame_0023.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 23
+
+harpy/die2/frame_0000.png
+size: 46, 39
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+    rotate: false
+    xy: 0,0
+    size: 46, 39
+    orig: 46, 39
+    offset: 0, 0
+    index: 0
+
+harpy/die2/frame_0001.png
+size: 46, 39
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+    rotate: false
+    xy: 0,0
+    size: 46, 39
+    orig: 46, 39
+    offset: 0, 0
+    index: 1
+
+harpy/die2/frame_0002.png
+size: 46, 39
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+    rotate: false
+    xy: 0,0
+    size: 46, 39
+        orig: 46, 39
+    offset: 0, 0
+    index: 2
+
+harpy/die1/frame_0000.png
+size: 44, 39
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+    rotate: false
+    xy: 0,0
+    size: 44, 39
+    orig: 44, 39
+    offset: 0, 0
+    index: 3
+
+harpy/die1/frame_0001.png
+size: 44, 39
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+    rotate: false
+    xy: 0,0
+    size: 44, 39
+    orig: 44, 39
+    offset: 0, 0
+    index: 4
+
+harpy/die1/frame_0002.png
+size: 44, 39
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+    rotate: false
+    xy: 0,0
+    size: 44, 39
+    orig: 44, 39
+    offset: 0, 0
+    index: 5
+
+harpy/die1/frame_0003.png
+size: 44, 39
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+    rotate: false
+    xy: 0,0
+    size: 44, 39
+    orig: 44, 39
+    offset: 0, 0
+    index: 6
+
+harpy/die1/frame_0004.png
+size: 44, 39
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+    rotate: false
+    xy: 0,0
+    size: 44, 39
+    orig: 44, 39
+    offset: 0, 0
+    index: 7
+
+harpy/move/frame_0000.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0, 0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 0
+
+harpy/move/frame_0001.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 1
+
+harpy/move/frame_0002.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 2
+
+harpy/move/frame_0003.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 3
+
+harpy/move/frame_0004.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 4
+
+harpy/move/frame_0005.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 5
+
+harpy/move/frame_0006.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 6
+
+harpy/move/frame_0007.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 7
+
+harpy/move/frame_0008.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 8
+
+harpy/move/frame_0009.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 9
+
+harpy/move/frame_0010.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 10
+
+harpy/move/frame_0011.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 11
+
+harpy/move/frame_0012.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 12
+
+harpy/move/frame_0013.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 13
+
+harpy/move/frame_0014.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 14
+
+harpy/move/frame_0015.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 15
+
+harpy/move/frame_0016.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 16
+
+harpy/move/frame_0017.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 17
+
+harpy/move/frame_0018.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 18
+
+harpy/move/frame_0019.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 19
+
+harpy/move/frame_0020.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 20
+
+harpy/move/frame_0021.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 21
+
+harpy/move/frame_0022.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 22
+
+harpy/move/frame_0023.png
+size: 42, 44
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0,0
+    size: 42, 44
+    orig: 42, 44
+    offset: 0, 0
+    index: 23
+Floating_Demon_Assets/4 Projectile F Demon/Projectile_FDemon_0001.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectile
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 0
+
+Floating_Demon_Assets/4 Projectile F Demon/Projectile_FDemon_0002.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectile
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 1
+
+Floating_Demon_Assets/4 Projectile F Demon/Projectile_FDemon_0003.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectile
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 2
+
+Floating_Demon_Assets/5 Projectile HIT F Demon/ProjectileHITFDemon_0001.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectileHit
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 0
+
+Floating_Demon_Assets/5 Projectile HIT F Demon/ProjectileHITFDemon_0002.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectileHit
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 1
+
+Floating_Demon_Assets/5 Projectile HIT F Demon/ProjectileHITFDemon_0003.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectileHit
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 2

@@ -19,6 +19,8 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener("wanderStart", this::animateWander);
     entity.getEvents().addListener("chaseStart", this::animateChase);
     entity.getEvents().addListener("dieAnimation", this::animateDie);
+    entity.getEvents().addListener("patrolStart", this::animatePatrol);
+    entity.getEvents().addListener("rangedAttack", this::animateAttack);
     entity.getEvents().addListener("default", this::animatePause);
   }
 
@@ -33,6 +35,9 @@ public class EnemyAnimationController extends Component {
       dying = false;
       ServiceLocator.getEntityService().scheduleDisposal(entity);
     }
+    if ("attack".equals(animator.getCurrentAnimation()) && animator.isFinished()) {
+      animator.startAnimation("move");
+    }
   }
 
   private void animateWander() {
@@ -45,5 +50,17 @@ public class EnemyAnimationController extends Component {
 
   private void animatePause() {
     animator.startAnimation("default");
+  }
+
+  private void animatePatrol() {
+    if (!dying) {
+      animator.startAnimation("move");
+    }
+  }
+
+  private void animateAttack() {
+    if (!dying) {
+      animator.startAnimation("chase");
+    }
   }
 }
