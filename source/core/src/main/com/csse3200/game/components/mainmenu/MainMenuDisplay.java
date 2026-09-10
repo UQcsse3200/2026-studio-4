@@ -31,11 +31,11 @@ public class MainMenuDisplay extends UIComponent {
             ServiceLocator.getResourceService()
                 .getAsset("CutScreens/main_menu.jpg", Texture.class));
 
-      title.setFillParent(true);
-      title.setScaling(Scaling.fill); // stretch/crop to fill screen, keeps aspect
+    title.setFillParent(true);
+    title.setScaling(Scaling.fill); // stretch/crop to fill screen, keeps aspect
 
-      Table table = new Table();
-      table.setPosition(800,150);
+    Table table = new Table();
+    table.setPosition(800, 150);
 
     TextButton startBtn = new TextButton("Start", skin);
     TextButton loadBtn = new TextButton("Load", skin);
@@ -80,13 +80,10 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-
-
     table.add(startBtn);
     table.add(loadBtn).padLeft(250f);
     table.add(settingsBtn).padLeft(250f);
     table.add(exitBtn).padLeft(250f);
-
 
     stage.addActor(title);
     stage.addActor(table);
