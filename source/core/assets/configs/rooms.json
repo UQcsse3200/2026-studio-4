@@ -59,7 +59,7 @@
         { "type": "BOMB", "x": 19, "y": 18 },
         { "type": "CHASE", "x": 27, "y": 25 },
         { "type": "BOMB", "x": 34, "y": 20 },
-        { "type": "FLOATING_DEMON", "x": 31, "y": 32 }
+        { "type": "GREEK_FLYING", "x": 31, "y": 32 }
       ],
       "obstacles": [
         { "type": "BARREL", "x": 13, "y": 12 }, { "type": "BARREL", "x": 15, "y": 12 },
@@ -81,7 +81,7 @@
         { "type": "BOMB", "x": 25, "y": 26 },
         { "type": "CHASE", "x": 32, "y": 18 },
         { "type": "CHASE", "x": 36, "y": 30 },
-        { "type": "FLOATING_DEMON", "x": 24, "y": 35 }
+        { "type": "GREEK_FLYING", "x": 24, "y": 35 }
       ],
       "obstacles": [
         { "type": "BARREL", "x": 14, "y": 30 }, { "type": "BARREL", "x": 16, "y": 30 },

@@ -20,7 +20,7 @@ class WorldConfigTest {
     assertNotNull(world);
     assertDoesNotThrow(world::validate);
     assertEquals(EnemyType.CHASE, world.rooms[1].enemySpawns[1].type);
-    assertEquals(EnemyType.FLOATING_DEMON, world.rooms[2].enemySpawns[3].type);
+    assertEquals(EnemyType.GREEK_FLYING, world.rooms[2].enemySpawns[3].type);
   }
 
   @Test

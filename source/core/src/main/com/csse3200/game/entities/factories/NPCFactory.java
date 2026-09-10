@@ -4,13 +4,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
-import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.EnemyDeathComponent;
-import com.csse3200.game.components.ExplodeComponent;
-import com.csse3200.game.components.SplitComponent;
-import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.*;
 import com.csse3200.game.components.npc.EnemyAnimationController;
-import com.csse3200.game.components.npc.FloatingDemonAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
 import com.csse3200.game.components.tasks.PatrolTask;
@@ -75,6 +70,7 @@ public class NPCFactory {
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
         .addComponent(aiComponent)
         .addComponent(animator)
+        .addComponent(new KnockbackComponent(20))
         .addComponent(new ExplodeComponent(target))
         .addComponent(new EnemyAnimationController());
 
@@ -167,8 +163,8 @@ public class NPCFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
-    animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("attack", 0.08f);
+    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("chase", 0.08f);
     animator.addAnimation(DIE_ANIMATION, 0.1f);
 
     Entity demon =
@@ -180,7 +176,7 @@ public class NPCFactory {
             .addComponent(new EnemyDeathComponent(true))
             .addComponent(aiComponent)
             .addComponent(animator)
-            .addComponent(new FloatingDemonAnimationController());
+            .addComponent(new EnemyAnimationController());
 
     animator.scaleEntity();
     demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
