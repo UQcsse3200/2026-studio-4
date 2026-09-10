@@ -57,7 +57,8 @@ public class CharmPickupComponent extends Component {
     }
 
     Entity itemEntity = ((BodyUserData) other.getBody().getUserData()).entity;
-    if (itemEntity.getComponent(ItemComponent.class) != null) {
+    ItemComponent itemComponent = itemEntity.getComponent(ItemComponent.class);
+    if (itemComponent != null && itemComponent.getCharm() != null) {
       nearbyItems.add(itemEntity);
     }
   }
