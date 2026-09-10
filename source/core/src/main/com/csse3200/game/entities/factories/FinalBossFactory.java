@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.boss.FinalBossDamageControllerComponent;
+import com.csse3200.game.components.boss.FinalBossExplosiveSummonComponent;
 import com.csse3200.game.components.boss.FinalBossHealthBarDisplay;
 import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
@@ -15,7 +16,7 @@ import java.util.function.Consumer;
 
 /** Creates the Final Boss and its Stage 1 summons. */
 public final class FinalBossFactory {
-  private static final String PLACEHOLDER_SKIN = "images/bombEnemy.atlas";
+  public static final String PLACEHOLDER_SKIN = "images/bombEnemy.atlas";
 
   /**
    * Creates the basic Final Boss entity.
@@ -23,20 +24,14 @@ public final class FinalBossFactory {
    * <p>The target and summon spawner will be used when Stage 1 behaviour is added.
    */
   public static Entity createFinalBoss(Entity target, Consumer<Entity> summonSpawner) {
-    FinalBossStageOneConfig config = new FinalBossStageOneConfig();
-    config.validate();
     if (target == null || summonSpawner == null) {
       throw new IllegalArgumentException("Final Boss factory arguments must not be null");
     }
 
-    TextureAtlas atlas =
-        ServiceLocator.getResourceService().getAsset(PLACEHOLDER_SKIN, TextureAtlas.class);
+    FinalBossStageOneConfig config = new FinalBossStageOneConfig();
+    config.validate();
 
-    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
-    animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("dieAnimation", 0.1f, Animation.PlayMode.NORMAL);
+    AnimationRenderComponent animator = createAnimator(PLACEHOLDER_SKIN);
 
     Entity boss =
         NPCFactory.createBaseNPC()
@@ -52,6 +47,51 @@ public final class FinalBossFactory {
     animator.startAnimation("default");
 
     return boss;
+  }
+
+  /** Creates an unregistered explosive summon used during Final Boss Stage 1. */
+  public static Entity createExplosiveSummon(
+      Entity target, FinalBossStageOneConfig config, float movementSpeed, float warningDuration) {
+    if (target == null || config == null) {
+      throw new IllegalArgumentException("Summon target and config must not be null");
+    }
+
+    config.validate();
+
+    AnimationRenderComponent animator = createAnimator(PLACEHOLDER_SKIN);
+
+    Entity summon =
+        NPCFactory.createBaseNPC()
+            .addComponent(new CombatStatsComponent(config.summonHealth, 0))
+            .addComponent(animator)
+            .addComponent(new EnemyAnimationController())
+            .addComponent(
+                new FinalBossExplosiveSummonComponent(
+                    target,
+                    movementSpeed,
+                    config.summonTriggerDistance,
+                    config.summonExplosionRadius,
+                    config.summonExplosionDamage,
+                    warningDuration));
+
+    animator.scaleEntity();
+    summon.setScale(summon.getScale().scl(0.75f));
+    animator.startAnimation("default");
+
+    return summon;
+  }
+
+  /** Creates the animations shared by the temporary boss and summon sprites. */
+  private static AnimationRenderComponent createAnimator(String skin) {
+    TextureAtlas atlas = ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class);
+
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("dieAnimation", 0.1f, Animation.PlayMode.NORMAL);
+
+    return animator;
   }
 
   private FinalBossFactory() {
