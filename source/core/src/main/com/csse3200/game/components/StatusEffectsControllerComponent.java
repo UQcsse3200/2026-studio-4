@@ -24,9 +24,10 @@ public class StatusEffectsControllerComponent extends Component {
   }
 
   /**
-   * Adds stacks to burning. Throws IllegalArgumentException if stacks <= 0.
+   * Adds stacks to a status effect. Throws IllegalArgumentException if stacks <= 0.
    *
-   * @param stacks the number of stacks of burning to add.
+   * @param statusEffect the status effect to add stacks of. A single character indicator for each effect. 'b' for burning. 'r' for regeneration.
+   * @param stacks the number of stacks to add.
    */
   public void addStatusEffect(int stacks, char statusEffect) {
     if (stacks <= 0) {

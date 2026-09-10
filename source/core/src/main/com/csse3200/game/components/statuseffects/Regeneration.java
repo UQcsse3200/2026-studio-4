@@ -3,7 +3,7 @@ package com.csse3200.game.components.statuseffects;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.services.GameTime;
 
-/** The object class for the burning status effect. */
+/** The object class for the regeneration status effect. */
 public class Regeneration implements StatusEffect {
   private final GameTime time = new GameTime();
 
