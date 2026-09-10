@@ -9,7 +9,7 @@ public class KnockbackComponent extends Component {
   private final float strength;
 
   /**
-   * @param strength The magnitude of the knockback force.
+   * @param strength The magnitude of the knockback forceZ.
    */
   public KnockbackComponent(float strength) {
     this.strength = strength;
@@ -27,17 +27,19 @@ public class KnockbackComponent extends Component {
    */
   private void onHitReaction(Entity attacker) {
     if (attacker == null || entity == null) {
+      System.out.println("击退失败：攻击者或实体为空");
       return;
     }
 
     PhysicsComponent physicsComponent = entity.getComponent(PhysicsComponent.class);
     if (physicsComponent == null || physicsComponent.getBody() == null) {
+      System.out.println("击退失败：缺少物理组件");
       return;
     }
 
     Vector2 knockbackDir = entity.getCenterPosition().cpy().sub(attacker.getPosition()).nor();
-
     Vector2 impulse = knockbackDir.scl(strength);
+    System.out.println("成功施加击退力，冲量大小为: " + impulse);
 
     physicsComponent
         .getBody()

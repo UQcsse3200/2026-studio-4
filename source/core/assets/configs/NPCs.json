@@ -17,7 +17,11 @@
       "x": 3,
       "y": 3
     }
-  }
+  },
+  "cerberus":{
+  "health": 250,
+  "baseAttack": 20
+}
 }
 
 

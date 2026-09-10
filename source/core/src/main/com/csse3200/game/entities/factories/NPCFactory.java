@@ -181,6 +181,62 @@ public class NPCFactory {
   }
 
   /**
+   * Creates a generic base entity for Mini Bosses.
+   *
+   * @return entity
+   */
+  public static Entity createBaseMiniBoss() {
+    Entity miniboss = createBaseNPC();
+    miniboss.addComponent(new BossPhaseComponent());
+    return miniboss;
+  }
+
+  /**
+   * Auxiliary Method: Generate the side heads (left head / right head) of Cerberus
+   *
+   * @param mainHead
+   * @param offset
+   * @param health
+   */
+  private static Entity createCerberusSideHead(Entity mainHead, Vector2 offset, int health) {
+    Entity sideHead = createBaseMiniBoss();
+
+    sideHead
+        .addComponent(new CombatStatsComponent(health, 10))
+        .addComponent(new HeadAttachmentComponent(mainHead, offset));
+
+    return sideHead;
+  }
+
+  /**
+   * Creates theCerberus main body (MiddleHead).
+   *
+   * @param target entity to chase/attack
+   * @param anchorPoint the center point of the gate (chain center)
+   * @return entity
+   */
+  public static Entity createCerberus(Entity target, Vector2 anchorPoint, String skin) {
+    Entity mainHead = createBaseMiniBoss();
+    BaseEntityConfig conf = configs.cerberus;
+
+    AnimationRenderComponent animationRenderComponent =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
+    animationRenderComponent.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
+    mainHead
+        .addComponent(new CombatStatsComponent(conf.health, conf.baseAttack))
+        .addComponent(animationRenderComponent)
+        .addComponent(new ChainRestrictionComponent(anchorPoint, 15f));
+    Entity leftHead = createCerberusSideHead(mainHead, new Vector2(-1.5f, 0.5f), conf.health / 2);
+    Entity rightHead = createCerberusSideHead(mainHead, new Vector2(1.5f, 0.5f), conf.health / 2);
+
+    ServiceLocator.getEntityService().register(leftHead);
+    ServiceLocator.getEntityService().register(rightHead);
+
+    return mainHead;
+  }
+
+  /**
    * Creates a generic NPC to be used as a base entity by more specific NPC creation methods.
    *
    * @return entity
