@@ -2,8 +2,11 @@ package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
 import com.csse3200.game.items.Charm;
+import com.csse3200.game.items.ItemType;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +22,13 @@ public class InventoryComponent extends Component {
   // Stores charms currently held by the player
   private final List<Charm> charms;
 
+  // Stores the quantity of each consumable item held by the player
+  private final Map<ItemType, Integer> consumables;
+
   public InventoryComponent(int gold) {
     setGold(gold);
     this.charms = new ArrayList<>();
+    this.consumables = new EnumMap<>(ItemType.class);
   }
 
   /**
