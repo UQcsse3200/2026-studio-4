@@ -3,7 +3,7 @@ package com.csse3200.game.components.items;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -27,64 +27,56 @@ class HealthPotionPickupComponentTest {
   }
 
   @Test
-  void shouldHealOnItemPickup() {
-    Entity player = createPlayer(40);
-    Entity potion = createItem(ItemDropSpec.single(ItemType.HEALTH_POTION));
+  void shouldStoreDroppedPotionQuantityOnItemPickup() {
+    Entity player = createPlayer();
+    Entity potion = createItem(new ItemDropSpec(ItemType.HEALTH_POTION, 2));
     overlap(player, potion);
 
     player.getEvents().trigger("itemPickup");
 
-    assertEquals(65, player.getComponent(CombatStatsComponent.class).getHealth());
-  }
-
-  @Test
-  void shouldClampHealingToMaximumHealth() {
-    Entity player = createPlayer(90);
-    Entity potion = createItem(ItemDropSpec.single(ItemType.HEALTH_POTION));
-    overlap(player, potion);
-
-    player.getEvents().trigger("itemPickup");
-
-    assertEquals(100, player.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals(
+        2,
+        player.getComponent(InventoryComponent.class).getConsumableCount(ItemType.HEALTH_POTION));
   }
 
   @Test
   void shouldRequireItemPickupWhileInRange() {
-    Entity player = createPlayer(40);
+    Entity player = createPlayer();
     Entity potion = createItem(ItemDropSpec.single(ItemType.HEALTH_POTION));
     overlap(player, potion);
-
-    assertEquals(40, player.getComponent(CombatStatsComponent.class).getHealth());
 
     Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
     Fixture potionFixture = potion.getComponent(HitboxComponent.class).getFixture();
     player.getEvents().trigger("collisionEnd", playerFixture, potionFixture);
     player.getEvents().trigger("itemPickup");
 
-    assertEquals(40, player.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals(
+        0,
+        player.getComponent(InventoryComponent.class).getConsumableCount(ItemType.HEALTH_POTION));
   }
 
   @Test
   void shouldIgnoreOtherItemTypes() {
-    Entity player = createPlayer(40);
+    Entity player = createPlayer();
     Entity coin = createItem(new ItemDropSpec(ItemType.GOLD_COIN, 25));
     overlap(player, coin);
 
     player.getEvents().trigger("itemPickup");
 
-    assertEquals(40, player.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals(
+        0,
+        player.getComponent(InventoryComponent.class).getConsumableCount(ItemType.HEALTH_POTION));
     assertEquals(ItemType.GOLD_COIN, coin.getComponent(ItemComponent.class).getItemType());
   }
 
-  private static Entity createPlayer(int health) {
+  private static Entity createPlayer() {
     Entity player =
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
-            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new InventoryComponent(0))
             .addComponent(new HealthPotionPickupComponent());
     player.create();
-    player.getComponent(CombatStatsComponent.class).setHealth(health);
     return player;
   }
 

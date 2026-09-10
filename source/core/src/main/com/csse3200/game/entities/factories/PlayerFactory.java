@@ -7,6 +7,8 @@ import com.csse3200.game.components.items.CharmPickupComponent;
 import com.csse3200.game.components.items.CurrencyPickupComponent;
 import com.csse3200.game.components.items.HealthPotionPickupComponent;
 import com.csse3200.game.components.player.CharmEffectComponent;
+import com.csse3200.game.components.player.ConsumableUseComponent;
+import com.csse3200.game.components.player.DemoConsumableInputComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
@@ -80,6 +82,8 @@ public class PlayerFactory {
             .addComponent(new CharmPickupComponent())
             .addComponent(new CurrencyPickupComponent())
             .addComponent(new HealthPotionPickupComponent())
+            .addComponent(new ConsumableUseComponent())
+            .addComponent(new DemoConsumableInputComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())
             .addComponent(new PlayerStatsDisplay())

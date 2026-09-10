@@ -1,8 +1,8 @@
 package com.csse3200.game.components.items;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.items.ItemType;
 import com.csse3200.game.physics.BodyUserData;
@@ -13,19 +13,18 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Temporary demo adapter that immediately heals the player when a Health Potion is picked up. */
+/** Temporary demo adapter that stores Health Potions when the player picks them up. */
 public class HealthPotionPickupComponent extends Component {
-  static final int HEAL_AMOUNT = 25;
   private static final Logger logger = LoggerFactory.getLogger(HealthPotionPickupComponent.class);
 
   private final Set<Entity> nearbyPotions = new LinkedHashSet<>();
   private HitboxComponent hitboxComponent;
-  private CombatStatsComponent combatStats;
+  private InventoryComponent inventory;
 
   @Override
   public void create() {
     hitboxComponent = entity.getComponent(HitboxComponent.class);
-    combatStats = entity.getComponent(CombatStatsComponent.class);
+    inventory = entity.getComponent(InventoryComponent.class);
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
     entity.getEvents().addListener("collisionEnd", this::onCollisionEnd);
     entity.getEvents().addListener("itemPickup", this::onItemPickup);
@@ -65,10 +64,11 @@ public class HealthPotionPickupComponent extends Component {
       return;
     }
 
-    int previousHealth = combatStats.getHealth();
-    combatStats.addHealth(HEAL_AMOUNT);
+    for (int i = 0; i < item.getQuantity(); i++) {
+      inventory.addConsumable(ItemType.HEALTH_POTION);
+    }
     nearbyPotions.remove(itemEntity);
     itemEntity.dispose();
-    logger.info("Picked up Health Potion: {} -> {} HP", previousHealth, combatStats.getHealth());
+    logger.info("Stored {} Health Potion(s)", item.getQuantity());
   }
 }
