@@ -19,11 +19,14 @@ import java.util.function.Consumer;
 /** Creates the Final Boss and its Stage 1 summons. */
 public final class FinalBossFactory {
   public static final String PLACEHOLDER_SKIN = "images/bombEnemy.atlas";
+  private static final String DEFAULT_ANIMATION = "default";
 
   /**
-   * Creates the basic Final Boss entity.
+   * Creates the Final Boss with its shared phase framework and Stage 1 behaviour.
    *
-   * <p>The target and summon spawner will be used when Stage 1 behaviour is added.
+   * @param target the player targeted by the boss and its summons
+   * @param summonSpawner callback used to register spawned summons in the room
+   * @return the unregistered Final Boss entity
    */
   public static Entity createFinalBoss(Entity target, Consumer<Entity> summonSpawner) {
     if (target == null || summonSpawner == null) {
@@ -48,7 +51,7 @@ public final class FinalBossFactory {
 
     animator.scaleEntity();
     boss.scaleWidth(2f);
-    animator.startAnimation("default");
+    animator.startAnimation(DEFAULT_ANIMATION);
 
     return boss;
   }
@@ -80,7 +83,7 @@ public final class FinalBossFactory {
 
     animator.scaleEntity();
     summon.setScale(summon.getScale().scl(0.75f));
-    animator.startAnimation("default");
+    animator.startAnimation(DEFAULT_ANIMATION);
 
     return summon;
   }
@@ -90,7 +93,7 @@ public final class FinalBossFactory {
     TextureAtlas atlas = ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class);
 
     AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
-    animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("dieAnimation", 0.1f, Animation.PlayMode.NORMAL);

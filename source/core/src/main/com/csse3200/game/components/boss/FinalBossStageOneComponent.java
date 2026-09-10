@@ -110,7 +110,7 @@ public class FinalBossStageOneComponent extends Component {
 
       summon.getEvents().addListener(FinalBossEvents.SUMMON_REMOVED, this::onSummonRemoved);
 
-      float angle = count == 0 ? 0f : (360f * i) / count;
+      float angle = (360f * i) / count;
 
       Vector2 offset = new Vector2(config.summonSpawnRadius, 0f).setAngleDeg(angle);
 

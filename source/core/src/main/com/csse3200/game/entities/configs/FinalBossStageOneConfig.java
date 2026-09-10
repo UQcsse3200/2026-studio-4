@@ -83,6 +83,11 @@ public class FinalBossStageOneConfig {
       throw new IllegalArgumentException("Proximity damage values are invalid");
     }
 
+    validateMovement();
+    validatePetrification();
+  }
+
+  private void validateMovement() {
     if (bossWanderSpeed < 0f
         || bossFleeSpeed < 0f
         || movementTargetRefreshInterval <= 0f
@@ -92,7 +97,9 @@ public class FinalBossStageOneConfig {
         || bossVisibilityHalfHeight <= 0f) {
       throw new IllegalArgumentException("Boss movement values are invalid");
     }
+  }
 
+  private void validatePetrification() {
     if (petrificationWarningDuration < 0f
         || petrificationRadius < 0f
         || petrificationSlowMultiplier < 0f

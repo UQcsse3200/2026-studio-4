@@ -28,14 +28,19 @@ public class SplitComponent extends Component {
   }
 
   /**
-   * Runs whenever this entity is hit and survives. Queues a split into two smaller copies exactly
-   * once, along with disposal of the original; both run once the current update ends.
+   * Runs on a hit reaction and queues a split only when health has reached zero. Splits at most
+   * once; child creation and parent disposal are deferred until the physics world can be modified
+   * safely.
    *
    * @param attacker The entity that caused the damage (can be null).
    */
   private void onHitReaction(Entity attacker) {
+    if (hasSplit || entity == null) {
+      return;
+    }
+
     CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
-    if (hasSplit || entity == null || stats == null || stats.getHealth() != 0) {
+    if (stats == null || stats.getHealth() != 0) {
       return;
     }
     int halfHealth = Math.max(1, stats.getMaxHealth() / 2);
