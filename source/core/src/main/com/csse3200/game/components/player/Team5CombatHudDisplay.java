@@ -33,8 +33,7 @@ public class Team5CombatHudDisplay extends UIComponent {
     }
   }
 
-  private final Map<ConsumableSlot, Label> quantityLabels =
-      new EnumMap<>(ConsumableSlot.class);
+  private final Map<ConsumableSlot, Label> quantityLabels = new EnumMap<>(ConsumableSlot.class);
   private Table table;
   private Label goldLabel;
   private Label selectedLabel;
