@@ -15,6 +15,7 @@ public class StatusEffectsControllerComponent extends Component {
    *
    * <p>Throws IllegalStateException if CombatStatsComponent is null.
    */
+  @Override
   public void create() {
     combatStatsComponent = entity.getComponent(CombatStatsComponent.class);
     if (combatStatsComponent == null) {
@@ -37,12 +38,12 @@ public class StatusEffectsControllerComponent extends Component {
     switch (statusEffect) {
       case 'b':
         for (int i = 0; i < stacks; i++) {
-          statusEffects.addLast(StatusEffectsFactory.CreateBurn(combatStatsComponent));
+          statusEffects.addLast(StatusEffectsFactory.createBurn(combatStatsComponent));
         }
         break;
       case 'r':
         for (int i = 0; i < stacks; i++) {
-          statusEffects.addLast(StatusEffectsFactory.CreateRegeneration(combatStatsComponent));
+          statusEffects.addLast(StatusEffectsFactory.createRegeneration(combatStatsComponent));
         }
         break;
       default:
@@ -54,6 +55,7 @@ public class StatusEffectsControllerComponent extends Component {
   /**
    * Updates the state of all status effects. Removes status effects that return true from update.
    */
+  @Override
   public void update() {
     ArrayList<StatusEffect> removal = new ArrayList<>();
     for (StatusEffect effect : statusEffects) {

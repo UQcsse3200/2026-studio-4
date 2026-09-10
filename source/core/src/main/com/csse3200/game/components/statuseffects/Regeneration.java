@@ -8,7 +8,7 @@ public class Regeneration implements StatusEffect {
   private final GameTime time = new GameTime();
 
   private final int healing;
-  private final long HEAL_COOLDOWN;
+  private final long healCooldown;
   private final long duration;
   private final long healInit;
   private long lastBurn;
@@ -19,14 +19,14 @@ public class Regeneration implements StatusEffect {
    * Create a new stack of regeneration.
    *
    * @param healing the amount of healing regeneration should do each time it activates.
-   * @param HEAL_COOLDOWN the amount of time between instances of regeneration. in milliseconds.
+   * @param healCooldown the amount of time between instances of regeneration. in milliseconds.
    * @param duration the total time the regeneration lasts for.
    * @param combatStats the combat stats component of the entity which has the status effect.
    */
   public Regeneration(
-      int healing, long HEAL_COOLDOWN, long duration, CombatStatsComponent combatStats) {
+      int healing, long healCooldown, long duration, CombatStatsComponent combatStats) {
     this.healing = healing;
-    this.HEAL_COOLDOWN = HEAL_COOLDOWN;
+    this.healCooldown = healCooldown;
     this.duration = duration;
     this.combatStats = combatStats;
     healInit = time.getTime();
@@ -39,14 +39,11 @@ public class Regeneration implements StatusEffect {
    */
   @Override
   public boolean update() {
-    if (time.getTimeSince(lastBurn) > HEAL_COOLDOWN) {
+    if (time.getTimeSince(lastBurn) > healCooldown) {
       combatStats.addHealth(healing);
       lastBurn = time.getTime();
     }
-    if (time.getTimeSince(healInit) > duration) {
-      return true;
-    }
-    return false;
+    return time.getTimeSince(healInit) > duration;
   }
 
   /** Returns the time left until the status effect should be removed (in milliseconds). */
