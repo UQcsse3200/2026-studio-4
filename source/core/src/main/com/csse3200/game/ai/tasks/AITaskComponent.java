@@ -1,6 +1,7 @@
 package com.csse3200.game.ai.tasks;
 
 import com.csse3200.game.components.Component;
+import com.csse3200.game.entities.Entity;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,11 @@ public class AITaskComponent extends Component implements TaskRunner {
 
   private final List<PriorityTask> priorityTasks = new ArrayList<>(2);
   private PriorityTask currentTask;
+  private Entity target;
+
+  public AITaskComponent(Entity target) {
+    this.target = target;
+  }
 
   /**
    * Add a priority task to the list of tasks. This task will be run only when it has the highest
@@ -34,12 +40,27 @@ public class AITaskComponent extends Component implements TaskRunner {
     return this;
   }
 
+  public void disableHighPriority() {
+    for (PriorityTask p : priorityTasks) {
+      if (p.getPriority() > 1) {
+        p.setPriority(-1);
+      }
+    }
+  }
+
+  @Override
+  public void create() {
+    super.create();
+    target.getEvents().addListener("invisiblePlayer", this::disableHighPriority);
+  }
+
   /**
    * On update, run the current highest priority task. If it's a different one, stop the old one and
    * start the new one. If the highest priority task has negative priority, no task will be run.
    */
   @Override
   public void update() {
+
     PriorityTask desiredtask = getHighestPriorityTask();
     if (desiredtask == null || desiredtask.getPriority() < 0) {
       return;

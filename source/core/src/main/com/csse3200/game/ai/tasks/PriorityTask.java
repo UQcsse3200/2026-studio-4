@@ -6,4 +6,6 @@ package com.csse3200.game.ai.tasks;
  */
 public interface PriorityTask extends Task {
   int getPriority();
+
+  void setPriority(int status);
 }

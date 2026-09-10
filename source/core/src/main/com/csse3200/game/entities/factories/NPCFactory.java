@@ -53,7 +53,7 @@ public class NPCFactory {
     BombEnemyConfig config = configs.bombEnemy;
 
     AITaskComponent aiComponent =
-        new AITaskComponent()
+        new AITaskComponent(target)
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new ChaseTask(target, 10, 3f, 10f));
 
@@ -73,7 +73,6 @@ public class NPCFactory {
         .addComponent(new KnockbackComponent(20))
         .addComponent(new ExplodeComponent(target))
         .addComponent(new EnemyAnimationController());
-
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
 
     return bombEnemy;
@@ -93,10 +92,10 @@ public class NPCFactory {
     ChaseEnemyConfig config = configs.chaseEnemy;
 
     AITaskComponent aiComponent =
-        new AITaskComponent()
+        new AITaskComponent(target)
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new ChaseTask(target, 10, 3f, 10f))
-            .addTask(new LungeAttackTask(target, CHASE_SPEED));
+            .addTask(new LungeAttackTask(target, 10, CHASE_SPEED));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -112,7 +111,6 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(animator)
         .addComponent(new EnemyAnimationController());
-
     if (shouldSplit) {
       chaseEnemy.addComponent(new SplitComponent(target, skin));
     }
@@ -156,9 +154,9 @@ public class NPCFactory {
       String skin) {
     FloatingDemonConfig config = configs.floatingDemon;
     AITaskComponent aiComponent =
-        new AITaskComponent()
-            .addTask(new PatrolTask(leftPoint, topPoint, rightPoint))
-            .addTask(new RangedAttackTask(target, config.baseAttack, projectileSpawner));
+        new AITaskComponent(target)
+            .addTask(new PatrolTask(leftPoint, topPoint, rightPoint, 5))
+            .addTask(new RangedAttackTask(target, 5, config.baseAttack, projectileSpawner));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -177,7 +175,6 @@ public class NPCFactory {
             .addComponent(aiComponent)
             .addComponent(animator)
             .addComponent(new EnemyAnimationController());
-
     animator.scaleEntity();
     demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
     return demon;

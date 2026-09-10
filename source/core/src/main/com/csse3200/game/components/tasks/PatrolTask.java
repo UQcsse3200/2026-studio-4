@@ -12,14 +12,20 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
   private final Vector2[] patrolPoints;
   private PhysicsMovementComponent movementComponent;
   private int currentPoint;
+  public int priority;
 
-  public PatrolTask(Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint) {
+  public PatrolTask(Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint, int priority) {
     patrolPoints = new Vector2[] {leftPoint.cpy(), topPoint.cpy(), rightPoint.cpy()};
   }
 
   @Override
   public int getPriority() {
-    return 1;
+    return priority;
+  }
+
+  @Override
+  public void setPriority(int status) {
+    this.priority = status;
   }
 
   @Override
