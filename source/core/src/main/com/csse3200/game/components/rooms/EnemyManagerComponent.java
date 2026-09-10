@@ -8,6 +8,7 @@ import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.ItemType;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -17,9 +18,18 @@ import java.util.Set;
 
 /** Spawns configured enemies and tracks when the room has been cleared. */
 public class EnemyManagerComponent extends EntityManagerComponent {
+  private static final List<ItemType> DEMO_DROP_TYPES =
+      List.of(
+          ItemType.STRENGTH_CHARM,
+          ItemType.HEALTH_POTION,
+          ItemType.SHIELD,
+          ItemType.SPEED_POTION,
+          ItemType.STRENGTH_POTION,
+          ItemType.GOLD_COIN);
   private final EnemySpawnConfig[] spawnConfigs;
   private final Set<Entity> activeEnemies = new HashSet<>();
   private final List<Entity> droppedItems = new ArrayList<>();
+  private int nextDemoDropIndex;
 
   /** Creates an empty manager for tests and rooms with no enemies. */
   public EnemyManagerComponent() {
@@ -85,7 +95,13 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   private void spawnItemDrop(Entity enemy) {
-    Entity item = ItemFactory.createDrop(ItemType.STRENGTH_CHARM, enemy.getPosition());
+    ItemType itemType = DEMO_DROP_TYPES.get(nextDemoDropIndex);
+    nextDemoDropIndex = (nextDemoDropIndex + 1) % DEMO_DROP_TYPES.size();
+    ItemDropSpec dropSpec =
+        itemType == ItemType.GOLD_COIN
+            ? new ItemDropSpec(itemType, 25)
+            : ItemDropSpec.single(itemType);
+    Entity item = ItemFactory.createDrop(dropSpec, enemy.getPosition());
 
     // spawning item should not use the spawnEntity as items are stored in their own list.
     droppedItems.add(item);

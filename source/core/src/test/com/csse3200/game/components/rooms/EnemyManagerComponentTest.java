@@ -21,12 +21,14 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.items.ItemType;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,8 +64,9 @@ class EnemyManagerComponentTest {
 
     ResourceService resourceService = mock(ResourceService.class);
     Texture texture = mock(Texture.class);
-    when(resourceService.getAsset("images/strength_charm_pixel.png", Texture.class))
-        .thenReturn(texture);
+    for (ItemType itemType : ItemType.values()) {
+      when(resourceService.getAsset(itemType.getTexturePath(), Texture.class)).thenReturn(texture);
+    }
     when(texture.getWidth()).thenReturn(1270);
     when(texture.getHeight()).thenReturn(1239);
     ServiceLocator.registerResourceService(resourceService);
@@ -137,6 +140,29 @@ class EnemyManagerComponentTest {
 
     entityService.update();
     verify(entityService, times(1)).register(Mockito.any(Entity.class));
+  }
+
+  @Test
+  void shouldCycleThroughEveryDemoDropType() {
+    Entity[] enemies = new Entity[ItemType.values().length];
+    for (int i = 0; i < enemies.length; i++) {
+      enemies[i] = new Entity();
+      enemyManager.track(enemies[i]);
+      enemies[i].getEvents().trigger("entityDied");
+    }
+
+    entityService.update();
+
+    ArgumentCaptor<Entity> dropCaptor = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService, times(ItemType.values().length)).register(dropCaptor.capture());
+    List<ItemType> actualTypes =
+        dropCaptor.getAllValues().stream()
+            .map(drop -> drop.getComponent(ItemComponent.class).getItemType())
+            .toList();
+    assertEquals(List.of(ItemType.values()), actualTypes);
+
+    Entity goldDrop = dropCaptor.getAllValues().get(ItemType.values().length - 1);
+    assertEquals(25, goldDrop.getComponent(ItemComponent.class).getQuantity());
   }
 
   @Test
