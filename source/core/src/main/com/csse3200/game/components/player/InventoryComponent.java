@@ -2,8 +2,11 @@ package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
 import com.csse3200.game.items.Charm;
+import com.csse3200.game.items.ItemType;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +22,13 @@ public class InventoryComponent extends Component {
   // Stores charms currently held by the player
   private final List<Charm> charms;
 
+  // Stores the quantity of each consumable item held by the player
+  private final Map<ItemType, Integer> consumables;
+
   public InventoryComponent(int gold) {
     setGold(gold);
     this.charms = new ArrayList<>();
+    this.consumables = new EnumMap<>(ItemType.class);
   }
 
   /**
@@ -121,5 +128,79 @@ public class InventoryComponent extends Component {
    */
   public int getCharmCount() {
     return this.charms.size();
+  }
+
+  /**
+   * Returns the number of a specific consumable currently stored.
+   *
+   * @param type consumable item type
+   * @return stored quantity, or 0 if none are stored
+   */
+  public int getConsumableCount(ItemType type) {
+    if (type == null || !type.isConsumable()) {
+      return 0;
+    }
+
+    return consumables.getOrDefault(type, 0);
+  }
+
+  /**
+   * Checks whether the player has at least one of the specified consumable.
+   *
+   * @param type consumable item type
+   * @return true if at least one is stored
+   */
+  public boolean hasConsumable(ItemType type) {
+    return getConsumableCount(type) > 0;
+  }
+
+  /**
+   * Adds one consumable of the specified type to the inventory.
+   *
+   * @param type consumable item type
+   */
+  public void addConsumable(ItemType type) {
+    if (type == null || !type.isConsumable()) {
+      return;
+    }
+
+    int newCount = getConsumableCount(type) + 1;
+    consumables.put(type, newCount);
+
+    if (entity != null) {
+      entity.getEvents().trigger("consumableInventoryChanged", type, newCount);
+    }
+  }
+
+  /**
+   * Removes one consumable of the specified type from the inventory.
+   *
+   * @param type consumable item type
+   * @return true if one was removed, false if none were available
+   */
+  public boolean removeConsumable(ItemType type) {
+    if (type == null || !type.isConsumable()) {
+      return false;
+    }
+
+    int currentCount = getConsumableCount(type);
+
+    if (currentCount <= 0) {
+      return false;
+    }
+
+    int newCount = currentCount - 1;
+
+    if (newCount == 0) {
+      consumables.remove(type);
+    } else {
+      consumables.put(type, newCount);
+    }
+
+    if (entity != null) {
+      entity.getEvents().trigger("consumableInventoryChanged", type, newCount);
+    }
+
+    return true;
   }
 }
