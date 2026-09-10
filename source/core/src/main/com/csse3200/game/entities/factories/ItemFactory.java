@@ -33,11 +33,12 @@ public final class ItemFactory {
   }
 
   public static Entity createItem(Item item) {
-    Entity itemEntity = new Entity()
-      .addComponent(new TextureRenderComponent(item.getTexture()))
-      .addComponent(new PhysicsComponent())
-      .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ITEM))
-      .addComponent(new ItemComponent(item));
+    Entity itemEntity =
+        new Entity()
+            .addComponent(new TextureRenderComponent(item.getTexture()))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ITEM))
+            .addComponent(new ItemComponent(item));
 
     itemEntity.getComponent(TextureRenderComponent.class).scaleEntity();
     return itemEntity;

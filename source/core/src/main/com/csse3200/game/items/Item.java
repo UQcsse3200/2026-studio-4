@@ -1,10 +1,15 @@
 package com.csse3200.game.items;
 
+/**
+ * An object that can be stored in the players inventory.
+ *
+ * <p>Defines information needed for the ui
+ */
 public abstract class Item implements Pickupable {
   private final String name;
   private final String description;
   private final String texture; // used when for inventory ui
-  
+
   protected Item(String name, String description, String texture) {
     this.name = name;
     this.description = description;
@@ -12,14 +17,14 @@ public abstract class Item implements Pickupable {
   }
 
   public String getName() {
-	return name;
+    return name;
   }
 
   public String getDescription() {
-	return description;
+    return description;
   }
 
   public String getTexture() {
-	return texture;
+    return texture;
   }
 }

@@ -3,9 +3,14 @@ package com.csse3200.game.items.charms;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.items.Item;
+import com.csse3200.game.items.Pickupable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A charm item type applies a effect on the player upon pickup {@link Pickupable}, and removes upon
+ * being dropped.
+ */
 public abstract class Charm extends Item {
   private static final Logger logger = LoggerFactory.getLogger(Charm.class);
   private boolean applied = false;
@@ -15,6 +20,7 @@ public abstract class Charm extends Item {
   }
 
   protected abstract void applyEffect(Entity player);
+
   protected abstract void removeEffect(Entity player);
 
   @Override

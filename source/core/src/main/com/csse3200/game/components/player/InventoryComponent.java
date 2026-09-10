@@ -2,7 +2,6 @@ package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
 import com.csse3200.game.items.charms.Charm;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
