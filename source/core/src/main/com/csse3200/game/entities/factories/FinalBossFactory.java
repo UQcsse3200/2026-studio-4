@@ -3,6 +3,7 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.rendering.AnimationRenderComponent;
@@ -36,7 +37,8 @@ public final class FinalBossFactory {
         NPCFactory.createBaseNPC()
             .addComponent(new CombatStatsComponent(100, 0))
             .addComponent(animator)
-            .addComponent(new EnemyAnimationController());
+            .addComponent(new EnemyAnimationController())
+            .addComponent(new FinalBossPhaseControllerComponent());
 
     animator.scaleEntity();
     boss.scaleWidth(2f);
