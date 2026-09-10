@@ -6,6 +6,7 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.items.ItemType;
@@ -62,6 +63,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             rightPoint,
             this::spawnEntity,
             "images/floatingDemon.atlas");
+      case FINAL_BOSS:
+        return FinalBossFactory.createFinalBoss(target, this::spawnEntity);
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
     }
