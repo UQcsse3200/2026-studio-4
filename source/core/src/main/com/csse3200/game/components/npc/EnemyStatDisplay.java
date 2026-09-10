@@ -49,9 +49,9 @@ public class EnemyStatDisplay extends UIComponent {
     healthBar = new ProgressBar(0, maxHealth, 1, false, barStyle);
     healthBar.setValue(health);
     healthBar.setAnimateDuration(0.3f);
-    healthBar.setSize(60f, 8f);
+    healthBar.setSize(10f, 1f);
 
-    table.add(healthBar).width(60f).height(8f);
+    table.add(healthBar).width(100f).height(1f);
     table.pack();
 
     if (stage == null) {

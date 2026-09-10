@@ -17,6 +17,7 @@ public abstract class UIComponent extends RenderComponent implements Renderable 
   @Override
   public void create() {
     super.create();
+    skin.load(Gdx.files.internal("hud_items/skin/skin.json"));
     stage = ServiceLocator.getRenderService().getStage();
   }
 

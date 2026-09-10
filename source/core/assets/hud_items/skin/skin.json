@@ -1,0 +1,30 @@
+{
+  com.badlogic.gdx.graphics.Color: {
+    white: { hex: "ffffff" },
+    black: { hex: "000000" },
+    red: { hex: "ff0000" },
+    gray: { hex: "808080" },
+    color: { hex: "e9c873" },
+    highlight: { hex: "ffe6a3" },
+    pressed: { hex: "b3893f" },
+    selection: { hex: "5588cc" },
+    window: { hex: "241a12" }
+
+    health: { hex: "b3402f" }   // deep red
+    mana: { hex: "3a6ea5" }   // blue
+    xp: { hex: "6b8e3a" }   // olive green
+    warning: { hex: "d99a2b" }   // amber
+    success: { hex: "4e9a4e" }   // green
+    disabled: { hex: "4a4640" }   // muted stone gray
+
+    zeus: { hex: "8a6a1f" }   // storm gold
+    poseidon: { hex: "1f5c47" }   // sea teal
+    hades: { hex: "4a3a7a" }   // underworld violet
+    ares: { hex: "7a2f2f" }   // blood red
+    athena: { hex: "2f4a7a" }   // wisdom blue
+    apollo: { hex: "7a4a1f" }   // sun amber
+    hera: { hex: "6a2a5a" }   // royal magenta
+  }
+
+
+}
