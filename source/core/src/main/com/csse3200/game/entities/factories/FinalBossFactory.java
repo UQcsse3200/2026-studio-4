@@ -8,6 +8,7 @@ import com.csse3200.game.components.boss.FinalBossHealthBarDisplay;
 import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.configs.FinalBossStageOneConfig;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.function.Consumer;
@@ -22,6 +23,8 @@ public final class FinalBossFactory {
    * <p>The target and summon spawner will be used when Stage 1 behaviour is added.
    */
   public static Entity createFinalBoss(Entity target, Consumer<Entity> summonSpawner) {
+    FinalBossStageOneConfig config = new FinalBossStageOneConfig();
+    config.validate();
     if (target == null || summonSpawner == null) {
       throw new IllegalArgumentException("Final Boss factory arguments must not be null");
     }
@@ -37,7 +40,7 @@ public final class FinalBossFactory {
 
     Entity boss =
         NPCFactory.createBaseNPC()
-            .addComponent(new CombatStatsComponent(100, 0))
+            .addComponent(new CombatStatsComponent(config.bossHealth, 0))
             .addComponent(animator)
             .addComponent(new EnemyAnimationController())
             .addComponent(new FinalBossPhaseControllerComponent())

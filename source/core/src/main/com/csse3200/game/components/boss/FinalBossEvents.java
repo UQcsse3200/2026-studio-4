@@ -7,6 +7,7 @@ public final class FinalBossEvents {
   public static final String SHIELD_ACTIVATED = "finalBossShieldActivated";
   public static final String SHIELD_DEACTIVATED = "finalBossShieldDeactivated";
   public static final String SHIELD_HIT = "finalBossShieldHit";
+  public static final String STAGE_ONE_STATE_CHANGED = "finalBossStageOneStateChanged";
 
   private FinalBossEvents() {
     throw new IllegalStateException("Instantiating static utility class");
