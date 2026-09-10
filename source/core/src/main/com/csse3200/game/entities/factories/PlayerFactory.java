@@ -25,7 +25,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
-
+import com.csse3200.game.components.player.ConsumableEffectComponent;
 /**
  * Factory to create a player entity.
  *
@@ -75,9 +75,9 @@ public class PlayerFactory {
             .addComponent(new CharmEffectComponent())
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(new CharmPickupComponent())
-            .addComponent(inputComponent)
-            .addComponent(new PlayerAnimationController())
+            .addComponent(inputComponent).addComponent(new PlayerAnimationController())
             .addComponent(new PlayerStatsDisplay())
+                .addComponent(new ConsumableEffectComponent())
             // Weapon damage = round(baseAttack * multiplier); charms that raise base attack
             // therefore scale weapon hits too.
             .addComponent(new WeaponAssetsComponent())

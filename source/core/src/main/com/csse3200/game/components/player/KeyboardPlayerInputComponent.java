@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.utils.math.Vector2Utils;
+import com.csse3200.game.items.ItemType;
 
 /**
  * Input handler for the player for keyboard and touch (mouse) input. This input handler only uses
@@ -56,6 +57,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("interact");
         entity.getEvents().trigger("itemPickup");
         return true;
+        case Keys.H:
+            entity.getEvents().trigger("debugUseConsumable", ItemType.HEALTH_POTION);
+            return true;
       default:
         return false;
     }
