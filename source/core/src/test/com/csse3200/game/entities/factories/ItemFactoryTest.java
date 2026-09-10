@@ -33,8 +33,9 @@ class ItemFactoryTest {
     ServiceLocator.registerEntityService(new EntityService());
     ResourceService resourceService = mock(ResourceService.class);
     Texture texture = mock(Texture.class);
-    when(resourceService.getAsset("images/strength_charm_pixel.png", Texture.class))
-        .thenReturn(texture);
+    for (ItemType itemType : ItemType.values()) {
+      when(resourceService.getAsset(itemType.getTexturePath(), Texture.class)).thenReturn(texture);
+    }
     when(texture.getWidth()).thenReturn(1270);
     when(texture.getHeight()).thenReturn(1239);
     ServiceLocator.registerResourceService(resourceService);
@@ -56,6 +57,20 @@ class ItemFactoryTest {
     assertEquals(firstPosition, firstDrop.getPosition());
     assertEquals(secondPosition, secondDrop.getPosition());
     assertNotSame(firstDrop, secondDrop);
+  }
+
+  @Test
+  void shouldCreateEverySupportedItemType() {
+    for (ItemType expectedType : ItemType.values()) {
+      Entity item = ItemFactory.createDrop(expectedType, Vector2.Zero);
+
+      assertNotNull(item);
+      assertEquals(expectedType, item.getComponent(ItemComponent.class).getItemType());
+      assertNotNull(item.getComponent(PhysicsComponent.class));
+      assertNotNull(item.getComponent(HitboxComponent.class));
+      assertNotNull(item.getComponent(TextureRenderComponent.class));
+      assertEquals(PhysicsLayer.ITEM, item.getComponent(HitboxComponent.class).getLayer());
+    }
   }
 
   @Test

@@ -9,6 +9,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.Charm;
+import com.csse3200.game.items.ItemType;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -106,6 +107,27 @@ class CharmPickupComponentTest {
     player.getEvents().trigger(ITEM_PICKUP_EVENT);
 
     assertEquals(0, player.getComponent(InventoryComponent.class).getCharmCount());
+  }
+
+  @Test
+  void shouldLeaveConsumablesForTheirDedicatedPickupFlow() {
+    Entity player = createPlayer();
+    Entity consumable =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ITEM))
+            .addComponent(new ItemComponent(ItemType.HEALTH_POTION));
+    consumable.create();
+
+    Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
+    Fixture consumableFixture = consumable.getComponent(HitboxComponent.class).getFixture();
+
+    player.getEvents().trigger("collisionStart", playerFixture, consumableFixture);
+    player.getEvents().trigger(ITEM_PICKUP_EVENT);
+
+    assertEquals(0, player.getComponent(InventoryComponent.class).getCharmCount());
+    assertEquals(
+        ItemType.HEALTH_POTION, consumable.getComponent(ItemComponent.class).getItemType());
   }
 
   private Entity createPlayer() {

@@ -13,14 +13,10 @@ import java.util.Objects;
 
 /** Factory for creating item entities. */
 public final class ItemFactory {
-  private static final String STRENGTH_CHARM_NAME = "Strength Charm";
-  private static final String STRENGTH_CHARM_TEXTURE = "images/strength_charm_pixel.png";
-
   /**
    * Creates the requested item at a world position.
    *
-   * <p>Sprint 1 currently supports only {@link ItemType#STRENGTH_CHARM}. The returned entity is not
-   * registered; the requesting room owns that responsibility.
+   * <p>The returned entity is not registered; the requesting room owns that responsibility.
    *
    * @param itemType type of item to create
    * @param position world position assigned to the item entity
@@ -33,6 +29,11 @@ public final class ItemFactory {
     Entity item =
         switch (itemType) {
           case STRENGTH_CHARM -> createStrengthCharm();
+          case HEALTH_POTION -> createHealthPotion();
+          case SHIELD -> createShield();
+          case SPEED_POTION -> createSpeedPotion();
+          case STRENGTH_POTION -> createStrengthPotion();
+          case GOLD_COIN -> createGoldCoin();
         };
     item.setPosition(position);
     return item;
@@ -47,13 +48,42 @@ public final class ItemFactory {
    * @return an unregistered Strength Charm entity
    */
   public static Entity createStrengthCharm() {
-    Charm strengthCharm = new Charm(STRENGTH_CHARM_NAME);
+    ItemType type = ItemType.STRENGTH_CHARM;
+    return createWorldItem(
+        new ItemComponent(new Charm(type.getDisplayName())), type.getTexturePath());
+  }
+
+  public static Entity createHealthPotion() {
+    return createTypedItem(ItemType.HEALTH_POTION);
+  }
+
+  public static Entity createShield() {
+    return createTypedItem(ItemType.SHIELD);
+  }
+
+  public static Entity createSpeedPotion() {
+    return createTypedItem(ItemType.SPEED_POTION);
+  }
+
+  public static Entity createStrengthPotion() {
+    return createTypedItem(ItemType.STRENGTH_POTION);
+  }
+
+  public static Entity createGoldCoin() {
+    return createTypedItem(ItemType.GOLD_COIN);
+  }
+
+  private static Entity createTypedItem(ItemType itemType) {
+    return createWorldItem(new ItemComponent(itemType), itemType.getTexturePath());
+  }
+
+  private static Entity createWorldItem(ItemComponent itemComponent, String texturePath) {
     Entity item =
         new Entity()
-            .addComponent(new TextureRenderComponent(STRENGTH_CHARM_TEXTURE))
+            .addComponent(new TextureRenderComponent(texturePath))
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ITEM))
-            .addComponent(new ItemComponent(strengthCharm));
+            .addComponent(itemComponent);
     item.getComponent(TextureRenderComponent.class).scaleEntity();
     return item;
   }

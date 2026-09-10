@@ -39,7 +39,13 @@ import org.slf4j.LoggerFactory;
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
   private static final String[] mainGameTextures = {
-    "images/heart.png", "images/strength_charm_pixel.png"
+    "images/heart.png",
+    "images/strength_charm_pixel.png",
+    "images/health_potion_pixel.png",
+    "images/shield_consumable_pixel.png",
+    "images/speed_potion_pixel.png",
+    "images/strength_potion_pixel.png",
+    "images/gold_coin_pixel.png"
   };
   private static final String[] mainGameTextureAtlases = {"images/idle_down.atlas"};
 
