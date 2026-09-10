@@ -28,7 +28,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   private final EnemySpawnConfig[] spawnConfigs;
   private final Set<Entity> activeEnemies = new HashSet<>();
   private final List<Entity> droppedItems = new ArrayList<>();
-  private int nextDemoDropIndex;
+  private static int nextDemoDropIndex;
+
+  /** Starts a new game-wide demo drop sequence. */
+  public static void resetDemoDropSequence() {
+    nextDemoDropIndex = 0;
+  }
 
   /** Creates an empty manager for tests and rooms with no enemies. */
   public EnemyManagerComponent() {

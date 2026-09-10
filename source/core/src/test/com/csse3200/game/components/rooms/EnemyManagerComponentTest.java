@@ -57,6 +57,7 @@ class EnemyManagerComponentTest {
 
   @BeforeEach
   void setUp() {
+    EnemyManagerComponent.resetDemoDropSequence();
     entityService = spy(new EntityService());
     ServiceLocator.registerEntityService(entityService);
     ServiceLocator.registerPhysicsService(new PhysicsService());
@@ -172,6 +173,30 @@ class EnemyManagerComponentTest {
 
     Entity goldDrop = dropCaptor.getAllValues().get(expectedTypes.size() - 2);
     assertEquals(25, goldDrop.getComponent(ItemComponent.class).getQuantity());
+  }
+
+  @Test
+  void shouldContinueDemoDropSequenceAcrossRoomManagers() {
+    Entity firstEnemy = new Entity();
+    enemyManager.track(firstEnemy);
+    firstEnemy.getEvents().trigger("entityDied");
+
+    EnemyManagerComponent nextRoomManager = new EnemyManagerComponent();
+    nextRoomManager.setEntity(createMockRoom());
+    nextRoomManager.create();
+    Entity secondEnemy = new Entity();
+    nextRoomManager.track(secondEnemy);
+    secondEnemy.getEvents().trigger("entityDied");
+
+    entityService.update();
+
+    ArgumentCaptor<Entity> dropCaptor = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService, times(2)).register(dropCaptor.capture());
+    assertEquals(
+        List.of(ItemType.HEALTH_POTION, ItemType.SHIELD),
+        dropCaptor.getAllValues().stream()
+            .map(drop -> drop.getComponent(ItemComponent.class).getItemType())
+            .toList());
   }
 
   @Test
