@@ -6,7 +6,9 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.boss.FinalBossDamageControllerComponent;
 import com.csse3200.game.components.boss.FinalBossExplosiveSummonComponent;
 import com.csse3200.game.components.boss.FinalBossHealthBarDisplay;
+import com.csse3200.game.components.boss.FinalBossMovementComponent;
 import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
+import com.csse3200.game.components.boss.FinalBossStageOneComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageOneConfig;
@@ -40,7 +42,9 @@ public final class FinalBossFactory {
             .addComponent(new EnemyAnimationController())
             .addComponent(new FinalBossPhaseControllerComponent())
             .addComponent(new FinalBossDamageControllerComponent())
-            .addComponent(new FinalBossHealthBarDisplay());
+            .addComponent(new FinalBossHealthBarDisplay())
+            .addComponent(new FinalBossMovementComponent(target, config))
+            .addComponent(new FinalBossStageOneComponent(target, summonSpawner, config));
 
     animator.scaleEntity();
     boss.scaleWidth(2f);

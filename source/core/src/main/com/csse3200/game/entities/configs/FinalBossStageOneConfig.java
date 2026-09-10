@@ -34,6 +34,8 @@ public class FinalBossStageOneConfig {
   public float movementTargetRefreshInterval = 0.5f;
   public float summonAvoidanceRadius = 3f;
   public float movementTargetDistance = 3f;
+  public float bossVisibilityHalfWidth = 8f;
+  public float bossVisibilityHalfHeight = 4f;
 
   // Petrification punishment
   public float petrificationWarningDuration = 1f;
@@ -85,7 +87,9 @@ public class FinalBossStageOneConfig {
         || bossFleeSpeed < 0f
         || movementTargetRefreshInterval <= 0f
         || summonAvoidanceRadius < 0f
-        || movementTargetDistance < 0f) {
+        || movementTargetDistance < 0f
+        || bossVisibilityHalfWidth <= 0f
+        || bossVisibilityHalfHeight <= 0f) {
       throw new IllegalArgumentException("Boss movement values are invalid");
     }
 
