@@ -117,7 +117,7 @@ class EnemyManagerComponentTest {
   }
 
   @Test
-  void shouldRegisterStrengthCharmAtDefeatedEnemyPosition() {
+  void shouldRegisterHealthPotionAtDefeatedEnemyPosition() {
     Vector2 deathPosition = new Vector2(4f, 6f);
     Entity enemy = new Entity();
     enemy.setPosition(deathPosition);
@@ -135,7 +135,8 @@ class EnemyManagerComponentTest {
 
     assertEquals(deathPosition, drop.getPosition());
     assertNotNull(item);
-    assertEquals("Strength Charm", item.getCharm().getName());
+    assertEquals(ItemType.HEALTH_POTION, item.getItemType());
+    assertEquals(1, item.getQuantity());
     assertEquals(PhysicsLayer.ITEM, drop.getComponent(HitboxComponent.class).getLayer());
 
     entityService.update();
@@ -144,7 +145,15 @@ class EnemyManagerComponentTest {
 
   @Test
   void shouldCycleThroughEveryDemoDropType() {
-    Entity[] enemies = new Entity[ItemType.values().length];
+    List<ItemType> expectedTypes =
+        List.of(
+            ItemType.HEALTH_POTION,
+            ItemType.SHIELD,
+            ItemType.SPEED_POTION,
+            ItemType.STRENGTH_POTION,
+            ItemType.GOLD_COIN,
+            ItemType.HEALTH_POTION);
+    Entity[] enemies = new Entity[expectedTypes.size()];
     for (int i = 0; i < enemies.length; i++) {
       enemies[i] = new Entity();
       enemyManager.track(enemies[i]);
@@ -154,14 +163,14 @@ class EnemyManagerComponentTest {
     entityService.update();
 
     ArgumentCaptor<Entity> dropCaptor = ArgumentCaptor.forClass(Entity.class);
-    verify(entityService, times(ItemType.values().length)).register(dropCaptor.capture());
+    verify(entityService, times(expectedTypes.size())).register(dropCaptor.capture());
     List<ItemType> actualTypes =
         dropCaptor.getAllValues().stream()
             .map(drop -> drop.getComponent(ItemComponent.class).getItemType())
             .toList();
-    assertEquals(List.of(ItemType.values()), actualTypes);
+    assertEquals(expectedTypes, actualTypes);
 
-    Entity goldDrop = dropCaptor.getAllValues().get(ItemType.values().length - 1);
+    Entity goldDrop = dropCaptor.getAllValues().get(expectedTypes.size() - 2);
     assertEquals(25, goldDrop.getComponent(ItemComponent.class).getQuantity());
   }
 

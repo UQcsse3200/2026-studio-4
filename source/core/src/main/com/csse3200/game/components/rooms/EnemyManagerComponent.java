@@ -20,7 +20,6 @@ import java.util.Set;
 public class EnemyManagerComponent extends EntityManagerComponent {
   private static final List<ItemType> DEMO_DROP_TYPES =
       List.of(
-          ItemType.STRENGTH_CHARM,
           ItemType.HEALTH_POTION,
           ItemType.SHIELD,
           ItemType.SPEED_POTION,
