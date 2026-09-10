@@ -18,7 +18,7 @@ class Team5CombatHudDisplayTest {
   void shouldHideZeroQuantityAndFormatPositiveQuantity() {
     assertEquals("", Team5CombatHudDisplay.formatQuantity(0));
     assertEquals("", Team5CombatHudDisplay.formatQuantity(-1));
-    assertEquals("×1", Team5CombatHudDisplay.formatQuantity(1));
-    assertEquals("×3", Team5CombatHudDisplay.formatQuantity(3));
+    assertEquals("x1", Team5CombatHudDisplay.formatQuantity(1));
+    assertEquals("x3", Team5CombatHudDisplay.formatQuantity(3));
   }
 }

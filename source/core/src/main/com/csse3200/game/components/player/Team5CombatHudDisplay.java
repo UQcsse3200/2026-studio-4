@@ -49,20 +49,21 @@ public class Team5CombatHudDisplay extends UIComponent {
 
   private void addActors() {
     table = new Table();
-    table.bottom();
+    table.top().left();
     table.setFillParent(true);
-    table.padBottom(20f);
+    table.padTop(260f).padLeft(5f);
 
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
     displayedGold = inventory == null ? 0 : inventory.getGold();
     goldLabel = new Label(formatGold(displayedGold), skin, LABEL_STYLE);
 
-    table.add(goldLabel).colspan(4).padBottom(6f);
+    table.add(goldLabel).left().padBottom(6f);
     table.row();
     for (ConsumableSlot slot : ConsumableSlot.values()) {
       Table slotTable = createSlotTable(slot);
       slotTables.put(slot, slotTable);
-      table.add(slotTable).padLeft(10f).padRight(10f);
+      table.add(slotTable).left().padTop(4f);
+      table.row();
     }
 
     stage.addActor(table);
@@ -120,7 +121,7 @@ public class Team5CombatHudDisplay extends UIComponent {
   }
 
   static String formatQuantity(int count) {
-    return count > 0 ? String.format("×%d", count) : "";
+    return count > 0 ? String.format("x%d", count) : "";
   }
 
   @Override
