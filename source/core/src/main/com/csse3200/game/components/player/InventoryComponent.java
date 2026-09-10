@@ -1,8 +1,8 @@
 package com.csse3200.game.components.player;
 
-import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.items.StatCharm;
+import com.csse3200.game.items.charms.Charm;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -18,7 +18,7 @@ public class InventoryComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(InventoryComponent.class);
   private int gold;
   // Stores charms currently held by the player
-  private final List<StatCharm<?>> charms;
+  private final List<Charm> charms;
 
   public InventoryComponent(int gold) {
     setGold(gold);
@@ -68,7 +68,7 @@ public class InventoryComponent extends Component {
    *
    * @return stored charms
    */
-  public List<StatCharm<?>> getCharms() {
+  public List<Charm> getCharms() {
     return this.charms;
   }
 
@@ -77,13 +77,8 @@ public class InventoryComponent extends Component {
    *
    * @param charm charm to add
    */
-  public void addCharm(StatCharm<?> charm) {
-    this.charms.add(charm);
-
-    CombatStatsComponent combatStats = getCombatStats();
-    if (combatStats != null) {
-      charm.applyStatChange(combatStats);
-    }
+  public void addCharm(Charm charm) {
+    charms.add(charm);
   }
 
   /**
@@ -92,22 +87,12 @@ public class InventoryComponent extends Component {
    * @param charm charm to remove
    * @return true if the charm was successfully removed
    */
-  public boolean removeCharm(StatCharm<?> charm) {
+  public boolean removeCharm(Charm charm) {
     boolean removed = this.charms.remove(charm);
     if (!removed) {
       return false;
     }
-
-    CombatStatsComponent combatStats = getCombatStats();
-    if (combatStats != null) {
-      charm.removeStatChange(combatStats);
-    }
     return true;
-  }
-
-  /** Returns the entity's combat stats, or null if unavailable (e.g. in isolated unit tests). */
-  private CombatStatsComponent getCombatStats() {
-    return entity == null ? null : entity.getComponent(CombatStatsComponent.class);
   }
 
   /**
@@ -117,7 +102,7 @@ public class InventoryComponent extends Component {
    * @param charm charm to check
    * @return true if the charm is stored in the inventory
    */
-  public boolean hasCharm(StatCharm<?> charm) {
+  public boolean hasCharm(Charm charm) {
     return this.charms.contains(charm);
   }
 

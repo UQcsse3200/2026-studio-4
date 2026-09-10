@@ -115,7 +115,7 @@ class CharmPickupComponentTest {
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
             .addComponent(new InventoryComponent(0))
-            .addComponent(new CharmPickupComponent());
+            .addComponent(new ItemPickupComponent());
     player.create();
     return player;
   }

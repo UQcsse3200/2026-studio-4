@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.items.CharmPickupComponent;
+import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
@@ -74,7 +74,7 @@ class ItemFlowIntegrationTest {
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
             .addComponent(new CombatStatsComponent(100, 10))
             .addComponent(new InventoryComponent(0))
-            .addComponent(new CharmPickupComponent());
+            .addComponent(new ItemPickupComponent());
     player.create();
     return player;
   }

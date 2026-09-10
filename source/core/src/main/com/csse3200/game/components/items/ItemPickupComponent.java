@@ -4,7 +4,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.items.StatCharm;
+import com.csse3200.game.items.Pickupable;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -30,17 +30,15 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Requires {@link HitboxComponent} and {@link InventoryComponent} on this entity.
  */
-public class CharmPickupComponent extends Component {
-  private static final Logger logger = LoggerFactory.getLogger(CharmPickupComponent.class);
+public class ItemPickupComponent extends Component {
+  private static final Logger logger = LoggerFactory.getLogger(ItemPickupComponent.class);
 
   private HitboxComponent hitboxComponent;
-  private InventoryComponent inventoryComponent;
   private final Set<Entity> nearbyItems = new LinkedHashSet<>();
 
   @Override
   public void create() {
     hitboxComponent = entity.getComponent(HitboxComponent.class);
-    inventoryComponent = entity.getComponent(InventoryComponent.class);
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
     entity.getEvents().addListener("collisionEnd", this::onCollisionEnd);
     entity.getEvents().addListener("itemPickup", this::onItemPickup);
@@ -84,11 +82,10 @@ public class CharmPickupComponent extends Component {
       return;
     }
 
-    StatCharm<?> charm = itemComponent.getCharm();
-    inventoryComponent.addCharm(charm);
+    Pickupable item = itemComponent.getItem();
+    item.pickUp(entity);
+
     nearbyItems.remove(itemEntity);
     itemEntity.dispose();
-
-    logger.info("Picked up charm: {}", charm.getName());
   }
 }
