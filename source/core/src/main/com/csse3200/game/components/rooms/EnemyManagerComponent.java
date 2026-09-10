@@ -8,6 +8,8 @@ import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.items.WeaponItem;
+import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -56,6 +58,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
         return NPCFactory.createFloatingDemon(
             target, leftPoint, topPoint, rightPoint, this::spawnEntity);
+      case BOW:
+        return ItemFactory.createItem(WeaponItem.createWeaponItem(WeaponType.Bow));
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
     }
