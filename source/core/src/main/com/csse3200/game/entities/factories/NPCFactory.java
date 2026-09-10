@@ -4,11 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
-import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.EnemyDeathComponent;
-import com.csse3200.game.components.ExplodeComponent;
-import com.csse3200.game.components.SplitComponent;
-import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.*;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.FloatingDemonAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -186,6 +182,37 @@ public class NPCFactory {
     demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
     return demon;
   }
+
+  /**
+   * Creates a generic base entity for Mini Bosses.
+   *
+   * @return entity
+   */
+  public static Entity createBaseMiniBoss(){
+    Entity miniboss = createBaseNPC();
+    miniboss.addComponent(new BossPhaseComponent());
+    return miniboss;
+  }
+
+  /**
+   * Creates theCerberus main body (MiddleHead).
+   *
+   * @param target entity to chase/attack
+   * @param anchorPoint the center point of the gate (chain center)
+   * @return entity
+   */
+public static Entity createCerberus(Entity target, Vector2 anchorPoint, String skin) {
+  Entity cerberus = createBaseMiniBoss();
+  BaseEntityConfig conf = configs.cerberus;
+
+  AnimationRenderComponent animationRenderComponent = new AnimationRenderComponent(
+          ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
+  animationRenderComponent.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
+  cerberus
+          .addComponent(new CombatStatsComponent(conf.health, conf.baseAttack))
+          .addComponent(animationRenderComponent);
+  return cerberus;
+};
 
   /**
    * Creates a generic NPC to be used as a base entity by more specific NPC creation methods.
