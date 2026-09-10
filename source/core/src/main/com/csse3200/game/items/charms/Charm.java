@@ -29,7 +29,7 @@ public abstract class Charm extends Item {
       logger.error("Attempted to apply effect twice");
       return;
     }
-
+    player.getComponent(InventoryComponent.class).addCharm(this);
     applyEffect(player);
     applied = true;
   }

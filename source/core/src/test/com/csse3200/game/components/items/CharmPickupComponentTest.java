@@ -4,12 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.items.StatCharm;
-import com.csse3200.game.items.StrengthCharm;
+import com.csse3200.game.items.charms.Charm;
+import com.csse3200.game.items.charms.StrengthCharm;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -31,7 +32,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldPickUpNearbyCharmOnItemPickup() {
-    StatCharm<?> charm = new StrengthCharm();
+    StrengthCharm charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -46,7 +47,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldNotPickUpWithoutItemPickup() {
-    StatCharm<?> charm = new StrengthCharm();
+    StrengthCharm charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -61,7 +62,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldNotPickUpOnRoomInteract() {
-    StatCharm<?> charm = new StrengthCharm();
+    StrengthCharm charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -76,7 +77,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldNotPickUpAfterLeavingRange() {
-    StatCharm<?> charm = new StrengthCharm();
+    StrengthCharm charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -114,6 +115,7 @@ class CharmPickupComponentTest {
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+            .addComponent(new CombatStatsComponent(0, 0))
             .addComponent(new InventoryComponent(0))
             .addComponent(new ItemPickupComponent());
     player.create();
@@ -124,7 +126,7 @@ class CharmPickupComponentTest {
    * Builds a world entity carrying an {@link ItemComponent}, the same way the Item Factory's output
    * is expected to look once the Room Team spawns it (physics body + an ITEM-layer hitbox).
    */
-  private Entity createItemEntity(StatCharm<?> charm) {
+  private Entity createItemEntity(Charm charm) {
     Entity itemEntity =
         new Entity()
             .addComponent(new PhysicsComponent())

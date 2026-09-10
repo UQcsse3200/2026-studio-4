@@ -4,14 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.items.StatCharm;
-import com.csse3200.game.items.StrengthCharm;
+import com.csse3200.game.items.charms.Charm;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -56,38 +51,21 @@ class InventoryComponentTest {
   }
 
   @Test
-  void shouldAddCharmAndApplyStats() {
-    Entity player = mock(Entity.class);
-    CombatStatsComponent stat = mock(CombatStatsComponent.class);
-
-    when(player.getComponent(CombatStatsComponent.class)).thenReturn(stat);
-
+  void shouldAddCharm() {
     InventoryComponent inventory = new InventoryComponent(100);
-    inventory.setEntity(player);
-
-    StatCharm<?> charm = mock(StatCharm.class);
-
+    Charm charm = mock(Charm.class);
     inventory.addCharm(charm);
 
-    verify(charm).applyStatChange(stat);
-    assertTrue(inventory.hasCharm(charm));
     assertEquals(1, inventory.getCharmCount());
   }
 
   @Test
-  void shouldRemoveCharmAndRemoveStats() {
-    Entity player = mock(Entity.class);
-    CombatStatsComponent stat = mock(CombatStatsComponent.class);
-    StatCharm<?> charm = mock(StatCharm.class);
-    when(player.getComponent(CombatStatsComponent.class)).thenReturn(stat);
-
+  void shouldRemoveCharm() {
     InventoryComponent inventory = new InventoryComponent(100);
-
-    inventory.setEntity(player);
+    Charm charm = mock(Charm.class);
     inventory.addCharm(charm);
     assertTrue(inventory.removeCharm(charm));
 
-    verify(charm).removeStatChange(stat);
     assertFalse(inventory.hasCharm(charm));
     assertEquals(0, inventory.getCharmCount());
   }
@@ -95,7 +73,7 @@ class InventoryComponentTest {
   @Test
   void shouldCheckHasCharm() {
     InventoryComponent inventory = new InventoryComponent(100);
-    StatCharm<?> charm = new StrengthCharm();
+    Charm charm = mock(Charm.class);
 
     assertFalse(inventory.hasCharm(charm));
 
