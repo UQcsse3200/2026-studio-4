@@ -32,8 +32,6 @@ import org.slf4j.LoggerFactory;
  * <p>Requires {@link HitboxComponent} and {@link InventoryComponent} on this entity.
  */
 public class ItemPickupComponent extends Component {
-  private static final Logger logger = LoggerFactory.getLogger(ItemPickupComponent.class);
-
   private HitboxComponent hitboxComponent;
   private final Set<Entity> nearbyItems = new LinkedHashSet<>();
 

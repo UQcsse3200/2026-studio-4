@@ -87,11 +87,7 @@ public class InventoryComponent extends Component {
    * @return true if the charm was successfully removed
    */
   public boolean removeCharm(Charm charm) {
-    boolean removed = this.charms.remove(charm);
-    if (!removed) {
-      return false;
-    }
-    return true;
+    return this.charms.remove(charm);
   }
 
   /**

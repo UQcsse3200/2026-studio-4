@@ -32,8 +32,6 @@ public class PlayerStatsDisplay extends UIComponent {
     entity.getEvents().addListener("updateMovementSpeed", this::updatePlayerMovementSpeedUI);
     entity.getEvents().addListener("updateAttackSpeed", this::updatePlayerAttackSpeedUI);
     entity.getEvents().addListener("updateMaxHealth", this::updatePlayerMaxHealthUI);
-    // entity.getEvents().addListener("charmAdded", this::updateCharmCountUI);
-    // entity.getEvents().addListener("charmRemoved", this::updateCharmCountUI);
   }
 
   /**

@@ -1,8 +1,8 @@
 package com.csse3200.game.items;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -22,7 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(GameExtension.class)
-public class StregnthCharmTest {
+public class StrengthCharmTest {
   @Mock private Entity player;
   @Mock private CombatStatsComponent stats;
   @Spy private InventoryComponent inventory = new InventoryComponent(100);
