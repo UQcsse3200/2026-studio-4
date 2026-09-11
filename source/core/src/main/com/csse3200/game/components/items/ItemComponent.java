@@ -11,7 +11,7 @@ public class ItemComponent extends Component {
   /**
    * Creates an item component for a charm.
    *
-   * @param charm charm represented by the entity
+   * @param item represented by the entity
    */
   public ItemComponent(Item item) {
     this.item = Objects.requireNonNull(item, "charm cannot be null");

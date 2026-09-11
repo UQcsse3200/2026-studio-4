@@ -17,10 +17,6 @@ public final class ItemFactory {
   /**
    * Creates the requested item at a world position.
    *
-   * <p>Sprint 1 currently supports only {@link ItemType#STRENGTH_CHARM}. The returned entity is not
-   * registered; the requesting room owns that responsibility.
-   *
-   * @param itemType type of item to create
    * @param position world position assigned to the item entity
    * @return a non-null, positioned, unregistered item entity for the room to spawn
    */

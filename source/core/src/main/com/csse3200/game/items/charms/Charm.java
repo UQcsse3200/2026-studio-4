@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A charm item type applies a effect on the player upon pickup {@link Pickupable}, and removes upon
+ * A charm item type applies a effect on the player upon pickup and removes upon
  * being dropped.
  */
 public abstract class Charm extends Item {
@@ -22,6 +22,9 @@ public abstract class Charm extends Item {
 
   protected abstract void removeEffect(Entity player);
 
+  /**
+   * Wraps the applyEffect component to also guard against applying twice
+   */
   @Override
   public void pickUp(Entity player) {
     if (applied) {
