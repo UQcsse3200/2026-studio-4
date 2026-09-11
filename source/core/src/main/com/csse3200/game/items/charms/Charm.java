@@ -6,10 +6,7 @@ import com.csse3200.game.items.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * A charm item type applies a effect on the player upon pickup and removes upon
- * being dropped.
- */
+/** A charm item type applies a effect on the player upon pickup and removes upon being dropped. */
 public abstract class Charm extends Item {
   private static final Logger logger = LoggerFactory.getLogger(Charm.class);
   private boolean applied = false;
@@ -22,9 +19,7 @@ public abstract class Charm extends Item {
 
   protected abstract void removeEffect(Entity player);
 
-  /**
-   * Wraps the applyEffect component to also guard against applying twice
-   */
+  /** Wraps the applyEffect component to also guard against applying twice */
   @Override
   public void pickUp(Entity player) {
     if (applied) {
