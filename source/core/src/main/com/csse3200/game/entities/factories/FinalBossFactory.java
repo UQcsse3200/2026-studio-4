@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.boss.FinalBossDamageControllerComponent;
 import com.csse3200.game.components.boss.FinalBossExplosiveSummonComponent;
-import com.csse3200.game.components.boss.FinalBossHealthBarDisplay;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
 import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
 import com.csse3200.game.components.boss.FinalBossStageOneComponent;
@@ -45,7 +44,6 @@ public final class FinalBossFactory {
             .addComponent(new EnemyAnimationController())
             .addComponent(new FinalBossPhaseControllerComponent())
             .addComponent(new FinalBossDamageControllerComponent())
-            .addComponent(new FinalBossHealthBarDisplay())
             .addComponent(new FinalBossMovementComponent(target, config))
             .addComponent(new FinalBossStageOneComponent(target, summonSpawner, config));
 
