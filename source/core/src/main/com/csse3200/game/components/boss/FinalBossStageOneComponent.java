@@ -49,6 +49,7 @@ public class FinalBossStageOneComponent extends Component {
     phaseController = requireComponent(FinalBossPhaseControllerComponent.class);
     damageController = requireComponent(FinalBossDamageControllerComponent.class);
     movementController = requireComponent(FinalBossMovementComponent.class);
+    movementController.setActiveSummons(activeSummons);
     bossStats = requireComponent(CombatStatsComponent.class);
 
     bossStats.setHealth(bossStats.getMaxHealth());
@@ -107,20 +108,41 @@ public class FinalBossStageOneComponent extends Component {
   private void spawnWave(int count, float movementSpeed, float warningDuration) {
     activeSummons.clear();
 
+    ArrayList<Entity> wave = new ArrayList<>();
+
     for (int i = 0; i < count; i++) {
+      float angle = (360f * i) / count;
+
       Entity summon =
           FinalBossFactory.createExplosiveSummon(target, config, movementSpeed, warningDuration);
 
+      FinalBossSummonMovementComponent summonMovement =
+          new FinalBossSummonMovementComponent(target, movementSpeed, angle, activeSummons);
+
+      float formationRadius =
+          state == FinalBossStageOneState.WAVE_TWO
+              ? config.waveTwoFormationRadius
+              : config.waveOneFormationRadius;
+
+      summonMovement.setFormationRadius(formationRadius);
+      summonMovement.setCamera(movementController.getCamera());
+      summon.addComponent(summonMovement);
+
       summon.getEvents().addListener(FinalBossEvents.SUMMON_REMOVED, this::onSummonRemoved);
 
-      float angle = (360f * i) / count;
       Vector2 offset = new Vector2(config.summonSpawnRadius, 0f).setAngleDeg(angle);
 
       Vector2 spawnPosition =
           entity.getCenterPosition().add(offset).sub(summon.getScale().scl(0.5f));
 
-      summon.setPosition(spawnPosition);
+      summon.setPosition(summonMovement.clampSpawnPosition(spawnPosition));
+
       activeSummons.add(summon);
+      wave.add(summon);
+    }
+
+    // Assemble the entire wave before registering any summons.
+    for (Entity summon : wave) {
       summonSpawner.accept(summon);
     }
 
@@ -163,7 +185,7 @@ public class FinalBossStageOneComponent extends Component {
 
   private void beginWaveTwo() {
     damageController.enableShield();
-    movementController.setMode(FinalBossMovementComponent.Mode.STEP_TOWARDS_PLAYER);
+    movementController.setMode(FinalBossMovementComponent.Mode.FLEE_ALONG_EDGE);
 
     changeState(FinalBossStageOneState.WAVE_TWO);
 

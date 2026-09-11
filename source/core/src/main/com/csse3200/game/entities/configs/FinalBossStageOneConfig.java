@@ -10,12 +10,16 @@ public class FinalBossStageOneConfig {
   public int summonExplosionDamage = 10;
 
   // Summon movement and explosion
-  public float waveOneSummonSpeed = 1f;
-  public float waveTwoSummonSpeed = 1.6f;
+  public float waveOneSummonSpeed = 2.8f;
+  public float waveTwoSummonSpeed = 3.2f;
   public float summonTriggerDistance = 0.8f;
   public float summonExplosionRadius = 1.5f;
   public float waveOneWarningDuration = 1f;
-  public float summonSpawnRadius = 2f;
+  public float summonSpawnRadius = 1.2f;
+
+  // Formation radius for each summon wave
+  public float waveOneFormationRadius = 2f;
+  public float waveTwoFormationRadius = 2.5f;
 
   // Seven-second vulnerability window
   public float breakWindowDuration = 7f;
@@ -38,7 +42,7 @@ public class FinalBossStageOneConfig {
   public float bossWanderSpeed = 0.8f;
   public float bossFleeSpeed = 1.2f;
   public float movementTargetRefreshInterval = 0.5f;
-  public float summonAvoidanceRadius = 3f;
+  public float summonAvoidanceRadius = 2f;
   public float movementTargetDistance = 3f;
 
   // Fallback visible bounds when the world camera is unavailable
@@ -94,6 +98,7 @@ public class FinalBossStageOneConfig {
     validateMovement();
     validateStepMovement();
     validatePetrification();
+    validateFormation();
   }
 
   private void validateMovement() {
@@ -132,6 +137,15 @@ public class FinalBossStageOneConfig {
         || petrificationSlowDuration < 0f
         || petrificationCooldown <= 0f) {
       throw new IllegalArgumentException("Petrification values are invalid");
+    }
+  }
+
+  private void validateFormation() {
+    if (!Float.isFinite(waveOneFormationRadius)
+        || !Float.isFinite(waveTwoFormationRadius)
+        || waveOneFormationRadius <= 0f
+        || waveTwoFormationRadius <= 0f) {
+      throw new IllegalArgumentException("Formation radii must be finite and positive");
     }
   }
 }
