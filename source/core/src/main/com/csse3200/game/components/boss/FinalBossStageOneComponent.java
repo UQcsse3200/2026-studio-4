@@ -54,8 +54,7 @@ public class FinalBossStageOneComponent extends Component {
     bossStats.setHealth(bossStats.getMaxHealth());
     damageController.enableShield();
 
-    movementController.setMode(FinalBossMovementComponent.Mode.WANDER_AVOID_SUMMONS);
-
+    movementController.setMode(FinalBossMovementComponent.Mode.STEP_TOWARDS_PLAYER);
     changeState(FinalBossStageOneState.WAVE_ONE);
 
     spawnWave(config.waveOneSummonCount, config.waveOneSummonSpeed, config.waveOneWarningDuration);
@@ -72,9 +71,13 @@ public class FinalBossStageOneComponent extends Component {
     }
 
     GameTime time = ServiceLocator.getTimeSource();
-    float deltaTime = time == null ? 0f : Math.max(time.getDeltaTime(), 0f);
+    float deltaTime = time == null ? 0f : time.getDeltaTime();
 
-    breakRemaining -= deltaTime;
+    if (!Float.isFinite(deltaTime) || deltaTime <= 0f) {
+      return;
+    }
+
+    breakRemaining = Math.max(0f, breakRemaining - deltaTime);
 
     if (breakRemaining <= 0f) {
       beginWaveTwo();
@@ -111,7 +114,6 @@ public class FinalBossStageOneComponent extends Component {
       summon.getEvents().addListener(FinalBossEvents.SUMMON_REMOVED, this::onSummonRemoved);
 
       float angle = (360f * i) / count;
-
       Vector2 offset = new Vector2(config.summonSpawnRadius, 0f).setAngleDeg(angle);
 
       Vector2 spawnPosition =
@@ -121,8 +123,6 @@ public class FinalBossStageOneComponent extends Component {
       activeSummons.add(summon);
       summonSpawner.accept(summon);
     }
-
-    movementController.setActiveSummons(activeSummons);
 
     if (activeSummons.isEmpty()) {
       onWaveCleared();
@@ -134,14 +134,16 @@ public class FinalBossStageOneComponent extends Component {
       return;
     }
 
-    movementController.setActiveSummons(activeSummons);
-
     if (activeSummons.isEmpty()) {
       onWaveCleared();
     }
   }
 
   private void onWaveCleared() {
+    if (phaseController.getCurrentPhase() != FinalBossPhase.STAGE_ONE) {
+      return;
+    }
+
     if (state == FinalBossStageOneState.WAVE_ONE) {
       beginBreakWindow();
     } else if (state == FinalBossStageOneState.WAVE_TWO) {
@@ -150,20 +152,18 @@ public class FinalBossStageOneComponent extends Component {
   }
 
   private void beginBreakWindow() {
-    changeState(FinalBossStageOneState.BREAK_WINDOW);
+    movementController.setMode(FinalBossMovementComponent.Mode.STOPPED);
     breakRemaining = config.breakWindowDuration;
 
-    movementController.setMode(FinalBossMovementComponent.Mode.STOPPED);
-
     int healthFloor = Math.round(bossStats.getMaxHealth() * config.breakWindowHealthFloor);
-
     damageController.openVulnerabilityWindow(config.breakWindowDamageMultiplier, healthFloor);
+
+    changeState(FinalBossStageOneState.BREAK_WINDOW);
   }
 
   private void beginWaveTwo() {
     damageController.enableShield();
-
-    movementController.setMode(FinalBossMovementComponent.Mode.FLEE_PLAYER);
+    movementController.setMode(FinalBossMovementComponent.Mode.STEP_TOWARDS_PLAYER);
 
     changeState(FinalBossStageOneState.WAVE_TWO);
 
@@ -176,16 +176,15 @@ public class FinalBossStageOneComponent extends Component {
     }
 
     transitionSent = true;
-    changeState(FinalBossStageOneState.COMPLETE);
+    breakRemaining = 0f;
 
-    movementController.setActiveSummons(null);
     movementController.setMode(FinalBossMovementComponent.Mode.STOPPED);
-
     damageController.disableStageOneProtection();
 
     int stageTwoHealth = Math.round(bossStats.getMaxHealth() * config.stageTwoStartingHealth);
-
     bossStats.setHealth(stageTwoHealth);
+
+    changeState(FinalBossStageOneState.COMPLETE);
 
     entity.getEvents().trigger(FinalBossEvents.STAGE_COMPLETED, FinalBossPhase.STAGE_ONE);
   }
@@ -196,9 +195,9 @@ public class FinalBossStageOneComponent extends Component {
     }
 
     cleanupStarted = true;
+    breakRemaining = 0f;
 
     if (movementController != null) {
-      movementController.setActiveSummons(null);
       movementController.setMode(FinalBossMovementComponent.Mode.STOPPED);
     }
 
@@ -213,7 +212,6 @@ public class FinalBossStageOneComponent extends Component {
 
   private void changeState(FinalBossStageOneState nextState) {
     state = nextState;
-
     entity.getEvents().trigger(FinalBossEvents.STAGE_ONE_STATE_CHANGED, state);
   }
 

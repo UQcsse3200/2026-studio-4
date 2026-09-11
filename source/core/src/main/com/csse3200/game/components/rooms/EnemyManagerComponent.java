@@ -3,7 +3,9 @@ package com.csse3200.game.components.rooms;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.boss.FinalBossMovementComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.FinalBossFactory;
@@ -21,10 +23,16 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   private final EnemySpawnConfig[] spawnConfigs;
   private final Set<Entity> activeEnemies = new HashSet<>();
   private final List<Entity> droppedItems = new ArrayList<>();
+  private CameraComponent camera;
 
   /** Creates an empty manager for tests and rooms with no enemies. */
   public EnemyManagerComponent() {
     this(new EnemySpawnConfig[0]);
+  }
+
+  public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs, CameraComponent camera) {
+    this(spawnConfigs);
+    this.camera = camera;
   }
 
   public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs) {
@@ -64,7 +72,11 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             this::spawnEntity,
             "images/floatingDemon.atlas");
       case FINAL_BOSS:
-        return FinalBossFactory.createFinalBoss(target, this::spawnEntity);
+        Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnEntity);
+        if (camera != null) {
+          boss.getComponent(FinalBossMovementComponent.class).setCamera(camera.getCamera());
+        }
+        return boss;
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
     }

@@ -25,15 +25,23 @@ public class FinalBossStageOneConfig {
 
   // First-wave proximity damage
   public float proximityDamageRadius = 1.5f;
-  public int proximityDamage = 2;
+  public int proximityDamage = 5;
   public float proximityDamageInterval = 1f;
 
-  // Boss movement
+  // Stop-and-go movement during Stage 1
+  public float bossStepSpeed = 3f;
+  public float bossStepMinDistance = 2f;
+  public float bossStepMaxDistance = 4f;
+  public float bossStepPauseDuration = 3f;
+
+  // Previous movement settings retained for compatibility
   public float bossWanderSpeed = 0.8f;
   public float bossFleeSpeed = 1.2f;
   public float movementTargetRefreshInterval = 0.5f;
   public float summonAvoidanceRadius = 3f;
   public float movementTargetDistance = 3f;
+
+  // Fallback visible bounds when the world camera is unavailable
   public float bossVisibilityHalfWidth = 8f;
   public float bossVisibilityHalfHeight = 4f;
 
@@ -84,6 +92,7 @@ public class FinalBossStageOneConfig {
     }
 
     validateMovement();
+    validateStepMovement();
     validatePetrification();
   }
 
@@ -96,6 +105,22 @@ public class FinalBossStageOneConfig {
         || bossVisibilityHalfWidth <= 0f
         || bossVisibilityHalfHeight <= 0f) {
       throw new IllegalArgumentException("Boss movement values are invalid");
+    }
+  }
+
+  private void validateStepMovement() {
+    if (!Float.isFinite(bossStepSpeed)
+        || !Float.isFinite(bossStepMinDistance)
+        || !Float.isFinite(bossStepMaxDistance)
+        || !Float.isFinite(bossStepPauseDuration)) {
+      throw new IllegalArgumentException("Boss step movement values must be finite");
+    }
+
+    if (bossStepSpeed <= 0f
+        || bossStepMinDistance <= 0f
+        || bossStepMaxDistance < bossStepMinDistance
+        || bossStepPauseDuration < 0f) {
+      throw new IllegalArgumentException("Boss step movement values are invalid");
     }
   }
 

@@ -33,6 +33,7 @@ public class RoomFactory {
         .addComponent(new ObstacleComponent(room.obstacles))
         .addComponent(new ExitComponent(room.exits))
         .addComponent(
-            new EnemyManagerComponent(cleared ? new EnemySpawnConfig[0] : room.enemySpawns));
+            new EnemyManagerComponent(
+                cleared ? new EnemySpawnConfig[0] : room.enemySpawns, camera));
   }
 }
