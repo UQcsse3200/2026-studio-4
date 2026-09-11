@@ -25,7 +25,7 @@ public class StatusEffectsControllerComponent extends Component {
   }
 
   /**
-   * Adds stacks to burning. Throws IllegalArgumentException if stacks <= 0.
+   * Adds stacks to burning.
    *
    * @param stacks the number of stacks of burning to add.
    */
