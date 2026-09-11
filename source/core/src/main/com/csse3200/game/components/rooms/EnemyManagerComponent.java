@@ -6,6 +6,7 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.items.ItemType;
@@ -47,16 +48,23 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
     switch (spawn.type) {
       case BOMB:
-        return NPCFactory.createBombEnemy(target);
+        return NPCFactory.createBombEnemy(target, "images/bombEnemy.atlas");
       case CHASE:
-        return NPCFactory.createChaseEnemy(target, true);
+        return NPCFactory.createChaseEnemy(target, true, "images/chaseEnemy.atlas");
       case FLOATING_DEMON:
         TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
         Vector2 leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);
         Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
         Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
         return NPCFactory.createFloatingDemon(
-            target, leftPoint, topPoint, rightPoint, this::spawnEntity);
+            target,
+            leftPoint,
+            topPoint,
+            rightPoint,
+            this::spawnEntity,
+            "images/floatingDemon.atlas");
+      case FINAL_BOSS:
+        return FinalBossFactory.createFinalBoss(target, this::spawnEntity);
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
     }
