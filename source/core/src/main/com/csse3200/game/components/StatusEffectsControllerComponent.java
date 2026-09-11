@@ -1,21 +1,21 @@
 package com.csse3200.game.components;
 
-import com.csse3200.game.services.GameTime;
+import com.csse3200.game.components.statuseffects.StatusEffect;
+import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
+import java.util.ArrayList;
 
 public class StatusEffectsControllerComponent extends Component {
 
   private CombatStatsComponent combatStatsComponent;
-  private final GameTime time = new GameTime();
 
-  private int burning;
-  private long lastBurn;
-  private final long BURN_COOLDOWN = 1000;
+  private final ArrayList<StatusEffect> statusEffects = new ArrayList<>();
 
   /**
    * Caches the CombatStatsComponent from entity.
    *
    * <p>Throws IllegalStateException if CombatStatsComponent is null.
    */
+  @Override
   public void create() {
     combatStatsComponent = entity.getComponent(CombatStatsComponent.class);
     if (combatStatsComponent == null) {
@@ -25,28 +25,46 @@ public class StatusEffectsControllerComponent extends Component {
   }
 
   /**
-   * Adds stacks to burning.
+   * Adds stacks to a status effect.
    *
-   * @param stacks the number of stacks of burning to add.
+   * @param statusEffect the status effect to add stacks of. A single character indicator for each
+   *     effect. 'b' for burning. 'r' for regeneration.
+   * @param stacks the number of stacks to add.
    */
-  public void burningOn(int stacks) {
+  public void addStatusEffect(int stacks, char statusEffect) {
     if (stacks <= 0) {
-      throw new IllegalArgumentException("Stacks of burning must be > 0");
+      throw new IllegalArgumentException("Stacks must be > 0");
     }
-    if (burning == 0) {
-      lastBurn = time.getTime();
+    switch (statusEffect) {
+      case 'b':
+        for (int i = 0; i < stacks; i++) {
+          statusEffects.addLast(StatusEffectsFactory.createBurn(combatStatsComponent));
+        }
+        break;
+      case 'r':
+        for (int i = 0; i < stacks; i++) {
+          statusEffects.addLast(StatusEffectsFactory.createRegeneration(combatStatsComponent));
+        }
+        break;
+      default:
+        throw new IllegalArgumentException(
+            "statusEffect must be a valid character representation of a status effect.");
     }
-    burning += stacks;
   }
 
   /**
-   * Updates the state of all status effects. Burning: If time since last burn > burn cooldown,
-   * deals 1 damage per stack of burn.
+   * Updates the state of all status effects. Removes status effects that return true from update.
    */
+  @Override
   public void update() {
-    if (burning > 0 && time.getTimeSince(lastBurn) > BURN_COOLDOWN) {
-      combatStatsComponent.takeDamage(burning); // Deals 1 damage per stack of burning.
-      lastBurn = time.getTime();
+    ArrayList<StatusEffect> removal = new ArrayList<>();
+    for (StatusEffect effect : statusEffects) {
+      if (effect.update()) {
+        removal.addLast(effect);
+      }
+    }
+    for (StatusEffect effect : removal) {
+      statusEffects.remove(effect);
     }
   }
 }

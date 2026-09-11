@@ -97,9 +97,6 @@ public class PlayerFactory {
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
     player.getComponent(AnimationRenderComponent.class).startAnimation("idle_down");
 
-    // player.getComponent(StatusEffectsControllerComponent.class).burningOn(1);
-    // Uncomment above line if you want to test burning.
-
     return player;
   }
 
