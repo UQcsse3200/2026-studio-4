@@ -27,9 +27,13 @@
   }
 
   com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle: {
+    player-health-bar: {
+      background: player-health-bar-back
+      knobBefore: player-health-bar-fill
+    }
     enemy-health-bar: {
-      background: health-bar-back
-      knobBefore: health-bar-fill
+      background: enemy-health-bar-back
+      knobBefore: enemy-health-bar-fill
     }
   }
 }

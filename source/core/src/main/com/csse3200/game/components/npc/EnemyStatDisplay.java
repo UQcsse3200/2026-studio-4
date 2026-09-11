@@ -56,7 +56,7 @@ public class EnemyStatDisplay extends UIComponent {
     healthBar.setValue(health);
     healthBar.setAnimateDuration(0.3f);
 
-    table.add(healthBar);
+    table.add(healthBar).width(50f);
     table.setTransform(true);
     table.setScale(scale);
 

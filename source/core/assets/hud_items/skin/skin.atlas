@@ -3,20 +3,36 @@ size: 1312, 304
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-health-bar-fill
+player-health-bar-fill
   rotate: false
-  xy: 915, 37
-  size: 42, 7
-  split: 4,4,4,4
-  orig: 256, 64
+  xy: 132, 68
+  size: 38, 8
+  split: 0,0,0,0
+  orig: 38, 8
   offset: 0, 0
   index: -1
-health-bar-back
+player-health-bar-back
   rotate: false
-  xy: 1107, 37
-  size: 42, 7
-  split: 4,4,4,4
-  orig: 256, 64
+  xy: 68, 68
+  size: 38, 8
+  split: 0,0,0,0
+  orig: 38, 8
+  offset: 0, 0
+  index: -1
+enemy-health-bar-fill
+  rotate: false
+  xy: 4, 68
+  size: 38, 8
+  split: 0,0,0,0
+  orig: 38, 8
+  offset: 0, 0
+  index: -1
+enemy-health-bar-back
+  rotate: false
+  xy: 68, 68
+  size: 38, 8
+  split: 0,0,0,0
+  orig: 38, 8
   offset: 0, 0
   index: -1
 

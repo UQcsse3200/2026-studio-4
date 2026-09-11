@@ -53,10 +53,11 @@ public class PlayerStatsDisplay extends UIComponent {
     health = stats.getHealth();
 
     ProgressBar.ProgressBarStyle barStyle =
-        skin.get("enemy-health-bar", ProgressBar.ProgressBarStyle.class);
+        skin.get("player-health-bar", ProgressBar.ProgressBarStyle.class);
     healthBar = new ProgressBar(0, maxHealth, 1, false, barStyle);
     healthBar.setValue(health);
     healthBar.setAnimateDuration(0.3f);
+    healthBar.setScale(3f);
 
     int charmCount = entity.getComponent(InventoryComponent.class).getCharmCount();
 

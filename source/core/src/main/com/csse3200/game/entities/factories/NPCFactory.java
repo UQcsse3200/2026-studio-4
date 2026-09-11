@@ -77,7 +77,8 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(animator)
         .addComponent(new ExplodeComponent(target))
-        .addComponent(new EnemyAnimationController());
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f));
 
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
 
@@ -116,7 +117,8 @@ public class NPCFactory {
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
         .addComponent(aiComponent)
         .addComponent(animator)
-        .addComponent(new EnemyAnimationController());
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f));
 
     if (shouldSplit) {
       chaseEnemy.addComponent(new SplitComponent(target, skin));
@@ -201,8 +203,7 @@ public class NPCFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new EnemyDeathComponent(true))
-            .addComponent(new EnemyStatDisplay(1.5f));
+            .addComponent(new EnemyDeathComponent(true));
 
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);
     return npc;
