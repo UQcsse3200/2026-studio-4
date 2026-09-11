@@ -26,5 +26,10 @@
     hera: { hex: "6a2a5a" }   // royal magenta
   }
 
-
+  com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle: {
+    enemy-health-bar: {
+      background: health-bar-back
+      knobBefore: health-bar-fill
+    }
+  }
 }

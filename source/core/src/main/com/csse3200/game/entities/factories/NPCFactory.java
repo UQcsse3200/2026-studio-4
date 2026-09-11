@@ -183,7 +183,7 @@ public class NPCFactory {
             .addComponent(aiComponent)
             .addComponent(animator)
             .addComponent(new FloatingDemonAnimationController())
-            .addComponent(new EnemyStatDisplay());
+            .addComponent(new EnemyStatDisplay(1.5f));
 
     animator.scaleEntity();
     demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
@@ -203,7 +203,7 @@ public class NPCFactory {
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new EnemyDeathComponent(true))
-            .addComponent(new EnemyStatDisplay());
+            .addComponent(new EnemyStatDisplay(1.5f));
 
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);
     return npc;

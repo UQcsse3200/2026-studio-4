@@ -17,9 +17,14 @@ public class EnemyStatDisplay extends UIComponent {
   private ProgressBar healthBar;
   private int maxHealth;
   private int health;
+  private float scale;
 
   /** Vertical offset (in world units) above the entity's position to draw the bar. */
   private static final float Y_OFFSET = 0.2f;
+
+  public EnemyStatDisplay(float sc) {
+    this.scale = sc;
+  }
 
   /** Creates reusable ui styles and adds actors to the stage. */
   @Override
@@ -45,14 +50,15 @@ public class EnemyStatDisplay extends UIComponent {
     table = new Table();
     table.setSkin(skin);
 
-    ProgressBar.ProgressBarStyle barStyle = skin.get("fancy", ProgressBar.ProgressBarStyle.class);
+    ProgressBar.ProgressBarStyle barStyle =
+        skin.get("enemy-health-bar", ProgressBar.ProgressBarStyle.class);
     healthBar = new ProgressBar(0, maxHealth, 1, false, barStyle);
     healthBar.setValue(health);
     healthBar.setAnimateDuration(0.3f);
-    healthBar.setSize(10f, 1f);
 
-    table.add(healthBar).width(100f).height(1f);
-    table.pack();
+    table.add(healthBar);
+    table.setTransform(true);
+    table.setScale(scale);
 
     if (stage == null) {
       return;

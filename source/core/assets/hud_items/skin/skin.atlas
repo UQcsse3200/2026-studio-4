@@ -1,3 +1,53 @@
+All.png
+size: 1312, 304
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+health-bar-fill
+  rotate: false
+  xy: 915, 37
+  size: 42, 7
+  split: 4,4,4,4
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+health-bar-back
+  rotate: false
+  xy: 1107, 37
+  size: 42, 7
+  split: 4,4,4,4
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+
+
+1-Hearth_Bar_Fill.png
+size: 64,16
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+health-bar-fill-a
+  rotate: false
+  xy: 0, 0
+  size: 64, 16
+  split: 4,4,4,4
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+
+Bar_Body_2.png
+size: 64,16
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+health-bar-back-a
+  rotate: false
+  xy: 0, 0
+  size: 48, 9
+  split: 4,4,4,4
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
 
 progress_bar.png
 size: 1506,1120
@@ -157,8 +207,9 @@ square-green-pressed
 bar-background
   rotate: false
   xy: 389, 583
-  size: 261, 11
-  orig: 261, 11
+  size: 455, 14
+  split: 6, 6, 0, 0
+  orig: 455, 14
   offset: 0, 0
   index: -1
 bar-fill-green
@@ -180,9 +231,10 @@ bar-fill-purple
 bar-fill-red
   rotate: false
   xy: 402, 701
-  size: 261, 11
-  orig: 261, 11
-  offset: 0, 0
+  size: 389, 12
+  split: 6, 6, 0, 0
+  orig: 389, 12
+  offset: 10, 0
   index: -1
 square-purple
   rotate: false

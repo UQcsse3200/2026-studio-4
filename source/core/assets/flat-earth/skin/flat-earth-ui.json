@@ -251,8 +251,8 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle: {
 	default: {
 		font: button
-		fontColor: white
-		downFontColor: white
+		fontColor: black
+		downFontColor: black
 		overFontColor: gray
 		up: button-c
 		down: button-p
@@ -310,8 +310,8 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
 	default: {
 		font: font
-		fontColorSelected: white
-		fontColorUnselected: white
+		fontColorSelected: black
+		fontColorUnselected: black
 		selection: selection
 		background: list-c
 	}
@@ -385,8 +385,8 @@ com.badlogic.gdx.scenes.scene2d.ui.SplitPane$SplitPaneStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	default: {
 		font: button
-		fontColor: white
-		downFontColor: white
+		fontColor: black
+		downFontColor: black
 		overFontColor: gray
 		up: button-c
 		down: button-p
