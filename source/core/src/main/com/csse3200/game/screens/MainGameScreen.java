@@ -43,7 +43,6 @@ public class MainGameScreen extends ScreenAdapter {
   };
   private static final String[] mainGameTextureAtlases = {"images/idle_down.atlas"};
 
-
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
