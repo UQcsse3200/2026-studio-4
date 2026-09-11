@@ -1,19 +1,19 @@
 package com.csse3200.game.components.items;
 
 import com.csse3200.game.components.Component;
-import com.csse3200.game.items.Pickupable;
+import com.csse3200.game.items.Item;
 import java.util.Objects;
 
 /** Stores the item data represented by an item entity. */
 public class ItemComponent extends Component {
-  private final Pickupable item;
+  private final Item item;
 
   /**
    * Creates an item component for a charm.
    *
    * @param charm charm represented by the entity
    */
-  public ItemComponent(Pickupable item) {
+  public ItemComponent(Item item) {
     this.item = Objects.requireNonNull(item, "charm cannot be null");
   }
 
@@ -22,7 +22,7 @@ public class ItemComponent extends Component {
    *
    * @return charm data
    */
-  public Pickupable getItem() {
+  public Item getItem() {
     return item;
   }
 }

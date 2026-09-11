@@ -32,6 +32,7 @@ public final class ItemFactory {
     return item;
   }
 
+  /** Creates an item entity to be spawned into the game. */
   public static Entity createItem(Item item) {
     Entity itemEntity =
         new Entity()

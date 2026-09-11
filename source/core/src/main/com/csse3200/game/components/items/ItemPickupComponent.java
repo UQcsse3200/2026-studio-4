@@ -4,7 +4,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.items.Pickupable;
+import com.csse3200.game.items.Item;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -82,7 +82,7 @@ public class ItemPickupComponent extends Component {
       return;
     }
 
-    Pickupable item = itemComponent.getItem();
+    Item item = itemComponent.getItem();
     item.pickUp(entity);
 
     nearbyItems.remove(itemEntity);
