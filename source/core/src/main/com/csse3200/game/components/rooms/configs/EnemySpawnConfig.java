@@ -7,6 +7,7 @@ public class EnemySpawnConfig extends PositionConfig {
   public enum EnemyType {
     BOMB,
     CHASE,
-    GREEK_FLYING
+    GREEK_FLYING,
+    FINAL_BOSS
   }
 }

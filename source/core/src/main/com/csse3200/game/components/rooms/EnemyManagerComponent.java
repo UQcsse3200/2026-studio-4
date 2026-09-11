@@ -6,6 +6,7 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.items.ItemType;
@@ -56,7 +57,14 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
         Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
         return NPCFactory.createFloatingDemon(
-            target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/harpy.atlas");
+            target,
+            leftPoint,
+            topPoint,
+            rightPoint,
+            this::spawnEntity,
+            "images/floatingDemon.atlas");
+      case FINAL_BOSS:
+        return FinalBossFactory.createFinalBoss(target, this::spawnEntity);
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
     }
