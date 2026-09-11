@@ -28,7 +28,7 @@
         { "id": "dungeonThreeShelf", "kind": "BOOKSHELF", "x": 20, "y": 11,
           "available": false, "message": "This dungeon is not available yet." },
         { "id": "dungeonFourShelf", "kind": "BOOKSHELF", "x": 20, "y": 6,
-          "available": false, "message": "This dungeon is not available yet." }
+          "destinationRoomId": "finalBossRoom", "destinationEntryPointId": "fromSelection" }
       ]
     },
     {
@@ -97,6 +97,15 @@
         { "id": "returnShelf", "kind": "BOOKSHELF", "x": 36, "y": 28,
           "destinationRoomId": "selection", "destinationEntryPointId": "fromDungeonOne",
           "requiresClear": true, "completesDungeon": true }
+      ]
+    },
+    {
+      "id": "finalBossRoom",
+      "dungeonId": "finalDungeon",
+      "title": "Final Boss",
+      "entryPoints": [{ "id": "fromSelection", "x": 10, "y": 10 }],
+      "enemySpawns": [
+        { "type": "FINAL_BOSS", "x": 20, "y": 20 }
       ]
     }
   ]
