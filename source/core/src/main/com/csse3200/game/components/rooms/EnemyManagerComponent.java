@@ -59,7 +59,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         return NPCFactory.createFloatingDemon(
             target, leftPoint, topPoint, rightPoint, this::spawnEntity);
       case BOW:
-        return ItemFactory.createItem(WeaponItem.createWeaponItem(WeaponType.Bow));
+        return ItemFactory.createItem(WeaponItem.createWeaponItem(WeaponType.BOW));
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
     }
