@@ -67,6 +67,11 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         return FinalBossFactory.createFinalBoss(target, this::spawnEntity);
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
+
+      case CERBERUS:
+        TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
+        Vector2 anchorPint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
+        return NPCFactory.createCerberus(target, anchorPint, "this::spawnEntity");
     }
   }
 

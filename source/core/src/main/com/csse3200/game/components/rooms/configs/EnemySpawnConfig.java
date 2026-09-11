@@ -8,6 +8,7 @@ public class EnemySpawnConfig extends PositionConfig {
     BOMB,
     CHASE,
     GREEK_FLYING,
+    CERBERUS,
     FINAL_BOSS
   }
 }

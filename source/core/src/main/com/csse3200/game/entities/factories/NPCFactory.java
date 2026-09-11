@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.*;
+import com.csse3200.game.components.npc.CerberusAnimationController;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
@@ -194,9 +195,9 @@ public class NPCFactory {
   /**
    * Auxiliary Method: Generate the side heads (left head / right head) of Cerberus
    *
-   * @param mainHead
-   * @param offset
-   * @param health
+   * @param mainHead The middle head, acting as the main body entity
+   * @param offset The positional offset of the side head relative to the main head
+   * @param health The independent health value for the side head
    */
   private static Entity createCerberusSideHead(Entity mainHead, Vector2 offset, int health) {
     Entity sideHead = createBaseMiniBoss();
@@ -223,10 +224,15 @@ public class NPCFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animationRenderComponent.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
+    animationRenderComponent.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
+    animationRenderComponent.addAnimation("roar", 0.1f, Animation.PlayMode.NORMAL);
+    animationRenderComponent.addAnimation("dieAnimation", 0.1f, Animation.PlayMode.NORMAL);
+
     mainHead
         .addComponent(new CombatStatsComponent(conf.health, conf.baseAttack))
         .addComponent(animationRenderComponent)
-        .addComponent(new ChainRestrictionComponent(anchorPoint, 15f));
+        .addComponent(new ChainRestrictionComponent(anchorPoint, 15f))
+        .addComponent(new CerberusAnimationController());
     Entity leftHead = createCerberusSideHead(mainHead, new Vector2(-1.5f, 0.5f), conf.health / 2);
     Entity rightHead = createCerberusSideHead(mainHead, new Vector2(1.5f, 0.5f), conf.health / 2);
 
