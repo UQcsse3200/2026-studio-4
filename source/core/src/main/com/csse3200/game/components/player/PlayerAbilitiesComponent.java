@@ -13,6 +13,13 @@ public class PlayerAbilitiesComponent extends Component {
   public static final long LAST_STAND_DURATION_MS = 10_000;
   public static final long LAST_STAND_COOLDOWN_MS = 60_000;
   public static final float LAST_STAND_MULTIPLIER = 1.5f;
+
+  /** Ability name carried by the abilityUsed, abilityEnded and abilityFailed events. */
+  public static final String INVISIBILITY = "invisibility";
+
+  /** Ability name carried by the abilityUsed and abilityEnded events. */
+  public static final String LAST_STAND = "laststand";
+
   private static final int LAST_STAND_HEALTH_PERCENT = 20;
 
   private GameTime time;
@@ -49,6 +56,14 @@ public class PlayerAbilitiesComponent extends Component {
     return abilities != null && abilities.isInvisible();
   }
 
+  /**
+   * Returns whether hostiles should ignore the target, either because there is no target or because
+   * invisibility is active. Callers that pass this check may dereference the target.
+   */
+  public static boolean isUntargetable(Entity target) {
+    return target == null || isInvisible(target);
+  }
+
   /** Returns whether hostile damage immunity and undetectability are still active. */
   public boolean isInvisible() {
     update();
@@ -73,18 +88,18 @@ public class PlayerAbilitiesComponent extends Component {
     update();
     if (!isAlive()) {
       if (!disposed && entity != null) {
-        entity.getEvents().trigger("abilityFailed", "invisibility", "Player is not alive");
+        entity.getEvents().trigger("abilityFailed", INVISIBILITY, "Player is not alive");
       }
       return false;
     }
     long now = time.getTime();
     if (now < invisibilityReadyAt) {
-      entity.getEvents().trigger("abilityFailed", "invisibility", "Ability is on cooldown");
+      entity.getEvents().trigger("abilityFailed", INVISIBILITY, "Ability is on cooldown");
       return false;
     }
     invisibleUntil = now + INVISIBILITY_DURATION_MS;
     invisibilityReadyAt = now + INVISIBILITY_COOLDOWN_MS;
-    entity.getEvents().trigger("abilityUsed", "invisibility");
+    entity.getEvents().trigger("abilityUsed", INVISIBILITY);
     return true;
   }
 
@@ -128,7 +143,7 @@ public class PlayerAbilitiesComponent extends Component {
     }
     lastStandUntil = now + LAST_STAND_DURATION_MS;
     lastStandReadyAt = now + LAST_STAND_COOLDOWN_MS;
-    entity.getEvents().trigger("abilityUsed", "laststand");
+    entity.getEvents().trigger("abilityUsed", LAST_STAND);
   }
 
   private boolean isAlive() {
@@ -154,10 +169,10 @@ public class PlayerAbilitiesComponent extends Component {
       lastStandEnabled = false;
     }
     if (endInvisibility) {
-      entity.getEvents().trigger("abilityEnded", "invisibility");
+      entity.getEvents().trigger("abilityEnded", INVISIBILITY);
     }
     if (endLastStand) {
-      entity.getEvents().trigger("abilityEnded", "laststand");
+      entity.getEvents().trigger("abilityEnded", LAST_STAND);
     }
   }
 

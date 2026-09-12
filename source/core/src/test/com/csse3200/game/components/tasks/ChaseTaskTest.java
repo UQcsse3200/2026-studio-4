@@ -94,7 +94,7 @@ class ChaseTaskTest {
     Entity target = new Entity().addComponent(abilities);
     target.setPosition(2f, 0f);
     ChaseTask task = new ChaseTask(target, 10, 5, 10);
-    task.create(() -> new Entity());
+    task.create(Entity::new);
 
     when(abilities.isInvisible()).thenReturn(true);
     assertEquals(-1, task.getPriority());

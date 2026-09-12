@@ -49,7 +49,7 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
 
   @Override
   public void update() {
-    if (PlayerAbilitiesComponent.isInvisible(target)) {
+    if (PlayerAbilitiesComponent.isUntargetable(target)) {
       movementTask.stop();
       return;
     }
@@ -68,7 +68,7 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
 
   @Override
   public int getPriority() {
-    if (PlayerAbilitiesComponent.isInvisible(target)) {
+    if (PlayerAbilitiesComponent.isUntargetable(target)) {
       // The scheduler may leave the current task running when all priorities are negative.
       if (status == Status.ACTIVE) {
         movementTask.stop();

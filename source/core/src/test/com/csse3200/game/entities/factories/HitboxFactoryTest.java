@@ -48,7 +48,8 @@ class HitboxFactoryTest {
   void shouldInheritLiveAppearanceWithoutFollowingOrRescalingDamage() {
     ResourceService resources = mock(ResourceService.class);
     ServiceLocator.registerResourceService(resources);
-    when(resources.getAsset("weapon.png", Texture.class)).thenReturn(mock(Texture.class));
+    Texture weaponTexture = mock(Texture.class);
+    when(resources.getAsset("weapon.png", Texture.class)).thenReturn(weaponTexture);
     GameTime time = mock(GameTime.class);
     PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
     CombatStatsComponent combat = new CombatStatsComponent(100, 10);

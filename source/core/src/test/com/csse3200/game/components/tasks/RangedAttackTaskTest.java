@@ -143,16 +143,16 @@ class RangedAttackTaskTest {
 
   @Test
   void shouldAttackOnlyWhenPlayerIsClose() {
-    Entity player = new Entity();
-    RangedAttackTask attackTask = new RangedAttackTask(player, 7);
+    Entity rangedTarget = new Entity();
+    RangedAttackTask attackTask = new RangedAttackTask(rangedTarget, 7);
     AITaskComponent ai = new AITaskComponent().addTask(attackTask);
     Entity demon = new Entity().addComponent(ai);
 
     demon.setPosition(0f, 0f);
-    player.setPosition(5f, 0f);
+    rangedTarget.setPosition(5f, 0f);
     assertEquals(5, attackTask.getPriority());
 
-    player.setPosition(8f, 0f);
+    rangedTarget.setPosition(8f, 0f);
     assertEquals(-1, attackTask.getPriority());
   }
 }

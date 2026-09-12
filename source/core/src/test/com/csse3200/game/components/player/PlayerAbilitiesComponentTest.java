@@ -7,6 +7,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.services.GameTime;
@@ -38,8 +39,8 @@ class PlayerAbilitiesComponentTest {
     player = new Entity().addComponent(stats).addComponent(abilities);
     player.create();
     hostile = new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
-    player.getEvents().addListener("abilityUsed", (String ability) -> used.add(ability));
-    player.getEvents().addListener("abilityEnded", (String ability) -> ended.add(ability));
+    player.getEvents().addListener("abilityUsed", (EventListener1<String>) used::add);
+    player.getEvents().addListener("abilityEnded", (EventListener1<String>) ended::add);
     player
         .getEvents()
         .addListener(

@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.ColliderComponent;
@@ -179,7 +180,7 @@ class CombatStatsComponentTest {
     assertEquals(17, combat.getEffectiveBaseAttack());
     assertEquals(3f, combat.getEffectiveAttackSpeed());
     List<Integer> rawUpdates = new ArrayList<>();
-    player.getEvents().addListener("updateBaseAttack", (Integer attack) -> rawUpdates.add(attack));
+    player.getEvents().addListener("updateBaseAttack", (EventListener1<Integer>) rawUpdates::add);
     combat.addBaseAttack(2);
     combat.addAttackSpeed(2f);
     assertEquals(20, combat.getEffectiveBaseAttack());

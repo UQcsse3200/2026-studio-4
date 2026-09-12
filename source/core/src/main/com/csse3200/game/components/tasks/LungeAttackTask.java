@@ -62,7 +62,7 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
   @Override
   public void update() {
     long now = gameTime.getTime();
-    if (PlayerAbilitiesComponent.isInvisible(target)) {
+    if (PlayerAbilitiesComponent.isUntargetable(target)) {
       if (phase != Phase.DONE) {
         endDash(now);
       }
@@ -96,7 +96,7 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
 
   @Override
   public int getPriority() {
-    if (PlayerAbilitiesComponent.isInvisible(target)) {
+    if (PlayerAbilitiesComponent.isUntargetable(target)) {
       // Stop the dash even if the scheduler has no replacement task.
       if (status == Status.ACTIVE && phase != Phase.DONE) {
         endDash(gameTime.getTime());

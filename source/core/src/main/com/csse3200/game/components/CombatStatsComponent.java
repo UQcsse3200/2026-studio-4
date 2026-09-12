@@ -275,7 +275,7 @@ public class CombatStatsComponent extends Component {
     }
 
     int previousHealth = health;
-    int remainingHealth = Math.max(0, Math.min(maxHealth, newHealth));
+    int remainingHealth = Math.clamp(newHealth, 0, maxHealth);
     setHealth(newHealth);
     if (entity != null && remainingHealth < previousHealth) {
       entity

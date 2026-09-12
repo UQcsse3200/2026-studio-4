@@ -53,7 +53,7 @@ public class FinalBossMovementComponent extends Component {
   @Override
   public void update() {
     if (mode == Mode.STOPPED
-        || (mode == Mode.FLEE_PLAYER && PlayerAbilitiesComponent.isInvisible(target))) {
+        || (mode == Mode.FLEE_PLAYER && PlayerAbilitiesComponent.isUntargetable(target))) {
       movement.setMoving(false);
       refreshRemaining = 0f;
       return;
