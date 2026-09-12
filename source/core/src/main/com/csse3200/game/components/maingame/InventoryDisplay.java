@@ -1,9 +1,11 @@
 package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.ui.UIComponent;
 import java.awt.*;
@@ -14,6 +16,7 @@ import org.slf4j.LoggerFactory;
 public class InventoryDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(MainGameExitDisplay.class);
   private static final float Z_INDEX = 2f;
+  private boolean charmsPage = true;
   private Table table;
 
   @Override
@@ -23,6 +26,11 @@ public class InventoryDisplay extends UIComponent {
   }
 
   private void addActors() {
+    buildPage();
+    table.setVisible(false);
+
+  }
+  private void buildPage() {
     //Create main table
     table = new Table();
     table.setFillParent(true);
@@ -35,14 +43,42 @@ public class InventoryDisplay extends UIComponent {
     bookCover.setScaling(Scaling.fill); // Forces graphic to fill the stack container
     bookStack.add(bookCover);
 
-    Table pagesContainer = charmsCreate();
-
+    Table pagesContainer;
+    if (charmsPage) {
+      pagesContainer = charmsCreate();
+    } else {
+      pagesContainer = consumableCreate();
+    }
     //combine all together
     bookStack.add(pagesContainer);
     table.add(bookStack).size(800, 500).center();
-    table.add(new ImageButton(inventory, "arrow")).size(32, 32).pad(6);
 
-    table.setVisible(false);
+    ImageButton arrow = new ImageButton(inventory, "arrow");
+    arrow.addListener(
+            new ChangeListener() {
+              @Override
+              public void changed(ChangeEvent changeEvent, Actor actor) {
+                logger.debug("next inventory button clicked");
+                entity.getEvents().trigger("nextPage");
+              }
+            });
+
+    table.add(arrow).size(32, 32).pad(6);
+
+    table.setVisible(true);
+  }
+
+  public void changePage() {
+    if (charmsPage) {
+      clearPage();
+      charmsPage = false;
+      buildPage();
+    }
+    else {
+      clearPage();
+      charmsPage = true;
+      buildPage();
+    }
   }
 
   private Table consumableCreate() {
@@ -115,6 +151,10 @@ public class InventoryDisplay extends UIComponent {
     }
     return grid;
   }
+  private void clearPage() {
+    table.clear();
+  }
+
 
   @Override
   public void draw(SpriteBatch batch) {
