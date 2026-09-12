@@ -10,8 +10,8 @@ import com.csse3200.game.entities.Entity;
  * new ability is a subclass and one registration rather than a change to the component.
  *
  * <p>An ability is not a status effect. An ability that puts a timed condition on the player
- * extends TimedPlayerAbility, which owns one; an instant or toggled ability extends this directly
- * and never touches the status effects system at all.
+ * extends {@link TimedPlayerAbility}, which owns one; an instant or toggled ability extends this
+ * directly and never touches the status effects system at all.
  */
 public abstract class PlayerAbility {
   private final String name;

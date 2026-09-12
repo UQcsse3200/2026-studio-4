@@ -507,50 +507,10 @@ class PlayerAbilitiesComponentTest {
     }
   }
 
-  /** An ability that owns a timed effect on the player, the same way Invisibility does. */
-  private abstract static class EffectAbility extends PlayerAbility {
-    private final TimedStatusEffect effect;
-    private StatusEffectsControllerComponent effects;
-
-    private EffectAbility(String name, TimedStatusEffect effect, long cooldown, boolean unlocked) {
-      super(name, cooldown, unlocked);
-      this.effect = effect;
-    }
-
-    @Override
-    protected void attach(StatusEffectsControllerComponent controller, Runnable onEnded) {
-      effects = controller;
-      effect.setOnEnded(onEnded);
-      controller.registerEffect(effect);
-    }
-
-    @Override
-    public void start() {
-      effect.activate();
-    }
-
-    @Override
-    public void stop() {
-      if (effects != null) {
-        effects.removeEffect(effect);
-      }
-    }
-
-    @Override
-    public boolean isRunning() {
-      return effect.isActive();
-    }
-
-    @Override
-    public long getRemainingMs() {
-      return effect.getRemainingDuration();
-    }
-  }
-
   /** A cast ability that starts locked, declared entirely outside PlayerAbilitiesComponent. */
-  private static final class TestAbility extends EffectAbility {
+  private static final class TestAbility extends TimedPlayerAbility {
     private TestAbility(GameTime time) {
-      super("testability", new TimedStatusEffect(time, 5_000), 20_000, false);
+      super("testability", 20_000, false, new TimedStatusEffect(time, 5_000));
     }
 
     @Override
@@ -560,9 +520,9 @@ class PlayerAbilitiesComponentTest {
   }
 
   /** A passive that starts on any hostile hit, declared entirely outside the component. */
-  private static final class TestPassive extends EffectAbility {
+  private static final class TestPassive extends TimedPlayerAbility {
     private TestPassive(GameTime time) {
-      super("testpassive", new TimedStatusEffect(time, 3_000), 9_000, true);
+      super("testpassive", 9_000, true, new TimedStatusEffect(time, 3_000));
     }
 
     @Override
