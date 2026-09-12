@@ -44,7 +44,8 @@ class ChaseEnemyTest {
     ServiceLocator.registerEntityService(entityService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/chaseEnemy.atlas"});
+    resourceService.loadTextureAtlases(
+        new String[] {"images/chaseEnemy.atlas", "images.miniEnemy.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
@@ -59,7 +60,7 @@ class ChaseEnemyTest {
             .addComponent(new com.csse3200.game.components.CombatStatsComponent(20, 0));
     player.create();
 
-    Entity chaseEnemy = NPCFactory.createChaseEnemy(player, true);
+    Entity chaseEnemy = NPCFactory.createChaseEnemy(player, true, "images/chaseEnemy.atlas");
     chaseEnemy.create();
 
     Fixture chaseFixture = chaseEnemy.getComponent(HitboxComponent.class).getFixture();
@@ -83,7 +84,7 @@ class ChaseEnemyTest {
             .addComponent(new com.csse3200.game.components.CombatStatsComponent(20, 0));
     player.create();
 
-    Entity chaseEnemy = NPCFactory.createChaseEnemy(player, true);
+    Entity chaseEnemy = NPCFactory.createChaseEnemy(player, true, "images/chaseEnemy.atlas");
     chaseEnemy.create();
 
     Entity otherEntity =
@@ -108,16 +109,16 @@ class ChaseEnemyTest {
 
   @Test
   void shouldUseConfiguredHealth() {
-    Entity chaseEnemy = NPCFactory.createChaseEnemy(new Entity(), true);
+    Entity chaseEnemy = NPCFactory.createChaseEnemy(new Entity(), true, "images/chaseEnemy.atlas");
     CombatStatsComponent stats = chaseEnemy.getComponent(CombatStatsComponent.class);
 
-    assertEquals(60, stats.getHealth());
-    assertEquals(60, stats.getMaxHealth());
+    assertEquals(20, stats.getHealth());
+    assertEquals(20, stats.getMaxHealth());
   }
 
   @Test
   void shouldStartDefaultAnimationImmediately() {
-    Entity chaseChild = NPCFactory.createChaseEnemy(new Entity(), false);
+    Entity chaseChild = NPCFactory.createChaseEnemy(new Entity(), false, "images/chaseEnemy.atlas");
     AnimationRenderComponent animator = chaseChild.getComponent(AnimationRenderComponent.class);
 
     assertEquals("default", animator.getCurrentAnimation());
