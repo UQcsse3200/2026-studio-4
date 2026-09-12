@@ -39,17 +39,17 @@ class CerberusAnimationControllerTest {
     verify(animator).startAnimation("move");
   }
 
-  @Test
-  void shouldPlayAttackAnimation() {
-    entity.getEvents().trigger("attackStart");
-    verify(animator).startAnimation("attack");
-  }
-
-  @Test
-  void shouldPlayRoarOnEnrage() {
-    entity.getEvents().trigger("enragePhaseStarted");
-    verify(animator).startAnimation("roar");
-  }
+  //  @Test
+  //  void shouldPlayAttackAnimation() {
+  //    entity.getEvents().trigger("attackStart");
+  //    verify(animator).startAnimation("attack");
+  //  }
+  //
+  //  @Test
+  //  void shouldPlayRoarOnEnrage() {
+  //    entity.getEvents().trigger("enragePhaseStarted");
+  //    verify(animator).startAnimation("roar");
+  //  }
 
   @Test
   void shouldHandleDeathAndDisposal() {

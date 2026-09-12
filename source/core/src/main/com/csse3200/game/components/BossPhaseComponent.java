@@ -8,7 +8,7 @@ public class BossPhaseComponent extends Component {
   public void create() {
     super.create();
     combatStatsComponent = entity.getComponent(CombatStatsComponent.class);
-    entity.getEvents().addListener("update", this::checkPhaseTransition);
+    entity.getEvents().addListener("updateHealth", this::checkPhaseTransition);
   }
 
   private void checkPhaseTransition(int currentHealth) {

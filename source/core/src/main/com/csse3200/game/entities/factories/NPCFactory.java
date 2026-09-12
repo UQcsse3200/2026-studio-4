@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.*;
-import com.csse3200.game.components.npc.CerberusAnimationController;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
@@ -203,58 +202,9 @@ public class NPCFactory {
    * @return entity
    */
   public static Entity createBaseMiniBoss() {
-    Entity miniboss = createBaseNPC();
-    miniboss.addComponent(new BossPhaseComponent());
-    return miniboss;
-  }
-
-  /**
-   * Auxiliary Method: Generate the side heads (left head / right head) of Cerberus
-   *
-   * @param mainHead The middle head, acting as the main body entity
-   * @param offset The positional offset of the side head relative to the main head
-   * @param health The independent health value for the side head
-   */
-  private static Entity createCerberusSideHead(Entity mainHead, Vector2 offset, int health) {
-    Entity sideHead = createBaseMiniBoss();
-
-    sideHead
-        .addComponent(new CombatStatsComponent(health, 10))
-        .addComponent(new HeadAttachmentComponent(mainHead, offset));
-
-    return sideHead;
-  }
-
-  /**
-   * Creates theCerberus main body (MiddleHead).
-   *
-   * @param anchorPoint the center point of the gate (chain center)
-   * @return entity
-   */
-  public static Entity createCerberus(Vector2 anchorPoint, String skin) {
-    Entity mainHead = createBaseMiniBoss();
-    BaseEntityConfig conf = configs.cerberus;
-
-    AnimationRenderComponent animationRenderComponent =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
-    animationRenderComponent.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
-    animationRenderComponent.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
-    animationRenderComponent.addAnimation("roar", 0.1f, Animation.PlayMode.NORMAL);
-    animationRenderComponent.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
-
-    mainHead
-        .addComponent(new CombatStatsComponent(conf.health, conf.baseAttack))
-        .addComponent(animationRenderComponent)
-        .addComponent(new ChainRestrictionComponent(anchorPoint, 15f))
-        .addComponent(new CerberusAnimationController());
-    Entity leftHead = createCerberusSideHead(mainHead, new Vector2(-1.5f, 0.5f), conf.health / 2);
-    Entity rightHead = createCerberusSideHead(mainHead, new Vector2(1.5f, 0.5f), conf.health / 2);
-
-    ServiceLocator.getEntityService().register(leftHead);
-    ServiceLocator.getEntityService().register(rightHead);
-
-    return mainHead;
+    Entity miniBoss = createBaseNPC();
+    miniBoss.addComponent(new BossPhaseComponent());
+    return miniBoss;
   }
 
   /**

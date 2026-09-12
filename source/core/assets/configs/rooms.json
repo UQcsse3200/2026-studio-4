@@ -34,6 +34,7 @@
       "title": "Dungeon One: Entrance",
       "entryPoints": [{ "id": "fromSelection", "x": 10, "y": 10 }],
       "enemySpawns": [
+        { "type": "CERBERUS", "x": 25, "y": 25 },
         { "type": "BOMB", "x": 22, "y": 20 },
         { "type": "CHASE", "x": 30, "y": 28 }
       ],

@@ -31,7 +31,7 @@ public class CerberusAnimationController extends Component {
     }
     if (!dying && animator.isFinished()) {
       String currentAnim = animator.getCurrentAnimation();
-      if ("attack".equals(currentAnim) || "roar".equals(currentAnim)) {
+      if ("lunge".equals(currentAnim) || "idle".equals(currentAnim)) {
         animator.startAnimation(ANIM_MOVE);
       }
     }
@@ -51,13 +51,13 @@ public class CerberusAnimationController extends Component {
 
   private void animateAttack() {
     if (!dying) {
-      animator.startAnimation("attack");
+      animator.startAnimation("lunge");
     }
   }
 
   private void animateEnrage() {
     if (!dying) {
-      animator.startAnimation("roar");
+      animator.startAnimation("idle");
     }
   }
 
