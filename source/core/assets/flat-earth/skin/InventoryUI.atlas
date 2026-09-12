@@ -1,0 +1,503 @@
+
+InventoryUI.png
+size: 2048, 2048
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+UI_TravelBook_Alert01a
+  rotate: false
+  xy: 786, 1222
+  size: 3, 6
+  orig: 3, 6
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Bar01a
+  rotate: false
+  xy: 515, 1096
+  size: 62, 4
+  orig: 62, 4
+  offset: 0, 0
+  index: -1
+UI_TravelBook_BookCover01a
+  rotate: false
+  xy: 515, 1102
+  size: 224, 160
+  orig: 224, 160
+  offset: 0, 0
+  index: -1
+UI_TravelBook_BookPageLeft01a
+  rotate: false
+  xy: 1029, 1629
+  size: 104, 147
+  orig: 104, 147
+  offset: 0, 0
+  index: -1
+UI_TravelBook_BookPageRight01a
+  rotate: false
+  xy: 1, 87
+  size: 104, 147
+  orig: 104, 147
+  offset: 0, 0
+  index: -1
+UI_TravelBook_ButtonValue01a
+  rotate: false
+  xy: 842, 1256
+  size: 8, 6
+  orig: 8, 6
+  offset: 0, 0
+  index: -1
+UI_TravelBook_ButtonValue01b
+  rotate: false
+  xy: 121, 214
+  size: 8, 6
+  orig: 8, 6
+  offset: 0, 0
+  index: -1
+UI_TravelBook_CommandDirection01a
+  rotate: false
+  xy: 1029, 1540
+  size: 5, 7
+  orig: 5, 7
+  offset: 0, 0
+  index: -1
+UI_TravelBook_CommandHold01a
+  rotate: false
+  xy: 1077, 1600
+  size: 9, 11
+  orig: 9, 11
+  offset: 0, 0
+  index: -1
+UI_TravelBook_CommandPress01a
+  rotate: false
+  xy: 1135, 1692
+  size: 5, 9
+  orig: 5, 9
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Cursor01c
+  rotate: false
+  xy: 773, 1230
+  size: 14, 16
+  orig: 14, 16
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Cursor01d
+  rotate: false
+  xy: 1029, 1563
+  size: 14, 16
+  orig: 14, 16
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Fill01a
+  rotate: false
+  xy: 107, 232
+  size: 30, 2
+  orig: 30, 2
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Fill01b
+  rotate: false
+  xy: 515, 1092
+  size: 30, 2
+  orig: 30, 2
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Frame01a
+  rotate: false
+  xy: 741, 1248
+  size: 62, 14
+  orig: 62, 14
+  offset: 0, 0
+  index: -1
+UI_TravelBook_FrameSelect01a
+  rotate: false
+  xy: 1029, 1613
+  size: 62, 14
+  orig: 62, 14
+  offset: 0, 0
+  index: -1
+UI_TravelBook_FrameSelect01b
+  rotate: false
+  xy: 1135, 1762
+  size: 62, 14
+  orig: 62, 14
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadA01a
+  rotate: false
+  xy: 124, 222
+  size: 9, 8
+  orig: 9, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadB01a
+  rotate: false
+  xy: 532, 1082
+  size: 9, 8
+  orig: 9, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadDPadDown01a
+  rotate: false
+  xy: 515, 1056
+  size: 8, 8
+  orig: 8, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadDPadLeft01a
+  rotate: false
+  xy: 529, 1072
+  size: 8, 8
+  orig: 8, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadDPadRight01a
+  rotate: false
+  xy: 1125, 1619
+  size: 8, 8
+  orig: 8, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadDPadUp01a
+  rotate: false
+  xy: 741, 1179
+  size: 8, 8
+  orig: 8, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadL01a
+  rotate: false
+  xy: 1135, 1703
+  size: 9, 9
+  orig: 9, 9
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadL301a
+  rotate: false
+  xy: 773, 1219
+  size: 11, 9
+  orig: 11, 9
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadLB01a
+  rotate: false
+  xy: 1199, 1768
+  size: 15, 8
+  orig: 15, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadLT01a
+  rotate: false
+  xy: 65, 77
+  size: 15, 8
+  orig: 15, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadMenu01a
+  rotate: false
+  xy: 1151, 1720
+  size: 9, 8
+  orig: 9, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadR01a
+  rotate: false
+  xy: 1167, 1735
+  size: 9, 9
+  orig: 9, 9
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadR301a
+  rotate: false
+  xy: 789, 1237
+  size: 11, 9
+  orig: 11, 9
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadRB01a
+  rotate: false
+  xy: 107, 222
+  size: 15, 8
+  orig: 15, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadRT01a
+  rotate: false
+  xy: 515, 1082
+  size: 15, 8
+  orig: 15, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadShare01a
+  rotate: false
+  xy: 1183, 1752
+  size: 9, 8
+  orig: 9, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadView01a
+  rotate: false
+  xy: 1, 1
+  size: 9, 8
+  orig: 9, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadX01a
+  rotate: false
+  xy: 16, 13
+  size: 9, 8
+  orig: 9, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_GamepadY01a
+  rotate: false
+  xy: 33, 33
+  size: 9, 8
+  orig: 9, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Handle03a
+  rotate: false
+  xy: 802, 1238
+  size: 7, 8
+  orig: 7, 8
+  offset: 0, 0
+  index: -1
+UI_TravelBook_HandleDropdown01a
+  rotate: false
+  xy: 48, 47
+  size: 9, 6
+  orig: 9, 6
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconArrow01a
+  rotate: false
+  xy: 1093, 1614
+  size: 16, 13
+  orig: 16, 13
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconCoin01a
+  rotate: false
+  xy: 1029, 1549
+  size: 11, 12
+  orig: 11, 12
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconCross01a
+  rotate: false
+  xy: 1061, 1597
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconEnergy01a
+  rotate: false
+  xy: 65, 61
+  size: 12, 14
+  orig: 12, 14
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconEnergy01d
+  rotate: false
+  xy: 107, 206
+  size: 12, 14
+  orig: 12, 14
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconEnergy01g
+  rotate: false
+  xy: 515, 1066
+  size: 12, 14
+  orig: 12, 14
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconGear01a
+  rotate: false
+  xy: 1135, 1714
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconHeart01a
+  rotate: false
+  xy: 1, 11
+  size: 13, 10
+  orig: 13, 10
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconHeart01e
+  rotate: false
+  xy: 33, 43
+  size: 13, 10
+  orig: 13, 10
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconHeart01i
+  rotate: false
+  xy: 827, 1252
+  size: 13, 10
+  orig: 13, 10
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconHome01a
+  rotate: false
+  xy: 1167, 1746
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconPause01a
+  rotate: false
+  xy: 1061, 1582
+  size: 10, 13
+  orig: 10, 13
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconPlay01a
+  rotate: false
+  xy: 107, 191
+  size: 9, 13
+  orig: 9, 13
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconRestart01a
+  rotate: false
+  xy: 1045, 1566
+  size: 11, 13
+  orig: 11, 13
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconStar01a
+  rotate: false
+  xy: 1111, 1616
+  size: 12, 11
+  orig: 12, 11
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconStar01c
+  rotate: false
+  xy: 741, 1189
+  size: 12, 11
+  orig: 12, 11
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconStar01e
+  rotate: false
+  xy: 758, 1203
+  size: 12, 11
+  orig: 12, 11
+  offset: 0, 0
+  index: -1
+UI_TravelBook_IconTick01a
+  rotate: false
+  xy: 741, 1202
+  size: 15, 12
+  orig: 15, 12
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Line01a
+  rotate: false
+  xy: 579, 1098
+  size: 30, 2
+  orig: 30, 2
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Marker01a
+  rotate: false
+  xy: 805, 1248
+  size: 20, 14
+  orig: 20, 14
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Point01a
+  rotate: false
+  xy: 789, 1230
+  size: 5, 5
+  orig: 5, 5
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Point02a
+  rotate: false
+  xy: 1199, 1763
+  size: 5, 3
+  orig: 5, 3
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Popup01a
+  rotate: false
+  xy: 1, 55
+  size: 62, 30
+  orig: 62, 30
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Select01a
+  rotate: false
+  xy: 741, 1216
+  size: 30, 30
+  orig: 30, 30
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Slot01a
+  rotate: false
+  xy: 1029, 1581
+  size: 30, 30
+  orig: 30, 30
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Slot01b
+  rotate: false
+  xy: 1135, 1730
+  size: 30, 30
+  orig: 30, 30
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Slot01c
+  rotate: false
+  xy: 1, 23
+  size: 30, 30
+  orig: 30, 30
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Toggle03a
+  rotate: false
+  xy: 1216, 1770
+  size: 10, 6
+  orig: 10, 6
+  offset: 0, 0
+  index: -1
+UI_TravelBook_Toggle03b
+  rotate: false
+  xy: 82, 79
+  size: 10, 6
+  orig: 10, 6
+  offset: 0, 0
+  index: -1
+pixel_16
+  rotate: false
+  xy: 1, 750
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+pixel_18
+  rotate: false
+  xy: 1, 1264
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+pixel_26
+  rotate: false
+  xy: 515, 1264
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+pixel_32
+  rotate: false
+  xy: 1, 236
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
