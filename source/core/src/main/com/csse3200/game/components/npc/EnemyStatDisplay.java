@@ -34,7 +34,6 @@ public class EnemyStatDisplay extends UIComponent {
 
     entity.getEvents().addListener("updateHealth", this::updateEnemyHealthUI);
     entity.getEvents().addListener("updateMaxHealth", this::updateEnemyMaxHealthUI);
-    //        entity.getEvents().addListener("setPosition", this::updateHealthBar);
   }
 
   /**

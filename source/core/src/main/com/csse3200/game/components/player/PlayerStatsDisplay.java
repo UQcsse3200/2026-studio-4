@@ -21,7 +21,6 @@ public class PlayerStatsDisplay extends UIComponent {
   private int health;
 
   private static final String LABEL_STYLE = "statDisplay";
-  private static final float SCALE = 3f;
 
   @Override
   public void create() {

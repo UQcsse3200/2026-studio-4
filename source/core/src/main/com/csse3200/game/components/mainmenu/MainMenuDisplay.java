@@ -34,7 +34,7 @@ public class MainMenuDisplay extends UIComponent {
     title.setFillParent(true);
     title.setScaling(Scaling.fill); // stretch/crop to fill screen, keeps aspect
 
-    Table table = new Table();
+    table = new Table();
     table.setPosition(800, 150);
 
     TextButton startBtn = new TextButton("Start", skin);
