@@ -35,8 +35,8 @@ public class KnockbackComponent extends Component {
       return;
     }
 
-    Vector2 KnockBackDir = entity.getCenterPosition().cpy().sub(attacker.getPosition()).nor();
-    Vector2 impulse = KnockBackDir.scl(strength);
+    Vector2 knockBackDir = entity.getCenterPosition().cpy().sub(attacker.getPosition()).nor();
+    Vector2 impulse = knockBackDir.scl(strength);
 
     physicsComponent
         .getBody()

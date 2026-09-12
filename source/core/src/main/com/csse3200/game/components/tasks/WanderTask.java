@@ -38,7 +38,9 @@ public class WanderTask extends DefaultTask implements PriorityTask {
   }
 
   @Override
-  public void setPriority(int status) {}
+  public void setPriority(int status) {
+    // Intentional empty method: WanderTask priority is fixed and should not be changed.
+  }
 
   @Override
   public void start() {
