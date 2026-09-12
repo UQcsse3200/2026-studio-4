@@ -2,10 +2,7 @@ package com.csse3200.game.entities.enemy;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.ExplodeComponent;
@@ -52,7 +49,7 @@ class BombEnemyTest {
 
   @Test
   void shouldHaveBombEnemyAnimations() {
-    Entity bombEnemy = NPCFactory.createBombEnemy(new Entity(), "images/bombEnemy.atlas");
+    Entity bombEnemy = NPCFactory.createBombEnemy(new Entity(), "images/bombEnemy.atlas", 0.05f);
     AnimationRenderComponent animator = bombEnemy.getComponent(AnimationRenderComponent.class);
 
     assertTrue(animator.hasAnimation("move"));
@@ -61,27 +58,26 @@ class BombEnemyTest {
   }
 
   @Test
-  void testBombEnemyExplodesOnPlayerCollision() {
+  void testBombEnemyExplodesAfterFuseTime() throws InterruptedException {
     Entity player =
         new Entity().addComponent(new PhysicsComponent()).addComponent(new HitboxComponent());
     player.create();
 
-    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas");
+    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas", 0.05f);
     bombEnemy.create();
-
-    ExplodeComponent explodeComponent = bombEnemy.getComponent(ExplodeComponent.class);
-
-    assertNotNull(explodeComponent);
 
     Fixture bombFixture = bombEnemy.getComponent(HitboxComponent.class).getFixture();
 
     Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
 
     EventListener0 dieAnimationListener = mock(EventListener0.class);
-
     bombEnemy.getEvents().addListener("dieAnimation", dieAnimationListener);
 
     bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
+
+    verify(dieAnimationListener, never()).handle();
+
+    Thread.sleep(100);
 
     verify(dieAnimationListener, times(1)).handle();
   }
@@ -92,7 +88,7 @@ class BombEnemyTest {
         new Entity().addComponent(new PhysicsComponent()).addComponent(new HitboxComponent());
     player.create();
 
-    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas");
+    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas", 0.05f);
     bombEnemy.create();
 
     ExplodeComponent explodeComponent = bombEnemy.getComponent(ExplodeComponent.class);

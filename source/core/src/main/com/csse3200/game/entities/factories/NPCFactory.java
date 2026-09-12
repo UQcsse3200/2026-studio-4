@@ -81,7 +81,7 @@ public class NPCFactory {
    * @param target entity to chase
    * @return entity
    */
-  public static Entity createBombEnemy(Entity target, String skin) {
+  public static Entity createBombEnemy(Entity target, String skin, float fuseTime) {
     Entity bombEnemy = createBaseNPC();
     BombEnemyConfig config = configs.bombEnemy;
 
@@ -103,7 +103,7 @@ public class NPCFactory {
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
         .addComponent(aiComponent)
         .addComponent(animator)
-        .addComponent(new ExplodeComponent(target))
+        .addComponent(new ExplodeComponent(target, fuseTime))
         .addComponent(new EnemyAnimationController());
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
 

@@ -194,39 +194,11 @@ move
   index: 25
 attack
   rotate: false
-  xy: 92, 132
-  size: 44, 39
-  orig: 44, 39
+  xy: 46, 132
+  size: 42, 44
+  orig: 42, 44
   offset: 0, 0
-  index: 0
-attack
-  rotate: false
-  xy: 138, 132
-  size: 44, 39
-  orig: 44, 39
-  offset: 0, 0
-  index: 1
-attack
-  rotate: false
-  xy: 184, 132
-  size: 44, 39
-  orig: 44, 39
-  offset: 0, 0
-  index: 2
-attack
-  rotate: false
-  xy: 230, 132
-  size: 44, 39
-  orig: 44, 39
-  offset: 0, 0
-  index: 3
-attack
-  rotate: false
-  xy: 276, 132
-  size: 44, 39
-  orig: 44, 39
-  offset: 0, 0
-  index: 4
+  index: 25
 chase
   rotate: false
   xy: 0, 0

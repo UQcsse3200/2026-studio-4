@@ -52,6 +52,7 @@ public class EnemyAnimationController extends Component {
   private void animatePause() {
     animator.startAnimation("default");
   }
+
   private void animateFuse() {
     animator.startAnimation("fuse");
   }

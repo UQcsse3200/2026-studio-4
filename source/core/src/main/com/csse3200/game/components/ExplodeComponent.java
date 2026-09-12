@@ -8,16 +8,16 @@ import com.csse3200.game.physics.components.HitboxComponent;
 
 public class ExplodeComponent extends Component {
 
-  private static final float FUSE_TIME = 2f;
-
   private final Entity player;
   private HitboxComponent hitboxComponent;
 
   private Timer.Task explosionTask;
   private boolean playerTouchingBomb = false;
+  float fuseTime;
 
-  public ExplodeComponent(Entity player) {
+  public ExplodeComponent(Entity player, float fuseTime) {
     this.player = player;
+    this.fuseTime = fuseTime;
   }
 
   @Override
@@ -39,8 +39,7 @@ public class ExplodeComponent extends Component {
       return;
     }
 
-    Entity collidedEntity =
-            ((BodyUserData) other.getBody().getUserData()).entity;
+    Entity collidedEntity = ((BodyUserData) other.getBody().getUserData()).entity;
 
     if (collidedEntity != player || playerTouchingBomb) {
       return;
@@ -51,16 +50,18 @@ public class ExplodeComponent extends Component {
     entity.getEvents().trigger("fuseStarted");
 
     explosionTask =
-            Timer.schedule(
-                    new Timer.Task() {
-                      @Override
-                      public void run() {
-                        if (playerTouchingBomb) {
-                          damagePlayer();
-                        }
-                      }
-                    },
-                    FUSE_TIME);
+        Timer.schedule(
+            new Timer.Task() {
+              @Override
+              public void run() {
+                if (playerTouchingBomb) {
+                  damagePlayer();
+                } else {
+                  entity.getComponent(CombatStatsComponent.class).setHealth(0);
+                }
+              }
+            },
+            fuseTime);
   }
 
   private void onCollisionEnd(Fixture me, Fixture other) {
@@ -72,27 +73,17 @@ public class ExplodeComponent extends Component {
       return;
     }
 
-    Entity collidedEntity =
-            ((BodyUserData) other.getBody().getUserData()).entity;
+    Entity collidedEntity = ((BodyUserData) other.getBody().getUserData()).entity;
 
     if (collidedEntity != player) {
       return;
     }
 
     playerTouchingBomb = false;
-
-    if (explosionTask != null) {
-      explosionTask.cancel();
-      explosionTask = null;
-    }
-
-    // Optional: stop the ticking animation.
-    entity.getEvents().trigger("fuseCancelled");
   }
 
   private void damagePlayer() {
-    CombatStatsComponent playerStats =
-            player.getComponent(CombatStatsComponent.class);
+    CombatStatsComponent playerStats = player.getComponent(CombatStatsComponent.class);
 
     if (playerStats != null) {
       playerStats.takeDamage(entity.getComponent(CombatStatsComponent.class).getBaseAttack());

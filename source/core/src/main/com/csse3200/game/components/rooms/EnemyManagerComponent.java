@@ -51,7 +51,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case GIANT:
         return NPCFactory.createGiantEnemy(target, "images/bombEnemy.atlas");
       case BOMB:
-        return NPCFactory.createBombEnemy(target, "images/bombEnemy.atlas");
+        return NPCFactory.createBombEnemy(target, "images/bombEnemy.atlas", 2f);
       case BEETLE:
         return NPCFactory.createChaseEnemy(target, true, "images/chaseEnemy.atlas");
       case MEDUSA:
