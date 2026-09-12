@@ -19,6 +19,15 @@ import java.util.Map;
  * PlayerAbility subclass, so adding an ability is a registration rather than a change here.
  */
 public class PlayerAbilitiesComponent extends Component {
+  /** Triggered with the ability name when one starts. */
+  public static final String ABILITY_USED = "abilityUsed";
+
+  /** Triggered with the ability name once one expires or is removed. */
+  public static final String ABILITY_ENDED = "abilityEnded";
+
+  /** Triggered with the ability name and a reason when a cast is refused. */
+  public static final String ABILITY_FAILED = "abilityFailed";
+
   private final Map<Class<? extends PlayerAbility>, PlayerAbility> abilities =
       new LinkedHashMap<>();
   private final Map<Class<? extends PlayerAbility>, Long> readyAt = new LinkedHashMap<>();
@@ -104,16 +113,16 @@ public class PlayerAbilitiesComponent extends Component {
     }
     if (!isAlive()) {
       if (!disposed && entity != null && (effects == null || !effects.isDisposed())) {
-        entity.getEvents().trigger("abilityFailed", ability.getName(), "Player is not alive");
+        entity.getEvents().trigger(ABILITY_FAILED, ability.getName(), "Player is not alive");
       }
       return false;
     }
     if (!ability.isUnlocked()) {
-      entity.getEvents().trigger("abilityFailed", ability.getName(), "Ability is locked");
+      entity.getEvents().trigger(ABILITY_FAILED, ability.getName(), "Ability is locked");
       return false;
     }
     if (time.getTime() < readyAt.getOrDefault(type, 0L)) {
-      entity.getEvents().trigger("abilityFailed", ability.getName(), "Ability is on cooldown");
+      entity.getEvents().trigger(ABILITY_FAILED, ability.getName(), "Ability is on cooldown");
       return false;
     }
     start(ability);
@@ -139,7 +148,7 @@ public class PlayerAbilitiesComponent extends Component {
   private void start(PlayerAbility ability) {
     ability.activate();
     readyAt.put(ability.getClass(), time.getTime() + ability.getCooldown());
-    entity.getEvents().trigger("abilityUsed", ability.getName());
+    entity.getEvents().trigger(ABILITY_USED, ability.getName());
   }
 
   private boolean isAlive() {
@@ -168,7 +177,7 @@ public class PlayerAbilitiesComponent extends Component {
 
   private void onEnded(PlayerAbility ability) {
     update();
-    entity.getEvents().trigger("abilityEnded", ability.getName());
+    entity.getEvents().trigger(ABILITY_ENDED, ability.getName());
   }
 
   @Override
