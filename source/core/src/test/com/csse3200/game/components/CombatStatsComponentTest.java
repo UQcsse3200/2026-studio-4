@@ -4,14 +4,323 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.player.abilities.Invisibility;
+import com.csse3200.game.components.player.abilities.LastStand;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.components.ColliderComponent;
+import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.services.GameTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class CombatStatsComponentTest {
+  @Test
+  void shouldClassifyHostileBodiesAndProjectilesUsingLayerMasks() {
+    assertFalse(CombatStatsComponent.isHostileAttacker(null));
+    assertFalse(CombatStatsComponent.isHostileAttacker(new Entity()));
+    for (short layer :
+        new short[] {PhysicsLayer.NPC, (short) (PhysicsLayer.NPC | PhysicsLayer.WEAPON)}) {
+      assertTrue(
+          CombatStatsComponent.isHostileAttacker(
+              new Entity().addComponent(new HitboxComponent().setLayer(layer))));
+      assertTrue(
+          CombatStatsComponent.isHostileAttacker(
+              new Entity().addComponent(new ColliderComponent().setLayer(layer))));
+    }
+    for (short layer :
+        new short[] {PhysicsLayer.PLAYER, (short) (PhysicsLayer.PLAYER | PhysicsLayer.NPC)}) {
+      assertTrue(
+          CombatStatsComponent.isHostileAttacker(
+              new Entity().addComponent(new TouchAttackComponent(layer))));
+    }
+    Entity friendlyWeapon =
+        new Entity()
+            .addComponent(new TouchAttackComponent(PhysicsLayer.NPC))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.WEAPON))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.PLAYER));
+    assertFalse(CombatStatsComponent.isHostileAttacker(friendlyWeapon));
+  }
+
+  @Test
+  void shouldBlockOnlyHostileDamageDuringInvisibilityAndResumeAtExpiry() {
+    GameTime time = mock(GameTime.class);
+    CombatStatsComponent combat = new CombatStatsComponent(100, 11);
+    PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
+    Entity player =
+        new Entity()
+            .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
+    player.create();
+    List<String> events = new ArrayList<>();
+    player.getEvents().addListener("damageBlocked", () -> events.add("blocked"));
+    player.getEvents().addListener("hitReaction", (Entity source) -> events.add("reaction"));
+    player
+        .getEvents()
+        .addListener(
+            "damageTaken",
+            (Entity source, Integer lost, Integer remaining) -> events.add("damage:" + lost));
+    Entity hostile = new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
+    assertTrue(abilities.tryActivate(Invisibility.class));
+
+    combat.takeDamage(10, hostile);
+    assertEquals(100, combat.getHealth());
+    assertEquals(List.of("blocked"), events);
+    events.clear();
+    combat.takeDamage(7, new Entity());
+    combat.takeDamage(3);
+    assertEquals(90, combat.getHealth());
+    assertEquals(List.of("damage:7", "reaction", "damage:3", "reaction"), events);
+
+    when(time.getTime()).thenReturn(Invisibility.DURATION_MS);
+    events.clear();
+    combat.takeDamage(10, hostile);
+    assertEquals(80, combat.getHealth());
+    assertEquals(List.of("damage:10", "reaction"), events);
+  }
+
+  @Test
+  void shouldReportActualScaledAndFloorLimitedLossWithOriginalAttacker() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 0);
+    Entity target = new Entity().addComponent(combat);
+    Entity projectile = new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
+    List<DamageEvent> events = new ArrayList<>();
+    target
+        .getEvents()
+        .addListener(
+            "damageTaken",
+            (Entity source, Integer lost, Integer remaining) -> {
+              assertEquals(remaining.intValue(), combat.getHealth());
+              events.add(new DamageEvent(source, lost, remaining));
+            });
+    combat.setIncomingDamageMultiplier(0.5f);
+    combat.setMinimumHealth(90);
+
+    combat.takeDamage(5, projectile);
+    combat.takeDamage(100, projectile);
+    combat.takeDamage(100, projectile);
+
+    assertEquals(
+        List.of(new DamageEvent(projectile, 3, 97), new DamageEvent(projectile, 7, 90)), events);
+  }
+
+  @Test
+  void shouldEmitDeathBeforeDamageAndReportOnlyRemainingHealthOnOverkill() {
+    CombatStatsComponent combat = new CombatStatsComponent(10, 0);
+    Entity target = new Entity().addComponent(combat);
+    List<String> order = new ArrayList<>();
+    List<DamageEvent> damage = new ArrayList<>();
+    target
+        .getEvents()
+        .addListener("updateHealth", (Integer health) -> order.add("health:" + health));
+    target.getEvents().addListener("entityDied", () -> order.add("death"));
+    target
+        .getEvents()
+        .addListener(
+            "damageTaken",
+            (Entity source, Integer lost, Integer remaining) -> {
+              order.add("damage");
+              damage.add(new DamageEvent(source, lost, remaining));
+            });
+    target.getEvents().addListener("hitReaction", (Entity source) -> order.add("reaction"));
+
+    combat.takeDamage(100);
+    assertEquals(List.of("health:0", "death", "damage", "reaction"), order);
+    assertEquals(List.of(new DamageEvent(null, 10, 0)), damage);
+    combat.takeDamage(100);
+    assertEquals(1, damage.size());
+    assertEquals(1, order.stream().filter("death"::equals).count());
+  }
+
+  @Test
+  void shouldNotReportDamageForSettersNonpositiveOrBlockedDamage() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 0);
+    Entity target = new Entity().addComponent(combat);
+    List<String> events = new ArrayList<>();
+    target
+        .getEvents()
+        .addListener(
+            "damageTaken",
+            (Entity source, Integer lost, Integer remaining) -> events.add("damage"));
+    target.getEvents().addListener("hitReaction", (Entity source) -> events.add("reaction"));
+    target.getEvents().addListener("damageBlocked", () -> events.add("blocked"));
+    combat.setHealth(80);
+    combat.addHealth(-10);
+    combat.takeDamage(0);
+    combat.takeDamage(-10);
+    assertTrue(events.isEmpty());
+
+    combat.setInvulnerable(true);
+    combat.takeDamage(10);
+    assertEquals(List.of("blocked"), events);
+    combat.setInvulnerable(false);
+    combat.setIncomingDamageMultiplier(0.1f);
+    events.clear();
+    combat.takeDamage(1);
+    assertEquals(List.of("blocked", "reaction"), events);
+    assertEquals(70, combat.getHealth());
+  }
+
+  @Test
+  void shouldAmplifyMovementSpeedOnlyWhileLastStandIsActive() {
+    GameTime time = mock(GameTime.class);
+    when(time.getTime()).thenReturn(1_000L);
+    CombatStatsComponent combat = new CombatStatsComponent(100, 10, 4f, 2f);
+    PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
+    Entity player =
+        new Entity()
+            .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
+    player.create();
+
+    assertEquals(4f, combat.getEffectiveMovementSpeed());
+
+    abilities.unlock(LastStand.class);
+    combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
+
+    assertEquals(6f, combat.getEffectiveMovementSpeed());
+    assertEquals(4f, combat.getMovementSpeed());
+
+    when(time.getTime()).thenReturn(1_000L + LastStand.DURATION_MS);
+
+    assertEquals(4f, combat.getEffectiveMovementSpeed());
+    assertEquals(4f, combat.getMovementSpeed());
+  }
+
+  @Test
+  void shouldApplyLastStandToEffectiveStatsAndHitsWithoutMutatingRawBuffs() {
+    GameTime time = mock(GameTime.class);
+    CombatStatsComponent combat = new CombatStatsComponent(100, 11, 3f, 2f);
+    PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
+    Entity player =
+        new Entity()
+            .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
+    player.create();
+    abilities.unlock(LastStand.class);
+    assertEquals(11, combat.getEffectiveBaseAttack());
+    assertEquals(2f, combat.getEffectiveAttackSpeed());
+    assertEquals(3f, combat.getEffectiveMovementSpeed());
+    combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
+
+    assertEquals(17, combat.getEffectiveBaseAttack());
+    assertEquals(3f, combat.getEffectiveAttackSpeed());
+    assertEquals(4.5f, combat.getEffectiveMovementSpeed());
+    List<Integer> attackUpdates = new ArrayList<>();
+    player
+        .getEvents()
+        .addListener("updateBaseAttack", (EventListener1<Integer>) attackUpdates::add);
+    combat.addBaseAttack(2);
+    combat.addAttackSpeed(2f);
+    assertEquals(20, combat.getEffectiveBaseAttack());
+    assertEquals(6f, combat.getEffectiveAttackSpeed());
+    assertEquals(13, combat.getBaseAttack());
+    assertEquals(4f, combat.getAttackSpeed());
+    assertEquals(3f, combat.getMovementSpeed());
+    // The raw stat keeps the charm's +2, while the event reports what the player now hits for.
+    assertEquals(List.of(20), attackUpdates);
+
+    CombatStatsComponent victim = new CombatStatsComponent(100, 0);
+    Entity target = new Entity().addComponent(victim);
+    List<DamageEvent> damage = new ArrayList<>();
+    target
+        .getEvents()
+        .addListener(
+            "damageTaken",
+            (Entity source, Integer lost, Integer remaining) ->
+                damage.add(new DamageEvent(source, lost, remaining)));
+    victim.hit(combat);
+    assertEquals(List.of(new DamageEvent(player, 20, 80)), damage);
+
+    when(time.getTime()).thenReturn(LastStand.DURATION_MS);
+    assertEquals(13, combat.getEffectiveBaseAttack());
+    assertEquals(4f, combat.getEffectiveAttackSpeed());
+    // Expiry republishes, so a listener falls back to the raw stat without watching the ability.
+    assertEquals(List.of(20, 13), attackUpdates);
+  }
+
+  @Test
+  void shouldUseRawEffectiveStatsWithoutEntityOrAbilities() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 11, 3f, 2f);
+    assertEquals(11, combat.getEffectiveBaseAttack());
+    assertEquals(2f, combat.getEffectiveAttackSpeed());
+    new Entity().addComponent(combat);
+    assertEquals(11, combat.getEffectiveBaseAttack());
+    assertEquals(2f, combat.getEffectiveAttackSpeed());
+  }
+
+  @Test
+  void shouldRepublishEffectiveStatEventsWhenLastStandStartsAndExpires() {
+    GameTime time = mock(GameTime.class);
+    when(time.getTime()).thenReturn(1_000L);
+    CombatStatsComponent combat = new CombatStatsComponent(100, 10, 4f, 2f);
+    PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
+    Entity player =
+        new Entity()
+            .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
+    player.create();
+
+    List<Integer> attack = new ArrayList<>();
+    List<Float> movement = new ArrayList<>();
+    List<Float> attackSpeed = new ArrayList<>();
+    player.getEvents().addListener("updateBaseAttack", (EventListener1<Integer>) attack::add);
+    player.getEvents().addListener("updateMovementSpeed", (EventListener1<Float>) movement::add);
+    player.getEvents().addListener("updateAttackSpeed", (EventListener1<Float>) attackSpeed::add);
+
+    abilities.unlock(LastStand.class);
+    combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
+
+    // A stat listener sees the buff on the stat event it already subscribes to, with no raw change.
+    assertEquals(List.of(15), attack);
+    assertEquals(List.of(6f), movement);
+    assertEquals(List.of(3f), attackSpeed);
+    assertEquals(10, combat.getBaseAttack());
+    assertEquals(4f, combat.getMovementSpeed());
+    assertEquals(2f, combat.getAttackSpeed());
+
+    when(time.getTime()).thenReturn(1_000L + LastStand.DURATION_MS);
+    player.update();
+
+    assertEquals(List.of(15, 10), attack);
+    assertEquals(List.of(6f, 4f), movement);
+    assertEquals(List.of(3f, 2f), attackSpeed);
+  }
+
+  private record DamageEvent(Entity attacker, int healthLost, int remainingHealth) {}
+
+  @Test
+  void shouldKeepLethalDamageSnapshotWhenDeathListenerRevivesTarget() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 0);
+    Entity target = new Entity().addComponent(combat);
+    List<DamageEvent> damage = new ArrayList<>();
+    target.getEvents().addListener("entityDied", () -> combat.setHealth(100));
+    target
+        .getEvents()
+        .addListener(
+            "damageTaken",
+            (Entity source, Integer lost, Integer remaining) ->
+                damage.add(new DamageEvent(source, lost, remaining)));
+
+    combat.takeDamage(1000);
+
+    assertEquals(100, combat.getHealth());
+    assertEquals(List.of(new DamageEvent(null, 100, 0)), damage);
+  }
+
   @Test
   void shouldSetGetHealth() {
     CombatStatsComponent combat = new CombatStatsComponent(100, 20);

@@ -32,6 +32,11 @@ public class TouchAttackComponent extends Component {
     this.targetLayer = targetLayer;
   }
 
+  /** Returns the victim layer mask, including PLAYER for hostile projectiles. */
+  public short getTargetLayer() {
+    return targetLayer;
+  }
+
   /**
    * Create a component which attacks entities on collision, with knockback.
    *

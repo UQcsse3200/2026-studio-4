@@ -3,6 +3,7 @@ package com.csse3200.game.components.tasks;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -48,6 +49,10 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
 
   @Override
   public void update() {
+    if (StatusEffectsControllerComponent.isUntargetable(target)) {
+      movementTask.stop();
+      return;
+    }
     movementTask.setTarget(target.getPosition());
     movementTask.update();
     if (movementTask.getStatus() != Status.ACTIVE) {
@@ -63,6 +68,13 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
 
   @Override
   public int getPriority() {
+    if (StatusEffectsControllerComponent.isUntargetable(target)) {
+      // The scheduler may leave the current task running when all priorities are negative.
+      if (status == Status.ACTIVE) {
+        movementTask.stop();
+      }
+      return -1;
+    }
     if (status == Status.ACTIVE) {
       return getActivePriority();
     }

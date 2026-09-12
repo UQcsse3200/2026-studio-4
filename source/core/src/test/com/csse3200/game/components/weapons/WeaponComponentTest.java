@@ -4,16 +4,70 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.player.abilities.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.services.GameTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class WeaponComponentTest {
+  @Test
+  void shouldUseLiveLastStandDamageAndCooldownWithoutChangingWeaponOrRawStats() {
+    GameTime time = mock(GameTime.class);
+    PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
+    CombatStatsComponent combat = new CombatStatsComponent(100, 11, 3f, 2f);
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.6f, 0.5f, 0f);
+    RecordingWeapon weapon = new RecordingWeapon();
+    Entity wielder =
+        new Entity()
+            .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities)
+            .addComponent(stats)
+            .addComponent(weapon);
+    wielder.create();
+    abilities.unlock(LastStand.class);
+    Vector2 direction = new Vector2(1f, 0f);
+    wielder.getEvents().trigger("weaponAttack", direction);
+    assertEquals(6, weapon.lastDamage);
+    assertEquals(0.3f, stats.getRemainingCooldown(), 1e-6f);
+
+    combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
+    assertFalse(weapon.attack(Vector2.Zero, direction));
+    assertEquals(0.3f, stats.getRemainingCooldown(), 1e-6f);
+    stats.update(0.3f);
+    wielder.getEvents().trigger("weaponAttack", direction);
+    assertEquals(9, weapon.lastDamage); // round(round(11 * 1.5) * 0.5)
+    assertEquals(0.2f, stats.getRemainingCooldown(), 1e-6f);
+
+    combat.addBaseAttack(2);
+    combat.addAttackSpeed(2f);
+    stats.update(0.2f);
+    assertTrue(weapon.attack(Vector2.Zero, direction));
+    assertEquals(10, weapon.lastDamage);
+    assertEquals(0.1f, stats.getRemainingCooldown(), 1e-6f);
+    when(time.getTime()).thenReturn(LastStand.DURATION_MS);
+    stats.update(0.1f);
+    assertTrue(weapon.attack(Vector2.Zero, direction));
+    assertEquals(7, weapon.lastDamage);
+    assertEquals(0.15f, stats.getRemainingCooldown(), 1e-6f);
+    assertEquals(13, combat.getBaseAttack());
+    assertEquals(4f, combat.getAttackSpeed());
+    assertEquals(3f, combat.getMovementSpeed());
+    assertEquals(4, weapon.createAttackCalls);
+  }
+
   @Test
   void shouldCallCreateAttackWhenReady() {
     WeaponStatsComponent stats = new WeaponStatsComponent(0.5f, 1f, 0f);
@@ -151,12 +205,14 @@ class WeaponComponentTest {
     int createAttackCalls;
     Vector2 lastOrigin;
     Vector2 lastDirection;
+    int lastDamage;
 
     @Override
     protected void createAttack(Vector2 origin, Vector2 direction) {
       createAttackCalls++;
       lastOrigin = origin;
       lastDirection = direction;
+      lastDamage = resolveHitboxDamage();
     }
   }
 }

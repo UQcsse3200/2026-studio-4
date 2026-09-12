@@ -1,6 +1,9 @@
 package com.csse3200.game.components;
 
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.components.ColliderComponent;
+import com.csse3200.game.physics.components.HitboxComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,8 +123,17 @@ public class CombatStatsComponent extends Component {
     return baseAttack;
   }
 
+  /** Returns base attack with active effects applied, leaving charm-adjusted raw stats alone. */
+  public int getEffectiveBaseAttack() {
+    float multiplier = getStatMultiplier();
+    return multiplier == 1f ? baseAttack : Math.round(baseAttack * multiplier);
+  }
+
   /**
    * Sets the entity's attack damage. Attack damage has a minimum bound of 0.
+   *
+   * <p>The {@code updateBaseAttack} event carries {@link #getEffectiveBaseAttack()}, so listeners
+   * render what the entity actually hits for without consulting any ability.
    *
    * @param attack Attack damage
    */
@@ -129,7 +141,7 @@ public class CombatStatsComponent extends Component {
     if (attack >= 0) {
       this.baseAttack = attack;
       if (entity != null) {
-        entity.getEvents().trigger("updateBaseAttack", this.baseAttack);
+        entity.getEvents().trigger("updateBaseAttack", getEffectiveBaseAttack());
       }
     } else {
       logger.error("Can not set base attack to a negative attack value");
@@ -154,8 +166,16 @@ public class CombatStatsComponent extends Component {
     return movementSpeed;
   }
 
+  /** Returns movement speed with active effects applied, leaving raw stats alone. */
+  public float getEffectiveMovementSpeed() {
+    return movementSpeed * getStatMultiplier();
+  }
+
   /**
    * Sets the entity's movement speed. Movement Speed has a minimum bound of 0.
+   *
+   * <p>The {@code updateMovementSpeed} event carries {@link #getEffectiveMovementSpeed()}, so
+   * listeners render what the entity actually moves at without consulting any ability.
    *
    * @param newSpeed new movement speed
    */
@@ -163,7 +183,7 @@ public class CombatStatsComponent extends Component {
     if (newSpeed >= 0) {
       this.movementSpeed = newSpeed;
       if (entity != null) {
-        entity.getEvents().trigger("updateMovementSpeed", this.movementSpeed);
+        entity.getEvents().trigger("updateMovementSpeed", getEffectiveMovementSpeed());
       }
     } else {
       logger.error("Can not set movement speed of entity to a negative value");
@@ -188,8 +208,26 @@ public class CombatStatsComponent extends Component {
     return attackSpeed;
   }
 
+  /** Returns attack speed with active effects applied, leaving raw stats alone. */
+  public float getEffectiveAttackSpeed() {
+    return attackSpeed * getStatMultiplier();
+  }
+
+  /**
+   * Returns what the entity's own status effects scale its stats by, or 1 when there are none. The
+   * effects say what they do; nothing here knows which ability, if any, put them there.
+   */
+  private float getStatMultiplier() {
+    StatusEffectsControllerComponent effects =
+        entity == null ? null : entity.getComponent(StatusEffectsControllerComponent.class);
+    return effects == null ? 1f : effects.getStatMultiplier();
+  }
+
   /**
    * Sets the entity's attack speed. Attack Speed has a minimum bound of 0.
+   *
+   * <p>The {@code updateAttackSpeed} event carries {@link #getEffectiveAttackSpeed()}, so listeners
+   * render what the entity actually attacks at without consulting any ability.
    *
    * @param newSpeed entity's new attack speed
    */
@@ -197,7 +235,7 @@ public class CombatStatsComponent extends Component {
     if (newSpeed >= 0) {
       this.attackSpeed = newSpeed;
       if (entity != null) {
-        entity.getEvents().trigger("updateAttackSpeed", this.attackSpeed);
+        entity.getEvents().trigger("updateAttackSpeed", getEffectiveAttackSpeed());
       }
     } else {
       logger.error("Can not set attack speed of entity to a negative value");
@@ -214,6 +252,24 @@ public class CombatStatsComponent extends Component {
   }
 
   /**
+   * Re-emits the base attack, movement speed and attack speed events carrying the current effective
+   * values.
+   *
+   * <p>The raw stats do not change on their own when a multiplier such as Last Stand starts or
+   * stops applying, so no setter fires and listeners would otherwise keep showing the pre-buff
+   * numbers. Whatever owns the multiplier calls this instead, which keeps every listener on the one
+   * existing stat event per stat rather than needing to know which abilities exist.
+   */
+  public void notifyEffectiveStatsChanged() {
+    if (entity == null) {
+      return;
+    }
+    entity.getEvents().trigger("updateBaseAttack", getEffectiveBaseAttack());
+    entity.getEvents().trigger("updateMovementSpeed", getEffectiveMovementSpeed());
+    entity.getEvents().trigger("updateAttackSpeed", getEffectiveAttackSpeed());
+  }
+
+  /**
    * Core method for dealing raw damage directly. Handles health reduction, hit reaction, and death
    * checks. Compatible with Task 2 ticket spec.
    *
@@ -225,16 +281,21 @@ public class CombatStatsComponent extends Component {
 
   /**
    * Core method for dealing raw damage directly. Handles health reduction, hit reaction, and death
-   * checks. Compatible with Task 2 ticket spec.
+   * checks. Emits {@code damageTaken(Entity attacker, int healthLost, int remainingHealth)} only
+   * for actual health loss, after applying damage. Direct health setters do not emit this event.
    *
    * @param damage Amount of damage to deal
+   * @param attacker original damage source, including projectile entities; null for unattributed
+   *     damage
    */
   public void takeDamage(int damage, Entity attacker) {
     if (damage <= 0) {
       return;
     }
 
-    if (invulnerable) {
+    if (invulnerable
+        || (isHostileAttacker(attacker)
+            && StatusEffectsControllerComponent.isUntargetable(entity))) {
       triggerDamageBlocked();
       return;
     }
@@ -248,8 +309,28 @@ public class CombatStatsComponent extends Component {
       return;
     }
 
+    int previousHealth = health;
+    int remainingHealth = Math.clamp(newHealth, 0, maxHealth);
     setHealth(newHealth);
+    if (entity != null && remainingHealth < previousHealth) {
+      entity
+          .getEvents()
+          .trigger("damageTaken", attacker, previousHealth - remainingHealth, remainingHealth);
+    }
     applyHitreaction(attacker);
+  }
+
+  /** Identifies enemy bodies and attack entities, preserving projectiles as the actual attacker. */
+  public static boolean isHostileAttacker(Entity attacker) {
+    if (attacker == null) {
+      return false;
+    }
+    TouchAttackComponent touch = attacker.getComponent(TouchAttackComponent.class);
+    HitboxComponent hitbox = attacker.getComponent(HitboxComponent.class);
+    ColliderComponent collider = attacker.getComponent(ColliderComponent.class);
+    return (touch != null && PhysicsLayer.contains(touch.getTargetLayer(), PhysicsLayer.PLAYER))
+        || (hitbox != null && PhysicsLayer.contains(hitbox.getLayer(), PhysicsLayer.NPC))
+        || (collider != null && PhysicsLayer.contains(collider.getLayer(), PhysicsLayer.NPC));
   }
 
   /**
@@ -310,7 +391,7 @@ public class CombatStatsComponent extends Component {
    */
   public void hit(CombatStatsComponent attacker) {
     if (attacker != null) {
-      takeDamage(attacker.getBaseAttack(), attacker.getEntity());
+      takeDamage(attacker.getEffectiveBaseAttack(), attacker.getEntity());
     }
   }
 

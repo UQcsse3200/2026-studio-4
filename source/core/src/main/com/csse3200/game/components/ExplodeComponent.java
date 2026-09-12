@@ -42,7 +42,8 @@ public class ExplodeComponent extends Component {
    * Handles the start of a collision involving this entity.
    *
    * <p>Collisions involving a different fixture are ignored. The other fixture's body user data is
-   * then checked to determine whether it belongs to the configured player entity.
+   * then checked to determine whether it belongs to the configured player entity. An invisible
+   * player is undetectable, so brushing past one neither detonates nor kills this entity.
    *
    * @param me the fixture belonging to this entity
    * @param other the fixture belonging to the other colliding entity
@@ -60,7 +61,7 @@ public class ExplodeComponent extends Component {
 
     Entity collidedEntity = ((BodyUserData) other.getBody().getUserData()).entity;
 
-    if (collidedEntity == player) {
+    if (collidedEntity == player && !StatusEffectsControllerComponent.isUntargetable(player)) {
       entity.getComponent(CombatStatsComponent.class).setHealth(0);
     }
   }

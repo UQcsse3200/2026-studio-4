@@ -56,6 +56,7 @@ public class BowWeaponComponent extends WeaponComponent {
             .damage(resolveHitboxDamage())
             .knockback(stats.getKnockback())
             .texture(TEXTURE)
+            .visualSource(entity)
             .visualScale(new Vector2(SPRITE_SIZE, SPRITE_SIZE))
             .rotation(dir.angleDeg())
             .rotationOffset(SPRITE_ANGLE_OFFSET);

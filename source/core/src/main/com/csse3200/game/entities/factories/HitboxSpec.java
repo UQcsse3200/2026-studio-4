@@ -19,6 +19,7 @@ public class HitboxSpec {
   private int damage;
   private float knockback;
   private Entity owner;
+  private Entity visualSource;
   private Vector2 localOffset = new Vector2();
   private String texturePath;
   private Vector2 visualScale;
@@ -161,6 +162,24 @@ public class HitboxSpec {
   public HitboxSpec owner(Entity owner) {
     this.owner = owner;
     return this;
+  }
+
+  /**
+   * Inherit current player ability appearance without changing hitbox movement.
+   *
+   * @param visualSource wielder supplying appearance, or null for no inherited appearance
+   * @return this spec
+   */
+  public HitboxSpec visualSource(Entity visualSource) {
+    this.visualSource = visualSource;
+    return this;
+  }
+
+  /**
+   * @return appearance source, independent of the follow owner, or null
+   */
+  public Entity getVisualSource() {
+    return visualSource;
   }
 
   /**
