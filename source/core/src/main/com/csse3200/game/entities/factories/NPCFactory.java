@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.*;
 import com.csse3200.game.components.npc.EnemyAnimationController;
+import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.components.npc.FloatingDemonAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
@@ -72,7 +73,8 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(animator)
         .addComponent(new ExplodeComponent(target))
-        .addComponent(new EnemyAnimationController());
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f));
 
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
 
@@ -111,7 +113,8 @@ public class NPCFactory {
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
         .addComponent(aiComponent)
         .addComponent(animator)
-        .addComponent(new EnemyAnimationController());
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f));
 
     if (shouldSplit) {
       chaseEnemy.addComponent(new SplitComponent(target, skin));
@@ -176,7 +179,8 @@ public class NPCFactory {
             .addComponent(new EnemyDeathComponent(true))
             .addComponent(aiComponent)
             .addComponent(animator)
-            .addComponent(new FloatingDemonAnimationController());
+            .addComponent(new FloatingDemonAnimationController())
+            .addComponent(new EnemyStatDisplay(1.5f));
 
     animator.scaleEntity();
     demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);

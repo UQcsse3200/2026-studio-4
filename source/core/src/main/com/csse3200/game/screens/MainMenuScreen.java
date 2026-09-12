@@ -22,7 +22,7 @@ public class MainMenuScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainMenuScreen.class);
   private final GdxGame game;
   private final Renderer renderer;
-  private static final String[] mainMenuTextures = {"images/box_boy_title.png"};
+  private static final String[] mainMenuTextures = {"CutScreens/main_menu.jpg"};
 
   public MainMenuScreen(GdxGame game) {
     this.game = game;

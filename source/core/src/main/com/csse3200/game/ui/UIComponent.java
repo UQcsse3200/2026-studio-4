@@ -1,6 +1,7 @@
 package com.csse3200.game.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.csse3200.game.rendering.RenderComponent;
@@ -17,6 +18,8 @@ public abstract class UIComponent extends RenderComponent implements Renderable 
   @Override
   public void create() {
     super.create();
+    skin.addRegions(new TextureAtlas(Gdx.files.internal("hud_items/skin/skin.atlas")));
+    skin.load(Gdx.files.internal("hud_items/skin/skin.json"));
     stage = ServiceLocator.getRenderService().getStage();
   }
 

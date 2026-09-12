@@ -17,54 +17,16 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
 	}
 }
 com.badlogic.gdx.graphics.Color: {
-	black: {
-		r: 0
-		g: 0
-		b: 0
-		a: 1
-	}
-	color: {
-		r: 0.3372549
-		g: 0.8
-		b: 0.44705883
-		a: 1
-	}
-	gray: {
-		r: 0.5
-		g: 0.5
-		b: 0.5
-		a: 1
-	}
-	highlight: {
-		r: 0.42156863
-		g: 1
-		b: 0.5552286
-		a: 1
-	}
-	pressed: {
-		r: 0.2529412
-		g: 0.6
-		b: 0.33313715
-		a: 1
-	}
-	selection: {
-		r: 0.22745098
-		g: 0.59607846
-		b: 0.85882354
-		a: 1
-	}
-	white: {
-		r: 1
-		g: 1
-		b: 1
-		a: 1
-	}
-	window: {
-		r: 0.76862746
-		g: 0.4509804
-		b: 0
-		a: 1
-	}
+	white: { hex: "ffffff" },
+	black: { hex: "000000" },
+	red: { hex: "ff0000" },
+	gray: { hex: "808080" },
+	color: { hex: "e9c873" },
+	highlight: { hex: "ffe6a3" },
+	pressed: { hex: "b3893f" },
+	selection: { hex: "5588cc" },
+	window: { hex: "241a12" },
+	brown: {hex: "2e1503"}
 }
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	button-c: {
@@ -290,8 +252,8 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle: {
 	default: {
 		font: button
-		fontColor: white
-		downFontColor: white
+		fontColor: black
+		downFontColor: black
 		overFontColor: gray
 		up: button-c
 		down: button-p
@@ -343,14 +305,14 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	}
 	statDisplay: {
 		font: font,
-		fontColor: white
+		fontColor: brown
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
 	default: {
 		font: font
-		fontColorSelected: white
-		fontColorUnselected: white
+		fontColorSelected: black
+		fontColorUnselected: black
 		selection: selection
 		background: list-c
 	}
@@ -424,8 +386,8 @@ com.badlogic.gdx.scenes.scene2d.ui.SplitPane$SplitPaneStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	default: {
 		font: button
-		fontColor: white
-		downFontColor: white
+		fontColor: black
+		downFontColor: black
 		overFontColor: gray
 		up: button-c
 		down: button-p
