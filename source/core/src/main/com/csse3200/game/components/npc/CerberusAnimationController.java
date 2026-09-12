@@ -5,6 +5,7 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 public class CerberusAnimationController extends Component {
+  private static final String ANIM_MOVE = "move";
   private AnimationRenderComponent animator;
   private boolean dying = false;
 
@@ -19,7 +20,7 @@ public class CerberusAnimationController extends Component {
     entity.getEvents().addListener("attackStart", this::animateAttack);
     entity.getEvents().addListener("enragePhaseStarted", this::animateEnrage);
     entity.getEvents().addListener("dieAnimation", this::animateDeath);
-    animator.startAnimation("move");
+    animator.startAnimation(ANIM_MOVE);
   }
 
   @Override
@@ -31,20 +32,20 @@ public class CerberusAnimationController extends Component {
     if (!dying && animator.isFinished()) {
       String currentAnim = animator.getCurrentAnimation();
       if ("attack".equals(currentAnim) || "roar".equals(currentAnim)) {
-        animator.startAnimation("move");
+        animator.startAnimation(ANIM_MOVE);
       }
     }
   }
 
   private void animateChase() {
     if (!dying) {
-      animator.startAnimation("move");
+      animator.startAnimation(ANIM_MOVE);
     }
   }
 
   private void animatePause() {
     if (!dying) {
-      animator.startAnimation("move");
+      animator.startAnimation(ANIM_MOVE);
     }
   }
 

@@ -13,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class HeadAttachmentComponentTest {
+class HeadAttachmentComponentTest {
 
   @Mock private Entity mainBody;
 
@@ -22,21 +22,21 @@ public class HeadAttachmentComponentTest {
   private HeadAttachmentComponent headAttachmentComponent;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     Vector2 offset = new Vector2(2f, 0f);
     headAttachmentComponent = new HeadAttachmentComponent(mainBody, offset);
     headAttachmentComponent.setEntity(entity);
   }
 
   @Test
-  public void testSetEntity() {
+  void testSetEntity() {
     when(mainBody.getPosition()).thenReturn(new Vector2(5f, 5f));
     headAttachmentComponent.update();
     verify(entity).setPosition(eq(new Vector2(7f, 5f)));
   }
 
   @Test
-  public void shouldNotCrashWhenMainBodyPositionIsNull() {
+  void shouldNotCrashWhenMainBodyPositionIsNull() {
     when(mainBody.getPosition()).thenReturn(null);
     headAttachmentComponent.update();
     verify(entity, never()).setPosition(any(Vector2.class));

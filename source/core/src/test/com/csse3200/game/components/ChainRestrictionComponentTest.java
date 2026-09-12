@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class ChainRestrictionComponentTest {
+class ChainRestrictionComponentTest {
 
   @Mock private Entity entity;
   @Mock private PhysicsComponent physicsComponent;
@@ -24,7 +24,7 @@ public class ChainRestrictionComponentTest {
   private ChainRestrictionComponent chainRestrictionComponent;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     Vector2 anchorPoint = new Vector2(0f, 0f);
     chainRestrictionComponent = new ChainRestrictionComponent(anchorPoint, 10f);
     when(entity.getComponent(PhysicsComponent.class)).thenReturn(physicsComponent);

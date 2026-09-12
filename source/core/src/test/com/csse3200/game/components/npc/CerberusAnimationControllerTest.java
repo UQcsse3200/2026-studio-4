@@ -13,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class CerberusAnimationControllerTest {
+class CerberusAnimationControllerTest {
 
   @Mock private AnimationRenderComponent animator;
   @Mock private EntityService entityService;
@@ -22,7 +22,7 @@ public class CerberusAnimationControllerTest {
   private CerberusAnimationController controller;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     ServiceLocator.registerEntityService(entityService);
 
     entity = new Entity();
