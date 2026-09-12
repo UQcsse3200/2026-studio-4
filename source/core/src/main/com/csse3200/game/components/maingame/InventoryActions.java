@@ -14,7 +14,9 @@ public class InventoryActions extends Component {
 
     public void create() {entity.getEvents().addListener("nextPage", this::nextPage);}
 
-
+    /**
+     * Changes page from the current inventory page to the non-displayed page
+     */
     private void nextPage() {
         logger.info("Swap inventory page");
         inventoryDisplay.changePage();

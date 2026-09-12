@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.components.maingame.InventoryActions;
 import com.csse3200.game.components.maingame.InventoryDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
@@ -160,6 +161,7 @@ public class MainGameScreen extends ScreenAdapter {
     terminal.addCommand("weapon", new WeaponCommand(player));
 
     InventoryDisplay inventoryDisplay = new InventoryDisplay();
+    InventoryActions inventoryActions = new InventoryActions(inventoryDisplay);
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
 
     Entity ui = new Entity();
@@ -170,7 +172,8 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay())
-        .addComponent(inventoryDisplay);
+        .addComponent(inventoryDisplay)
+                .addComponent(inventoryActions);
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     ServiceLocator.getEntityService().register(ui);
   }
