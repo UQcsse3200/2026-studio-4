@@ -1,8 +1,8 @@
 package com.csse3200.game.ui.terminal.commands;
 
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
-import com.csse3200.game.components.statuseffects.Invisibility;
-import com.csse3200.game.components.statuseffects.LastStand;
+import com.csse3200.game.components.player.abilities.Invisibility;
+import com.csse3200.game.components.player.abilities.LastStand;
 import com.csse3200.game.entities.Entity;
 import java.util.ArrayList;
 

@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.statuseffects.Invisibility;
-import com.csse3200.game.components.statuseffects.LastStand;
+import com.csse3200.game.components.player.abilities.Invisibility;
+import com.csse3200.game.components.player.abilities.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 

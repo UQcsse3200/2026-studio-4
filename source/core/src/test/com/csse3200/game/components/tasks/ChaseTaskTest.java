@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
-import com.csse3200.game.components.statuseffects.Invisibility;
+import com.csse3200.game.components.player.abilities.Invisibility;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;

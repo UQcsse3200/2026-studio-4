@@ -6,8 +6,9 @@ import static org.mockito.Mockito.*;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
-import com.csse3200.game.components.statuseffects.Invisibility;
-import com.csse3200.game.components.statuseffects.LastStand;
+import com.csse3200.game.components.player.abilities.Invisibility;
+import com.csse3200.game.components.player.abilities.LastStand;
+import com.csse3200.game.components.statuseffects.TimedStatusEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.listeners.EventListener1;
@@ -506,10 +507,50 @@ class PlayerAbilitiesComponentTest {
     }
   }
 
+  /** An ability that owns a timed effect on the player, the same way Invisibility does. */
+  private abstract static class EffectAbility extends PlayerAbility {
+    private final TimedStatusEffect effect;
+    private StatusEffectsControllerComponent effects;
+
+    private EffectAbility(String name, TimedStatusEffect effect, long cooldown, boolean unlocked) {
+      super(name, cooldown, unlocked);
+      this.effect = effect;
+    }
+
+    @Override
+    protected void attach(StatusEffectsControllerComponent controller, Runnable onEnded) {
+      effects = controller;
+      effect.setOnEnded(onEnded);
+      controller.registerEffect(effect);
+    }
+
+    @Override
+    public void start() {
+      effect.activate();
+    }
+
+    @Override
+    public void stop() {
+      if (effects != null) {
+        effects.removeEffect(effect);
+      }
+    }
+
+    @Override
+    public boolean isRunning() {
+      return effect.isActive();
+    }
+
+    @Override
+    public long getRemainingMs() {
+      return effect.getRemainingDuration();
+    }
+  }
+
   /** A cast ability that starts locked, declared entirely outside PlayerAbilitiesComponent. */
-  private static final class TestAbility extends TimedPlayerAbility {
+  private static final class TestAbility extends EffectAbility {
     private TestAbility(GameTime time) {
-      super("testability", time, 5_000, 20_000, false);
+      super("testability", new TimedStatusEffect(time, 5_000), 20_000, false);
     }
 
     @Override
@@ -519,9 +560,9 @@ class PlayerAbilitiesComponentTest {
   }
 
   /** A passive that starts on any hostile hit, declared entirely outside the component. */
-  private static final class TestPassive extends TimedPlayerAbility {
+  private static final class TestPassive extends EffectAbility {
     private TestPassive(GameTime time) {
-      super("testpassive", time, 3_000, 9_000, true);
+      super("testpassive", new TimedStatusEffect(time, 3_000), 9_000, true);
     }
 
     @Override

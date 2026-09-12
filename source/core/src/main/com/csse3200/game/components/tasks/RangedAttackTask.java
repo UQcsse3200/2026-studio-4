@@ -3,7 +3,7 @@ package com.csse3200.game.components.tasks;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
-import com.csse3200.game.components.statuseffects.Invisibility;
+import com.csse3200.game.components.player.abilities.Invisibility;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.FloatingDemonProjectileFactory;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;

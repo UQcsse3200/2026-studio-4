@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.player.abilities.Invisibility;
+import com.csse3200.game.components.player.abilities.LastStand;
 import com.csse3200.game.components.statuseffects.Burning;
-import com.csse3200.game.components.statuseffects.Invisibility;
-import com.csse3200.game.components.statuseffects.LastStand;
 import com.csse3200.game.components.statuseffects.Regeneration;
 import com.csse3200.game.components.statuseffects.TimedEffect;
 import com.csse3200.game.entities.Entity;

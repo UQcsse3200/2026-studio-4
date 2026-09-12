@@ -1,7 +1,7 @@
 package com.csse3200.game.components;
 
-import com.csse3200.game.components.statuseffects.Invisibility;
-import com.csse3200.game.components.statuseffects.LastStand;
+import com.csse3200.game.components.player.abilities.Invisibility;
+import com.csse3200.game.components.player.abilities.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.ColliderComponent;

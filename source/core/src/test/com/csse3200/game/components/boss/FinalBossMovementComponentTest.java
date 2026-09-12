@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
-import com.csse3200.game.components.statuseffects.Invisibility;
+import com.csse3200.game.components.player.abilities.Invisibility;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageOneConfig;
 import com.csse3200.game.extensions.GameExtension;
