@@ -35,12 +35,12 @@ public class InventoryDisplay extends UIComponent {
     bookCover.setScaling(Scaling.fill); // Forces graphic to fill the stack container
     bookStack.add(bookCover);
 
-    Table pagesContainer = consumableCreate();
+    Table pagesContainer = charmsCreate();
 
     //combine all together
     bookStack.add(pagesContainer);
-
     table.add(bookStack).size(800, 500).center();
+    table.add(new ImageButton(inventory, "arrow")).size(32, 32).pad(6);
 
     table.setVisible(false);
   }
@@ -59,6 +59,32 @@ public class InventoryDisplay extends UIComponent {
     leftPage.row();
     Table leftGrid = gridDraw(3, 3, 72);
     leftPage.add(leftGrid);
+
+    pagesContainer.add(leftPage).size(365, 500);
+
+    //right page creation
+    Table rightPage = new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
+
+    //Create Grid
+    Table rightGrid = gridDraw(4, 20, 64);
+
+    rightPage.add(rightGrid).center().pad(10);
+    pagesContainer.add(rightPage).size(365, 500);
+
+    return pagesContainer;
+  }
+
+  private Table charmsCreate() {
+    //Overall page table with padding inside cover
+    Table pagesContainer = new Table();
+    pagesContainer.pad(40, 50, 40, 50);
+
+    //left page creation
+    Table leftPage = new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a")).top();
+
+    leftPage.add(new Label("Charms", skin)).top().colspan(3).pad(25f);
+    leftPage.row();
+    //display stats
 
     pagesContainer.add(leftPage).size(365, 500);
 
