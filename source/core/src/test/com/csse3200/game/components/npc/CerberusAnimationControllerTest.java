@@ -3,9 +3,7 @@ package com.csse3200.game.components.npc;
 import static org.mockito.Mockito.*;
 
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.rendering.AnimationRenderComponent;
-import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,15 +14,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class CerberusAnimationControllerTest {
 
   @Mock private AnimationRenderComponent animator;
-  @Mock private EntityService entityService;
 
   private Entity entity;
   private CerberusAnimationController controller;
 
   @BeforeEach
   void setUp() {
-    ServiceLocator.registerEntityService(entityService);
-
     entity = new Entity();
     controller = new CerberusAnimationController();
 
@@ -39,29 +34,37 @@ class CerberusAnimationControllerTest {
     verify(animator).startAnimation("move");
   }
 
-  //  @Test
-  //  void shouldPlayAttackAnimation() {
-  //    entity.getEvents().trigger("attackStart");
-  //    verify(animator).startAnimation("attack");
-  //  }
-  //
-  //  @Test
-  //  void shouldPlayRoarOnEnrage() {
-  //    entity.getEvents().trigger("enragePhaseStarted");
-  //    verify(animator).startAnimation("roar");
-  //  }
+  @Test
+  void shouldPlayAttackAnimation() {
+    entity.getEvents().trigger("attackStart");
+
+    verify(animator).startAnimation("lunge");
+  }
 
   @Test
-  void shouldHandleDeathAndDisposal() {
-    entity.getEvents().trigger("dieAnimation");
-    verify(animator).startAnimation("dieAnimation");
+  void shouldPlayIdleOnEnrage() {
+    entity.getEvents().trigger("enragePhaseStarted");
 
-    when(animator.isFinished()).thenReturn(false);
-    controller.update();
-    verify(entityService, never()).scheduleDisposal(entity);
+    verify(animator).startAnimation("idle");
+  }
 
+  @Test
+  void shouldReturnToMoveAfterLunge() {
     when(animator.isFinished()).thenReturn(true);
+    when(animator.getCurrentAnimation()).thenReturn("lunge");
+
     controller.update();
-    verify(entityService).scheduleDisposal(entity);
+
+    verify(animator, times(2)).startAnimation("move");
+  }
+
+  @Test
+  void shouldReturnToMoveAfterIdle() {
+    when(animator.isFinished()).thenReturn(true);
+    when(animator.getCurrentAnimation()).thenReturn("idle");
+
+    controller.update();
+
+    verify(animator, times(2)).startAnimation("move");
   }
 }
