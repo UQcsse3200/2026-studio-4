@@ -36,333 +36,94 @@ enemy-health-bar-back
   offset: 0, 0
   index: -1
 
-
-1-Hearth_Bar_Fill.png
-size: 64,16
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
-health-bar-fill-a
-  rotate: false
-  xy: 0, 0
-  size: 64, 16
-  split: 4,4,4,4
-  orig: 256, 64
-  offset: 0, 0
-  index: -1
-
-Bar_Body_2.png
-size: 64,16
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
-health-bar-back-a
-  rotate: false
-  xy: 0, 0
-  size: 48, 9
-  split: 4,4,4,4
-  orig: 256, 64
-  offset: 0, 0
-  index: -1
-
 progress_bar.png
 size: 1506,1120
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-button-green
-  rotate: false
-  xy: 11, 18
-  size: 350, 111
-  split: 30, 30, 0, 0
-  orig: 350, 111
-  offset: 0, 0
-  index: -1
-button-green-pressed
-  rotate: false
-  xy: 381, 18
-  size: 350, 111
-  split: 30, 30, 0, 0
-  orig: 350, 111
-  offset: 0, 0
-  index: -1
-button-purple
-  rotate: false
-  xy: 11, 158
-  size: 350, 111
-  split: 30, 30, 0, 0
-  orig: 350, 111
-  offset: 0, 0
-  index: -1
-button-purple-pressed
-  rotate: false
-  xy: 381, 158
-  size: 350, 111
-  split: 30, 30, 0, 0
-  orig: 350, 111
-  offset: 0, 0
-  index: -1
-button-red
-  rotate: false
-  xy: 11, 298
-  size: 350, 111
-  split: 30, 30, 0, 0
-  orig: 350, 111
-  offset: 0, 0
-  index: -1
-button-red-pressed
-  rotate: false
-  xy: 381, 298
-  size: 350, 111
-  split: 30, 30, 0, 0
-  orig: 350, 111
-  offset: 0, 0
-  index: -1
-button-gold
-  rotate: false
-  xy: 11, 438
-  size: 350, 111
-  split: 30, 30, 0, 0
-  orig: 350, 111
-  offset: 0, 0
-  index: -1
-button-gold-pressed
-  rotate: false
-  xy: 381, 438
-  size: 350, 111
-  split: 30, 30, 0, 0
-  orig: 350, 111
-  offset: 0, 0
-  index: -1
-icon-locked
-  rotate: false
-  xy: 769, 11
-  size: 123, 127
-  orig: 123, 127
-  offset: 0, 0
-  index: -1
-label-plate
-  rotate: false
-  xy: 972, 32
-  size: 469, 75
-  split: 20, 20, 0, 0
-  orig: 469, 75
-  offset: 0, 0
-  index: -1
-banner-red
-  rotate: false
-  xy: 923, 151
-  size: 576, 121
-  orig: 576, 121
-  offset: 0, 0
-  index: -1
-icon-empty
-  rotate: false
-  xy: 757, 178
-  size: 66, 69
-  orig: 66, 69
-  offset: 0, 0
-  index: -1
-icon-check
-  rotate: false
-  xy: 842, 178
-  size: 66, 69
-  orig: 66, 69
-  offset: 0, 0
-  index: -1
 icon-star
   rotate: false
   xy: 1005, 282
   size: 108, 108
+  split: 0,0,0,0
   orig: 108, 108
   offset: 0, 0
   index: -1
-icon-heart
+heart-icon
   rotate: false
   xy: 769, 289
   size: 123, 127
+  split: 0,0,0,0
   orig: 123, 127
   offset: 0, 0
   index: -1
-icon-potion
-  rotate: false
-  xy: 769, 431
-  size: 132, 127
-  orig: 132, 127
-  offset: 0, 0
-  index: -1
-scroll-parchment
-  rotate: false
-  xy: 954, 433
-  size: 518, 399
-  split: 60, 60, 60, 60
-  orig: 518, 399
-  offset: 0, 0
-  index: -1
-bar-knob
-  rotate: false
-  xy: 869, 574
-  size: 23, 53
-  orig: 23, 53
-  offset: 0, 0
-  index: -1
-square-green
-  rotate: false
-  xy: 11, 579
-  size: 128, 111
-  orig: 128, 111
-  offset: 0, 0
-  index: -1
-square-green-pressed
-  rotate: false
-  xy: 196, 579
-  size: 128, 111
-  orig: 128, 111
-  offset: 0, 0
-  index: -1
-bar-background
-  rotate: false
-  xy: 389, 583
-  size: 455, 14
-  split: 6, 6, 0, 0
-  orig: 455, 14
-  offset: 0, 0
-  index: -1
-bar-fill-green
-  rotate: false
-  xy: 402, 647
-  size: 429, 12
-  split: 6, 6, 0, 0
-  orig: 429, 12
-  offset: 0, 0
-  index: -1
-bar-fill-purple
-  rotate: false
-  xy: 402, 674
-  size: 429, 12
-  split: 6, 6, 0, 0
-  orig: 429, 12
-  offset: 0, 0
-  index: -1
-bar-fill-red
-  rotate: false
-  xy: 402, 701
-  size: 389, 12
-  split: 6, 6, 0, 0
-  orig: 389, 12
-  offset: 10, 0
-  index: -1
-square-purple
-  rotate: false
-  xy: 11, 719
-  size: 128, 111
-  orig: 128, 111
-  offset: 0, 0
-  index: -1
-square-purple-pressed
-  rotate: false
-  xy: 196, 719
-  size: 128, 111
-  orig: 128, 111
-  offset: 0, 0
-  index: -1
-bar-fill-gold
-  rotate: false
-  xy: 402, 728
-  size: 429, 12
-  split: 6, 6, 0, 0
-  orig: 429, 12
-  offset: 0, 0
-  index: -1
-bar-fill-blue
-  rotate: false
-  xy: 402, 755
-  size: 429, 12
-  split: 6, 6, 0, 0
-  orig: 429, 12
-  offset: 0, 0
-  index: -1
-round-green
-  rotate: false
-  xy: 399, 849
-  size: 123, 127
-  orig: 123, 127
-  offset: 0, 0
-  index: -1
-round-green-pressed
-  rotate: false
-  xy: 584, 849
-  size: 123, 127
-  orig: 123, 127
-  offset: 0, 0
-  index: -1
-round-red
-  rotate: false
-  xy: 769, 849
-  size: 123, 127
-  orig: 123, 127
-  offset: 0, 0
-  index: -1
-round-red-pressed
-  rotate: false
-  xy: 954, 849
-  size: 123, 127
-  orig: 123, 127
-  offset: 0, 0
-  index: -1
-square-red
-  rotate: false
-  xy: 11, 859
-  size: 128, 111
-  orig: 128, 111
-  offset: 0, 0
-  index: -1
-square-red-pressed
-  rotate: false
-  xy: 196, 859
-  size: 128, 111
-  orig: 128, 111
-  offset: 0, 0
-  index: -1
-round-purple
-  rotate: false
-  xy: 399, 989
-  size: 123, 127
-  orig: 123, 127
-  offset: 0, 0
-  index: -1
-round-purple-pressed
-  rotate: false
-  xy: 584, 989
-  size: 123, 127
-  orig: 123, 127
-  offset: 0, 0
-  index: -1
-round-gold
-  rotate: false
-  xy: 769, 989
-  size: 123, 127
-  orig: 123, 127
-  offset: 0, 0
-  index: -1
-round-gold-pressed
-  rotate: false
-  xy: 954, 989
-  size: 123, 127
-  orig: 123, 127
-  offset: 0, 0
-  index: -1
-square-gold
-  rotate: false
-  xy: 11, 999
-  size: 128, 111
-  orig: 128, 111
-  offset: 0, 0
-  index: -1
-square-gold-pressed
-  rotate: false
-  xy: 196, 999
-  size: 128, 111
-  orig: 128, 111
-  offset: 0, 0
-  index: -1
+
+book.png
+  size: 1683, 1026
+  format: RGBA8888
+  filter: Linear,Linear
+  repeat: none
+  book-background
+    rotate: false
+    xy: 0, 0
+    size: 1683, 1026
+    split: 0,0,0,0
+    orig: 1683, 1026
+    offset: 0, 0
+    index: -1
+
+scroll.png
+  size: 1920, 1080
+  format: RGBA8888
+  filter: Linear,Linear
+  repeat: none
+  scroll-background
+    rotate: false
+    xy: 110, 170
+    size: 1683, 794
+    split: 0,0,0,0
+    orig: 1683, 794
+    offset: 0, 0
+    index: -1
+
+attack_speed.png
+  size: 2000, 2000
+  format: RGBA8888
+  filter: Linear,Linear
+  repeat: none
+  as-icon
+    rotate: false
+    xy: 333, 312
+    size: 1422, 1304
+    split: 0,0,0,0
+    orig: 1422, 1304
+    offset: 0, 0
+    index: -1
+
+movement_speed.png
+  size: 847, 847
+  format: RGBA8888
+  filter: Linear,Linear
+  repeat: none
+  ms-icon
+    rotate: false
+    xy: 0,0
+    size: 847, 847
+    split: 0,0,0,0
+    orig: 847, 847
+    offset: 0, 0
+    index: -1
+
+strength_charm_pixel.png
+  size: 1270, 1239
+  format: RGBA8888
+  filter: Linear,Linear
+  repeat: none
+  strength-icon
+    rotate: false
+    xy: 231, 64
+    size: 808, 1028
+    split: 0,0,0,0
+    orig: 808, 1028
+    offset: 0, 0
+    index: -1

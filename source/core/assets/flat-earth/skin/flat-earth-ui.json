@@ -25,7 +25,8 @@ com.badlogic.gdx.graphics.Color: {
 	highlight: { hex: "ffe6a3" },
 	pressed: { hex: "b3893f" },
 	selection: { hex: "5588cc" },
-	window: { hex: "241a12" }
+	window: { hex: "241a12" },
+	brown: {hex: "2e1503"}
 }
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	button-c: {
@@ -304,7 +305,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	}
 	statDisplay: {
 		font: font,
-		fontColor: white
+		fontColor: brown
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {

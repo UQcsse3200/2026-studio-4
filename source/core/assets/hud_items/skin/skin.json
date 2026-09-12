@@ -26,10 +26,17 @@
     hera: { hex: "6a2a5a" }   // royal magenta
   }
 
+  com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
+    player-bar-fill: {
+      name: player-health-bar-fill
+      color: red
+    }
+  }
+
   com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle: {
     player-health-bar: {
       background: player-health-bar-back
-      knobBefore: player-health-bar-fill
+      knobBefore: player-bar-fill
     }
     enemy-health-bar: {
       background: enemy-health-bar-back
