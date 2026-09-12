@@ -1,5 +1,6 @@
 package com.csse3200.game.components.statuseffects;
 
+import com.csse3200.game.components.player.TimedPlayerAbility;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.GameTime;
 
@@ -7,7 +8,7 @@ import com.csse3200.game.services.GameTime;
  * Cast ability. While it runs the player takes no hostile damage and hostiles cannot target them.
  * It never changes raw combat stats.
  */
-public final class Invisibility extends PlayerAbility {
+public final class Invisibility extends TimedPlayerAbility {
   /** Name carried by the abilityUsed, abilityEnded and abilityFailed events. */
   public static final String NAME = "invisibility";
 

@@ -12,7 +12,8 @@ class TimedStatusEffectTest {
   void shouldUseInjectedClockAndSeparateExpirationFromLifecycleCallbacks() {
     GameTime time = mock(GameTime.class);
     Runnable ended = mock(Runnable.class);
-    for (TimedStatusEffect effect : List.of(new Invisibility(time), new LastStand(time))) {
+    for (TimedStatusEffect effect :
+        List.of(new TimedStatusEffect(time, 15_000), new TimedStatusEffect(time, 10_000))) {
       effect.setOnEnded(ended);
       when(time.getTime()).thenReturn(0L);
       assertFalse(effect.isActive());

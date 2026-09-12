@@ -1,6 +1,7 @@
 package com.csse3200.game.components.statuseffects;
 
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.player.TimedPlayerAbility;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.GameTime;
 
@@ -9,7 +10,7 @@ import com.csse3200.game.services.GameTime;
  * a short burst that amplifies effective strength, movement speed and attack speed. It reads raw
  * combat stats rather than changing them, so the burst cannot leak into the player's real stats.
  */
-public final class LastStand extends PlayerAbility {
+public final class LastStand extends TimedPlayerAbility {
   /** Name carried by the abilityUsed and abilityEnded events. */
   public static final String NAME = "laststand";
 

@@ -8,7 +8,6 @@ import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.statuseffects.Invisibility;
 import com.csse3200.game.components.statuseffects.LastStand;
-import com.csse3200.game.components.statuseffects.PlayerAbility;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.listeners.EventListener1;
@@ -449,7 +448,7 @@ class PlayerAbilitiesComponentTest {
   }
 
   /** A cast ability that starts locked, declared entirely outside PlayerAbilitiesComponent. */
-  private static final class TestAbility extends PlayerAbility {
+  private static final class TestAbility extends TimedPlayerAbility {
     private TestAbility(GameTime time) {
       super("testability", time, 5_000, 20_000, false);
     }
@@ -461,7 +460,7 @@ class PlayerAbilitiesComponentTest {
   }
 
   /** A passive that starts on any hostile hit, declared entirely outside the component. */
-  private static final class TestPassive extends PlayerAbility {
+  private static final class TestPassive extends TimedPlayerAbility {
     private TestPassive(GameTime time) {
       super("testpassive", time, 3_000, 9_000, true);
     }
@@ -470,6 +469,66 @@ class PlayerAbilitiesComponentTest {
     public boolean triggersOnDamage(
         CombatStatsComponent combat, Entity attacker, int healthLost, int remainingHealth) {
       return healthLost > 0 && CombatStatsComponent.isHostileAttacker(attacker);
+    }
+  }
+
+  @Test
+  void shouldRunAnInstantAbilityThatAppliesNoStatusEffect() {
+    InstantAbility instant = new InstantAbility();
+    abilities.register(instant);
+
+    assertTrue(abilities.tryActivate(InstantAbility.class));
+    assertEquals(1, instant.starts);
+    assertEquals(List.of("instant"), used);
+    // It finishes at once, so it never runs and never ends.
+    assertFalse(abilities.isActive(InstantAbility.class));
+    assertEquals(0, abilities.getRemainingMs(InstantAbility.class));
+    assertTrue(ended.isEmpty());
+    // Its cooldown is still the component's business.
+    assertEquals(8_000, abilities.getCooldownRemainingMs(InstantAbility.class));
+    assertFalse(abilities.tryActivate(InstantAbility.class));
+    assertEquals(List.of("instant:Ability is on cooldown"), failed);
+    assertEquals(1, instant.starts);
+
+    when(time.getTime()).thenReturn(START + 8_000);
+    assertTrue(abilities.tryActivate(InstantAbility.class));
+    assertEquals(2, instant.starts);
+  }
+
+  /**
+   * An ability that finishes the moment it starts. It extends PlayerAbility directly and never
+   * touches the status effects system, which is the case the ability and effect split exists for.
+   */
+  private static final class InstantAbility extends PlayerAbility {
+    private int starts;
+
+    private InstantAbility() {
+      super("instant", 8_000, true);
+    }
+
+    @Override
+    public boolean isCastable() {
+      return true;
+    }
+
+    @Override
+    public void start() {
+      starts++;
+    }
+
+    @Override
+    public void stop() {
+      // Nothing to stop.
+    }
+
+    @Override
+    public boolean isRunning() {
+      return false;
+    }
+
+    @Override
+    public long getRemainingMs() {
+      return 0;
     }
   }
 

@@ -5,7 +5,6 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.statuseffects.Invisibility;
 import com.csse3200.game.components.statuseffects.LastStand;
-import com.csse3200.game.components.statuseffects.PlayerAbility;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
@@ -56,7 +55,7 @@ public class PlayerAbilitiesComponent extends Component {
       throw new IllegalStateException("PlayerAbilities requires StatusEffectsControllerComponent");
     }
     if (effects != null) {
-      abilities.values().forEach(effects::registerEffect);
+      abilities.values().forEach(ability -> ability.attach(effects, () -> onEnded(ability)));
     }
     register(new Invisibility(time));
     register(new LastStand(time));
@@ -69,10 +68,9 @@ public class PlayerAbilitiesComponent extends Component {
    * end event, and the status effects controller owns its active lifetime once there is one.
    */
   public void register(PlayerAbility ability) {
-    ability.setOnEnded(() -> onEnded(ability));
     abilities.put(ability.getClass(), ability);
     if (effects != null) {
-      effects.registerEffect(ability);
+      ability.attach(effects, () -> onEnded(ability));
     }
   }
 
@@ -80,20 +78,29 @@ public class PlayerAbilitiesComponent extends Component {
   public boolean isActive(Class<? extends PlayerAbility> type) {
     update();
     PlayerAbility ability = abilities.get(type);
-    return ability != null && ability.isActive();
+    return ability != null && ability.isRunning();
   }
 
   /** Returns how much longer the ability runs, in milliseconds. */
   public long getRemainingMs(Class<? extends PlayerAbility> type) {
     update();
     PlayerAbility ability = abilities.get(type);
-    return isAlive() && ability != null ? ability.getRemainingDuration() : 0;
+    return isAlive() && ability != null ? ability.getRemainingMs() : 0;
   }
 
   /** Returns the wait until the ability may start again, including its active period, in ms. */
   public long getCooldownRemainingMs(Class<? extends PlayerAbility> type) {
     update();
     return isAlive() ? Math.max(0, readyAt.getOrDefault(type, 0L) - time.getTime()) : 0;
+  }
+
+  /** Ends an ability early without touching its cooldown. */
+  public void stop(Class<? extends PlayerAbility> type) {
+    update();
+    PlayerAbility ability = abilities.get(type);
+    if (ability != null) {
+      ability.stop();
+    }
   }
 
   /** Unlocks an ability once; repeated calls never start it or reset its cooldown. */
@@ -146,7 +153,7 @@ public class PlayerAbilitiesComponent extends Component {
   }
 
   private void start(PlayerAbility ability) {
-    ability.activate();
+    ability.start();
     readyAt.put(ability.getClass(), time.getTime() + ability.getCooldown());
     entity.getEvents().trigger(ABILITY_USED, ability.getName());
   }

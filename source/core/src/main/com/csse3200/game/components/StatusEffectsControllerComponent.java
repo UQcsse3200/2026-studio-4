@@ -4,36 +4,30 @@ import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
 import com.csse3200.game.components.statuseffects.TimedStatusEffect;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 public class StatusEffectsControllerComponent extends Component {
 
   private CombatStatsComponent combatStatsComponent;
 
   private final ArrayList<StatusEffect> statusEffects = new ArrayList<>();
-  private final LinkedHashMap<Class<? extends TimedStatusEffect>, TimedStatusEffect> timedEffects =
-      new LinkedHashMap<>();
+  private final ArrayList<TimedStatusEffect> timedEffects = new ArrayList<>();
   private boolean disposed;
 
-  /** Registers one reusable effect per concrete type, in lifecycle notification order. */
+  /**
+   * Takes ownership of expiring a timed effect, in lifecycle notification order. The caller keeps
+   * the reference and decides when to activate it.
+   */
   public void registerEffect(TimedStatusEffect effect) {
-    if (disposed || timedEffects.containsKey(effect.getClass())) {
+    if (disposed || timedEffects.contains(effect)) {
       throw new IllegalStateException("Effect already registered or controller disposed");
     }
-    timedEffects.put(effect.getClass(), effect);
+    timedEffects.add(effect);
   }
 
-  /** Queries deadlines only; never ticks burning or regeneration. */
-  public <T extends TimedStatusEffect> T getEffect(Class<T> type) {
+  /** Stops an active effect, keeping the registration for the next activation. */
+  public void removeEffect(TimedStatusEffect effect) {
     refreshTimedEffects();
-    return type.cast(timedEffects.get(type));
-  }
-
-  /** Removes the active state, retaining the registration for the next activation. */
-  public void removeEffect(Class<? extends TimedStatusEffect> type) {
-    refreshTimedEffects();
-    TimedStatusEffect effect = timedEffects.get(type);
-    if (effect != null && effect.isActive()) {
+    if (effect != null && timedEffects.contains(effect) && effect.isActive()) {
       effect.clear();
       effect.notifyEnded();
     }
@@ -53,7 +47,7 @@ public class StatusEffectsControllerComponent extends Component {
 
   private void clearTimedEffects(boolean all) {
     ArrayList<TimedStatusEffect> ended = new ArrayList<>();
-    for (TimedStatusEffect effect : timedEffects.values()) {
+    for (TimedStatusEffect effect : timedEffects) {
       if (effect.isActive() && (all || effect.update())) {
         effect.clear();
         ended.add(effect);

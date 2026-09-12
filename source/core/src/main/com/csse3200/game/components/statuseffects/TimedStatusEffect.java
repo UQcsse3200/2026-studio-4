@@ -2,15 +2,21 @@ package com.csse3200.game.components.statuseffects;
 
 import com.csse3200.game.services.GameTime;
 
-/** A reusable active deadline, expired in batches by the status effects controller. */
-public abstract class TimedStatusEffect implements StatusEffect {
+/**
+ * A plain timed condition on an entity: it starts, counts down against the game clock, and ends.
+ * The status effects controller expires these in batches.
+ *
+ * <p>It knows nothing about what applied it, so anything that needs a countdown on an entity can
+ * own one.
+ */
+public class TimedStatusEffect implements StatusEffect {
   private final GameTime time;
   private final long duration;
   private Runnable onEnded;
   private long deadline;
   private boolean active;
 
-  protected TimedStatusEffect(GameTime time, long duration) {
+  public TimedStatusEffect(GameTime time, long duration) {
     this.time = time;
     this.duration = duration;
   }

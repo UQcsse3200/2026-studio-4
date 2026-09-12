@@ -1,26 +1,25 @@
-package com.csse3200.game.components.statuseffects;
+package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.services.GameTime;
 
 /**
- * A timed status effect the player owns as an ability, carrying the parts no other effect needs: an
- * event name, a cooldown, an unlock state and its own rule for when it may start.
+ * Something the player can use: it has a name, a cooldown, an unlock state and its own rule for
+ * when it may start. PlayerAbilitiesComponent drives every ability through this class alone, so a
+ * new ability is a subclass and one registration rather than a change to the component.
  *
- * <p>PlayerAbilitiesComponent drives every ability through this class alone, so a new ability is a
- * subclass and one registration rather than a change to the component.
+ * <p>An ability is not a status effect. An ability that puts a timed condition on the player
+ * extends TimedPlayerAbility, which owns one; an instant or toggled ability extends this directly
+ * and never touches the status effects system at all.
  */
-public abstract class PlayerAbility extends TimedStatusEffect {
+public abstract class PlayerAbility {
   private final String name;
   private final long cooldown;
   private final boolean unlockedByDefault;
   private boolean unlocked;
 
-  protected PlayerAbility(
-      String name, GameTime time, long duration, long cooldown, boolean unlockedByDefault) {
-    super(time, duration);
+  protected PlayerAbility(String name, long cooldown, boolean unlockedByDefault) {
     this.name = name;
     this.cooldown = cooldown;
     this.unlockedByDefault = unlockedByDefault;
@@ -69,6 +68,26 @@ public abstract class PlayerAbility extends TimedStatusEffect {
       CombatStatsComponent stats, Entity attacker, int healthLost, int remainingHealth) {
     return false;
   }
+
+  /**
+   * Hands over the controller that owns any status effect this ability applies, along with the
+   * callback to run when the ability ends. An ability that applies no status effect ignores both.
+   */
+  protected void attach(StatusEffectsControllerComponent effects, Runnable onEnded) {
+    // Nothing to hand over by default.
+  }
+
+  /** Starts the ability. The component has already checked alive, unlock and cooldown. */
+  public abstract void start();
+
+  /** Ends the ability early. Doing this to an ability that is not running changes nothing. */
+  public abstract void stop();
+
+  /** Returns whether the ability is still doing something. */
+  public abstract boolean isRunning();
+
+  /** Returns how much longer it runs in ms, which is zero for an ability that finishes at once. */
+  public abstract long getRemainingMs();
 
   /**
    * Returns whether the ability is running on an entity, refreshing expiry first so the answer does
