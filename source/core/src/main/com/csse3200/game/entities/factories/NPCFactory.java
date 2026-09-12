@@ -67,6 +67,7 @@ public class NPCFactory {
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
+
     bombEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
@@ -129,56 +130,73 @@ public class NPCFactory {
 
   /**
    * Creates a floating demon which patrols in a straight horizontal line.
+   * (这是那个比较短的快捷包装方法)
+   *
+   * @param target target entity to attack
+   * @param leftPoint left point of its patrol path
+   * @param topPoint top point of its patrol path
+   * @param rightPoint right point of its patrol path
+   * @param skin the atlas file path for the entity
+   * @return floating demon entity
+   */
+  public static Entity createFloatingDemon(
+          Entity target, Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint, String skin) {
+    return createFloatingDemon(
+            target,
+            leftPoint,
+            topPoint,
+            rightPoint,
+            projectile -> ServiceLocator.getEntityService().register(projectile),
+            skin);
+  }
+
+  /**
+   * Creates a floating demon and delegates ownership of its projectiles to the given spawner.
    *
    * @param leftPoint left point of its patrol path
    * @param topPoint top point of its patrol path
    * @param rightPoint right point of its patrol path
    * @return floating demon entity
    */
-  public static Entity createFloatingDemon(
-      Entity target, Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint, String skin) {
-    return createFloatingDemon(
-        target,
-        leftPoint,
-        topPoint,
-        rightPoint,
-        projectile -> ServiceLocator.getEntityService().register(projectile),
-        skin);
-  }
 
-  /** Creates a floating demon and delegates ownership of its projectiles to the given spawner. */
   public static Entity createFloatingDemon(
-      Entity target,
-      Vector2 leftPoint,
-      Vector2 topPoint,
-      Vector2 rightPoint,
-      Consumer<Entity> projectileSpawner,
-      String skin) {
+          Entity target,
+          Vector2 leftPoint,
+          Vector2 topPoint,
+          Vector2 rightPoint,
+          Consumer<Entity> projectileSpawner,
+          String skin) {
+
     FloatingDemonConfig config = configs.floatingDemon;
+
     AITaskComponent aiComponent =
-        new AITaskComponent(target)
-            .addTask(new PatrolTask(leftPoint, topPoint, rightPoint, 5))
-            .addTask(new RangedAttackTask(target, 5, config.baseAttack, projectileSpawner));
+            new AITaskComponent(target)
+                    .addTask(new PatrolTask(leftPoint, topPoint, rightPoint, 1))
+                    .addTask(new RangedAttackTask(target, 5, config.baseAttack, projectileSpawner));
 
     AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
-    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation(CHASE_ANIMATION, 0.08f);
-    animator.addAnimation(DIE_ANIMATION, 0.1f);
+            new AnimationRenderComponent(
+                    ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
 
-    Entity demon =
-        new Entity()
-            .addComponent(new PhysicsComponent())
-            .addComponent(new PhysicsMovementComponent())
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+    animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
+    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+
+    Entity demon = createBaseNPC();
+
+    demon
             .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-            .addComponent(new EnemyDeathComponent(true))
             .addComponent(aiComponent)
             .addComponent(animator)
             .addComponent(new EnemyAnimationController());
+
     animator.scaleEntity();
+    animator.startAnimation("move");
+
     demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
+
     return demon;
   }
 

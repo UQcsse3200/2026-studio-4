@@ -60,7 +60,7 @@ public class EnemyAnimationController extends Component {
 
   private void animateAttack() {
     if (!dying) {
-      animator.startAnimation("chase");
+      animator.startAnimation("attack");
     }
   }
 }

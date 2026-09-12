@@ -62,7 +62,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             topPoint,
             rightPoint,
             this::spawnEntity,
-            "images/floatingDemon.atlas");
+            "images/harpy.atlas");
       case CERBERUS:
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
