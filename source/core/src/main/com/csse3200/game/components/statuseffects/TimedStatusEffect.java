@@ -6,14 +6,23 @@ import com.csse3200.game.services.GameTime;
 public abstract class TimedStatusEffect implements StatusEffect {
   private final GameTime time;
   private final long duration;
-  private final Runnable onEnded;
+  private Runnable onEnded;
   private long deadline;
   private boolean active;
 
-  protected TimedStatusEffect(GameTime time, long duration, Runnable onEnded) {
+  protected TimedStatusEffect(GameTime time, long duration) {
     this.time = time;
     this.duration = duration;
+  }
+
+  /** Sets the callback run once, after the effect expires or is removed. */
+  public void setOnEnded(Runnable onEnded) {
     this.onEnded = onEnded;
+  }
+
+  /** Returns how long a single activation lasts, in milliseconds. */
+  public long getDuration() {
+    return duration;
   }
 
   public void activate() {
@@ -42,6 +51,8 @@ public abstract class TimedStatusEffect implements StatusEffect {
   }
 
   public void notifyEnded() {
-    onEnded.run();
+    if (onEnded != null) {
+      onEnded.run();
+    }
   }
 }

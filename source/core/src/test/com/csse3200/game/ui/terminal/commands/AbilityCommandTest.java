@@ -7,6 +7,8 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.statuseffects.Invisibility;
+import com.csse3200.game.components.statuseffects.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
@@ -54,11 +56,11 @@ class AbilityCommandTest {
         List.of("", "unknown", "Invisibility", "LASTSTAND", " invisibility", "laststand ")) {
       assertFalse(command.action(args(invalid)), invalid);
     }
-    assertFalse(abilities.isInvisible());
-    assertEquals(0, abilities.getInvisibilityCooldownRemainingMs());
+    assertFalse(abilities.isActive(Invisibility.class));
+    assertEquals(0, abilities.getCooldownRemainingMs(Invisibility.class));
     stats.takeDamage(81, hostile);
-    assertFalse(abilities.isLastStandActive());
-    assertEquals(0, abilities.getLastStandCooldownRemainingMs());
+    assertFalse(abilities.isActive(LastStand.class));
+    assertEquals(0, abilities.getCooldownRemainingMs(LastStand.class));
     assertTrue(used.isEmpty());
   }
 
@@ -74,23 +76,23 @@ class AbilityCommandTest {
   @Test
   void shouldCastInvisibilityWithoutBypassingOrResettingCooldown() {
     assertTrue(command.action(args("invisibility")));
-    assertTrue(abilities.isInvisible());
+    assertTrue(abilities.isActive(Invisibility.class));
     assertFalse(command.action(args("invisibility")));
     when(time.getTime()).thenReturn(6_000L);
     assertFalse(command.action(args("invisibility")));
-    assertEquals(10_000, abilities.getInvisibilityRemainingMs());
-    assertEquals(40_000, abilities.getInvisibilityCooldownRemainingMs());
+    assertEquals(10_000, abilities.getRemainingMs(Invisibility.class));
+    assertEquals(40_000, abilities.getCooldownRemainingMs(Invisibility.class));
     when(time.getTime()).thenReturn(16_000L);
     assertFalse(command.action(args("invisibility")));
-    assertFalse(abilities.isInvisible());
+    assertFalse(abilities.isActive(Invisibility.class));
     when(time.getTime()).thenReturn(45_999L);
     assertFalse(command.action(args("invisibility")));
-    assertEquals(1, abilities.getInvisibilityCooldownRemainingMs());
+    assertEquals(1, abilities.getCooldownRemainingMs(Invisibility.class));
     assertEquals(List.of("invisibility"), used);
     when(time.getTime()).thenReturn(46_000L);
     assertTrue(command.action(args("invisibility")));
-    assertEquals(15_000, abilities.getInvisibilityRemainingMs());
-    assertEquals(45_000, abilities.getInvisibilityCooldownRemainingMs());
+    assertEquals(15_000, abilities.getRemainingMs(Invisibility.class));
+    assertEquals(45_000, abilities.getCooldownRemainingMs(Invisibility.class));
     assertEquals(List.of("invisibility", "invisibility"), used);
   }
 
@@ -99,27 +101,27 @@ class AbilityCommandTest {
     stats.setHealth(19);
     assertTrue(command.action(args("laststand")));
     assertTrue(command.action(args("laststand")));
-    assertFalse(abilities.isLastStandActive());
-    assertEquals(0, abilities.getLastStandCooldownRemainingMs());
+    assertFalse(abilities.isActive(LastStand.class));
+    assertEquals(0, abilities.getCooldownRemainingMs(LastStand.class));
     assertTrue(used.isEmpty());
     stats.takeDamage(1, hostile);
-    assertTrue(abilities.isLastStandActive());
+    assertTrue(abilities.isActive(LastStand.class));
     when(time.getTime()).thenReturn(6_000L);
     assertTrue(command.action(args("laststand")));
     stats.takeDamage(1, hostile);
-    assertEquals(5_000, abilities.getLastStandRemainingMs());
-    assertEquals(55_000, abilities.getLastStandCooldownRemainingMs());
+    assertEquals(5_000, abilities.getRemainingMs(LastStand.class));
+    assertEquals(55_000, abilities.getCooldownRemainingMs(LastStand.class));
     when(time.getTime()).thenReturn(60_999L);
     assertTrue(command.action(args("laststand")));
     stats.takeDamage(1, hostile);
-    assertFalse(abilities.isLastStandActive());
-    assertEquals(1, abilities.getLastStandCooldownRemainingMs());
+    assertFalse(abilities.isActive(LastStand.class));
+    assertEquals(1, abilities.getCooldownRemainingMs(LastStand.class));
     when(time.getTime()).thenReturn(61_000L);
     assertTrue(command.action(args("laststand")));
-    assertFalse(abilities.isLastStandActive());
+    assertFalse(abilities.isActive(LastStand.class));
     stats.takeDamage(1, hostile);
-    assertTrue(abilities.isLastStandActive());
-    assertEquals(60_000, abilities.getLastStandCooldownRemainingMs());
+    assertTrue(abilities.isActive(LastStand.class));
+    assertEquals(60_000, abilities.getCooldownRemainingMs(LastStand.class));
     assertEquals(List.of("laststand", "laststand"), used);
   }
 
@@ -131,7 +133,7 @@ class AbilityCommandTest {
     assertTrue(command.action(args("laststand")));
     stats.setHealth(19);
     stats.takeDamage(1, hostile);
-    assertFalse(abilities.isLastStandActive());
+    assertFalse(abilities.isActive(LastStand.class));
     assertTrue(used.isEmpty());
   }
 
@@ -141,7 +143,7 @@ class AbilityCommandTest {
     assertFalse(command.action(args("invisibility")));
     assertTrue(command.action(args("laststand")));
     stats.takeDamage(81, hostile);
-    assertFalse(abilities.isLastStandActive());
+    assertFalse(abilities.isActive(LastStand.class));
     assertTrue(used.isEmpty());
 
     PlayerAbilitiesComponent incomplete = new PlayerAbilitiesComponent(time);
@@ -152,7 +154,7 @@ class AbilityCommandTest {
     target.create();
     assertFalse(incompleteCommand.action(args("invisibility")));
     assertTrue(incompleteCommand.action(args("laststand")));
-    assertFalse(incomplete.isLastStandActive());
+    assertFalse(incomplete.isActive(LastStand.class));
   }
 
   private ArrayList<String> args(String... values) {

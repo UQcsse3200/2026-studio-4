@@ -40,7 +40,7 @@ class StatusEffectsControllerComponentTest {
 
   @Test
   void shouldOwnActiveLifetimesAndAllowRemovalWithoutResettingCooldowns() {
-    assertTrue(abilities.tryInvisibility());
+    assertTrue(abilities.tryActivate(Invisibility.class));
     Invisibility effect = controller.getEffect(Invisibility.class);
     assertTrue(effect.isActive());
     assertEquals(15_000, effect.getRemainingDuration());
@@ -49,11 +49,11 @@ class StatusEffectsControllerComponentTest {
     player.getEvents().addListener("abilityEnded", recordEnded);
     controller.removeEffect(Invisibility.class);
     controller.removeEffect(Invisibility.class);
-    assertFalse(abilities.isInvisible());
-    assertEquals(45_000, abilities.getInvisibilityCooldownRemainingMs());
+    assertFalse(abilities.isActive(Invisibility.class));
+    assertEquals(45_000, abilities.getCooldownRemainingMs(Invisibility.class));
     assertEquals(List.of("invisibility"), ended);
     when(time.getTime()).thenReturn(45_000L);
-    assertTrue(abilities.tryInvisibility());
+    assertTrue(abilities.tryActivate(Invisibility.class));
     assertSame(effect, controller.getEffect(Invisibility.class));
     assertEquals(15_000, effect.getRemainingDuration());
   }
@@ -90,15 +90,15 @@ class StatusEffectsControllerComponentTest {
             (String name) -> {
               events.add("ended:" + name);
               if (name.equals("invisibility")) {
-                assertFalse(abilities.isLastStandActive());
-                assertTrue(abilities.tryInvisibility());
+                assertFalse(abilities.isActive(LastStand.class));
+                assertTrue(abilities.tryActivate(Invisibility.class));
               }
             });
     when(time.getTime()).thenReturn(60_000L);
     controller.update();
     assertEquals(List.of("ended:invisibility", "used:invisibility", "ended:laststand"), events);
-    assertTrue(abilities.isInvisible());
-    assertEquals(15_000, abilities.getInvisibilityRemainingMs());
+    assertTrue(abilities.isActive(Invisibility.class));
+    assertEquals(15_000, abilities.getRemainingMs(Invisibility.class));
   }
 
   @Test
@@ -115,11 +115,11 @@ class StatusEffectsControllerComponentTest {
             "abilityEnded",
             (String name) -> {
               ended.add(name);
-              assertFalse(abilities.isInvisible());
-              assertFalse(abilities.isLastStandActive());
-              assertEquals(0, abilities.getInvisibilityCooldownRemainingMs());
-              assertEquals(0, abilities.getLastStandCooldownRemainingMs());
-              assertFalse(abilities.tryInvisibility());
+              assertFalse(abilities.isActive(Invisibility.class));
+              assertFalse(abilities.isActive(LastStand.class));
+              assertEquals(0, abilities.getCooldownRemainingMs(Invisibility.class));
+              assertEquals(0, abilities.getCooldownRemainingMs(LastStand.class));
+              assertFalse(abilities.tryActivate(Invisibility.class));
             });
     controller.dispose();
     abilities.dispose();
@@ -137,16 +137,16 @@ class StatusEffectsControllerComponentTest {
         .addListener(
             "abilityEnded",
             (String name) -> {
-              assertFalse(abilities.isInvisible());
-              assertFalse(abilities.isLastStandActive());
-              assertEquals(0, abilities.getInvisibilityCooldownRemainingMs());
-              assertEquals(0, abilities.getLastStandCooldownRemainingMs());
+              assertFalse(abilities.isActive(Invisibility.class));
+              assertFalse(abilities.isActive(LastStand.class));
+              assertEquals(0, abilities.getCooldownRemainingMs(Invisibility.class));
+              assertEquals(0, abilities.getCooldownRemainingMs(LastStand.class));
             });
     stats.setHealth(0);
     stats.setHealth(19);
     stats.takeDamage(1, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
-    assertFalse(abilities.isLastStandActive());
-    assertTrue(abilities.tryInvisibility());
+    assertFalse(abilities.isActive(LastStand.class));
+    assertTrue(abilities.tryActivate(Invisibility.class));
   }
 
   @Test
@@ -157,14 +157,14 @@ class StatusEffectsControllerComponentTest {
       controller.addStatusEffect(3, 'r');
       assertEquals(2, burns.constructed().size());
       assertEquals(3, regens.constructed().size());
-      assertTrue(abilities.tryInvisibility());
+      assertTrue(abilities.tryActivate(Invisibility.class));
       when(time.getTime()).thenReturn(15_000L);
-      abilities.isInvisible();
-      abilities.isLastStandActive();
-      abilities.getInvisibilityRemainingMs();
-      abilities.getLastStandRemainingMs();
-      abilities.getInvisibilityCooldownRemainingMs();
-      abilities.getLastStandCooldownRemainingMs();
+      abilities.isActive(Invisibility.class);
+      abilities.isActive(LastStand.class);
+      abilities.getRemainingMs(Invisibility.class);
+      abilities.getRemainingMs(LastStand.class);
+      abilities.getCooldownRemainingMs(Invisibility.class);
+      abilities.getCooldownRemainingMs(LastStand.class);
       abilities.update();
       burns.constructed().forEach(Mockito::verifyNoInteractions);
       regens.constructed().forEach(Mockito::verifyNoInteractions);
@@ -192,7 +192,7 @@ class StatusEffectsControllerComponentTest {
             .addComponent(new CombatStatsComponent(100, 10))
             .addComponent(new PlayerAbilitiesComponent(time));
     assertThrows(IllegalStateException.class, noController::create);
-    Invisibility duplicate = new Invisibility(time, 10, () -> {});
+    Invisibility duplicate = new Invisibility(time);
     assertThrows(IllegalStateException.class, () -> controller.registerEffect(duplicate));
   }
 
@@ -200,7 +200,8 @@ class StatusEffectsControllerComponentTest {
   void shouldRegisterBeforeControllerCreateAndExpireAtExactDeadline() {
     StatusEffectsControllerComponent uncreated = new StatusEffectsControllerComponent();
     Runnable ended = mock(Runnable.class);
-    Invisibility effect = new Invisibility(time, 15_000, ended);
+    Invisibility effect = new Invisibility(time);
+    effect.setOnEnded(ended);
     uncreated.registerEffect(effect);
     new Entity().addComponent(new CombatStatsComponent(100, 10)).addComponent(uncreated).create();
     effect.activate();
@@ -218,7 +219,8 @@ class StatusEffectsControllerComponentTest {
     CombatStatsComponent combat = new CombatStatsComponent(100, 10);
     new Entity().addComponent(combat).addComponent(standalone).create();
     Runnable ended = mock(Runnable.class);
-    LastStand effect = new LastStand(time, 10_000, ended);
+    LastStand effect = new LastStand(time);
+    effect.setOnEnded(ended);
     standalone.registerEffect(effect);
     effect.activate();
     combat.setHealth(0);
@@ -246,8 +248,8 @@ class StatusEffectsControllerComponentTest {
   }
 
   private void activateBoth() {
-    abilities.enableLastStand();
+    abilities.unlock(LastStand.class);
     stats.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
-    assertTrue(abilities.tryInvisibility());
+    assertTrue(abilities.tryActivate(Invisibility.class));
   }
 }

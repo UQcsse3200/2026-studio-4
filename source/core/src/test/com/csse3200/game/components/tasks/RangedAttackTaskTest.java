@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.statuseffects.Invisibility;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.FloatingDemonProjectileFactory;
@@ -55,12 +56,12 @@ class RangedAttackTaskTest {
 
   @Test
   void shouldSuppressInactiveAndActivePriorityButRetainRangeHysteresis() {
-    when(abilities.isInvisible()).thenReturn(true);
+    when(abilities.isActive(Invisibility.class)).thenReturn(true);
     assertEquals(-1, task.getPriority());
     task.start();
     assertEquals(-1, task.getPriority());
     player.setPosition(7f, 0f);
-    when(abilities.isInvisible()).thenReturn(false);
+    when(abilities.isActive(Invisibility.class)).thenReturn(false);
     assertEquals(5, task.getPriority());
     task.stop();
     assertEquals(-1, task.getPriority());
@@ -71,13 +72,13 @@ class RangedAttackTaskTest {
   @Test
   void shouldNotQueueOrAnnounceAttacksWhileInvisibleAndResumeWhenVisible() {
     task.start();
-    when(abilities.isInvisible()).thenReturn(true);
+    when(abilities.isActive(Invisibility.class)).thenReturn(true);
     when(time.getDeltaTime()).thenReturn(10f);
     task.update();
     task.update();
     assertEquals(0, callbacks.size());
     assertEquals(0, attacks);
-    when(abilities.isInvisible()).thenReturn(false);
+    when(abilities.isActive(Invisibility.class)).thenReturn(false);
     task.update();
     assertEquals(3, callbacks.size());
     assertEquals(1, attacks);
@@ -87,10 +88,10 @@ class RangedAttackTaskTest {
   void shouldPauseExistingCooldownWhileInvisible() {
     task.start();
     task.update();
-    when(abilities.isInvisible()).thenReturn(true);
+    when(abilities.isActive(Invisibility.class)).thenReturn(true);
     when(time.getDeltaTime()).thenReturn(10f);
     task.update();
-    when(abilities.isInvisible()).thenReturn(false);
+    when(abilities.isActive(Invisibility.class)).thenReturn(false);
     when(time.getDeltaTime()).thenReturn(1f);
     task.update();
     assertEquals(3, callbacks.size());
@@ -111,13 +112,13 @@ class RangedAttackTaskTest {
       task.update();
       assertEquals(3, callbacks.size());
       callbacks.get(0).run();
-      when(abilities.isInvisible()).thenReturn(true);
+      when(abilities.isActive(Invisibility.class)).thenReturn(true);
       callbacks.get(1).run();
       callbacks.get(2).run();
       assertEquals(List.of(projectile), spawned);
       factory.verify(() -> FloatingDemonProjectileFactory.createProjectile(any(), any(), eq(7)));
 
-      when(abilities.isInvisible()).thenReturn(false);
+      when(abilities.isActive(Invisibility.class)).thenReturn(false);
       when(time.getDeltaTime()).thenReturn(2f);
       task.update();
       callbacks.subList(3, 6).forEach(Runnable::run);
@@ -134,7 +135,7 @@ class RangedAttackTaskTest {
       task.start();
       task.update();
       assertEquals(3, callbacks.size());
-      when(abilities.isInvisible()).thenReturn(true);
+      when(abilities.isActive(Invisibility.class)).thenReturn(true);
       callbacks.forEach(Runnable::run);
       factory.verifyNoInteractions();
       assertEquals(0, spawned.size());

@@ -13,6 +13,7 @@ import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.ai.tasks.TaskRunner;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.statuseffects.Invisibility;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
@@ -56,9 +57,9 @@ class LungeAttackTaskTest {
     target.setPosition(1f, 0f);
     LungeAttackTask task = new LungeAttackTask(target, 2.5f);
     task.create(taskRunner);
-    when(abilities.isInvisible()).thenReturn(true);
+    when(abilities.isActive(Invisibility.class)).thenReturn(true);
     assertEquals(-1, task.getPriority());
-    when(abilities.isInvisible()).thenReturn(false);
+    when(abilities.isActive(Invisibility.class)).thenReturn(false);
     assertEquals(20, task.getPriority());
   }
 
@@ -97,12 +98,12 @@ class LungeAttackTaskTest {
     ai.update();
     verify(movementComponent).setMoving(true);
 
-    when(abilities.isInvisible()).thenReturn(true);
+    when(abilities.isActive(Invisibility.class)).thenReturn(true);
     when(gameTime.getTime()).thenReturn(600L);
     ai.update();
     verify(fallback).start();
     clearInvocations(movementComponent);
-    when(abilities.isInvisible()).thenReturn(false);
+    when(abilities.isActive(Invisibility.class)).thenReturn(false);
     when(gameTime.getTime()).thenReturn(2599L);
     ai.update();
     verify(movementComponent, never()).setMoving(true);
@@ -130,7 +131,7 @@ class LungeAttackTaskTest {
     }
     clearInvocations(movementComponent);
     when(gameTime.getTime()).thenReturn(600L);
-    when(abilities.isInvisible()).thenReturn(true);
+    when(abilities.isActive(Invisibility.class)).thenReturn(true);
     if (checkPriority) {
       assertEquals(-1, task.getPriority());
     } else {
@@ -145,7 +146,7 @@ class LungeAttackTaskTest {
     task.update();
     assertEquals(-1, task.getPriority());
     assertEquals(1, dashEnds[0]);
-    when(abilities.isInvisible()).thenReturn(false);
+    when(abilities.isActive(Invisibility.class)).thenReturn(false);
     task.update();
     assertEquals(-1, task.getPriority());
     task.stop();

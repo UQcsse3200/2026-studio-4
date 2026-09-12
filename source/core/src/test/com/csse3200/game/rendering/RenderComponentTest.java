@@ -19,6 +19,8 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.statuseffects.Invisibility;
+import com.csse3200.game.components.statuseffects.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -37,7 +39,8 @@ class RenderComponentTest {
   @Test
   void shouldMultiplyExistingAlphaForInvisibilityAndRestoreMutableBatchColor() {
     PlayerAbilitiesComponent abilities = mock(PlayerAbilitiesComponent.class);
-    when(abilities.isInvisible()).thenReturn(true);
+    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(abilities.isActive(LastStand.class)).thenReturn(false);
     RecordingRender component = new RecordingRender();
     new Entity().addComponent(abilities).addComponent(component);
     Color original = new Color(0.8f, 0.6f, 0.4f, 0.5f);
@@ -55,7 +58,8 @@ class RenderComponentTest {
   @Test
   void shouldTintLastStandWithoutChangingAlphaAndRestoreColorWhenDrawThrows() {
     PlayerAbilitiesComponent abilities = mock(PlayerAbilitiesComponent.class);
-    when(abilities.isLastStandActive()).thenReturn(true);
+    when(abilities.isActive(Invisibility.class)).thenReturn(false);
+    when(abilities.isActive(LastStand.class)).thenReturn(true);
     RecordingRender component = new RecordingRender();
     new Entity().addComponent(abilities).addComponent(component);
     Color original = new Color(0.8f, 0.6f, 0.4f, 0.5f);
@@ -80,12 +84,12 @@ class RenderComponentTest {
             .addComponent(new StatusEffectsControllerComponent())
             .addComponent(abilities);
     player.create();
-    abilities.enableLastStand();
+    abilities.unlock(LastStand.class);
     RecordingRender weaponRender = new RecordingRender();
     new Entity().addComponent(weaponRender);
     weaponRender.setVisualSource(player);
     combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
-    assertTrue(abilities.tryInvisibility());
+    assertTrue(abilities.tryActivate(Invisibility.class));
     Color original = new Color(0.8f, 0.6f, 0.4f, 0.5f);
     SpriteBatch batch = mutableColorBatch(original);
 
@@ -97,11 +101,11 @@ class RenderComponentTest {
     assertEquals(original, batch.getColor());
     weaponRender.failure = null;
 
-    when(time.getTime()).thenReturn(PlayerAbilitiesComponent.LAST_STAND_DURATION_MS);
+    when(time.getTime()).thenReturn(LastStand.DURATION_MS);
     weaponRender.render(batch);
     assertEquals(new Color(0.8f, 0.6f, 0.4f, 0.5f * 0.35f), weaponRender.drawColor);
     assertEquals(original, batch.getColor());
-    when(time.getTime()).thenReturn(PlayerAbilitiesComponent.INVISIBILITY_DURATION_MS);
+    when(time.getTime()).thenReturn(Invisibility.DURATION_MS);
     weaponRender.render(batch);
     assertEquals(original, weaponRender.drawColor);
     assertEquals(original, batch.getColor());
@@ -110,7 +114,8 @@ class RenderComponentTest {
   @Test
   void shouldUseExplicitVisualSourceInsteadOfOwnAbilitiesAndAllowResettingIt() {
     PlayerAbilitiesComponent ownAbilities = mock(PlayerAbilitiesComponent.class);
-    when(ownAbilities.isInvisible()).thenReturn(true);
+    when(ownAbilities.isActive(Invisibility.class)).thenReturn(true);
+    when(ownAbilities.isActive(LastStand.class)).thenReturn(false);
     RecordingRender component = new RecordingRender();
     new Entity().addComponent(ownAbilities).addComponent(component);
     component.setVisualSource(new Entity());

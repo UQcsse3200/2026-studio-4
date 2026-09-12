@@ -12,6 +12,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.statuseffects.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -36,7 +37,7 @@ class WeaponComponentTest {
             .addComponent(stats)
             .addComponent(weapon);
     wielder.create();
-    abilities.enableLastStand();
+    abilities.unlock(LastStand.class);
     Vector2 direction = new Vector2(1f, 0f);
     wielder.getEvents().trigger("weaponAttack", direction);
     assertEquals(6, weapon.lastDamage);
@@ -56,7 +57,7 @@ class WeaponComponentTest {
     assertTrue(weapon.attack(Vector2.Zero, direction));
     assertEquals(10, weapon.lastDamage);
     assertEquals(0.1f, stats.getRemainingCooldown(), 1e-6f);
-    when(time.getTime()).thenReturn(PlayerAbilitiesComponent.LAST_STAND_DURATION_MS);
+    when(time.getTime()).thenReturn(LastStand.DURATION_MS);
     stats.update(0.1f);
     assertTrue(weapon.attack(Vector2.Zero, direction));
     assertEquals(7, weapon.lastDamage);

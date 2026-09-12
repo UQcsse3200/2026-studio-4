@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.statuseffects.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -58,12 +59,12 @@ class PlayerStatsDisplayTest {
   void shouldShowAmplifiedStatsWhileLastStandIsActiveAndRevertOnExpiry() {
     assertStatLines(4f, 2f, 10);
 
-    abilities.enableLastStand();
+    abilities.unlock(LastStand.class);
     combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
 
     assertStatLines(6f, 3f, 15);
 
-    when(time.getTime()).thenReturn(START + PlayerAbilitiesComponent.LAST_STAND_DURATION_MS);
+    when(time.getTime()).thenReturn(START + LastStand.DURATION_MS);
     player.update();
 
     assertStatLines(4f, 2f, 10);
@@ -71,7 +72,7 @@ class PlayerStatsDisplayTest {
 
   @Test
   void shouldKeepAmplifyingRawStatChangesMadeDuringLastStand() {
-    abilities.enableLastStand();
+    abilities.unlock(LastStand.class);
     combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
 
     combat.addMovementSpeed(2f);

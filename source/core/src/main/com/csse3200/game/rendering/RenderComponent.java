@@ -4,7 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.statuseffects.Invisibility;
+import com.csse3200.game.components.statuseffects.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -34,10 +35,8 @@ public abstract class RenderComponent extends Component implements Renderable, D
   @Override
   public void render(SpriteBatch batch) {
     Entity source = visualSource == null ? entity : visualSource;
-    PlayerAbilitiesComponent abilities =
-        source == null ? null : source.getComponent(PlayerAbilitiesComponent.class);
-    boolean invisible = abilities != null && abilities.isInvisible();
-    boolean lastStand = abilities != null && abilities.isLastStandActive();
+    boolean invisible = Invisibility.isActiveOn(source);
+    boolean lastStand = LastStand.isActiveOn(source);
     if (!invisible && !lastStand) {
       draw(batch);
       return;

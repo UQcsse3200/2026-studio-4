@@ -22,6 +22,8 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.statuseffects.Invisibility;
+import com.csse3200.game.components.statuseffects.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -120,18 +122,18 @@ class BowWeaponComponentTest {
     render.render(batch);
     assertEquals(original, color);
     // Activate after spawning so a snapshot of the player's appearance cannot pass.
-    abilities.enableLastStand();
+    abilities.unlock(LastStand.class);
     combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
     render.render(batch);
     assertEquals(original, color);
-    assertTrue(abilities.tryInvisibility());
+    assertTrue(abilities.tryActivate(Invisibility.class));
     render.render(batch);
     assertEquals(original, color);
     // Render directly, without an entity update frame, at each effect's deadline.
-    when(time.getTime()).thenReturn(PlayerAbilitiesComponent.LAST_STAND_DURATION_MS);
+    when(time.getTime()).thenReturn(LastStand.DURATION_MS);
     render.render(batch);
     assertEquals(original, color);
-    when(time.getTime()).thenReturn(PlayerAbilitiesComponent.INVISIBILITY_DURATION_MS);
+    when(time.getTime()).thenReturn(Invisibility.DURATION_MS);
     render.render(batch);
     assertEquals(original, color);
     assertEquals(

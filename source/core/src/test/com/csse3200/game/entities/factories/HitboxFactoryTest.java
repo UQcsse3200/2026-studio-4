@@ -23,6 +23,8 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.statuseffects.Invisibility;
+import com.csse3200.game.components.statuseffects.LastStand;
 import com.csse3200.game.components.weapons.FollowComponent;
 import com.csse3200.game.components.weapons.LifetimeComponent;
 import com.csse3200.game.components.weapons.WeaponComponent;
@@ -102,9 +104,9 @@ class HitboxFactoryTest {
             anyFloat());
 
     render.render(batch);
-    abilities.enableLastStand();
+    abilities.unlock(LastStand.class);
     combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
-    assertTrue(abilities.tryInvisibility());
+    assertTrue(abilities.tryActivate(Invisibility.class));
     render.render(batch);
     assertEquals(
         List.of(original, new Color(0.8f, 0.6f * 0.35f, 0.4f * 0.35f, 0.5f * 0.35f)), drawn);
@@ -112,7 +114,7 @@ class HitboxFactoryTest {
     assertEquals(8, hitbox.getComponent(CombatStatsComponent.class).getEffectiveBaseAttack());
     source.setPosition(20f, 30f);
     assertEquals(new Vector2(1f, 2f), hitbox.getPosition());
-    when(time.getTime()).thenReturn(PlayerAbilitiesComponent.INVISIBILITY_DURATION_MS);
+    when(time.getTime()).thenReturn(Invisibility.DURATION_MS);
     render.render(batch);
     assertEquals(original, drawn.get(2));
   }
@@ -160,12 +162,12 @@ class HitboxFactoryTest {
     Fixture attackFixture = hitbox.getComponent(HitboxComponent.class).getFixture();
     Fixture targetFixture = target.getComponent(HitboxComponent.class).getFixture();
     assertTrue(CombatStatsComponent.isHostileAttacker(hitbox));
-    assertTrue(abilities.tryInvisibility());
+    assertTrue(abilities.tryActivate(Invisibility.class));
     hitbox.getEvents().trigger("collisionStart", attackFixture, targetFixture);
     assertEquals(100, combat.getHealth());
     assertTrue(sources.isEmpty());
 
-    when(time.getTime()).thenReturn(PlayerAbilitiesComponent.INVISIBILITY_DURATION_MS);
+    when(time.getTime()).thenReturn(Invisibility.DURATION_MS);
     hitbox.getEvents().trigger("collisionStart", attackFixture, targetFixture);
     assertEquals(92, combat.getHealth());
     assertEquals(List.of(hitbox), sources);

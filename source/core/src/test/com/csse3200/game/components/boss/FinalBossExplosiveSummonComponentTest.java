@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.statuseffects.Invisibility;
 import com.csse3200.game.components.weapons.ProjectileComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -145,7 +146,7 @@ class FinalBossExplosiveSummonComponentTest {
     verify(movement).setMoving(true);
     clearInvocations(movement);
 
-    when(abilities.isInvisible()).thenReturn(true);
+    when(abilities.isActive(Invisibility.class)).thenReturn(true);
     player.setPosition(0f, 0f);
     explosive.update();
     verify(movement).setMoving(false);
@@ -154,7 +155,7 @@ class FinalBossExplosiveSummonComponentTest {
     assertFalse(explosive.hasDetonated());
     clearInvocations(movement);
 
-    when(abilities.isInvisible()).thenReturn(false);
+    when(abilities.isActive(Invisibility.class)).thenReturn(false);
     player.setPosition(4f, 0f);
     explosive.update();
     verify(movement).setMoving(true);
@@ -170,7 +171,7 @@ class FinalBossExplosiveSummonComponentTest {
             .addComponent(new StatusEffectsControllerComponent())
             .addComponent(abilities);
     player.create();
-    assertTrue(abilities.tryInvisibility());
+    assertTrue(abilities.tryActivate(Invisibility.class));
     Entity summon = createSummon(1f);
     summon.setPosition(0f, 0f);
     FinalBossExplosiveSummonComponent explosive =
@@ -181,8 +182,7 @@ class FinalBossExplosiveSummonComponentTest {
     assertFalse(explosive.isWarningActive());
     assertFalse(explosive.hasDetonated());
 
-    when(ServiceLocator.getTimeSource().getTime())
-        .thenReturn(PlayerAbilitiesComponent.INVISIBILITY_DURATION_MS);
+    when(ServiceLocator.getTimeSource().getTime()).thenReturn(Invisibility.DURATION_MS);
     explosive.update();
     assertTrue(explosive.isWarningActive());
     assertFalse(explosive.hasDetonated());
@@ -208,7 +208,7 @@ class FinalBossExplosiveSummonComponentTest {
     summon.getEvents().addListener(FinalBossEvents.SUMMON_REMOVED, ignored -> removals[0]++);
     explosive.update();
     assertTrue(explosive.isWarningActive());
-    assertTrue(abilities.tryInvisibility());
+    assertTrue(abilities.tryActivate(Invisibility.class));
     deltaTime.set(0.5f);
     explosive.update();
     assertFalse(explosive.hasDetonated());
@@ -230,7 +230,7 @@ class FinalBossExplosiveSummonComponentTest {
             .addComponent(new StatusEffectsControllerComponent())
             .addComponent(abilities);
     player.create();
-    assertTrue(abilities.tryInvisibility());
+    assertTrue(abilities.tryActivate(Invisibility.class));
     Entity summon = createSummon(1f);
     summon.setPosition(0f, 0f);
     Entity projectile = new Entity().addComponent(new ProjectileComponent(new Vector2(1f, 0f), 1f));

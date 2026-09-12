@@ -3,7 +3,7 @@ package com.csse3200.game.components.boss;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.statuseffects.Invisibility;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageOneConfig;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
@@ -52,8 +52,7 @@ public class FinalBossMovementComponent extends Component {
 
   @Override
   public void update() {
-    if (mode == Mode.STOPPED
-        || (mode == Mode.FLEE_PLAYER && PlayerAbilitiesComponent.isUntargetable(target))) {
+    if (mode == Mode.STOPPED || (mode == Mode.FLEE_PLAYER && Invisibility.isUntargetable(target))) {
       movement.setMoving(false);
       refreshRemaining = 0f;
       return;

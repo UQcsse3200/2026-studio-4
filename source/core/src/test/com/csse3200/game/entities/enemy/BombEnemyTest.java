@@ -13,6 +13,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.ExplodeComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.statuseffects.Invisibility;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.NPCFactory;
@@ -143,15 +144,14 @@ class BombEnemyTest {
     EventListener0 dieAnimationListener = mock(EventListener0.class);
     bombEnemy.getEvents().addListener("dieAnimation", dieAnimationListener);
 
-    assertTrue(abilities.tryInvisibility());
+    assertTrue(abilities.tryActivate(Invisibility.class));
     bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
 
     verify(dieAnimationListener, times(0)).handle();
     assertFalse(bombEnemy.getComponent(CombatStatsComponent.class).isDead());
 
     // The bomb detonates again once invisibility wears off.
-    when(abilityTime.getTime())
-        .thenReturn(1_000L + PlayerAbilitiesComponent.INVISIBILITY_DURATION_MS);
+    when(abilityTime.getTime()).thenReturn(1_000L + Invisibility.DURATION_MS);
     bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
 
     verify(dieAnimationListener, times(1)).handle();

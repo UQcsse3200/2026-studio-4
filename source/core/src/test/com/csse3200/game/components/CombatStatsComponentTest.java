@@ -8,6 +8,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.statuseffects.Invisibility;
+import com.csse3200.game.components.statuseffects.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
@@ -69,7 +71,7 @@ class CombatStatsComponentTest {
             "damageTaken",
             (Entity source, Integer lost, Integer remaining) -> events.add("damage:" + lost));
     Entity hostile = new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
-    assertTrue(abilities.tryInvisibility());
+    assertTrue(abilities.tryActivate(Invisibility.class));
 
     combat.takeDamage(10, hostile);
     assertEquals(100, combat.getHealth());
@@ -80,7 +82,7 @@ class CombatStatsComponentTest {
     assertEquals(90, combat.getHealth());
     assertEquals(List.of("damage:7", "reaction", "damage:3", "reaction"), events);
 
-    when(time.getTime()).thenReturn(PlayerAbilitiesComponent.INVISIBILITY_DURATION_MS);
+    when(time.getTime()).thenReturn(Invisibility.DURATION_MS);
     events.clear();
     combat.takeDamage(10, hostile);
     assertEquals(80, combat.getHealth());
@@ -184,13 +186,13 @@ class CombatStatsComponentTest {
 
     assertEquals(4f, combat.getEffectiveMovementSpeed());
 
-    abilities.enableLastStand();
+    abilities.unlock(LastStand.class);
     combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
 
     assertEquals(6f, combat.getEffectiveMovementSpeed());
     assertEquals(4f, combat.getMovementSpeed());
 
-    when(time.getTime()).thenReturn(1_000L + PlayerAbilitiesComponent.LAST_STAND_DURATION_MS);
+    when(time.getTime()).thenReturn(1_000L + LastStand.DURATION_MS);
 
     assertEquals(4f, combat.getEffectiveMovementSpeed());
     assertEquals(4f, combat.getMovementSpeed());
@@ -207,7 +209,7 @@ class CombatStatsComponentTest {
             .addComponent(new StatusEffectsControllerComponent())
             .addComponent(abilities);
     player.create();
-    abilities.enableLastStand();
+    abilities.unlock(LastStand.class);
     assertEquals(11, combat.getEffectiveBaseAttack());
     assertEquals(2f, combat.getEffectiveAttackSpeed());
     assertEquals(3f, combat.getEffectiveMovementSpeed());
@@ -239,7 +241,7 @@ class CombatStatsComponentTest {
     victim.hit(combat);
     assertEquals(List.of(new DamageEvent(player, 20, 80)), damage);
 
-    when(time.getTime()).thenReturn(PlayerAbilitiesComponent.LAST_STAND_DURATION_MS);
+    when(time.getTime()).thenReturn(LastStand.DURATION_MS);
     assertEquals(13, combat.getEffectiveBaseAttack());
     assertEquals(4f, combat.getEffectiveAttackSpeed());
     assertEquals(List.of(13), rawUpdates);

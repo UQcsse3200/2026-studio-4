@@ -1,6 +1,7 @@
 package com.csse3200.game.components;
 
-import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.statuseffects.Invisibility;
+import com.csse3200.game.components.statuseffects.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.ColliderComponent;
@@ -124,17 +125,10 @@ public class CombatStatsComponent extends Component {
     return baseAttack;
   }
 
-  /** Returns whether the owning entity is currently under the Last Stand passive. */
-  private boolean isLastStandActive() {
-    PlayerAbilitiesComponent abilities =
-        entity == null ? null : entity.getComponent(PlayerAbilitiesComponent.class);
-    return abilities != null && abilities.isLastStandActive();
-  }
-
   /** Returns base attack with Last Stand applied, without changing charm-adjusted raw stats. */
   public int getEffectiveBaseAttack() {
-    return isLastStandActive()
-        ? Math.round(baseAttack * PlayerAbilitiesComponent.LAST_STAND_MULTIPLIER)
+    return LastStand.isActiveOn(entity)
+        ? Math.round(baseAttack * LastStand.MULTIPLIER)
         : baseAttack;
   }
 
@@ -174,9 +168,7 @@ public class CombatStatsComponent extends Component {
 
   /** Returns movement speed with Last Stand applied, without changing charm-adjusted raw stats. */
   public float getEffectiveMovementSpeed() {
-    return isLastStandActive()
-        ? movementSpeed * PlayerAbilitiesComponent.LAST_STAND_MULTIPLIER
-        : movementSpeed;
+    return LastStand.isActiveOn(entity) ? movementSpeed * LastStand.MULTIPLIER : movementSpeed;
   }
 
   /**
@@ -215,9 +207,7 @@ public class CombatStatsComponent extends Component {
 
   /** Returns attack speed with Last Stand applied, without changing charm-adjusted raw stats. */
   public float getEffectiveAttackSpeed() {
-    return isLastStandActive()
-        ? attackSpeed * PlayerAbilitiesComponent.LAST_STAND_MULTIPLIER
-        : attackSpeed;
+    return LastStand.isActiveOn(entity) ? attackSpeed * LastStand.MULTIPLIER : attackSpeed;
   }
 
   /**
@@ -269,8 +259,7 @@ public class CombatStatsComponent extends Component {
       return;
     }
 
-    if (invulnerable
-        || (isHostileAttacker(attacker) && PlayerAbilitiesComponent.isInvisible(entity))) {
+    if (invulnerable || (isHostileAttacker(attacker) && Invisibility.isActiveOn(entity))) {
       triggerDamageBlocked();
       return;
     }

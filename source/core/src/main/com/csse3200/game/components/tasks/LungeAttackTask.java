@@ -3,7 +3,7 @@ package com.csse3200.game.components.tasks;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
-import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.statuseffects.Invisibility;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.GameTime;
@@ -62,7 +62,7 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
   @Override
   public void update() {
     long now = gameTime.getTime();
-    if (PlayerAbilitiesComponent.isUntargetable(target)) {
+    if (Invisibility.isUntargetable(target)) {
       if (phase != Phase.DONE) {
         endDash(now);
       }
@@ -96,7 +96,7 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
 
   @Override
   public int getPriority() {
-    if (PlayerAbilitiesComponent.isUntargetable(target)) {
+    if (Invisibility.isUntargetable(target)) {
       // Stop the dash even if the scheduler has no replacement task.
       if (status == Status.ACTIVE && phase != Phase.DONE) {
         endDash(gameTime.getTime());

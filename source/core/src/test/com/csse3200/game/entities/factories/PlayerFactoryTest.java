@@ -16,6 +16,8 @@ import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.statuseffects.Invisibility;
+import com.csse3200.game.components.statuseffects.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
@@ -64,11 +66,11 @@ class PlayerFactoryTest {
     // Initialise only the integration under test, avoiding unrelated UI and input lifecycles.
     firstAbilities.create();
     secondAbilities.create();
-    assertFalse(firstAbilities.isInvisible());
-    assertFalse(firstAbilities.isLastStandActive());
-    assertTrue(firstAbilities.tryInvisibility());
-    assertTrue(firstAbilities.isInvisible());
-    assertFalse(secondAbilities.isInvisible());
+    assertFalse(firstAbilities.isActive(Invisibility.class));
+    assertFalse(firstAbilities.isActive(LastStand.class));
+    assertTrue(firstAbilities.tryActivate(Invisibility.class));
+    assertTrue(firstAbilities.isActive(Invisibility.class));
+    assertFalse(secondAbilities.isActive(Invisibility.class));
   }
 
   @Test
@@ -82,18 +84,18 @@ class PlayerFactoryTest {
     int rawAttack = combat.getBaseAttack();
     float rawAttackSpeed = combat.getAttackSpeed();
     float movementSpeed = combat.getMovementSpeed();
-    abilities.enableLastStand();
+    abilities.unlock(LastStand.class);
     combat.takeDamage(
         combat.getHealth() - 1,
         new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
 
-    assertTrue(abilities.isLastStandActive());
+    assertTrue(abilities.isActive(LastStand.class));
     assertEquals(Math.round(rawAttack * 1.5f), combat.getEffectiveBaseAttack());
     assertEquals(rawAttackSpeed * 1.5f, combat.getEffectiveAttackSpeed());
     assertEquals(rawAttack, combat.getBaseAttack());
     assertEquals(rawAttackSpeed, combat.getAttackSpeed());
     assertEquals(movementSpeed, combat.getMovementSpeed());
-    when(time.getTime()).thenReturn(PlayerAbilitiesComponent.LAST_STAND_DURATION_MS);
+    when(time.getTime()).thenReturn(LastStand.DURATION_MS);
     assertEquals(rawAttack, combat.getEffectiveBaseAttack());
     assertEquals(rawAttackSpeed, combat.getEffectiveAttackSpeed());
   }

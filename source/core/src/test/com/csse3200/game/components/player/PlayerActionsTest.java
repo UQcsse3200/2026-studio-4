@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.statuseffects.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -223,7 +224,7 @@ class PlayerActionsTest {
             .addComponent(new PlayerAnimationController());
     buffed.create();
 
-    abilities.enableLastStand();
+    abilities.unlock(LastStand.class);
     combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
 
     buffed.getEvents().trigger("walk", Vector2Utils.RIGHT.cpy());
