@@ -1,0 +1,129 @@
+Medusa/Idle.png
+size: 2048, 128
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+default
+    rotate: false
+    xy: 0,0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 0
+move
+    rotate: false
+    xy: 0, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 0
+move
+    rotate: false
+    xy: 128,0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 1
+move
+    rotate: false
+    xy: 256, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 2
+move
+    rotate: false
+    xy: 364, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 3
+move
+    rotate: false
+    xy: 512,0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 4
+move
+    rotate: false
+    xy: 640, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 5
+move
+    rotate: false
+    xy: 768, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 6
+
+Medusa/Idle_2.png
+size: 640, 128
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+    rotate: false
+    xy: 0,0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 7
+move
+    rotate: false
+    xy: 128, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 8
+move
+    rotate: false
+    xy: 256,0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 9
+move
+    rotate: false
+    xy: 384, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 10
+move
+    rotate: false
+    xy: 512, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 11
+
+Medusa/Dead.png
+size: 384, 128
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+    rotate: false
+    xy: 0, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 0
+dieAnimation
+    rotate: false
+    xy: 128, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 1
+dieAnimation
+    rotate: false
+    xy: , 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 2

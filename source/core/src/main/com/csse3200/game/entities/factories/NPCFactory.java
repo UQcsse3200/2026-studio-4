@@ -42,7 +42,39 @@ public class NPCFactory {
   private static final float CHASE_SPEED = 2.5f;
   private static final String DEFAULT_ANIMATION = "default";
   private static final String DIE_ANIMATION = "dieAnimation";
+  private static final String MOVE = "move";
   private static final String CHASE_ANIMATION = "chase";
+
+  public static Entity createGiantEnemy(Entity target, String skin) {
+    Entity giantEnemy = createBaseNPC();
+    GiantEnemyConfig config = configs.giantEnemy;
+
+    AITaskComponent aiComponent =
+        new AITaskComponent(target)
+            .addTask(new WanderTask(config.movement, 1f))
+            .addTask(new ChaseTask(target, 10, 3f, 10f));
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
+    animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
+    animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+
+    giantEnemy
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
+        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
+        .addComponent(aiComponent)
+        .addComponent(animator)
+        .addComponent(new EnemyAnimationController());
+    giantEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
+    giantEnemy.setScale(2, 2);
+
+    giantEnemy.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(0.5f, 0.5f));
+
+    return giantEnemy;
+  }
 
   /**
    * Creates a bomb Enemy entity.

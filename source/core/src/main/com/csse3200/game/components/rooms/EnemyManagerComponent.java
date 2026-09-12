@@ -47,22 +47,23 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
     switch (spawn.type) {
+      case GIANT:
+        return NPCFactory.createGiantEnemy(target, "images/bombEnemy.atlas");
       case BOMB:
         return NPCFactory.createBombEnemy(target, "images/bombEnemy.atlas");
-      case CHASE:
+      case BEETLE:
         return NPCFactory.createChaseEnemy(target, true, "images/chaseEnemy.atlas");
-      case GREEK_FLYING:
+      case MEDUSA:
+        Entity medusa = NPCFactory.createChaseEnemy(target, true, "images/medusa.atlas");
+        medusa.setScale(2, 2);
+        return medusa;
+      case HARPY:
         TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
         Vector2 leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);
         Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
         Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
         return NPCFactory.createFloatingDemon(
-            target,
-            leftPoint,
-            topPoint,
-            rightPoint,
-            this::spawnEntity,
-            "images/floatingDemon.atlas");
+            target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/harpy.atlas");
       case CERBERUS:
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
