@@ -175,11 +175,11 @@ public class NPCFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
 
-    animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     Entity demon = createBaseNPC();
 
