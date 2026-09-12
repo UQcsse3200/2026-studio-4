@@ -54,7 +54,7 @@ public class FinalBossStageOneConfig {
   public float petrificationRadius = 1.2f;
   public float petrificationSlowMultiplier = 0.5f;
   public float petrificationSlowDuration = 2f;
-  public float petrificationCooldown = 4f;
+  public float petrificationCooldown = 0.5f;
 
   /** Validates values required by the Stage 1 runtime. */
   public void validate() {
