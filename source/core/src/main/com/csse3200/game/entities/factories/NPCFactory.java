@@ -97,13 +97,12 @@ public class NPCFactory {
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("fuse", 0.1f, Animation.PlayMode.LOOP);
 
     bombEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
-        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
         .addComponent(aiComponent)
         .addComponent(animator)
-        .addComponent(new KnockbackComponent(20))
         .addComponent(new ExplodeComponent(target))
         .addComponent(new EnemyAnimationController());
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();

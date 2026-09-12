@@ -21,6 +21,7 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener("dieAnimation", this::animateDie);
     entity.getEvents().addListener("patrolStart", this::animatePatrol);
     entity.getEvents().addListener("rangedAttack", this::animateAttack);
+    entity.getEvents().addListener("fuseStarted", this::animateFuse);
     entity.getEvents().addListener("default", this::animatePause);
   }
 
@@ -50,6 +51,9 @@ public class EnemyAnimationController extends Component {
 
   private void animatePause() {
     animator.startAnimation("default");
+  }
+  private void animateFuse() {
+    animator.startAnimation("fuse");
   }
 
   private void animatePatrol() {
