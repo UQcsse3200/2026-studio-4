@@ -219,6 +219,7 @@ public class NPCFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new StatusEffectsControllerComponent())
             .addComponent(new EnemyDeathComponent(true));
 
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);

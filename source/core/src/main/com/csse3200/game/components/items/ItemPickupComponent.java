@@ -4,14 +4,13 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.items.Charm;
+import com.csse3200.game.items.Item;
+import com.csse3200.game.items.charms.Charm;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Lets an entity (the player) pick up charms dropped in the game world.
@@ -30,17 +29,13 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Requires {@link HitboxComponent} and {@link InventoryComponent} on this entity.
  */
-public class CharmPickupComponent extends Component {
-  private static final Logger logger = LoggerFactory.getLogger(CharmPickupComponent.class);
-
+public class ItemPickupComponent extends Component {
   private HitboxComponent hitboxComponent;
-  private InventoryComponent inventoryComponent;
   private final Set<Entity> nearbyItems = new LinkedHashSet<>();
 
   @Override
   public void create() {
     hitboxComponent = entity.getComponent(HitboxComponent.class);
-    inventoryComponent = entity.getComponent(InventoryComponent.class);
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
     entity.getEvents().addListener("collisionEnd", this::onCollisionEnd);
     entity.getEvents().addListener("itemPickup", this::onItemPickup);
@@ -84,11 +79,10 @@ public class CharmPickupComponent extends Component {
       return;
     }
 
-    Charm charm = itemComponent.getCharm();
-    inventoryComponent.addCharm(charm);
+    Item item = itemComponent.getItem();
+    item.pickUp(entity);
+
     nearbyItems.remove(itemEntity);
     itemEntity.dispose();
-
-    logger.info("Picked up charm: {}", charm.getName());
   }
 }

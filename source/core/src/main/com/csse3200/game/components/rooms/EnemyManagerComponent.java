@@ -6,7 +6,6 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.CerberusFactory;
 import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
@@ -62,20 +61,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case CERBERUS:
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
-
-        return CerberusFactory.createCerberus(
-            anchorPoint, this::spawnAndTrackCerberusHead, "images/cerberus.atlas");
-
+        return NPCFactory.createCerberus(anchorPoint, "this::spawnEntity");
       case FINAL_BOSS:
         return FinalBossFactory.createFinalBoss(target, this::spawnEntity);
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
     }
-  }
-
-  private void spawnAndTrackCerberusHead(Entity head) {
-    track(head);
-    spawnEntity(head);
   }
 
   /** Tracks an enemy and any children it spawns. Package-private for testing. */
