@@ -475,14 +475,14 @@ UI_TravelBook_Toggle03b
   index: -1
 pixel_16
   rotate: false
-  xy: 1, 750
+  xy: 1, 1264
   size: 512, 512
   orig: 512, 512
   offset: 0, 0
   index: -1
 pixel_18
   rotate: false
-  xy: 1, 1264
+  xy: 1, 750
   size: 512, 512
   orig: 512, 512
   offset: 0, 0
