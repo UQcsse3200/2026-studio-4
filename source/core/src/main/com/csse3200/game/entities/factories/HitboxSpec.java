@@ -175,7 +175,9 @@ public class HitboxSpec {
     return this;
   }
 
-  /** @return appearance source, independent of the follow owner, or null */
+  /**
+   * @return appearance source, independent of the follow owner, or null
+   */
   public Entity getVisualSource() {
     return visualSource;
   }

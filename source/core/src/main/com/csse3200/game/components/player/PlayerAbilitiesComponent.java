@@ -114,7 +114,10 @@ public class PlayerAbilitiesComponent extends Component {
 
   private void onDamageTaken(Entity attacker, int healthLost, int remainingHealth) {
     update();
-    if (!isAlive() || !lastStandEnabled || healthLost <= 0 || remainingHealth <= 0
+    if (!isAlive()
+        || !lastStandEnabled
+        || healthLost <= 0
+        || remainingHealth <= 0
         || (long) remainingHealth * 100 >= (long) stats.getMaxHealth() * LAST_STAND_HEALTH_PERCENT
         || !CombatStatsComponent.isHostileAttacker(attacker)) {
       return;

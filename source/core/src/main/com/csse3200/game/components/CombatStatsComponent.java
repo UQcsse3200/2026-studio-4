@@ -251,14 +251,16 @@ public class CombatStatsComponent extends Component {
    * for actual health loss, after applying damage. Direct health setters do not emit this event.
    *
    * @param damage Amount of damage to deal
-   * @param attacker original damage source, including projectile entities; null for unattributed damage
+   * @param attacker original damage source, including projectile entities; null for unattributed
+   *     damage
    */
   public void takeDamage(int damage, Entity attacker) {
     if (damage <= 0) {
       return;
     }
 
-    if (invulnerable || (isHostileAttacker(attacker) && PlayerAbilitiesComponent.isInvisible(entity))) {
+    if (invulnerable
+        || (isHostileAttacker(attacker) && PlayerAbilitiesComponent.isInvisible(entity))) {
       triggerDamageBlocked();
       return;
     }
@@ -276,7 +278,9 @@ public class CombatStatsComponent extends Component {
     int remainingHealth = Math.max(0, Math.min(maxHealth, newHealth));
     setHealth(newHealth);
     if (entity != null && remainingHealth < previousHealth) {
-      entity.getEvents().trigger("damageTaken", attacker, previousHealth - remainingHealth, remainingHealth);
+      entity
+          .getEvents()
+          .trigger("damageTaken", attacker, previousHealth - remainingHealth, remainingHealth);
     }
     applyHitreaction(attacker);
   }

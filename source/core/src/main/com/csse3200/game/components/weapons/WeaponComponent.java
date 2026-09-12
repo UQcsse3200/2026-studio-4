@@ -12,8 +12,8 @@ import com.csse3200.game.entities.factories.HitboxSpec;
  * weapon-specific hitbox.
  *
  * <p>The same entity must also have a {@link WeaponStatsComponent}. Hitbox damage is {@code
- * round(wielder.effectiveBaseAttack * weapon.multiplier)}; use {@link #resolveHitboxDamage()} when filling
- * {@link HitboxSpec#damage(int)}.
+ * round(wielder.effectiveBaseAttack * weapon.multiplier)}; use {@link #resolveHitboxDamage()} when
+ * filling {@link HitboxSpec#damage(int)}.
  *
  * <p>Listens for a {@code "weaponAttack"} event carrying a {@link Vector2} direction (triggered by,
  * e.g., a player action or AI controller), and calls {@link #attack(Vector2, Vector2)} using the
@@ -114,8 +114,8 @@ public abstract class WeaponComponent extends Component {
   protected abstract void createAttack(Vector2 origin, Vector2 direction);
 
   /**
-   * Damage for this weapon's spawned hitboxes: the wielder's effective base attack scaled by the weapon
-   * multiplier, rounded. A wielder without combat stats is treated as 0 base attack.
+   * Damage for this weapon's spawned hitboxes: the wielder's effective base attack scaled by the
+   * weapon multiplier, rounded. A wielder without combat stats is treated as 0 base attack.
    *
    * @return {@code round(wielder.effectiveBaseAttack * multiplier)}
    */
