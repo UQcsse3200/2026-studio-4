@@ -8,6 +8,7 @@ public class EnemySpawnConfig extends PositionConfig {
     BOMB,
     CHASE,
     FLOATING_DEMON,
+    BOW,
     FINAL_BOSS
   }
 }

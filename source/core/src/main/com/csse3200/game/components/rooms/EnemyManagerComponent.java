@@ -9,7 +9,8 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.WeaponItem;
+import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -63,6 +64,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             rightPoint,
             this::spawnEntity,
             "images/floatingDemon.atlas");
+      case BOW:
+        return ItemFactory.createItem(WeaponItem.createWeaponItem(WeaponType.BOW));
       case FINAL_BOSS:
         return FinalBossFactory.createFinalBoss(target, this::spawnEntity);
       default:
@@ -93,7 +96,10 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   private void spawnItemDrop(Entity enemy) {
-    Entity item = ItemFactory.createDrop(ItemType.STRENGTH_CHARM, enemy.getPosition());
+    Entity item = ItemFactory.createDrop(enemy.getPosition());
+    if (item == null) {
+      return;
+    }
 
     // spawning item should not use the spawnEntity as items are stored in their own list.
     droppedItems.add(item);
