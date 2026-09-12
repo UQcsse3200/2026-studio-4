@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -36,7 +37,11 @@ class PlayerAbilitiesComponentTest {
     when(time.getTime()).thenReturn(START);
     stats = new CombatStatsComponent(100, 10, 2f, 4f);
     abilities = new PlayerAbilitiesComponent(time);
-    player = new Entity().addComponent(stats).addComponent(abilities);
+    player =
+        new Entity()
+            .addComponent(stats)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
     player.create();
     hostile = new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
     player.getEvents().addListener("abilityUsed", (EventListener1<String>) used::add);
@@ -365,7 +370,11 @@ class PlayerAbilitiesComponentTest {
     PlayerAbilitiesComponent registered = new PlayerAbilitiesComponent();
     ServiceLocator.registerTimeSource(time);
     CombatStatsComponent combat = new CombatStatsComponent(100, 10);
-    Entity target = new Entity().addComponent(combat).addComponent(registered);
+    Entity target =
+        new Entity()
+            .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(registered);
     target.create();
     ServiceLocator.registerTimeSource(earlierClock);
     registered.enableLastStand();
@@ -386,7 +395,10 @@ class PlayerAbilitiesComponentTest {
     when(time.getTime()).thenReturn(0L);
     PlayerAbilitiesComponent injected = new PlayerAbilitiesComponent(time);
     Entity target =
-        new Entity().addComponent(new CombatStatsComponent(100, 10)).addComponent(injected);
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(injected);
     target.create();
     assertTrue(injected.tryInvisibility());
     when(time.getTime()).thenReturn(15_000L);

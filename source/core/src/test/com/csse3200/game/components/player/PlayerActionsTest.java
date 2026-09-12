@@ -13,6 +13,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -215,6 +216,7 @@ class PlayerActionsTest {
         new Entity()
             .addComponent(physics)
             .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
             .addComponent(abilities)
             .addComponent(new PlayerActions())
             .addComponent(mock(AnimationRenderComponent.class))

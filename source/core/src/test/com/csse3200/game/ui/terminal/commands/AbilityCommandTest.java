@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.entities.Entity;
@@ -32,7 +33,11 @@ class AbilityCommandTest {
     when(time.getTime()).thenReturn(1_000L);
     stats = new CombatStatsComponent(100, 10);
     abilities = new PlayerAbilitiesComponent(time);
-    Entity player = new Entity().addComponent(stats).addComponent(abilities);
+    Entity player =
+        new Entity()
+            .addComponent(stats)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
     player.create();
     player.getEvents().addListener("abilityUsed", (EventListener1<String>) used::add);
     command = new AbilityCommand(player);

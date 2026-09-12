@@ -2,11 +2,14 @@ package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.statuseffects.Invisibility;
+import com.csse3200.game.components.statuseffects.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 
-/** Player spell and passive deadlines, independent of frame ordering and raw combat stats. */
+/** Player spell cooldowns and passive trigger; active lifetimes belong to status effects. */
 public class PlayerAbilitiesComponent extends Component {
   public static final long INVISIBILITY_DURATION_MS = 15_000;
   public static final long INVISIBILITY_COOLDOWN_MS = 45_000;
@@ -24,11 +27,10 @@ public class PlayerAbilitiesComponent extends Component {
 
   private GameTime time;
   private CombatStatsComponent stats;
+  private StatusEffectsControllerComponent effects;
   private boolean lastStandEnabled;
   private boolean disposed;
-  private long invisibleUntil;
   private long invisibilityReadyAt;
-  private long lastStandUntil;
   private long lastStandReadyAt;
 
   /** Uses the registered game clock when the entity is created. */
@@ -45,6 +47,16 @@ public class PlayerAbilitiesComponent extends Component {
       time = ServiceLocator.getTimeSource();
     }
     stats = entity.getComponent(CombatStatsComponent.class);
+    effects = entity.getComponent(StatusEffectsControllerComponent.class);
+    if (stats != null && effects == null) {
+      throw new IllegalStateException("PlayerAbilities requires StatusEffectsControllerComponent");
+    }
+    if (effects != null) {
+      effects.registerEffect(
+          new Invisibility(time, INVISIBILITY_DURATION_MS, () -> onEnded(INVISIBILITY)));
+      effects.registerEffect(
+          new LastStand(time, LAST_STAND_DURATION_MS, () -> onEnded(LAST_STAND)));
+    }
     entity.getEvents().addListener("damageTaken", this::onDamageTaken);
     entity.getEvents().addListener("entityDied", this::update);
   }
@@ -67,13 +79,15 @@ public class PlayerAbilitiesComponent extends Component {
   /** Returns whether hostile damage immunity and undetectability are still active. */
   public boolean isInvisible() {
     update();
-    return invisibleUntil != 0;
+    Invisibility effect = effects == null ? null : effects.getEffect(Invisibility.class);
+    return effect != null && effect.isActive();
   }
 
   /** Returns whether the temporary base-attack and attack-speed multiplier is active. */
   public boolean isLastStandActive() {
     update();
-    return lastStandUntil != 0;
+    LastStand effect = effects == null ? null : effects.getEffect(LastStand.class);
+    return effect != null && effect.isActive();
   }
 
   /** Enables the passive once; repeated calls never trigger it or reset its cooldown. */
@@ -87,7 +101,7 @@ public class PlayerAbilitiesComponent extends Component {
   public boolean tryInvisibility() {
     update();
     if (!isAlive()) {
-      if (!disposed && entity != null) {
+      if (!disposed && entity != null && (effects == null || !effects.isDisposed())) {
         entity.getEvents().trigger("abilityFailed", INVISIBILITY, "Player is not alive");
       }
       return false;
@@ -97,7 +111,7 @@ public class PlayerAbilitiesComponent extends Component {
       entity.getEvents().trigger("abilityFailed", INVISIBILITY, "Ability is on cooldown");
       return false;
     }
-    invisibleUntil = now + INVISIBILITY_DURATION_MS;
+    effects.getEffect(Invisibility.class).activate();
     invisibilityReadyAt = now + INVISIBILITY_COOLDOWN_MS;
     entity.getEvents().trigger("abilityUsed", INVISIBILITY);
     return true;
@@ -106,7 +120,8 @@ public class PlayerAbilitiesComponent extends Component {
   /** Returns invisibility effect time remaining in milliseconds. */
   public long getInvisibilityRemainingMs() {
     update();
-    return isAlive() ? Math.max(0, invisibleUntil - time.getTime()) : 0;
+    Invisibility effect = effects == null ? null : effects.getEffect(Invisibility.class);
+    return isAlive() && effect != null ? effect.getRemainingDuration() : 0;
   }
 
   /** Returns cooldown remaining from the cast, including the active period, in milliseconds. */
@@ -118,7 +133,8 @@ public class PlayerAbilitiesComponent extends Component {
   /** Returns Last Stand effect time remaining in milliseconds. */
   public long getLastStandRemainingMs() {
     update();
-    return isAlive() ? Math.max(0, lastStandUntil - time.getTime()) : 0;
+    LastStand effect = effects == null ? null : effects.getEffect(LastStand.class);
+    return isAlive() && effect != null ? effect.getRemainingDuration() : 0;
   }
 
   /** Returns cooldown remaining from the passive trigger in milliseconds. */
@@ -141,39 +157,37 @@ public class PlayerAbilitiesComponent extends Component {
     if (now < lastStandReadyAt) {
       return;
     }
-    lastStandUntil = now + LAST_STAND_DURATION_MS;
+    effects.getEffect(LastStand.class).activate();
     lastStandReadyAt = now + LAST_STAND_COOLDOWN_MS;
     entity.getEvents().trigger("abilityUsed", LAST_STAND);
   }
 
   private boolean isAlive() {
-    return !disposed && stats != null && !stats.isDead() && time != null;
+    return !disposed
+        && stats != null
+        && !stats.isDead()
+        && time != null
+        && effects != null
+        && !effects.isDisposed();
   }
 
   @Override
   public void update() {
-    boolean alive = isAlive();
-    long now = alive ? time.getTime() : 0;
-    boolean endInvisibility = invisibleUntil != 0 && (!alive || now >= invisibleUntil);
-    boolean endLastStand = lastStandUntil != 0 && (!alive || now >= lastStandUntil);
-    // Clear state before notifying observers, which may query abilities again.
-    if (endInvisibility) {
-      invisibleUntil = 0;
-    }
-    if (endLastStand) {
-      lastStandUntil = 0;
-    }
-    if (!alive) {
+    if (!isAlive()) {
       invisibilityReadyAt = 0;
       lastStandReadyAt = 0;
       lastStandEnabled = false;
+      if (effects != null) {
+        effects.clearTimedEffects();
+      }
+    } else {
+      effects.refreshTimedEffects();
     }
-    if (endInvisibility) {
-      entity.getEvents().trigger("abilityEnded", INVISIBILITY);
-    }
-    if (endLastStand) {
-      entity.getEvents().trigger("abilityEnded", LAST_STAND);
-    }
+  }
+
+  private void onEnded(String ability) {
+    update();
+    entity.getEvents().trigger("abilityEnded", ability);
   }
 
   @Override

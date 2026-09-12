@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.weapons.ProjectileComponent;
 import com.csse3200.game.entities.Entity;
@@ -163,7 +164,11 @@ class FinalBossExplosiveSummonComponentTest {
   @Test
   void shouldPreventProximityWarningUntilInvisibilityExpires() {
     PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent();
-    player = new Entity().addComponent(new CombatStatsComponent(100, 10)).addComponent(abilities);
+    player =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
     player.create();
     assertTrue(abilities.tryInvisibility());
     Entity summon = createSummon(1f);
@@ -189,7 +194,11 @@ class FinalBossExplosiveSummonComponentTest {
   @Test
   void shouldFinishArmedWarningWhileInvisibleWithoutDamagingPlayer() {
     PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent();
-    player = new Entity().addComponent(new CombatStatsComponent(100, 10)).addComponent(abilities);
+    player =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
     player.create();
     Entity summon = createSummon(1f);
     summon.setPosition(0f, 0f);
@@ -215,7 +224,11 @@ class FinalBossExplosiveSummonComponentTest {
   @Test
   void shouldAllowProjectileTriggeredExplosionWhilePlayerIsInvisible() {
     PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent();
-    player = new Entity().addComponent(new CombatStatsComponent(100, 10)).addComponent(abilities);
+    player =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
     player.create();
     assertTrue(abilities.tryInvisibility());
     Entity summon = createSummon(1f);

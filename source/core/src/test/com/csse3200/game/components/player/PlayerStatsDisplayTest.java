@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -46,6 +47,7 @@ class PlayerStatsDisplayTest {
     player =
         new Entity()
             .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
             .addComponent(abilities)
             .addComponent(new InventoryComponent(0))
             .addComponent(display);

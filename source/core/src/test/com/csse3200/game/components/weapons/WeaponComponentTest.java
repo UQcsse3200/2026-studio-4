@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.entities.Entity;
@@ -30,6 +31,7 @@ class WeaponComponentTest {
     Entity wielder =
         new Entity()
             .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
             .addComponent(abilities)
             .addComponent(stats)
             .addComponent(weapon);

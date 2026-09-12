@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.entities.Entity;
@@ -73,7 +74,11 @@ class RenderComponentTest {
     GameTime time = mock(GameTime.class);
     PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
     CombatStatsComponent combat = new CombatStatsComponent(100, 10);
-    Entity player = new Entity().addComponent(combat).addComponent(abilities);
+    Entity player =
+        new Entity()
+            .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
     player.create();
     abilities.enableLastStand();
     RecordingRender weaponRender = new RecordingRender();

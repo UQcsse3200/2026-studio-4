@@ -54,7 +54,11 @@ class CombatStatsComponentTest {
     GameTime time = mock(GameTime.class);
     CombatStatsComponent combat = new CombatStatsComponent(100, 11);
     PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
-    Entity player = new Entity().addComponent(combat).addComponent(abilities);
+    Entity player =
+        new Entity()
+            .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
     player.create();
     List<String> events = new ArrayList<>();
     player.getEvents().addListener("damageBlocked", () -> events.add("blocked"));
@@ -171,7 +175,11 @@ class CombatStatsComponentTest {
     when(time.getTime()).thenReturn(1_000L);
     CombatStatsComponent combat = new CombatStatsComponent(100, 10, 4f, 2f);
     PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
-    Entity player = new Entity().addComponent(combat).addComponent(abilities);
+    Entity player =
+        new Entity()
+            .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
     player.create();
 
     assertEquals(4f, combat.getEffectiveMovementSpeed());
@@ -193,7 +201,11 @@ class CombatStatsComponentTest {
     GameTime time = mock(GameTime.class);
     CombatStatsComponent combat = new CombatStatsComponent(100, 11, 3f, 2f);
     PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
-    Entity player = new Entity().addComponent(combat).addComponent(abilities);
+    Entity player =
+        new Entity()
+            .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
     player.create();
     abilities.enableLastStand();
     assertEquals(11, combat.getEffectiveBaseAttack());

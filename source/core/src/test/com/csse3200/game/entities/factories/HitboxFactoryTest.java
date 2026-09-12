@@ -20,6 +20,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.weapons.FollowComponent;
@@ -53,7 +54,11 @@ class HitboxFactoryTest {
     GameTime time = mock(GameTime.class);
     PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
     CombatStatsComponent combat = new CombatStatsComponent(100, 10);
-    Entity source = new Entity().addComponent(combat).addComponent(abilities);
+    Entity source =
+        new Entity()
+            .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
     source.create();
     Entity hitbox =
         HitboxFactory.createHitbox(meleeSpec().texture("weapon.png").visualSource(source));
@@ -128,6 +133,7 @@ class HitboxFactoryTest {
     Entity target =
         new Entity()
             .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
             .addComponent(abilities)
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER));

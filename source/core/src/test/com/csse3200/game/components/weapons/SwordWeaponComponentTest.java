@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.entities.Entity;
@@ -91,6 +92,7 @@ class SwordWeaponComponentTest {
     Entity player =
         new Entity()
             .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
             .addComponent(abilities)
             .addComponent(new WeaponStatsComponent(0.5f, 0.8f, 2f))
             .addComponent(sword);

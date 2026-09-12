@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.ExplodeComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -129,6 +130,7 @@ class BombEnemyTest {
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent())
             .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new StatusEffectsControllerComponent())
             .addComponent(abilities);
     player.create();
 
