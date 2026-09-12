@@ -126,9 +126,8 @@ class StatusEffectsControllerComponentTest {
     assertEquals(List.of("invisibility", "laststand"), ended);
     assertTrue(failed.isEmpty());
     // A disposed controller keeps nothing and takes nothing new.
-    assertThrows(
-        IllegalStateException.class,
-        () -> controller.registerEffect(new TimedStatusEffect(time, 1)));
+    TimedStatusEffect rejected = new TimedStatusEffect(time, 1);
+    assertThrows(IllegalStateException.class, () -> controller.registerEffect(rejected));
   }
 
   @Test
