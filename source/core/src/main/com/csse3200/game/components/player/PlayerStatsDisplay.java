@@ -14,7 +14,6 @@ public class PlayerStatsDisplay extends UIComponent {
   private Table table;
   private Label healthValueLabel;
   private Label strengthLabel;
-  private Label charmCountLabel;
   private Label movementSpeedLabel;
   private Label attackSpeedLabel;
   private ProgressBar healthBar;
@@ -113,9 +112,6 @@ public class PlayerStatsDisplay extends UIComponent {
     asBlock.add(attackSpeedLabel);
 
     // Strength box
-    int charmCount = entity.getComponent(InventoryComponent.class).getCharmCount();
-    charmCountLabel = new Label(String.format("#: %d", charmCount), skin, LABEL_STYLE);
-
     Image strengthIcon = new Image(skin.getDrawable("strength-icon")); // placeholder
     strengthLabel = new Label(String.valueOf(stats.getBaseAttack()), skin, LABEL_STYLE);
     strengthLabel.setFontScale(1f);
@@ -126,8 +122,6 @@ public class PlayerStatsDisplay extends UIComponent {
     strengthBox.add(strengthIcon).size(28f, 28f);
     strengthBox.row().padTop(2f);
     strengthBox.add(strengthLabel);
-    strengthBox.row().padTop(2f);
-    strengthBox.add(charmCountLabel);
 
     // Row below health bar
     Table subStatsRow = new Table();
@@ -202,13 +196,6 @@ public class PlayerStatsDisplay extends UIComponent {
   public void updatePlayerStrengthUI(int strength) {
     CharSequence text = String.format("%d", strength);
     strengthLabel.setText(text);
-  }
-
-  /** Updates the displayed charm count after a charm is added to or removed from the inventory. */
-  public void updateCharmCountUI() {
-    int charmCount = entity.getComponent(InventoryComponent.class).getCharmCount();
-    CharSequence text = String.format("#: %d", charmCount);
-    charmCountLabel.setText(text);
   }
 
   @Override
