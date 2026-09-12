@@ -14,6 +14,7 @@ com.csse3200.game.components.player
 com.csse3200.game.components.rooms
 com.csse3200.game.components.rooms.configs
 com.csse3200.game.components.settingsmenu
+com.csse3200.game.components.statuseffects
 com.csse3200.game.components.tasks
 com.csse3200.game.components.weapons
 com.csse3200.game.concurrency
