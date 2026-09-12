@@ -135,13 +135,16 @@ public class CombatStatsComponent extends Component {
   /**
    * Sets the entity's attack damage. Attack damage has a minimum bound of 0.
    *
+   * <p>The {@code updateBaseAttack} event carries {@link #getEffectiveBaseAttack()}, so listeners
+   * render what the entity actually hits for without consulting any ability.
+   *
    * @param attack Attack damage
    */
   public void setBaseAttack(int attack) {
     if (attack >= 0) {
       this.baseAttack = attack;
       if (entity != null) {
-        entity.getEvents().trigger("updateBaseAttack", this.baseAttack);
+        entity.getEvents().trigger("updateBaseAttack", getEffectiveBaseAttack());
       }
     } else {
       logger.error("Can not set base attack to a negative attack value");
@@ -174,13 +177,16 @@ public class CombatStatsComponent extends Component {
   /**
    * Sets the entity's movement speed. Movement Speed has a minimum bound of 0.
    *
+   * <p>The {@code updateMovementSpeed} event carries {@link #getEffectiveMovementSpeed()}, so
+   * listeners render what the entity actually moves at without consulting any ability.
+   *
    * @param newSpeed new movement speed
    */
   public void setMovementSpeed(float newSpeed) {
     if (newSpeed >= 0) {
       this.movementSpeed = newSpeed;
       if (entity != null) {
-        entity.getEvents().trigger("updateMovementSpeed", this.movementSpeed);
+        entity.getEvents().trigger("updateMovementSpeed", getEffectiveMovementSpeed());
       }
     } else {
       logger.error("Can not set movement speed of entity to a negative value");
@@ -213,13 +219,16 @@ public class CombatStatsComponent extends Component {
   /**
    * Sets the entity's attack speed. Attack Speed has a minimum bound of 0.
    *
+   * <p>The {@code updateAttackSpeed} event carries {@link #getEffectiveAttackSpeed()}, so listeners
+   * render what the entity actually attacks at without consulting any ability.
+   *
    * @param newSpeed entity's new attack speed
    */
   public void setAttackSpeed(float newSpeed) {
     if (newSpeed >= 0) {
       this.attackSpeed = newSpeed;
       if (entity != null) {
-        entity.getEvents().trigger("updateAttackSpeed", this.attackSpeed);
+        entity.getEvents().trigger("updateAttackSpeed", getEffectiveAttackSpeed());
       }
     } else {
       logger.error("Can not set attack speed of entity to a negative value");
@@ -233,6 +242,24 @@ public class CombatStatsComponent extends Component {
    */
   public void addAttackSpeed(float speed) {
     setAttackSpeed(this.attackSpeed + speed);
+  }
+
+  /**
+   * Re-emits the base attack, movement speed and attack speed events carrying the current effective
+   * values.
+   *
+   * <p>The raw stats do not change on their own when a multiplier such as Last Stand starts or
+   * stops applying, so no setter fires and listeners would otherwise keep showing the pre-buff
+   * numbers. Whatever owns the multiplier calls this instead, which keeps every listener on the one
+   * existing stat event per stat rather than needing to know which abilities exist.
+   */
+  public void notifyEffectiveStatsChanged() {
+    if (entity == null) {
+      return;
+    }
+    entity.getEvents().trigger("updateBaseAttack", getEffectiveBaseAttack());
+    entity.getEvents().trigger("updateMovementSpeed", getEffectiveMovementSpeed());
+    entity.getEvents().trigger("updateAttackSpeed", getEffectiveAttackSpeed());
   }
 
   /**

@@ -218,8 +218,10 @@ class CombatStatsComponentTest {
     assertEquals(17, combat.getEffectiveBaseAttack());
     assertEquals(3f, combat.getEffectiveAttackSpeed());
     assertEquals(4.5f, combat.getEffectiveMovementSpeed());
-    List<Integer> rawUpdates = new ArrayList<>();
-    player.getEvents().addListener("updateBaseAttack", (EventListener1<Integer>) rawUpdates::add);
+    List<Integer> attackUpdates = new ArrayList<>();
+    player
+        .getEvents()
+        .addListener("updateBaseAttack", (EventListener1<Integer>) attackUpdates::add);
     combat.addBaseAttack(2);
     combat.addAttackSpeed(2f);
     assertEquals(20, combat.getEffectiveBaseAttack());
@@ -227,7 +229,8 @@ class CombatStatsComponentTest {
     assertEquals(13, combat.getBaseAttack());
     assertEquals(4f, combat.getAttackSpeed());
     assertEquals(3f, combat.getMovementSpeed());
-    assertEquals(List.of(13), rawUpdates);
+    // The raw stat keeps the charm's +2, while the event reports what the player now hits for.
+    assertEquals(List.of(20), attackUpdates);
 
     CombatStatsComponent victim = new CombatStatsComponent(100, 0);
     Entity target = new Entity().addComponent(victim);
@@ -244,7 +247,8 @@ class CombatStatsComponentTest {
     when(time.getTime()).thenReturn(LastStand.DURATION_MS);
     assertEquals(13, combat.getEffectiveBaseAttack());
     assertEquals(4f, combat.getEffectiveAttackSpeed());
-    assertEquals(List.of(13), rawUpdates);
+    // Expiry republishes, so a listener falls back to the raw stat without watching the ability.
+    assertEquals(List.of(20, 13), attackUpdates);
   }
 
   @Test
@@ -255,6 +259,45 @@ class CombatStatsComponentTest {
     new Entity().addComponent(combat);
     assertEquals(11, combat.getEffectiveBaseAttack());
     assertEquals(2f, combat.getEffectiveAttackSpeed());
+  }
+
+  @Test
+  void shouldRepublishEffectiveStatEventsWhenLastStandStartsAndExpires() {
+    GameTime time = mock(GameTime.class);
+    when(time.getTime()).thenReturn(1_000L);
+    CombatStatsComponent combat = new CombatStatsComponent(100, 10, 4f, 2f);
+    PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
+    Entity player =
+        new Entity()
+            .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
+    player.create();
+
+    List<Integer> attack = new ArrayList<>();
+    List<Float> movement = new ArrayList<>();
+    List<Float> attackSpeed = new ArrayList<>();
+    player.getEvents().addListener("updateBaseAttack", (EventListener1<Integer>) attack::add);
+    player.getEvents().addListener("updateMovementSpeed", (EventListener1<Float>) movement::add);
+    player.getEvents().addListener("updateAttackSpeed", (EventListener1<Float>) attackSpeed::add);
+
+    abilities.unlock(LastStand.class);
+    combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
+
+    // A stat listener sees the buff on the stat event it already subscribes to, with no raw change.
+    assertEquals(List.of(15), attack);
+    assertEquals(List.of(6f), movement);
+    assertEquals(List.of(3f), attackSpeed);
+    assertEquals(10, combat.getBaseAttack());
+    assertEquals(4f, combat.getMovementSpeed());
+    assertEquals(2f, combat.getAttackSpeed());
+
+    when(time.getTime()).thenReturn(1_000L + LastStand.DURATION_MS);
+    player.update();
+
+    assertEquals(List.of(15, 10), attack);
+    assertEquals(List.of(6f, 4f), movement);
+    assertEquals(List.of(3f, 2f), attackSpeed);
   }
 
   private record DamageEvent(Entity attacker, int healthLost, int remainingHealth) {}

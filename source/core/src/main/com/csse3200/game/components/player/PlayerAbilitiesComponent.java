@@ -160,6 +160,18 @@ public class PlayerAbilitiesComponent extends Component {
     ability.start();
     readyAt.put(ability.getClass(), time.getTime() + ability.getCooldown());
     entity.getEvents().trigger(ABILITY_USED, ability.getName());
+    republishEffectiveStats();
+  }
+
+  /**
+   * An ability starting or ending can change what the player hits and moves at without touching a
+   * raw stat, so no setter fires. Republishing here keeps stat listeners on the existing per-stat
+   * events instead of having each of them subscribe to ability lifecycle events too.
+   */
+  private void republishEffectiveStats() {
+    if (stats != null) {
+      stats.notifyEffectiveStatsChanged();
+    }
   }
 
   private boolean isAlive() {
@@ -189,6 +201,7 @@ public class PlayerAbilitiesComponent extends Component {
   private void onEnded(PlayerAbility ability) {
     update();
     entity.getEvents().trigger(ABILITY_ENDED, ability.getName());
+    republishEffectiveStats();
   }
 
   @Override

@@ -16,7 +16,6 @@ public class PlayerStatsDisplay extends UIComponent {
   private Label movementSpeedLabel;
   private Label attackSpeedLabel;
   private ProgressBar healthBar;
-  private CombatStatsComponent stats;
   private int maxHealth;
   private int health;
 
@@ -29,18 +28,10 @@ public class PlayerStatsDisplay extends UIComponent {
     addActors();
 
     entity.getEvents().addListener("updateHealth", this::updatePlayerHealthUI);
+    entity.getEvents().addListener("updateBaseAttack", this::updatePlayerStrengthUI);
+    entity.getEvents().addListener("updateMovementSpeed", this::updatePlayerMovementSpeedUI);
+    entity.getEvents().addListener("updateAttackSpeed", this::updatePlayerAttackSpeedUI);
     entity.getEvents().addListener("updateMaxHealth", this::updatePlayerMaxHealthUI);
-    // The amplified lines are read back from the component, so the raw value carried by these
-    // events is ignored; Last Stand starting or expiring changes them without any raw stat change.
-    entity
-        .getEvents()
-        .addListener("updateBaseAttack", (Integer attack) -> updateAmplifiedStatsUI());
-    entity
-        .getEvents()
-        .addListener("updateMovementSpeed", (Float speed) -> updateAmplifiedStatsUI());
-    entity.getEvents().addListener("updateAttackSpeed", (Float speed) -> updateAmplifiedStatsUI());
-    entity.getEvents().addListener("abilityUsed", (String ability) -> updateAmplifiedStatsUI());
-    entity.getEvents().addListener("abilityEnded", (String ability) -> updateAmplifiedStatsUI());
   }
 
   /**
@@ -54,7 +45,7 @@ public class PlayerStatsDisplay extends UIComponent {
     table.setFillParent(true);
     table.padTop(45f).padLeft(5f);
 
-    stats = entity.getComponent(CombatStatsComponent.class);
+    CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
     maxHealth = stats.getMaxHealth();
     health = stats.getHealth();
 
@@ -71,10 +62,13 @@ public class PlayerStatsDisplay extends UIComponent {
             String.format("Health: %d / %d", stats.getHealth(), stats.getMaxHealth()),
             skin,
             LABEL_STYLE);
-    strengthLabel = new Label("", skin, LABEL_STYLE);
-    movementSpeedLabel = new Label("", skin, LABEL_STYLE);
-    attackSpeedLabel = new Label("", skin, LABEL_STYLE);
-    updateAmplifiedStatsUI();
+    strengthLabel =
+        new Label(String.format("Strength: %d", stats.getBaseAttack()), skin, LABEL_STYLE);
+    movementSpeedLabel =
+        new Label(
+            String.format("Movement Speed: %.2f", stats.getMovementSpeed()), skin, LABEL_STYLE);
+    attackSpeedLabel =
+        new Label(String.format("Attack Speed: %.2f", stats.getAttackSpeed()), skin, LABEL_STYLE);
     charmCountLabel =
         new Label(String.format("Strength Charms: %d", charmCount), skin, LABEL_STYLE);
 
@@ -111,15 +105,23 @@ public class PlayerStatsDisplay extends UIComponent {
   }
 
   /**
-   * Refreshes every stat line that Last Stand amplifies, showing the values the player currently
-   * fights and moves at rather than the raw stored stats. Called both when a raw stat changes and
-   * when the passive starts or expires, so the display tracks the buff live.
+   * Updates the player's movement speed on the ui.
+   *
+   * @param movementSpeed player movement speed
    */
-  public void updateAmplifiedStatsUI() {
-    strengthLabel.setText(String.format("Strength: %d", stats.getEffectiveBaseAttack()));
-    movementSpeedLabel.setText(
-        String.format("Movement Speed: %.2f", stats.getEffectiveMovementSpeed()));
-    attackSpeedLabel.setText(String.format("Attack Speed: %.2f", stats.getEffectiveAttackSpeed()));
+  public void updatePlayerMovementSpeedUI(float movementSpeed) {
+    CharSequence text = String.format("Movement Speed: %.2f", movementSpeed);
+    movementSpeedLabel.setText(text);
+  }
+
+  /**
+   * Updates the player's Attack Speed on the ui.
+   *
+   * @param attackSpeed player attack speed
+   */
+  public void updatePlayerAttackSpeedUI(float attackSpeed) {
+    CharSequence text = String.format("Attack Speed: %.2f", attackSpeed);
+    attackSpeedLabel.setText(text);
   }
 
   /**
@@ -130,6 +132,16 @@ public class PlayerStatsDisplay extends UIComponent {
   public void updatePlayerMaxHealthUI(int maxHealth) {
     this.maxHealth = maxHealth;
     healthBar.setRange(0, maxHealth);
+  }
+
+  /**
+   * Updates the player's strength on the ui.
+   *
+   * @param strength player strength, represented by base attack damage
+   */
+  public void updatePlayerStrengthUI(int strength) {
+    CharSequence text = String.format("Strength: %d", strength);
+    strengthLabel.setText(text);
   }
 
   /** Updates the displayed charm count after a charm is added to or removed from the inventory. */
