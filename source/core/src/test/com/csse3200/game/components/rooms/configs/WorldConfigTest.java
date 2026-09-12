@@ -19,9 +19,9 @@ class WorldConfigTest {
 
     assertNotNull(world);
     assertDoesNotThrow(world::validate);
-    assertEquals(EnemyType.MEDUSA, world.rooms[1].enemySpawns[1].type);
+    assertEquals(EnemyType.MEDUSA, world.rooms[1].enemySpawns[2].type);
     assertEquals(EnemyType.HARPY, world.rooms[2].enemySpawns[3].type);
-  }
+    }
 
   @Test
   void shouldRejectBrokenRoomReference() {

@@ -6,10 +6,11 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.CerberusFactory;
 import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.WeaponItem;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -67,7 +68,10 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case CERBERUS:
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
-        return NPCFactory.createCerberus(anchorPoint, "this::spawnEntity");
+        return CerberusFactory.createCerberus(
+            anchorPoint, this::spawnEntity, "images/cerberus.atlas");
+      case BOW:
+        return ItemFactory.createItem(WeaponItem.createWeaponItem(WeaponItem.WeaponType.BOW));
       case FINAL_BOSS:
         return FinalBossFactory.createFinalBoss(target, this::spawnEntity);
       default:
@@ -98,7 +102,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   private void spawnItemDrop(Entity enemy) {
-    Entity item = ItemFactory.createDrop(ItemType.STRENGTH_CHARM, enemy.getPosition());
+    Entity item = ItemFactory.createDrop(enemy.getPosition());
 
     // spawning item should not use the spawnEntity as items are stored in their own list.
     droppedItems.add(item);

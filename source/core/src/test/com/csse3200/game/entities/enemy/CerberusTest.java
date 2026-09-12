@@ -13,7 +13,7 @@ import com.csse3200.game.components.ChainRestrictionComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.entities.factories.CerberusFactory;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -48,9 +48,9 @@ class CerberusTest {
   @Test
   void shouldCreateCerberusWithCorrectComponents() {
     Vector2 anchor = new Vector2(5f, 5f);
-    String skin = "images/chaseEnemy.atlas";
+    String skin = "images/cerberus.atlas";
 
-    Entity cerberus = NPCFactory.createCerberus(anchor, skin);
+    Entity cerberus = CerberusFactory.createCerberus(anchor, entityService::register, skin);
     assertNotNull(cerberus);
     assertNotNull(cerberus.getComponent(ChainRestrictionComponent.class));
     assertNotNull(cerberus.getComponent(CombatStatsComponent.class));

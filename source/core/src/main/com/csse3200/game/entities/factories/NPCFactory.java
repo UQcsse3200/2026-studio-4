@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.*;
-import com.csse3200.game.components.npc.CerberusAnimationController;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
@@ -160,11 +159,13 @@ public class NPCFactory {
   }
 
   /**
-   * Creates a floating demon which patrols in a straight horizontal line.
+   * Creates a floating demon which patrols in a straight horizontal line. (这是那个比较短的快捷包装方法)
    *
+   * @param target target entity to attack
    * @param leftPoint left point of its patrol path
    * @param topPoint top point of its patrol path
    * @param rightPoint right point of its patrol path
+   * @param skin the atlas file path for the entity
    * @return floating demon entity
    */
   public static Entity createFloatingDemon(
@@ -178,7 +179,14 @@ public class NPCFactory {
         skin);
   }
 
-  /** Creates a floating demon and delegates ownership of its projectiles to the given spawner. */
+  /**
+   * Creates a floating demon and delegates ownership of its projectiles to the given spawner.
+   *
+   * @param leftPoint left point of its patrol path
+   * @param topPoint top point of its patrol path
+   * @param rightPoint right point of its patrol path
+   * @return floating demon entity
+   */
   public static Entity createFloatingDemon(
       Entity target,
       Vector2 leftPoint,
@@ -186,31 +194,37 @@ public class NPCFactory {
       Vector2 rightPoint,
       Consumer<Entity> projectileSpawner,
       String skin) {
+
     FloatingDemonConfig config = configs.floatingDemon;
+
     AITaskComponent aiComponent =
         new AITaskComponent(target)
-            .addTask(new PatrolTask(leftPoint, topPoint, rightPoint, 5))
+            .addTask(new PatrolTask(leftPoint, topPoint, rightPoint, 1))
             .addTask(new RangedAttackTask(target, 5, config.baseAttack, projectileSpawner));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
-    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation(CHASE_ANIMATION, 0.08f);
-    animator.addAnimation(DIE_ANIMATION, 0.1f);
 
-    Entity demon =
-        new Entity()
-            .addComponent(new PhysicsComponent())
-            .addComponent(new PhysicsMovementComponent())
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-            .addComponent(new EnemyDeathComponent(true))
-            .addComponent(aiComponent)
-            .addComponent(animator)
-            .addComponent(new EnemyAnimationController());
+    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
+    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+
+    Entity demon = createBaseNPC();
+
+    demon
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(aiComponent)
+        .addComponent(animator)
+        .addComponent(new EnemyAnimationController());
+
     animator.scaleEntity();
+    animator.startAnimation("move");
+
     demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
+
     return demon;
   }
 
@@ -220,58 +234,9 @@ public class NPCFactory {
    * @return entity
    */
   public static Entity createBaseMiniBoss() {
-    Entity miniboss = createBaseNPC();
-    miniboss.addComponent(new BossPhaseComponent());
-    return miniboss;
-  }
-
-  /**
-   * Auxiliary Method: Generate the side heads (left head / right head) of Cerberus
-   *
-   * @param mainHead The middle head, acting as the main body entity
-   * @param offset The positional offset of the side head relative to the main head
-   * @param health The independent health value for the side head
-   */
-  private static Entity createCerberusSideHead(Entity mainHead, Vector2 offset, int health) {
-    Entity sideHead = createBaseMiniBoss();
-
-    sideHead
-        .addComponent(new CombatStatsComponent(health, 10))
-        .addComponent(new HeadAttachmentComponent(mainHead, offset));
-
-    return sideHead;
-  }
-
-  /**
-   * Creates theCerberus main body (MiddleHead).
-   *
-   * @param anchorPoint the center point of the gate (chain center)
-   * @return entity
-   */
-  public static Entity createCerberus(Vector2 anchorPoint, String skin) {
-    Entity mainHead = createBaseMiniBoss();
-    BaseEntityConfig conf = configs.cerberus;
-
-    AnimationRenderComponent animationRenderComponent =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
-    animationRenderComponent.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
-    animationRenderComponent.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
-    animationRenderComponent.addAnimation("roar", 0.1f, Animation.PlayMode.NORMAL);
-    animationRenderComponent.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
-
-    mainHead
-        .addComponent(new CombatStatsComponent(conf.health, conf.baseAttack))
-        .addComponent(animationRenderComponent)
-        .addComponent(new ChainRestrictionComponent(anchorPoint, 15f))
-        .addComponent(new CerberusAnimationController());
-    Entity leftHead = createCerberusSideHead(mainHead, new Vector2(-1.5f, 0.5f), conf.health / 2);
-    Entity rightHead = createCerberusSideHead(mainHead, new Vector2(1.5f, 0.5f), conf.health / 2);
-
-    ServiceLocator.getEntityService().register(leftHead);
-    ServiceLocator.getEntityService().register(rightHead);
-
-    return mainHead;
+    Entity miniBoss = createBaseNPC();
+    miniBoss.addComponent(new BossPhaseComponent());
+    return miniBoss;
   }
 
   /**
@@ -286,6 +251,7 @@ public class NPCFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new StatusEffectsControllerComponent())
             .addComponent(new EnemyDeathComponent(true));
 
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);

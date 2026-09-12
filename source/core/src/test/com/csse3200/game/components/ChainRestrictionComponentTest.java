@@ -26,7 +26,7 @@ class ChainRestrictionComponentTest {
   @BeforeEach
   void setUp() {
     Vector2 anchorPoint = new Vector2(0f, 0f);
-    chainRestrictionComponent = new ChainRestrictionComponent(anchorPoint, 10f);
+    chainRestrictionComponent = new ChainRestrictionComponent(anchorPoint, 3f);
     when(entity.getComponent(PhysicsComponent.class)).thenReturn(physicsComponent);
     chainRestrictionComponent.setEntity(entity);
     chainRestrictionComponent.create();
@@ -34,7 +34,7 @@ class ChainRestrictionComponentTest {
 
   @Test
   void shouldNotPullWhenInsideRadius() {
-    when(entity.getPosition()).thenReturn(new Vector2(5f, 0f));
+    when(entity.getPosition()).thenReturn(new Vector2(2f, 0f));
     chainRestrictionComponent.update();
     verify(physicsComponent, never()).getBody();
   }

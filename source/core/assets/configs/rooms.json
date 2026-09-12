@@ -11,6 +11,9 @@
         { "id": "start", "x": 14, "y": 14 },
         { "id": "fromDungeonOne", "x": 14, "y": 14 }
       ],
+      "enemySpawns": [
+        { "type": "BOW", "x": 10, "y": 14 }
+      ],
       "obstacles": [
         { "type": "ROCK", "x": 6, "y": 22 },
         { "type": "ROCK", "x": 8, "y": 21 },
@@ -34,6 +37,7 @@
       "title": "Dungeon One: Entrance",
       "entryPoints": [{ "id": "fromSelection", "x": 10, "y": 10 }],
       "enemySpawns": [
+        { "type": "CERBERUS", "x": 25, "y": 25 },
         { "type": "BOMB", "x": 22, "y": 20 },
         { "type": "MEDUSA", "x": 30, "y": 28 }
       ],

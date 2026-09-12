@@ -11,6 +11,7 @@ public class EnemySpawnConfig extends PositionConfig {
     BEETLE,
     MEDUSA,
     CERBERUS,
+    BOW,
     FINAL_BOSS
   }
 }

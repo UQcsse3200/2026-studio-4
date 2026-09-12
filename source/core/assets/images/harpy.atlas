@@ -1,811 +1,467 @@
-harpy/move/frame_0000.png
-size: 42, 44
+harpy.png
+size: 368, 220
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 default
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 3
-move
-    rotate: false
-    xy: 0, 0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 0
-
-harpy/move/frame_0001.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 1
-
-harpy/move/frame_0002.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 2
-
-harpy/move/frame_0003.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 3
-
-harpy/move/frame_0004.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 4
-
-harpy/move/frame_0005.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 5
-
-harpy/move/frame_0006.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 6
-
-harpy/move/frame_0007.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 7
-
-harpy/move/frame_0008.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 8
-
-harpy/move/frame_0009.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 9
-
-harpy/move/frame_0010.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 10
-
-harpy/move/frame_0011.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 11
-
-harpy/move/frame_0012.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 12
-
-harpy/move/frame_0013.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 13
-
-harpy/move/frame_0014.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 14
-
-harpy/move/frame_0015.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 15
-
-harpy/move/frame_0016.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 16
-
-harpy/move/frame_0017.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 17
-
-harpy/move/frame_0018.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 18
-
-harpy/move/frame_0019.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 19
-
-harpy/move/frame_0020.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 20
-
-harpy/move/frame_0021.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 21
-
-harpy/move/frame_0022.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 22
-
-harpy/move/frame_0023.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-move
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 23
-
-harpy/die2/frame_0000.png
-size: 46, 39
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-dieAnimation
-    rotate: false
-    xy: 0,0
-    size: 46, 39
-    orig: 46, 39
-    offset: 0, 0
-    index: 0
-
-harpy/die2/frame_0001.png
-size: 46, 39
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-dieAnimation
-    rotate: false
-    xy: 0,0
-    size: 46, 39
-    orig: 46, 39
-    offset: 0, 0
-    index: 1
-
-harpy/die2/frame_0002.png
-size: 46, 39
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-dieAnimation
-    rotate: false
-    xy: 0,0
-    size: 46, 39
-        orig: 46, 39
-    offset: 0, 0
-    index: 2
-
-harpy/die1/frame_0000.png
-size: 44, 39
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-dieAnimation
-    rotate: false
-    xy: 0,0
-    size: 44, 39
-    orig: 44, 39
-    offset: 0, 0
-    index: 3
-
-harpy/die1/frame_0001.png
-size: 44, 39
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-dieAnimation
-    rotate: false
-    xy: 0,0
-    size: 44, 39
-    orig: 44, 39
-    offset: 0, 0
-    index: 4
-
-harpy/die1/frame_0002.png
-size: 44, 39
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-dieAnimation
-    rotate: false
-    xy: 0,0
-    size: 44, 39
-    orig: 44, 39
-    offset: 0, 0
-    index: 5
-
-harpy/die1/frame_0003.png
-size: 44, 39
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-dieAnimation
-    rotate: false
-    xy: 0,0
-    size: 44, 39
-    orig: 44, 39
-    offset: 0, 0
-    index: 6
-
-harpy/die1/frame_0004.png
-size: 44, 39
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-dieAnimation
-    rotate: false
-    xy: 0,0
-    size: 44, 39
-    orig: 44, 39
-    offset: 0, 0
-    index: 7
-
-harpy/move/frame_0000.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0, 0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 0
-
-harpy/move/frame_0001.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 1
-
-harpy/move/frame_0002.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 2
-
-harpy/move/frame_0003.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 3
-
-harpy/move/frame_0004.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 4
-
-harpy/move/frame_0005.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 5
-
-harpy/move/frame_0006.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 6
-
-harpy/move/frame_0007.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 7
-
-harpy/move/frame_0008.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 8
-
-harpy/move/frame_0009.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 9
-
-harpy/move/frame_0010.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 10
-
-harpy/move/frame_0011.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 11
-
-harpy/move/frame_0012.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 12
-
-harpy/move/frame_0013.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 13
-
-harpy/move/frame_0014.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 14
-
-harpy/move/frame_0015.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 15
-
-harpy/move/frame_0016.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 16
-
-harpy/move/frame_0017.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 17
-
-harpy/move/frame_0018.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 18
-
-harpy/move/frame_0019.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 19
-
-harpy/move/frame_0020.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 20
-
-harpy/move/frame_0021.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 21
-
-harpy/move/frame_0022.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 22
-
-harpy/move/frame_0023.png
-size: 42, 44
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-chase
-    rotate: false
-    xy: 0,0
-    size: 42, 44
-    orig: 42, 44
-    offset: 0, 0
-    index: 23
-Floating_Demon_Assets/4 Projectile F Demon/Projectile_FDemon_0001.png
-size: 50, 50
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-projectile
   rotate: false
   xy: 0, 0
-  size: 50, 50
-  orig: 50, 50
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: -1
+move
+  rotate: false
+  xy: 0, 0
+  size: 42, 44
+  orig: 42, 44
   offset: 0, 0
   index: 0
-
-Floating_Demon_Assets/4 Projectile F Demon/Projectile_FDemon_0002.png
-size: 50, 50
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-projectile
+move
   rotate: false
-  xy: 0, 0
-  size: 50, 50
-  orig: 50, 50
+  xy: 46, 0
+  size: 42, 44
+  orig: 42, 44
   offset: 0, 0
   index: 1
-
-Floating_Demon_Assets/4 Projectile F Demon/Projectile_FDemon_0003.png
-size: 50, 50
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-projectile
+move
   rotate: false
-  xy: 0, 0
-  size: 50, 50
-  orig: 50, 50
+  xy: 92, 0
+  size: 42, 44
+  orig: 42, 44
   offset: 0, 0
   index: 2
-
-Floating_Demon_Assets/5 Projectile HIT F Demon/ProjectileHITFDemon_0001.png
-size: 50, 50
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-projectileHit
+move
   rotate: false
-  xy: 0, 0
-  size: 50, 50
-  orig: 50, 50
+  xy: 138, 0
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 3
+move
+  rotate: false
+  xy: 184, 0
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 4
+move
+  rotate: false
+  xy: 230, 0
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 5
+move
+  rotate: false
+  xy: 276, 0
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 6
+move
+  rotate: false
+  xy: 322, 0
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 7
+move
+  rotate: false
+  xy: 0, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 8
+move
+  rotate: false
+  xy: 46, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 9
+move
+  rotate: false
+  xy: 92, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 10
+move
+  rotate: false
+  xy: 138, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 11
+move
+  rotate: false
+  xy: 184, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 12
+move
+  rotate: false
+  xy: 230, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 13
+move
+  rotate: false
+  xy: 276, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 14
+move
+  rotate: false
+  xy: 322, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 15
+move
+  rotate: false
+  xy: 0, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 16
+move
+  rotate: false
+  xy: 46, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 17
+move
+  rotate: false
+  xy: 92, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 18
+move
+  rotate: false
+  xy: 138, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 19
+move
+  rotate: false
+  xy: 184, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 20
+move
+  rotate: false
+  xy: 230, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 21
+move
+  rotate: false
+  xy: 276, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 22
+move
+  rotate: false
+  xy: 322, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 23
+move
+  rotate: false
+  xy: 0, 132
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 24
+move
+  rotate: false
+  xy: 46, 132
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 25
+attack
+  rotate: false
+  xy: 92, 132
+  size: 44, 39
+  orig: 44, 39
   offset: 0, 0
   index: 0
-
-Floating_Demon_Assets/5 Projectile HIT F Demon/ProjectileHITFDemon_0002.png
-size: 50, 50
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-projectileHit
+attack
   rotate: false
-  xy: 0, 0
-  size: 50, 50
-  orig: 50, 50
+  xy: 138, 132
+  size: 44, 39
+  orig: 44, 39
   offset: 0, 0
   index: 1
-
-Floating_Demon_Assets/5 Projectile HIT F Demon/ProjectileHITFDemon_0003.png
-size: 50, 50
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-projectileHit
+attack
   rotate: false
-  xy: 0, 0
-  size: 50, 50
-  orig: 50, 50
+  xy: 184, 132
+  size: 44, 39
+  orig: 44, 39
   offset: 0, 0
   index: 2
+attack
+  rotate: false
+  xy: 230, 132
+  size: 44, 39
+  orig: 44, 39
+  offset: 0, 0
+  index: 3
+attack
+  rotate: false
+  xy: 276, 132
+  size: 44, 39
+  orig: 44, 39
+  offset: 0, 0
+  index: 4
+chase
+  rotate: false
+  xy: 0, 0
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 0
+chase
+  rotate: false
+  xy: 46, 0
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 1
+chase
+  rotate: false
+  xy: 92, 0
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 2
+chase
+  rotate: false
+  xy: 138, 0
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 3
+chase
+  rotate: false
+  xy: 184, 0
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 4
+chase
+  rotate: false
+  xy: 230, 0
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 5
+chase
+  rotate: false
+  xy: 276, 0
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 6
+chase
+  rotate: false
+  xy: 322, 0
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 7
+chase
+  rotate: false
+  xy: 0, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 8
+chase
+  rotate: false
+  xy: 46, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 9
+chase
+  rotate: false
+  xy: 92, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 10
+chase
+  rotate: false
+  xy: 138, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 11
+chase
+  rotate: false
+  xy: 184, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 12
+chase
+  rotate: false
+  xy: 230, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 13
+chase
+  rotate: false
+  xy: 276, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 14
+chase
+  rotate: false
+  xy: 322, 44
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 15
+chase
+  rotate: false
+  xy: 0, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 16
+chase
+  rotate: false
+  xy: 46, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 17
+chase
+  rotate: false
+  xy: 92, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 18
+chase
+  rotate: false
+  xy: 138, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 19
+chase
+  rotate: false
+  xy: 184, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 20
+chase
+  rotate: false
+  xy: 230, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 21
+chase
+  rotate: false
+  xy: 276, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 22
+chase
+  rotate: false
+  xy: 322, 88
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 23
+chase
+  rotate: false
+  xy: 0, 132
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 24
+chase
+  rotate: false
+  xy: 46, 132
+  size: 42, 44
+  orig: 42, 44
+  offset: 0, 0
+  index: 25
+dieAnimation
+  rotate: false
+  xy: 184, 176
+  size: 46, 39
+  orig: 46, 39
+  offset: 0, 0
+  index: 0
+dieAnimation
+  rotate: false
+  xy: 230, 176
+  size: 46, 39
+  orig: 46, 39
+  offset: 0, 0
+  index: 1
+dieAnimation
+  rotate: false
+  xy: 276, 176
+  size: 46, 39
+  orig: 46, 39
+  offset: 0, 0
+  index: 2
+dieAnimation
+  rotate: false
+  xy: 322, 132
+  size: 44, 39
+  orig: 44, 39
+  offset: 0, 0
+  index: 3
+dieAnimation
+  rotate: false
+  xy: 0, 176
+  size: 44, 39
+  orig: 44, 39
+  offset: 0, 0
+  index: 4
+dieAnimation
+  rotate: false
+  xy: 46, 176
+  size: 44, 39
+  orig: 44, 39
+  offset: 0, 0
+  index: 5
+dieAnimation
+  rotate: false
+  xy: 92, 176
+  size: 44, 39
+  orig: 44, 39
+  offset: 0, 0
+  index: 6
+dieAnimation
+  rotate: false
+  xy: 138, 176
+  size: 44, 39
+  orig: 44, 39
+  offset: 0, 0
+  index: 7
