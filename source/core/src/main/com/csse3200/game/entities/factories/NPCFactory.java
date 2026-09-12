@@ -67,7 +67,6 @@ public class NPCFactory {
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
-
     bombEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
@@ -129,8 +128,7 @@ public class NPCFactory {
   }
 
   /**
-   * Creates a floating demon which patrols in a straight horizontal line.
-   * (这是那个比较短的快捷包装方法)
+   * Creates a floating demon which patrols in a straight horizontal line. (这是那个比较短的快捷包装方法)
    *
    * @param target target entity to attack
    * @param leftPoint left point of its patrol path
@@ -140,14 +138,14 @@ public class NPCFactory {
    * @return floating demon entity
    */
   public static Entity createFloatingDemon(
-          Entity target, Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint, String skin) {
+      Entity target, Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint, String skin) {
     return createFloatingDemon(
-            target,
-            leftPoint,
-            topPoint,
-            rightPoint,
-            projectile -> ServiceLocator.getEntityService().register(projectile),
-            skin);
+        target,
+        leftPoint,
+        topPoint,
+        rightPoint,
+        projectile -> ServiceLocator.getEntityService().register(projectile),
+        skin);
   }
 
   /**
@@ -158,25 +156,24 @@ public class NPCFactory {
    * @param rightPoint right point of its patrol path
    * @return floating demon entity
    */
-
   public static Entity createFloatingDemon(
-          Entity target,
-          Vector2 leftPoint,
-          Vector2 topPoint,
-          Vector2 rightPoint,
-          Consumer<Entity> projectileSpawner,
-          String skin) {
+      Entity target,
+      Vector2 leftPoint,
+      Vector2 topPoint,
+      Vector2 rightPoint,
+      Consumer<Entity> projectileSpawner,
+      String skin) {
 
     FloatingDemonConfig config = configs.floatingDemon;
 
     AITaskComponent aiComponent =
-            new AITaskComponent(target)
-                    .addTask(new PatrolTask(leftPoint, topPoint, rightPoint, 1))
-                    .addTask(new RangedAttackTask(target, 5, config.baseAttack, projectileSpawner));
+        new AITaskComponent(target)
+            .addTask(new PatrolTask(leftPoint, topPoint, rightPoint, 1))
+            .addTask(new RangedAttackTask(target, 5, config.baseAttack, projectileSpawner));
 
     AnimationRenderComponent animator =
-            new AnimationRenderComponent(
-                    ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
 
     animator.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
@@ -187,10 +184,10 @@ public class NPCFactory {
     Entity demon = createBaseNPC();
 
     demon
-            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-            .addComponent(aiComponent)
-            .addComponent(animator)
-            .addComponent(new EnemyAnimationController());
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(aiComponent)
+        .addComponent(animator)
+        .addComponent(new EnemyAnimationController());
 
     animator.scaleEntity();
     animator.startAnimation("move");

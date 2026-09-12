@@ -57,12 +57,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
         Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
         return NPCFactory.createFloatingDemon(
-            target,
-            leftPoint,
-            topPoint,
-            rightPoint,
-            this::spawnEntity,
-            "images/harpy.atlas");
+            target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/harpy.atlas");
       case CERBERUS:
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
