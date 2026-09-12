@@ -2,7 +2,7 @@ package com.csse3200.game.components;
 
 import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.components.statuseffects.TimedEffect;
 import java.util.ArrayList;
 
 public class StatusEffectsControllerComponent extends Component {
@@ -10,14 +10,14 @@ public class StatusEffectsControllerComponent extends Component {
   private CombatStatsComponent combatStatsComponent;
 
   private final ArrayList<StatusEffect> statusEffects = new ArrayList<>();
-  private final ArrayList<TimedStatusEffect> timedEffects = new ArrayList<>();
+  private final ArrayList<TimedEffect> timedEffects = new ArrayList<>();
   private boolean disposed;
 
   /**
    * Takes ownership of expiring a timed effect, in lifecycle notification order. The caller keeps
    * the reference and decides when to activate it.
    */
-  public void registerEffect(TimedStatusEffect effect) {
+  public void registerEffect(TimedEffect effect) {
     if (disposed || timedEffects.contains(effect)) {
       throw new IllegalStateException("Effect already registered or controller disposed");
     }
@@ -25,7 +25,7 @@ public class StatusEffectsControllerComponent extends Component {
   }
 
   /** Stops an active effect, keeping the registration for the next activation. */
-  public void removeEffect(TimedStatusEffect effect) {
+  public void removeEffect(TimedEffect effect) {
     refreshTimedEffects();
     if (effect != null && timedEffects.contains(effect) && effect.isActive()) {
       effect.clear();
@@ -46,15 +46,15 @@ public class StatusEffectsControllerComponent extends Component {
   }
 
   private void clearTimedEffects(boolean all) {
-    ArrayList<TimedStatusEffect> ended = new ArrayList<>();
-    for (TimedStatusEffect effect : timedEffects) {
+    ArrayList<TimedEffect> ended = new ArrayList<>();
+    for (TimedEffect effect : timedEffects) {
       if (effect.isActive() && (all || effect.update())) {
         effect.clear();
         ended.add(effect);
       }
     }
     // Clear every expired state before any callback can reenter or activate another effect.
-    for (TimedStatusEffect effect : ended) {
+    for (TimedEffect effect : ended) {
       effect.notifyEnded();
     }
   }

@@ -8,7 +8,7 @@ import com.csse3200.game.components.statuseffects.Burning;
 import com.csse3200.game.components.statuseffects.Invisibility;
 import com.csse3200.game.components.statuseffects.LastStand;
 import com.csse3200.game.components.statuseffects.Regeneration;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.components.statuseffects.TimedEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
@@ -126,7 +126,7 @@ class StatusEffectsControllerComponentTest {
     assertEquals(List.of("invisibility", "laststand"), ended);
     assertTrue(failed.isEmpty());
     // A disposed controller keeps nothing and takes nothing new.
-    TimedStatusEffect rejected = new TimedStatusEffect(time, 1);
+    TimedEffect rejected = new FakeTimedEffect();
     assertThrows(IllegalStateException.class, () -> controller.registerEffect(rejected));
   }
 
@@ -193,7 +193,7 @@ class StatusEffectsControllerComponentTest {
             .addComponent(new CombatStatsComponent(100, 10))
             .addComponent(new PlayerAbilitiesComponent(time));
     assertThrows(IllegalStateException.class, noController::create);
-    TimedStatusEffect duplicate = new TimedStatusEffect(time, 10);
+    TimedEffect duplicate = new FakeTimedEffect();
     controller.registerEffect(duplicate);
     assertThrows(IllegalStateException.class, () -> controller.registerEffect(duplicate));
   }
@@ -202,15 +202,14 @@ class StatusEffectsControllerComponentTest {
   void shouldRegisterBeforeControllerCreateAndExpireAtExactDeadline() {
     StatusEffectsControllerComponent uncreated = new StatusEffectsControllerComponent();
     Runnable ended = mock(Runnable.class);
-    TimedStatusEffect effect = new TimedStatusEffect(time, 15_000);
-    effect.setOnEnded(ended);
+    FakeTimedEffect effect = new FakeTimedEffect();
+    effect.onEnded = ended;
     uncreated.registerEffect(effect);
     new Entity().addComponent(new CombatStatsComponent(100, 10)).addComponent(uncreated).create();
-    effect.activate();
-    when(time.getTime()).thenReturn(14_999L);
+    effect.active = true;
     uncreated.refreshTimedEffects();
     assertTrue(effect.isActive());
-    when(time.getTime()).thenReturn(15_000L);
+    effect.expired = true;
     uncreated.update();
     assertFalse(effect.isActive());
     verify(ended).run();
@@ -222,10 +221,10 @@ class StatusEffectsControllerComponentTest {
     CombatStatsComponent combat = new CombatStatsComponent(100, 10);
     new Entity().addComponent(combat).addComponent(standalone).create();
     Runnable ended = mock(Runnable.class);
-    TimedStatusEffect effect = new TimedStatusEffect(time, 10_000);
-    effect.setOnEnded(ended);
+    FakeTimedEffect effect = new FakeTimedEffect();
+    effect.onEnded = ended;
     standalone.registerEffect(effect);
-    effect.activate();
+    effect.active = true;
     combat.setHealth(0);
     assertFalse(effect.isActive());
     standalone.update();
@@ -247,6 +246,40 @@ class StatusEffectsControllerComponentTest {
       controller.update();
       verify(burns.constructed().getFirst()).update();
       verifyNoInteractions(burns.constructed().getLast());
+    }
+  }
+
+  /** Proves the controller drives anything implementing the contract, not one concrete class. */
+  private static final class FakeTimedEffect implements TimedEffect {
+    private boolean active;
+    private boolean expired;
+    private Runnable onEnded;
+
+    @Override
+    public boolean isActive() {
+      return active;
+    }
+
+    @Override
+    public boolean update() {
+      return active && expired;
+    }
+
+    @Override
+    public long getRemainingDuration() {
+      return active && !expired ? 1 : 0;
+    }
+
+    @Override
+    public void clear() {
+      active = false;
+    }
+
+    @Override
+    public void notifyEnded() {
+      if (onEnded != null) {
+        onEnded.run();
+      }
     }
   }
 

@@ -18,12 +18,26 @@ public abstract class PlayerAbility {
   private final long cooldown;
   private final boolean unlockedByDefault;
   private boolean unlocked;
+  private Entity owner;
 
   protected PlayerAbility(String name, long cooldown, boolean unlockedByDefault) {
     this.name = name;
     this.cooldown = cooldown;
     this.unlockedByDefault = unlockedByDefault;
     this.unlocked = unlockedByDefault;
+  }
+
+  /**
+   * Returns the player this ability belongs to, which is set when it is registered. An ability that
+   * acts on the world, such as one that puts an effect on nearby enemies, starts from here.
+   */
+  public Entity getOwner() {
+    return owner;
+  }
+
+  /** Set by PlayerAbilitiesComponent when the ability is registered. */
+  final void setOwner(Entity owner) {
+    this.owner = owner;
   }
 
   /** Returns the name carried by the abilityUsed, abilityEnded and abilityFailed events. */
@@ -70,8 +84,9 @@ public abstract class PlayerAbility {
   }
 
   /**
-   * Hands over the controller that owns any status effect this ability applies, along with the
-   * callback to run when the ability ends. An ability that applies no status effect ignores both.
+   * Hands over the player's status effects controller, along with the callback to run when this
+   * ability ends. An ability that puts no timed condition on the player ignores both; it can still
+   * reach any other entity's controller through getOwner.
    */
   protected void attach(StatusEffectsControllerComponent effects, Runnable onEnded) {
     // Nothing to hand over by default.

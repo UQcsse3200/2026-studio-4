@@ -447,6 +447,65 @@ class PlayerAbilitiesComponentTest {
     assertTrue(failed.isEmpty());
   }
 
+  @Test
+  void shouldGiveAnAbilityItsOwnerSoItCanActOnOtherEntities() {
+    Entity enemy = new Entity().addComponent(new CombatStatsComponent(50, 5));
+    enemy.create();
+    TargetedAbility targeted = new TargetedAbility(enemy);
+    abilities.register(targeted);
+
+    assertSame(player, targeted.getOwner());
+    assertTrue(abilities.tryActivate(TargetedAbility.class));
+
+    // The effect landed on the enemy, and the player is not the one running anything.
+    assertEquals(43, enemy.getComponent(CombatStatsComponent.class).getHealth());
+    assertFalse(abilities.isActive(TargetedAbility.class));
+    assertEquals(List.of("targeted"), used);
+    // Its cooldown is still the component's business, not the ability's.
+    assertEquals(6_000, abilities.getCooldownRemainingMs(TargetedAbility.class));
+    assertFalse(abilities.tryActivate(TargetedAbility.class));
+    assertEquals(50, enemy.getComponent(CombatStatsComponent.class).getMaxHealth());
+  }
+
+  /**
+   * An ability whose effect lands on somebody else. It extends PlayerAbility directly, reaches the
+   * world through getOwner, and needs no change to PlayerAbilitiesComponent to work.
+   */
+  private static final class TargetedAbility extends PlayerAbility {
+    private final Entity target;
+
+    private TargetedAbility(Entity target) {
+      super("targeted", 6_000, true);
+      this.target = target;
+    }
+
+    @Override
+    public boolean isCastable() {
+      return true;
+    }
+
+    @Override
+    public void start() {
+      assertNotNull(getOwner());
+      target.getComponent(CombatStatsComponent.class).takeDamage(7, getOwner());
+    }
+
+    @Override
+    public void stop() {
+      // Nothing lingers on the player to stop.
+    }
+
+    @Override
+    public boolean isRunning() {
+      return false;
+    }
+
+    @Override
+    public long getRemainingMs() {
+      return 0;
+    }
+  }
+
   /** A cast ability that starts locked, declared entirely outside PlayerAbilitiesComponent. */
   private static final class TestAbility extends TimedPlayerAbility {
     private TestAbility(GameTime time) {

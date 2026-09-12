@@ -54,9 +54,8 @@ public class PlayerAbilitiesComponent extends Component {
     if (stats != null && effects == null) {
       throw new IllegalStateException("PlayerAbilities requires StatusEffectsControllerComponent");
     }
-    if (effects != null) {
-      abilities.values().forEach(ability -> ability.attach(effects, () -> onEnded(ability)));
-    }
+    // Abilities registered before create are still waiting for their owner and controller.
+    abilities.values().forEach(this::bind);
     register(new Invisibility(time));
     register(new LastStand(time));
     entity.getEvents().addListener("damageTaken", this::onDamageTaken);
@@ -69,6 +68,11 @@ public class PlayerAbilitiesComponent extends Component {
    */
   public void register(PlayerAbility ability) {
     abilities.put(ability.getClass(), ability);
+    bind(ability);
+  }
+
+  private void bind(PlayerAbility ability) {
+    ability.setOwner(entity);
     if (effects != null) {
       ability.attach(effects, () -> onEnded(ability));
     }
