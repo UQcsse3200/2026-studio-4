@@ -1,5 +1,5 @@
 Medusa/Idle.png
-size: 2048, 128
+size: 869, 128
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
@@ -122,8 +122,63 @@ dieAnimation
     index: 1
 dieAnimation
     rotate: false
-    xy: , 0
+    xy: 256, 0
     size: 128, 128
     orig: 128, 128
     offset: 0, 0
     index: 2
+
+Medusa/Attack_2.png
+size: 896, 128
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+chase
+    rotate: false
+    xy: 0, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 0
+chase
+    rotate: false
+    xy: 128, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 1
+chase
+    rotate: false
+    xy: 256, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 2
+chase
+    rotate: false
+    xy: 384, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 3
+chase
+    rotate: false
+    xy: 512, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 4
+chase
+    rotate: false
+    xy: 640, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 5
+chase
+    rotate: false
+    xy: 768, 0
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 6
