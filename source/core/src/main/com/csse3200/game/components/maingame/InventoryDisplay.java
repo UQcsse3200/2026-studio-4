@@ -30,6 +30,10 @@ public class InventoryDisplay extends UIComponent {
     table.setVisible(false);
 
   }
+
+  /**
+   * Builds the inventory page depending on which inventory is being displayed
+   */
   private void buildPage() {
     //Create main table
     table = new Table();
@@ -68,19 +72,26 @@ public class InventoryDisplay extends UIComponent {
     table.setVisible(true);
   }
 
+  /**
+   * Changes the current page to the other inactive page and sets the flag
+   */
   public void changePage() {
     if (charmsPage) {
-      clearPage();
+      table.clear();
       charmsPage = false;
       buildPage();
     }
     else {
-      clearPage();
+      table.clear();
       charmsPage = true;
       buildPage();
     }
   }
 
+  /**
+   * Creates the consumable inventory UI
+   * @return the Consumable inventory UI
+   */
   private Table consumableCreate() {
     //Overall page table with padding inside cover
     Table pagesContainer = new Table();
@@ -110,6 +121,10 @@ public class InventoryDisplay extends UIComponent {
     return pagesContainer;
   }
 
+  /**
+   * Creates the consumable inventory UI
+   * @return the Consumable inventory UI
+   */
   private Table charmsCreate() {
     //Overall page table with padding inside cover
     Table pagesContainer = new Table();
@@ -136,6 +151,13 @@ public class InventoryDisplay extends UIComponent {
     return pagesContainer;
   }
 
+  /**
+   * Builds a grid style inventory according to the parameters given
+   * @param columns number of coloumns in the inventory
+   * @param totalSlots number of total slots in the inventory
+   * @param slotSize size of the slots in the inventory
+   * @return a table component to be displayed in the inventory
+   */
   private Table gridDraw(int columns, int totalSlots, int slotSize) {
     // Grid Table building
     Table grid = new Table();
@@ -151,10 +173,6 @@ public class InventoryDisplay extends UIComponent {
     }
     return grid;
   }
-  private void clearPage() {
-    table.clear();
-  }
-
 
   @Override
   public void draw(SpriteBatch batch) {
