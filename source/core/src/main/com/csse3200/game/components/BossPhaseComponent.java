@@ -12,8 +12,8 @@ public class BossPhaseComponent extends Component {
   }
 
   private void checkPhaseTransition(int currentHealth) {
-    int MaxHealth = combatStatsComponent.getMaxHealth();
-    float healthPercentage = (float) currentHealth / MaxHealth;
+    int maxHealth = combatStatsComponent.getMaxHealth();
+    float healthPercentage = (float) currentHealth / maxHealth;
 
     if (healthPercentage <= 0.5f && currentPhase == 1) {
       currentPhase = 2;

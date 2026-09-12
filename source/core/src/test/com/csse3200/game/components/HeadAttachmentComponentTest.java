@@ -1,7 +1,6 @@
 package com.csse3200.game.components;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.math.Vector2;
@@ -32,7 +31,7 @@ class HeadAttachmentComponentTest {
   void testSetEntity() {
     when(mainBody.getPosition()).thenReturn(new Vector2(5f, 5f));
     headAttachmentComponent.update();
-    verify(entity).setPosition(eq(new Vector2(7f, 5f)));
+    verify(entity).setPosition(new Vector2(7f, 5f));
   }
 
   @Test

@@ -24,7 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class CerberusTest {
+class CerberusTest {
   @Mock private EntityService entityService;
   @Mock private ResourceService resourceService;
   @Mock private com.csse3200.game.rendering.RenderService renderService;
@@ -32,7 +32,6 @@ public class CerberusTest {
   @Mock private com.csse3200.game.physics.PhysicsService physicsService;
   @Mock private com.csse3200.game.physics.PhysicsEngine physicsEngine;
   @Mock private TextureAtlas textureAtlas;
-  @Mock private Entity target;
 
   @BeforeEach
   void setUp() {
@@ -51,7 +50,7 @@ public class CerberusTest {
     Vector2 anchor = new Vector2(5f, 5f);
     String skin = "images/chaseEnemy.atlas";
 
-    Entity cerberus = NPCFactory.createCerberus(target, anchor, skin);
+    Entity cerberus = NPCFactory.createCerberus(anchor, skin);
     assertNotNull(cerberus);
     assertNotNull(cerberus.getComponent(ChainRestrictionComponent.class));
     assertNotNull(cerberus.getComponent(CombatStatsComponent.class));

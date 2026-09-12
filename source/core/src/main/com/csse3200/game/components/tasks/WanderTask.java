@@ -21,7 +21,6 @@ public class WanderTask extends DefaultTask implements PriorityTask {
   private MovementTask movementTask;
   private WaitTask waitTask;
   private Task currentTask;
-  private int priority = 1;
 
   /**
    * @param wanderRange Distance in X and Y the entity can move from its position when start() is
@@ -39,9 +38,7 @@ public class WanderTask extends DefaultTask implements PriorityTask {
   }
 
   @Override
-  public void setPriority(int status) {
-    this.priority = 1;
-  }
+  public void setPriority(int status) {}
 
   @Override
   public void start() {

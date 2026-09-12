@@ -42,6 +42,7 @@ public class NPCFactory {
   private static final float CHASE_SPEED = 2.5f;
   private static final String DEFAULT_ANIMATION = "default";
   private static final String DIE_ANIMATION = "dieAnimation";
+  private static final String CHASE_ANIMATION = "chase";
 
   /**
    * Creates a bomb Enemy entity.
@@ -62,7 +63,7 @@ public class NPCFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation("move", 0.7f, Animation.PlayMode.LOOP);
-    animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
@@ -103,7 +104,7 @@ public class NPCFactory {
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
 
     chaseEnemy
@@ -163,7 +164,7 @@ public class NPCFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("chase", 0.08f);
+    animator.addAnimation(CHASE_ANIMATION, 0.08f);
     animator.addAnimation(DIE_ANIMATION, 0.1f);
 
     Entity demon =
@@ -212,11 +213,10 @@ public class NPCFactory {
   /**
    * Creates theCerberus main body (MiddleHead).
    *
-   * @param target entity to chase/attack
    * @param anchorPoint the center point of the gate (chain center)
    * @return entity
    */
-  public static Entity createCerberus(Entity target, Vector2 anchorPoint, String skin) {
+  public static Entity createCerberus(Vector2 anchorPoint, String skin) {
     Entity mainHead = createBaseMiniBoss();
     BaseEntityConfig conf = configs.cerberus;
 
@@ -226,7 +226,7 @@ public class NPCFactory {
     animationRenderComponent.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
     animationRenderComponent.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
     animationRenderComponent.addAnimation("roar", 0.1f, Animation.PlayMode.NORMAL);
-    animationRenderComponent.addAnimation("dieAnimation", 0.1f, Animation.PlayMode.NORMAL);
+    animationRenderComponent.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
 
     mainHead
         .addComponent(new CombatStatsComponent(conf.health, conf.baseAttack))
