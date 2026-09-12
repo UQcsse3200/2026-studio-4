@@ -107,14 +107,18 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createDrop(com.csse3200.game.items.ItemType,com.badlogic.gdx.math.Vector2)" class="member-name-link">createDrop</a><wbr>(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;itemType,
- com.badlogic.gdx.math.Vector2&nbsp;position)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createDrop(com.badlogic.gdx.math.Vector2)" class="member-name-link">createDrop</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;position)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates the requested item at a world position.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createStrengthCharm()" class="member-name-link">createStrengthCharm</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createItem(com.csse3200.game.items.Item)" class="member-name-link">createItem</a><wbr>(<a href="../../items/Item.html" title="class in com.csse3200.game.items">Item</a>&nbsp;item)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates an item entity to be spawned into the game.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createStrengthCharm()" class="member-name-link">createStrengthCharm</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates the Strength Charm used for Sprint 1 item drops.</div>
 </div>
 </div>
@@ -135,21 +139,23 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="createDrop(com.csse3200.game.items.ItemType,com.badlogic.gdx.math.Vector2)">
+<section class="detail" id="createDrop(com.badlogic.gdx.math.Vector2)">
 <h3>createDrop</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createDrop</span><wbr><span class="parameters">(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;itemType,
- com.badlogic.gdx.math.Vector2&nbsp;position)</span></div>
-<div class="block">Creates the requested item at a world position.
-
- <p>Sprint 1 currently supports only <a href="../../items/ItemType.html#STRENGTH_CHARM"><code>ItemType.STRENGTH_CHARM</code></a>. The returned entity is not
- registered; the requesting room owns that responsibility.</div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createDrop</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;position)</span></div>
+<div class="block">Creates the requested item at a world position.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>itemType</code> - type of item to create</dd>
 <dd><code>position</code> - world position assigned to the item entity</dd>
 <dt>Returns:</dt>
 <dd>a non-null, positioned, unregistered item entity for the room to spawn</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createItem(com.csse3200.game.items.Item)">
+<h3>createItem</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createItem</span><wbr><span class="parameters">(<a href="../../items/Item.html" title="class in com.csse3200.game.items">Item</a>&nbsp;item)</span></div>
+<div class="block">Creates an item entity to be spawned into the game.</div>
 </section>
 </li>
 <li>
