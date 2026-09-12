@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.ui.UIComponent;
 import java.awt.*;
 import org.slf4j.Logger;
@@ -22,76 +23,71 @@ public class InventoryDisplay extends UIComponent {
   }
 
   private void addActors() {
+    //Create main table
     table = new Table();
     table.setFillParent(true);
     stage.addActor(table);
+    //Create initial stack
+    Stack bookStack = new Stack();
 
-    // Right side of inventory
-    Table charmsTable = new Table();
-    Table consumablesTable = new Table();
+    //Create book cover UI
+    Image bookCover = new Image(inventory.getDrawable("UI_TravelBook_BookCover01a"));
+    bookCover.setScaling(Scaling.fill); // Forces graphic to fill the stack container
+    bookStack.add(bookCover);
 
-    // Left side of inventory
-    Table goldCount = new Table();
-    Table weaponDisplayTable = new Table();
+    Table pagesContainer = consumableCreate();
 
-    Table rightStack = new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a"));
-    Table leftStack = new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
+    //combine all together
+    bookStack.add(pagesContainer);
 
-    // Gold display building
-    goldCount.add(new Image(skin, "button-c")).left();
-    goldCount.add(new Label("52", skin)).expand();
-
-    // Weapon Display Table building
-    weaponDisplayTable.add(new Image(inventory, "UI_TravelBook_CommandDirection01a"));
-    weaponDisplayTable.row();
-    weaponDisplayTable.add(new Label("Sword", skin));
-
-    charmsTable.add(new Label("Charms", skin)).colspan(3);
-    charmsTable.row();
-    tableDraw(charmsTable);
-
-    consumablesTable.add(new Label("Consumables", skin)).colspan(3);
-    consumablesTable.row();
-    tableDraw(consumablesTable);
-
-    // Created to have the two row on left column and one row on right column
-    leftStack.add(goldCount).fill();
-    leftStack.row();
-    leftStack.add(weaponDisplayTable).expand().fill();
-
-    rightStack.add(charmsTable).padLeft(20f).fill();
-    rightStack.add(consumablesTable).padLeft(20f).fill();
-
-    table.add(leftStack).fill();
-    table.add(rightStack).fill();
-
-    leftStack.setDebug(true);
-    rightStack.setDebug(true);
-    charmsTable.setDebug(true);
-    consumablesTable.setDebug(true);
-    goldCount.setDebug(true);
-    weaponDisplayTable.setDebug(true);
-    table.setDebug(true);
+    table.add(bookStack).size(800, 500).center();
 
     table.setVisible(false);
   }
 
-  private void tableDraw(Table table) {
-    // Grid Table building
-    int columns = 3;
-    int totalSlots = 21;
-    int slotSize = 64;
+  private Table consumableCreate() {
+    //Overall page table with padding inside cover
+    Table pagesContainer = new Table();
+    pagesContainer.pad(40, 50, 40, 50);
 
+    //left page creation
+    Table leftPage = new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a")).top();
+
+    leftPage.add(new Label("Consumables", skin)).top().colspan(3).pad(25f);
+    leftPage.row();
+    leftPage.add(new Label("Equipped", skin)).colspan(3);
+    leftPage.row();
+    Table leftGrid = gridDraw(3, 3, 72);
+    leftPage.add(leftGrid);
+
+    pagesContainer.add(leftPage).size(365, 500);
+
+    //right page creation
+    Table rightPage = new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
+
+    //Create Grid
+    Table rightGrid = gridDraw(4, 20, 64);
+
+    rightPage.add(rightGrid).center().pad(10);
+    pagesContainer.add(rightPage).size(365, 500);
+
+    return pagesContainer;
+  }
+
+  private Table gridDraw(int columns, int totalSlots, int slotSize) {
+    // Grid Table building
+    Table grid = new Table();
     for (int i = 0; i < totalSlots; i++) {
       ImageButton slotBackground = new ImageButton(inventory, "inventory-box");
 
-      table.add(slotBackground).size(slotSize).pad(5);
+      grid.add(slotBackground).size(slotSize).pad(3);
 
       // Break to a new row after reaching the column limit
       if ((i + 1) % columns == 0) {
-        table.row();
+        grid.row();
       }
     }
+    return grid;
   }
 
   @Override
