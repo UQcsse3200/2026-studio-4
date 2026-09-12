@@ -14,6 +14,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class HitboxSpecTest {
   @Test
+  void shouldKeepVisualSourceIndependentOfFollowOwnerAndAllowClearing() {
+    HitboxSpec spec = new HitboxSpec();
+    Entity owner = new Entity();
+    Entity source = new Entity();
+    assertNull(spec.getVisualSource());
+    assertSame(spec, spec.visualSource(source));
+    assertSame(source, spec.getVisualSource());
+    assertNull(spec.getOwner());
+    spec.owner(owner);
+    assertSame(source, spec.getVisualSource());
+    assertSame(owner, spec.getOwner());
+    assertSame(spec, spec.visualSource(null));
+    assertNull(spec.getVisualSource());
+    assertSame(owner, spec.getOwner());
+    spec.visualSource(source).owner(null);
+    assertSame(source, spec.getVisualSource());
+    assertNull(spec.getOwner());
+  }
+
+  @Test
   void shouldDefaultLayerAndOffset() {
     HitboxSpec spec = new HitboxSpec();
     assertEquals(PhysicsLayer.WEAPON, spec.getLayer());

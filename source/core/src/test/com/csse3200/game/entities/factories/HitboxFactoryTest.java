@@ -6,12 +6,22 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.weapons.FollowComponent;
 import com.csse3200.game.components.weapons.LifetimeComponent;
 import com.csse3200.game.components.weapons.WeaponComponent;
@@ -22,13 +32,138 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.rendering.RotatingTextureRenderComponent;
+import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class HitboxFactoryTest {
+  @Test
+  void shouldInheritLiveAppearanceWithoutFollowingOrRescalingDamage() {
+    ResourceService resources = mock(ResourceService.class);
+    ServiceLocator.registerResourceService(resources);
+    when(resources.getAsset("weapon.png", Texture.class)).thenReturn(mock(Texture.class));
+    GameTime time = mock(GameTime.class);
+    PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
+    CombatStatsComponent combat = new CombatStatsComponent(100, 10);
+    Entity source = new Entity().addComponent(combat).addComponent(abilities);
+    source.create();
+    Entity hitbox =
+        HitboxFactory.createHitbox(meleeSpec().texture("weapon.png").visualSource(source));
+    RotatingTextureRenderComponent render =
+        hitbox.getComponent(RotatingTextureRenderComponent.class);
+    assertNotNull(render);
+    assertNull(hitbox.getComponent(FollowComponent.class));
+    assertNull(hitbox.getComponent(PlayerAbilitiesComponent.class));
+    SpriteBatch batch = mock(SpriteBatch.class);
+    Color color = new Color(0.8f, 0.6f, 0.4f, 0.5f);
+    Color original = new Color(color);
+    when(batch.getColor()).thenReturn(color);
+    doAnswer(
+            invocation -> {
+              color.set(
+                  invocation.getArgument(0),
+                  invocation.getArgument(1),
+                  invocation.getArgument(2),
+                  invocation.getArgument(3));
+              return null;
+            })
+        .when(batch)
+        .setColor(anyFloat(), anyFloat(), anyFloat(), anyFloat());
+    List<Color> drawn = new ArrayList<>();
+    doAnswer(
+            invocation -> {
+              drawn.add(new Color(color));
+              return null;
+            })
+        .when(batch)
+        .draw(
+            any(TextureRegion.class),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat());
+
+    render.render(batch);
+    abilities.enableLastStand();
+    combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
+    assertTrue(abilities.tryInvisibility());
+    render.render(batch);
+    assertEquals(
+        List.of(original, new Color(0.8f, 0.6f * 0.35f, 0.4f * 0.35f, 0.5f * 0.35f)), drawn);
+    assertEquals(original, color);
+    assertEquals(8, hitbox.getComponent(CombatStatsComponent.class).getEffectiveBaseAttack());
+    source.setPosition(20f, 30f);
+    assertEquals(new Vector2(1f, 2f), hitbox.getPosition());
+    when(time.getTime()).thenReturn(PlayerAbilitiesComponent.INVISIBILITY_DURATION_MS);
+    render.render(batch);
+    assertEquals(original, drawn.get(2));
+  }
+
+  @Test
+  void shouldAllowVisualSourceWithoutTextureAndWithoutFollowOwner() {
+    Entity hitbox = HitboxFactory.createHitbox(meleeSpec().visualSource(new Entity()));
+    assertNull(hitbox.getComponent(RotatingTextureRenderComponent.class));
+    assertNull(hitbox.getComponent(FollowComponent.class));
+    assertEquals(8, hitbox.getComponent(CombatStatsComponent.class).getBaseAttack());
+  }
+
+  @Test
+  void shouldPreserveHostileHitboxAsDamageSourceAndRespectInvisibilityOnCollision() {
+    GameTime time = mock(GameTime.class);
+    PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
+    CombatStatsComponent combat = new CombatStatsComponent(100, 0);
+    Entity target =
+        new Entity()
+            .addComponent(combat)
+            .addComponent(abilities)
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER));
+    target.create();
+    Entity owner = new Entity();
+    Entity hitbox =
+        HitboxFactory.createHitbox(
+            meleeSpec()
+                .targetLayer(PhysicsLayer.PLAYER)
+                .owner(owner)
+                .visualSource(owner)
+                .knockback(0f));
+    hitbox.create();
+    List<Entity> sources = new ArrayList<>();
+    target
+        .getEvents()
+        .addListener(
+            "damageTaken",
+            (Entity source, Integer lost, Integer remaining) -> {
+              sources.add(source);
+              assertEquals(8, lost.intValue());
+              assertEquals(92, remaining.intValue());
+            });
+    Fixture attackFixture = hitbox.getComponent(HitboxComponent.class).getFixture();
+    Fixture targetFixture = target.getComponent(HitboxComponent.class).getFixture();
+    assertTrue(CombatStatsComponent.isHostileAttacker(hitbox));
+    assertTrue(abilities.tryInvisibility());
+    hitbox.getEvents().trigger("collisionStart", attackFixture, targetFixture);
+    assertEquals(100, combat.getHealth());
+    assertTrue(sources.isEmpty());
+
+    when(time.getTime()).thenReturn(PlayerAbilitiesComponent.INVISIBILITY_DURATION_MS);
+    hitbox.getEvents().trigger("collisionStart", attackFixture, targetFixture);
+    assertEquals(92, combat.getHealth());
+    assertEquals(List.of(hitbox), sources);
+  }
+
   @BeforeEach
   void beforeEach() {
     ServiceLocator.registerPhysicsService(new PhysicsService());

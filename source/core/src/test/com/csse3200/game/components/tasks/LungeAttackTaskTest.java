@@ -2,12 +2,17 @@ package com.csse3200.game.components.tasks;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.ai.tasks.AITaskComponent;
+import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.ai.tasks.TaskRunner;
+import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
@@ -42,6 +47,117 @@ class LungeAttackTaskTest {
 
     taskRunner = mock(TaskRunner.class);
     when(taskRunner.getEntity()).thenReturn(owner);
+  }
+
+  @Test
+  void shouldNotAcquireInvisibleTarget() {
+    PlayerAbilitiesComponent abilities = mock(PlayerAbilitiesComponent.class);
+    target.addComponent(abilities);
+    target.setPosition(1f, 0f);
+    LungeAttackTask task = new LungeAttackTask(target, 2.5f);
+    task.create(taskRunner);
+    when(abilities.isInvisible()).thenReturn(true);
+    assertEquals(-1, task.getPriority());
+    when(abilities.isInvisible()).thenReturn(false);
+    assertEquals(20, task.getPriority());
+  }
+
+  @Test
+  void shouldCancelTelegraphFromUpdate() {
+    assertCancellation(false, false);
+  }
+
+  @Test
+  void shouldCancelTelegraphFromPriority() {
+    assertCancellation(false, true);
+  }
+
+  @Test
+  void shouldCancelDashFromUpdate() {
+    assertCancellation(true, false);
+  }
+
+  @Test
+  void shouldCancelDashFromPriority() {
+    assertCancellation(true, true);
+  }
+
+  @Test
+  void shouldYieldToFallbackAndResumeThroughSchedulerAfterCooldown() {
+    PlayerAbilitiesComponent abilities = mock(PlayerAbilitiesComponent.class);
+    target.addComponent(abilities);
+    target.setPosition(1f, 0f);
+    LungeAttackTask task = new LungeAttackTask(target, 2.5f);
+    PriorityTask fallback = mock(PriorityTask.class);
+    when(fallback.getPriority()).thenReturn(0);
+    AITaskComponent ai = new AITaskComponent().addTask(task).addTask(fallback);
+    ai.setEntity(owner);
+    ai.update();
+    when(gameTime.getTime()).thenReturn(500L);
+    ai.update();
+    verify(movementComponent).setMoving(true);
+
+    when(abilities.isInvisible()).thenReturn(true);
+    when(gameTime.getTime()).thenReturn(600L);
+    ai.update();
+    verify(fallback).start();
+    clearInvocations(movementComponent);
+    when(abilities.isInvisible()).thenReturn(false);
+    when(gameTime.getTime()).thenReturn(2599L);
+    ai.update();
+    verify(movementComponent, never()).setMoving(true);
+    when(gameTime.getTime()).thenReturn(2600L);
+    ai.update();
+    verify(fallback).stop();
+    when(gameTime.getTime()).thenReturn(3100L);
+    ai.update();
+    verify(movementComponent).setMoving(true);
+  }
+
+  private void assertCancellation(boolean dashStarted, boolean checkPriority) {
+    PlayerAbilitiesComponent abilities = mock(PlayerAbilitiesComponent.class);
+    target.addComponent(abilities);
+    target.setPosition(1f, 0f);
+    int[] dashEnds = {0};
+    owner.getEvents().addListener("lungeDashEnd", () -> dashEnds[0]++);
+    LungeAttackTask task = new LungeAttackTask(target, 2.5f);
+    task.create(taskRunner);
+    task.start();
+    if (dashStarted) {
+      when(gameTime.getTime()).thenReturn(500L);
+      task.update();
+      verify(movementComponent).setMoving(true);
+    }
+    clearInvocations(movementComponent);
+    when(gameTime.getTime()).thenReturn(600L);
+    when(abilities.isInvisible()).thenReturn(true);
+    if (checkPriority) {
+      assertEquals(-1, task.getPriority());
+    } else {
+      task.update();
+    }
+    verify(movementComponent).setMoving(false);
+    verify(movementComponent).setMaxSpeed(new Vector2(2.5f, 2.5f));
+    verify(movementComponent, never()).setMoving(true);
+    verify(movementComponent, never()).setTarget(any());
+
+    when(gameTime.getTime()).thenReturn(1600L);
+    task.update();
+    assertEquals(-1, task.getPriority());
+    assertEquals(1, dashEnds[0]);
+    when(abilities.isInvisible()).thenReturn(false);
+    task.update();
+    assertEquals(-1, task.getPriority());
+    task.stop();
+    when(gameTime.getTime()).thenReturn(2599L);
+    assertEquals(-1, task.getPriority());
+    when(gameTime.getTime()).thenReturn(2600L);
+    assertEquals(20, task.getPriority());
+    clearInvocations(movementComponent);
+    task.start();
+    when(gameTime.getTime()).thenReturn(3100L);
+    task.update();
+    verify(movementComponent).setMoving(true);
   }
 
   @Test
