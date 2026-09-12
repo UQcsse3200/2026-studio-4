@@ -1,0 +1,18 @@
+{
+
+"com.badlogic.gdx.graphics.Color": {
+	"Black": {
+		"r": 0,
+		"g": 0,
+		"b": 0,
+		"a": 1
+	}
+},
+
+"com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
+	"inventory-box": {
+		"up": "UI_TravelBook_Slot01a",
+		"down": "UI_TravelBook_Slot01c"
+	}
+}
+}

@@ -1,10 +1,9 @@
 package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.csse3200.game.ui.UIComponent;
 import java.awt.*;
 import org.slf4j.Logger;
@@ -28,29 +27,24 @@ public class InventoryDisplay extends UIComponent {
     stage.addActor(table);
 
     // Right side of inventory
-    Table charmsTable = new Table().background(skin.getDrawable("white"));
-    Table consumablesTable = new Table().background(skin.getDrawable("white"));
-    Table weaponsTable = new Table().background(skin.getDrawable("white"));
+    Table charmsTable = new Table();
+    Table consumablesTable = new Table();
 
     // Left side of inventory
-    Table goldCount = new Table().background(skin.getDrawable("white"));
-    Table weaponDisplayTable = new Table().background(skin.getDrawable("white"));
+    Table goldCount = new Table();
+    Table weaponDisplayTable = new Table();
 
-    Table rightStack = new Table().background(skin.getDrawable("white"));
-    Table leftStack = new Table();
+    Table rightStack = new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a"));
+    Table leftStack = new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
 
     // Gold display building
-    goldCount.add(new Image(skin, "button-pressed")).left();
+    goldCount.add(new Image(skin, "button-c")).left();
     goldCount.add(new Label("52", skin)).expand();
 
     // Weapon Display Table building
-    weaponDisplayTable.add(new Image(skin, "earth"));
+    weaponDisplayTable.add(new Image(inventory, "UI_TravelBook_CommandDirection01a"));
     weaponDisplayTable.row();
     weaponDisplayTable.add(new Label("Sword", skin));
-
-    weaponsTable.add(new Label("Weapons", skin)).colspan(3);
-    weaponsTable.row();
-    tableDraw(weaponsTable);
 
     charmsTable.add(new Label("Charms", skin)).colspan(3);
     charmsTable.row();
@@ -65,7 +59,6 @@ public class InventoryDisplay extends UIComponent {
     leftStack.row();
     leftStack.add(weaponDisplayTable).expand().fill();
 
-    rightStack.add(weaponsTable).padLeft(20f).fill();
     rightStack.add(charmsTable).padLeft(20f).fill();
     rightStack.add(consumablesTable).padLeft(20f).fill();
 
@@ -74,7 +67,6 @@ public class InventoryDisplay extends UIComponent {
 
     leftStack.setDebug(true);
     rightStack.setDebug(true);
-    weaponsTable.setDebug(true);
     charmsTable.setDebug(true);
     consumablesTable.setDebug(true);
     goldCount.setDebug(true);
@@ -91,7 +83,7 @@ public class InventoryDisplay extends UIComponent {
     int slotSize = 64;
 
     for (int i = 0; i < totalSlots; i++) {
-      TextButton slotBackground = new TextButton("Thing", skin);
+      ImageButton slotBackground = new ImageButton(inventory, "inventory-box");
 
       table.add(slotBackground).size(slotSize).pad(5);
 
