@@ -28,21 +28,18 @@ public class InventoryDisplay extends UIComponent {
   private void addActors() {
     buildPage();
     table.setVisible(false);
-
   }
 
-  /**
-   * Builds the inventory page depending on which inventory is being displayed
-   */
+  /** Builds the inventory page depending on which inventory is being displayed */
   private void buildPage() {
-    //Create main table
+    // Create main table
     table = new Table();
     table.setFillParent(true);
     stage.addActor(table);
-    //Create initial stack
+    // Create initial stack
     Stack bookStack = new Stack();
 
-    //Create book cover UI
+    // Create book cover UI
     Image bookCover = new Image(inventory.getDrawable("UI_TravelBook_BookCover01a"));
     bookCover.setScaling(Scaling.fill); // Forces graphic to fill the stack container
     bookStack.add(bookCover);
@@ -53,35 +50,32 @@ public class InventoryDisplay extends UIComponent {
     } else {
       pagesContainer = consumableCreate();
     }
-    //combine all together
+    // combine all together
     bookStack.add(pagesContainer);
     table.add(bookStack).size(800, 500).center();
 
     ImageButton arrow = new ImageButton(inventory, "arrow");
     arrow.addListener(
-            new ChangeListener() {
-              @Override
-              public void changed(ChangeEvent changeEvent, Actor actor) {
-                logger.debug("next inventory button clicked");
-                entity.getEvents().trigger("nextPage");
-              }
-            });
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            logger.debug("next inventory button clicked");
+            entity.getEvents().trigger("nextPage");
+          }
+        });
 
     table.add(arrow).size(32, 32).pad(6);
 
     table.setVisible(true);
   }
 
-  /**
-   * Changes the current page to the other inactive page and sets the flag
-   */
+  /** Changes the current page to the other inactive page and sets the flag */
   public void changePage() {
     if (charmsPage) {
       table.clear();
       charmsPage = false;
       buildPage();
-    }
-    else {
+    } else {
       table.clear();
       charmsPage = true;
       buildPage();
@@ -90,15 +84,17 @@ public class InventoryDisplay extends UIComponent {
 
   /**
    * Creates the consumable inventory UI
+   *
    * @return the Consumable inventory UI
    */
   private Table consumableCreate() {
-    //Overall page table with padding inside cover
+    // Overall page table with padding inside cover
     Table pagesContainer = new Table();
     pagesContainer.pad(40, 50, 40, 50);
 
-    //left page creation
-    Table leftPage = new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a")).top();
+    // left page creation
+    Table leftPage =
+        new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a")).top();
 
     leftPage.add(new Label("Consumables", skin)).top().colspan(3).pad(25f);
     leftPage.row();
@@ -109,10 +105,11 @@ public class InventoryDisplay extends UIComponent {
 
     pagesContainer.add(leftPage).size(365, 500);
 
-    //right page creation
-    Table rightPage = new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
+    // right page creation
+    Table rightPage =
+        new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
 
-    //Create Grid
+    // Create Grid
     Table rightGrid = gridDraw(4, 20, 64);
 
     rightPage.add(rightGrid).center().pad(10);
@@ -123,26 +120,29 @@ public class InventoryDisplay extends UIComponent {
 
   /**
    * Creates the consumable inventory UI
+   *
    * @return the Consumable inventory UI
    */
   private Table charmsCreate() {
-    //Overall page table with padding inside cover
+    // Overall page table with padding inside cover
     Table pagesContainer = new Table();
     pagesContainer.pad(40, 50, 40, 50);
 
-    //left page creation
-    Table leftPage = new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a")).top();
+    // left page creation
+    Table leftPage =
+        new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a")).top();
 
     leftPage.add(new Label("Charms", skin)).top().colspan(3).pad(25f);
     leftPage.row();
-    //display stats
+    // display stats
 
     pagesContainer.add(leftPage).size(365, 500);
 
-    //right page creation
-    Table rightPage = new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
+    // right page creation
+    Table rightPage =
+        new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
 
-    //Create Grid
+    // Create Grid
     Table rightGrid = gridDraw(4, 20, 64);
 
     rightPage.add(rightGrid).center().pad(10);
@@ -153,6 +153,7 @@ public class InventoryDisplay extends UIComponent {
 
   /**
    * Builds a grid style inventory according to the parameters given
+   *
    * @param columns number of coloumns in the inventory
    * @param totalSlots number of total slots in the inventory
    * @param slotSize size of the slots in the inventory

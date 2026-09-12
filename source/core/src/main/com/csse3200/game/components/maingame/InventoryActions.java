@@ -5,21 +5,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class InventoryActions extends Component {
-    private static final Logger logger = LoggerFactory.getLogger(InventoryActions.class);
-    private InventoryDisplay inventoryDisplay;
+  private static final Logger logger = LoggerFactory.getLogger(InventoryActions.class);
+  private InventoryDisplay inventoryDisplay;
 
-    public InventoryActions(InventoryDisplay inventoryDisplay) {
-        this.inventoryDisplay = inventoryDisplay;
-    }
+  public InventoryActions(InventoryDisplay inventoryDisplay) {
+    this.inventoryDisplay = inventoryDisplay;
+  }
 
-    public void create() {entity.getEvents().addListener("nextPage", this::nextPage);}
+  public void create() {
+    entity.getEvents().addListener("nextPage", this::nextPage);
+  }
 
-    /**
-     * Changes page from the current inventory page to the non-displayed page
-     */
-    private void nextPage() {
-        logger.info("Swap inventory page");
-        inventoryDisplay.changePage();
-
-    }
+  /** Changes page from the current inventory page to the non-displayed page */
+  private void nextPage() {
+    logger.info("Swap inventory page");
+    inventoryDisplay.changePage();
+  }
 }
