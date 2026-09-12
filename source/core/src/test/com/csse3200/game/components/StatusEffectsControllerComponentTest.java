@@ -9,6 +9,7 @@ import com.csse3200.game.components.statuseffects.Invisibility;
 import com.csse3200.game.components.statuseffects.LastStand;
 import com.csse3200.game.components.statuseffects.Regeneration;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.services.GameTime;
@@ -17,6 +18,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
 @ExtendWith(GameExtension.class)
 class StatusEffectsControllerComponentTest {
@@ -43,7 +45,8 @@ class StatusEffectsControllerComponentTest {
     assertTrue(effect.isActive());
     assertEquals(15_000, effect.getRemainingDuration());
     List<String> ended = new ArrayList<>();
-    player.getEvents().addListener("abilityEnded", (String name) -> ended.add(name));
+    EventListener1<String> recordEnded = ended::add;
+    player.getEvents().addListener("abilityEnded", recordEnded);
     controller.removeEffect(Invisibility.class);
     controller.removeEffect(Invisibility.class);
     assertFalse(abilities.isInvisible());
@@ -163,8 +166,8 @@ class StatusEffectsControllerComponentTest {
       abilities.getInvisibilityCooldownRemainingMs();
       abilities.getLastStandCooldownRemainingMs();
       abilities.update();
-      burns.constructed().forEach(effect -> verifyNoInteractions(effect));
-      regens.constructed().forEach(effect -> verifyNoInteractions(effect));
+      burns.constructed().forEach(Mockito::verifyNoInteractions);
+      regens.constructed().forEach(Mockito::verifyNoInteractions);
       when(burns.constructed().getFirst().update()).thenReturn(true);
       when(regens.constructed().getFirst().update()).thenReturn(true);
       controller.update();
@@ -189,9 +192,8 @@ class StatusEffectsControllerComponentTest {
             .addComponent(new CombatStatsComponent(100, 10))
             .addComponent(new PlayerAbilitiesComponent(time));
     assertThrows(IllegalStateException.class, noController::create);
-    assertThrows(
-        IllegalStateException.class,
-        () -> controller.registerEffect(new Invisibility(time, 10, () -> {})));
+    Invisibility duplicate = new Invisibility(time, 10, () -> {});
+    assertThrows(IllegalStateException.class, () -> controller.registerEffect(duplicate));
   }
 
   @Test
