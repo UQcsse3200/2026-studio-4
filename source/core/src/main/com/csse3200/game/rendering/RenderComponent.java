@@ -4,8 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.player.abilities.Invisibility;
-import com.csse3200.game.components.player.abilities.LastStand;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -34,10 +33,10 @@ public abstract class RenderComponent extends Component implements Renderable, D
 
   @Override
   public void render(SpriteBatch batch) {
+    // Effects say how they look; the renderer never asks which ability, or whose, they are.
     Entity source = visualSource == null ? entity : visualSource;
-    boolean invisible = Invisibility.isActiveOn(source);
-    boolean lastStand = LastStand.isActiveOn(source);
-    if (!invisible && !lastStand) {
+    Color tint = StatusEffectsControllerComponent.getTint(source);
+    if (tint == null) {
       draw(batch);
       return;
     }
@@ -49,11 +48,7 @@ public abstract class RenderComponent extends Component implements Renderable, D
     float b = color.b;
     float a = color.a;
     try {
-      batch.setColor(
-          r,
-          g * (lastStand ? 0.35f : 1f),
-          b * (lastStand ? 0.35f : 1f),
-          a * (invisible ? 0.35f : 1f));
+      batch.setColor(r * tint.r, g * tint.g, b * tint.b, a * tint.a);
       draw(batch);
     } finally {
       batch.setColor(r, g, b, a);

@@ -103,15 +103,4 @@ public abstract class PlayerAbility {
 
   /** Returns how much longer it runs in ms, which is zero for an ability that finishes at once. */
   public abstract long getRemainingMs();
-
-  /**
-   * Returns whether the ability is running on an entity, refreshing expiry first so the answer does
-   * not depend on where in the frame it is asked. Missing entities and entities without abilities
-   * are never running one.
-   */
-  protected static boolean isRunningOn(Entity entity, Class<? extends PlayerAbility> type) {
-    PlayerAbilitiesComponent abilities =
-        entity == null ? null : entity.getComponent(PlayerAbilitiesComponent.class);
-    return abilities != null && abilities.isActive(type);
-  }
 }

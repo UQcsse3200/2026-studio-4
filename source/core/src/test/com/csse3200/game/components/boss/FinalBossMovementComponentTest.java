@@ -5,8 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.components.player.PlayerAbilitiesComponent;
-import com.csse3200.game.components.player.abilities.Invisibility;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageOneConfig;
 import com.csse3200.game.extensions.GameExtension;
@@ -20,7 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class FinalBossMovementComponentTest {
-  private PlayerAbilitiesComponent abilities;
+  private StatusEffectsControllerComponent effects;
   private Entity player;
   private PhysicsMovementComponent movement;
   private FinalBossMovementComponent bossMovement;
@@ -28,8 +27,8 @@ class FinalBossMovementComponentTest {
   @BeforeEach
   void setUp() {
     ServiceLocator.registerTimeSource(mock(GameTime.class));
-    abilities = mock(PlayerAbilitiesComponent.class);
-    player = new Entity().addComponent(abilities);
+    effects = mock(StatusEffectsControllerComponent.class);
+    player = new Entity().addComponent(effects);
     player.setPosition(2f, 0f);
     movement = mock(PhysicsMovementComponent.class);
     FinalBossStageOneConfig config = new FinalBossStageOneConfig();
@@ -48,7 +47,7 @@ class FinalBossMovementComponentTest {
     verify(movement).setTarget(new Vector2(-3f, 0f));
     clearInvocations(movement);
 
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(effects.isConcealed()).thenReturn(true);
     player.setPosition(-2f, 0f);
     bossMovement.update();
     verify(movement).setMoving(false);
@@ -57,7 +56,7 @@ class FinalBossMovementComponentTest {
     clearInvocations(movement);
 
     // No elapsed frame time: invisibility must reset the target refresh timer.
-    when(abilities.isActive(Invisibility.class)).thenReturn(false);
+    when(effects.isConcealed()).thenReturn(false);
     bossMovement.update();
     verify(movement).setMoving(true);
     verify(movement).setTarget(new Vector2(3f, 0f));
@@ -65,7 +64,7 @@ class FinalBossMovementComponentTest {
 
   @Test
   void shouldNotBeginFleeingFromInvisiblePlayer() {
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(effects.isConcealed()).thenReturn(true);
     bossMovement.setMode(FinalBossMovementComponent.Mode.FLEE_PLAYER);
     bossMovement.update();
     verify(movement).setMoving(false);
@@ -75,7 +74,7 @@ class FinalBossMovementComponentTest {
 
   @Test
   void shouldContinueWanderingWhilePlayerIsInvisible() {
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(effects.isConcealed()).thenReturn(true);
     bossMovement.setMode(FinalBossMovementComponent.Mode.WANDER_AVOID_SUMMONS);
     bossMovement.update();
     verify(movement).setMoving(true);
@@ -85,7 +84,7 @@ class FinalBossMovementComponentTest {
 
   @Test
   void shouldStillAvoidSummonsWhilePlayerIsInvisible() {
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(effects.isConcealed()).thenReturn(true);
     Entity summon = new Entity();
     summon.setPosition(0.1f, 0f);
     bossMovement.setActiveSummons(List.of(summon));
@@ -97,9 +96,9 @@ class FinalBossMovementComponentTest {
 
   @Test
   void shouldRemainStoppedWhenVisibilityChanges() {
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(effects.isConcealed()).thenReturn(true);
     bossMovement.update();
-    when(abilities.isActive(Invisibility.class)).thenReturn(false);
+    when(effects.isConcealed()).thenReturn(false);
     bossMovement.update();
     verify(movement, times(2)).setMoving(false);
     verify(movement, never()).setMoving(true);

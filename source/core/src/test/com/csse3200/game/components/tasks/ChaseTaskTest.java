@@ -10,8 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.csse3200.game.ai.tasks.AITaskComponent;
-import com.csse3200.game.components.player.PlayerAbilitiesComponent;
-import com.csse3200.game.components.player.abilities.Invisibility;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
@@ -91,22 +90,22 @@ class ChaseTaskTest {
 
   @Test
   void shouldRejectInvisibleTargetAndRecoverInactivePriority() {
-    PlayerAbilitiesComponent abilities = mock(PlayerAbilitiesComponent.class);
-    Entity target = new Entity().addComponent(abilities);
+    StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
+    Entity target = new Entity().addComponent(effects);
     target.setPosition(2f, 0f);
     ChaseTask task = new ChaseTask(target, 10, 5, 10);
     task.create(Entity::new);
 
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(effects.isConcealed()).thenReturn(true);
     assertEquals(-1, task.getPriority());
-    when(abilities.isActive(Invisibility.class)).thenReturn(false);
+    when(effects.isConcealed()).thenReturn(false);
     assertEquals(10, task.getPriority());
   }
 
   @Test
   void shouldStopAndResumeThroughSchedulerWithoutReplacementTask() {
-    PlayerAbilitiesComponent abilities = mock(PlayerAbilitiesComponent.class);
-    Entity target = new Entity().addComponent(abilities);
+    StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
+    Entity target = new Entity().addComponent(effects);
     target.setPosition(2f, 0f);
     PhysicsMovementComponent movement = mock(PhysicsMovementComponent.class);
     ChaseTask task = new ChaseTask(target, 10, 5, 10);
@@ -116,14 +115,14 @@ class ChaseTaskTest {
     verify(movement).setMoving(true);
     clearInvocations(movement);
 
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(effects.isConcealed()).thenReturn(true);
     target.setPosition(3f, 0f);
     ai.update();
     verify(movement).setMoving(false);
     verify(movement, never()).setTarget(any());
     clearInvocations(movement);
 
-    when(abilities.isActive(Invisibility.class)).thenReturn(false);
+    when(effects.isConcealed()).thenReturn(false);
     ai.update();
     verify(movement).setMoving(true);
     assertEquals(10, task.getPriority());
@@ -131,8 +130,8 @@ class ChaseTaskTest {
 
   @Test
   void shouldCancelDirectUpdateWithoutTrackingInvisiblePosition() {
-    PlayerAbilitiesComponent abilities = mock(PlayerAbilitiesComponent.class);
-    Entity target = new Entity().addComponent(abilities);
+    StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
+    Entity target = new Entity().addComponent(effects);
     target.setPosition(2f, 0f);
     PhysicsMovementComponent movement = mock(PhysicsMovementComponent.class);
     Entity owner = new Entity().addComponent(movement);
@@ -141,7 +140,7 @@ class ChaseTaskTest {
     task.start();
     clearInvocations(movement);
 
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(effects.isConcealed()).thenReturn(true);
     task.update();
     verify(movement).setMoving(false);
     verify(movement, never()).setTarget(any());

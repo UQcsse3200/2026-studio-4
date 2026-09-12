@@ -12,8 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.ai.tasks.TaskRunner;
-import com.csse3200.game.components.player.PlayerAbilitiesComponent;
-import com.csse3200.game.components.player.abilities.Invisibility;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
@@ -52,14 +51,14 @@ class LungeAttackTaskTest {
 
   @Test
   void shouldNotAcquireInvisibleTarget() {
-    PlayerAbilitiesComponent abilities = mock(PlayerAbilitiesComponent.class);
-    target.addComponent(abilities);
+    StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
+    target.addComponent(effects);
     target.setPosition(1f, 0f);
     LungeAttackTask task = new LungeAttackTask(target, 2.5f);
     task.create(taskRunner);
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(effects.isConcealed()).thenReturn(true);
     assertEquals(-1, task.getPriority());
-    when(abilities.isActive(Invisibility.class)).thenReturn(false);
+    when(effects.isConcealed()).thenReturn(false);
     assertEquals(20, task.getPriority());
   }
 
@@ -85,8 +84,8 @@ class LungeAttackTaskTest {
 
   @Test
   void shouldYieldToFallbackAndResumeThroughSchedulerAfterCooldown() {
-    PlayerAbilitiesComponent abilities = mock(PlayerAbilitiesComponent.class);
-    target.addComponent(abilities);
+    StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
+    target.addComponent(effects);
     target.setPosition(1f, 0f);
     LungeAttackTask task = new LungeAttackTask(target, 2.5f);
     PriorityTask fallback = mock(PriorityTask.class);
@@ -98,12 +97,12 @@ class LungeAttackTaskTest {
     ai.update();
     verify(movementComponent).setMoving(true);
 
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(effects.isConcealed()).thenReturn(true);
     when(gameTime.getTime()).thenReturn(600L);
     ai.update();
     verify(fallback).start();
     clearInvocations(movementComponent);
-    when(abilities.isActive(Invisibility.class)).thenReturn(false);
+    when(effects.isConcealed()).thenReturn(false);
     when(gameTime.getTime()).thenReturn(2599L);
     ai.update();
     verify(movementComponent, never()).setMoving(true);
@@ -116,8 +115,8 @@ class LungeAttackTaskTest {
   }
 
   private void assertCancellation(boolean dashStarted, boolean checkPriority) {
-    PlayerAbilitiesComponent abilities = mock(PlayerAbilitiesComponent.class);
-    target.addComponent(abilities);
+    StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
+    target.addComponent(effects);
     target.setPosition(1f, 0f);
     int[] dashEnds = {0};
     owner.getEvents().addListener("lungeDashEnd", () -> dashEnds[0]++);
@@ -131,7 +130,7 @@ class LungeAttackTaskTest {
     }
     clearInvocations(movementComponent);
     when(gameTime.getTime()).thenReturn(600L);
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(effects.isConcealed()).thenReturn(true);
     if (checkPriority) {
       assertEquals(-1, task.getPriority());
     } else {
@@ -146,7 +145,7 @@ class LungeAttackTaskTest {
     task.update();
     assertEquals(-1, task.getPriority());
     assertEquals(1, dashEnds[0]);
-    when(abilities.isActive(Invisibility.class)).thenReturn(false);
+    when(effects.isConcealed()).thenReturn(false);
     task.update();
     assertEquals(-1, task.getPriority());
     task.stop();

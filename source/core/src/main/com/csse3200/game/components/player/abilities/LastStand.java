@@ -11,8 +11,8 @@ import com.csse3200.game.services.GameTime;
  * LastStandEffect on them, amplifying effective strength, movement speed and attack speed for as
  * long as it runs.
  *
- * <p>The ability owns the effect, decides when a hit should apply it, and reports the player's
- * state from it.
+ * <p>The ability only decides which hit applies the effect. How much the effect amplifies by, and
+ * everything that reads it, lives on {@link LastStandEffect} and the status effects controller.
  */
 public final class LastStand extends TimedPlayerAbility {
   /** Name carried by the abilityUsed and abilityEnded events. */
@@ -20,9 +20,6 @@ public final class LastStand extends TimedPlayerAbility {
 
   public static final long DURATION_MS = 10_000;
   public static final long COOLDOWN_MS = 60_000;
-
-  /** Applied to effective strength, movement speed and attack speed while the effect runs. */
-  public static final float MULTIPLIER = 1.5f;
 
   /** Share of max health a hostile hit must leave the player strictly below to apply the effect. */
   private static final int HEALTH_PERCENT = 20;
@@ -39,10 +36,5 @@ public final class LastStand extends TimedPlayerAbility {
         && remainingHealth > 0
         && (long) remainingHealth * 100 < (long) stats.getMaxHealth() * HEALTH_PERCENT
         && CombatStatsComponent.isHostileAttacker(attacker);
-  }
-
-  /** Returns whether the amplifier is running on an entity. */
-  public static boolean isActiveOn(Entity target) {
-    return isRunningOn(target, LastStand.class);
   }
 }

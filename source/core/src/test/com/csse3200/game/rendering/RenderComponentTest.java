@@ -37,12 +37,11 @@ class RenderComponentTest {
   @Mock RenderService service;
 
   @Test
-  void shouldMultiplyExistingAlphaForInvisibilityAndRestoreMutableBatchColor() {
-    PlayerAbilitiesComponent abilities = mock(PlayerAbilitiesComponent.class);
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
-    when(abilities.isActive(LastStand.class)).thenReturn(false);
+  void shouldMultiplyExistingAlphaForAFadingTintAndRestoreMutableBatchColor() {
+    StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
+    when(effects.getTint()).thenReturn(new Color(1f, 1f, 1f, 0.35f));
     RecordingRender component = new RecordingRender();
-    new Entity().addComponent(abilities).addComponent(component);
+    new Entity().addComponent(effects).addComponent(component);
     Color original = new Color(0.8f, 0.6f, 0.4f, 0.5f);
     SpriteBatch batch = mutableColorBatch(original);
 
@@ -56,12 +55,11 @@ class RenderComponentTest {
   }
 
   @Test
-  void shouldTintLastStandWithoutChangingAlphaAndRestoreColorWhenDrawThrows() {
-    PlayerAbilitiesComponent abilities = mock(PlayerAbilitiesComponent.class);
-    when(abilities.isActive(Invisibility.class)).thenReturn(false);
-    when(abilities.isActive(LastStand.class)).thenReturn(true);
+  void shouldTintColourWithoutChangingAlphaAndRestoreColorWhenDrawThrows() {
+    StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
+    when(effects.getTint()).thenReturn(new Color(1f, 0.35f, 0.35f, 1f));
     RecordingRender component = new RecordingRender();
-    new Entity().addComponent(abilities).addComponent(component);
+    new Entity().addComponent(effects).addComponent(component);
     Color original = new Color(0.8f, 0.6f, 0.4f, 0.5f);
     SpriteBatch batch = mutableColorBatch(original);
     RuntimeException failure = new IllegalStateException("draw failed");
@@ -112,12 +110,11 @@ class RenderComponentTest {
   }
 
   @Test
-  void shouldUseExplicitVisualSourceInsteadOfOwnAbilitiesAndAllowResettingIt() {
-    PlayerAbilitiesComponent ownAbilities = mock(PlayerAbilitiesComponent.class);
-    when(ownAbilities.isActive(Invisibility.class)).thenReturn(true);
-    when(ownAbilities.isActive(LastStand.class)).thenReturn(false);
+  void shouldUseExplicitVisualSourceInsteadOfOwnEffectsAndAllowResettingIt() {
+    StatusEffectsControllerComponent ownEffects = mock(StatusEffectsControllerComponent.class);
+    when(ownEffects.getTint()).thenReturn(new Color(1f, 1f, 1f, 0.35f));
     RecordingRender component = new RecordingRender();
-    new Entity().addComponent(ownAbilities).addComponent(component);
+    new Entity().addComponent(ownEffects).addComponent(component);
     component.setVisualSource(new Entity());
     Color original = new Color(0.8f, 0.6f, 0.4f, 0.5f);
     SpriteBatch batch = mutableColorBatch(original);
@@ -132,10 +129,10 @@ class RenderComponentTest {
   }
 
   @Test
-  void shouldDrawWithoutTouchingBatchColorWhenAbilitiesAreInactive() {
-    PlayerAbilitiesComponent abilities = mock(PlayerAbilitiesComponent.class);
+  void shouldDrawWithoutTouchingBatchColorWhenNoEffectTints() {
+    StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
     RenderComponent component = spy(RenderComponent.class);
-    new Entity().addComponent(abilities).addComponent(component);
+    new Entity().addComponent(effects).addComponent(component);
     SpriteBatch batch = mock(SpriteBatch.class);
 
     component.render(batch);

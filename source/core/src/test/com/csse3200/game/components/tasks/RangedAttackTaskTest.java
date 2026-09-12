@@ -6,8 +6,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import com.csse3200.game.ai.tasks.AITaskComponent;
-import com.csse3200.game.components.player.PlayerAbilitiesComponent;
-import com.csse3200.game.components.player.abilities.Invisibility;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.FloatingDemonProjectileFactory;
@@ -24,7 +23,7 @@ import org.mockito.MockedStatic;
 
 @ExtendWith(GameExtension.class)
 class RangedAttackTaskTest {
-  private PlayerAbilitiesComponent abilities;
+  private StatusEffectsControllerComponent effects;
   private Entity player;
   private RangedAttackTask task;
   private GameTime time;
@@ -34,8 +33,8 @@ class RangedAttackTaskTest {
 
   @BeforeEach
   void setUp() {
-    abilities = mock(PlayerAbilitiesComponent.class);
-    player = new Entity().addComponent(abilities);
+    effects = mock(StatusEffectsControllerComponent.class);
+    player = new Entity().addComponent(effects);
     player.setPosition(5f, 0f);
     Entity owner = new Entity().addComponent(mock(PhysicsMovementComponent.class));
     owner.getEvents().addListener("rangedAttack", () -> attacks++);
@@ -56,12 +55,12 @@ class RangedAttackTaskTest {
 
   @Test
   void shouldSuppressInactiveAndActivePriorityButRetainRangeHysteresis() {
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(effects.isConcealed()).thenReturn(true);
     assertEquals(-1, task.getPriority());
     task.start();
     assertEquals(-1, task.getPriority());
     player.setPosition(7f, 0f);
-    when(abilities.isActive(Invisibility.class)).thenReturn(false);
+    when(effects.isConcealed()).thenReturn(false);
     assertEquals(5, task.getPriority());
     task.stop();
     assertEquals(-1, task.getPriority());
@@ -72,13 +71,13 @@ class RangedAttackTaskTest {
   @Test
   void shouldNotQueueOrAnnounceAttacksWhileInvisibleAndResumeWhenVisible() {
     task.start();
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(effects.isConcealed()).thenReturn(true);
     when(time.getDeltaTime()).thenReturn(10f);
     task.update();
     task.update();
     assertEquals(0, callbacks.size());
     assertEquals(0, attacks);
-    when(abilities.isActive(Invisibility.class)).thenReturn(false);
+    when(effects.isConcealed()).thenReturn(false);
     task.update();
     assertEquals(3, callbacks.size());
     assertEquals(1, attacks);
@@ -88,10 +87,10 @@ class RangedAttackTaskTest {
   void shouldPauseExistingCooldownWhileInvisible() {
     task.start();
     task.update();
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(effects.isConcealed()).thenReturn(true);
     when(time.getDeltaTime()).thenReturn(10f);
     task.update();
-    when(abilities.isActive(Invisibility.class)).thenReturn(false);
+    when(effects.isConcealed()).thenReturn(false);
     when(time.getDeltaTime()).thenReturn(1f);
     task.update();
     assertEquals(3, callbacks.size());
@@ -112,13 +111,13 @@ class RangedAttackTaskTest {
       task.update();
       assertEquals(3, callbacks.size());
       callbacks.get(0).run();
-      when(abilities.isActive(Invisibility.class)).thenReturn(true);
+      when(effects.isConcealed()).thenReturn(true);
       callbacks.get(1).run();
       callbacks.get(2).run();
       assertEquals(List.of(projectile), spawned);
       factory.verify(() -> FloatingDemonProjectileFactory.createProjectile(any(), any(), eq(7)));
 
-      when(abilities.isActive(Invisibility.class)).thenReturn(false);
+      when(effects.isConcealed()).thenReturn(false);
       when(time.getDeltaTime()).thenReturn(2f);
       task.update();
       callbacks.subList(3, 6).forEach(Runnable::run);
@@ -135,7 +134,7 @@ class RangedAttackTaskTest {
       task.start();
       task.update();
       assertEquals(3, callbacks.size());
-      when(abilities.isActive(Invisibility.class)).thenReturn(true);
+      when(effects.isConcealed()).thenReturn(true);
       callbacks.forEach(Runnable::run);
       factory.verifyNoInteractions();
       assertEquals(0, spawned.size());

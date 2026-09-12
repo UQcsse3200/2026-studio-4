@@ -130,8 +130,8 @@ class FinalBossExplosiveSummonComponentTest {
 
   @Test
   void shouldStopPursuitAndResumeAtPlayersNewPosition() {
-    PlayerAbilitiesComponent abilities = mock(PlayerAbilitiesComponent.class);
-    player = new Entity().addComponent(new CombatStatsComponent(100, 10)).addComponent(abilities);
+    StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
+    player = new Entity().addComponent(new CombatStatsComponent(100, 10)).addComponent(effects);
     player.create();
     PhysicsMovementComponent movement = mock(PhysicsMovementComponent.class);
     FinalBossExplosiveSummonComponent explosive =
@@ -146,7 +146,7 @@ class FinalBossExplosiveSummonComponentTest {
     verify(movement).setMoving(true);
     clearInvocations(movement);
 
-    when(abilities.isActive(Invisibility.class)).thenReturn(true);
+    when(effects.isConcealed()).thenReturn(true);
     player.setPosition(0f, 0f);
     explosive.update();
     verify(movement).setMoving(false);
@@ -155,7 +155,7 @@ class FinalBossExplosiveSummonComponentTest {
     assertFalse(explosive.hasDetonated());
     clearInvocations(movement);
 
-    when(abilities.isActive(Invisibility.class)).thenReturn(false);
+    when(effects.isConcealed()).thenReturn(false);
     player.setPosition(4f, 0f);
     explosive.update();
     verify(movement).setMoving(true);

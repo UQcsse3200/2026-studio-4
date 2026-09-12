@@ -56,16 +56,17 @@ class PlayerAbilitiesComponentTest {
   }
 
   @Test
-  void shouldStartInactiveAndTreatMissingTargetsAsVisible() {
+  void shouldStartInactiveAndTreatMissingTargetsAsUntargetable() {
     assertInactive();
-    assertFalse(Invisibility.isActiveOn(null));
-    assertFalse(Invisibility.isActiveOn(new Entity()));
-    assertFalse(Invisibility.isActiveOn(player));
+    // A missing target is untargetable; a real one without effects is not.
+    assertTrue(StatusEffectsControllerComponent.isUntargetable(null));
+    assertFalse(StatusEffectsControllerComponent.isUntargetable(new Entity()));
+    assertFalse(StatusEffectsControllerComponent.isUntargetable(player));
     assertTrue(used.isEmpty());
     assertTrue(ended.isEmpty());
     assertTrue(failed.isEmpty());
     assertTrue(abilities.tryActivate(Invisibility.class));
-    assertTrue(Invisibility.isActiveOn(player));
+    assertTrue(StatusEffectsControllerComponent.isUntargetable(player));
   }
 
   @Test

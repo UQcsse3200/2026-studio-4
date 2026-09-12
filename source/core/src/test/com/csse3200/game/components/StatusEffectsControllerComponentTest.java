@@ -3,10 +3,13 @@ package com.csse3200.game.components;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.badlogic.gdx.graphics.Color;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.player.abilities.Invisibility;
 import com.csse3200.game.components.player.abilities.LastStand;
 import com.csse3200.game.components.statuseffects.Burning;
+import com.csse3200.game.components.statuseffects.InvisibilityEffect;
+import com.csse3200.game.components.statuseffects.LastStandEffect;
 import com.csse3200.game.components.statuseffects.Regeneration;
 import com.csse3200.game.components.statuseffects.TimedEffect;
 import com.csse3200.game.entities.Entity;
@@ -287,5 +290,50 @@ class StatusEffectsControllerComponentTest {
     abilities.unlock(LastStand.class);
     stats.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
     assertTrue(abilities.tryActivate(Invisibility.class));
+  }
+
+  @Test
+  void shouldConcealAndAmplifyAnyEntityNotJustThePlayer() {
+    // No ability component anywhere: an enemy wearing the same effects behaves identically, which
+    // is what naming an ability from combat, rendering and AI used to make impossible.
+    CombatStatsComponent enemyStats = new CombatStatsComponent(100, 10, 4f, 2f);
+    StatusEffectsControllerComponent enemyEffects = new StatusEffectsControllerComponent();
+    Entity enemy = new Entity().addComponent(enemyStats).addComponent(enemyEffects);
+    enemy.create();
+    InvisibilityEffect hidden = new InvisibilityEffect(time, 5_000);
+    LastStandEffect amplified = new LastStandEffect(time, 5_000);
+    enemyEffects.registerEffect(hidden);
+    enemyEffects.registerEffect(amplified);
+
+    assertFalse(StatusEffectsControllerComponent.isUntargetable(enemy));
+    assertNull(StatusEffectsControllerComponent.getTint(enemy));
+    assertEquals(1f, enemyEffects.getStatMultiplier());
+    assertEquals(10, enemyStats.getEffectiveBaseAttack());
+
+    when(time.getTime()).thenReturn(0L);
+    hidden.activate();
+    amplified.activate();
+
+    assertTrue(StatusEffectsControllerComponent.isUntargetable(enemy));
+    // Both effects compose rather than one winning.
+    assertEquals(
+        new Color(1f, 0.35f, 0.35f, 0.35f), StatusEffectsControllerComponent.getTint(enemy));
+    assertEquals(LastStandEffect.MULTIPLIER, enemyEffects.getStatMultiplier());
+    assertEquals(15, enemyStats.getEffectiveBaseAttack());
+    assertEquals(6f, enemyStats.getEffectiveMovementSpeed());
+
+    // Queries expire state themselves, with no frame update.
+    when(time.getTime()).thenReturn(5_000L);
+    assertFalse(StatusEffectsControllerComponent.isUntargetable(enemy));
+    assertNull(StatusEffectsControllerComponent.getTint(enemy));
+    assertEquals(10, enemyStats.getEffectiveBaseAttack());
+  }
+
+  @Test
+  void shouldTreatMissingEntitiesAndEffectlessOnesAsPlainlyTargetable() {
+    assertTrue(StatusEffectsControllerComponent.isUntargetable(null));
+    assertFalse(StatusEffectsControllerComponent.isUntargetable(new Entity()));
+    assertNull(StatusEffectsControllerComponent.getTint(null));
+    assertNull(StatusEffectsControllerComponent.getTint(new Entity()));
   }
 }

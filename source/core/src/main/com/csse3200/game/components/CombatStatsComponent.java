@@ -1,7 +1,5 @@
 package com.csse3200.game.components;
 
-import com.csse3200.game.components.player.abilities.Invisibility;
-import com.csse3200.game.components.player.abilities.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.ColliderComponent;
@@ -125,11 +123,10 @@ public class CombatStatsComponent extends Component {
     return baseAttack;
   }
 
-  /** Returns base attack with Last Stand applied, without changing charm-adjusted raw stats. */
+  /** Returns base attack with active effects applied, leaving charm-adjusted raw stats alone. */
   public int getEffectiveBaseAttack() {
-    return LastStand.isActiveOn(entity)
-        ? Math.round(baseAttack * LastStand.MULTIPLIER)
-        : baseAttack;
+    float multiplier = getStatMultiplier();
+    return multiplier == 1f ? baseAttack : Math.round(baseAttack * multiplier);
   }
 
   /**
@@ -169,9 +166,9 @@ public class CombatStatsComponent extends Component {
     return movementSpeed;
   }
 
-  /** Returns movement speed with Last Stand applied, without changing charm-adjusted raw stats. */
+  /** Returns movement speed with active effects applied, leaving raw stats alone. */
   public float getEffectiveMovementSpeed() {
-    return LastStand.isActiveOn(entity) ? movementSpeed * LastStand.MULTIPLIER : movementSpeed;
+    return movementSpeed * getStatMultiplier();
   }
 
   /**
@@ -211,9 +208,19 @@ public class CombatStatsComponent extends Component {
     return attackSpeed;
   }
 
-  /** Returns attack speed with Last Stand applied, without changing charm-adjusted raw stats. */
+  /** Returns attack speed with active effects applied, leaving raw stats alone. */
   public float getEffectiveAttackSpeed() {
-    return LastStand.isActiveOn(entity) ? attackSpeed * LastStand.MULTIPLIER : attackSpeed;
+    return attackSpeed * getStatMultiplier();
+  }
+
+  /**
+   * Returns what the entity's own status effects scale its stats by, or 1 when there are none. The
+   * effects say what they do; nothing here knows which ability, if any, put them there.
+   */
+  private float getStatMultiplier() {
+    StatusEffectsControllerComponent effects =
+        entity == null ? null : entity.getComponent(StatusEffectsControllerComponent.class);
+    return effects == null ? 1f : effects.getStatMultiplier();
   }
 
   /**
@@ -286,7 +293,9 @@ public class CombatStatsComponent extends Component {
       return;
     }
 
-    if (invulnerable || (isHostileAttacker(attacker) && Invisibility.isActiveOn(entity))) {
+    if (invulnerable
+        || (isHostileAttacker(attacker)
+            && StatusEffectsControllerComponent.isUntargetable(entity))) {
       triggerDamageBlocked();
       return;
     }
