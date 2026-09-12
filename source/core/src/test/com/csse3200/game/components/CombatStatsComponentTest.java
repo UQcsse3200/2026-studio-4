@@ -166,6 +166,29 @@ class CombatStatsComponentTest {
   }
 
   @Test
+  void shouldAmplifyMovementSpeedOnlyWhileLastStandIsActive() {
+    GameTime time = mock(GameTime.class);
+    when(time.getTime()).thenReturn(1_000L);
+    CombatStatsComponent combat = new CombatStatsComponent(100, 10, 4f, 2f);
+    PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
+    Entity player = new Entity().addComponent(combat).addComponent(abilities);
+    player.create();
+
+    assertEquals(4f, combat.getEffectiveMovementSpeed());
+
+    abilities.enableLastStand();
+    combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
+
+    assertEquals(6f, combat.getEffectiveMovementSpeed());
+    assertEquals(4f, combat.getMovementSpeed());
+
+    when(time.getTime()).thenReturn(1_000L + PlayerAbilitiesComponent.LAST_STAND_DURATION_MS);
+
+    assertEquals(4f, combat.getEffectiveMovementSpeed());
+    assertEquals(4f, combat.getMovementSpeed());
+  }
+
+  @Test
   void shouldApplyLastStandToEffectiveStatsAndHitsWithoutMutatingRawBuffs() {
     GameTime time = mock(GameTime.class);
     CombatStatsComponent combat = new CombatStatsComponent(100, 11, 3f, 2f);
@@ -175,10 +198,12 @@ class CombatStatsComponentTest {
     abilities.enableLastStand();
     assertEquals(11, combat.getEffectiveBaseAttack());
     assertEquals(2f, combat.getEffectiveAttackSpeed());
+    assertEquals(3f, combat.getEffectiveMovementSpeed());
     combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
 
     assertEquals(17, combat.getEffectiveBaseAttack());
     assertEquals(3f, combat.getEffectiveAttackSpeed());
+    assertEquals(4.5f, combat.getEffectiveMovementSpeed());
     List<Integer> rawUpdates = new ArrayList<>();
     player.getEvents().addListener("updateBaseAttack", (EventListener1<Integer>) rawUpdates::add);
     combat.addBaseAttack(2);

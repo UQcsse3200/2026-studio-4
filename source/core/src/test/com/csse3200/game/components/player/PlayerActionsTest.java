@@ -13,10 +13,13 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.Vector2Utils;
@@ -192,6 +195,41 @@ class PlayerActionsTest {
     ArgumentCaptor<Vector2> impulse = ArgumentCaptor.forClass(Vector2.class);
     verify(body).applyLinearImpulse(impulse.capture(), any(Vector2.class), eq(true));
     assertEquals(15f, impulse.getValue().x, 0.001f);
+  }
+
+  @Test
+  void shouldWalkFasterWhileLastStandIsActive() {
+    GameTime time = mock(GameTime.class);
+    when(time.getTime()).thenReturn(1_000L);
+
+    PhysicsComponent physics = mock(PhysicsComponent.class);
+    Body buffedBody = mock(Body.class);
+    when(physics.getBody()).thenReturn(buffedBody);
+    when(buffedBody.getLinearVelocity()).thenReturn(new Vector2());
+    when(buffedBody.getMass()).thenReturn(1f);
+    when(buffedBody.getWorldCenter()).thenReturn(new Vector2());
+
+    CombatStatsComponent combat = new CombatStatsComponent(100, 10, 3f, 1f);
+    PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
+    Entity buffed =
+        new Entity()
+            .addComponent(physics)
+            .addComponent(combat)
+            .addComponent(abilities)
+            .addComponent(new PlayerActions())
+            .addComponent(mock(AnimationRenderComponent.class))
+            .addComponent(new PlayerAnimationController());
+    buffed.create();
+
+    abilities.enableLastStand();
+    combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
+
+    buffed.getEvents().trigger("walk", Vector2Utils.RIGHT.cpy());
+    buffed.update();
+
+    ArgumentCaptor<Vector2> impulse = ArgumentCaptor.forClass(Vector2.class);
+    verify(buffedBody).applyLinearImpulse(impulse.capture(), any(Vector2.class), eq(true));
+    assertEquals(4.5f, impulse.getValue().x, 0.001f);
   }
 
   private void walk(Vector2 direction) {

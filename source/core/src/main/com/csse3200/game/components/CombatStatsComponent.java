@@ -124,11 +124,16 @@ public class CombatStatsComponent extends Component {
     return baseAttack;
   }
 
-  /** Returns base attack with Last Stand applied, without changing charm-adjusted raw stats. */
-  public int getEffectiveBaseAttack() {
+  /** Returns whether the owning entity is currently under the Last Stand passive. */
+  private boolean isLastStandActive() {
     PlayerAbilitiesComponent abilities =
         entity == null ? null : entity.getComponent(PlayerAbilitiesComponent.class);
-    return abilities != null && abilities.isLastStandActive()
+    return abilities != null && abilities.isLastStandActive();
+  }
+
+  /** Returns base attack with Last Stand applied, without changing charm-adjusted raw stats. */
+  public int getEffectiveBaseAttack() {
+    return isLastStandActive()
         ? Math.round(baseAttack * PlayerAbilitiesComponent.LAST_STAND_MULTIPLIER)
         : baseAttack;
   }
@@ -167,6 +172,13 @@ public class CombatStatsComponent extends Component {
     return movementSpeed;
   }
 
+  /** Returns movement speed with Last Stand applied, without changing charm-adjusted raw stats. */
+  public float getEffectiveMovementSpeed() {
+    return isLastStandActive()
+        ? movementSpeed * PlayerAbilitiesComponent.LAST_STAND_MULTIPLIER
+        : movementSpeed;
+  }
+
   /**
    * Sets the entity's movement speed. Movement Speed has a minimum bound of 0.
    *
@@ -201,11 +213,9 @@ public class CombatStatsComponent extends Component {
     return attackSpeed;
   }
 
-  /** Returns attack speed with Last Stand applied; movement speed is unaffected. */
+  /** Returns attack speed with Last Stand applied, without changing charm-adjusted raw stats. */
   public float getEffectiveAttackSpeed() {
-    PlayerAbilitiesComponent abilities =
-        entity == null ? null : entity.getComponent(PlayerAbilitiesComponent.class);
-    return abilities != null && abilities.isLastStandActive()
+    return isLastStandActive()
         ? attackSpeed * PlayerAbilitiesComponent.LAST_STAND_MULTIPLIER
         : attackSpeed;
   }

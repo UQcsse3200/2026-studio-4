@@ -129,7 +129,7 @@ public class PlayerActions extends Component {
     Vector2 velocity = body.getLinearVelocity();
     Vector2 desiredVelocity;
 
-    float movementSpeed = combatStats.getMovementSpeed();
+    float movementSpeed = combatStats.getEffectiveMovementSpeed();
 
     if (dashOn) {
       float dashSpeed = DASH_SPEED_MULTIPLIER * movementSpeed;
