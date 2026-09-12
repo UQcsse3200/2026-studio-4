@@ -5,4 +5,5 @@ public class NPCConfigs {
   public BombEnemyConfig bombEnemy = new BombEnemyConfig();
   public ChaseEnemyConfig chaseEnemy = new ChaseEnemyConfig();
   public FloatingDemonConfig floatingDemon = new FloatingDemonConfig();
+  public BaseEntityConfig cerberus = new BaseEntityConfig();
 }

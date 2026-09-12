@@ -20,8 +20,8 @@ class PatrolTaskTest {
     Vector2 leftPoint = new Vector2(1f, 3f);
     Vector2 topPoint = new Vector2(5f, 5f);
     Vector2 rightPoint = new Vector2(10f, 3f);
-    PatrolTask patrolTask = new PatrolTask(leftPoint, topPoint, rightPoint);
-    AITaskComponent aiTaskComponent = new AITaskComponent().addTask(patrolTask);
+    PatrolTask patrolTask = new PatrolTask(leftPoint, topPoint, rightPoint, 5);
+    AITaskComponent aiTaskComponent = new AITaskComponent(new Entity()).addTask(patrolTask);
     PhysicsMovementComponent movement = new PhysicsMovementComponent();
     Entity enemy = new Entity().addComponent(aiTaskComponent).addComponent(movement);
 
