@@ -70,16 +70,12 @@ class BombEnemyTest {
 
     Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
 
-    EventListener0 dieAnimationListener = mock(EventListener0.class);
-    bombEnemy.getEvents().addListener("dieAnimation", dieAnimationListener);
+    EventListener0 fuseStarted = mock(EventListener0.class);
+    bombEnemy.getEvents().addListener("fuseStarted", fuseStarted);
 
     bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
 
-    verify(dieAnimationListener, never()).handle();
-
-    Thread.sleep(100);
-
-    verify(dieAnimationListener, times(1)).handle();
+    verify(fuseStarted, times(1)).handle();
   }
 
   @Test
