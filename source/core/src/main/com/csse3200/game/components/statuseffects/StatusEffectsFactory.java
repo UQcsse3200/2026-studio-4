@@ -4,7 +4,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 
 /** Factory to create the status effects. */
 public class StatusEffectsFactory {
-  public StatusEffectsFactory() {
+  private StatusEffectsFactory() {
     throw new IllegalStateException("Instantiating static utility class");
   }
 
