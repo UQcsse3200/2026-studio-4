@@ -39,7 +39,7 @@ public class Regeneration implements StatusEffect {
    */
   @Override
   public boolean update() {
-    if (time.getTimeSince(lastBurn) > healCooldown) {
+    if (time.getTimeSince(lastBurn) > healCooldown && !combatStats.isDead()) {
       combatStats.addHealth(healing);
       lastBurn = time.getTime();
     }
