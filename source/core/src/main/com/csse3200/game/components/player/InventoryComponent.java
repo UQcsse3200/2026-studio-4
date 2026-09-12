@@ -1,7 +1,7 @@
 package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
-import com.csse3200.game.items.Charm;
+import com.csse3200.game.items.charms.Charm;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -77,12 +77,7 @@ public class InventoryComponent extends Component {
    * @param charm charm to add
    */
   public void addCharm(Charm charm) {
-    this.charms.add(charm);
-
-    // Notify other components when a charm is added
-    if (entity != null) {
-      entity.getEvents().trigger("charmAdded", charm);
-    }
+    charms.add(charm);
   }
 
   /**
@@ -92,14 +87,7 @@ public class InventoryComponent extends Component {
    * @return true if the charm was successfully removed
    */
   public boolean removeCharm(Charm charm) {
-    boolean removed = this.charms.remove(charm);
-
-    // Notify other components only when the charm is successfully removed
-    if (removed && entity != null) {
-      entity.getEvents().trigger("charmRemoved", charm);
-    }
-
-    return removed;
+    return this.charms.remove(charm);
   }
 
   /**
