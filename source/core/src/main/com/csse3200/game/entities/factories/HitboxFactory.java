@@ -49,6 +49,7 @@ public class HitboxFactory {
     }
     if (spec.getTexture() != null) {
       RotatingTextureRenderComponent render = new RotatingTextureRenderComponent(spec.getTexture());
+      render.setVisualSource(spec.getVisualSource());
       render.setVisualScale(spec.getVisualScale());
       render.setVisualOffset(spec.getVisualOffset());
       render.setRotation(spec.getRotation());

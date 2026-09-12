@@ -12,7 +12,7 @@ import com.csse3200.game.entities.factories.HitboxSpec;
  * weapon-specific hitbox.
  *
  * <p>The same entity must also have a {@link WeaponStatsComponent}. Hitbox damage is {@code
- * round(wielder.baseAttack * weapon.multiplier)}; use {@link #resolveHitboxDamage()} when filling
+ * round(wielder.effectiveBaseAttack * weapon.multiplier)}; use {@link #resolveHitboxDamage()} when filling
  * {@link HitboxSpec#damage(int)}.
  *
  * <p>Listens for a {@code "weaponAttack"} event carrying a {@link Vector2} direction (triggered by,
@@ -114,26 +114,26 @@ public abstract class WeaponComponent extends Component {
   protected abstract void createAttack(Vector2 origin, Vector2 direction);
 
   /**
-   * Damage for this weapon's spawned hitboxes: the wielder's base attack scaled by the weapon
+   * Damage for this weapon's spawned hitboxes: the wielder's effective base attack scaled by the weapon
    * multiplier, rounded. A wielder without combat stats is treated as 0 base attack.
    *
-   * @return {@code round(wielder.baseAttack * multiplier)}
+   * @return {@code round(wielder.effectiveBaseAttack * multiplier)}
    */
   protected int resolveHitboxDamage() {
     CombatStatsComponent combat = entity.getComponent(CombatStatsComponent.class);
-    int baseAttack = combat == null ? 0 : combat.getBaseAttack();
+    int baseAttack = combat == null ? 0 : combat.getEffectiveBaseAttack();
     return stats.resolveHitboxDamage(baseAttack);
   }
 
   /**
-   * Cooldown for this weapon scaled by the wielder's attack speed, so attack-speed buffs make every
+   * Cooldown for this weapon scaled by the wielder's effective attack speed, so buffs make every
    * weapon fire faster. A wielder without combat stats uses the weapon's base cooldown.
    *
-   * @return {@code weapon.cooldown / wielder.attackSpeed}
+   * @return {@code weapon.cooldown / wielder.effectiveAttackSpeed}
    */
   protected float resolveCooldown() {
     CombatStatsComponent combat = entity.getComponent(CombatStatsComponent.class);
-    float attackSpeed = combat == null ? 1f : combat.getAttackSpeed();
+    float attackSpeed = combat == null ? 1f : combat.getEffectiveAttackSpeed();
     return stats.resolveCooldown(attackSpeed);
   }
 }

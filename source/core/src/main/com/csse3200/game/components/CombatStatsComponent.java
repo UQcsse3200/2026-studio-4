@@ -1,6 +1,10 @@
 package com.csse3200.game.components;
 
+import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.components.ColliderComponent;
+import com.csse3200.game.physics.components.HitboxComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,6 +124,15 @@ public class CombatStatsComponent extends Component {
     return baseAttack;
   }
 
+  /** Returns base attack with Last Stand applied, without changing charm-adjusted raw stats. */
+  public int getEffectiveBaseAttack() {
+    PlayerAbilitiesComponent abilities =
+        entity == null ? null : entity.getComponent(PlayerAbilitiesComponent.class);
+    return abilities != null && abilities.isLastStandActive()
+        ? Math.round(baseAttack * PlayerAbilitiesComponent.LAST_STAND_MULTIPLIER)
+        : baseAttack;
+  }
+
   /**
    * Sets the entity's attack damage. Attack damage has a minimum bound of 0.
    *
@@ -188,6 +201,15 @@ public class CombatStatsComponent extends Component {
     return attackSpeed;
   }
 
+  /** Returns attack speed with Last Stand applied; movement speed is unaffected. */
+  public float getEffectiveAttackSpeed() {
+    PlayerAbilitiesComponent abilities =
+        entity == null ? null : entity.getComponent(PlayerAbilitiesComponent.class);
+    return abilities != null && abilities.isLastStandActive()
+        ? attackSpeed * PlayerAbilitiesComponent.LAST_STAND_MULTIPLIER
+        : attackSpeed;
+  }
+
   /**
    * Sets the entity's attack speed. Attack Speed has a minimum bound of 0.
    *
@@ -225,16 +247,18 @@ public class CombatStatsComponent extends Component {
 
   /**
    * Core method for dealing raw damage directly. Handles health reduction, hit reaction, and death
-   * checks. Compatible with Task 2 ticket spec.
+   * checks. Emits {@code damageTaken(Entity attacker, int healthLost, int remainingHealth)} only
+   * for actual health loss, after applying damage. Direct health setters do not emit this event.
    *
    * @param damage Amount of damage to deal
+   * @param attacker original damage source, including projectile entities; null for unattributed damage
    */
   public void takeDamage(int damage, Entity attacker) {
     if (damage <= 0) {
       return;
     }
 
-    if (invulnerable) {
+    if (invulnerable || (isHostileAttacker(attacker) && PlayerAbilitiesComponent.isInvisible(entity))) {
       triggerDamageBlocked();
       return;
     }
@@ -248,8 +272,26 @@ public class CombatStatsComponent extends Component {
       return;
     }
 
+    int previousHealth = health;
+    int remainingHealth = Math.max(0, Math.min(maxHealth, newHealth));
     setHealth(newHealth);
+    if (entity != null && remainingHealth < previousHealth) {
+      entity.getEvents().trigger("damageTaken", attacker, previousHealth - remainingHealth, remainingHealth);
+    }
     applyHitreaction(attacker);
+  }
+
+  /** Identifies enemy bodies and attack entities, preserving projectiles as the actual attacker. */
+  public static boolean isHostileAttacker(Entity attacker) {
+    if (attacker == null) {
+      return false;
+    }
+    TouchAttackComponent touch = attacker.getComponent(TouchAttackComponent.class);
+    HitboxComponent hitbox = attacker.getComponent(HitboxComponent.class);
+    ColliderComponent collider = attacker.getComponent(ColliderComponent.class);
+    return (touch != null && PhysicsLayer.contains(touch.getTargetLayer(), PhysicsLayer.PLAYER))
+        || (hitbox != null && PhysicsLayer.contains(hitbox.getLayer(), PhysicsLayer.NPC))
+        || (collider != null && PhysicsLayer.contains(collider.getLayer(), PhysicsLayer.NPC));
   }
 
   /**
@@ -310,7 +352,7 @@ public class CombatStatsComponent extends Component {
    */
   public void hit(CombatStatsComponent attacker) {
     if (attacker != null) {
-      takeDamage(attacker.getBaseAttack(), attacker.getEntity());
+      takeDamage(attacker.getEffectiveBaseAttack(), attacker.getEntity());
     }
   }
 

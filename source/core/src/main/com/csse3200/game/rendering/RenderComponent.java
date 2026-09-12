@@ -1,8 +1,11 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -11,6 +14,12 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public abstract class RenderComponent extends Component implements Renderable, Disposable {
   private static final int DEFAULT_LAYER = 1;
+  private Entity visualSource;
+
+  /** Use another entity's current player ability appearance; null uses this entity. */
+  public void setVisualSource(Entity visualSource) {
+    this.visualSource = visualSource;
+  }
 
   @Override
   public void create() {
@@ -24,7 +33,32 @@ public abstract class RenderComponent extends Component implements Renderable, D
 
   @Override
   public void render(SpriteBatch batch) {
-    draw(batch);
+    Entity source = visualSource == null ? entity : visualSource;
+    PlayerAbilitiesComponent abilities =
+        source == null ? null : source.getComponent(PlayerAbilitiesComponent.class);
+    boolean invisible = abilities != null && abilities.isInvisible();
+    boolean lastStand = abilities != null && abilities.isLastStandActive();
+    if (!invisible && !lastStand) {
+      draw(batch);
+      return;
+    }
+
+    // SpriteBatch exposes its mutable Color, so preserve channel values rather than the reference.
+    Color color = batch.getColor();
+    float r = color.r;
+    float g = color.g;
+    float b = color.b;
+    float a = color.a;
+    try {
+      batch.setColor(
+          r,
+          g * (lastStand ? 0.35f : 1f),
+          b * (lastStand ? 0.35f : 1f),
+          a * (invisible ? 0.35f : 1f));
+      draw(batch);
+    } finally {
+      batch.setColor(r, g, b, a);
+    }
   }
 
   @Override
