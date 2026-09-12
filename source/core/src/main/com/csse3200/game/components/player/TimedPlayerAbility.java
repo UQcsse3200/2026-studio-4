@@ -54,9 +54,10 @@ public abstract class TimedPlayerAbility extends PlayerAbility implements TimedE
     }
   }
 
+  /** A timed ability runs for exactly as long as the condition it puts on the player. */
   @Override
   public boolean isRunning() {
-    return active;
+    return isActive();
   }
 
   @Override
