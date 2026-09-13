@@ -118,6 +118,9 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   /** Tracks an enemy and any children it spawns. Package-private for testing. */
   void track(Entity enemy) {
     activeEnemies.add(enemy);
+    enemy
+        .getEvents()
+        .addListener("cerberusProjectileSpawned", (Entity projectile) -> spawnEntity(projectile));
     enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy));
     enemy
         .getEvents()

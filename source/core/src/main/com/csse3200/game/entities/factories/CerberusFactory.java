@@ -8,6 +8,7 @@ import com.csse3200.game.components.miniboss.cerberus.CerberusAnimationControlle
 import com.csse3200.game.components.miniboss.cerberus.CerberusBiteComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusMovementComponent;
+import com.csse3200.game.components.miniboss.cerberus.CerberusProjectileComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.files.FileLoader;
@@ -135,6 +136,11 @@ public class CerberusFactory {
       mainHead
           .addComponent(new CerberusMovementComponent(target, anchorPoint, 3f))
           .addComponent(new CerberusBiteComponent(target, anchorPoint, 3f));
+
+      rightHead.addComponent(
+          new CerberusProjectileComponent(
+              target,
+              projectile -> mainHead.getEvents().trigger("cerberusProjectileSpawned", projectile)));
     }
 
     sideHeadSpawner.accept(leftHead);
