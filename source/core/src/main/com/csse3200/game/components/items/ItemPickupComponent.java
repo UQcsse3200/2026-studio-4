@@ -2,10 +2,9 @@ package com.csse3200.game.components.items;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.player.InteractionPrompt;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.items.Item;
-import com.csse3200.game.items.charms.Charm;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -84,5 +83,22 @@ public class ItemPickupComponent extends Component {
 
     nearbyItems.remove(itemEntity);
     itemEntity.dispose();
+  }
+
+  /**
+   * HUD copy while an item is in pickup range.
+   *
+   * @return prompt text, or null if nothing is nearby
+   */
+  public String getPickupPrompt() {
+    if (nearbyItems.isEmpty()) {
+      return null;
+    }
+    Entity itemEntity = nearbyItems.iterator().next();
+    ItemComponent itemComponent = itemEntity.getComponent(ItemComponent.class);
+    if (itemComponent == null || itemComponent.getItem() == null) {
+      return null;
+    }
+    return InteractionPrompt.forItem(itemComponent.getItem().getName());
   }
 }
