@@ -1,7 +1,9 @@
-package com.csse3200.game.components;
+package com.csse3200.game.components.miniboss.cerberus;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.DebugRenderer;
@@ -38,6 +40,13 @@ public class CerberusMovementComponent extends Component {
       physicsMovementComponent.setMoving(false);
       return;
     }
+
+      CerberusBiteComponent bite = entity.getComponent(CerberusBiteComponent.class);
+      if (bite != null && bite.controlMovement(physicsMovementComponent)) {
+          return;
+      }
+
+      physicsMovementComponent.setMaxSpeed(new Vector2(SPEED, SPEED));
 
     Vector2 destination =
         target.getPosition().sub(anchor).limit(Math.max(0f, radius - 0.5f)).add(anchor);

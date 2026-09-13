@@ -1,5 +1,7 @@
-package com.csse3200.game.components;
+package com.csse3200.game.components.miniboss.cerberus;
 
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.ServiceLocator;
