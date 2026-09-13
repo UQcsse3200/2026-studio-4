@@ -12,12 +12,14 @@ import com.csse3200.game.services.ServiceLocator;
 public class SplitComponent extends Component {
   private boolean hasSplit = false;
   private final Entity target;
+  private String skin;
 
   /**
    * @param target The entity to chase (usually the player), passed on to the split-off children.
    */
-  public SplitComponent(Entity target) {
+  public SplitComponent(Entity target, String skin) {
     this.target = target;
+    this.skin = skin;
   }
 
   @Override
@@ -26,8 +28,9 @@ public class SplitComponent extends Component {
   }
 
   /**
-   * Runs whenever this entity is hit and survives. Queues a split into two smaller copies exactly
-   * once, along with disposal of the original; both run once the current update ends.
+   * Runs on a hit reaction and queues a split only when health has reached zero. Splits at most
+   * once; child creation and parent disposal are deferred until the physics world can be modified
+   * safely.
    *
    * @param attacker The entity that caused the damage (can be null).
    */
@@ -35,25 +38,23 @@ public class SplitComponent extends Component {
     if (hasSplit || entity == null) {
       return;
     }
-    hasSplit = true;
 
     CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
-    if (stats == null) {
+    if (stats == null || stats.getHealth() != 0) {
       return;
     }
-
     int halfHealth = Math.max(1, stats.getMaxHealth() / 2);
     int halfAttack = Math.max(1, stats.getBaseAttack() / 2);
-
     // Hit reactions fire from collisions while the physics world is locked. A locked world can
     // neither create the children's bodies nor destroy the original's, so both are deferred.
     ServiceLocator.getEntityService()
         .schedule(
             () -> {
-              spawnChild(-0.5f, halfHealth, halfAttack);
-              spawnChild(0.5f, halfHealth, halfAttack);
+              spawnChild(-0.8f, halfHealth, halfAttack);
+              spawnChild(0.8f, halfHealth, halfAttack);
             });
     ServiceLocator.getEntityService().scheduleDisposal(entity);
+    hasSplit = true;
   }
 
   /**
@@ -64,7 +65,9 @@ public class SplitComponent extends Component {
    * @param attack attack damage to assign to the new, smaller enemy
    */
   private void spawnChild(float xOffset, int health, int attack) {
-    Entity child = NPCFactory.createChaseEnemy(target, false);
+    Entity child = NPCFactory.createChaseEnemy(target, false, this.skin);
+    child.scaleWidth(child.getScale().x / 1.2f);
+    child.scaleHeight(child.getScale().y / 1.2f);
 
     CombatStatsComponent childStats = child.getComponent(CombatStatsComponent.class);
     if (childStats != null) {

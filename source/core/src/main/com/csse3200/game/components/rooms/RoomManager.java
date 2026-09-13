@@ -57,9 +57,6 @@ public class RoomManager {
     entityService.register(currentRoom);
     entityService.register(player);
     start(initialEntryPoint);
-
-    // player.getComponent(StatusEffectsControllerComponent.class).burningOn(1);
-    // Uncomment above line to test burning status effect on player.
   }
 
   private void start(PositionConfig entryPoint) {

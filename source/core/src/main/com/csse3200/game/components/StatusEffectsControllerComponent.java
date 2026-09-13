@@ -16,6 +16,7 @@ public class StatusEffectsControllerComponent extends Component {
    *
    * <p>Throws IllegalStateException if CombatStatsComponent is null.
    */
+  @Override
   public void create() {
     combatStatsComponent = entity.getComponent(CombatStatsComponent.class);
     if (combatStatsComponent == null) {
@@ -27,16 +28,30 @@ public class StatusEffectsControllerComponent extends Component {
   }
 
   /**
-   * Adds stacks to burning. Throws IllegalArgumentException if stacks <= 0.
+   * Adds stacks to a status effect.
    *
-   * @param stacks the number of stacks of burning to add.
+   * @param statusEffect the status effect to add stacks of. A single character indicator for each
+   *     effect. 'b' for burning. 'r' for regeneration.
+   * @param stacks the number of stacks to add.
    */
-  public void burningOn(int stacks) {
+  public void addStatusEffect(int stacks, char statusEffect) {
     if (stacks <= 0) {
-      throw new IllegalArgumentException("Stacks of burning must be > 0");
+      throw new IllegalArgumentException("Stacks must be > 0");
     }
-    for (int i = 0; i < stacks; i++) {
-      statusEffects.addLast(StatusEffectsFactory.CreateBurn(combatStatsComponent));
+    switch (statusEffect) {
+      case 'b':
+        for (int i = 0; i < stacks; i++) {
+          statusEffects.addLast(StatusEffectsFactory.createBurn(combatStatsComponent));
+        }
+        break;
+      case 'r':
+        for (int i = 0; i < stacks; i++) {
+          statusEffects.addLast(StatusEffectsFactory.createRegeneration(combatStatsComponent));
+        }
+        break;
+      default:
+        throw new IllegalArgumentException(
+            "statusEffect must be a valid character representation of a status effect.");
     }
   }
 
@@ -64,6 +79,7 @@ public void activateTimed() {
   /**
    * Updates the state of all status effects. Removes status effects that return true from update.
    */
+  @Override
   public void update() {
     ArrayList<StatusEffect> removal = new ArrayList<>();
     for (StatusEffect effect : statusEffects) {

@@ -49,7 +49,7 @@ public class NPCFactory {
    * @param target entity to chase
    * @return entity
    */
-  public static Entity createBombEnemy(Entity target) {
+  public static Entity createBombEnemy(Entity target, String skin) {
     Entity bombEnemy = createBaseNPC();
     BombEnemyConfig config = configs.bombEnemy;
 
@@ -60,8 +60,7 @@ public class NPCFactory {
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/bombEnemy.atlas", TextureAtlas.class));
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation("move", 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
@@ -89,7 +88,7 @@ public class NPCFactory {
    * @param shouldSplit whether the enemy should receive a {@link SplitComponent}
    * @return entity
    */
-  public static Entity createChaseEnemy(Entity target, boolean shouldSplit) {
+  public static Entity createChaseEnemy(Entity target, boolean shouldSplit, String skin) {
     Entity chaseEnemy = createBaseNPC();
     ChaseEnemyConfig config = configs.chaseEnemy;
 
@@ -101,8 +100,7 @@ public class NPCFactory {
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/chaseEnemy.atlas", TextureAtlas.class));
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
@@ -116,7 +114,7 @@ public class NPCFactory {
         .addComponent(new EnemyAnimationController());
 
     if (shouldSplit) {
-      chaseEnemy.addComponent(new SplitComponent(target));
+      chaseEnemy.addComponent(new SplitComponent(target, skin));
     }
 
     animator.scaleEntity();
@@ -138,13 +136,14 @@ public class NPCFactory {
    * @return floating demon entity
    */
   public static Entity createFloatingDemon(
-      Entity target, Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint) {
+      Entity target, Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint, String skin) {
     return createFloatingDemon(
         target,
         leftPoint,
         topPoint,
         rightPoint,
-        projectile -> ServiceLocator.getEntityService().register(projectile));
+        projectile -> ServiceLocator.getEntityService().register(projectile),
+        skin);
   }
 
   /** Creates a floating demon and delegates ownership of its projectiles to the given spawner. */
@@ -153,7 +152,8 @@ public class NPCFactory {
       Vector2 leftPoint,
       Vector2 topPoint,
       Vector2 rightPoint,
-      Consumer<Entity> projectileSpawner) {
+      Consumer<Entity> projectileSpawner,
+      String skin) {
     FloatingDemonConfig config = configs.floatingDemon;
     AITaskComponent aiComponent =
         new AITaskComponent()
@@ -162,8 +162,7 @@ public class NPCFactory {
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/floatingDemon.atlas", TextureAtlas.class));
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.08f);
     animator.addAnimation(DIE_ANIMATION, 0.1f);

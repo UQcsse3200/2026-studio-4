@@ -8,7 +8,7 @@ public class Burning implements StatusEffect {
   private final GameTime time = new GameTime();
 
   private final int damage;
-  private final long BURN_COOLDOWN;
+  private final long burnCooldown;
   private final long duration;
   private final long burnInit;
   private long lastBurn;
@@ -19,13 +19,13 @@ public class Burning implements StatusEffect {
    * Create a new stack of burning.
    *
    * @param damage the amount of damage burning should do each time it activates.
-   * @param BURN_COOLDOWN the amount of time between instances of burn. in milliseconds.
+   * @param burnCooldown the amount of time between instances of burn. in milliseconds.
    * @param duration the total time the burning lasts for.
    * @param combatStats the combat stats component of the entity which has the status effect.
    */
-  public Burning(int damage, long BURN_COOLDOWN, long duration, CombatStatsComponent combatStats) {
+  public Burning(int damage, long burnCooldown, long duration, CombatStatsComponent combatStats) {
     this.damage = damage;
-    this.BURN_COOLDOWN = BURN_COOLDOWN;
+    this.burnCooldown = burnCooldown;
     this.duration = duration;
     this.combatStats = combatStats;
     burnInit = time.getTime();
@@ -38,14 +38,11 @@ public class Burning implements StatusEffect {
    */
   @Override
   public boolean update() {
-    if (time.getTimeSince(lastBurn) > BURN_COOLDOWN) {
+    if (time.getTimeSince(lastBurn) > burnCooldown) {
       combatStats.takeDamage(damage);
       lastBurn = time.getTime();
     }
-    if (time.getTimeSince(burnInit) > duration) {
-      return true;
-    }
-    return false;
+    return time.getTimeSince(burnInit) > duration;
   }
 
   /** Returns the time left until the status effect should be removed (in milliseconds). */

@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.items.Charm;
+import com.csse3200.game.items.charms.Charm;
+import com.csse3200.game.items.charms.StrengthCharm;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -30,7 +32,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldPickUpNearbyCharmOnItemPickup() {
-    Charm charm = new Charm("Strength Charm");
+    StrengthCharm charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -45,7 +47,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldNotPickUpWithoutItemPickup() {
-    Charm charm = new Charm("Strength Charm");
+    StrengthCharm charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -60,7 +62,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldNotPickUpOnRoomInteract() {
-    Charm charm = new Charm("Strength Charm");
+    StrengthCharm charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -75,7 +77,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldNotPickUpAfterLeavingRange() {
-    Charm charm = new Charm("Strength Charm");
+    StrengthCharm charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -113,8 +115,9 @@ class CharmPickupComponentTest {
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+            .addComponent(new CombatStatsComponent(0, 0))
             .addComponent(new InventoryComponent(0))
-            .addComponent(new CharmPickupComponent());
+            .addComponent(new ItemPickupComponent());
     player.create();
     return player;
   }
