@@ -198,10 +198,8 @@ public class StatusEffectsControllerComponent extends Component {
     for (StatusEffect effect : new ArrayList<>(statusEffects)) {
       // A tick may dispose this controller, clear the list (a burn that kills) or remove this
       // effect, in which case the effect has already been told; only a live removal is notified.
-      if (!disposed
-          && statusEffects.contains(effect)
-          && effect.update()
-          && statusEffects.remove(effect)) {
+      // Each of those takes the effect off the list, so the membership check covers all three.
+      if (statusEffects.contains(effect) && effect.update() && statusEffects.remove(effect)) {
         if (removed == null) {
           removed = new ArrayList<>();
         }
