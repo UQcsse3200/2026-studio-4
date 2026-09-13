@@ -5,6 +5,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,13 +14,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class AITaskComponentTest {
   @Test
   void shouldRunNothingWithNoTask() {
-    AITaskComponent taskComponent = new AITaskComponent();
+    AITaskComponent taskComponent = new AITaskComponent(new Entity());
     taskComponent.update();
   }
 
   @Test
   void shouldNotRunNegativePriorityTask() {
-    AITaskComponent taskComponent = new AITaskComponent();
+    AITaskComponent taskComponent = new AITaskComponent(new Entity());
     PriorityTask task = mock(PriorityTask.class);
     when(task.getPriority()).thenReturn(-1);
     taskComponent.addTask(task);
@@ -29,7 +30,7 @@ class AITaskComponentTest {
 
   @Test
   void shouldRunSingleTask() {
-    AITaskComponent taskComponent = new AITaskComponent();
+    AITaskComponent taskComponent = new AITaskComponent(new Entity());
     PriorityTask task = mock(PriorityTask.class);
     when(task.getPriority()).thenReturn(1);
 
@@ -41,7 +42,7 @@ class AITaskComponentTest {
 
   @Test
   void shouldRunPriorityTask() {
-    AITaskComponent taskComponent = new AITaskComponent();
+    AITaskComponent taskComponent = new AITaskComponent(new Entity());
 
     PriorityTask lowPriorityTask = mock(PriorityTask.class);
     when(lowPriorityTask.getPriority()).thenReturn(1);
@@ -69,7 +70,7 @@ class AITaskComponentTest {
 
   @Test
   void shouldStopTaskOnDispose() {
-    AITaskComponent taskComponent = new AITaskComponent();
+    AITaskComponent taskComponent = new AITaskComponent(new Entity());
     PriorityTask task = mock(PriorityTask.class);
     when(task.getPriority()).thenReturn(1);
     taskComponent.addTask(task);

@@ -38,7 +38,7 @@ class RangedAttackTaskTest {
     player.setPosition(5f, 0f);
     Entity owner = new Entity().addComponent(mock(PhysicsMovementComponent.class));
     owner.getEvents().addListener("rangedAttack", () -> attacks++);
-    task = new RangedAttackTask(player, 7, spawned::add);
+    task = new RangedAttackTask(player, 5, 7, spawned::add);
     task.create(() -> owner);
     time = mock(GameTime.class);
     ServiceLocator.registerTimeSource(time);
@@ -144,8 +144,8 @@ class RangedAttackTaskTest {
   @Test
   void shouldAttackOnlyWhenPlayerIsClose() {
     Entity rangedTarget = new Entity();
-    RangedAttackTask attackTask = new RangedAttackTask(rangedTarget, 7);
-    AITaskComponent ai = new AITaskComponent().addTask(attackTask);
+    RangedAttackTask attackTask = new RangedAttackTask(rangedTarget, 5, 7);
+    AITaskComponent ai = new AITaskComponent(rangedTarget).addTask(attackTask);
     Entity demon = new Entity().addComponent(ai);
 
     demon.setPosition(0f, 0f);
