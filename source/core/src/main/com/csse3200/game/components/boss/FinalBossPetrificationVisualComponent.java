@@ -75,7 +75,7 @@ public class FinalBossPetrificationVisualComponent extends RenderComponent {
       Vector2 size = target.getScale();
       batch.draw(ring, feet.x, feet.y - size.y * 0.08f, size.x, size.y * 0.3f);
     }
-    if (impactRemaining > 0f) {
+    if (impactRemaining > 0f && stones != null && stones.length > 0) {
       int frame =
           FinalBossVisualAssets.once(
               IMPACT_DURATION - impactRemaining, IMPACT_DURATION, stones.length);

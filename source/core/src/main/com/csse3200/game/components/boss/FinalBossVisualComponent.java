@@ -222,55 +222,63 @@ public class FinalBossVisualComponent extends RenderComponent {
         batch.draw(transform[frame], pos.x, pos.y, size.x, size.y);
       }
 
-      if (!dying && movement != null && movement.isChargeWarningActive()) {
-        int frame = (int) (elapsed / 0.12f) % attackAlert.length;
-        float alertWidth = size.x * 1.35f;
-        float alertHeight = size.y * 1.35f;
-        batch.draw(
-            attackAlert[frame],
-            pos.x + (size.x - alertWidth) * 0.5f,
-            pos.y + (size.y - alertHeight) * 0.5f,
-            alertWidth,
-            alertHeight);
-      }
+      drawChargeWarning(batch, pos, size);
 
       /*
        * Shield rendering.
        */
-      if (!ordinary && !dying && protection.isShielded()) {
-        boolean shieldHit = hitRemaining > 0f;
+      drawShield(batch, pos, size, ordinary);
+    } finally {
+      batch.setPackedColor(colour);
+    }
+  }
 
-        float alpha = shieldHit ? 1f : 0.65f + 0.2f * MathUtils.sin(elapsed * 5f);
+  /** Draws the existing Stage 2 charge warning. */
+  private void drawChargeWarning(SpriteBatch batch, Vector2 pos, Vector2 size) {
+    if (dying || movement == null || !movement.isChargeWarningActive()) {
+      return;
+    }
 
-        // Briefly expand the intact shield when it is struck.
-        float pulse = shieldHit ? 1f + 0.08f * hitRemaining / SHIELD_HIT_DURATION : 1f;
+    int frame = (int) (elapsed / 0.12f) % attackAlert.length;
+    float alertWidth = size.x * 1.35f;
+    float alertHeight = size.y * 1.35f;
+    batch.draw(
+        attackAlert[frame],
+        pos.x + (size.x - alertWidth) * 0.5f,
+        pos.y + (size.y - alertHeight) * 0.5f,
+        alertWidth,
+        alertHeight);
+  }
 
-        float shieldWidth = size.x * pulse;
-        float shieldHeight = size.y * pulse;
+  private void drawShield(SpriteBatch batch, Vector2 pos, Vector2 size, boolean ordinary) {
+    if (ordinary || dying || !protection.isShielded()) {
+      return;
+    }
 
-        batch.setColor(1f, 1f, 1f, alpha);
+    boolean shieldHit = hitRemaining > 0f;
+    float alpha = shieldHit ? 1f : 0.65f + 0.2f * MathUtils.sin(elapsed * 5f);
 
-        batch.draw(
-            shield[(int) (elapsed / 0.12f) % shield.length],
-            pos.x + (size.x - shieldWidth) * 0.5f,
-            pos.y + (size.y - shieldHeight) * 0.5f,
-            shieldWidth,
-            shieldHeight);
+    // Briefly expand the intact shield when it is struck.
+    float pulse = shieldHit ? 1f + 0.08f * hitRemaining / SHIELD_HIT_DURATION : 1f;
+    float shieldWidth = size.x * pulse;
+    float shieldHeight = size.y * pulse;
+    float colour = batch.getPackedColor();
 
-        /*
-         * Shield impact animation.
-         *
-         * This is separate from the orange successful-damage effect.
-         */
-        if (shieldHit) {
-          batch.setColor(1f, 1f, 1f, 1f);
+    try {
+      batch.setColor(1f, 1f, 1f, alpha);
+      batch.draw(
+          shield[(int) (elapsed / 0.12f) % shield.length],
+          pos.x + (size.x - shieldWidth) * 0.5f,
+          pos.y + (size.y - shieldHeight) * 0.5f,
+          shieldWidth,
+          shieldHeight);
 
-          int frame =
-              FinalBossVisualAssets.once(
-                  SHIELD_HIT_DURATION - hitRemaining, SHIELD_HIT_DURATION, impact.length);
-
-          batch.draw(impact[frame], pos.x, pos.y, size.x, size.y);
-        }
+      if (shieldHit) {
+        batch.setColor(1f, 1f, 1f, 1f);
+        int frame =
+            FinalBossVisualAssets.once(
+                SHIELD_HIT_DURATION - hitRemaining, SHIELD_HIT_DURATION, impact.length);
+        batch.draw(impact[frame], pos.x, pos.y, size.x, size.y);
       }
     } finally {
       batch.setPackedColor(colour);

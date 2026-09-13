@@ -50,9 +50,15 @@ public enum FinalBossVisualAssets {
 
   /** Selects a frame in a one-shot sequence, retaining the last frame at its endpoint. */
   static int once(float elapsed, float duration, int count) {
+    if (count <= 0) {
+      throw new IllegalArgumentException("Animation frame count must be positive");
+    }
+
     if (duration <= 0f) {
       return count - 1;
     }
-    return Math.min(count - 1, Math.max(0, (int) (elapsed / duration * count)));
+
+    int frame = (int) (elapsed / duration * count);
+    return Math.clamp(frame, 0, count - 1);
   }
 }

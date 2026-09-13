@@ -132,31 +132,8 @@ public class FinalBossMovementComponent extends Component {
       return;
     }
 
-    if (chargeAttacksEnabled && mode == Mode.STEP_TOWARDS_PLAYER) {
-      if (chargeWarningRemaining > 0f) {
-        chargeWarningRemaining = Math.max(0f, chargeWarningRemaining - deltaTime);
-        movement.setMoving(false);
-        if (chargeWarningRemaining <= 0f) {
-          beginCharge();
-        }
-        return;
-      }
-
-      if (chargeDestination != null) {
-        updateCharge(deltaTime);
-        return;
-      }
-
-      chargeDelayRemaining = Math.max(0f, chargeDelayRemaining - deltaTime);
-      if (chargeDelayRemaining <= 0f) {
-        if (config.bossChargeAttackDelay <= 0f) {
-          beginCharge();
-        } else {
-          chargeWarningRemaining = config.bossChargeAttackDelay;
-        }
-        movement.setMoving(false);
-        return;
-      }
+    if (updateChargeCycle(deltaTime)) {
+      return;
     }
 
     if (pauseRemaining > 0f) {
@@ -178,6 +155,40 @@ public class FinalBossMovementComponent extends Component {
     destination = null;
     chargeDestination = null;
     pauseRemaining = 0f;
+  }
+
+  /** Returns whether the charge cycle handled movement for this update. */
+  private boolean updateChargeCycle(float deltaTime) {
+    if (!chargeAttacksEnabled || mode != Mode.STEP_TOWARDS_PLAYER) {
+      return false;
+    }
+
+    if (chargeWarningRemaining > 0f) {
+      chargeWarningRemaining = Math.max(0f, chargeWarningRemaining - deltaTime);
+      movement.setMoving(false);
+      if (chargeWarningRemaining <= 0f) {
+        beginCharge();
+      }
+      return true;
+    }
+
+    if (chargeDestination != null) {
+      updateCharge(deltaTime);
+      return true;
+    }
+
+    chargeDelayRemaining = Math.max(0f, chargeDelayRemaining - deltaTime);
+    if (chargeDelayRemaining > 0f) {
+      return false;
+    }
+
+    if (config.bossChargeAttackDelay <= 0f) {
+      beginCharge();
+    } else {
+      chargeWarningRemaining = config.bossChargeAttackDelay;
+    }
+    movement.setMoving(false);
+    return true;
   }
 
   private void beginCharge() {
@@ -354,7 +365,7 @@ public class FinalBossMovementComponent extends Component {
       verticalLimit = (bounds.y - position.y) / direction.y;
     }
 
-    float distance = Math.max(0f, Math.min(stepDistance, Math.min(horizontalLimit, verticalLimit)));
+    float distance = Math.clamp(Math.min(horizontalLimit, verticalLimit), 0f, stepDistance);
 
     return clampToVisibleArea(position.cpy().mulAdd(direction, distance));
   }
@@ -474,19 +485,17 @@ public class FinalBossMovementComponent extends Component {
       Vector2 away = bossCentre.cpy().sub(summon.getCenterPosition());
       float distance = away.len();
 
-      if (distance >= radius) {
-        continue;
-      }
+      if (distance < radius) {
+        if (distance <= 0.001f) {
+          // Pick a sideways direction when the two centres overlap.
+          away.set(-forward.y, forward.x);
+        } else {
+          away.scl(1f / distance);
+        }
 
-      if (distance <= 0.001f) {
-        // Pick a sideways direction when the two centres overlap.
-        away.set(-forward.y, forward.x);
-      } else {
-        away.scl(1f / distance);
+        float strength = 1f - distance / radius;
+        separation.mulAdd(away, strength);
       }
-
-      float strength = 1f - distance / radius;
-      separation.mulAdd(away, strength);
     }
 
     return separation.limit(1f);
@@ -501,8 +510,8 @@ public class FinalBossMovementComponent extends Component {
     if (camera != null && camera.viewportWidth > 0f && camera.viewportHeight > 0f) {
       float zoom = 1f;
 
-      if (camera instanceof OrthographicCamera) {
-        zoom = ((OrthographicCamera) camera).zoom;
+      if (camera instanceof OrthographicCamera orthographicCamera) {
+        zoom = orthographicCamera.zoom;
       }
 
       centre.set(camera.position.x, camera.position.y);

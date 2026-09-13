@@ -261,15 +261,13 @@ public class FinalBossSummonMovementComponent extends Component {
       Vector2 away = centre.cpy().sub(other.getCenterPosition());
       float distance = away.len();
 
-      if (distance >= SEPARATION_RADIUS) {
-        continue;
-      }
-
-      if (distance <= 0.001f) {
-        separation.add(directionAt(approachAngle));
-      } else {
-        float strength = 1f - distance / SEPARATION_RADIUS;
-        separation.mulAdd(away.scl(1f / distance), strength);
+      if (distance < SEPARATION_RADIUS) {
+        if (distance <= 0.001f) {
+          separation.add(directionAt(approachAngle));
+        } else {
+          float strength = 1f - distance / SEPARATION_RADIUS;
+          separation.mulAdd(away.scl(1f / distance), strength);
+        }
       }
     }
 
@@ -323,8 +321,8 @@ public class FinalBossSummonMovementComponent extends Component {
     }
 
     float zoom = 1f;
-    if (camera instanceof OrthographicCamera) {
-      zoom = ((OrthographicCamera) camera).zoom;
+    if (camera instanceof OrthographicCamera orthographicCamera) {
+      zoom = orthographicCamera.zoom;
     }
 
     Vector2 halfSize = entity.getScale().scl(0.5f);
