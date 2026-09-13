@@ -11,6 +11,7 @@ import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.items.WeaponItem;
+import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -57,6 +58,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case MEDUSA:
         Entity medusa = NPCFactory.createChaseEnemy(target, true, "images/medusa.atlas");
         medusa.setScale(2, 2);
+        medusa.getComponent(HitboxComponent.class).setAsBox(new Vector2(1, 1));
         return medusa;
       case HARPY:
         TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
