@@ -20,6 +20,7 @@ public class PlayerStatsDisplay extends UIComponent {
   private int health;
   private Label shieldLabel;
   private ProgressBar shieldBar;
+  private Table shieldTable;
 
   private static final String LABEL_STYLE = "statDisplay";
   public void updatePlayerShieldUI(int current, int max) {
@@ -98,12 +99,18 @@ public class PlayerStatsDisplay extends UIComponent {
     table.add(strengthLabel).left();
     table.row();
     table.add(charmCountLabel).left();
-    table.row();
-    table.add(shieldLabel).left();
-    table.row();
-    table.add(shieldBar).left();
+
+
+    shieldTable = new Table();
+    shieldTable.bottom().left();
+    shieldTable.setFillParent(true);
+    shieldTable.padBottom(25f).padLeft(5f);
+    shieldTable.add(shieldLabel).left();
+    shieldTable.row();
+    shieldTable.add(shieldBar).left();
 
     stage.addActor(table);
+    stage.addActor(shieldTable);
   }
 
   @Override
@@ -174,5 +181,6 @@ public class PlayerStatsDisplay extends UIComponent {
   public void dispose() {
     super.dispose();
     table.remove();
+    shieldTable.remove();
   }
 }
