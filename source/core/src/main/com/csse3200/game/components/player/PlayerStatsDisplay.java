@@ -64,7 +64,7 @@ public class PlayerStatsDisplay extends UIComponent {
     healthBar.setValue(health);
     healthBar.setAnimateDuration(0.3f);
     shieldBar = new ProgressBar(0, 20, 1, false, barStyle);
-    shieldBar.setValue(0);
+    shieldBar.setValue(20);
     shieldBar.setAnimateDuration(0.2f);
     
     shieldLabel = new Label("Shield: 0 / 20", skin, LABEL_STYLE);
