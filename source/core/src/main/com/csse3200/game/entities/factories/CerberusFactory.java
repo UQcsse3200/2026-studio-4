@@ -20,6 +20,7 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.components.miniboss.cerberus.CerberusMistComponent;
 import java.util.function.Consumer;
 
 /** Factory for creating Cerberus and its individual heads. */
@@ -141,6 +142,8 @@ public class CerberusFactory {
           new CerberusProjectileComponent(
               target,
               projectile -> mainHead.getEvents().trigger("cerberusProjectileSpawned", projectile)));
+
+      leftHead.addComponent(new CerberusMistComponent(target));
     }
 
     sideHeadSpawner.accept(leftHead);
