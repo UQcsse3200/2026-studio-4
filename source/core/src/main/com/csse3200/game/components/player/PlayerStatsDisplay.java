@@ -134,8 +134,8 @@ public class PlayerStatsDisplay extends UIComponent {
     content.row();
     content.add(subStatsRow);
 
-    panel.add(content).expand().top().left().padTop(39f).padLeft(52f);
-    table.add(panel).size(panelWidth, panelHeight).top().left();
+    panel.add(content).expand().top().center();
+    table.add(panel).size(panelWidth, panelHeight).top().left().padTop(20f);
 
     stage.addActor(table);
   }
