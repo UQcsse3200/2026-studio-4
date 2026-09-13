@@ -100,4 +100,47 @@ class InvisibilityPotionComponentTest {
     invisibility.tryUse();
     assertEquals(1, stealthSignals.get());
   }
+
+  @Test
+  void shouldShowReadyOnHudBeforeUse() {
+    assertFalse(invisibility.isInvisible());
+    assertEquals("Invisibility: Ready", invisibility.getDurationHudText());
+    assertEquals("Invis CD: Ready", invisibility.getCooldownHudText());
+  }
+
+  @Test
+  void shouldTickHudDurationAndCooldown() {
+    assertTrue(invisibility.tryUse());
+    nowMs.set(10_000L);
+    assertEquals("Invisibility: 5s", invisibility.getDurationHudText());
+    assertEquals("Invis CD: 35s", invisibility.getCooldownHudText());
+
+    nowMs.set(15_000L);
+    invisibility.update();
+    assertEquals("Invisibility: Ready", invisibility.getDurationHudText());
+    assertEquals("Invis CD: 30s", invisibility.getCooldownHudText());
+  }
+
+  @Test
+  void shouldApplyFromUseInvisibilityPotionEvent() {
+    player.getEvents().trigger("useInvisibilityPotion");
+    assertTrue(invisibility.isInvisible());
+    assertEquals("Invisibility: 15s", invisibility.getDurationHudText());
+  }
+
+  @Test
+  void shouldEmitStartedAndEndedEvents() {
+    AtomicInteger started = new AtomicInteger();
+    AtomicInteger ended = new AtomicInteger();
+    player.getEvents().addListener("invisibilityStarted", started::incrementAndGet);
+    player.getEvents().addListener("invisibilityEnded", ended::incrementAndGet);
+
+    invisibility.tryUse();
+    assertEquals(1, started.get());
+    assertEquals(0, ended.get());
+
+    nowMs.set(InvisibilityPotionComponent.DURATION_MS);
+    invisibility.update();
+    assertEquals(1, ended.get());
+  }
 }

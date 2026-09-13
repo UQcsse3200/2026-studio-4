@@ -1,5 +1,6 @@
 package com.csse3200.game.ui.terminal.commands;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -50,5 +51,29 @@ class AbilityCommandTest {
   void shouldRejectUnknownAbility() {
     assertFalse(command.action(new ArrayList<>(List.of("dash"))));
     assertFalse(invisibility.isInvisible());
+  }
+
+  @Test
+  void shouldRejectMissingArgs() {
+    assertFalse(command.action(new ArrayList<>()));
+    assertFalse(invisibility.isInvisible());
+  }
+
+  @Test
+  void shouldFailWhenPlayerHasNoInvisibilityComponent() {
+    AbilityCommand missing = new AbilityCommand(new Entity());
+    assertFalse(missing.action(new ArrayList<>(List.of("invisibility"))));
+  }
+
+  @Test
+  void qaCommandShouldBypassCooldown() {
+    assertTrue(invisibility.tryUse());
+    nowMs.set(20_000L);
+    invisibility.update();
+    assertFalse(invisibility.tryUse());
+
+    assertTrue(command.action(new ArrayList<>(List.of("invisibility"))));
+    assertTrue(invisibility.isInvisible());
+    assertEquals("Invisibility: 15s", invisibility.getDurationHudText());
   }
 }
