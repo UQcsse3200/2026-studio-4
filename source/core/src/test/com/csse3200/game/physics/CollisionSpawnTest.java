@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.SplitComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -71,6 +72,7 @@ class CollisionSpawnTest {
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new CombatStatsComponent(ENEMY_HEALTH, 0))
+            .addComponent(new EnemyDeathComponent(false))
             .addComponent(new SplitComponent(new Entity(), "images/chaseEnemy.atlas"));
     enemy.setPosition(SHARED_POSITION);
     entityService.register(enemy);
