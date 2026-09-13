@@ -9,8 +9,8 @@ public class FinalBossStageOneConfig {
 
   // Boss and summon health
   public int bossHealth = 100;
-  public int waveOneSummonCount = 4;
-  public int waveTwoSummonCount = 6;
+  public int waveOneSummonCount = 8;
+  public int waveTwoSummonCount = 16;
   public int summonHealth = 10;
   public int summonExplosionDamage = 10;
 
@@ -20,11 +20,11 @@ public class FinalBossStageOneConfig {
   public float summonTriggerDistance = 0.8f;
   public float summonExplosionRadius = 1.5f;
   public float waveOneWarningDuration = 1f;
-  public float summonSpawnRadius = 1.2f;
+  public float summonSpawnRadius = 2.4f;
 
   // Formation radius for each summon wave
-  public float waveOneFormationRadius = 2f;
-  public float waveTwoFormationRadius = 2.5f;
+  public float waveOneFormationRadius = 4f;
+  public float waveTwoFormationRadius = 6f;
 
   // Seven-second vulnerability window
   public float breakWindowDuration = 7f;
@@ -76,8 +76,8 @@ public class FinalBossStageOneConfig {
       throw new IllegalArgumentException("Boss health must be positive");
     }
 
-    if (waveOneSummonCount <= 0 || waveTwoSummonCount <= waveOneSummonCount) {
-      throw new IllegalArgumentException("Wave two must contain more summons than wave one");
+    if (waveOneSummonCount <= 0 || waveTwoSummonCount <= 0) {
+      throw new IllegalArgumentException("Summon counts must be positive");
     }
 
     if (summonHealth <= 0 || summonExplosionDamage < 0) {

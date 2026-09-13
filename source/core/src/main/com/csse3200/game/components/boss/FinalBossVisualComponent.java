@@ -11,6 +11,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Renders Grandpa's entrance, airborne wizard, charge, cast and shield animations. */
 public class FinalBossVisualComponent extends RenderComponent {
+  private static final float SHIELD_HIT_DURATION = 0.48f;
   private final Entity target;
   private final FinalBossStageOneConfig config;
   private TextureRegion[] grandpa;
@@ -40,9 +41,15 @@ public class FinalBossVisualComponent extends RenderComponent {
     transform = FinalBossVisualAssets.TRANSFORM.loadFrames();
     shield = FinalBossVisualAssets.SHIELD.loadFrames();
     impact = FinalBossVisualAssets.SHIELD_HIT.loadFrames();
+    // Remove transparent margins while preserving the same centre in every frame.
+    for (int i = 0; i < impact.length; i++) {
+      impact[i] = new TextureRegion(impact[i], 20, 20, 32, 32);
+    }
     stageOne = entity.getComponent(FinalBossStageOneComponent.class);
     protection = entity.getComponent(FinalBossDamageControllerComponent.class);
-    entity.getEvents().addListener(FinalBossEvents.SHIELD_HIT, () -> hitRemaining = 0.32f);
+    entity
+        .getEvents()
+        .addListener(FinalBossEvents.SHIELD_HIT, () -> hitRemaining = SHIELD_HIT_DURATION);
     entity.getEvents().addListener(FinalBossEvents.PETRIFICATION_WARNING, this::onCast);
     entity.getEvents().addListener("dieAnimation", () -> dying = true);
     super.create();
@@ -108,12 +115,31 @@ public class FinalBossVisualComponent extends RenderComponent {
         batch.draw(transform[frame], pos.x, pos.y, size.x, size.y);
       }
       if (!ordinary && !dying && protection.isShielded()) {
-        float alpha = hitRemaining > 0f ? 1f : 0.65f + 0.2f * MathUtils.sin(elapsed * 5f);
+        boolean shieldHit = hitRemaining > 0f;
+
+        float alpha = shieldHit ? 1f : 0.65f + 0.2f * MathUtils.sin(elapsed * 5f);
+
+        // Briefly expand the intact shield, then return to its normal size.
+        float pulse = shieldHit ? 1f + 0.08f * hitRemaining / SHIELD_HIT_DURATION : 1f;
+
+        float shieldWidth = size.x * pulse;
+        float shieldHeight = size.y * pulse;
+
         batch.setColor(1f, 1f, 1f, alpha);
-        batch.draw(shield[(int) (elapsed / 0.12f) % shield.length], pos.x, pos.y, size.x, size.y);
-        if (hitRemaining > 0f) {
+        batch.draw(
+            shield[(int) (elapsed / 0.12f) % shield.length],
+            pos.x + (size.x - shieldWidth) * 0.5f,
+            pos.y + (size.y - shieldHeight) * 0.5f,
+            shieldWidth,
+            shieldHeight);
+
+        if (shieldHit) {
           batch.setColor(1f, 1f, 1f, 1f);
-          int frame = FinalBossVisualAssets.once(0.32f - hitRemaining, 0.32f, impact.length);
+
+          int frame =
+              FinalBossVisualAssets.once(
+                  SHIELD_HIT_DURATION - hitRemaining, SHIELD_HIT_DURATION, impact.length);
+
           batch.draw(impact[frame], pos.x, pos.y, size.x, size.y);
         }
       }

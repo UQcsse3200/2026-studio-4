@@ -18,16 +18,16 @@ import java.util.Collection;
  * chasing the player's centre.
  */
 public class FinalBossSummonMovementComponent extends Component {
-  private static final float SCATTER_DISTANCE = 0.5f;
-  private static final float SCATTER_TIMEOUT = 0.4f;
+  private static final float SCATTER_DISTANCE = 1.2f;
+  private static final float SCATTER_TIMEOUT = 0.9f;
   private static final float FORMATION_RADIUS = 2f;
   private static final float CLOSING_SPEED = 1.2f;
   private static final float SLOT_TOLERANCE = 0.4f;
   private static final float ARRIVAL_DISTANCE = 0.05f;
   private static final float ANGLE_TOLERANCE = 12f;
   private static final float ANGULAR_STEP = 20f;
-  private static final float SEPARATION_RADIUS = 1f;
-  private static final float SEPARATION_WEIGHT = 0.8f;
+  private static final float SEPARATION_RADIUS = 1.6f;
+  private static final float SEPARATION_WEIGHT = 1.1f;
 
   private static final float SCREEN_MARGIN = 0.25f;
 
@@ -49,6 +49,9 @@ public class FinalBossSummonMovementComponent extends Component {
   private float initialFormationRadius = FORMATION_RADIUS;
   private float finalApproachRadius;
   private float arrivalTolerance;
+  private float closingSpeed = CLOSING_SPEED;
+  private boolean continuousClosing;
+  private float formationElapsed;
 
   /** Sets the formation radius before the summon is registered. */
   public void setFormationRadius(float radius) {
@@ -58,6 +61,21 @@ public class FinalBossSummonMovementComponent extends Component {
 
     initialFormationRadius = radius;
     formationRadius = radius;
+  }
+
+  /** Sets how quickly the formation contracts towards the player. */
+  public void setClosingSpeed(float speed) {
+    if (!Float.isFinite(speed) || speed <= 0f) {
+      throw new IllegalArgumentException("Closing speed must be finite and positive");
+    }
+
+    closingSpeed = speed;
+  }
+
+  /** Enables continuous inward movement after a brief formation period. */
+  public void setContinuousClosing(boolean enabled) {
+    continuousClosing = enabled;
+    formationElapsed = 0f;
   }
 
   /**
@@ -151,31 +169,43 @@ public class FinalBossSummonMovementComponent extends Component {
     Vector2 playerCentre = target.getCenterPosition();
     Vector2 summonCentre = entity.getCenterPosition();
 
+    if (continuousClosing) {
+      // Briefly allow the summons to spread, then keep contracting the formation.
+      // Player movement must not reset this progress.
+      float previousElapsed = formationElapsed;
+      formationElapsed += deltaTime;
+
+      float closingTime = Math.max(0f, formationElapsed - 1f) - Math.max(0f, previousElapsed - 1f);
+
+      formationRadius = Math.max(finalApproachRadius, formationRadius - closingSpeed * closingTime);
+    }
+
     Vector2 assignedPosition =
         clampCentreToVisibleArea(
             positionAroundPlayer(playerCentre, approachAngle, formationRadius));
 
-    // Near the screen edge, use the direction of the reachable slot.
     Vector2 assignedOffset = assignedPosition.cpy().sub(playerCentre);
     float assignedAngle = assignedOffset.isZero() ? approachAngle : assignedOffset.angleDeg();
 
     Vector2 relativePosition = summonCentre.cpy().sub(playerCentre);
     float currentAngle = relativePosition.isZero() ? assignedAngle : relativePosition.angleDeg();
+
     float angleDifference = shortestAngleDifference(currentAngle, assignedAngle);
 
     if (Math.abs(angleDifference) > ANGLE_TOLERANCE) {
-      formationRadius = initialFormationRadius;
+      if (!continuousClosing) {
+        formationRadius = initialFormationRadius;
+      }
 
       float nextAngle =
           currentAngle + MathUtils.clamp(angleDifference, -ANGULAR_STEP, ANGULAR_STEP);
 
-      // Keep the flanking route compact even when the summon starts far away.
       return clampCentreToVisibleArea(
-          positionAroundPlayer(playerCentre, nextAngle, initialFormationRadius));
+          positionAroundPlayer(playerCentre, nextAngle, formationRadius));
     }
 
-    if (summonCentre.dst(assignedPosition) <= SLOT_TOLERANCE) {
-      formationRadius = Math.max(finalApproachRadius, formationRadius - CLOSING_SPEED * deltaTime);
+    if (!continuousClosing && summonCentre.dst(assignedPosition) <= SLOT_TOLERANCE) {
+      formationRadius = Math.max(finalApproachRadius, formationRadius - closingSpeed * deltaTime);
     }
 
     return clampCentreToVisibleArea(

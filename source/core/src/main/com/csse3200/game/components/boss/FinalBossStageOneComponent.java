@@ -157,12 +157,19 @@ public class FinalBossStageOneComponent extends Component {
               : config.waveOneFormationRadius;
 
       summonMovement.setFormationRadius(formationRadius);
+      boolean waveOne = state == FinalBossStageOneState.WAVE_ONE;
+
+      summonMovement.setClosingSpeed(waveOne ? 0.55f : 0.75f);
+      summonMovement.setContinuousClosing(false);
+
       summonMovement.setCamera(movementController.getCamera());
       summon.addComponent(summonMovement);
 
       summon.getEvents().addListener(FinalBossEvents.SUMMON_REMOVED, this::onSummonRemoved);
 
-      Vector2 offset = new Vector2(config.summonSpawnRadius, 0f).setAngleDeg(angle);
+      float spawnRadius = config.summonSpawnRadius;
+
+      Vector2 offset = new Vector2(spawnRadius, 0f).setAngleDeg(angle);
 
       Vector2 spawnPosition =
           entity.getCenterPosition().add(offset).sub(summon.getScale().scl(0.5f));
