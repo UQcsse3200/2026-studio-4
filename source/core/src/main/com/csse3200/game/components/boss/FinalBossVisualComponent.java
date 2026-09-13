@@ -23,8 +23,10 @@ public class FinalBossVisualComponent extends RenderComponent {
   private TextureRegion[] transform;
   private TextureRegion[] shield;
   private TextureRegion[] impact;
+  private TextureRegion[] attackAlert;
 
   private FinalBossStageOneComponent stageOne;
+  private FinalBossMovementComponent movement;
   private FinalBossDamageControllerComponent protection;
 
   private int previousHealth;
@@ -51,6 +53,7 @@ public class FinalBossVisualComponent extends RenderComponent {
     transform = FinalBossVisualAssets.TRANSFORM.loadFrames();
     shield = FinalBossVisualAssets.SHIELD.loadFrames();
     impact = FinalBossVisualAssets.SHIELD_HIT.loadFrames();
+    attackAlert = FinalBossVisualAssets.ATTACK_ALERT.loadFrames();
 
     // Remove transparent margins while preserving the same centre in every frame.
     for (int i = 0; i < impact.length; i++) {
@@ -58,6 +61,7 @@ public class FinalBossVisualComponent extends RenderComponent {
     }
 
     stageOne = entity.getComponent(FinalBossStageOneComponent.class);
+    movement = entity.getComponent(FinalBossMovementComponent.class);
     protection = entity.getComponent(FinalBossDamageControllerComponent.class);
 
     CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
@@ -216,6 +220,18 @@ public class FinalBossVisualComponent extends RenderComponent {
         int frame = FinalBossVisualAssets.once(stateTime, config.bossTransformDuration, 12);
 
         batch.draw(transform[frame], pos.x, pos.y, size.x, size.y);
+      }
+
+      if (!dying && movement != null && movement.isChargeWarningActive()) {
+        int frame = (int) (elapsed / 0.12f) % attackAlert.length;
+        float alertWidth = size.x * 1.35f;
+        float alertHeight = size.y * 1.35f;
+        batch.draw(
+            attackAlert[frame],
+            pos.x + (size.x - alertWidth) * 0.5f,
+            pos.y + (size.y - alertHeight) * 0.5f,
+            alertWidth,
+            alertHeight);
       }
 
       /*

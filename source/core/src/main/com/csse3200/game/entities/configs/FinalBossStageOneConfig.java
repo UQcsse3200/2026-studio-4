@@ -43,6 +43,10 @@ public class FinalBossStageOneConfig {
   public float bossStepMaxDistance = 4f;
   public float bossStepPauseDuration = 3f;
 
+  // Stage 2 charge attacks
+  public float bossChargeAttackDelay = 1f;
+  public float bossChargeDistance = 4f;
+
   // Previous movement settings retained for compatibility
   public float bossWanderSpeed = 0.8f;
   public float bossFleeSpeed = 1.2f;
@@ -111,6 +115,7 @@ public class FinalBossStageOneConfig {
 
     validateMovement();
     validateStepMovement();
+    validateChargeAttack();
     validatePetrification();
     validateFormation();
   }
@@ -151,6 +156,15 @@ public class FinalBossStageOneConfig {
         || petrificationSlowDuration < 0f
         || petrificationCooldown <= 0f) {
       throw new IllegalArgumentException("Petrification values are invalid");
+    }
+  }
+
+  private void validateChargeAttack() {
+    if (!Float.isFinite(bossChargeAttackDelay)
+        || !Float.isFinite(bossChargeDistance)
+        || bossChargeAttackDelay < 0f
+        || bossChargeDistance <= 0f) {
+      throw new IllegalArgumentException("Boss charge attack values are invalid");
     }
   }
 

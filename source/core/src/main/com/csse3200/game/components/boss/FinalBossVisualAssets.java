@@ -13,6 +13,7 @@ public enum FinalBossVisualAssets {
   SPAWN("summon-spawn.png", 32, 6, 12),
   SHIELD("shield.png", 72, 8, 8),
   SHIELD_HIT("shield-hit.png", 72, 4, 4),
+  ATTACK_ALERT("attack-alert.png", 1024, 8, 8),
   BOMB_IDLE("bomb-idle.png", 50, 3, 3),
   BOMB_EXPLOSION("bomb-explosion.png", 50, 11, 11),
   STONE("stone.png", 72, 8, 8);

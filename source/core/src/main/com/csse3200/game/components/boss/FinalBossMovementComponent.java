@@ -38,9 +38,13 @@ public class FinalBossMovementComponent extends Component {
   private Camera camera;
   private Mode mode = Mode.STOPPED;
   private Vector2 destination;
+  private Vector2 chargeDestination;
 
   private float pauseRemaining;
   private float stepRemaining;
+  private float chargeDelayRemaining;
+  private float chargeWarningRemaining;
+  private boolean chargeAttacksEnabled;
   private boolean disposed;
 
   /** Uses the live wave collection so removed summons are no longer considered. */
@@ -93,6 +97,19 @@ public class FinalBossMovementComponent extends Component {
     return mode;
   }
 
+  /** Enables the Stage 2 charge cycle, beginning with its warning animation. */
+  public void enableChargeAttacks() {
+    chargeAttacksEnabled = true;
+    chargeDestination = null;
+    chargeDelayRemaining = 0f;
+    chargeWarningRemaining = config.bossChargeAttackDelay;
+  }
+
+  /** Returns whether the boss is currently warning about an imminent charge. */
+  public boolean isChargeWarningActive() {
+    return chargeWarningRemaining > 0f;
+  }
+
   @Override
   public void update() {
     if (disposed) {
@@ -115,6 +132,33 @@ public class FinalBossMovementComponent extends Component {
       return;
     }
 
+    if (chargeAttacksEnabled && mode == Mode.STEP_TOWARDS_PLAYER) {
+      if (chargeWarningRemaining > 0f) {
+        chargeWarningRemaining = Math.max(0f, chargeWarningRemaining - deltaTime);
+        movement.setMoving(false);
+        if (chargeWarningRemaining <= 0f) {
+          beginCharge();
+        }
+        return;
+      }
+
+      if (chargeDestination != null) {
+        updateCharge(deltaTime);
+        return;
+      }
+
+      chargeDelayRemaining = Math.max(0f, chargeDelayRemaining - deltaTime);
+      if (chargeDelayRemaining <= 0f) {
+        if (config.bossChargeAttackDelay <= 0f) {
+          beginCharge();
+        } else {
+          chargeWarningRemaining = config.bossChargeAttackDelay;
+        }
+        movement.setMoving(false);
+        return;
+      }
+    }
+
     if (pauseRemaining > 0f) {
       pauseRemaining = Math.max(0f, pauseRemaining - deltaTime);
       movement.setMoving(false);
@@ -132,7 +176,51 @@ public class FinalBossMovementComponent extends Component {
   public void dispose() {
     disposed = true;
     destination = null;
+    chargeDestination = null;
     pauseRemaining = 0f;
+  }
+
+  private void beginCharge() {
+    Vector2 direction = target.getCenterPosition().sub(entity.getCenterPosition());
+    if (direction.isZero()) {
+      chargeDelayRemaining = config.bossChargeAttackDelay;
+      return;
+    }
+
+    chargeDestination =
+        clampToVisibleArea(
+            entity.getPosition().mulAdd(direction.nor(), config.bossChargeDistance));
+  }
+
+  private void updateCharge(float deltaTime) {
+    Vector2 currentPosition = entity.getPosition();
+    Vector2 direction = chargeDestination.cpy().sub(currentPosition);
+    float distance = direction.len();
+
+    if (distance <= ARRIVAL_DISTANCE) {
+      finishCharge();
+      return;
+    }
+
+    float stepDistance = Math.min(config.bossStepSpeed * deltaTime, distance);
+    Vector2 nextPosition =
+        clampToVisibleArea(currentPosition.cpy().mulAdd(direction.nor(), stepDistance));
+    Vector2 step = nextPosition.cpy().sub(currentPosition);
+
+    if (step.len() <= 0.001f) {
+      finishCharge();
+      return;
+    }
+
+    movement.setMaxSpeed(new Vector2(config.bossStepSpeed * 10, config.bossStepSpeed * 10));
+    movement.setTarget(nextPosition);
+    movement.setMoving(true);
+  }
+
+  private void finishCharge() {
+    chargeDestination = null;
+    chargeDelayRemaining = config.bossChargeAttackDelay;
+    movement.setMoving(false);
   }
 
   private void chooseNextDestination() {
