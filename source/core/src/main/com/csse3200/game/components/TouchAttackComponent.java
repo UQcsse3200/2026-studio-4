@@ -68,6 +68,11 @@ public class TouchAttackComponent extends Component {
 
     // Try to attack target.
     Entity target = ((BodyUserData) other.getBody().getUserData()).entity;
+    if (PhysicsLayer.contains(targetLayer, PhysicsLayer.PLAYER)
+        && StatusEffectsControllerComponent.isConcealed(target)) {
+      // A hostile cannot find a concealed target, so it neither damages nor shoves them.
+      return;
+    }
     CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
     if (targetStats != null) {
       targetStats.hit(combatStats);

@@ -6,11 +6,10 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.ai.tasks.AITaskComponent;
-import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.ai.tasks.TaskRunner;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
@@ -54,7 +53,7 @@ class LungeAttackTaskTest {
     StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
     target.addComponent(effects);
     target.setPosition(1f, 0f);
-    LungeAttackTask task = new LungeAttackTask(target, 2.5f);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f);
     task.create(taskRunner);
     when(effects.isConcealed()).thenReturn(true);
     assertEquals(-1, task.getPriority());
@@ -63,87 +62,86 @@ class LungeAttackTaskTest {
   }
 
   @Test
-  void shouldCancelTelegraphFromUpdate() {
-    assertCancellation(false, false);
-  }
-
-  @Test
-  void shouldCancelTelegraphFromPriority() {
-    assertCancellation(false, true);
-  }
-
-  @Test
-  void shouldCancelDashFromUpdate() {
-    assertCancellation(true, false);
-  }
-
-  @Test
-  void shouldCancelDashFromPriority() {
-    assertCancellation(true, true);
-  }
-
-  @Test
-  void shouldYieldToFallbackAndResumeThroughSchedulerAfterCooldown() {
+  void shouldKeepPriorityPureAndWindDownThroughUpdateWhenTargetVanishes() {
     StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
     target.addComponent(effects);
     target.setPosition(1f, 0f);
-    LungeAttackTask task = new LungeAttackTask(target, 2.5f);
-    PriorityTask fallback = mock(PriorityTask.class);
-    when(fallback.getPriority()).thenReturn(0);
-    AITaskComponent ai = new AITaskComponent().addTask(task).addTask(fallback);
-    ai.setEntity(owner);
-    ai.update();
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f);
+    task.create(taskRunner);
+    task.start();
     when(gameTime.getTime()).thenReturn(500L);
-    ai.update();
+    task.update();
     verify(movementComponent).setMoving(true);
+    clearInvocations(movementComponent);
 
     when(effects.isConcealed()).thenReturn(true);
+    // The query changes nothing: the lunge keeps its priority so its own update can end it.
+    assertEquals(20, task.getPriority());
+    assertEquals(20, task.getPriority());
+    verifyNoInteractions(movementComponent);
     when(gameTime.getTime()).thenReturn(600L);
-    ai.update();
-    verify(fallback).start();
-    clearInvocations(movementComponent);
-    when(effects.isConcealed()).thenReturn(false);
-    when(gameTime.getTime()).thenReturn(2599L);
-    ai.update();
-    verify(movementComponent, never()).setMoving(true);
-    when(gameTime.getTime()).thenReturn(2600L);
-    ai.update();
-    verify(fallback).stop();
-    when(gameTime.getTime()).thenReturn(3100L);
-    ai.update();
-    verify(movementComponent).setMoving(true);
+    task.update();
+    assertEquals(-1, task.getPriority());
+    verify(movementComponent).setMoving(false);
+    verify(movementComponent).setMaxSpeed(new Vector2(2.5f, 2.5f));
   }
 
-  private void assertCancellation(boolean dashStarted, boolean checkPriority) {
+  @Test
+  void shouldAbandonTelegraphWithoutDashEndOrCooldown() {
     StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
     target.addComponent(effects);
     target.setPosition(1f, 0f);
     int[] dashEnds = {0};
     owner.getEvents().addListener("lungeDashEnd", () -> dashEnds[0]++);
-    LungeAttackTask task = new LungeAttackTask(target, 2.5f);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f);
     task.create(taskRunner);
     task.start();
-    if (dashStarted) {
-      when(gameTime.getTime()).thenReturn(500L);
-      task.update();
-      verify(movementComponent).setMoving(true);
-    }
     clearInvocations(movementComponent);
+
+    when(gameTime.getTime()).thenReturn(200L);
+    when(effects.isConcealed()).thenReturn(true);
+    task.update();
+    assertEquals(-1, task.getPriority());
+    verify(movementComponent).setMoving(false);
+    verify(movementComponent, never()).setTarget(any());
+    // No dash ever started, so nothing announces one ending.
+    assertEquals(0, dashEnds[0]);
+
+    when(gameTime.getTime()).thenReturn(300L);
+    task.update();
+    assertEquals(-1, task.getPriority());
+    task.stop();
+    // Nor is a cooldown charged: the lunge is ready the moment the target is visible again.
+    when(effects.isConcealed()).thenReturn(false);
+    assertEquals(20, task.getPriority());
+  }
+
+  @Test
+  void shouldEndDashNormallyWithDashEndAndCooldown() {
+    StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
+    target.addComponent(effects);
+    target.setPosition(1f, 0f);
+    int[] dashEnds = {0};
+    owner.getEvents().addListener("lungeDashEnd", () -> dashEnds[0]++);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f);
+    task.create(taskRunner);
+    task.start();
+    when(gameTime.getTime()).thenReturn(500L);
+    task.update();
+    verify(movementComponent).setMoving(true);
+    clearInvocations(movementComponent);
+
     when(gameTime.getTime()).thenReturn(600L);
     when(effects.isConcealed()).thenReturn(true);
-    if (checkPriority) {
-      assertEquals(-1, task.getPriority());
-    } else {
-      task.update();
-    }
+    task.update();
     verify(movementComponent).setMoving(false);
     verify(movementComponent).setMaxSpeed(new Vector2(2.5f, 2.5f));
     verify(movementComponent, never()).setMoving(true);
-    verify(movementComponent, never()).setTarget(any());
+    assertEquals(-1, task.getPriority());
+    assertEquals(1, dashEnds[0]);
 
     when(gameTime.getTime()).thenReturn(1600L);
     task.update();
-    assertEquals(-1, task.getPriority());
     assertEquals(1, dashEnds[0]);
     when(effects.isConcealed()).thenReturn(false);
     task.update();

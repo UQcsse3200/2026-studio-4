@@ -56,17 +56,17 @@ class PlayerAbilitiesComponentTest {
   }
 
   @Test
-  void shouldStartInactiveAndTreatMissingTargetsAsUntargetable() {
+  void shouldStartInactiveAndTreatMissingTargetsAsNotConcealed() {
     assertInactive();
-    // A missing target is untargetable; a real one without effects is not.
-    assertTrue(StatusEffectsControllerComponent.isUntargetable(null));
-    assertFalse(StatusEffectsControllerComponent.isUntargetable(new Entity()));
-    assertFalse(StatusEffectsControllerComponent.isUntargetable(player));
+    // Neither a missing target nor one without effects is concealed; only a running effect is.
+    assertFalse(StatusEffectsControllerComponent.isConcealed(null));
+    assertFalse(StatusEffectsControllerComponent.isConcealed(new Entity()));
+    assertFalse(StatusEffectsControllerComponent.isConcealed(player));
     assertTrue(used.isEmpty());
     assertTrue(ended.isEmpty());
     assertTrue(failed.isEmpty());
     assertTrue(abilities.tryActivate(Invisibility.class));
-    assertTrue(StatusEffectsControllerComponent.isUntargetable(player));
+    assertTrue(StatusEffectsControllerComponent.isConcealed(player));
   }
 
   @Test
@@ -84,7 +84,7 @@ class PlayerAbilitiesComponentTest {
     assertFalse(abilities.isActive(Invisibility.class));
     assertEquals(0, abilities.getRemainingMs(Invisibility.class));
     assertEquals(30_000, abilities.getCooldownRemainingMs(Invisibility.class));
-    abilities.update();
+    player.update();
     when(time.getTime()).thenReturn(START + 100_000);
     assertEquals(0, abilities.getRemainingMs(Invisibility.class));
     assertEquals(0, abilities.getCooldownRemainingMs(Invisibility.class));
@@ -122,7 +122,7 @@ class PlayerAbilitiesComponentTest {
     assertInactive();
     abilities.unlock(LastStand.class);
     abilities.unlock(LastStand.class);
-    abilities.update();
+    player.update();
     assertInactive();
     stats.takeDamage(1, hostile);
     assertTrue(abilities.isActive(LastStand.class));
@@ -162,7 +162,7 @@ class PlayerAbilitiesComponentTest {
     abilities.unlock(LastStand.class);
     stats.setHealth(19);
     stats.addHealth(-1);
-    abilities.update();
+    player.update();
     assertInactive();
     stats.takeDamage(1);
     stats.takeDamage(1, new Entity());
@@ -224,7 +224,7 @@ class PlayerAbilitiesComponentTest {
     assertFalse(abilities.isActive(LastStand.class));
     assertEquals(0, abilities.getRemainingMs(LastStand.class));
     assertEquals(50_000, abilities.getCooldownRemainingMs(LastStand.class));
-    abilities.update();
+    player.update();
     assertEquals(List.of("laststand"), ended);
 
     when(time.getTime()).thenReturn(START + 59_999);
@@ -234,7 +234,7 @@ class PlayerAbilitiesComponentTest {
     assertEquals(1, abilities.getCooldownRemainingMs(LastStand.class));
     when(time.getTime()).thenReturn(START + 60_000);
     abilities.unlock(LastStand.class);
-    abilities.update();
+    player.update();
     assertFalse(abilities.isActive(LastStand.class));
     assertEquals(0, abilities.getCooldownRemainingMs(LastStand.class));
     stats.takeDamage(1, hostile);
@@ -280,13 +280,13 @@ class PlayerAbilitiesComponentTest {
             (String ability) -> {
               assertFalse(abilities.isActive(Invisibility.class));
               assertFalse(abilities.isActive(LastStand.class));
-              abilities.update();
+              player.update();
             });
     when(time.getTime()).thenReturn(START + 100_000);
-    abilities.update();
-    abilities.update();
+    player.update();
+    player.update();
     assertInactive();
-    assertEquals(List.of("invisibility", "laststand"), ended);
+    assertEquals(List.of("laststand", "invisibility"), ended);
   }
 
   @Test
@@ -295,14 +295,14 @@ class PlayerAbilitiesComponentTest {
     stats.takeDamage(81, hostile);
     assertTrue(abilities.tryActivate(Invisibility.class));
     stats.setHealth(0);
-    assertEquals(List.of("invisibility", "laststand"), ended);
+    assertEquals(List.of("laststand", "invisibility"), ended);
     assertInactive();
     abilities.unlock(LastStand.class);
     assertFalse(abilities.tryActivate(Invisibility.class));
     assertEquals(List.of("invisibility:Player is not alive"), failed);
     player.getEvents().trigger("entityDied");
     player.getEvents().trigger("damageTaken", hostile, 1, 1);
-    assertEquals(List.of("invisibility", "laststand"), ended);
+    assertEquals(List.of("laststand", "invisibility"), ended);
 
     stats.setHealth(19);
     stats.takeDamage(1, hostile);
@@ -321,7 +321,7 @@ class PlayerAbilitiesComponentTest {
     stats.takeDamage(81, hostile);
     assertTrue(abilities.tryActivate(Invisibility.class));
     player.dispose();
-    assertEquals(List.of("invisibility", "laststand"), ended);
+    assertEquals(List.of("laststand", "invisibility"), ended);
     assertInactive();
     when(time.getTime()).thenReturn(START + 100_000);
     abilities.unlock(LastStand.class);
@@ -333,7 +333,7 @@ class PlayerAbilitiesComponentTest {
     player.dispose();
     assertInactive();
     assertEquals(List.of("laststand", "invisibility"), used);
-    assertEquals(List.of("invisibility", "laststand"), ended);
+    assertEquals(List.of("laststand", "invisibility"), ended);
     assertTrue(failed.isEmpty());
   }
 
@@ -429,6 +429,7 @@ class PlayerAbilitiesComponentTest {
 
     when(time.getTime()).thenReturn(START + 5_000);
     assertFalse(abilities.isActive(TestAbility.class));
+    player.update();
     assertEquals(List.of("testability"), ended);
     assertEquals(15_000, abilities.getCooldownRemainingMs(TestAbility.class));
     assertFalse(abilities.tryActivate(TestAbility.class));
@@ -511,7 +512,7 @@ class PlayerAbilitiesComponentTest {
   /** A cast ability that starts locked, declared entirely outside PlayerAbilitiesComponent. */
   private static final class TestAbility extends TimedPlayerAbility {
     private TestAbility(GameTime time) {
-      super("testability", 20_000, false, new TimedStatusEffect(time, 5_000));
+      super("testability", 20_000, false, () -> new TimedStatusEffect(time, 5_000));
     }
 
     @Override
@@ -523,7 +524,7 @@ class PlayerAbilitiesComponentTest {
   /** A passive that starts on any hostile hit, declared entirely outside the component. */
   private static final class TestPassive extends TimedPlayerAbility {
     private TestPassive(GameTime time) {
-      super("testpassive", 9_000, true, new TimedStatusEffect(time, 3_000));
+      super("testpassive", 9_000, true, () -> new TimedStatusEffect(time, 3_000));
     }
 
     @Override

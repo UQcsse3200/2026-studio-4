@@ -41,7 +41,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
   @Override
   public int getPriority() {
-    if (StatusEffectsControllerComponent.isUntargetable(target)) {
+    if (StatusEffectsControllerComponent.isConcealed(target)) {
       return -1;
     }
     float distance = owner.getEntity().getPosition().dst(target.getPosition());
@@ -71,7 +71,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
   @Override
   public void update() {
-    if (StatusEffectsControllerComponent.isUntargetable(target)) {
+    if (StatusEffectsControllerComponent.isConcealed(target)) {
       return;
     }
     cooldownLeft -= ServiceLocator.getTimeSource().getDeltaTime();
@@ -97,7 +97,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
     ServiceLocator.getEntityService()
         .runAfterUpdate(
             () -> {
-              if (StatusEffectsControllerComponent.isUntargetable(target)) {
+              if (StatusEffectsControllerComponent.isConcealed(target)) {
                 return;
               }
               Entity projectile =

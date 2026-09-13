@@ -68,10 +68,8 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
   @Override
   public void update() {
     long now = gameTime.getTime();
-    if (StatusEffectsControllerComponent.isUntargetable(target)) {
-      if (phase != Phase.DONE) {
-        endDash(now);
-      }
+    if (StatusEffectsControllerComponent.isConcealed(target)) {
+      loseTarget(now);
       return;
     }
     switch (phase) {
@@ -100,17 +98,18 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
     }
   }
 
+  /**
+   * A pure query: the scheduler calls this repeatedly, so it never changes state. While the lunge
+   * is in progress it keeps its priority even if the target has just vanished, so that {@link
+   * #update()} still runs and can wind the lunge down itself before this yields.
+   */
   @Override
   public int getPriority() {
-    if (StatusEffectsControllerComponent.isUntargetable(target)) {
-      // Stop the dash even if the scheduler has no replacement task.
-      if (status == Status.ACTIVE && phase != Phase.DONE) {
-        endDash(gameTime.getTime());
-      }
-      return -1;
-    }
     if (status == Status.ACTIVE) {
       return phase == Phase.DONE ? -1 : this.priority;
+    }
+    if (StatusEffectsControllerComponent.isConcealed(target)) {
+      return -1;
     }
 
     long now = gameTime.getTime();
@@ -121,6 +120,25 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
       return this.priority;
     }
     return -1;
+  }
+
+  /**
+   * Winds the lunge down because the target can no longer be seen. A dash already underway ends
+   * normally, with its end event and cooldown. A telegraph that never became a dash is simply
+   * abandoned: no dash ever started, so no dash end is announced and no cooldown is charged.
+   */
+  private void loseTarget(long now) {
+    switch (phase) {
+      case TELEGRAPH:
+        movementComponent.setMoving(false);
+        phase = Phase.DONE;
+        break;
+      case DASH:
+        endDash(now);
+        break;
+      case DONE:
+        break;
+    }
   }
 
   private void beginDash(long now) {

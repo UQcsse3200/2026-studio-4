@@ -109,7 +109,7 @@ class ChaseTaskTest {
     target.setPosition(2f, 0f);
     PhysicsMovementComponent movement = mock(PhysicsMovementComponent.class);
     ChaseTask task = new ChaseTask(target, 10, 5, 10);
-    AITaskComponent ai = new AITaskComponent().addTask(task);
+    AITaskComponent ai = new AITaskComponent(target).addTask(task);
     new Entity().addComponent(movement).addComponent(ai).create();
     ai.update();
     verify(movement).setMoving(true);

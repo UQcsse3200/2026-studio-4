@@ -1,11 +1,11 @@
 package com.csse3200.game.components.player.abilities;
 
 import com.csse3200.game.components.player.TimedPlayerAbility;
-import com.csse3200.game.components.statuseffects.InvisibilityEffect;
+import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
 import com.csse3200.game.services.GameTime;
 
 /**
- * Cast ability. Activating it puts an InvisibilityEffect on the player, and for as long as that
+ * Cast ability. Activating it puts an invisibility effect on the player, and for as long as that
  * effect runs the player takes no hostile damage and hostiles cannot target them.
  *
  * <p>The ability only decides when to apply the effect. Everything that reacts to being hidden asks
@@ -20,7 +20,8 @@ public final class Invisibility extends TimedPlayerAbility {
   public static final long COOLDOWN_MS = 45_000;
 
   public Invisibility(GameTime time) {
-    super(NAME, COOLDOWN_MS, true, new InvisibilityEffect(time, DURATION_MS));
+    super(
+        NAME, COOLDOWN_MS, true, () -> StatusEffectsFactory.createInvisibility(time, DURATION_MS));
   }
 
   @Override

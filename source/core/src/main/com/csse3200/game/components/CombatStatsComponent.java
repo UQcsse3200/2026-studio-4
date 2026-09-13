@@ -1,5 +1,6 @@
 package com.csse3200.game.components;
 
+import com.csse3200.game.components.statuseffects.Stat;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.ColliderComponent;
@@ -125,7 +126,7 @@ public class CombatStatsComponent extends Component {
 
   /** Returns base attack with active effects applied, leaving charm-adjusted raw stats alone. */
   public int getEffectiveBaseAttack() {
-    float multiplier = getStatMultiplier();
+    float multiplier = getStatMultiplier(Stat.ATTACK);
     return multiplier == 1f ? baseAttack : Math.round(baseAttack * multiplier);
   }
 
@@ -168,7 +169,7 @@ public class CombatStatsComponent extends Component {
 
   /** Returns movement speed with active effects applied, leaving raw stats alone. */
   public float getEffectiveMovementSpeed() {
-    return movementSpeed * getStatMultiplier();
+    return movementSpeed * getStatMultiplier(Stat.MOVEMENT_SPEED);
   }
 
   /**
@@ -210,17 +211,21 @@ public class CombatStatsComponent extends Component {
 
   /** Returns attack speed with active effects applied, leaving raw stats alone. */
   public float getEffectiveAttackSpeed() {
-    return attackSpeed * getStatMultiplier();
+    return attackSpeed * getStatMultiplier(Stat.ATTACK_SPEED);
   }
 
   /**
-   * Returns what the entity's own status effects scale its stats by, or 1 when there are none. The
-   * effects say what they do; nothing here knows which ability, if any, put them there.
+   * Returns what the entity's own status effects scale one stat by, or 1 when there are none.
+   *
+   * <p>The effective value is derived on read rather than written into the raw stat and undone
+   * later: an int stat cannot survive a x1.5 then /1.5 round trip, an undo would eat a charm picked
+   * up mid-effect, and an effect that never gets to undo (death, disposal) would leave the buff
+   * baked in. The effects say what they do; nothing here knows which ability put them there.
    */
-  private float getStatMultiplier() {
+  private float getStatMultiplier(Stat stat) {
     StatusEffectsControllerComponent effects =
         entity == null ? null : entity.getComponent(StatusEffectsControllerComponent.class);
-    return effects == null ? 1f : effects.getStatMultiplier();
+    return effects == null ? 1f : effects.getStatMultiplier(stat);
   }
 
   /**
@@ -294,8 +299,7 @@ public class CombatStatsComponent extends Component {
     }
 
     if (invulnerable
-        || (isHostileAttacker(attacker)
-            && StatusEffectsControllerComponent.isUntargetable(entity))) {
+        || (isHostileAttacker(attacker) && StatusEffectsControllerComponent.isConcealed(entity))) {
       triggerDamageBlocked();
       return;
     }

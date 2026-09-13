@@ -8,10 +8,12 @@ import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.player.abilities.Invisibility;
 import com.csse3200.game.components.player.abilities.LastStand;
 import com.csse3200.game.components.statuseffects.Burning;
-import com.csse3200.game.components.statuseffects.InvisibilityEffect;
 import com.csse3200.game.components.statuseffects.LastStandEffect;
 import com.csse3200.game.components.statuseffects.Regeneration;
-import com.csse3200.game.components.statuseffects.TimedEffect;
+import com.csse3200.game.components.statuseffects.Stat;
+import com.csse3200.game.components.statuseffects.StatusEffect;
+import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
+import com.csse3200.game.components.statuseffects.TimedStatusEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
@@ -22,7 +24,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 
 @ExtendWith(GameExtension.class)
 class StatusEffectsControllerComponentTest {
@@ -61,7 +62,7 @@ class StatusEffectsControllerComponentTest {
   }
 
   @Test
-  void shouldExpireBothBeforeReentrantCallbacksFromControllerQuery() {
+  void shouldAnswerQueriesAtTheExactDeadlineButRemoveAndNotifyOnlyOnUpdate() {
     activateBoth();
     List<String> ended = new ArrayList<>();
     player
@@ -70,14 +71,22 @@ class StatusEffectsControllerComponentTest {
             "abilityEnded",
             (String name) -> {
               ended.add(name);
+              // Every expired effect is off the list before the first callback runs.
               assertFalse(abilities.isActive(Invisibility.class));
               assertFalse(abilities.isActive(LastStand.class));
-              controller.refreshTimedEffects();
+              assertFalse(controller.isConcealed());
             });
     when(time.getTime()).thenReturn(15_000L);
+    // Queries are pure: they ignore the expired effect at once but fire nothing.
     assertFalse(abilities.isActive(LastStand.class));
+    assertFalse(controller.isConcealed());
+    assertNull(controller.getTint());
+    assertEquals(1f, controller.getStatMultiplier(Stat.ATTACK));
+    assertTrue(ended.isEmpty());
     controller.update();
-    assertEquals(List.of("invisibility", "laststand"), ended);
+    assertEquals(List.of("laststand", "invisibility"), ended);
+    controller.update();
+    assertEquals(2, ended.size());
   }
 
   @Test
@@ -95,10 +104,11 @@ class StatusEffectsControllerComponentTest {
                 assertFalse(abilities.isActive(LastStand.class));
                 assertTrue(abilities.tryActivate(Invisibility.class));
               }
+              // Effects come off in the order they were applied: last stand was first.
             });
     when(time.getTime()).thenReturn(60_000L);
     controller.update();
-    assertEquals(List.of("ended:invisibility", "used:invisibility", "ended:laststand"), events);
+    assertEquals(List.of("ended:laststand", "ended:invisibility", "used:invisibility"), events);
     assertTrue(abilities.isActive(Invisibility.class));
     assertEquals(15_000, abilities.getRemainingMs(Invisibility.class));
   }
@@ -126,11 +136,11 @@ class StatusEffectsControllerComponentTest {
     controller.dispose();
     abilities.dispose();
     controller.dispose();
-    assertEquals(List.of("invisibility", "laststand"), ended);
+    assertEquals(List.of("laststand", "invisibility"), ended);
     assertTrue(failed.isEmpty());
     // A disposed controller keeps nothing and takes nothing new.
-    TimedEffect rejected = new FakeTimedEffect();
-    assertThrows(IllegalStateException.class, () -> controller.registerEffect(rejected));
+    StatusEffect rejected = new FakeEffect();
+    assertThrows(IllegalStateException.class, () -> controller.addStatusEffect(rejected));
   }
 
   @Test
@@ -169,9 +179,13 @@ class StatusEffectsControllerComponentTest {
       abilities.getRemainingMs(LastStand.class);
       abilities.getCooldownRemainingMs(Invisibility.class);
       abilities.getCooldownRemainingMs(LastStand.class);
+      controller.isConcealed();
+      controller.getTint();
+      controller.getStatMultiplier(Stat.ATTACK);
       abilities.update();
-      burns.constructed().forEach(Mockito::verifyNoInteractions);
-      regens.constructed().forEach(Mockito::verifyNoInteractions);
+      // Queries may look at a stack, but only the frame update ticks it.
+      burns.constructed().forEach(burn -> verify(burn, never()).update());
+      regens.constructed().forEach(regen -> verify(regen, never()).update());
       when(burns.constructed().getFirst().update()).thenReturn(true);
       when(regens.constructed().getFirst().update()).thenReturn(true);
       controller.update();
@@ -189,6 +203,7 @@ class StatusEffectsControllerComponentTest {
     assertThrows(IllegalArgumentException.class, () -> controller.addStatusEffect(0, 'b'));
     assertThrows(IllegalArgumentException.class, () -> controller.addStatusEffect(-1, 'r'));
     assertThrows(IllegalArgumentException.class, () -> controller.addStatusEffect(1, '?'));
+    assertThrows(IllegalArgumentException.class, () -> controller.addStatusEffect(null));
     Entity noStats = new Entity().addComponent(new StatusEffectsControllerComponent());
     assertThrows(IllegalStateException.class, noStats::create);
     Entity noController =
@@ -196,26 +211,40 @@ class StatusEffectsControllerComponentTest {
             .addComponent(new CombatStatsComponent(100, 10))
             .addComponent(new PlayerAbilitiesComponent(time));
     assertThrows(IllegalStateException.class, noController::create);
-    TimedEffect duplicate = new FakeTimedEffect();
-    controller.registerEffect(duplicate);
-    assertThrows(IllegalStateException.class, () -> controller.registerEffect(duplicate));
+    StatusEffect duplicate = new FakeEffect();
+    controller.addStatusEffect(duplicate);
+    assertThrows(IllegalStateException.class, () -> controller.addStatusEffect(duplicate));
   }
 
   @Test
-  void shouldRegisterBeforeControllerCreateAndExpireAtExactDeadline() {
+  void shouldAcceptEffectsBeforeCreateAndRemoveThemWhenTheyReportDone() {
     StatusEffectsControllerComponent uncreated = new StatusEffectsControllerComponent();
-    Runnable ended = mock(Runnable.class);
-    FakeTimedEffect effect = new FakeTimedEffect();
-    effect.onEnded = ended;
-    uncreated.registerEffect(effect);
+    FakeEffect effect = new FakeEffect();
+    uncreated.addStatusEffect(effect);
     new Entity().addComponent(new CombatStatsComponent(100, 10)).addComponent(uncreated).create();
-    effect.active = true;
-    uncreated.refreshTimedEffects();
-    assertTrue(effect.isActive());
-    effect.expired = true;
     uncreated.update();
-    assertFalse(effect.isActive());
-    verify(ended).run();
+    assertTrue(uncreated.hasStatusEffect(effect));
+    assertEquals(0, effect.removed);
+    effect.expired = true;
+    assertFalse(uncreated.hasStatusEffect(effect));
+    assertEquals(0, effect.removed);
+    uncreated.update();
+    assertEquals(1, effect.removed);
+    uncreated.update();
+    uncreated.removeStatusEffect(effect);
+    assertEquals(1, effect.removed);
+  }
+
+  @Test
+  void shouldRemoveEarlyExactlyOnceAndIgnoreUnknownEffects() {
+    FakeEffect effect = new FakeEffect();
+    controller.addStatusEffect(effect);
+    controller.removeStatusEffect(effect);
+    controller.removeStatusEffect(effect);
+    controller.removeStatusEffect(null);
+    controller.removeStatusEffect(new FakeEffect());
+    assertEquals(1, effect.removed);
+    assertFalse(controller.hasStatusEffect(effect));
   }
 
   @Test
@@ -223,16 +252,14 @@ class StatusEffectsControllerComponentTest {
     StatusEffectsControllerComponent standalone = new StatusEffectsControllerComponent();
     CombatStatsComponent combat = new CombatStatsComponent(100, 10);
     new Entity().addComponent(combat).addComponent(standalone).create();
-    Runnable ended = mock(Runnable.class);
-    FakeTimedEffect effect = new FakeTimedEffect();
-    effect.onEnded = ended;
-    standalone.registerEffect(effect);
-    effect.active = true;
+    FakeEffect effect = new FakeEffect();
+    standalone.addStatusEffect(effect);
     combat.setHealth(0);
-    assertFalse(effect.isActive());
+    assertFalse(standalone.hasStatusEffect(effect));
+    assertEquals(1, effect.removed);
     standalone.update();
     standalone.dispose();
-    verify(ended).run();
+    assertEquals(1, effect.removed);
   }
 
   @Test
@@ -248,41 +275,67 @@ class StatusEffectsControllerComponentTest {
       assertDoesNotThrow(controller::update);
       controller.update();
       verify(burns.constructed().getFirst()).update();
-      verifyNoInteractions(burns.constructed().getLast());
+      verify(burns.constructed().getFirst()).onRemoved();
+      verify(burns.constructed().getLast(), never()).update();
+      verify(burns.constructed().getLast()).onRemoved();
     }
   }
 
-  /** Proves the controller drives anything implementing the contract, not one concrete class. */
-  private static final class FakeTimedEffect implements TimedEffect {
-    private boolean active;
-    private boolean expired;
-    private Runnable onEnded;
+  @Test
+  void shouldNotifyAKillingStackOnceWhenDeathClearsTheListMidUpdate() {
+    FakeEffect killer =
+        new FakeEffect() {
+          @Override
+          public boolean update() {
+            stats.setHealth(0);
+            return true;
+          }
+        };
+    FakeEffect bystander = new FakeEffect();
+    controller.addStatusEffect(killer);
+    controller.addStatusEffect(bystander);
+    controller.update();
+    assertEquals(1, killer.removed);
+    assertEquals(1, bystander.removed);
+    assertFalse(controller.hasStatusEffect(bystander));
+  }
 
-    @Override
-    public boolean isActive() {
-      return active;
-    }
+  @Test
+  void shouldComposeMultipliersPerStat() {
+    FakeEffect slow =
+        new FakeEffect() {
+          @Override
+          public float getStatMultiplier(Stat stat) {
+            return stat == Stat.MOVEMENT_SPEED ? 0.5f : 1f;
+          }
+        };
+    when(time.getTime()).thenReturn(0L);
+    controller.addStatusEffect(slow);
+    controller.addStatusEffect(StatusEffectsFactory.createLastStand(time, 1_000));
+    assertEquals(LastStandEffect.MULTIPLIER, controller.getStatMultiplier(Stat.ATTACK));
+    assertEquals(LastStandEffect.MULTIPLIER, controller.getStatMultiplier(Stat.ATTACK_SPEED));
+    assertEquals(
+        LastStandEffect.MULTIPLIER * 0.5f, controller.getStatMultiplier(Stat.MOVEMENT_SPEED));
+  }
+
+  /** Proves the controller drives anything implementing the contract, not one concrete class. */
+  private static class FakeEffect implements StatusEffect {
+    boolean expired;
+    int removed;
 
     @Override
     public boolean update() {
-      return active && expired;
+      return expired;
     }
 
     @Override
     public long getRemainingDuration() {
-      return active && !expired ? 1 : 0;
+      return expired ? 0 : 1;
     }
 
     @Override
-    public void clear() {
-      active = false;
-    }
-
-    @Override
-    public void notifyEnded() {
-      if (onEnded != null) {
-        onEnded.run();
-      }
+    public void onRemoved() {
+      removed++;
     }
   }
 
@@ -300,40 +353,48 @@ class StatusEffectsControllerComponentTest {
     StatusEffectsControllerComponent enemyEffects = new StatusEffectsControllerComponent();
     Entity enemy = new Entity().addComponent(enemyStats).addComponent(enemyEffects);
     enemy.create();
-    InvisibilityEffect hidden = new InvisibilityEffect(time, 5_000);
-    LastStandEffect amplified = new LastStandEffect(time, 5_000);
-    enemyEffects.registerEffect(hidden);
-    enemyEffects.registerEffect(amplified);
 
-    assertFalse(StatusEffectsControllerComponent.isUntargetable(enemy));
+    assertFalse(StatusEffectsControllerComponent.isConcealed(enemy));
     assertNull(StatusEffectsControllerComponent.getTint(enemy));
-    assertEquals(1f, enemyEffects.getStatMultiplier());
+    assertEquals(1f, enemyEffects.getStatMultiplier(Stat.ATTACK));
     assertEquals(10, enemyStats.getEffectiveBaseAttack());
 
     when(time.getTime()).thenReturn(0L);
-    hidden.activate();
-    amplified.activate();
+    TimedStatusEffect hidden = StatusEffectsFactory.createInvisibility(time, 5_000);
+    TimedStatusEffect amplified = StatusEffectsFactory.createLastStand(time, 5_000);
+    enemyEffects.addStatusEffect(hidden);
+    enemyEffects.addStatusEffect(amplified);
 
-    assertTrue(StatusEffectsControllerComponent.isUntargetable(enemy));
+    assertTrue(StatusEffectsControllerComponent.isConcealed(enemy));
     // Both effects compose rather than one winning.
     assertEquals(
         new Color(1f, 0.35f, 0.35f, 0.35f), StatusEffectsControllerComponent.getTint(enemy));
-    assertEquals(LastStandEffect.MULTIPLIER, enemyEffects.getStatMultiplier());
+    assertEquals(LastStandEffect.MULTIPLIER, enemyEffects.getStatMultiplier(Stat.ATTACK));
     assertEquals(15, enemyStats.getEffectiveBaseAttack());
     assertEquals(6f, enemyStats.getEffectiveMovementSpeed());
+    assertEquals(3f, enemyStats.getEffectiveAttackSpeed());
 
-    // Queries expire state themselves, with no frame update.
+    // Queries ignore expired effects at once, with no frame update.
     when(time.getTime()).thenReturn(5_000L);
-    assertFalse(StatusEffectsControllerComponent.isUntargetable(enemy));
+    assertFalse(StatusEffectsControllerComponent.isConcealed(enemy));
     assertNull(StatusEffectsControllerComponent.getTint(enemy));
     assertEquals(10, enemyStats.getEffectiveBaseAttack());
   }
 
   @Test
-  void shouldTreatMissingEntitiesAndEffectlessOnesAsPlainlyTargetable() {
-    assertTrue(StatusEffectsControllerComponent.isUntargetable(null));
-    assertFalse(StatusEffectsControllerComponent.isUntargetable(new Entity()));
+  void shouldTreatMissingEntitiesAndEffectlessOnesAsNotConcealed() {
+    assertFalse(StatusEffectsControllerComponent.isConcealed(null));
+    assertFalse(StatusEffectsControllerComponent.isConcealed(new Entity()));
     assertNull(StatusEffectsControllerComponent.getTint(null));
     assertNull(StatusEffectsControllerComponent.getTint(new Entity()));
+  }
+
+  @Test
+  void shouldApplyHostileDamageToStatsWithNoEntityInsteadOfBlockingIt() {
+    // A detached CombatStatsComponent has no controller to conceal it, so it is plainly hittable.
+    CombatStatsComponent detached = new CombatStatsComponent(100, 10);
+    detached.takeDamage(
+        30, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
+    assertEquals(70, detached.getHealth());
   }
 }

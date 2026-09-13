@@ -129,8 +129,8 @@ class AbilityCommandTest {
   void shouldRejectDeadPlayerCastAndNotEnablePassiveWhileDead() {
     stats.setHealth(0);
     assertFalse(command.action(args("invisibility")));
-    // Last Stand reports a recognized command, not whether the player can enable the passive.
-    assertTrue(command.action(args("laststand")));
+    // Unlocking is refused while dead, and the terminal is told so.
+    assertFalse(command.action(args("laststand")));
     stats.setHealth(19);
     stats.takeDamage(1, hostile);
     assertFalse(abilities.isActive(LastStand.class));
@@ -141,7 +141,7 @@ class AbilityCommandTest {
   void shouldNotActivateDisposedOrUncreatedAbilitiesOrAbilitiesWithoutStats() {
     abilities.dispose();
     assertFalse(command.action(args("invisibility")));
-    assertTrue(command.action(args("laststand")));
+    assertFalse(command.action(args("laststand")));
     stats.takeDamage(81, hostile);
     assertFalse(abilities.isActive(LastStand.class));
     assertTrue(used.isEmpty());
@@ -149,11 +149,12 @@ class AbilityCommandTest {
     PlayerAbilitiesComponent incomplete = new PlayerAbilitiesComponent(time);
     Entity target = new Entity().addComponent(incomplete);
     AbilityCommand incompleteCommand = new AbilityCommand(target);
+    // Without stats the player is never "alive", so neither casting nor unlocking succeeds.
     assertFalse(incompleteCommand.action(args("invisibility")));
-    assertTrue(incompleteCommand.action(args("laststand")));
+    assertFalse(incompleteCommand.action(args("laststand")));
     target.create();
     assertFalse(incompleteCommand.action(args("invisibility")));
-    assertTrue(incompleteCommand.action(args("laststand")));
+    assertFalse(incompleteCommand.action(args("laststand")));
     assertFalse(incomplete.isActive(LastStand.class));
   }
 

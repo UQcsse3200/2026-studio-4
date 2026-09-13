@@ -107,12 +107,18 @@ public class PlayerAbilitiesComponent extends Component {
     }
   }
 
-  /** Unlocks an ability once; repeated calls never start it or reset its cooldown. */
-  public void unlock(Class<? extends PlayerAbility> type) {
+  /**
+   * Unlocks an ability once; repeated calls never start it or reset its cooldown.
+   *
+   * @return whether the ability is now unlocked, which is false when the player is not alive
+   */
+  public boolean unlock(Class<? extends PlayerAbility> type) {
     PlayerAbility ability = abilities.get(type);
-    if (isAlive() && ability != null) {
-      ability.unlock();
+    if (!isAlive() || ability == null) {
+      return false;
     }
+    ability.unlock();
+    return true;
   }
 
   /** Starts a cast ability only when alive, unlocked and ready; a rejected cast changes nothing. */
@@ -183,10 +189,13 @@ public class PlayerAbilitiesComponent extends Component {
         && !effects.isDisposed();
   }
 
+  /**
+   * Nothing to do while alive: the controller expires effects itself. Once the player is dead or
+   * this is disposed, cooldowns and unlocks reset and anything still running is taken off.
+   */
   @Override
   public void update() {
     if (isAlive()) {
-      effects.refreshTimedEffects();
       return;
     }
     readyAt.clear();
@@ -194,7 +203,7 @@ public class PlayerAbilitiesComponent extends Component {
       ability.relock();
     }
     if (effects != null) {
-      effects.clearTimedEffects();
+      effects.clearStatusEffects();
     }
   }
 

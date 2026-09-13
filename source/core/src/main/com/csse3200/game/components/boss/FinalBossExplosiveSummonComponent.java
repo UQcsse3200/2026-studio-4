@@ -80,7 +80,7 @@ public class FinalBossExplosiveSummonComponent extends Component {
     }
 
     if (!warningActive) {
-      if (StatusEffectsControllerComponent.isUntargetable(target)) {
+      if (StatusEffectsControllerComponent.isConcealed(target)) {
         movement.setMoving(false);
         return;
       }

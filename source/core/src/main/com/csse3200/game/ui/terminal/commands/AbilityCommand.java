@@ -29,8 +29,7 @@ public class AbilityCommand implements Command {
       case Invisibility.NAME:
         return abilities.tryActivate(Invisibility.class);
       case LastStand.NAME:
-        abilities.unlock(LastStand.class);
-        return true;
+        return abilities.unlock(LastStand.class);
       default:
         return false;
     }

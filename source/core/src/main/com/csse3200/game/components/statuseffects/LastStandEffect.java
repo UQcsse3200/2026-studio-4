@@ -21,8 +21,9 @@ public class LastStandEffect extends TimedStatusEffect {
     super(time, duration);
   }
 
+  /** Amplifies every stat equally; the enum parameter is what lets a future slow be selective. */
   @Override
-  public float getStatMultiplier() {
+  public float getStatMultiplier(Stat stat) {
     return MULTIPLIER;
   }
 

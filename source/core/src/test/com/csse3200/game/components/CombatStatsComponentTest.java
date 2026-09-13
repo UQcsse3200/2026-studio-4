@@ -247,7 +247,10 @@ class CombatStatsComponentTest {
     when(time.getTime()).thenReturn(LastStand.DURATION_MS);
     assertEquals(13, combat.getEffectiveBaseAttack());
     assertEquals(4f, combat.getEffectiveAttackSpeed());
-    // Expiry republishes, so a listener falls back to the raw stat without watching the ability.
+    // The frame update removes the expired effect and republishes, so a listener falls back to
+    // the raw stat without watching the ability.
+    assertEquals(List.of(20), attackUpdates);
+    player.update();
     assertEquals(List.of(20, 13), attackUpdates);
   }
 

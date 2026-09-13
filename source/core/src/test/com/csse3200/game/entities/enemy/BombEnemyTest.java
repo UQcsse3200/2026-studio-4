@@ -127,26 +127,32 @@ class BombEnemyTest {
             .addComponent(abilities);
     player.create();
 
-    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas");
+    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas", 0.05f);
     bombEnemy.create();
 
     Fixture bombFixture = bombEnemy.getComponent(HitboxComponent.class).getFixture();
     Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
 
-    EventListener0 dieAnimationListener = mock(EventListener0.class);
-    bombEnemy.getEvents().addListener("dieAnimation", dieAnimationListener);
+    EventListener0 fuseStarted = mock(EventListener0.class);
+    bombEnemy.getEvents().addListener("fuseStarted", fuseStarted);
+    ExplodeComponent explode = bombEnemy.getComponent(ExplodeComponent.class);
 
     assertTrue(abilities.tryActivate(Invisibility.class));
     bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
+    explode.update();
 
-    verify(dieAnimationListener, times(0)).handle();
+    verify(fuseStarted, times(0)).handle();
     assertFalse(bombEnemy.getComponent(CombatStatsComponent.class).isDead());
 
-    // The bomb detonates again once invisibility wears off.
+    // The player is still standing on the bomb when invisibility wears off: the fuse lights on the
+    // next frame without the fixtures having to separate and touch again.
     when(abilityTime.getTime()).thenReturn(1_000L + Invisibility.DURATION_MS);
-    bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
+    explode.update();
+    verify(fuseStarted, times(1)).handle();
 
-    verify(dieAnimationListener, times(1)).handle();
-    assertTrue(bombEnemy.getComponent(CombatStatsComponent.class).isDead());
+    // A repeat contact does not light a second fuse.
+    bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
+    explode.update();
+    verify(fuseStarted, times(1)).handle();
   }
 }
