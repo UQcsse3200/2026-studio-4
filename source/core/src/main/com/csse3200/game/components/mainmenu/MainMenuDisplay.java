@@ -110,5 +110,4 @@ public class MainMenuDisplay extends UIComponent {
   public float getZIndex() {
     return Z_INDEX;
   }
-
 }
