@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 public class MainMenuDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(MainMenuDisplay.class);
   private static final float Z_INDEX = 2f;
-  private Table table;
 
   @Override
   public void create() {
@@ -37,12 +36,15 @@ public class MainMenuDisplay extends UIComponent {
 
     Label title = new Label("Book Boy", skin, "title");
     title.setFontScale(5f);
-    title.setPosition(340, 850);
 
-    table = new Table();
-    table.setFillParent(true); // table now matches stage size
-    table.center(); // centers children horizontally
-    table.padTop(800f);
+    Table rootTable = new Table();
+    rootTable.setFillParent(true); // always matches current stage size, any screen
+
+    rootTable.top().padTop(50f); // title near the top
+    rootTable.add(title).center();
+    rootTable.row();
+
+    Table buttonRow = new Table();
 
     TextButton startBtn = new TextButton("Start", skin);
     TextButton loadBtn = new TextButton("Load", skin);
@@ -87,14 +89,16 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    table.add(startBtn);
-    table.add(loadBtn).padLeft(250f);
-    table.add(settingsBtn).padLeft(250f);
-    table.add(exitBtn).padLeft(250f);
+    buttonRow.add(startBtn);
+    buttonRow.add(loadBtn).padLeft(250f);
+    buttonRow.add(settingsBtn).padLeft(250f);
+    buttonRow.add(exitBtn).padLeft(250f);
+
+    rootTable.row().expand().bottom().padBottom(150f);
+    rootTable.add(buttonRow);
 
     stage.addActor(background);
-    stage.addActor(title);
-    stage.addActor(table);
+    stage.addActor(rootTable);
   }
 
   @Override
@@ -109,7 +113,6 @@ public class MainMenuDisplay extends UIComponent {
 
   @Override
   public void dispose() {
-    table.clear();
     super.dispose();
   }
 }
