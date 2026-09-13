@@ -13,6 +13,8 @@ public class PlayerStatsDisplay extends UIComponent {
   private Label healthLabel;
   private Label strengthLabel;
   private Label charmCountLabel;
+  private Label invisibilityLabel;
+  private Label invisibilityCooldownLabel;
   private Label movementSpeedLabel;
   private Label attackSpeedLabel;
   private ProgressBar healthBar;
@@ -71,6 +73,18 @@ public class PlayerStatsDisplay extends UIComponent {
         new Label(String.format("Attack Speed: %.2f", stats.getAttackSpeed()), skin, LABEL_STYLE);
     charmCountLabel =
         new Label(String.format("Strength Charms: %d", charmCount), skin, LABEL_STYLE);
+    InvisibilityPotionComponent invisibility =
+        entity.getComponent(InvisibilityPotionComponent.class);
+    invisibilityLabel =
+        new Label(
+            invisibility == null ? "Invisibility: Ready" : invisibility.getDurationHudText(),
+            skin,
+            LABEL_STYLE);
+    invisibilityCooldownLabel =
+        new Label(
+            invisibility == null ? "Invis CD: Ready" : invisibility.getCooldownHudText(),
+            skin,
+            LABEL_STYLE);
 
     table.add(healthLabel).left();
     table.row();
@@ -83,8 +97,23 @@ public class PlayerStatsDisplay extends UIComponent {
     table.add(strengthLabel).left();
     table.row();
     table.add(charmCountLabel).left();
+    table.row();
+    table.add(invisibilityLabel).left();
+    table.row();
+    table.add(invisibilityCooldownLabel).left();
 
     stage.addActor(table);
+  }
+
+  @Override
+  public void update() {
+    InvisibilityPotionComponent invisibility =
+        entity.getComponent(InvisibilityPotionComponent.class);
+    if (invisibility == null) {
+      return;
+    }
+    invisibilityLabel.setText(invisibility.getDurationHudText());
+    invisibilityCooldownLabel.setText(invisibility.getCooldownHudText());
   }
 
   @Override
