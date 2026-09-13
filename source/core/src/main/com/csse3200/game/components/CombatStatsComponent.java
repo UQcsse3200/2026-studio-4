@@ -246,10 +246,8 @@ public class CombatStatsComponent extends Component {
         addHealth(-remainingDamage);
         applyHitreaction(attacker);
       }
-=======
     if (damage <= 0) {
       return;
->>>>>>> 3c2b57677541c22a7ae8b70df78f854a41d3e7f4
     }
 
     if (invulnerable) {

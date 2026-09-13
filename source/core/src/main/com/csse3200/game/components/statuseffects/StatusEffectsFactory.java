@@ -17,10 +17,8 @@ public class StatusEffectsFactory {
   public static StatusEffect createBurn(CombatStatsComponent combatStats) {
     return new Burning(1, 1000, 10000, combatStats);
   }
-<<<<<<< HEAD
   public static Shield createShield() {
     return new Shield();
-=======
 
   /**
    * Create a regeneration status effect
@@ -30,6 +28,5 @@ public class StatusEffectsFactory {
    */
   public static StatusEffect createRegeneration(CombatStatsComponent combatStats) {
     return new Regeneration(1, 1000, 10000, combatStats);
->>>>>>> 3c2b57677541c22a7ae8b70df78f854a41d3e7f4
   }
 }
