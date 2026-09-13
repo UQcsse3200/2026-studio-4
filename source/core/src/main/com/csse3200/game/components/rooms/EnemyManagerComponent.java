@@ -99,7 +99,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
         return CerberusFactory.createCerberus(
-            anchorPoint, this::spawnEntity, "images/cerberus.atlas");
+            anchorPoint, this::spawnAndTrackCerberusHead, "images/cerberus.atlas");
       case BOW:
         return ItemFactory.createItem(WeaponItem.createWeaponItem(WeaponItem.WeaponType.BOW));
       case FINAL_BOSS:
@@ -107,6 +107,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
     }
+  }
+
+  /** Tracks an enemy and any children it spawns. Package-private for testing. */
+  private void spawnAndTrackCerberusHead(Entity head) {
+    track(head);
+    spawnEntity(head);
   }
 
   /** Tracks an enemy and any children it spawns. Package-private for testing. */

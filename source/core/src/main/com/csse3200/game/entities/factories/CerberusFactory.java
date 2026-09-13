@@ -28,9 +28,7 @@ public class CerberusFactory {
   }
 
   /**
-   * Creates the base entity used by Cerberus parts.
-   *
-   * <p>Cerberus currently has no death animation, so EnemyDeathComponent is configured with false.
+   * Creates the shared physics components for a Cerberus part.
    *
    * @return base Cerberus entity
    */
@@ -40,8 +38,7 @@ public class CerberusFactory {
             .addComponent(new PhysicsComponent())
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new EnemyDeathComponent(false));
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC));
 
     PhysicsUtils.setScaledCollider(part, 0.9f, 0.4f);
     return part;
@@ -70,7 +67,8 @@ public class CerberusFactory {
   private static Entity createCerberusSideHead(
       Entity mainHead, Vector2 offset, int health, String skin) {
 
-    Entity sideHead = createBaseCerberusPart();
+    Entity sideHead = createBaseCerberusPart().addComponent(new EnemyDeathComponent(false));
+    sideHead.getComponent(ColliderComponent.class).setSensor(true);
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -123,6 +121,8 @@ public class CerberusFactory {
 
     Entity rightHead =
         createCerberusSideHead(mainHead, new Vector2(0.55f, 0.25f), conf.health / 2, skin);
+
+    mainHead.addComponent(new CerberusDeathComponent(leftHead, rightHead));
 
     sideHeadSpawner.accept(leftHead);
     sideHeadSpawner.accept(rightHead);
