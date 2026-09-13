@@ -44,6 +44,9 @@ public class NPCFactory {
   private static final String DIE_ANIMATION = "dieAnimation";
   private static final String MOVE = "move";
   private static final String CHASE_ANIMATION = "chase";
+  private static final float BOSS_ENEMY_SCALE = 3f;
+  private static final float NORMAL_ENEMY_SCALE = 1.5f;
+  private static final float MINI_ENEMY_SCALE = 1f;
 
   public static Entity createGiantEnemy(Entity target, String skin) {
     Entity giantEnemy = createBaseNPC();
@@ -68,7 +71,8 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(new EnemyDeathComponent(true))
         .addComponent(animator)
-        .addComponent(new EnemyAnimationController());
+        .addComponent(new EnemyAnimationController())
+            .addComponent(new EnemyStatDisplay(BOSS_ENEMY_SCALE));
     giantEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
     giantEnemy.setScale(2, 2);
 
@@ -108,7 +112,7 @@ public class NPCFactory {
         .addComponent(animator)
         .addComponent(new ExplodeComponent(target,fuseTime))
         .addComponent(new EnemyAnimationController())
-        .addComponent(new EnemyStatDisplay(1.5f));
+        .addComponent(new EnemyStatDisplay(NORMAL_ENEMY_SCALE));
 
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
 
@@ -148,7 +152,7 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(animator)
         .addComponent(new EnemyAnimationController())
-        .addComponent(new EnemyStatDisplay(1.5f))
+        .addComponent(new EnemyStatDisplay(NORMAL_ENEMY_SCALE))
             .addComponent(new EnemyDeathComponent(true));
 
     if (shouldSplit) {
@@ -227,7 +231,7 @@ public class NPCFactory {
         .addComponent(animator)
         .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(new EnemyAnimationController())
-            .addComponent(new EnemyStatDisplay(1.5f));
+            .addComponent(new EnemyStatDisplay(NORMAL_ENEMY_SCALE));
 
     animator.scaleEntity();
     animator.startAnimation("move");

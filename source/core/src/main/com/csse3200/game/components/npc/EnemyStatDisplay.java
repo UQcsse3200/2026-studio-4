@@ -22,6 +22,10 @@ public class EnemyStatDisplay extends UIComponent {
   /** Vertical offset (in world units) above the entity's position to draw the bar. */
   private static final float Y_OFFSET = 0.2f;
 
+  public EnemyStatDisplay() {
+
+    this.scale = 1.5f;
+  }
   public EnemyStatDisplay(float sc) {
     this.scale = sc;
   }
