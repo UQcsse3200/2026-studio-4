@@ -65,6 +65,7 @@ public class NPCFactory {
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
         .addComponent(aiComponent)
+        .addComponent(new EnemyDeathComponent(true))
         .addComponent(animator)
         .addComponent(new EnemyAnimationController());
     giantEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
@@ -102,6 +103,7 @@ public class NPCFactory {
     bombEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
         .addComponent(aiComponent)
+        .addComponent(new EnemyDeathComponent(true))
         .addComponent(animator)
         .addComponent(new ExplodeComponent(target, fuseTime))
         .addComponent(new EnemyAnimationController());
@@ -127,7 +129,7 @@ public class NPCFactory {
         new AITaskComponent(target)
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new ChaseTask(target, 10, 3f, 10f))
-            .addTask(new LungeAttackTask(target, 10, CHASE_SPEED));
+            .addTask(new LungeAttackTask(target, 20, CHASE_SPEED));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -142,6 +144,7 @@ public class NPCFactory {
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
         .addComponent(aiComponent)
         .addComponent(animator)
+        .addComponent(new EnemyDeathComponent(true))
         .addComponent(new EnemyAnimationController());
     if (shouldSplit) {
       chaseEnemy.addComponent(new SplitComponent(target, skin));
@@ -217,6 +220,7 @@ public class NPCFactory {
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(aiComponent)
         .addComponent(animator)
+        .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(new EnemyAnimationController());
 
     animator.scaleEntity();
@@ -250,8 +254,7 @@ public class NPCFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new StatusEffectsControllerComponent())
-            .addComponent(new EnemyDeathComponent(true));
+            .addComponent(new StatusEffectsControllerComponent());
 
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);
     return npc;

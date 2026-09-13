@@ -1,6 +1,8 @@
 package com.csse3200.game.components.npc;
 
+import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -19,6 +21,7 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener("wanderStart", this::animateWander);
     entity.getEvents().addListener("chaseStart", this::animateChase);
     entity.getEvents().addListener("dieAnimation", this::animateDie);
+    entity.getEvents().addListener("flyingDeath", this::animateFlyingDeath);
     entity.getEvents().addListener("patrolStart", this::animatePatrol);
     entity.getEvents().addListener("rangedAttack", this::animateAttack);
     entity.getEvents().addListener("fuseStarted", this::animateFuse);
@@ -27,6 +30,13 @@ public class EnemyAnimationController extends Component {
 
   private void animateDie() {
     dying = true;
+    animator.startAnimation("dieAnimation");
+  }
+
+  private void animateFlyingDeath() {
+    dying = true;
+    entity.getComponent(AITaskComponent.class).setEnabled(false);
+    entity.getComponent(PhysicsMovementComponent.class).setMoving(false);
     animator.startAnimation("dieAnimation");
   }
 

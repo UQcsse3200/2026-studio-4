@@ -58,7 +58,7 @@ class BombEnemyTest {
   }
 
   @Test
-  void testBombEnemyExplodesAfterFuseTime() throws InterruptedException {
+  void testBombEnemyExplodesAfterFuseTime() {
     Entity player =
         new Entity().addComponent(new PhysicsComponent()).addComponent(new HitboxComponent());
     player.create();
