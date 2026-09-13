@@ -67,7 +67,7 @@ public class PlayerStatsDisplay extends UIComponent {
     shieldBar.setValue(20);
     shieldBar.setAnimateDuration(0.2f);
     
-    shieldLabel = new Label("Shield: 0 / 20", skin, LABEL_STYLE);
+    shieldLabel = new Label("Shield: 20 / 20", skin, LABEL_STYLE);
 
     int charmCount = entity.getComponent(InventoryComponent.class).getCharmCount();
 
