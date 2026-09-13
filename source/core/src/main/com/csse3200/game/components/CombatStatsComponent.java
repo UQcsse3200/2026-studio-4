@@ -228,8 +228,20 @@ public class CombatStatsComponent extends Component {
    */
   public void takeDamage(int damage, Entity attacker) {
     if (damage > 0) {
-      addHealth(-damage);
-      applyHitreaction(attacker);
+      int remainingDamage = damage;
+
+      if (entity != null) {
+        StatusEffectsControllerComponent effects = 
+            entity.getComponent(StatusEffectsControllerComponent.class);
+        
+        if (effects != null) {
+          remainingDamage = effects.modifyIncomingDamage(damage);
+        }
+      }
+      if (remainingDamage > 0) {
+        addHealth(-remainingDamage);
+        applyHitreaction(attacker);
+      }
     }
   }
 

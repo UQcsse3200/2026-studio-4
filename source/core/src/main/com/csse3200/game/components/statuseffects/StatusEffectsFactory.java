@@ -13,4 +13,7 @@ public class StatusEffectsFactory {
   public static StatusEffect CreateBurn(CombatStatsComponent combatStats) {
     return new Burning(1, 1000, 10000, combatStats);
   }
+  public static Shield createShield() {
+    return new Shield();
+  }
 }

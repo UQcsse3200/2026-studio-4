@@ -19,7 +19,7 @@ public class Component {
    * should be made here, not in the constructor which is called before an entity is finished.
    */
   public void create() {
-    // No action by default.
+    
   }
 
   /**

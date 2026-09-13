@@ -19,8 +19,15 @@ public class PlayerStatsDisplay extends UIComponent {
   private ProgressBar healthBar;
   private int maxHealth;
   private int health;
+  private Label shieldLabel;
+  private ProgressBar shieldBar;
 
   private static final String LABEL_STYLE = "statDisplay";
+  public void updatePlayerShieldUI(int current, int max) {
+    shieldLabel.setText(String.format("Shield: %d / %d", current, max));
+    shieldBar.setRange(0, max);
+    shieldBar.setValue(current);
+  }
 
   /** Creates reusable ui styles and adds actors to the stage. */
   @Override
@@ -35,6 +42,7 @@ public class PlayerStatsDisplay extends UIComponent {
     entity.getEvents().addListener("updateMaxHealth", this::updatePlayerMaxHealthUI);
     entity.getEvents().addListener("charmAdded", this::updateCharmCountUI);
     entity.getEvents().addListener("charmRemoved", this::updateCharmCountUI);
+    entity.getEvents().addListener("updateShield", this::updatePlayerShieldUI);
   }
 
   /**
@@ -56,6 +64,11 @@ public class PlayerStatsDisplay extends UIComponent {
     healthBar = new ProgressBar(0, maxHealth, 1, false, barStyle);
     healthBar.setValue(health);
     healthBar.setAnimateDuration(0.3f);
+    shieldBar = new ProgressBar(0, 20, 1, false, barStyle);
+    shieldBar.setValue(0);
+    shieldBar.setAnimateDuration(0.2f);
+    
+    shieldLabel = new Label("Shield: 0 / 20", skin, LABEL_STYLE);
 
     int charmCount = entity.getComponent(InventoryComponent.class).getCharmCount();
 
@@ -86,6 +99,10 @@ public class PlayerStatsDisplay extends UIComponent {
     table.add(strengthLabel).left();
     table.row();
     table.add(charmCountLabel).left();
+    table.row();
+    table.add(shieldLabel).left();
+    table.row();
+    table.add(shieldBar).left();
 
     stage.addActor(table);
   }
