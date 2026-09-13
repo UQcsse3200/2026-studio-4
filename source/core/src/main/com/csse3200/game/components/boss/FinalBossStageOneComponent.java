@@ -52,12 +52,30 @@ public class FinalBossStageOneComponent extends Component {
     movementController = requireComponent(FinalBossMovementComponent.class);
     movementController.setActiveSummons(activeSummons);
     bossStats = requireComponent(CombatStatsComponent.class);
+    entity.getEvents().addListener("updateHealth", this::onBossHealthChanged);
 
     bossStats.setHealth(bossStats.getMaxHealth());
     damageController.enableShield();
 
     movementController.setMode(FinalBossMovementComponent.Mode.STOPPED);
     changeState(FinalBossStageOneState.INTRO);
+  }
+
+  /** Restores the shield immediately when the break-window health floor is reached. */
+  private void onBossHealthChanged(Integer health) {
+    if (cleanupStarted
+        || health <= 0
+        || phaseController.getCurrentPhase() != FinalBossPhase.STAGE_ONE
+        || state != FinalBossStageOneState.BREAK_WINDOW
+        || damageController.isShielded()) {
+      return;
+    }
+
+    int healthFloor = Math.round(bossStats.getMaxHealth() * config.breakWindowHealthFloor);
+
+    if (health <= healthFloor) {
+      damageController.enableShield();
+    }
   }
 
   @Override
