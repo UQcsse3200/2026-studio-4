@@ -188,8 +188,7 @@ public class FinalBossMovementComponent extends Component {
     }
 
     chargeDestination =
-        clampToVisibleArea(
-            entity.getPosition().mulAdd(direction.nor(), config.bossChargeDistance));
+        clampToVisibleArea(entity.getPosition().mulAdd(direction.nor(), config.bossChargeDistance));
   }
 
   private void updateCharge(float deltaTime) {
