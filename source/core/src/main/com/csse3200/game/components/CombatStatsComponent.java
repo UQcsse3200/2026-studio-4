@@ -230,7 +230,6 @@ public class CombatStatsComponent extends Component {
    * @param damage Amount of damage to deal
    */
   public void takeDamage(int damage, Entity attacker) {
-<<<<<<< HEAD
     if (damage > 0) {
       int remainingDamage = damage;
 
