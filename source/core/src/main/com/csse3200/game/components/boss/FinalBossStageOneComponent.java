@@ -20,12 +20,13 @@ public class FinalBossStageOneComponent extends Component {
   private final FinalBossStageOneConfig config;
   private final Set<Entity> activeSummons = new HashSet<>();
 
-  private FinalBossStageOneState state = FinalBossStageOneState.WAVE_ONE;
+  private FinalBossStageOneState state = FinalBossStageOneState.INTRO;
   private FinalBossPhaseControllerComponent phaseController;
   private FinalBossDamageControllerComponent damageController;
   private FinalBossMovementComponent movementController;
   private CombatStatsComponent bossStats;
 
+  private float stateElapsed;
   private float breakRemaining;
   private boolean transitionSent;
   private boolean cleanupStarted;
@@ -55,19 +56,13 @@ public class FinalBossStageOneComponent extends Component {
     bossStats.setHealth(bossStats.getMaxHealth());
     damageController.enableShield();
 
-    movementController.setMode(FinalBossMovementComponent.Mode.STEP_TOWARDS_PLAYER);
-    changeState(FinalBossStageOneState.WAVE_ONE);
-
-    spawnWave(config.waveOneSummonCount, config.waveOneSummonSpeed, config.waveOneWarningDuration);
+    movementController.setMode(FinalBossMovementComponent.Mode.STOPPED);
+    changeState(FinalBossStageOneState.INTRO);
   }
 
   @Override
   public void update() {
     if (cleanupStarted || phaseController.getCurrentPhase() != FinalBossPhase.STAGE_ONE) {
-      return;
-    }
-
-    if (state != FinalBossStageOneState.BREAK_WINDOW) {
       return;
     }
 
@@ -78,10 +73,42 @@ public class FinalBossStageOneComponent extends Component {
       return;
     }
 
+    stateElapsed += deltaTime;
+    switch (state) {
+      case INTRO:
+        if (stateElapsed >= config.bossIntroDuration) {
+          changeState(FinalBossStageOneState.TRANSFORMING);
+        }
+        return;
+      case TRANSFORMING:
+        if (stateElapsed >= config.bossTransformDuration) {
+          changeState(FinalBossStageOneState.SUMMONING_ONE);
+        }
+        return;
+      case SUMMONING_ONE:
+        if (stateElapsed >= config.bossSummonCastDuration) {
+          movementController.setMode(FinalBossMovementComponent.Mode.STEP_TOWARDS_PLAYER);
+          changeState(FinalBossStageOneState.WAVE_ONE);
+          spawnWave(
+              config.waveOneSummonCount, config.waveOneSummonSpeed, config.waveOneWarningDuration);
+        }
+        return;
+      case SUMMONING_TWO:
+        if (stateElapsed >= config.bossSummonCastDuration) {
+          beginWaveTwo();
+        }
+        return;
+      case BREAK_WINDOW:
+        break;
+      default:
+        return;
+    }
+
     breakRemaining = Math.max(0f, breakRemaining - deltaTime);
 
     if (breakRemaining <= 0f) {
-      beginWaveTwo();
+      damageController.enableShield();
+      changeState(FinalBossStageOneState.SUMMONING_TWO);
     }
   }
 
@@ -93,6 +120,11 @@ public class FinalBossStageOneComponent extends Component {
   /** Returns the current internal Stage 1 state. */
   public FinalBossStageOneState getState() {
     return state;
+  }
+
+  /** Returns seconds elapsed in the current state for visual playback. */
+  public float getStateElapsed() {
+    return stateElapsed;
   }
 
   /** Returns the number of summons that are still active. */
@@ -234,6 +266,7 @@ public class FinalBossStageOneComponent extends Component {
 
   private void changeState(FinalBossStageOneState nextState) {
     state = nextState;
+    stateElapsed = 0f;
     entity.getEvents().trigger(FinalBossEvents.STAGE_ONE_STATE_CHANGED, state);
   }
 

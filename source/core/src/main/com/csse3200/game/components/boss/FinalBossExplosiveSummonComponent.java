@@ -79,9 +79,7 @@ public class FinalBossExplosiveSummonComponent extends Component {
     }
 
     if (entity.getComponent(FinalBossSummonMovementComponent.class) == null) {
-      if (entity.getComponent(FinalBossSummonMovementComponent.class) == null) {
-        movement.setTarget(target.getPosition());
-      }
+      movement.setTarget(target.getPosition());
     }
 
     if (!warningActive

@@ -2,6 +2,11 @@ package com.csse3200.game.entities.configs;
 
 /** Configurable gameplay values for Final Boss Stage 1. */
 public class FinalBossStageOneConfig {
+  // Entrance and summon animation timings
+  public float bossIntroDuration = 1f;
+  public float bossTransformDuration = 1.2f;
+  public float bossSummonCastDuration = 0.7f;
+
   // Boss and summon health
   public int bossHealth = 100;
   public int waveOneSummonCount = 4;
@@ -50,7 +55,7 @@ public class FinalBossStageOneConfig {
   public float bossVisibilityHalfHeight = 4f;
 
   // Petrification punishment
-  public float petrificationWarningDuration = 1f;
+  public float petrificationWarningDuration = 0.5f;
   public float petrificationRadius = 1.2f;
   public float petrificationSlowMultiplier = 0.5f;
   public float petrificationSlowDuration = 2f;
@@ -58,6 +63,15 @@ public class FinalBossStageOneConfig {
 
   /** Validates values required by the Stage 1 runtime. */
   public void validate() {
+    if (!Float.isFinite(bossIntroDuration)
+        || bossIntroDuration <= 0f
+        || !Float.isFinite(bossTransformDuration)
+        || bossTransformDuration <= 0f
+        || !Float.isFinite(bossSummonCastDuration)
+        || bossSummonCastDuration <= 0f) {
+      throw new IllegalArgumentException("Boss animation timings must be finite and positive");
+    }
+
     if (bossHealth <= 0) {
       throw new IllegalArgumentException("Boss health must be positive");
     }
