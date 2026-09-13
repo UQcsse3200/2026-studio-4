@@ -26,6 +26,7 @@ public class EnemyStatDisplay extends UIComponent {
 
     this.scale = 1.5f;
   }
+
   public EnemyStatDisplay(float sc) {
     this.scale = sc;
   }

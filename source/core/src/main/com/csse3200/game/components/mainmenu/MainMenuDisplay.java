@@ -34,19 +34,19 @@ public class MainMenuDisplay extends UIComponent {
     background.setFillParent(true);
     background.setScaling(Scaling.fill); // stretch/crop to fill screen, keeps aspect
 
-      Image title =
-              new Image(
-                      ServiceLocator.getResourceService()
-                              .getAsset("images/box_boy_title.png", Texture.class));
+    Image title =
+        new Image(
+            ServiceLocator.getResourceService()
+                .getAsset("images/box_boy_title.png", Texture.class));
 
-      title.setPosition(400,750);
+    title.setPosition(400, 750);
 
-      table = new Table();
-      table.setFillParent(true);   // table now matches stage size
-      table.center();              // centers children horizontally
-//      table.padTop(800f);
+    table = new Table();
+    table.setFillParent(true); // table now matches stage size
+    table.center(); // centers children horizontally
+    table.padTop(800f);
 
-      TextButton startBtn = new TextButton("Start", skin);
+    TextButton startBtn = new TextButton("Start", skin);
     TextButton loadBtn = new TextButton("Load", skin);
     TextButton settingsBtn = new TextButton("Settings", skin);
     TextButton exitBtn = new TextButton("Exit", skin);
@@ -94,11 +94,8 @@ public class MainMenuDisplay extends UIComponent {
     table.add(settingsBtn).padLeft(250f);
     table.add(exitBtn).padLeft(250f);
 
-
-
-
     stage.addActor(background);
-      stage.addActor(title);
+    stage.addActor(title);
     stage.addActor(table);
   }
 

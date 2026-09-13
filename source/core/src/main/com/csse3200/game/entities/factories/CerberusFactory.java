@@ -6,8 +6,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.*;
 import com.csse3200.game.components.npc.CerberusAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
-import com.csse3200.game.components.player.PlayerActions;
-import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.files.FileLoader;
@@ -45,7 +43,7 @@ public class CerberusFactory {
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new EnemyDeathComponent(false))
-                .addComponent(new EnemyStatDisplay());
+            .addComponent(new EnemyStatDisplay());
 
     PhysicsUtils.setScaledCollider(part, 0.9f, 0.4f);
     return part;
@@ -87,7 +85,7 @@ public class CerberusFactory {
         .addComponent(new CombatStatsComponent(health, 10))
         .addComponent(new HeadAttachmentComponent(mainHead, offset))
         .addComponent(animator)
-            .addComponent(new EnemyStatDisplay());
+        .addComponent(new EnemyStatDisplay());
 
     animator.startAnimation("move");
 
@@ -122,7 +120,7 @@ public class CerberusFactory {
         .addComponent(animator)
         .addComponent(new ChainRestrictionComponent(anchorPoint, 15f))
         .addComponent(new CerberusAnimationController())
-            .addComponent(new EnemyStatDisplay());
+        .addComponent(new EnemyStatDisplay());
 
     Entity leftHead =
         createCerberusSideHead(mainHead, new Vector2(-0.55f, 0.25f), conf.health / 2, skin);
