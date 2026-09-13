@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * F1 debug abilities: {@code ability invisibility} applies the real 15s stealth effect and
- * bypasses potion inventory and the 45s cooldown.
+ * F1 debug abilities: {@code ability invisibility} applies the real 15s stealth effect and bypasses
+ * potion inventory and the 45s cooldown.
  */
 public class AbilityCommand implements Command {
   private static final Logger logger = LoggerFactory.getLogger(AbilityCommand.class);

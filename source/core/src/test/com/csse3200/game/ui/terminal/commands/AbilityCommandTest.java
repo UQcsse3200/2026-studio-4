@@ -34,9 +34,7 @@ class AbilityCommandTest {
 
     invisibility = new InvisibilityPotionComponent();
     Entity player =
-        new Entity()
-            .addComponent(new CombatStatsComponent(100, 10))
-            .addComponent(invisibility);
+        new Entity().addComponent(new CombatStatsComponent(100, 10)).addComponent(invisibility);
     player.create();
     command = new AbilityCommand(player);
   }
