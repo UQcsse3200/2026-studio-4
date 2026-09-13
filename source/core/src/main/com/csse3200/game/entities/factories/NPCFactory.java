@@ -69,7 +69,7 @@ public class NPCFactory {
         .addComponent(animator)
         .addComponent(new EnemyAnimationController());
     giantEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
-    giantEnemy.setScale(2, 2);
+    giantEnemy.setScale(3f, 3f);
 
     giantEnemy.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(0.5f, 0.5f));
 
