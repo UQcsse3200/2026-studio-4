@@ -66,3 +66,17 @@ dieAnimation
    orig: 960, 960
    offset: 0, 0
    index: 8
+fuse
+   rotate: false
+   xy: 0, 2880
+   size: 960, 960
+   orig: 960, 960
+   offset: 0, 0
+   index: 0
+fuse
+  rotate: false
+  xy: 0, 0
+  size: 960, 960
+  orig: 960, 960
+  offset: 0, 0
+  index: 1
