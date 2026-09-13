@@ -94,7 +94,7 @@ public class NPCFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
-    animator.addAnimation("move", 0.7f, Animation.PlayMode.LOOP);
+    animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
@@ -135,7 +135,7 @@ public class NPCFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
 
@@ -144,7 +144,7 @@ public class NPCFactory {
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
         .addComponent(aiComponent)
         .addComponent(animator)
-        .addComponent(new EnemyDeathComponent(true))
+        .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(new EnemyAnimationController());
     if (shouldSplit) {
       chaseEnemy.addComponent(new SplitComponent(target, skin));
@@ -208,7 +208,7 @@ public class NPCFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
 
-    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
