@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -34,12 +35,9 @@ public class MainMenuDisplay extends UIComponent {
     background.setFillParent(true);
     background.setScaling(Scaling.fill); // stretch/crop to fill screen, keeps aspect
 
-    Image title =
-        new Image(
-            ServiceLocator.getResourceService()
-                .getAsset("images/box_boy_title.png", Texture.class));
-
-    title.setPosition(400, 750);
+    Label title = new Label("Book Boy", skin, "title");
+    title.setFontScale(5f);
+    title.setPosition(340, 850);
 
     table = new Table();
     table.setFillParent(true); // table now matches stage size

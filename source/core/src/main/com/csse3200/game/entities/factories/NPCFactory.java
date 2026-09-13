@@ -46,7 +46,6 @@ public class NPCFactory {
   private static final String CHASE_ANIMATION = "chase";
   private static final float BOSS_ENEMY_SCALE = 3f;
   private static final float NORMAL_ENEMY_SCALE = 1.5f;
-  private static final float MINI_ENEMY_SCALE = 1f;
 
   public static Entity createGiantEnemy(Entity target, String skin) {
     Entity giantEnemy = createBaseNPC();
