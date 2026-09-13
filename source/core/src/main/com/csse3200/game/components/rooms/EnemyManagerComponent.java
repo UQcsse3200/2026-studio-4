@@ -99,7 +99,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
         return CerberusFactory.createCerberus(
-            anchorPoint, this::spawnAndTrackCerberusHead, "images/cerberus.atlas");
+            target, anchorPoint, this::spawnAndTrackCerberusHead, "images/cerberus.atlas");
       case BOW:
         return ItemFactory.createItem(WeaponItem.createWeaponItem(WeaponItem.WeaponType.BOW));
       case FINAL_BOSS:

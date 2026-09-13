@@ -97,7 +97,11 @@ public class CerberusFactory {
    */
   public static Entity createCerberus(
       Vector2 anchorPoint, Consumer<Entity> sideHeadSpawner, String skin) {
+    return createCerberus(null, anchorPoint, sideHeadSpawner, skin);
+  }
 
+  public static Entity createCerberus(
+      Entity target, Vector2 anchorPoint, Consumer<Entity> sideHeadSpawner, String skin) {
     Entity mainHead = createBaseCerberusMiniBoss();
 
     BaseEntityConfig conf = configs.cerberus;
@@ -113,7 +117,7 @@ public class CerberusFactory {
     mainHead
         .addComponent(new CombatStatsComponent(conf.health, conf.baseAttack))
         .addComponent(animator)
-        .addComponent(new ChainRestrictionComponent(anchorPoint, 15f))
+        .addComponent(new ChainRestrictionComponent(anchorPoint, 3f))
         .addComponent(new CerberusAnimationController());
 
     Entity leftHead =
@@ -123,6 +127,10 @@ public class CerberusFactory {
         createCerberusSideHead(mainHead, new Vector2(0.55f, 0.25f), conf.health / 2, skin);
 
     mainHead.addComponent(new CerberusDeathComponent(leftHead, rightHead));
+
+    if (target != null) {
+      mainHead.addComponent(new CerberusMovementComponent(target, anchorPoint, 3f));
+    }
 
     sideHeadSpawner.accept(leftHead);
     sideHeadSpawner.accept(rightHead);
