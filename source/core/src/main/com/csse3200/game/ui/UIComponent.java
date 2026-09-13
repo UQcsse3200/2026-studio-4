@@ -1,7 +1,6 @@
 package com.csse3200.game.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.csse3200.game.rendering.RenderComponent;
@@ -13,13 +12,13 @@ public abstract class UIComponent extends RenderComponent implements Renderable 
   private static final int UI_LAYER = 2;
   protected static final Skin skin =
       new Skin(Gdx.files.internal("flat-earth/skin/flat-earth-ui.json"));
+  protected static final Skin hud = new Skin(Gdx.files.internal("hud_items/skin/skin.json"));
+
   protected Stage stage;
 
   @Override
   public void create() {
     super.create();
-    skin.addRegions(new TextureAtlas(Gdx.files.internal("hud_items/skin/skin.atlas")));
-    skin.load(Gdx.files.internal("hud_items/skin/skin.json"));
     stage = ServiceLocator.getRenderService().getStage();
   }
 

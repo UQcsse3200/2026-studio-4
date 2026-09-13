@@ -52,10 +52,10 @@ public class EnemyStatDisplay extends UIComponent {
     health = stats.getHealth();
 
     table = new Table();
-    table.setSkin(skin);
+    table.setSkin(hud);
 
     ProgressBar.ProgressBarStyle barStyle =
-        skin.get("enemy-health-bar", ProgressBar.ProgressBarStyle.class);
+        hud.get("enemy-health-bar", ProgressBar.ProgressBarStyle.class);
     healthBar = new ProgressBar(0, maxHealth, 1, false, barStyle);
     healthBar.setValue(health);
     healthBar.setAnimateDuration(0.3f);

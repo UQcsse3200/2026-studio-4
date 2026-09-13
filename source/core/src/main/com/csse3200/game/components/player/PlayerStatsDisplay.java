@@ -54,15 +54,15 @@ public class PlayerStatsDisplay extends UIComponent {
     float panelHeight = panelWidth / (1683f / 794f); // ≈ 245f
 
     Table panel = new Table();
-    panel.setBackground(skin.getDrawable("scroll-background"));
+    panel.setBackground(hud.getDrawable("scroll-background"));
 
     // Icon heart
-    Image heartIcon = new Image(skin.getDrawable("heart-icon")); // native 123x127, ~1:1
+    Image heartIcon = new Image(hud.getDrawable("heart-icon")); // native 123x127, ~1:1
     float iconSize = 20f;
 
     // Health bar
     ProgressBar.ProgressBarStyle barStyle =
-        skin.get("player-health-bar", ProgressBar.ProgressBarStyle.class);
+        hud.get("player-health-bar", ProgressBar.ProgressBarStyle.class);
     healthBar = new ProgressBar(0, maxHealth, 1, false, barStyle);
     healthBar.setValue(health);
     healthBar.setAnimateDuration(0.3f);
@@ -87,12 +87,12 @@ public class PlayerStatsDisplay extends UIComponent {
     healthBarRow.setScale(2.5f);
 
     // MS + AS
-    Image speedIcon = new Image(skin.getDrawable("ms-icon")); // placeholder
+    Image speedIcon = new Image(hud.getDrawable("ms-icon")); // placeholder
     movementSpeedLabel =
         new Label(String.format("%.1fx", stats.getMovementSpeed()), skin, LABEL_STYLE);
     movementSpeedLabel.setFontScale(1f);
 
-    Image attackSpeedIcon = new Image(skin.getDrawable("as-icon")); // placeholder
+    Image attackSpeedIcon = new Image(hud.getDrawable("as-icon")); // placeholder
     attackSpeedLabel = new Label(String.format("%.1f", stats.getAttackSpeed()), skin, LABEL_STYLE);
     attackSpeedLabel.setFontScale(1f);
 
@@ -111,7 +111,7 @@ public class PlayerStatsDisplay extends UIComponent {
     asBlock.add(attackSpeedLabel);
 
     // Strength box
-    Image strengthIcon = new Image(skin.getDrawable("strength-icon")); // placeholder
+    Image strengthIcon = new Image(hud.getDrawable("strength-icon")); // placeholder
     strengthLabel = new Label(String.valueOf(stats.getBaseAttack()), skin, LABEL_STYLE);
     strengthLabel.setFontScale(1f);
 
