@@ -34,10 +34,9 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateFlyingDeath() {
-    dying = true;
     entity.getComponent(AITaskComponent.class).setEnabled(false);
     entity.getComponent(PhysicsMovementComponent.class).setMoving(false);
-    animator.startAnimation("dieAnimation");
+    animateDie();
   }
 
   @Override
