@@ -46,6 +46,16 @@ public class StatusEffectsControllerComponent extends Component {
           statusEffects.addLast(StatusEffectsFactory.createRegeneration(combatStatsComponent));
         }
         break;
+      case 's':
+        for (int i = 0; i < stacks; i++) {
+          statusEffects.addLast(StatusEffectsFactory.createSlow(combatStatsComponent));
+        }
+        break;
+      case 'S':
+        for (int i = 0; i < stacks; i++) {
+          statusEffects.addLast(StatusEffectsFactory.createSpeed(combatStatsComponent));
+        }
+        break;
       default:
         throw new IllegalArgumentException(
             "statusEffect must be a valid character representation of a status effect.");

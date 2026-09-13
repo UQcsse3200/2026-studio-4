@@ -27,4 +27,24 @@ public class StatusEffectsFactory {
   public static StatusEffect createRegeneration(CombatStatsComponent combatStats) {
     return new Regeneration(1, 1000, 10000, combatStats);
   }
+
+  /**
+   * Create a slow status effect
+   *
+   * @param combatStats The combat stats component of the entity that slow is applied to.
+   * @return The slow status effect.
+   */
+  public static StatusEffect createSlow(CombatStatsComponent combatStats) {
+    return new Slow(10000, combatStats);
+  }
+
+  /**
+   * Create a speed status effect
+   *
+   * @param combatStats The combat stats component of the entity that speed is applied to.
+   * @return The speed status effect.
+   */
+  public static StatusEffect createSpeed(CombatStatsComponent combatStats) {
+    return new Speed(10000, combatStats);
+  }
 }
