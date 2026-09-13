@@ -39,7 +39,7 @@ class FloatingDemonTest {
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/floatingDemon.atlas"});
+    resourceService.loadTextureAtlases(new String[] {"images/harpy.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
@@ -53,7 +53,7 @@ class FloatingDemonTest {
             new Vector2(1f, 3f),
             new Vector2(5f, 5f),
             new Vector2(10f, 3f),
-            "images/floatingDemon.atlas");
+            "images/harpy.atlas");
     demon.create();
 
     HitboxComponent demonHitbox = demon.getComponent(HitboxComponent.class);
@@ -94,7 +94,7 @@ class FloatingDemonTest {
             new Vector2(1f, 3f),
             new Vector2(5f, 5f),
             new Vector2(10f, 3f),
-            "images/floatingDemon.atlas");
+            "images/harpy.atlas");
     demon.create();
 
     demon.getComponent(CombatStatsComponent.class).setHealth(0);
