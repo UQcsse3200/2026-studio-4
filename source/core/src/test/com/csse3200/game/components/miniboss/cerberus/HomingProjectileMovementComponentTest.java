@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;
 import org.junit.jupiter.api.Test;
 
-public class HomingProjectileMovementComponentTest {
+class HomingProjectileMovementComponentTest {
   @Test
   void shouldChangeDirectionWhenTargetMoves() {
     Entity target = new Entity();

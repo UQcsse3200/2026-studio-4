@@ -13,7 +13,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class CerberusMistComponentTest {
+class CerberusMistComponentTest {
   private GameTime time;
   private RenderService renderService;
   private Entity player;

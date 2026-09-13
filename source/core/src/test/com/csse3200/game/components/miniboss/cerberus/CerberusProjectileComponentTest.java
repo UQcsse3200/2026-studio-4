@@ -20,7 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
-public class CerberusProjectileComponentTest {
+class CerberusProjectileComponentTest {
   private GameTime time;
   private Entity player;
   private Entity rightHead;

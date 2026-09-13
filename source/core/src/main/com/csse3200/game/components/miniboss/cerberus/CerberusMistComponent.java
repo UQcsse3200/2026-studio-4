@@ -24,7 +24,7 @@ public class CerberusMistComponent extends RenderComponent {
 
   private CombatStatsComponent stats;
   private CombatStatsComponent targetStats;
-  private float cooldown = COOLDOWN;
+  private float cooldownReamining = COOLDOWN;
   private float remaining;
   private boolean active;
   private boolean inside;
@@ -52,7 +52,7 @@ public class CerberusMistComponent extends RenderComponent {
 
     if (targetStats == null || targetStats.isDead()) {
       clearMist();
-      cooldown = COOLDOWN;
+      cooldownReamining = COOLDOWN;
       return;
     }
 
@@ -62,7 +62,7 @@ public class CerberusMistComponent extends RenderComponent {
       remaining -= delta;
       if (remaining <= 0f) {
         clearMist();
-        cooldown = COOLDOWN;
+        cooldownReamining = COOLDOWN;
         return;
       }
 
@@ -70,8 +70,8 @@ public class CerberusMistComponent extends RenderComponent {
       return;
     }
 
-    cooldown = Math.max(0f, cooldown - delta);
-    if (cooldown > 0f
+    cooldownReamining = Math.max(0f, cooldownReamining - delta);
+    if (cooldownReamining > 0f
         || entity.getCenterPosition().dst2(target.getCenterPosition()) > CAST_RANGE * CAST_RANGE) {
       return;
     }

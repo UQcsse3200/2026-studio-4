@@ -14,7 +14,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class CerberusBiteComponentTest {
+class CerberusBiteComponentTest {
   private Entity boss;
   private Entity player;
   private CombatStatsComponent bossStats;

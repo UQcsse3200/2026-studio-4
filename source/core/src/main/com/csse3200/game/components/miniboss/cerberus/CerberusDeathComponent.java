@@ -15,6 +15,8 @@ public class CerberusDeathComponent extends Component {
   private boolean rightDead;
   private boolean disposalScheduled;
 
+  private static final String ENTITY_DIED = "entityDied";
+
   public CerberusDeathComponent(Entity leftHead, Entity rightHead) {
     this.leftHead = leftHead;
     this.rightHead = rightHead;
@@ -22,9 +24,9 @@ public class CerberusDeathComponent extends Component {
 
   @Override
   public void create() {
-    entity.getEvents().addListener("entityDied", this::onMiddleHeadDied);
-    leftHead.getEvents().addListener("entityDied", this::onLeftHeadDied);
-    rightHead.getEvents().addListener("entityDied", this::onRightHeadDied);
+    entity.getEvents().addListener(ENTITY_DIED, this::onMiddleHeadDied);
+    leftHead.getEvents().addListener(ENTITY_DIED, this::onLeftHeadDied);
+    rightHead.getEvents().addListener(ENTITY_DIED, this::onRightHeadDied);
     leftDead = leftHead.getComponent(CombatStatsComponent.class).isDead();
     rightDead = rightHead.getComponent(CombatStatsComponent.class).isDead();
 
