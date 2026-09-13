@@ -7,6 +7,7 @@ import com.csse3200.game.components.*;
 import com.csse3200.game.components.miniboss.cerberus.CerberusAnimationController;
 import com.csse3200.game.components.miniboss.cerberus.CerberusBiteComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
+import com.csse3200.game.components.miniboss.cerberus.CerberusMistComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusMovementComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusProjectileComponent;
 import com.csse3200.game.entities.Entity;
@@ -20,7 +21,6 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.components.miniboss.cerberus.CerberusMistComponent;
 import java.util.function.Consumer;
 
 /** Factory for creating Cerberus and its individual heads. */
