@@ -36,7 +36,7 @@ public class Shield implements StatusEffect {
   }
 
   public boolean activateAbsorb() {
-    if (current <= 0 || mode != Mode.NONE) {
+    if (current < MAX_SHIELD || mode != Mode.NONE) {
     return false;
     }
     mode = Mode.ABSORB;
