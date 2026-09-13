@@ -41,12 +41,12 @@ public class CerberusMovementComponent extends Component {
       return;
     }
 
-      CerberusBiteComponent bite = entity.getComponent(CerberusBiteComponent.class);
-      if (bite != null && bite.controlMovement(physicsMovementComponent)) {
-          return;
-      }
+    CerberusBiteComponent bite = entity.getComponent(CerberusBiteComponent.class);
+    if (bite != null && bite.controlMovement(physicsMovementComponent)) {
+      return;
+    }
 
-      physicsMovementComponent.setMaxSpeed(new Vector2(SPEED, SPEED));
+    physicsMovementComponent.setMaxSpeed(new Vector2(SPEED, SPEED));
 
     Vector2 destination =
         target.getPosition().sub(anchor).limit(Math.max(0f, radius - 0.5f)).add(anchor);

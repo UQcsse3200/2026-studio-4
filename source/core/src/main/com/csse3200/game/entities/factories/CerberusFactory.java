@@ -4,10 +4,10 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.*;
-import com.csse3200.game.components.miniboss.cerberus.CerberusMovementComponent;
+import com.csse3200.game.components.miniboss.cerberus.CerberusAnimationController;
 import com.csse3200.game.components.miniboss.cerberus.CerberusBiteComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
-import com.csse3200.game.components.miniboss.cerberus.CerberusAnimationController;
+import com.csse3200.game.components.miniboss.cerberus.CerberusMovementComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.files.FileLoader;
@@ -132,8 +132,9 @@ public class CerberusFactory {
     mainHead.addComponent(new CerberusDeathComponent(leftHead, rightHead));
 
     if (target != null) {
-      mainHead.addComponent(new CerberusMovementComponent(target, anchorPoint, 3f))
-              .addComponent(new CerberusBiteComponent(target, anchorPoint, 3f));
+      mainHead
+          .addComponent(new CerberusMovementComponent(target, anchorPoint, 3f))
+          .addComponent(new CerberusBiteComponent(target, anchorPoint, 3f));
     }
 
     sideHeadSpawner.accept(leftHead);
