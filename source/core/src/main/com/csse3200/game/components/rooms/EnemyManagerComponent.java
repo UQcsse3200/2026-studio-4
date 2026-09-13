@@ -98,7 +98,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
         return CerberusFactory.createCerberus(
-            anchorPoint, this::spawnEntity, "images/cerberus.atlas");
+            target, anchorPoint, this::spawnAndTrackCerberusHead, "images/cerberus.atlas");
       case BOW:
         return ItemFactory.createItem(WeaponItem.createWeaponItem(WeaponItem.WeaponType.BOW));
       case FINAL_BOSS:
@@ -109,8 +109,15 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   /** Tracks an enemy and any children it spawns. Package-private for testing. */
+  private void spawnAndTrackCerberusHead(Entity head) {
+    track(head);
+    spawnEntity(head);
+  }
+
+  /** Tracks an enemy and any children it spawns. Package-private for testing. */
   void track(Entity enemy) {
     activeEnemies.add(enemy);
+    enemy.getEvents().<Entity>addListener("cerberusProjectileSpawned", this::spawnEntity);
     enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy));
     enemy
         .getEvents()

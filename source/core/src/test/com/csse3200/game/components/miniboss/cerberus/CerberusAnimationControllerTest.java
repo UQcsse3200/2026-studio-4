@@ -1,4 +1,4 @@
-package com.csse3200.game.components.npc;
+package com.csse3200.game.components.miniboss.cerberus;
 
 import static org.mockito.Mockito.*;
 
