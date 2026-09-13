@@ -299,7 +299,9 @@ public class CombatStatsComponent extends Component {
     }
 
     if (invulnerable
-        || (isHostileAttacker(attacker) && StatusEffectsControllerComponent.isConcealed(entity))) {
+        || (entity != null
+            && isHostileAttacker(attacker)
+            && StatusEffectsControllerComponent.isConcealed(entity))) {
       triggerDamageBlocked();
       return;
     }

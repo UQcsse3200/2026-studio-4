@@ -383,7 +383,6 @@ class StatusEffectsControllerComponentTest {
 
   @Test
   void shouldTreatMissingEntitiesAndEffectlessOnesAsNotConcealed() {
-    assertFalse(StatusEffectsControllerComponent.isConcealed(null));
     assertFalse(StatusEffectsControllerComponent.isConcealed(new Entity()));
     assertNull(StatusEffectsControllerComponent.getTint(null));
     assertNull(StatusEffectsControllerComponent.getTint(new Entity()));

@@ -27,14 +27,17 @@ public class StatusEffectsControllerComponent extends Component {
   private boolean disposed;
 
   /**
-   * Returns whether hostiles should currently be unable to find, chase or damage the entity. A
-   * missing entity, or one without a controller, is simply not concealed.
+   * Returns whether hostiles should currently be unable to find, chase or damage the entity. An
+   * entity without a controller is simply not concealed.
    *
    * <p>This is the one question enemy AI, boss pursuit and contact damage ask. It names no ability,
    * so any effect that reports {@link StatusEffect#concealsOwner()} hides whoever is wearing it.
+   *
+   * @param entity the entity being looked for; must not be null
    */
   public static boolean isConcealed(Entity entity) {
-    StatusEffectsControllerComponent effects = findOn(entity);
+    StatusEffectsControllerComponent effects =
+        entity.getComponent(StatusEffectsControllerComponent.class);
     return effects != null && effects.isConcealed();
   }
 
@@ -193,15 +196,12 @@ public class StatusEffectsControllerComponent extends Component {
     // Queries and callbacks run every frame, so allocate only when something actually ended.
     List<StatusEffect> removed = null;
     for (StatusEffect effect : new ArrayList<>(statusEffects)) {
-      if (disposed) {
-        break;
-      }
-      // An earlier tick may have killed the entity and cleared the list, or removed this effect.
-      if (!statusEffects.contains(effect)) {
-        continue;
-      }
-      // A tick may itself clear the list (a burn that kills), in which case it was already told.
-      if (effect.update() && statusEffects.remove(effect)) {
+      // A tick may dispose this controller, clear the list (a burn that kills) or remove this
+      // effect, in which case the effect has already been told; only a live removal is notified.
+      if (!disposed
+          && statusEffects.contains(effect)
+          && effect.update()
+          && statusEffects.remove(effect)) {
         if (removed == null) {
           removed = new ArrayList<>();
         }

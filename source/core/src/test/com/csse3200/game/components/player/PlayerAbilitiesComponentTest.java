@@ -59,7 +59,6 @@ class PlayerAbilitiesComponentTest {
   void shouldStartInactiveAndTreatMissingTargetsAsNotConcealed() {
     assertInactive();
     // Neither a missing target nor one without effects is concealed; only a running effect is.
-    assertFalse(StatusEffectsControllerComponent.isConcealed(null));
     assertFalse(StatusEffectsControllerComponent.isConcealed(new Entity()));
     assertFalse(StatusEffectsControllerComponent.isConcealed(player));
     assertTrue(used.isEmpty());
