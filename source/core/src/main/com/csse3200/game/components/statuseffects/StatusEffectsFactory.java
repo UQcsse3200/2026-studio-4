@@ -19,6 +19,7 @@ public class StatusEffectsFactory {
   }
   public static Shield createShield() {
     return new Shield();
+  }
 
   /**
    * Create a regeneration status effect

@@ -229,43 +229,44 @@ public class CombatStatsComponent extends Component {
    *
    * @param damage Amount of damage to deal
    */
-  public void takeDamage(int damage, Entity attacker) {
-    if (damage > 0) {
-      int remainingDamage = damage;
-
-      if (entity != null) {
-        StatusEffectsControllerComponent effects = 
-            entity.getComponent(StatusEffectsControllerComponent.class);
-        
-        if (effects != null) {
-          remainingDamage = effects.modifyIncomingDamage(damage);
-        }
-      }
-      if (remainingDamage > 0) {
-        addHealth(-remainingDamage);
-        applyHitreaction(attacker);
-      }
-    if (damage <= 0) {
-      return;
-    }
-
-    if (invulnerable) {
-      triggerDamageBlocked();
-      return;
-    }
-
-    int adjustedDamage = Math.round(damage * incomingDamageMultiplier);
-    int newHealth = Math.max(minimumHealth, health - adjustedDamage);
-
-    if (newHealth == health) {
-      triggerDamageBlocked();
-      applyHitreaction(attacker);
-      return;
-    }
-
-    setHealth(newHealth);
-    applyHitreaction(attacker);
+public void takeDamage(int damage, Entity attacker) {
+  if (damage <= 0) {
+    return;
   }
+
+  if (invulnerable) {
+    triggerDamageBlocked();
+    return;
+  }
+
+  int remainingDamage = damage;
+
+  if (entity != null) {
+    StatusEffectsControllerComponent effects =
+        entity.getComponent(StatusEffectsControllerComponent.class);
+
+    if (effects != null) {
+      remainingDamage = effects.modifyIncomingDamage(damage);
+    }
+  }
+
+  if (remainingDamage <= 0) {
+    triggerDamageBlocked();
+    return;
+  }
+
+  int adjustedDamage = Math.round(remainingDamage * incomingDamageMultiplier);
+  int newHealth = Math.max(minimumHealth, health - adjustedDamage);
+
+  if (newHealth == health) {
+    triggerDamageBlocked();
+    applyHitreaction(attacker);
+    return;
+  }
+
+  setHealth(newHealth);
+  applyHitreaction(attacker);
+}
 
   /**
    * Enables or disables immunity to incoming damage.
