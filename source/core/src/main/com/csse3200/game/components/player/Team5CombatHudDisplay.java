@@ -3,6 +3,7 @@ package com.csse3200.game.components.player;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.csse3200.game.items.ItemType;
 import com.csse3200.game.ui.UIComponent;
 import java.util.EnumMap;
 import java.util.Map;
@@ -11,25 +12,40 @@ import java.util.Map;
  * Displays Team 5's always-visible Sprint 2 combat information.
  *
  * <p>This component is intentionally separate from the shared health HUD and the full inventory
- * screen. Until the inventory and input contracts are available, it provides the visual quick-bar
- * layout with zero quantities and no selected consumable.
+ * screen. It reads Team 5's Gold and consumable state without modifying Team 2's HUD shell or
+ * {@link PlayerStatsDisplay}.
  */
 public class Team5CombatHudDisplay extends UIComponent {
   private static final String LABEL_STYLE = "statDisplay";
 
   /** Presentation-only slots for the four planned Sprint 2 consumables. */
   public enum ConsumableSlot {
-    HEALTH("1", "Health"),
-    SHIELD("2", "Shield"),
-    SPEED("3", "Speed"),
-    STRENGTH("4", "Strength");
+    HEALTH("1", "Health", ItemType.HEALTH_POTION),
+    SHIELD("2", "Shield", ItemType.SHIELD),
+    SPEED("3", "Speed", ItemType.SPEED_POTION),
+    STRENGTH("4", "Strength", ItemType.STRENGTH_POTION);
 
     private final String key;
     private final String displayName;
+    private final ItemType itemType;
 
-    ConsumableSlot(String key, String displayName) {
+    ConsumableSlot(String key, String displayName, ItemType itemType) {
       this.key = key;
       this.displayName = displayName;
+      this.itemType = itemType;
+    }
+
+    static ConsumableSlot fromItemType(ItemType itemType) {
+      if (itemType == null) {
+        return null;
+      }
+
+      for (ConsumableSlot slot : values()) {
+        if (slot.itemType == itemType) {
+          return slot;
+        }
+      }
+      return null;
     }
   }
 
@@ -44,6 +60,14 @@ public class Team5CombatHudDisplay extends UIComponent {
   public void create() {
     super.create();
     addActors();
+    registerEventListeners();
+  }
+
+  void registerEventListeners() {
+    entity
+        .getEvents()
+        .addListener("consumableInventoryChanged", this::onConsumableInventoryChanged);
+    entity.getEvents().addListener("selectedConsumableChanged", this::onSelectedConsumableChanged);
   }
 
   private void addActors() {
@@ -60,7 +84,8 @@ public class Team5CombatHudDisplay extends UIComponent {
     table.add(goldLabel).colspan(4).padBottom(6f);
     table.row();
     for (ConsumableSlot slot : ConsumableSlot.values()) {
-      Label label = new Label(formatSlot(slot, 0), skin, LABEL_STYLE);
+      int count = inventory == null ? 0 : inventory.getConsumableCount(slot.itemType);
+      Label label = new Label(formatSlot(slot, count), skin, LABEL_STYLE);
       quantityLabels.put(slot, label);
       table.add(label).padLeft(10f).padRight(10f);
     }
@@ -100,6 +125,17 @@ public class Team5CombatHudDisplay extends UIComponent {
     if (selectedLabel != null) {
       selectedLabel.setText(formatSelected(slot));
     }
+  }
+
+  private void onConsumableInventoryChanged(ItemType itemType, int newCount) {
+    ConsumableSlot slot = ConsumableSlot.fromItemType(itemType);
+    if (slot != null) {
+      updateConsumableCount(slot, newCount);
+    }
+  }
+
+  private void onSelectedConsumableChanged(ItemType itemType) {
+    updateSelectedConsumable(ConsumableSlot.fromItemType(itemType));
   }
 
   static String formatGold(int gold) {
