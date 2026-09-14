@@ -181,12 +181,13 @@ public class NPCFactory {
             .addTask(new CoilAttackTask(target, CHASE_SPEED))
             .addTask(new VenomSpitAttackTask(target));
 
-    // Placeholder art until the snake's own sprite sheet is ready - reuses the Chase Enemy's
-    // atlas so the boss is visible and testable in the meantime.
+    // Placeholder art until the snake's own sprite sheet is ready - reuses the Beetle enemy's
+    // atlas (the old "chaseEnemy" atlas was renamed to "beetle" in the team refactor) so the
+    // boss is visible and testable in the meantime.
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/chaseEnemy.atlas", TextureAtlas.class));
+                .getAsset("images/beetle.atlas", TextureAtlas.class));
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
