@@ -8,6 +8,7 @@ import com.csse3200.game.components.miniboss.cerberus.CerberusAnimationControlle
 import com.csse3200.game.components.miniboss.cerberus.CerberusAttackCoordinator;
 import com.csse3200.game.components.miniboss.cerberus.CerberusBiteComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
+import com.csse3200.game.components.miniboss.cerberus.CerberusEnrageVisualComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusMistComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusMovementComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusPhaseComponent;
@@ -131,9 +132,15 @@ public class CerberusFactory {
     Entity rightHead =
         createCerberusSideHead(mainHead, new Vector2(0.55f, 0.25f), conf.health / 2, skin);
 
+    CerberusPhaseComponent phase = new CerberusPhaseComponent(leftHead, rightHead);
+
     mainHead
         .addComponent(new CerberusDeathComponent(leftHead, rightHead))
-        .addComponent(new CerberusPhaseComponent(leftHead, rightHead));
+        .addComponent(phase)
+        .addComponent(new CerberusEnrageVisualComponent(phase));
+
+    leftHead.addComponent(new CerberusEnrageVisualComponent(phase));
+    rightHead.addComponent(new CerberusEnrageVisualComponent(phase));
 
     if (target != null) {
       mainHead
