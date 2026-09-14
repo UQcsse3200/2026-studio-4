@@ -25,6 +25,9 @@ public class HitboxFactory {
   /**
    * Create an unregistered kinematic sensor that damages {@code spec.targetLayer} on contact.
    *
+   * <p>A hitbox with an owner starts centred on {@code owner centre + localOffset}, matching where
+   * its {@link FollowComponent} keeps it; {@code spec.position} only places ownerless hitboxes.
+   *
    * @param spec spawn configuration
    * @return unregistered hitbox entity
    * @require spec != null &amp;&amp; spec.getPosition() != null &amp;&amp; spec.getSize() != null
@@ -59,6 +62,12 @@ public class HitboxFactory {
 
     Vector2 size = spec.getSize();
     Vector2 position = spec.getPosition();
+    if (spec.getOwner() != null) {
+      // Start where FollowComponent will put it. A hitbox registered after the entity update (e.g.
+      // a queued combo strike) is rendered before it ever updates, and would otherwise flash at the
+      // spawn origin for a frame instead of on its offset.
+      position = spec.getOwner().getCenterPosition().add(spec.getLocalOffset()).mulAdd(size, -0.5f);
+    }
     hitbox.setScale(size);
     hitbox.setPosition(position);
     return hitbox;
