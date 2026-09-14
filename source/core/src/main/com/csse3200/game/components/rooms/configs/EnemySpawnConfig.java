@@ -18,4 +18,3 @@ public class EnemySpawnConfig extends PositionConfig {
     SNAKE_MINI_BOSS
   }
 }
-

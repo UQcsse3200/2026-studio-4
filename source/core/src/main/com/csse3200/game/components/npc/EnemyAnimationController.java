@@ -1,6 +1,8 @@
 package com.csse3200.game.components.npc;
 
+import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -19,6 +21,10 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener("wanderStart", this::animateWander);
     entity.getEvents().addListener("chaseStart", this::animateChase);
     entity.getEvents().addListener("dieAnimation", this::animateDie);
+    entity.getEvents().addListener("flyingDeath", this::animateFlyingDeath);
+    entity.getEvents().addListener("patrolStart", this::animatePatrol);
+    entity.getEvents().addListener("rangedAttack", this::animateAttack);
+    entity.getEvents().addListener("fuseStarted", this::animateFuse);
     entity.getEvents().addListener("default", this::animatePause);
   }
 
@@ -27,11 +33,20 @@ public class EnemyAnimationController extends Component {
     animator.startAnimation("dieAnimation");
   }
 
+  private void animateFlyingDeath() {
+    entity.getComponent(AITaskComponent.class).setEnabled(false);
+    entity.getComponent(PhysicsMovementComponent.class).setMoving(false);
+    animateDie();
+  }
+
   @Override
   public void update() {
     if (dying && animator.isFinished()) {
       dying = false;
       ServiceLocator.getEntityService().scheduleDisposal(entity);
+    }
+    if ("attack".equals(animator.getCurrentAnimation()) && animator.isFinished()) {
+      animator.startAnimation("move");
     }
   }
 
@@ -45,5 +60,21 @@ public class EnemyAnimationController extends Component {
 
   private void animatePause() {
     animator.startAnimation("default");
+  }
+
+  private void animateFuse() {
+    animator.startAnimation("fuse");
+  }
+
+  private void animatePatrol() {
+    if (!dying) {
+      animator.startAnimation("move");
+    }
+  }
+
+  private void animateAttack() {
+    if (!dying) {
+      animator.startAnimation("attack");
+    }
   }
 }

@@ -115,6 +115,11 @@ public class CoilAttackTask extends DefaultTask implements PriorityTask {
         return -1;
     }
 
+    @Override
+    public void setPriority(int status) {
+        // Intentional empty method: this task's priority is fixed and computed internally.
+    }
+
     private void beginCoil(long now) {
         Vector2 direction = target.getPosition().cpy().sub(owner.getEntity().getPosition()).nor();
         coilTargetPoint = owner.getEntity().getPosition().cpy().add(direction.scl(COIL_DISTANCE));

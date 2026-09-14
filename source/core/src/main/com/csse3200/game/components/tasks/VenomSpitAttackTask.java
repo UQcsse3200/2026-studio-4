@@ -79,6 +79,11 @@ public class VenomSpitAttackTask extends DefaultTask implements PriorityTask {
         return -1;
     }
 
+    @Override
+    public void setPriority(int status) {
+        // Intentional empty method: this task's priority is fixed and computed internally.
+    }
+
     private boolean isBelowHealthThreshold() {
         CombatStatsComponent stats = owner.getEntity().getComponent(CombatStatsComponent.class);
         return stats != null && stats.getHealth() <= stats.getMaxHealth() * HEALTH_THRESHOLD_PERCENT;

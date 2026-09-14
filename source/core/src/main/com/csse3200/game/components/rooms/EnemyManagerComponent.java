@@ -56,9 +56,9 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         Entity crab = NPCFactory.createChaseEnemy(target, true, "images/crab.atlas");
         crab.setScale(1.5f, 1.5f);
         crab.getComponent(HitboxComponent.class)
-                .setAsBox(
-                        new Vector2(1f, 0.5f),
-                        new Vector2(crab.getCenterPosition().x, crab.getCenterPosition().y / 2));
+            .setAsBox(
+                new Vector2(1f, 0.5f),
+                new Vector2(crab.getCenterPosition().x, crab.getCenterPosition().y / 2));
         return crab;
       case MUMMY:
         Entity mummy = NPCFactory.createGiantEnemy(target, "images/mummy.atlas");
@@ -71,10 +71,10 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
         golem.setScale(1.5F, 1.5F);
         golem
-                .getComponent(HitboxComponent.class)
-                .setAsBox(
-                        new Vector2(1, 1),
-                        new Vector2(golem.getCenterPosition().x, golem.getCenterPosition().y / 2));
+            .getComponent(HitboxComponent.class)
+            .setAsBox(
+                new Vector2(1, 1),
+                new Vector2(golem.getCenterPosition().x, golem.getCenterPosition().y / 2));
         return golem;
       case MEDUSA:
         Entity medusa = NPCFactory.createChaseEnemy(target, true, "images/medusa.atlas");
@@ -87,20 +87,20 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
         Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
         return NPCFactory.createFloatingDemon(
-                target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/harpy.atlas");
+            target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/harpy.atlas");
       case CYCLOPS:
         Entity cyclops = NPCFactory.createGiantEnemy(target, "images/cyclops.atlas");
         cyclops
-                .getComponent(HitboxComponent.class)
-                .setAsBox(
-                        new Vector2(1f, 1.5f),
-                        new Vector2(cyclops.getCenterPosition().x, cyclops.getCenterPosition().y / 2));
+            .getComponent(HitboxComponent.class)
+            .setAsBox(
+                new Vector2(1f, 1.5f),
+                new Vector2(cyclops.getCenterPosition().x, cyclops.getCenterPosition().y / 2));
         return cyclops;
       case CERBERUS:
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
         return CerberusFactory.createCerberus(
-                target, anchorPoint, this::spawnAndTrackCerberusHead, "images/cerberus.atlas");
+            target, anchorPoint, this::spawnAndTrackCerberusHead, "images/cerberus.atlas");
       case BOW:
         return ItemFactory.createItem(WeaponItem.createWeaponItem(WeaponItem.WeaponType.BOW));
       case FINAL_BOSS:
@@ -122,8 +122,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     enemy.getEvents().<Entity>addListener("cerberusProjectileSpawned", this::spawnEntity);
     enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy));
     enemy
-            .getEvents()
-            .addListener("spawnChildren", (Entity child) -> replaceWithChild(enemy, child));
+        .getEvents()
+        .addListener("spawnChildren", (Entity child) -> replaceWithChild(enemy, child));
   }
 
   private void onEnemyDefeated(Entity enemy) {
@@ -170,4 +170,3 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     super.dispose();
   }
 }
-
