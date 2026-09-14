@@ -1,13 +1,16 @@
 package com.csse3200.game.components.weapons;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +49,8 @@ class SwordWeaponComponentTest {
   private static final float EXPECTED_REACH = 0.5f + 0.5f + 0.05f;
 
   private static final float ARC_DEGREES = 90f;
-  private static final float LIFETIME = 0.5f;
+  private static final float LIFETIME = 0.25f;
+  private static final float HEAVY_LIFETIME = 0.8f;
   private static final float TOLERANCE = 1e-4f;
 
   private EntityService entityService;
@@ -81,9 +85,27 @@ class SwordWeaponComponentTest {
     wielder.create();
     assertTrue(sword.attack(new Vector2(0f, 0f), direction));
 
+    return captureRegisteredHitbox();
+  }
+
+  private Entity captureRegisteredHitbox() {
     ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
     verify(entityService).register(captor.capture());
     return captor.getValue();
+  }
+
+  /** Wielder with base attack 10, sword multiplier 0.8 and a {@link WeaponUpgradeComponent}. */
+  private Entity createUpgradableWielder(SwordWeaponComponent sword, boolean upgraded) {
+    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+    Entity wielder =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new WeaponStatsComponent(0.5f, 0.8f, 2f))
+            .addComponent(upgrades)
+            .addComponent(sword);
+    wielder.create();
+    upgrades.setUpgraded(SwordWeaponComponent.class, upgraded);
+    return wielder;
   }
 
   @Test
@@ -231,6 +253,181 @@ class SwordWeaponComponentTest {
     Entity hitbox = attackAndCapture(new Vector2(1f, 0f));
 
     // round(baseAttack 10 * multiplier 0.8)
+    assertEquals(8, hitbox.getComponent(CombatStatsComponent.class).getBaseAttack());
+  }
+
+  @Test
+  void shouldKeepSprintOneLightAttackWhenNotUpgraded() {
+    SwordWeaponComponent sword = new SwordWeaponComponent();
+    createUpgradableWielder(sword, false);
+
+    assertTrue(sword.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    Entity hitbox = captureRegisteredHitbox();
+
+    assertEquals(new Vector2(1.0f, 0.4f), hitbox.getScale());
+    assertEquals(8, hitbox.getComponent(CombatStatsComponent.class).getBaseAttack());
+  }
+
+  @Test
+  void shouldNotHeavyAttackWhenNotUpgraded() {
+    SwordWeaponComponent sword = new SwordWeaponComponent();
+    Entity wielder = createUpgradableWielder(sword, false);
+
+    assertFalse(sword.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+
+    verify(entityService, never()).register(any(Entity.class));
+    assertEquals(0f, wielder.getComponent(WeaponStatsComponent.class).getRemainingCooldown());
+  }
+
+  @Test
+  void shouldBoostLightDamageButKeepItsSweepWhenUpgraded() {
+    SwordWeaponComponent sword = new SwordWeaponComponent();
+    createUpgradableWielder(sword, true);
+
+    assertTrue(sword.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    Entity hitbox = captureRegisteredHitbox();
+
+    // Same blade and 90-degree arc as the unupgraded sword...
+    assertEquals(new Vector2(1.0f, 0.4f), hitbox.getScale());
+    assertEquals(
+        -ARC_DEGREES / 2f,
+        hitbox.getComponent(RotatingTextureRenderComponent.class).getRotation(),
+        TOLERANCE);
+    // ...but round(baseAttack 10 * multiplier 0.8 * light upgrade 1.2) = round(9.6)
+    assertEquals(10, hitbox.getComponent(CombatStatsComponent.class).getBaseAttack());
+  }
+
+  @Test
+  void shouldHeavyAttackWithTheSameBladeWhenUpgraded() {
+    SwordWeaponComponent sword = new SwordWeaponComponent();
+    createUpgradableWielder(sword, true);
+
+    assertTrue(sword.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    Entity hitbox = captureRegisteredHitbox();
+
+    assertEquals(new Vector2(1.0f, 0.4f), hitbox.getScale());
+    assertNotNull(hitbox.getComponent(FollowComponent.class));
+    assertNotNull(hitbox.getComponent(SweepComponent.class));
+  }
+
+  @Test
+  void shouldSpinTheHeavyAttackAFullTurnAroundTheWielder() {
+    SwordWeaponComponent sword = new SwordWeaponComponent();
+    createUpgradableWielder(sword, true);
+
+    assertTrue(sword.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    Entity hitbox = captureRegisteredHitbox();
+    RotatingTextureRenderComponent render =
+        hitbox.getComponent(RotatingTextureRenderComponent.class);
+
+    // Aiming right, the spin opens directly behind the wielder at -180...
+    assertEquals(-180f, render.getRotation(), TOLERANCE);
+    Vector2 expected = new Vector2(EXPECTED_REACH, 0f).setAngleDeg(-180f);
+    Vector2 actual = hitbox.getComponent(FollowComponent.class).getLocalOffset();
+    assertEquals(expected.x, actual.x, TOLERANCE);
+    assertEquals(expected.y, actual.y, TOLERANCE);
+
+    // ...passes through the aim direction halfway through its slower spin...
+    when(gameTime.getDeltaTime()).thenReturn(HEAVY_LIFETIME / 2f);
+    hitbox.update();
+    assertEquals(0f, render.getRotation(), TOLERANCE);
+
+    // ...and ends a full 360 degrees later, back behind the wielder.
+    when(gameTime.getDeltaTime()).thenReturn(HEAVY_LIFETIME);
+    hitbox.update();
+    assertEquals(180f, render.getRotation(), TOLERANCE);
+  }
+
+  @Test
+  void shouldSpinTheHeavyAttackSlowerThanTheLightSweep() {
+    SwordWeaponComponent sword = new SwordWeaponComponent();
+    Entity wielder = createUpgradableWielder(sword, true);
+
+    assertTrue(sword.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    Entity light = captureRegisteredHitbox();
+    wielder.getComponent(WeaponStatsComponent.class).update(10f);
+    assertTrue(sword.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService, times(2)).register(captor.capture());
+    Entity heavy = captor.getAllValues().get(1);
+
+    // After the light sweep's full lifetime it has finished its arc...
+    when(gameTime.getDeltaTime()).thenReturn(LIFETIME);
+    light.update();
+    heavy.update();
+    assertEquals(
+        ARC_DEGREES / 2f,
+        light.getComponent(RotatingTextureRenderComponent.class).getRotation(),
+        TOLERANCE);
+    // ...while the heavy spin is still well short of its end.
+    float heavyProgress = LIFETIME / HEAVY_LIFETIME;
+    assertEquals(
+        -180f + 360f * heavyProgress,
+        heavy.getComponent(RotatingTextureRenderComponent.class).getRotation(),
+        TOLERANCE);
+  }
+
+  @Test
+  void shouldKeepHeavyCooldownAtLeastAsLongAsTheSpinWithAttackSpeedBuffs() {
+    SwordWeaponComponent sword = new SwordWeaponComponent();
+    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+    Entity wielder =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10, 3f, 4f)) // attack speed 4x
+            .addComponent(new WeaponStatsComponent(0.5f, 0.8f, 2f))
+            .addComponent(upgrades)
+            .addComponent(sword);
+    wielder.create();
+    upgrades.setUpgraded(SwordWeaponComponent.class, true);
+
+    assertTrue(sword.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+
+    // 0.5s / 4 * 2 = 0.25s would let a second spin start mid-spin; clamp to the 0.8s spin.
+    assertEquals(
+        HEAVY_LIFETIME,
+        wielder.getComponent(WeaponStatsComponent.class).getRemainingCooldown(),
+        TOLERANCE);
+  }
+
+  @Test
+  void shouldDealHeavyUpgradeDamage() {
+    SwordWeaponComponent sword = new SwordWeaponComponent();
+    createUpgradableWielder(sword, true);
+
+    assertTrue(sword.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    Entity hitbox = captureRegisteredHitbox();
+
+    // round(baseAttack 10 * multiplier 0.8 * heavy upgrade 1.35) = round(10.8)
+    assertEquals(11, hitbox.getComponent(CombatStatsComponent.class).getBaseAttack());
+  }
+
+  @Test
+  void shouldLengthenTheSharedCooldownAfterAHeavyAttack() {
+    SwordWeaponComponent sword = new SwordWeaponComponent();
+    Entity wielder = createUpgradableWielder(sword, true);
+    WeaponStatsComponent stats = wielder.getComponent(WeaponStatsComponent.class);
+
+    assertTrue(sword.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+
+    // 0.5s cooldown doubled by the heavy attack.
+    assertEquals(1.0f, stats.getRemainingCooldown(), TOLERANCE);
+    // The cooldown is shared, so the light attack waits too.
+    stats.update(0.5f);
+    assertFalse(sword.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+  }
+
+  @Test
+  void shouldRevertToSprintOneSwordWhenUpgradeRemoved() {
+    SwordWeaponComponent sword = new SwordWeaponComponent();
+    Entity wielder = createUpgradableWielder(sword, true);
+    wielder
+        .getComponent(WeaponUpgradeComponent.class)
+        .setUpgraded(SwordWeaponComponent.class, false);
+
+    assertFalse(sword.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    assertTrue(sword.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+
+    Entity hitbox = captureRegisteredHitbox();
     assertEquals(8, hitbox.getComponent(CombatStatsComponent.class).getBaseAttack());
   }
 }
