@@ -20,14 +20,18 @@ public class FinalBossVisualComponent extends RenderComponent {
 
   private TextureRegion[] grandpa;
   private TextureRegion[] wizard;
+  private TextureRegion[] wizardStageTwo;
+  private TextureRegion[] wizardTired;
   private TextureRegion[] transform;
   private TextureRegion[] shield;
   private TextureRegion[] impact;
   private TextureRegion[] attackAlert;
 
   private FinalBossStageOneComponent stageOne;
+  private FinalBossStageTwoComponent stageTwo;
   private FinalBossMovementComponent movement;
   private FinalBossDamageControllerComponent protection;
+  private FinalBossPhaseControllerComponent phaseController;
 
   private int previousHealth;
 
@@ -50,6 +54,8 @@ public class FinalBossVisualComponent extends RenderComponent {
   public void create() {
     grandpa = FinalBossVisualAssets.GRANDPA.loadFrames();
     wizard = FinalBossVisualAssets.WIZARD.loadFrames();
+    wizardStageTwo = FinalBossVisualAssets.WIZARD_STAGE_TWO.loadFrames();
+    wizardTired = FinalBossVisualAssets.WIZARD_TIRED.loadFrames();
     transform = FinalBossVisualAssets.TRANSFORM.loadFrames();
     shield = FinalBossVisualAssets.SHIELD.loadFrames();
     impact = FinalBossVisualAssets.SHIELD_HIT.loadFrames();
@@ -61,8 +67,10 @@ public class FinalBossVisualComponent extends RenderComponent {
     }
 
     stageOne = entity.getComponent(FinalBossStageOneComponent.class);
+    stageTwo = entity.getComponent(FinalBossStageTwoComponent.class);
     movement = entity.getComponent(FinalBossMovementComponent.class);
     protection = entity.getComponent(FinalBossDamageControllerComponent.class);
+    phaseController = entity.getComponent(FinalBossPhaseControllerComponent.class);
 
     CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
     previousHealth = stats.getHealth();
@@ -157,14 +165,19 @@ public class FinalBossVisualComponent extends RenderComponent {
     float x = pos.x + (size.x - bodyWidth) * 0.5f;
     float y = pos.y + hover * size.y;
 
+    TextureRegion[] activeWizardFrames = getActiveWizardFrames();
     TextureRegion body =
-        ordinary ? grandpa[1 + (int) (elapsed / 0.3f) % 2] : wizard[wizardFrame(state, stateTime)];
+        ordinary
+            ? grandpa[1 + (int) (elapsed / 0.3f) % 2]
+            : activeWizardFrames[wizardFrame(state, stateTime)];
 
     boolean damageHit =
         damageHitRemaining > 0f
             && state == FinalBossStageOneState.BREAK_WINDOW
             && !protection.isShielded()
             && !dying;
+
+    boolean transitioning = phaseController != null && phaseController.isTransitioning();
 
     float colour = batch.getPackedColor();
 
@@ -176,6 +189,10 @@ public class FinalBossVisualComponent extends RenderComponent {
        */
       if (dying) {
         batch.setColor(1f, 1f, 1f, Math.max(0f, 1f - deathElapsed / 0.5f));
+      } else if (transitioning) {
+        // Blink red to warn that the boss is about to change stage.
+        float blink = MathUtils.sin(elapsed * 12f) > 0f ? 1f : 0.35f;
+        batch.setColor(1f, blink, blink, 1f);
       } else if (damageHit) {
         batch.setColor(1f, 0.5f, 0.5f, 1f);
       }
@@ -283,6 +300,21 @@ public class FinalBossVisualComponent extends RenderComponent {
     } finally {
       batch.setPackedColor(colour);
     }
+  }
+
+  /** Selects the appropriate wizard texture based on current phase and attack state. */
+  private TextureRegion[] getActiveWizardFrames() {
+    FinalBossPhaseControllerComponent phaseController =
+        entity.getComponent(FinalBossPhaseControllerComponent.class);
+    if (phaseController == null || phaseController.getCurrentPhase() != FinalBossPhase.STAGE_TWO) {
+      return wizard;
+    }
+
+    if (stageTwo != null && !stageTwo.isAttacking()) {
+      return wizardTired;
+    }
+
+    return wizardStageTwo;
   }
 
   private int wizardFrame(FinalBossStageOneState state, float stateTime) {
