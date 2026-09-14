@@ -17,9 +17,7 @@ import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-/**
- * Checks the inventory and hotbar's layout and cleanup.
- */
+/** Checks the inventory and hotbar's layout and cleanup. */
 @ExtendWith(GameExtension.class)
 class InventoryDisplayTest {
   @Test
@@ -37,7 +35,8 @@ class InventoryDisplayTest {
     ServiceLocator.getEntityService().register(ui);
     try {
       // Initial state: the book is closed, while the decorative hotbar is visible and cannot
-      // intercept mouse/touch input. Actor names let us find the UI without accessing private fields.
+      // intercept mouse/touch input. Actor names let us find the UI without accessing private
+      // fields.
       Table hotbar = stage.getRoot().findActor("inventory-hotbar");
       assertNotNull(hotbar);
       assertTrue(hotbar.isVisible());
@@ -73,30 +72,29 @@ class InventoryDisplayTest {
         assertEquals(3, left.getChildren().size);
         assertEquals(3, right.getChildren().size);
         // Stage coordinates start at the bottom-left. The left group begins 340 pixels inward;
-        // its top is y = 706 - 48 = 658, leaving room above it for the area title.
+        // both groups now begin 48 pixels above the bottom edge.
         assertEquals(340f, left.getX(), 0.1f);
-        assertEquals(658f, left.getY() + left.getHeight(), 0.1f);
+        assertEquals(48f, left.getY(), 0.1f);
+        assertEquals(48f, right.getY(), 0.1f);
         assertTrue(
-            right.getX() + right.getWidth() <= width - 96f,
-            "Right group must leave room for Exit");
+            right.getX() + right.getWidth() <= width - 96f, "Right group must leave room for Exit");
         assertTrue(
             right.getX() > left.getX() + left.getWidth(),
             "The two groups must remain separated on narrower windows");
         // At the widest size there is room for matching 340-pixel insets on both sides.
-        // Narrower layouts may reduce the right inset, but must still clear Exit and the left group.
+        // Narrower layouts may reduce the right inset, but must still clear Exit and the left
+        // group.
         if (width >= 1918) {
           assertEquals(width - 340f, right.getX() + right.getWidth(), 0.1f);
         }
-        // Open and lay out the book too: its upper edge must remain below the hotbar's lower edge.
+        // Moving the hotbar must not change the book's existing vertical position.
         display.setVisible(true);
         Table book = stage.getRoot().findActor("inventory-book");
         book.invalidateHierarchy();
         book.validate();
         // The first child is the stack containing the book cover and its pages.
         Actor cover = book.getChildren().first();
-        assertTrue(
-            cover.getY() + cover.getHeight() < left.getY(),
-            "The open inventory book must remain below the hotbar");
+        assertEquals(width >= 1280 ? 50f : 76f, cover.getY(), 1f);
         for (Actor circle : left.getChildren()) {
           // Full-size circles are 96 pixels. At width 906, the available width per circle is
           // (906 - 340 left inset - 96 right inset - 24 group gap - 24 slot gaps) / 6 = 70.333.
@@ -106,7 +104,8 @@ class InventoryDisplayTest {
       }
     } finally {
       // Dispose even if an assertion fails. Entity disposal should remove both UI tables (and
-      // dispose the hotbar texture); the actor-count assertion checks the stage cleanup specifically.
+      // dispose the hotbar texture); the actor-count assertion checks the stage cleanup
+      // specifically.
       ui.dispose();
       assertEquals(0, stage.getActors().size);
       stage.dispose();

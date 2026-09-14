@@ -21,7 +21,7 @@ public class InventoryDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(InventoryDisplay.class);
   private static final float Z_INDEX = 2f;
   private static final float HOTBAR_SLOT_SIZE = 96f;
-  private static final float HOTBAR_TOP_INSET = 48f;
+  private static final float HOTBAR_EDGE_INSET = 48f;
   private static final float HOTBAR_SLOT_GAP = 6f;
   private static final float HOTBAR_SIDE_INSET = 340f;
   private boolean charmsPage = true;
@@ -64,8 +64,8 @@ public class InventoryDisplay extends UIComponent {
         };
     hotbarTable.setName("inventory-hotbar");
     hotbarTable.setFillParent(true);
-    // Keep the groups inward beside the stats, with clearance below long room titles.
-    hotbarTable.top().padTop(HOTBAR_TOP_INSET).padLeft(HOTBAR_SIDE_INSET);
+    // Keep the existing horizontal layout, anchored 48 pixels above the bottom edge.
+    hotbarTable.bottom().padBottom(HOTBAR_EDGE_INSET).padLeft(HOTBAR_SIDE_INSET);
     hotbarTable.padRight(
         new Value() {
           @Override
@@ -115,12 +115,12 @@ public class InventoryDisplay extends UIComponent {
     table = new Table();
     table.setName("inventory-book");
     table.setFillParent(true);
-    // Keep the book centred normally; on short windows leave room for the larger hotbar.
+    // Preserve the book's existing vertical layout independently of the hotbar's new position.
     table.padTop(
         new Value() {
           @Override
           public float get(Actor context) {
-            float hotbarBottom = HOTBAR_TOP_INSET + hotbarSlotSize(context.getWidth());
+            float hotbarBottom = HOTBAR_EDGE_INSET + hotbarSlotSize(context.getWidth());
             return Math.max(0f, 2f * (hotbarBottom + 12f) + 500f - context.getHeight());
           }
         });
