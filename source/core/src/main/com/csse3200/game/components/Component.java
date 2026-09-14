@@ -18,9 +18,7 @@ public class Component {
    * Called when the entity is created and registered. Initial logic such as calls to GetComponent
    * should be made here, not in the constructor which is called before an entity is finished.
    */
-  public void create() {
-    
-  }
+  public void create() {}
 
   /**
    * Early update called once per frame of the game, before update(). Use this only for logic that

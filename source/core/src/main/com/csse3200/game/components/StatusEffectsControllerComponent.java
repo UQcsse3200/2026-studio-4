@@ -1,4 +1,5 @@
 package com.csse3200.game.components;
+
 import com.csse3200.game.components.statuseffects.Shield;
 import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
@@ -69,13 +70,14 @@ public class StatusEffectsControllerComponent extends Component {
     ensureShield();
     shield.activateAbsorb();
     triggerShieldUi();
-}
+  }
 
-public void activateTimed() {
-  ensureShield();
-  shield.activateTimed();
-  triggerShieldUi();
-}
+  public void activateTimed() {
+    ensureShield();
+    shield.activateTimed();
+    triggerShieldUi();
+  }
+
   public int modifyIncomingDamage(int damage) {
     if (shield == null) {
       return damage;
@@ -102,16 +104,18 @@ public void activateTimed() {
     }
     triggerShieldUi();
   }
+
   private void ensureShield() {
     if (shield == null) {
       shield = StatusEffectsFactory.createShield();
       statusEffects.add(shield);
     }
-  }  
-  private void triggerShieldUi() {
-   if (entity == null || shield == null) {
-      return;
   }
-   entity.getEvents().trigger("updateShield", shield.getCurrent(), shield.getMax());
- }
+
+  private void triggerShieldUi() {
+    if (entity == null || shield == null) {
+      return;
+    }
+    entity.getEvents().trigger("updateShield", shield.getCurrent(), shield.getMax());
+  }
 }

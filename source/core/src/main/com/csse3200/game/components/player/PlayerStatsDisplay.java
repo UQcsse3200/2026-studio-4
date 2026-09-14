@@ -23,6 +23,7 @@ public class PlayerStatsDisplay extends UIComponent {
   private Table shieldTable;
 
   private static final String LABEL_STYLE = "statDisplay";
+
   public void updatePlayerShieldUI(int current, int max) {
     shieldLabel.setText(String.format("Shield: %d / %d", current, max));
     shieldBar.setRange(0, max);
@@ -67,7 +68,7 @@ public class PlayerStatsDisplay extends UIComponent {
     shieldBar = new ProgressBar(0, 20, 1, false, barStyle);
     shieldBar.setValue(20);
     shieldBar.setAnimateDuration(0.2f);
-    
+
     shieldLabel = new Label("Shield: 20 / 20", skin, LABEL_STYLE);
 
     int charmCount = entity.getComponent(InventoryComponent.class).getCharmCount();
@@ -99,7 +100,6 @@ public class PlayerStatsDisplay extends UIComponent {
     table.add(strengthLabel).left();
     table.row();
     table.add(charmCountLabel).left();
-
 
     shieldTable = new Table();
     shieldTable.bottom().left();

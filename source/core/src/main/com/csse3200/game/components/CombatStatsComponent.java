@@ -229,44 +229,44 @@ public class CombatStatsComponent extends Component {
    *
    * @param damage Amount of damage to deal
    */
-public void takeDamage(int damage, Entity attacker) {
-  if (damage <= 0) {
-    return;
-  }
-
-  if (invulnerable) {
-    triggerDamageBlocked();
-    return;
-  }
-
-  int remainingDamage = damage;
-
-  if (entity != null) {
-    StatusEffectsControllerComponent effects =
-        entity.getComponent(StatusEffectsControllerComponent.class);
-
-    if (effects != null) {
-      remainingDamage = effects.modifyIncomingDamage(damage);
+  public void takeDamage(int damage, Entity attacker) {
+    if (damage <= 0) {
+      return;
     }
-  }
 
-  if (remainingDamage <= 0) {
-    triggerDamageBlocked();
-    return;
-  }
+    if (invulnerable) {
+      triggerDamageBlocked();
+      return;
+    }
 
-  int adjustedDamage = Math.round(remainingDamage * incomingDamageMultiplier);
-  int newHealth = Math.max(minimumHealth, health - adjustedDamage);
+    int remainingDamage = damage;
 
-  if (newHealth == health) {
-    triggerDamageBlocked();
+    if (entity != null) {
+      StatusEffectsControllerComponent effects =
+          entity.getComponent(StatusEffectsControllerComponent.class);
+
+      if (effects != null) {
+        remainingDamage = effects.modifyIncomingDamage(damage);
+      }
+    }
+
+    if (remainingDamage <= 0) {
+      triggerDamageBlocked();
+      return;
+    }
+
+    int adjustedDamage = Math.round(remainingDamage * incomingDamageMultiplier);
+    int newHealth = Math.max(minimumHealth, health - adjustedDamage);
+
+    if (newHealth == health) {
+      triggerDamageBlocked();
+      applyHitreaction(attacker);
+      return;
+    }
+
+    setHealth(newHealth);
     applyHitreaction(attacker);
-    return;
   }
-
-  setHealth(newHealth);
-  applyHitreaction(attacker);
-}
 
   /**
    * Enables or disables immunity to incoming damage.

@@ -37,7 +37,7 @@ public class Shield implements StatusEffect {
 
   public boolean activateAbsorb() {
     if (current < MAX_SHIELD || mode != Mode.NONE) {
-    return false;
+      return false;
     }
     mode = Mode.ABSORB;
     expiresAt = time.getTime() + ABSORB_DURATION_MS;
@@ -57,9 +57,9 @@ public class Shield implements StatusEffect {
 
   private void startRecharge() {
     if (depletedAt < 0) {
-    depletedAt = time.getTime();
+      depletedAt = time.getTime();
+    }
   }
-}
 
   public int modifyIncomingDamage(int damage) {
     if (damage <= 0 || mode == Mode.NONE) {
@@ -93,20 +93,20 @@ public class Shield implements StatusEffect {
       mode = Mode.NONE;
       expiresAt = 0;
     }
-      if (mode == Mode.NONE && current < MAX_SHIELD && depletedAt >= 0) {
-        long timeSinceDepleted = time.getTimeSince(depletedAt);
-        
-        if (timeSinceDepleted >= RECHARGE_DELAY_MS) {
-          long rechargeTime = timeSinceDepleted - RECHARGE_DELAY_MS;
-          long cappedRechargeTime = Math.min(rechargeTime, RECHARGE_DURATION_MS);
-          current = (int) ((cappedRechargeTime * MAX_SHIELD) / RECHARGE_DURATION_MS);
-          
-          if (current >= MAX_SHIELD) {
-            current = MAX_SHIELD;
-            depletedAt = -1;
-          }
+    if (mode == Mode.NONE && current < MAX_SHIELD && depletedAt >= 0) {
+      long timeSinceDepleted = time.getTimeSince(depletedAt);
+
+      if (timeSinceDepleted >= RECHARGE_DELAY_MS) {
+        long rechargeTime = timeSinceDepleted - RECHARGE_DELAY_MS;
+        long cappedRechargeTime = Math.min(rechargeTime, RECHARGE_DURATION_MS);
+        current = (int) ((cappedRechargeTime * MAX_SHIELD) / RECHARGE_DURATION_MS);
+
+        if (current >= MAX_SHIELD) {
+          current = MAX_SHIELD;
+          depletedAt = -1;
         }
       }
+    }
     return false;
   }
 
