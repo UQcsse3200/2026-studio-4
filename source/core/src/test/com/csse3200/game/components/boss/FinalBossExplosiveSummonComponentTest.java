@@ -3,9 +3,16 @@ package com.csse3200.game.components.boss;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.weapons.ProjectileComponent;
@@ -24,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 
 @ExtendWith(GameExtension.class)
 class FinalBossExplosiveSummonComponentTest {
@@ -46,7 +54,7 @@ class FinalBossExplosiveSummonComponentTest {
     ServiceLocator.registerTimeSource(time);
 
     ResourceService resources = new ResourceService();
-    resources.loadTextureAtlases(new String[] {FinalBossFactory.PLACEHOLDER_SKIN});
+    resources.loadTextures(FinalBossVisualAssets.paths());
     resources.loadAll();
     ServiceLocator.registerResourceService(resources);
 
@@ -118,6 +126,49 @@ class FinalBossExplosiveSummonComponentTest {
 
     explosive.update();
     assertTrue(explosive.hasDetonated());
+  }
+
+  @Test
+  void shouldShowImmediateBlastAndDisposeOnlyAfterPlayback() {
+    EntityService service = spy(new EntityService());
+    ServiceLocator.registerEntityService(service);
+    Entity summon = createSummon(0f);
+    FinalBossExplosiveSummonComponent explosive =
+        summon.getComponent(FinalBossExplosiveSummonComponent.class);
+    FinalBossSummonVisualComponent visual =
+        summon.getComponent(FinalBossSummonVisualComponent.class);
+    explosive.detonate();
+    SpriteBatch batch = mock(SpriteBatch.class);
+    visual.render(batch);
+    ArgumentCaptor<TextureRegion> frame = ArgumentCaptor.forClass(TextureRegion.class);
+    verify(batch).draw(frame.capture(), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+    assertEquals(450, frame.getValue().getRegionX());
+    deltaTime.set(0.15f);
+    visual.update();
+    verify(service, never()).scheduleDisposal(summon);
+    deltaTime.set(0.18f);
+    visual.update();
+    visual.update();
+    explosive.detonate();
+    verify(service, times(1)).scheduleDisposal(summon);
+    assertEquals(90, player.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void shouldCreateAndRenderBossWithSelectedAssets() {
+    Entity boss = FinalBossFactory.createFinalBoss(player, Entity::create);
+    boss.create();
+    FinalBossStageOneComponent stage = boss.getComponent(FinalBossStageOneComponent.class);
+    assertEquals(FinalBossStageOneState.INTRO, stage.getState());
+    boss.getComponent(FinalBossVisualComponent.class).render(mock(SpriteBatch.class));
+    deltaTime.set(config.bossIntroDuration);
+    stage.update();
+    deltaTime.set(config.bossTransformDuration);
+    stage.update();
+    deltaTime.set(config.bossSummonCastDuration);
+    stage.update();
+    assertEquals(config.waveOneSummonCount, stage.getActiveSummonCount());
+    boss.getComponent(FinalBossVisualComponent.class).render(mock(SpriteBatch.class));
   }
 
   private Entity createSummon(float warningDuration) {

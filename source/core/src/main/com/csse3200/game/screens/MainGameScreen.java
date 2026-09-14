@@ -80,6 +80,7 @@ public class MainGameScreen extends ScreenAdapter {
     roomManager.create();
     RoomCommand roomCommand = new RoomCommand(roomManager);
     terminal.addCommand("room", roomCommand);
+
     createUI();
   }
 

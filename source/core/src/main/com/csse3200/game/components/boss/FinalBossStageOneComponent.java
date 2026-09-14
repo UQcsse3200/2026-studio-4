@@ -20,12 +20,13 @@ public class FinalBossStageOneComponent extends Component {
   private final FinalBossStageOneConfig config;
   private final Set<Entity> activeSummons = new HashSet<>();
 
-  private FinalBossStageOneState state = FinalBossStageOneState.WAVE_ONE;
+  private FinalBossStageOneState state = FinalBossStageOneState.INTRO;
   private FinalBossPhaseControllerComponent phaseController;
   private FinalBossDamageControllerComponent damageController;
   private FinalBossMovementComponent movementController;
   private CombatStatsComponent bossStats;
 
+  private float stateElapsed;
   private float breakRemaining;
   private boolean transitionSent;
   private boolean cleanupStarted;
@@ -49,16 +50,32 @@ public class FinalBossStageOneComponent extends Component {
     phaseController = requireComponent(FinalBossPhaseControllerComponent.class);
     damageController = requireComponent(FinalBossDamageControllerComponent.class);
     movementController = requireComponent(FinalBossMovementComponent.class);
+    movementController.setActiveSummons(activeSummons);
     bossStats = requireComponent(CombatStatsComponent.class);
+    entity.getEvents().addListener("updateHealth", this::onBossHealthChanged);
 
     bossStats.setHealth(bossStats.getMaxHealth());
     damageController.enableShield();
 
-    movementController.setMode(FinalBossMovementComponent.Mode.WANDER_AVOID_SUMMONS);
+    movementController.setMode(FinalBossMovementComponent.Mode.STOPPED);
+    changeState(FinalBossStageOneState.INTRO);
+  }
 
-    changeState(FinalBossStageOneState.WAVE_ONE);
+  /** Restores the shield immediately when the break-window health floor is reached. */
+  private void onBossHealthChanged(Integer health) {
+    if (cleanupStarted
+        || health <= 0
+        || phaseController.getCurrentPhase() != FinalBossPhase.STAGE_ONE
+        || state != FinalBossStageOneState.BREAK_WINDOW
+        || damageController.isShielded()) {
+      return;
+    }
 
-    spawnWave(config.waveOneSummonCount, config.waveOneSummonSpeed, config.waveOneWarningDuration);
+    int healthFloor = Math.round(bossStats.getMaxHealth() * config.breakWindowHealthFloor);
+
+    if (health <= healthFloor) {
+      damageController.enableShield();
+    }
   }
 
   @Override
@@ -67,17 +84,49 @@ public class FinalBossStageOneComponent extends Component {
       return;
     }
 
-    if (state != FinalBossStageOneState.BREAK_WINDOW) {
+    GameTime time = ServiceLocator.getTimeSource();
+    float deltaTime = time == null ? 0f : time.getDeltaTime();
+
+    if (!Float.isFinite(deltaTime) || deltaTime <= 0f) {
       return;
     }
 
-    GameTime time = ServiceLocator.getTimeSource();
-    float deltaTime = time == null ? 0f : Math.max(time.getDeltaTime(), 0f);
+    stateElapsed += deltaTime;
+    switch (state) {
+      case INTRO:
+        if (stateElapsed >= config.bossIntroDuration) {
+          changeState(FinalBossStageOneState.TRANSFORMING);
+        }
+        return;
+      case TRANSFORMING:
+        if (stateElapsed >= config.bossTransformDuration) {
+          changeState(FinalBossStageOneState.SUMMONING_ONE);
+        }
+        return;
+      case SUMMONING_ONE:
+        if (stateElapsed >= config.bossSummonCastDuration) {
+          movementController.setMode(FinalBossMovementComponent.Mode.STEP_TOWARDS_PLAYER);
+          changeState(FinalBossStageOneState.WAVE_ONE);
+          spawnWave(
+              config.waveOneSummonCount, config.waveOneSummonSpeed, config.waveOneWarningDuration);
+        }
+        return;
+      case SUMMONING_TWO:
+        if (stateElapsed >= config.bossSummonCastDuration) {
+          beginWaveTwo();
+        }
+        return;
+      case BREAK_WINDOW:
+        break;
+      default:
+        return;
+    }
 
-    breakRemaining -= deltaTime;
+    breakRemaining = Math.max(0f, breakRemaining - deltaTime);
 
     if (breakRemaining <= 0f) {
-      beginWaveTwo();
+      damageController.enableShield();
+      changeState(FinalBossStageOneState.SUMMONING_TWO);
     }
   }
 
@@ -89,6 +138,11 @@ public class FinalBossStageOneComponent extends Component {
   /** Returns the current internal Stage 1 state. */
   public FinalBossStageOneState getState() {
     return state;
+  }
+
+  /** Returns seconds elapsed in the current state for visual playback. */
+  public float getStateElapsed() {
+    return stateElapsed;
   }
 
   /** Returns the number of summons that are still active. */
@@ -104,25 +158,50 @@ public class FinalBossStageOneComponent extends Component {
   private void spawnWave(int count, float movementSpeed, float warningDuration) {
     activeSummons.clear();
 
+    ArrayList<Entity> wave = new ArrayList<>();
+
     for (int i = 0; i < count; i++) {
+      float angle = (360f * i) / count;
+
       Entity summon =
           FinalBossFactory.createExplosiveSummon(target, config, movementSpeed, warningDuration);
 
+      FinalBossSummonMovementComponent summonMovement =
+          new FinalBossSummonMovementComponent(target, movementSpeed, angle, activeSummons);
+
+      float formationRadius =
+          state == FinalBossStageOneState.WAVE_TWO
+              ? config.waveTwoFormationRadius
+              : config.waveOneFormationRadius;
+
+      summonMovement.setFormationRadius(formationRadius);
+      boolean waveOne = state == FinalBossStageOneState.WAVE_ONE;
+
+      summonMovement.setClosingSpeed(waveOne ? 0.55f : 0.75f);
+      summonMovement.setContinuousClosing(false);
+
+      summonMovement.setCamera(movementController.getCamera());
+      summon.addComponent(summonMovement);
+
       summon.getEvents().addListener(FinalBossEvents.SUMMON_REMOVED, this::onSummonRemoved);
 
-      float angle = (360f * i) / count;
+      float spawnRadius = config.summonSpawnRadius;
 
-      Vector2 offset = new Vector2(config.summonSpawnRadius, 0f).setAngleDeg(angle);
+      Vector2 offset = new Vector2(spawnRadius, 0f).setAngleDeg(angle);
 
       Vector2 spawnPosition =
           entity.getCenterPosition().add(offset).sub(summon.getScale().scl(0.5f));
 
-      summon.setPosition(spawnPosition);
+      summon.setPosition(summonMovement.clampSpawnPosition(spawnPosition));
+
       activeSummons.add(summon);
-      summonSpawner.accept(summon);
+      wave.add(summon);
     }
 
-    movementController.setActiveSummons(activeSummons);
+    // Assemble the entire wave before registering any summons.
+    for (Entity summon : wave) {
+      summonSpawner.accept(summon);
+    }
 
     if (activeSummons.isEmpty()) {
       onWaveCleared();
@@ -134,14 +213,16 @@ public class FinalBossStageOneComponent extends Component {
       return;
     }
 
-    movementController.setActiveSummons(activeSummons);
-
     if (activeSummons.isEmpty()) {
       onWaveCleared();
     }
   }
 
   private void onWaveCleared() {
+    if (phaseController.getCurrentPhase() != FinalBossPhase.STAGE_ONE) {
+      return;
+    }
+
     if (state == FinalBossStageOneState.WAVE_ONE) {
       beginBreakWindow();
     } else if (state == FinalBossStageOneState.WAVE_TWO) {
@@ -150,20 +231,18 @@ public class FinalBossStageOneComponent extends Component {
   }
 
   private void beginBreakWindow() {
-    changeState(FinalBossStageOneState.BREAK_WINDOW);
+    movementController.setMode(FinalBossMovementComponent.Mode.STOPPED);
     breakRemaining = config.breakWindowDuration;
 
-    movementController.setMode(FinalBossMovementComponent.Mode.STOPPED);
-
     int healthFloor = Math.round(bossStats.getMaxHealth() * config.breakWindowHealthFloor);
-
     damageController.openVulnerabilityWindow(config.breakWindowDamageMultiplier, healthFloor);
+
+    changeState(FinalBossStageOneState.BREAK_WINDOW);
   }
 
   private void beginWaveTwo() {
     damageController.enableShield();
-
-    movementController.setMode(FinalBossMovementComponent.Mode.FLEE_PLAYER);
+    movementController.setMode(FinalBossMovementComponent.Mode.FLEE_ALONG_EDGE);
 
     changeState(FinalBossStageOneState.WAVE_TWO);
 
@@ -176,16 +255,15 @@ public class FinalBossStageOneComponent extends Component {
     }
 
     transitionSent = true;
-    changeState(FinalBossStageOneState.COMPLETE);
+    breakRemaining = 0f;
 
-    movementController.setActiveSummons(null);
     movementController.setMode(FinalBossMovementComponent.Mode.STOPPED);
-
     damageController.disableStageOneProtection();
 
     int stageTwoHealth = Math.round(bossStats.getMaxHealth() * config.stageTwoStartingHealth);
-
     bossStats.setHealth(stageTwoHealth);
+
+    changeState(FinalBossStageOneState.COMPLETE);
 
     entity.getEvents().trigger(FinalBossEvents.STAGE_COMPLETED, FinalBossPhase.STAGE_ONE);
   }
@@ -196,9 +274,9 @@ public class FinalBossStageOneComponent extends Component {
     }
 
     cleanupStarted = true;
+    breakRemaining = 0f;
 
     if (movementController != null) {
-      movementController.setActiveSummons(null);
       movementController.setMode(FinalBossMovementComponent.Mode.STOPPED);
     }
 
@@ -213,7 +291,7 @@ public class FinalBossStageOneComponent extends Component {
 
   private void changeState(FinalBossStageOneState nextState) {
     state = nextState;
-
+    stateElapsed = 0f;
     entity.getEvents().trigger(FinalBossEvents.STAGE_ONE_STATE_CHANGED, state);
   }
 
