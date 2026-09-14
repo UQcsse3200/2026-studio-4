@@ -163,7 +163,7 @@ public class MainGameScreen extends ScreenAdapter {
     terminal.addCommand("weapon", new WeaponCommand(player));
     terminal.addCommand("ability", new AbilityCommand(player));
 
-    InventoryDisplay inventoryDisplay = new InventoryDisplay();
+    InventoryDisplay inventoryDisplay = new InventoryDisplay(player);
     InventoryActions inventoryActions = new InventoryActions(inventoryDisplay);
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
 

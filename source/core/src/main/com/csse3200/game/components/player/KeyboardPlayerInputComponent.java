@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.input.InputComponent;
+import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.utils.math.Vector2Utils;
 
 /**
@@ -26,6 +27,15 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   @Override
   public boolean keyDown(int keycode) {
     switch (keycode) {
+      case Keys.NUM_1:
+        entity.getEvents().trigger("equipWeapon", WeaponType.SWORD);
+        return true;
+      case Keys.NUM_2:
+        entity.getEvents().trigger("equipWeapon", WeaponType.DAGGER);
+        return true;
+      case Keys.NUM_3:
+        entity.getEvents().trigger("equipWeapon", WeaponType.BOW);
+        return true;
       case Keys.W:
         walkDirection.add(Vector2Utils.UP);
         triggerWalkEvent();

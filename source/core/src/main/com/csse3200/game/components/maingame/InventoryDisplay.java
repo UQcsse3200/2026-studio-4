@@ -1,6 +1,7 @@
 package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -12,11 +13,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
+import com.csse3200.game.components.weapons.WeaponSelectionComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.items.WeaponItem;
+import com.csse3200.game.items.WeaponItem.WeaponType;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Displays the inventory book and a persistent, decorative six-slot hotbar. */
+/** Displays the inventory book and persistent hotbar with the player's selected weapon. */
 public class InventoryDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(InventoryDisplay.class);
   private static final float Z_INDEX = 2f;
@@ -28,11 +35,25 @@ public class InventoryDisplay extends UIComponent {
   private Table table;
   private Table hotbarTable;
   private Texture hotbarTexture;
+  private final Entity player;
+  private final WeaponSelectionComponent selection;
+  private final Image[] weaponFrames = new Image[3];
+  private boolean disposed;
+
+  /**
+   * @param player player whose equipment and item icons are displayed
+   */
+  public InventoryDisplay(Entity player) {
+    this.player = Objects.requireNonNull(player);
+    selection = Objects.requireNonNull(player.getComponent(WeaponSelectionComponent.class));
+  }
 
   @Override
   public void create() {
     super.create();
     addActors();
+    updateWeaponSelection(selection.getSelectedWeapon());
+    player.getEvents().addListener("weaponSelected", this::updateWeaponSelection);
   }
 
   private void addActors() {
@@ -79,13 +100,13 @@ public class InventoryDisplay extends UIComponent {
           }
         });
     hotbarTable.setTouchable(Touchable.disabled);
-    hotbarTable.add(createHotbarGroup(slot));
+    hotbarTable.add(createHotbarGroup(slot, true));
     hotbarTable.add().expandX();
-    hotbarTable.add(createHotbarGroup(slot));
+    hotbarTable.add(createHotbarGroup(slot, false));
     stage.addActor(hotbarTable);
   }
 
-  private Table createHotbarGroup(TextureRegionDrawable slot) {
+  private Table createHotbarGroup(TextureRegionDrawable slot, boolean showWeapons) {
     Table group = new Table();
     Value slotSize =
         new Value() {
@@ -97,9 +118,49 @@ public class InventoryDisplay extends UIComponent {
     for (int i = 0; i < 3; i++) {
       Image circle = new Image(slot);
       circle.setScaling(Scaling.fit);
-      group.add(circle).size(slotSize).padRight(i < 2 ? HOTBAR_SLOT_GAP : 0f);
+      Actor content = circle;
+      if (showWeapons) {
+        weaponFrames[i] = circle;
+        circle.setName("weapon-frame-" + (i + 1));
+        content = createWeaponSlot(circle, selection.getWeapons().get(i), i + 1);
+      }
+      group.add(content).size(slotSize).padRight(i < 2 ? HOTBAR_SLOT_GAP : 0f);
     }
     return group;
+  }
+
+  private Stack createWeaponSlot(Image frame, WeaponItem item, int key) {
+    Stack slot = new Stack();
+    slot.add(frame);
+    // These textures belong to WeaponAssetsComponent; the UI only borrows them.
+    Texture texture =
+        ServiceLocator.getResourceService().getAsset(item.getTexture(), Texture.class);
+    Image icon = new Image(texture);
+    icon.setName("weapon-icon-" + key);
+    icon.setScaling(Scaling.fit);
+    Container<Image> iconContainer = new Container<>(icon);
+    iconContainer.size(Value.percentWidth(0.55f, slot));
+    slot.add(iconContainer);
+
+    Label.LabelStyle keyStyle = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
+    keyStyle.fontColor = Color.WHITE;
+    Label keyLabel = new Label(Integer.toString(key), keyStyle);
+    keyLabel.setName("weapon-key-" + key);
+    keyLabel.setFontScale(1.05f);
+    Table labelOverlay = new Table();
+    labelOverlay.bottom().add(keyLabel).padBottom(2f);
+    slot.add(labelOverlay);
+    return slot;
+  }
+
+  private void updateWeaponSelection(WeaponType selected) {
+    if (disposed) {
+      return;
+    }
+    for (int i = 0; i < weaponFrames.length; i++) {
+      weaponFrames[i].setColor(
+          WeaponSelectionComponent.SLOT_WEAPONS.get(i) == selected ? Color.WHITE : Color.GRAY);
+    }
   }
 
   /** Use the enlarged circles where space permits, shrinking only for narrow windows. */
@@ -273,6 +334,7 @@ public class InventoryDisplay extends UIComponent {
 
   @Override
   public void dispose() {
+    disposed = true;
     table.remove();
     hotbarTable.remove();
     hotbarTexture.dispose();

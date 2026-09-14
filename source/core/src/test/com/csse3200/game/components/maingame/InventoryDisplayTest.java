@@ -3,16 +3,24 @@ package com.csse3200.game.components.maingame;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.csse3200.game.components.weapons.*;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +38,19 @@ class InventoryDisplayTest {
     ServiceLocator.registerEntityService(new EntityService());
     // Registering the entity calls InventoryDisplay.create(), which adds the book and hotbar
     // to the stage. These services also support the component's normal disposal path below.
-    InventoryDisplay display = new InventoryDisplay();
+    ResourceService resources = new ResourceService();
+    ServiceLocator.registerResourceService(resources);
+    WeaponSelectionComponent selection = new WeaponSelectionComponent();
+    Entity player =
+        new Entity()
+            .addComponent(new WeaponAssetsComponent())
+            .addComponent(new WeaponStatsComponent(0.5f, 1f, 2f))
+            .addComponent(new SwordWeaponComponent())
+            .addComponent(new KnifeWeaponComponent())
+            .addComponent(new BowWeaponComponent())
+            .addComponent(selection);
+    ServiceLocator.getEntityService().register(player);
+    InventoryDisplay display = new InventoryDisplay(player);
     Entity ui = new Entity().addComponent(display);
     ServiceLocator.getEntityService().register(ui);
     try {
@@ -42,6 +62,23 @@ class InventoryDisplayTest {
       assertTrue(hotbar.isVisible());
       assertEquals(Touchable.disabled, hotbar.getTouchable());
       assertFalse(stage.getRoot().findActor("inventory-book").isVisible());
+      Image swordFrame = hotbar.findActor("weapon-frame-1");
+      Image knifeFrame = hotbar.findActor("weapon-frame-2");
+      Image bowFrame = hotbar.findActor("weapon-frame-3");
+      assertEquals(Color.WHITE, swordFrame.getColor());
+      assertEquals(Color.GRAY, knifeFrame.getColor());
+      assertEquals(Color.GRAY, bowFrame.getColor());
+      for (int i = 0; i < 3; i++) {
+        Image icon = hotbar.findActor("weapon-icon-" + (i + 1));
+        Texture expected =
+            resources.getAsset(selection.getWeapons().get(i).getTexture(), Texture.class);
+        assertSame(expected, ((TextureRegionDrawable) icon.getDrawable()).getRegion().getTexture());
+        Label label = hotbar.findActor("weapon-key-" + (i + 1));
+        assertEquals(Integer.toString(i + 1), label.getText().toString());
+      }
+      selection.equip(WeaponType.BOW);
+      assertEquals(Color.GRAY, swordFrame.getColor());
+      assertEquals(Color.WHITE, bowFrame.getColor());
 
       // Exercise page changes with the book both open and closed. Repeating the sequence catches
       // abandoned book tables accumulating on the stage when a page is rebuilt.
@@ -53,6 +90,9 @@ class InventoryDisplayTest {
         display.changePage();
         assertFalse(stage.getRoot().findActor("inventory-book").isVisible());
         assertTrue(hotbar.isVisible());
+        selection.equip(WeaponType.DAGGER);
+        assertEquals(Color.WHITE, knifeFrame.getColor());
+        assertEquals(Color.GRAY, bowFrame.getColor());
         // Only two top-level actors belong in this isolated stage: the book and the hotbar.
         // Their nested slot images and page contents do not count as top-level actors.
         assertEquals(2, stage.getActors().size, "Page changes must not leak stage actors");
@@ -101,6 +141,9 @@ class InventoryDisplayTest {
           // Allow one pixel of tolerance because Scene2D rounds fractional bounds to whole pixels.
           assertEquals(width >= 1280 ? 96f : 70.333f, circle.getWidth(), 1f);
         }
+        Image icon = hotbar.findActor("weapon-icon-1");
+        assertEquals(left.getChildren().first().getWidth() * 0.55f, icon.getWidth(), 1f);
+        assertEquals(Color.WHITE, ((Image) right.getChildren().first()).getColor());
       }
     } finally {
       // Dispose even if an assertion fails. Entity disposal should remove both UI tables (and
@@ -108,6 +151,10 @@ class InventoryDisplayTest {
       // specifically.
       ui.dispose();
       assertEquals(0, stage.getActors().size);
+      // Disposing the display must not unload the player-owned weapon textures.
+      assertNotNull(resources.getAsset(selection.getWeapons().get(0).getTexture(), Texture.class));
+      player.dispose();
+      resources.dispose();
       stage.dispose();
     }
   }
