@@ -21,6 +21,13 @@ public class FinalBossPhaseControllerComponent extends Component {
     }
 
     currentPhase = nextPhase(currentPhase);
+    if (currentPhase == FinalBossPhase.STAGE_TWO) {
+      FinalBossMovementComponent movement = entity.getComponent(FinalBossMovementComponent.class);
+      if (movement != null) {
+        movement.setMode(FinalBossMovementComponent.Mode.STEP_TOWARDS_PLAYER);
+        movement.enableChargeAttacks();
+      }
+    }
     entity.getEvents().trigger(FinalBossEvents.PHASE_CHANGED, currentPhase);
     return true;
   }
