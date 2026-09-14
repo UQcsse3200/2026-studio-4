@@ -31,8 +31,9 @@ class InventoryDisplayLayeringTest {
     new Entity().addComponent(display);
     display.create();
     try {
-      // The book is the only actor initially added to this isolated stage, and starts closed.
-      Actor book = stage.getActors().first();
+      // Find the book by name because the stage also contains the persistent hotbar.
+      Actor book = stage.getRoot().findActor("inventory-book");
+      assertNotNull(book);
       assertFalse(book.isVisible());
       // A plain actor stands in for an enemy health bar: only its stage order matters here.
       Actor enemyOverlay = new Actor();
@@ -49,8 +50,10 @@ class InventoryDisplayLayeringTest {
 
         // Page switching rebuilds the book; the replacement must also cover the health bar.
         display.changePage();
-        // peek() returns the last stage actor, which is the newly added book table.
-        book = stage.getActors().peek();
+        // The hotbar is brought to the front during page changes, so stage order cannot
+        // identify the replacement book. Resolve the new book actor by its stable name.
+        book = stage.getRoot().findActor("inventory-book");
+        assertNotNull(book);
         assertNotSame(enemyOverlay, book);
         assertTrue(book.isVisible());
         assertTrue(book.getZIndex() > enemyOverlay.getZIndex());
