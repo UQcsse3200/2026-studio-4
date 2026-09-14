@@ -82,13 +82,14 @@ public class CerberusFactory {
 
     animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("lunge", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation("idle", 0.1f, Animation.PlayMode.LOOP);
 
     sideHead
         .addComponent(new CombatStatsComponent(health, 10))
         .addComponent(new HeadAttachmentComponent(mainHead, offset))
         .addComponent(animator);
 
-    animator.startAnimation("move");
+    animator.startAnimation("idle");
 
     return sideHead;
   }
@@ -117,7 +118,7 @@ public class CerberusFactory {
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
 
     animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("idle", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation("idle", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("lunge", 0.1f, Animation.PlayMode.NORMAL);
 
     mainHead
@@ -127,10 +128,10 @@ public class CerberusFactory {
         .addComponent(new CerberusAnimationController());
 
     Entity leftHead =
-        createCerberusSideHead(mainHead, new Vector2(-0.55f, 0.25f), conf.health / 2, skin);
+        createCerberusSideHead(mainHead, new Vector2(-0.3f, 0.15f), conf.health / 2, skin);
 
     Entity rightHead =
-        createCerberusSideHead(mainHead, new Vector2(0.55f, 0.25f), conf.health / 2, skin);
+        createCerberusSideHead(mainHead, new Vector2(0.3f, 0.15f), conf.health / 2, skin);
 
     CerberusPhaseComponent phase = new CerberusPhaseComponent(leftHead, rightHead);
 
@@ -166,7 +167,7 @@ public class CerberusFactory {
     sideHeadSpawner.accept(leftHead);
     sideHeadSpawner.accept(rightHead);
 
-    animator.startAnimation("move");
+    animator.startAnimation("idle");
 
     return mainHead;
   }
