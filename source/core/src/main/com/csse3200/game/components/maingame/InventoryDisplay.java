@@ -11,7 +11,7 @@ import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Displays a button to exit the Main Game screen to the Main Menu screen. */
+/** Displays an Inventory UI over the main game screen. */
 public class InventoryDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(InventoryDisplay.class);
   private static final float Z_INDEX = 2f;
@@ -118,9 +118,9 @@ public class InventoryDisplay extends UIComponent {
   }
 
   /**
-   * Creates the consumable inventory UI
+   * Creates the Charms inventory UI
    *
-   * @return the Consumable inventory UI
+   * @return the Charms inventory UI
    */
   private Table charmsCreate() {
     // Overall page table with padding inside cover
@@ -153,7 +153,7 @@ public class InventoryDisplay extends UIComponent {
   /**
    * Builds a grid style inventory according to the parameters given
    *
-   * @param columns number of coloumns in the inventory
+   * @param columns number of columns in the inventory
    * @param totalSlots number of total slots in the inventory
    * @param slotSize size of the slots in the inventory
    * @return a table component to be displayed in the inventory
