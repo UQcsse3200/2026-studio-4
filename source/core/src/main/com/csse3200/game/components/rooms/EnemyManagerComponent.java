@@ -56,7 +56,9 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
         Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
         return NPCFactory.createFloatingDemon(
-            target, leftPoint, topPoint, rightPoint, this::spawnEntity);
+                target, leftPoint, topPoint, rightPoint, this::spawnEntity);
+      case SNAKE_MINI_BOSS:
+        return NPCFactory.createSnakeMiniBoss(target);
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
     }
@@ -67,8 +69,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     activeEnemies.add(enemy);
     enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy));
     enemy
-        .getEvents()
-        .addListener("spawnChildren", (Entity child) -> replaceWithChild(enemy, child));
+            .getEvents()
+            .addListener("spawnChildren", (Entity child) -> replaceWithChild(enemy, child));
   }
 
   private void onEnemyDefeated(Entity enemy) {

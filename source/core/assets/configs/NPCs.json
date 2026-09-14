@@ -17,6 +17,14 @@
       "x": 3,
       "y": 3
     }
+  },
+  "snakeMiniBoss" : {
+    "health": 150,
+    "baseAttack": 10,
+    "movement": {
+      "x": 2,
+      "y": 2
+    }
   }
 }
 

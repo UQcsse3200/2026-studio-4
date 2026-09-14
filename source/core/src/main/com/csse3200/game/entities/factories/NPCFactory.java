@@ -12,9 +12,11 @@ import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.FloatingDemonAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
+import com.csse3200.game.components.tasks.CoilAttackTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
 import com.csse3200.game.components.tasks.PatrolTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
+import com.csse3200.game.components.tasks.VenomSpitAttackTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
@@ -41,7 +43,7 @@ import java.util.function.Consumer;
  */
 public class NPCFactory {
   private static final NPCConfigs configs =
-      FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
+          FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
 
   private static final float CHASE_SPEED = 2.5f;
   private static final String DEFAULT_ANIMATION = "default";
@@ -58,26 +60,26 @@ public class NPCFactory {
     BombEnemyConfig config = configs.bombEnemy;
 
     AITaskComponent aiComponent =
-        new AITaskComponent()
-            .addTask(new WanderTask(config.movement, 1f))
-            .addTask(new ChaseTask(target, 10, 3f, 10f));
+            new AITaskComponent()
+                    .addTask(new WanderTask(config.movement, 1f))
+                    .addTask(new ChaseTask(target, 10, 3f, 10f));
 
     AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/bombEnemy.atlas", TextureAtlas.class));
+            new AnimationRenderComponent(
+                    ServiceLocator.getResourceService()
+                            .getAsset("images/bombEnemy.atlas", TextureAtlas.class));
     animator.addAnimation("move", 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     bombEnemy
-        .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
-        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
-        .addComponent(aiComponent)
-        .addComponent(animator)
-        .addComponent(new ExplodeComponent(target))
-        .addComponent(new EnemyAnimationController());
+            .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
+            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
+            .addComponent(aiComponent)
+            .addComponent(animator)
+            .addComponent(new ExplodeComponent(target))
+            .addComponent(new EnemyAnimationController());
 
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
 
@@ -98,26 +100,26 @@ public class NPCFactory {
     ChaseEnemyConfig config = configs.chaseEnemy;
 
     AITaskComponent aiComponent =
-        new AITaskComponent()
-            .addTask(new WanderTask(config.movement, 1f))
-            .addTask(new ChaseTask(target, 10, 3f, 10f))
-            .addTask(new LungeAttackTask(target, CHASE_SPEED));
+            new AITaskComponent()
+                    .addTask(new WanderTask(config.movement, 1f))
+                    .addTask(new ChaseTask(target, 10, 3f, 10f))
+                    .addTask(new LungeAttackTask(target, CHASE_SPEED));
 
     AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/chaseEnemy.atlas", TextureAtlas.class));
+            new AnimationRenderComponent(
+                    ServiceLocator.getResourceService()
+                            .getAsset("images/chaseEnemy.atlas", TextureAtlas.class));
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
 
     chaseEnemy
-        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
-        .addComponent(aiComponent)
-        .addComponent(animator)
-        .addComponent(new EnemyAnimationController());
+            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
+            .addComponent(aiComponent)
+            .addComponent(animator)
+            .addComponent(new EnemyAnimationController());
 
     if (shouldSplit) {
       chaseEnemy.addComponent(new SplitComponent(target));
@@ -127,10 +129,57 @@ public class NPCFactory {
     animator.startAnimation(DEFAULT_ANIMATION);
 
     chaseEnemy
-        .getComponent(PhysicsMovementComponent.class)
-        .setMaxSpeed(new Vector2(CHASE_SPEED, CHASE_SPEED));
+            .getComponent(PhysicsMovementComponent.class)
+            .setMaxSpeed(new Vector2(CHASE_SPEED, CHASE_SPEED));
 
     return chaseEnemy;
+  }
+
+  /**
+   * Creates the snake mini-boss entity. Moves toward the player and, once close enough, performs
+   * a telegraphed coil attack that poisons the player over time. Once its own health drops below
+   * 50%, it also gains a ranged venom-spit attack that creates a damaging pool on the ground.
+   *
+   * @param target entity to chase
+   * @return entity
+   */
+  public static Entity createSnakeMiniBoss(Entity target) {
+    Entity snakeBoss = createBaseNPC();
+    SnakeMiniBossConfig config = configs.snakeMiniBoss;
+
+    AITaskComponent aiComponent =
+            new AITaskComponent()
+                    .addTask(new WanderTask(config.movement, 1f))
+                    .addTask(new ChaseTask(target, 10, 3f, 10f))
+                    .addTask(new CoilAttackTask(target, CHASE_SPEED))
+                    .addTask(new VenomSpitAttackTask(target));
+
+    // Placeholder art until the snake's own sprite sheet is ready - reuses the Chase Enemy's
+    // atlas so the boss is visible and testable in the meantime.
+    AnimationRenderComponent animator =
+            new AnimationRenderComponent(
+                    ServiceLocator.getResourceService()
+                            .getAsset("images/chaseEnemy.atlas", TextureAtlas.class));
+    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+
+    snakeBoss
+            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
+            .addComponent(aiComponent)
+            .addComponent(animator)
+            .addComponent(new EnemyAnimationController());
+
+    animator.scaleEntity();
+    animator.startAnimation(DEFAULT_ANIMATION);
+
+    snakeBoss
+            .getComponent(PhysicsMovementComponent.class)
+            .setMaxSpeed(new Vector2(CHASE_SPEED, CHASE_SPEED));
+
+    return snakeBoss;
   }
 
   /**
@@ -142,46 +191,46 @@ public class NPCFactory {
    * @return floating demon entity
    */
   public static Entity createFloatingDemon(
-      Entity target, Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint) {
+          Entity target, Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint) {
     return createFloatingDemon(
-        target,
-        leftPoint,
-        topPoint,
-        rightPoint,
-        projectile -> ServiceLocator.getEntityService().register(projectile));
+            target,
+            leftPoint,
+            topPoint,
+            rightPoint,
+            projectile -> ServiceLocator.getEntityService().register(projectile));
   }
 
   /** Creates a floating demon and delegates ownership of its projectiles to the given spawner. */
   public static Entity createFloatingDemon(
-      Entity target,
-      Vector2 leftPoint,
-      Vector2 topPoint,
-      Vector2 rightPoint,
-      Consumer<Entity> projectileSpawner) {
+          Entity target,
+          Vector2 leftPoint,
+          Vector2 topPoint,
+          Vector2 rightPoint,
+          Consumer<Entity> projectileSpawner) {
     FloatingDemonConfig config = configs.floatingDemon;
     AITaskComponent aiComponent =
-        new AITaskComponent()
-            .addTask(new PatrolTask(leftPoint, topPoint, rightPoint))
-            .addTask(new RangedAttackTask(target, config.baseAttack, projectileSpawner));
+            new AITaskComponent()
+                    .addTask(new PatrolTask(leftPoint, topPoint, rightPoint))
+                    .addTask(new RangedAttackTask(target, config.baseAttack, projectileSpawner));
 
     AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/floatingDemon.atlas", TextureAtlas.class));
+            new AnimationRenderComponent(
+                    ServiceLocator.getResourceService()
+                            .getAsset("images/floatingDemon.atlas", TextureAtlas.class));
     animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.08f);
     animator.addAnimation(DIE_ANIMATION, 0.1f);
 
     Entity demon =
-        new Entity()
-            .addComponent(new PhysicsComponent())
-            .addComponent(new PhysicsMovementComponent())
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-            .addComponent(new EnemyDeathComponent(true))
-            .addComponent(aiComponent)
-            .addComponent(animator)
-            .addComponent(new FloatingDemonAnimationController());
+            new Entity()
+                    .addComponent(new PhysicsComponent())
+                    .addComponent(new PhysicsMovementComponent())
+                    .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+                    .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+                    .addComponent(new EnemyDeathComponent(true))
+                    .addComponent(aiComponent)
+                    .addComponent(animator)
+                    .addComponent(new FloatingDemonAnimationController());
 
     animator.scaleEntity();
     demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
@@ -195,12 +244,12 @@ public class NPCFactory {
    */
   public static Entity createBaseNPC() {
     Entity npc =
-        new Entity()
-            .addComponent(new PhysicsComponent())
-            .addComponent(new PhysicsMovementComponent())
-            .addComponent(new ColliderComponent())
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new EnemyDeathComponent(true));
+            new Entity()
+                    .addComponent(new PhysicsComponent())
+                    .addComponent(new PhysicsMovementComponent())
+                    .addComponent(new ColliderComponent())
+                    .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+                    .addComponent(new EnemyDeathComponent(true));
 
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);
     return npc;
