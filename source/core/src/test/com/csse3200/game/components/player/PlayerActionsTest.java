@@ -132,6 +132,7 @@ class PlayerActionsTest {
   void shouldNotTriggerWeaponAttackOnSpecialAttack() {
     int[] weaponAttacks = {0};
     player.getEvents().addListener("weaponAttack", (Vector2 direction) -> weaponAttacks[0]++);
+    player.getEvents().addListener("weaponHeavyAttack", (Vector2 direction) -> weaponAttacks[0]++);
 
     player.getEvents().trigger("specialAttack");
 
@@ -140,6 +141,21 @@ class PlayerActionsTest {
     verify(animator, never()).startAnimation("attack_left");
     verify(animator, never()).startAnimation("attack_right");
     verify(animator, never()).startAnimation("attack_up");
+  }
+
+  @Test
+  void shouldTriggerHeavyWeaponAttackInFacingDirectionOnHeavyAttack() {
+    walk(Vector2Utils.LEFT);
+    player.getEvents().trigger("walkStop");
+    Vector2[] facing = {null};
+    player
+        .getEvents()
+        .addListener("weaponHeavyAttack", (Vector2 direction) -> facing[0] = direction);
+
+    player.getEvents().trigger("heavyAttack");
+
+    assertEquals(-1f, facing[0].x, 0.001f);
+    assertEquals(0f, facing[0].y, 0.001f);
   }
 
   @Test

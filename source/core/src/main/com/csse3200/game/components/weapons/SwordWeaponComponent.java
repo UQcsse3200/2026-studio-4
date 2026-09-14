@@ -10,16 +10,23 @@ import com.csse3200.game.services.ServiceLocator;
 /**
  * Slower sweeping attack. Spawns a rectangular sword hitbox that moves along a predetermined arc of
  * attack using SweepComponent.
+ *
+ * <p>Once upgraded (see {@link WeaponUpgradeComponent}) the sword also has a heavy attack: the same
+ * blade swept a full 360 degrees around the wielder.
  */
 public class SwordWeaponComponent extends WeaponComponent {
   /** Sprite drawn for the sword's sweeping attack. Loaded by {@link WeaponAssetsComponent}. */
   public static final String TEXTURE = "images/weapons/sword.png";
 
   // weapon attributes
-  private static final float LIFETIME = 0.5f; // How long the sweep attack takes
+  private static final float LIGHT_LIFETIME = 0.25f; // How long the light sweep takes
+  // How long the heavy spin takes. Slower than the light sweep so the full turn reads clearly;
+  // must stay below the heavy cooldown so one spin ends before the next can start.
+  private static final float HEAVY_LIFETIME = 0.8f;
   private static final float BLADE_LENGTH = 1.0f; // the length of the hitbox when sweeping
   private static final float BLADE_WIDTH = 0.4f; // the width of the hitbox when sweeping
   private static final float ARC_DEGREES = 90f; // the arc of the sweep attack
+  private static final float HEAVY_ARC_DEGREES = 360f; // the heavy attack spins all the way around
   private static final float GAP = 0.05f; // hitbox min distance from the player
   // Drawn square so the blade keeps its shape; the hitbox stays long and thin for collision.
   private static final float SPRITE_SIZE = 1.0f;
@@ -34,6 +41,35 @@ public class SwordWeaponComponent extends WeaponComponent {
 
   @Override
   protected void createAttack(Vector2 origin, Vector2 direction) {
+    spawnSweep(origin, direction, ARC_DEGREES, LIGHT_LIFETIME, resolveHitboxDamage());
+  }
+
+  @Override
+  protected boolean hasHeavyAttack() {
+    return true;
+  }
+
+  @Override
+  protected void createHeavyAttack(Vector2 origin, Vector2 direction) {
+    spawnSweep(origin, direction, HEAVY_ARC_DEGREES, HEAVY_LIFETIME, resolveHeavyHitboxDamage());
+  }
+
+  @Override
+  protected float getHeavyAttackDuration() {
+    return HEAVY_LIFETIME;
+  }
+
+  /**
+   * Spawn the blade hitbox and sweep it through an arc centred on the attack direction.
+   *
+   * @param origin world position of the attack
+   * @param direction facing or aim direction
+   * @param arcDegrees total angle the blade sweeps through
+   * @param lifetime seconds the sweep takes to cover the arc
+   * @param damage damage dealt to each enemy the blade touches
+   */
+  private void spawnSweep(
+      Vector2 origin, Vector2 direction, float arcDegrees, float lifetime, int damage) {
     WeaponStatsComponent stats = entity.getComponent(WeaponStatsComponent.class);
 
     Vector2 dir = direction.cpy().nor();
@@ -53,8 +89,8 @@ public class SwordWeaponComponent extends WeaponComponent {
 
     // get start and end of attack radius for sweep component constructor
     float baseAngle = dir.angleDeg();
-    float startAngle = baseAngle - ARC_DEGREES / 2f;
-    float endAngle = baseAngle + ARC_DEGREES / 2f;
+    float startAngle = baseAngle - arcDegrees / 2f;
+    float endAngle = baseAngle + arcDegrees / 2f;
 
     Vector2 offset = new Vector2(reach, 0f).setAngleDeg(startAngle);
 
@@ -63,10 +99,10 @@ public class SwordWeaponComponent extends WeaponComponent {
         new HitboxSpec()
             .position(origin)
             .size(size)
-            .lifetime(LIFETIME)
+            .lifetime(lifetime)
             .layer(PhysicsLayer.WEAPON)
             .targetLayer(PhysicsLayer.NPC)
-            .damage(resolveHitboxDamage())
+            .damage(damage)
             .knockback(stats.getKnockback())
             .owner(entity)
             .localOffset(offset)
@@ -78,7 +114,7 @@ public class SwordWeaponComponent extends WeaponComponent {
             .rotationOffset(SPRITE_ANGLE_OFFSET);
 
     Entity hitbox = HitboxFactory.createHitbox(spec);
-    hitbox.addComponent(new SweepComponent(LIFETIME, startAngle, endAngle, reach));
+    hitbox.addComponent(new SweepComponent(lifetime, startAngle, endAngle, reach));
     ServiceLocator.getEntityService().register(hitbox);
   }
 }
