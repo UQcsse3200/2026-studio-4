@@ -12,6 +12,7 @@ import com.csse3200.game.components.boss.FinalBossProximityDamageComponent;
 import com.csse3200.game.components.boss.FinalBossStageOneComponent;
 import com.csse3200.game.components.boss.FinalBossSummonVisualComponent;
 import com.csse3200.game.components.boss.FinalBossVisualComponent;
+import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageOneConfig;
 import java.util.function.Consumer;
@@ -46,7 +47,9 @@ public final class FinalBossFactory {
             .addComponent(new FinalBossProximityDamageComponent(target, config))
             .addComponent(new FinalBossPetrificationWarningRenderComponent())
             .addComponent(new FinalBossPetrificationComponent(target, config))
-            .addComponent(new FinalBossPetrificationVisualComponent(target, config));
+            .addComponent(new FinalBossPetrificationVisualComponent(target, config))
+            .addComponent(new FinalBossStageOneComponent(target, summonSpawner, config))
+            .addComponent(new EnemyStatDisplay(3.0f));
 
     boss.setScale(2f, 2f);
 

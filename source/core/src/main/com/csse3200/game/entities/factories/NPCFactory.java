@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.*;
 import com.csse3200.game.components.npc.EnemyAnimationController;
+import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
 import com.csse3200.game.components.tasks.PatrolTask;
@@ -43,6 +44,8 @@ public class NPCFactory {
   private static final String DIE_ANIMATION = "dieAnimation";
   private static final String MOVE = "move";
   private static final String CHASE_ANIMATION = "chase";
+  private static final float BOSS_ENEMY_SCALE = 3f;
+  private static final float NORMAL_ENEMY_SCALE = 1.5f;
 
   public static Entity createGiantEnemy(Entity target, String skin) {
     Entity giantEnemy = createBaseNPC();
@@ -67,7 +70,8 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(new EnemyDeathComponent(true))
         .addComponent(animator)
-        .addComponent(new EnemyAnimationController());
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(BOSS_ENEMY_SCALE));
     giantEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
     giantEnemy.setScale(2, 2);
 
@@ -106,7 +110,9 @@ public class NPCFactory {
         .addComponent(new EnemyDeathComponent(true))
         .addComponent(animator)
         .addComponent(new ExplodeComponent(target, fuseTime))
-        .addComponent(new EnemyAnimationController());
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(NORMAL_ENEMY_SCALE));
+
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
 
     return bombEnemy;
@@ -144,8 +150,10 @@ public class NPCFactory {
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
         .addComponent(aiComponent)
         .addComponent(animator)
-        .addComponent(new EnemyDeathComponent(true))
-        .addComponent(new EnemyAnimationController());
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(NORMAL_ENEMY_SCALE))
+        .addComponent(new EnemyDeathComponent(true));
+
     if (shouldSplit) {
       chaseEnemy.addComponent(new SplitComponent(target, skin));
     }
@@ -221,7 +229,8 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(animator)
         .addComponent(new EnemyDeathComponent(true, true))
-        .addComponent(new EnemyAnimationController());
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(NORMAL_ENEMY_SCALE));
 
     animator.scaleEntity();
     animator.startAnimation("move");
