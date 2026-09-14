@@ -1,9 +1,8 @@
 package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
-import com.csse3200.game.items.charms.Charm;
 import com.csse3200.game.components.maingame.InventoryDisplay;
-import com.csse3200.game.items.Charm;
+import com.csse3200.game.items.charms.Charm;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
