@@ -1,6 +1,9 @@
 package com.csse3200.game.components.boss;
 
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
@@ -8,33 +11,53 @@ import com.csse3200.game.entities.configs.FinalBossStageOneConfig;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collections;
 
-/** Controls the movement modes used by Grandpa during Stage 1. */
+/** Moves Grandpa towards the player in discrete steps separated by pauses. */
 public class FinalBossMovementComponent extends Component {
   /** Available Stage 1 movement modes. */
   public enum Mode {
     STOPPED,
-    WANDER_AVOID_SUMMONS,
-    FLEE_PLAYER
+    STEP_TOWARDS_PLAYER,
+    FLEE_ALONG_EDGE
   }
+
+  private static final float ARRIVAL_DISTANCE = 0.1f;
+  private static final float SCREEN_MARGIN = 0.25f;
+  private static final float PLAYER_STOP_DISTANCE = 0.75f;
+  private static final float MINIMUM_STEP_TIMEOUT = 2f;
 
   private final Entity target;
   private final FinalBossStageOneConfig config;
-  private final Set<Entity> activeSummons = new HashSet<>();
+
+  private Collection<Entity> activeSummons = Collections.emptyList();
 
   private PhysicsMovementComponent movement;
+  private Camera camera;
   private Mode mode = Mode.STOPPED;
-  private float refreshRemaining;
-  private float wanderAngle;
+  private Vector2 destination;
+  private Vector2 chargeDestination;
+
+  private float pauseRemaining;
+  private float stepRemaining;
+  private float chargeDelayRemaining;
+  private float chargeWarningRemaining;
+  private boolean chargeAttacksEnabled;
+  private boolean disposed;
+
+  /** Uses the live wave collection so removed summons are no longer considered. */
+  public void setActiveSummons(Collection<Entity> summons) {
+    activeSummons = summons == null ? Collections.emptyList() : summons;
+  }
 
   public FinalBossMovementComponent(Entity target, FinalBossStageOneConfig config) {
     if (target == null || config == null) {
       throw new IllegalArgumentException("Target and config must not be null");
     }
 
+    config.validate();
     this.target = target;
     this.config = config;
   }
@@ -49,146 +72,471 @@ public class FinalBossMovementComponent extends Component {
     }
   }
 
-  @Override
-  public void update() {
-    if (mode == Mode.STOPPED) {
-      movement.setMoving(false);
-      return;
-    }
-
-    movement.setMoving(true);
-
-    GameTime time = ServiceLocator.getTimeSource();
-    float deltaTime = time == null ? 0f : Math.max(time.getDeltaTime(), 0f);
-
-    refreshRemaining -= deltaTime;
-
-    if (refreshRemaining > 0f) {
-      return;
-    }
-
-    refreshRemaining = config.movementTargetRefreshInterval;
-
-    if (mode == Mode.FLEE_PLAYER) {
-      updateFleeTarget();
-    } else {
-      updateWanderTarget();
-    }
+  /** Supplies the world camera used to constrain movement destinations. */
+  public void setCamera(Camera camera) {
+    this.camera = camera;
   }
 
-  /** Changes the active movement behaviour. */
+  public Camera getCamera() {
+    return camera;
+  }
+
+  /** Changes behaviour and resets any previous movement or pause. */
   public void setMode(Mode mode) {
-    if (mode == null) {
-      throw new IllegalArgumentException("Movement mode must not be null");
+    if (mode == Mode.FLEE_ALONG_EDGE && camera == null) {
+      throw new IllegalStateException("Edge movement requires the world camera");
     }
 
     this.mode = mode;
-    refreshRemaining = 0f;
-
-    PhysicsMovementComponent controller = requireMovement();
-
-    float speed = mode == Mode.FLEE_PLAYER ? config.bossFleeSpeed : config.bossWanderSpeed;
-
-    controller.setMaxSpeed(new Vector2(speed, speed));
-
-    if (mode == Mode.STOPPED) {
-      controller.setMoving(false);
-    }
+    destination = null;
+    pauseRemaining = 0f;
+    stepRemaining = 0f;
   }
 
   public Mode getMode() {
     return mode;
   }
 
-  /** Updates the summons considered by the avoidance calculation. */
-  public void setActiveSummons(Collection<Entity> summons) {
-    activeSummons.clear();
+  /** Enables the Stage 2 charge cycle, beginning with its warning animation. */
+  public void enableChargeAttacks() {
+    chargeAttacksEnabled = true;
+    chargeDestination = null;
+    chargeDelayRemaining = 0f;
+    chargeWarningRemaining = config.bossChargeAttackDelay;
+  }
 
-    if (summons != null) {
-      activeSummons.addAll(summons);
+  /** Returns whether the boss is currently warning about an imminent charge. */
+  public boolean isChargeWarningActive() {
+    return chargeWarningRemaining > 0f;
+  }
+
+  @Override
+  public void update() {
+    if (disposed) {
+      return;
+    }
+
+    // Apply during movement and pauses, including the vulnerability window.
+    keepInsideVisibleArea();
+
+    if (mode == Mode.STOPPED) {
+      movement.setMoving(false);
+      return;
+    }
+
+    GameTime time = ServiceLocator.getTimeSource();
+    float deltaTime = time == null ? 0f : time.getDeltaTime();
+
+    if (!Float.isFinite(deltaTime) || deltaTime <= 0f) {
+      movement.setMoving(false);
+      return;
+    }
+
+    if (updateChargeCycle(deltaTime)) {
+      return;
+    }
+
+    if (pauseRemaining > 0f) {
+      pauseRemaining = Math.max(0f, pauseRemaining - deltaTime);
+      movement.setMoving(false);
+      return;
+    }
+
+    if (destination == null) {
+      chooseNextDestination();
+    }
+
+    updateStep(deltaTime);
+  }
+
+  @Override
+  public void dispose() {
+    disposed = true;
+    destination = null;
+    chargeDestination = null;
+    pauseRemaining = 0f;
+  }
+
+  /** Returns whether the charge cycle handled movement for this update. */
+  private boolean updateChargeCycle(float deltaTime) {
+    if (!chargeAttacksEnabled || mode != Mode.STEP_TOWARDS_PLAYER) {
+      return false;
+    }
+
+    if (chargeWarningRemaining > 0f) {
+      chargeWarningRemaining = Math.max(0f, chargeWarningRemaining - deltaTime);
+      movement.setMoving(false);
+      if (chargeWarningRemaining <= 0f) {
+        beginCharge();
+      }
+      return true;
+    }
+
+    if (chargeDestination != null) {
+      updateCharge(deltaTime);
+      return true;
+    }
+
+    chargeDelayRemaining = Math.max(0f, chargeDelayRemaining - deltaTime);
+    if (chargeDelayRemaining > 0f) {
+      return false;
+    }
+
+    if (config.bossChargeAttackDelay <= 0f) {
+      beginCharge();
+    } else {
+      chargeWarningRemaining = config.bossChargeAttackDelay;
+    }
+    movement.setMoving(false);
+    return true;
+  }
+
+  private void beginCharge() {
+    Vector2 direction = target.getCenterPosition().sub(entity.getCenterPosition());
+    if (direction.isZero()) {
+      chargeDelayRemaining = config.bossChargeAttackDelay;
+      return;
+    }
+
+    chargeDestination =
+        clampToVisibleArea(entity.getPosition().mulAdd(direction.nor(), config.bossChargeDistance));
+  }
+
+  private void updateCharge(float deltaTime) {
+    Vector2 currentPosition = entity.getPosition();
+    Vector2 direction = chargeDestination.cpy().sub(currentPosition);
+    float distance = direction.len();
+
+    if (distance <= ARRIVAL_DISTANCE) {
+      finishCharge();
+      return;
+    }
+
+    float stepDistance = Math.min(config.bossStepSpeed * deltaTime, distance);
+    Vector2 nextPosition =
+        clampToVisibleArea(currentPosition.cpy().mulAdd(direction.nor(), stepDistance));
+    Vector2 step = nextPosition.cpy().sub(currentPosition);
+
+    if (step.len() <= 0.001f) {
+      finishCharge();
+      return;
+    }
+
+    movement.setMaxSpeed(new Vector2(config.bossStepSpeed * 10, config.bossStepSpeed * 10));
+    movement.setTarget(nextPosition);
+    movement.setMoving(true);
+  }
+
+  private void finishCharge() {
+    chargeDestination = null;
+    chargeDelayRemaining = config.bossChargeAttackDelay;
+    movement.setMoving(false);
+  }
+
+  private void chooseNextDestination() {
+    if (mode == Mode.FLEE_ALONG_EDGE) {
+      destination = chooseEdgeDestination();
+    } else {
+      destination = choosePlayerDestination();
+    }
+
+    float actualDistance = entity.getPosition().dst(destination);
+
+    stepRemaining =
+        Math.max(
+            MINIMUM_STEP_TIMEOUT, actualDistance / config.bossStepSpeed + MINIMUM_STEP_TIMEOUT);
+  }
+
+  private Vector2 choosePlayerDestination() {
+    Vector2 direction = target.getCenterPosition().sub(entity.getCenterPosition());
+    float availableDistance = Math.max(0f, direction.len() - PLAYER_STOP_DISTANCE);
+
+    float randomDistance = MathUtils.random(config.bossStepMinDistance, config.bossStepMaxDistance);
+    float stepDistance = Math.min(randomDistance, availableDistance);
+
+    return clampToVisibleArea(entity.getPosition().mulAdd(direction.nor(), stepDistance));
+  }
+
+  private Vector2 chooseEdgeDestination() {
+    Rectangle bounds = getVisibleBounds();
+    Vector2 position = clampToVisibleArea(entity.getPosition());
+
+    float stepDistance = MathUtils.random(config.bossStepMinDistance, config.bossStepMaxDistance);
+
+    ArrayList<Vector2> candidates = new ArrayList<>();
+    float edgeTolerance = ARRIVAL_DISTANCE * 2f;
+
+    boolean nearVerticalEdge =
+        Math.abs(position.x - bounds.x) <= edgeTolerance
+            || Math.abs(position.x - (bounds.x + bounds.width)) <= edgeTolerance;
+
+    boolean nearHorizontalEdge =
+        Math.abs(position.y - bounds.y) <= edgeTolerance
+            || Math.abs(position.y - (bounds.y + bounds.height)) <= edgeTolerance;
+
+    if (nearVerticalEdge) {
+      // Keep x fixed: move vertically along the left or right edge.
+      addEdgeCandidate(
+          candidates,
+          position,
+          new Vector2(
+              position.x,
+              MathUtils.clamp(position.y + stepDistance, bounds.y, bounds.y + bounds.height)));
+
+      addEdgeCandidate(
+          candidates,
+          position,
+          new Vector2(
+              position.x,
+              MathUtils.clamp(position.y - stepDistance, bounds.y, bounds.y + bounds.height)));
+    }
+
+    if (nearHorizontalEdge) {
+      // Keep y fixed: move horizontally along the top or bottom edge.
+      addEdgeCandidate(
+          candidates,
+          position,
+          new Vector2(
+              MathUtils.clamp(position.x + stepDistance, bounds.x, bounds.x + bounds.width),
+              position.y));
+
+      addEdgeCandidate(
+          candidates,
+          position,
+          new Vector2(
+              MathUtils.clamp(position.x - stepDistance, bounds.x, bounds.x + bounds.width),
+              position.y));
+    }
+
+    if (candidates.isEmpty()) {
+      return chooseRetreatDestination(position, bounds, stepDistance);
+    }
+
+    return chooseFarthestFromPlayer(candidates);
+  }
+
+  private void addEdgeCandidate(
+      ArrayList<Vector2> candidates, Vector2 position, Vector2 candidate) {
+    if (position.dst(candidate) > ARRIVAL_DISTANCE) {
+      candidates.add(candidate);
     }
   }
 
-  private void updateFleeTarget() {
+  private Vector2 chooseFarthestFromPlayer(ArrayList<Vector2> candidates) {
+    Vector2 playerCentre = target.getCenterPosition();
+    Vector2 halfSize = entity.getScale().scl(0.5f);
+
+    Vector2 best = candidates.get(0);
+    float bestDistance = -1f;
+
+    for (Vector2 candidate : candidates) {
+      float distance = candidate.cpy().add(halfSize).dst2(playerCentre);
+
+      if (distance > bestDistance) {
+        bestDistance = distance;
+        best = candidate;
+      }
+    }
+
+    return best.cpy();
+  }
+
+  private Vector2 chooseRetreatDestination(Vector2 position, Rectangle bounds, float stepDistance) {
     Vector2 direction = entity.getCenterPosition().sub(target.getCenterPosition());
 
     if (direction.isZero()) {
       direction.set(1f, 0f);
     }
 
-    Vector2 destination =
-        entity.getPosition().mulAdd(direction.nor(), config.movementTargetDistance);
+    direction.nor();
 
-    movement.setTarget(clampToVisibleArea(destination));
+    float horizontalLimit = Float.POSITIVE_INFINITY;
+    float verticalLimit = Float.POSITIVE_INFINITY;
+
+    if (direction.x > 0f) {
+      horizontalLimit = (bounds.x + bounds.width - position.x) / direction.x;
+    } else if (direction.x < 0f) {
+      horizontalLimit = (bounds.x - position.x) / direction.x;
+    }
+
+    if (direction.y > 0f) {
+      verticalLimit = (bounds.y + bounds.height - position.y) / direction.y;
+    } else if (direction.y < 0f) {
+      verticalLimit = (bounds.y - position.y) / direction.y;
+    }
+
+    float distance = Math.clamp(Math.min(horizontalLimit, verticalLimit), 0f, stepDistance);
+
+    return clampToVisibleArea(position.cpy().mulAdd(direction, distance));
   }
 
-  private void updateWanderTarget() {
-    Vector2 bossPosition = entity.getCenterPosition();
-    Vector2 crowdedCentre = new Vector2();
-    int nearbySummons = 0;
+  private void updateStep(float deltaTime) {
+    // The camera can move or resize after a destination has been selected.
+    destination = clampToVisibleArea(destination);
+    float distance = entity.getPosition().dst(destination);
 
-    for (Entity summon : activeSummons) {
-      Vector2 summonPosition = summon.getCenterPosition();
-
-      if (bossPosition.dst(summonPosition) <= config.summonAvoidanceRadius) {
-        crowdedCentre.add(summonPosition);
-        nearbySummons++;
-      }
+    if (distance <= ARRIVAL_DISTANCE) {
+      beginPause();
+      return;
     }
 
-    Vector2 direction;
+    stepRemaining -= deltaTime;
 
-    if (nearbySummons > 0) {
-      crowdedCentre.scl(1f / nearbySummons);
-      direction = bossPosition.sub(crowdedCentre);
-
-      if (direction.isZero()) {
-        direction.set(1f, 0f);
-      }
-    } else {
-      wanderAngle = (wanderAngle + 137f) % 360f;
-
-      direction = new Vector2(1f, 0f).setAngleDeg(wanderAngle);
+    if (stepRemaining <= 0f) {
+      // A wall or another entity may prevent arrival.
+      beginPause();
+      return;
     }
 
-    Vector2 destination =
-        entity.getPosition().mulAdd(direction.nor(), config.movementTargetDistance);
+    moveTowards(destination, deltaTime);
+  }
 
-    movement.setTarget(clampToVisibleArea(destination));
+  private void beginPause() {
+    movement.setMoving(false);
+    destination = null;
+    pauseRemaining = config.bossStepPauseDuration;
+  }
+
+  private void moveTowards(Vector2 position, float deltaTime) {
+    Vector2 currentPosition = entity.getPosition();
+    Vector2 direction = position.cpy().sub(currentPosition);
+    float distance = direction.len();
+
+    if (distance <= ARRIVAL_DISTANCE) {
+      movement.setMoving(false);
+      return;
+    }
+
+    Vector2 forward = direction.nor();
+    Vector2 steering =
+        mode == Mode.FLEE_ALONG_EDGE ? forward : calculateAvoidanceDirection(forward);
+    float stepDistance = Math.min(config.bossStepSpeed * deltaTime, distance);
+
+    Vector2 nextPosition = clampToVisibleArea(currentPosition.cpy().mulAdd(steering, stepDistance));
+
+    Vector2 step = nextPosition.cpy().sub(currentPosition);
+    float actualDistance = step.len();
+
+    if (actualDistance <= 0.001f) {
+      movement.setMoving(false);
+      return;
+    }
+
+    float speed = Math.min(config.bossStepSpeed, actualDistance / deltaTime);
+
+    movement.setMaxSpeed(new Vector2(speed, speed));
+    movement.setTarget(nextPosition);
+    movement.setMoving(true);
   }
 
   /**
-   * Restricts the Boss to a conservative visible area around the player.
-   *
-   * <p>The current game camera follows the player. The Boss scale is included so the entire sprite,
-   * rather than only its centre, remains visible.
+   * Returns towards the visible area if camera movement leaves the Boss outside its safe bounds.
+   * Camera recovery takes priority over the normal pause.
    */
-  private Vector2 clampToVisibleArea(Vector2 destination) {
-    Vector2 visibleCentre = target.getCenterPosition();
-    Vector2 halfBossSize = entity.getScale().scl(0.5f);
-    Vector2 desiredCentre = destination.cpy().add(halfBossSize);
+  private void keepInsideVisibleArea() {
+    Vector2 position = entity.getPosition();
+    Vector2 safePosition = clampToVisibleArea(position);
 
-    float minimumX = visibleCentre.x - config.bossVisibilityHalfWidth + halfBossSize.x;
-    float maximumX = visibleCentre.x + config.bossVisibilityHalfWidth - halfBossSize.x;
-    float minimumY = visibleCentre.y - config.bossVisibilityHalfHeight + halfBossSize.y;
-    float maximumY = visibleCentre.y + config.bossVisibilityHalfHeight - halfBossSize.y;
+    if (!position.epsilonEquals(safePosition, 0.001f)) {
+      movement.setMoving(false);
+      entity.setPosition(safePosition);
+    }
 
-    desiredCentre.x = MathUtils.clamp(desiredCentre.x, minimumX, maximumX);
-    desiredCentre.y = MathUtils.clamp(desiredCentre.y, minimumY, maximumY);
-
-    return desiredCentre.sub(halfBossSize);
+    if (destination != null) {
+      destination = clampToVisibleArea(destination);
+    }
   }
 
-  private PhysicsMovementComponent requireMovement() {
-    if (movement == null) {
-      movement = entity.getComponent(PhysicsMovementComponent.class);
+  /** Adds lateral steering while retaining forward progress towards the destination. */
+  private Vector2 calculateAvoidanceDirection(Vector2 forward) {
+    Vector2 separation = calculateSummonSeparation(forward);
+    Vector2 sideways = new Vector2(-forward.y, forward.x);
+
+    float lateral = separation.dot(sideways);
+    float opposition = separation.dot(forward);
+
+    // A summon directly ahead produces no lateral force, so choose a consistent side.
+    if (Math.abs(lateral) < 0.05f && opposition < -0.05f) {
+      lateral = Math.min(1f, -opposition);
     }
 
-    if (movement == null) {
-      throw new IllegalStateException(
-          "FinalBossMovementComponent requires PhysicsMovementComponent");
+    float sidewaysStrength = MathUtils.clamp(lateral * 2f, -1.5f, 1.5f);
+
+    return forward.cpy().mulAdd(sideways, sidewaysStrength).nor();
+  }
+
+  private Vector2 calculateSummonSeparation(Vector2 forward) {
+    Vector2 separation = new Vector2();
+    Vector2 bossCentre = entity.getCenterPosition();
+    float radius = config.summonAvoidanceRadius;
+
+    if (radius <= 0f) {
+      return separation;
     }
 
-    return movement;
+    for (Entity summon : activeSummons) {
+      FinalBossExplosiveSummonComponent explosive =
+          summon.getComponent(FinalBossExplosiveSummonComponent.class);
+
+      if (explosive != null && explosive.hasDetonated()) {
+        continue;
+      }
+
+      Vector2 away = bossCentre.cpy().sub(summon.getCenterPosition());
+      float distance = away.len();
+
+      if (distance < radius) {
+        if (distance <= 0.001f) {
+          // Pick a sideways direction when the two centres overlap.
+          away.set(-forward.y, forward.x);
+        } else {
+          away.scl(1f / distance);
+        }
+
+        float strength = 1f - distance / radius;
+        separation.mulAdd(away, strength);
+      }
+    }
+
+    return separation.limit(1f);
+  }
+
+  /** Restricts the entire Boss sprite to the camera rectangle with a small margin. */
+  private Rectangle getVisibleBounds() {
+    Vector2 centre = target.getCenterPosition();
+    float halfWidth = config.bossVisibilityHalfWidth;
+    float halfHeight = config.bossVisibilityHalfHeight;
+
+    if (camera != null && camera.viewportWidth > 0f && camera.viewportHeight > 0f) {
+      float zoom = 1f;
+
+      if (camera instanceof OrthographicCamera orthographicCamera) {
+        zoom = orthographicCamera.zoom;
+      }
+
+      centre.set(camera.position.x, camera.position.y);
+      halfWidth = camera.viewportWidth * zoom * 0.5f;
+      halfHeight = camera.viewportHeight * zoom * 0.5f;
+    }
+
+    Vector2 halfSize = entity.getScale().scl(0.5f);
+
+    float allowedX = Math.max(0f, halfWidth - halfSize.x - SCREEN_MARGIN);
+    float allowedY = Math.max(0f, halfHeight - halfSize.y - SCREEN_MARGIN);
+
+    // Bounds describe the entity's lower-left position, not its centre.
+    return new Rectangle(
+        centre.x - allowedX - halfSize.x,
+        centre.y - allowedY - halfSize.y,
+        allowedX * 2f,
+        allowedY * 2f);
+  }
+
+  private Vector2 clampToVisibleArea(Vector2 position) {
+    Rectangle bounds = getVisibleBounds();
+
+    return new Vector2(
+        MathUtils.clamp(position.x, bounds.x, bounds.x + bounds.width),
+        MathUtils.clamp(position.y, bounds.y, bounds.y + bounds.height));
   }
 }

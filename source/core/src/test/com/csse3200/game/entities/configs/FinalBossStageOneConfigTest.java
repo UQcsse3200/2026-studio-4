@@ -14,11 +14,18 @@ class FinalBossStageOneConfigTest {
   }
 
   @Test
-  void shouldRequireMoreSummonsInWaveTwo() {
+  void shouldAllowIndependentWaveSummonCounts() {
     FinalBossStageOneConfig config = new FinalBossStageOneConfig();
-    config.waveTwoSummonCount = config.waveOneSummonCount;
 
-    assertThrows(IllegalArgumentException.class, config::validate);
+    config.waveOneSummonCount = 8;
+    config.waveTwoSummonCount = 6;
+    assertDoesNotThrow(config::validate);
+
+    config.waveTwoSummonCount = 8;
+    assertDoesNotThrow(config::validate);
+
+    config.waveTwoSummonCount = 10;
+    assertDoesNotThrow(config::validate);
   }
 
   @Test

@@ -1,24 +1,24 @@
 package com.csse3200.game.entities.factories;
 
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.boss.FinalBossDamageControllerComponent;
 import com.csse3200.game.components.boss.FinalBossExplosiveSummonComponent;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
+import com.csse3200.game.components.boss.FinalBossPetrificationComponent;
+import com.csse3200.game.components.boss.FinalBossPetrificationVisualComponent;
+import com.csse3200.game.components.boss.FinalBossPetrificationWarningRenderComponent;
 import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
+import com.csse3200.game.components.boss.FinalBossProximityDamageComponent;
 import com.csse3200.game.components.boss.FinalBossStageOneComponent;
-import com.csse3200.game.components.npc.EnemyAnimationController;
+import com.csse3200.game.components.boss.FinalBossSummonVisualComponent;
+import com.csse3200.game.components.boss.FinalBossVisualComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageOneConfig;
-import com.csse3200.game.rendering.AnimationRenderComponent;
-import com.csse3200.game.services.ServiceLocator;
 import java.util.function.Consumer;
 
 /** Creates the Final Boss and its Stage 1 summons. */
 public final class FinalBossFactory {
   public static final String PLACEHOLDER_SKIN = "images/bombEnemy.atlas";
-  private static final String DEFAULT_ANIMATION = "default";
 
   /**
    * Creates the Final Boss with its shared phase framework and Stage 1 behaviour.
@@ -35,21 +35,20 @@ public final class FinalBossFactory {
     FinalBossStageOneConfig config = new FinalBossStageOneConfig();
     config.validate();
 
-    AnimationRenderComponent animator = createAnimator(PLACEHOLDER_SKIN);
-
     Entity boss =
         NPCFactory.createBaseNPC()
             .addComponent(new CombatStatsComponent(config.bossHealth, 0))
-            .addComponent(animator)
-            .addComponent(new EnemyAnimationController())
+            .addComponent(new FinalBossVisualComponent(target, config))
             .addComponent(new FinalBossPhaseControllerComponent())
             .addComponent(new FinalBossDamageControllerComponent())
             .addComponent(new FinalBossMovementComponent(target, config))
-            .addComponent(new FinalBossStageOneComponent(target, summonSpawner, config));
+            .addComponent(new FinalBossStageOneComponent(target, summonSpawner, config))
+            .addComponent(new FinalBossProximityDamageComponent(target, config))
+            .addComponent(new FinalBossPetrificationWarningRenderComponent())
+            .addComponent(new FinalBossPetrificationComponent(target, config))
+            .addComponent(new FinalBossPetrificationVisualComponent(target, config));
 
-    animator.scaleEntity();
-    boss.scaleWidth(2f);
-    animator.startAnimation(DEFAULT_ANIMATION);
+    boss.setScale(2f, 2f);
 
     return boss;
   }
@@ -63,13 +62,10 @@ public final class FinalBossFactory {
 
     config.validate();
 
-    AnimationRenderComponent animator = createAnimator(PLACEHOLDER_SKIN);
-
     Entity summon =
         NPCFactory.createBaseNPC()
             .addComponent(new CombatStatsComponent(config.summonHealth, 0))
-            .addComponent(animator)
-            .addComponent(new EnemyAnimationController())
+            .addComponent(new FinalBossSummonVisualComponent())
             .addComponent(
                 new FinalBossExplosiveSummonComponent(
                     target,
@@ -79,24 +75,9 @@ public final class FinalBossFactory {
                     config.summonExplosionDamage,
                     warningDuration));
 
-    animator.scaleEntity();
-    summon.setScale(summon.getScale().scl(0.75f));
-    animator.startAnimation(DEFAULT_ANIMATION);
+    summon.setScale(0.75f, 0.75f);
 
     return summon;
-  }
-
-  /** Creates the animations shared by the temporary boss and summon sprites. */
-  private static AnimationRenderComponent createAnimator(String skin) {
-    TextureAtlas atlas = ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class);
-
-    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
-    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("dieAnimation", 0.1f, Animation.PlayMode.NORMAL);
-
-    return animator;
   }
 
   private FinalBossFactory() {
