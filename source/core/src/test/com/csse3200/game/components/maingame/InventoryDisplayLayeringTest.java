@@ -7,9 +7,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.csse3200.game.components.weapons.BowWeaponComponent;
+import com.csse3200.game.components.weapons.KnifeWeaponComponent;
+import com.csse3200.game.components.weapons.SwordWeaponComponent;
+import com.csse3200.game.components.weapons.WeaponAssetsComponent;
+import com.csse3200.game.components.weapons.WeaponSelectionComponent;
+import com.csse3200.game.components.weapons.WeaponStatsComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,11 +33,23 @@ class InventoryDisplayLayeringTest {
     RenderService renderer = new RenderService();
     renderer.setStage(stage);
     ServiceLocator.registerRenderService(renderer);
-    // Attach the display to an entity and initialise it using the shared stage above.
-    // Only the display's lifecycle is needed here, so we do not register a full game entity.
-    InventoryDisplay display = new InventoryDisplay();
-    new Entity().addComponent(display);
-    display.create();
+    ServiceLocator.registerEntityService(new EntityService());
+    ResourceService resources = new ResourceService();
+    ServiceLocator.registerResourceService(resources);
+    // The hotbar now reads the player's equipment and borrows its loaded weapon textures.
+    // Build only those dependencies rather than a full player with physics and movement.
+    Entity player =
+        new Entity()
+            .addComponent(new WeaponAssetsComponent())
+            .addComponent(new WeaponStatsComponent(0.5f, 1f, 2f))
+            .addComponent(new SwordWeaponComponent())
+            .addComponent(new KnifeWeaponComponent())
+            .addComponent(new BowWeaponComponent())
+            .addComponent(new WeaponSelectionComponent());
+    ServiceLocator.getEntityService().register(player);
+    InventoryDisplay display = new InventoryDisplay(player);
+    Entity ui = new Entity().addComponent(display);
+    ServiceLocator.getEntityService().register(ui);
     try {
       // Find the book by name because the stage also contains the persistent hotbar.
       Actor book = stage.getRoot().findActor("inventory-book");
@@ -65,8 +85,10 @@ class InventoryDisplayLayeringTest {
         enemyOverlay.remove();
       }
     } finally {
-      // Release the display and stage even if an assertion fails.
-      display.dispose();
+      // Remove the UI before releasing the player-owned textures it borrows.
+      ui.dispose();
+      player.dispose();
+      resources.dispose();
       stage.dispose();
     }
   }
