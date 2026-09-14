@@ -4,12 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.items.Charm;
+import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.charms.Charm;
+import com.csse3200.game.items.charms.StrengthCharm;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -31,7 +34,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldPickUpNearbyCharmOnItemPickup() {
-    Charm charm = new Charm("Strength Charm");
+    StrengthCharm charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -46,7 +49,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldNotPickUpWithoutItemPickup() {
-    Charm charm = new Charm("Strength Charm");
+    StrengthCharm charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -61,7 +64,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldNotPickUpOnRoomInteract() {
-    Charm charm = new Charm("Strength Charm");
+    StrengthCharm charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -76,7 +79,7 @@ class CharmPickupComponentTest {
 
   @Test
   void shouldNotPickUpAfterLeavingRange() {
-    Charm charm = new Charm("Strength Charm");
+    StrengthCharm charm = new StrengthCharm();
     Entity player = createPlayer();
     Entity itemEntity = createItemEntity(charm);
 
@@ -110,7 +113,7 @@ class CharmPickupComponentTest {
   }
 
   @Test
-  void shouldLeaveConsumablesForTheirDedicatedPickupFlow() {
+  void shouldPickUpConsumableThroughSharedItemFlow() {
     Entity player = createPlayer();
     Entity consumable =
         new Entity()
@@ -127,7 +130,27 @@ class CharmPickupComponentTest {
 
     assertEquals(0, player.getComponent(InventoryComponent.class).getCharmCount());
     assertEquals(
-        ItemType.HEALTH_POTION, consumable.getComponent(ItemComponent.class).getItemType());
+        1,
+        player.getComponent(InventoryComponent.class).getConsumableCount(ItemType.HEALTH_POTION));
+  }
+
+  @Test
+  void shouldPickUpCallerSelectedGoldQuantityThroughSharedItemFlow() {
+    Entity player = createPlayer();
+    Entity gold =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ITEM))
+            .addComponent(new ItemComponent(new ItemDropSpec(ItemType.GOLD_COIN, 25)));
+    gold.create();
+
+    Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
+    Fixture goldFixture = gold.getComponent(HitboxComponent.class).getFixture();
+
+    player.getEvents().trigger("collisionStart", playerFixture, goldFixture);
+    player.getEvents().trigger(ITEM_PICKUP_EVENT);
+
+    assertEquals(25, player.getComponent(InventoryComponent.class).getGold());
   }
 
   private Entity createPlayer() {
@@ -135,8 +158,9 @@ class CharmPickupComponentTest {
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+            .addComponent(new CombatStatsComponent(0, 0))
             .addComponent(new InventoryComponent(0))
-            .addComponent(new CharmPickupComponent());
+            .addComponent(new ItemPickupComponent());
     player.create();
     return player;
   }

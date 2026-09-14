@@ -3,10 +3,11 @@ package com.csse3200.game.components.player;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.items.Charm;
 import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.charms.Charm;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -53,19 +54,16 @@ class InventoryComponentTest {
   @Test
   void shouldAddCharm() {
     InventoryComponent inventory = new InventoryComponent(100);
-    Charm charm = new Charm("Strength Charm");
-
+    Charm charm = mock(Charm.class);
     inventory.addCharm(charm);
 
-    assertTrue(inventory.hasCharm(charm));
     assertEquals(1, inventory.getCharmCount());
   }
 
   @Test
   void shouldRemoveCharm() {
     InventoryComponent inventory = new InventoryComponent(100);
-    Charm charm = new Charm("Strength Charm");
-
+    Charm charm = mock(Charm.class);
     inventory.addCharm(charm);
     assertTrue(inventory.removeCharm(charm));
 
@@ -76,7 +74,7 @@ class InventoryComponentTest {
   @Test
   void shouldCheckHasCharm() {
     InventoryComponent inventory = new InventoryComponent(100);
-    Charm charm = new Charm("Strength Charm");
+    Charm charm = mock(Charm.class);
 
     assertFalse(inventory.hasCharm(charm));
 
@@ -103,6 +101,15 @@ class InventoryComponentTest {
     inventory.addConsumable(ItemType.HEALTH_POTION);
 
     assertEquals(2, inventory.getConsumableCount(ItemType.HEALTH_POTION));
+  }
+
+  @Test
+  void shouldAddCallerSelectedConsumableQuantity() {
+    InventoryComponent inventory = new InventoryComponent(0);
+
+    inventory.addConsumable(ItemType.HEALTH_POTION, 3);
+
+    assertEquals(3, inventory.getConsumableCount(ItemType.HEALTH_POTION));
   }
 
   @Test

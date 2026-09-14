@@ -2,6 +2,7 @@ package com.csse3200.game.components;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.csse3200.game.entities.Entity;
@@ -173,5 +174,47 @@ class CombatStatsComponentTest {
     combat.addAttackSpeed(1.0f);
 
     assertEquals(7.0f, updateAttackSpeed[0]);
+  }
+
+  @Test
+  void shouldBlockDamageWhileInvulnerable() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 20);
+    Entity entity = new Entity().addComponent(combat);
+    entity.create();
+
+    int[] blockedEvents = {0};
+    entity.getEvents().addListener("damageBlocked", () -> blockedEvents[0]++);
+
+    combat.setInvulnerable(true);
+    combat.takeDamage(30);
+
+    assertEquals(100, combat.getHealth());
+    assertEquals(1, blockedEvents[0]);
+  }
+
+  @Test
+  void shouldScaleIncomingDamage() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 20);
+
+    combat.setIncomingDamageMultiplier(0.25f);
+    combat.takeDamage(20);
+
+    assertEquals(95, combat.getHealth());
+    assertEquals(0.25f, combat.getIncomingDamageMultiplier());
+    assertThrows(IllegalArgumentException.class, () -> combat.setIncomingDamageMultiplier(-0.1f));
+  }
+
+  @Test
+  void shouldApplyMinimumHealthOnlyToIncomingDamage() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 20);
+    combat.setMinimumHealth(90);
+
+    combat.takeDamage(50);
+    assertEquals(90, combat.getHealth());
+
+    combat.setHealth(80);
+    assertEquals(80, combat.getHealth());
+
+    assertThrows(IllegalArgumentException.class, () -> combat.setMinimumHealth(101));
   }
 }

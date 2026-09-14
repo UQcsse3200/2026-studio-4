@@ -3,13 +3,18 @@ package com.csse3200.game.components.rooms;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.boss.FinalBossMovementComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.CerberusFactory;
+import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.WeaponItem;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -29,10 +34,16 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   private final Set<Entity> activeEnemies = new HashSet<>();
   private final List<Entity> droppedItems = new ArrayList<>();
   private int nextDemoDropIndex;
+  private CameraComponent camera;
 
   /** Creates an empty manager for tests and rooms with no enemies. */
   public EnemyManagerComponent() {
     this(new EnemySpawnConfig[0]);
+  }
+
+  public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs, CameraComponent camera) {
+    this(spawnConfigs);
+    this.camera = camera;
   }
 
   public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs) {
@@ -55,17 +66,36 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
     switch (spawn.type) {
+      case GIANT:
+        return NPCFactory.createGiantEnemy(target, "images/bombEnemy.atlas");
       case BOMB:
-        return NPCFactory.createBombEnemy(target);
-      case CHASE:
-        return NPCFactory.createChaseEnemy(target, true);
-      case FLOATING_DEMON:
+        return NPCFactory.createBombEnemy(target, "images/bombEnemy.atlas", 2f);
+      case BEETLE:
+        return NPCFactory.createChaseEnemy(target, true, "images/chaseEnemy.atlas");
+      case MEDUSA:
+        Entity medusa = NPCFactory.createChaseEnemy(target, true, "images/medusa.atlas");
+        medusa.setScale(2, 2);
+        return medusa;
+      case HARPY:
         TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
         Vector2 leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);
         Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
         Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
         return NPCFactory.createFloatingDemon(
-            target, leftPoint, topPoint, rightPoint, this::spawnEntity);
+            target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/harpy.atlas");
+      case CERBERUS:
+        TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
+        Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
+        return CerberusFactory.createCerberus(
+            anchorPoint, this::spawnEntity, "images/cerberus.atlas");
+      case BOW:
+        return ItemFactory.createItem(WeaponItem.createWeaponItem(WeaponItem.WeaponType.BOW));
+      case FINAL_BOSS:
+        Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnEntity);
+        if (camera != null) {
+          boss.getComponent(FinalBossMovementComponent.class).setCamera(camera.getCamera());
+        }
+        return boss;
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
     }

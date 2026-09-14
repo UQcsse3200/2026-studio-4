@@ -56,7 +56,7 @@ class SplitComponentTest {
   }
 
   private Entity createSplitEnemy() {
-    Entity enemy = NPCFactory.createChaseEnemy(new Entity(), true);
+    Entity enemy = NPCFactory.createChaseEnemy(new Entity(), true, "images/chaseEnemy.atlas");
     enemy.create();
     return enemy;
   }
@@ -74,6 +74,7 @@ class SplitComponentTest {
     EventListener1<Entity> childListener = addChildListener(enemy);
 
     enemy.getEvents().trigger("hitReaction", (Entity) null);
+    enemy.getComponent(CombatStatsComponent.class).setHealth(0);
 
     verify(childListener, times(0)).handle(any());
   }
@@ -86,6 +87,7 @@ class SplitComponentTest {
     int halfHealth = Math.max(1, enemyStats.getMaxHealth() / 2);
     int halfAttack = Math.max(1, enemyStats.getBaseAttack() / 2);
 
+    enemy.getComponent(CombatStatsComponent.class).setHealth(0);
     enemy.getEvents().trigger("hitReaction", (Entity) null);
     entityService.update();
 
@@ -104,6 +106,7 @@ class SplitComponentTest {
     Entity enemy = createSplitEnemy();
     EventListener1<Entity> childListener = addChildListener(enemy);
 
+    enemy.getComponent(CombatStatsComponent.class).setHealth(0);
     enemy.getEvents().trigger("hitReaction", (Entity) null);
     entityService.update();
 
@@ -119,10 +122,11 @@ class SplitComponentTest {
   void shouldSplitOnlyOnce() {
     Entity enemy = createSplitEnemy();
     EventListener1<Entity> childListener = addChildListener(enemy);
-
+    enemy.getComponent(CombatStatsComponent.class).setHealth(0);
     enemy.getEvents().trigger("hitReaction", (Entity) null);
     enemy.getEvents().trigger("hitReaction", (Entity) null);
     entityService.update();
+    enemy.getComponent(CombatStatsComponent.class).setHealth(0);
     enemy.getEvents().trigger("hitReaction", (Entity) null);
     entityService.update();
 
@@ -133,6 +137,7 @@ class SplitComponentTest {
   void shouldDisposeOriginalOnEntityServiceUpdate() {
     Entity enemy = createSplitEnemy();
 
+    enemy.getComponent(CombatStatsComponent.class).setHealth(0);
     enemy.getEvents().trigger("hitReaction", (Entity) null);
     verify(entityService, times(0)).unregister(enemy);
 

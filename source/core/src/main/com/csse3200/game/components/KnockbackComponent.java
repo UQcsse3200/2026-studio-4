@@ -4,12 +4,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.components.PhysicsComponent;
 
-/** Component that applies aphysical knockback impulse to an entity when hit. */
+/** Component that applies a physical KnockBack impulse to an entity when hit. */
 public class KnockbackComponent extends Component {
   private final float strength;
 
   /**
-   * @param strength The magnitude of the knockback force.
+   * @param strength The magnitude of the KnockBack forceZ.
    */
   public KnockbackComponent(float strength) {
     this.strength = strength;
@@ -21,9 +21,9 @@ public class KnockbackComponent extends Component {
   }
 
   /**
-   * Calculates knockback direction vector and applies linear impulse via Box2D.
+   * Calculates KnockBack direction vector and applies linear impulse via Box2D.
    *
-   * @param attacker The entity causing the damage （can be null)
+   * @param attacker The entity causing the damage (can be null)
    */
   private void onHitReaction(Entity attacker) {
     if (attacker == null || entity == null) {
@@ -35,9 +35,8 @@ public class KnockbackComponent extends Component {
       return;
     }
 
-    Vector2 knockbackDir = entity.getCenterPosition().cpy().sub(attacker.getPosition()).nor();
-
-    Vector2 impulse = knockbackDir.scl(strength);
+    Vector2 knockBackDir = entity.getCenterPosition().cpy().sub(attacker.getPosition()).nor();
+    Vector2 impulse = knockBackDir.scl(strength);
 
     physicsComponent
         .getBody()

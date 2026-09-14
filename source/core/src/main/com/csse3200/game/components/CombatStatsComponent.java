@@ -17,6 +17,9 @@ public class CombatStatsComponent extends Component {
   private int baseAttack;
   private float movementSpeed;
   private float attackSpeed;
+  private boolean invulnerable;
+  private float incomingDamageMultiplier = 1f;
+  private int minimumHealth;
 
   public CombatStatsComponent(int health, int baseAttack) {
     this.maxHealth = health;
@@ -227,10 +230,76 @@ public class CombatStatsComponent extends Component {
    * @param damage Amount of damage to deal
    */
   public void takeDamage(int damage, Entity attacker) {
-    if (damage > 0) {
-      addHealth(-damage);
-      applyHitreaction(attacker);
+    if (damage <= 0) {
+      return;
     }
+
+    if (invulnerable) {
+      triggerDamageBlocked();
+      return;
+    }
+
+    int adjustedDamage = Math.round(damage * incomingDamageMultiplier);
+    int newHealth = Math.max(minimumHealth, health - adjustedDamage);
+
+    if (newHealth == health) {
+      triggerDamageBlocked();
+      applyHitreaction(attacker);
+      return;
+    }
+
+    setHealth(newHealth);
+    applyHitreaction(attacker);
+  }
+
+  /**
+   * Enables or disables immunity to incoming damage.
+   *
+   * @param invulnerable whether incoming damage should be blocked
+   */
+  public void setInvulnerable(boolean invulnerable) {
+    this.invulnerable = invulnerable;
+  }
+
+  /** Returns whether all incoming damage is currently blocked. */
+  public boolean isInvulnerable() {
+    return invulnerable;
+  }
+
+  /**
+   * Sets the multiplier applied to incoming damage.
+   *
+   * @param multiplier non-negative incoming damage multiplier
+   */
+  public void setIncomingDamageMultiplier(float multiplier) {
+    if (multiplier < 0f) {
+      throw new IllegalArgumentException("Incoming damage multiplier must be non-negative");
+    }
+
+    incomingDamageMultiplier = multiplier;
+  }
+
+  /** Returns the current incoming damage multiplier. */
+  public float getIncomingDamageMultiplier() {
+    return incomingDamageMultiplier;
+  }
+
+  /**
+   * Sets the lowest health reachable through takeDamage().
+   *
+   * <p>Direct setHealth() calls can still cross this value for scripted phase transitions.
+   */
+  public void setMinimumHealth(int minimumHealth) {
+    if (minimumHealth < 0 || minimumHealth > maxHealth) {
+      throw new IllegalArgumentException("Minimum health must be between zero and maximum health");
+    }
+
+    this.minimumHealth = minimumHealth;
+  }
+
+  /** Returns the current incoming-damage health floor. */
+  public int getMinimumHealth() {
+    return minimumHealth;
   }
 
   /**
@@ -249,6 +318,12 @@ public class CombatStatsComponent extends Component {
   private void applyHitreaction(Entity attacker) {
     if (entity != null) {
       entity.getEvents().trigger("hitReaction", attacker);
+    }
+  }
+
+  private void triggerDamageBlocked() {
+    if (entity != null) {
+      entity.getEvents().trigger("damageBlocked");
     }
   }
 }

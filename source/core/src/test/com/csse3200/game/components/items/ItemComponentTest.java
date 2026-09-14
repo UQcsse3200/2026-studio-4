@@ -5,18 +5,20 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.csse3200.game.items.Charm;
 import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.charms.Charm;
+import com.csse3200.game.items.charms.StrengthCharm;
 import org.junit.jupiter.api.Test;
 
 class ItemComponentTest {
   @Test
-  void shouldStoreCharm() {
-    Charm charm = new Charm("Test Charm");
+  void shouldStoreSharedItemAndTeam5Metadata() {
+    Charm charm = new StrengthCharm();
 
     ItemComponent component = new ItemComponent(charm);
 
+    assertSame(charm, component.getItem());
     assertSame(charm, component.getCharm());
     assertEquals(ItemType.STRENGTH_CHARM, component.getItemType());
     assertEquals(1, component.getQuantity());
@@ -40,14 +42,10 @@ class ItemComponentTest {
   }
 
   @Test
-  void shouldRejectNullCharm() {
+  void shouldRejectInvalidConstruction() {
     assertThrows(NullPointerException.class, () -> new ItemComponent((Charm) null));
     assertThrows(NullPointerException.class, () -> new ItemComponent((ItemType) null));
     assertThrows(NullPointerException.class, () -> new ItemComponent((ItemDropSpec) null));
-  }
-
-  @Test
-  void shouldRequireCharmDataForCharmTypes() {
     assertThrows(IllegalArgumentException.class, () -> new ItemComponent(ItemType.STRENGTH_CHARM));
   }
 }

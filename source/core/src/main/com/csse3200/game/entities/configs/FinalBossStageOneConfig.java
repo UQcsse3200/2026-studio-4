@@ -1,0 +1,179 @@
+package com.csse3200.game.entities.configs;
+
+/** Configurable gameplay values for Final Boss Stage 1. */
+public class FinalBossStageOneConfig {
+  // Entrance and summon animation timings
+  public float bossIntroDuration = 1f;
+  public float bossTransformDuration = 1.2f;
+  public float bossSummonCastDuration = 0.7f;
+
+  // Boss and summon health
+  public int bossHealth = 100;
+  public int waveOneSummonCount = 8;
+  public int waveTwoSummonCount = 16;
+  public int summonHealth = 10;
+  public int summonExplosionDamage = 10;
+
+  // Summon movement and explosion
+  public float waveOneSummonSpeed = 2.8f;
+  public float waveTwoSummonSpeed = 3.2f;
+  public float summonTriggerDistance = 0.8f;
+  public float summonExplosionRadius = 1.5f;
+  public float waveOneWarningDuration = 1f;
+  public float summonSpawnRadius = 2.4f;
+
+  // Formation radius for each summon wave
+  public float waveOneFormationRadius = 4f;
+  public float waveTwoFormationRadius = 6f;
+
+  // Seven-second vulnerability window
+  public float breakWindowDuration = 7f;
+  public float breakWindowDamageMultiplier = 0.25f;
+  public float breakWindowHealthFloor = 0.9f;
+  public float stageTwoStartingHealth = 0.8f;
+
+  // First-wave proximity damage
+  public float proximityDamageRadius = 1.5f;
+  public int proximityDamage = 5;
+  public float proximityDamageInterval = 1f;
+
+  // Stop-and-go movement during Stage 1
+  public float bossStepSpeed = 3f;
+  public float bossStepMinDistance = 2f;
+  public float bossStepMaxDistance = 4f;
+  public float bossStepPauseDuration = 3f;
+
+  // Stage 2 charge attacks
+  public float bossChargeAttackDelay = 1f;
+  public float bossChargeDistance = 4f;
+
+  // Previous movement settings retained for compatibility
+  public float bossWanderSpeed = 0.8f;
+  public float bossFleeSpeed = 1.2f;
+  public float movementTargetRefreshInterval = 0.5f;
+  public float summonAvoidanceRadius = 2f;
+  public float movementTargetDistance = 3f;
+
+  // Fallback visible bounds when the world camera is unavailable
+  public float bossVisibilityHalfWidth = 8f;
+  public float bossVisibilityHalfHeight = 4f;
+
+  // Petrification punishment
+  public float petrificationWarningDuration = 0.5f;
+  public float petrificationRadius = 1.2f;
+  public float petrificationSlowMultiplier = 0.5f;
+  public float petrificationSlowDuration = 2f;
+  public float petrificationCooldown = 0.5f;
+
+  /** Validates values required by the Stage 1 runtime. */
+  public void validate() {
+    if (!Float.isFinite(bossIntroDuration)
+        || bossIntroDuration <= 0f
+        || !Float.isFinite(bossTransformDuration)
+        || bossTransformDuration <= 0f
+        || !Float.isFinite(bossSummonCastDuration)
+        || bossSummonCastDuration <= 0f) {
+      throw new IllegalArgumentException("Boss animation timings must be finite and positive");
+    }
+
+    if (bossHealth <= 0) {
+      throw new IllegalArgumentException("Boss health must be positive");
+    }
+
+    if (waveOneSummonCount <= 0 || waveTwoSummonCount <= 0) {
+      throw new IllegalArgumentException("Summon counts must be positive");
+    }
+
+    if (summonHealth <= 0 || summonExplosionDamage < 0) {
+      throw new IllegalArgumentException("Summon health and damage values are invalid");
+    }
+
+    if (waveOneSummonSpeed < 0f || waveTwoSummonSpeed <= waveOneSummonSpeed) {
+      throw new IllegalArgumentException("Wave two summons must be faster than wave one summons");
+    }
+
+    if (summonTriggerDistance < 0f
+        || summonExplosionRadius < 0f
+        || waveOneWarningDuration < 0f
+        || summonSpawnRadius < 0f) {
+      throw new IllegalArgumentException("Summon distances and timings must be non-negative");
+    }
+
+    if (breakWindowDuration < 0f
+        || breakWindowDamageMultiplier < 0f
+        || breakWindowHealthFloor < 0f
+        || breakWindowHealthFloor > 1f
+        || stageTwoStartingHealth < 0f
+        || stageTwoStartingHealth > 1f
+        || stageTwoStartingHealth >= breakWindowHealthFloor) {
+      throw new IllegalArgumentException("Break-window health values are invalid");
+    }
+
+    if (proximityDamageRadius < 0f || proximityDamage < 0 || proximityDamageInterval <= 0f) {
+      throw new IllegalArgumentException("Proximity damage values are invalid");
+    }
+
+    validateMovement();
+    validateStepMovement();
+    validateChargeAttack();
+    validatePetrification();
+    validateFormation();
+  }
+
+  private void validateMovement() {
+    if (bossWanderSpeed < 0f
+        || bossFleeSpeed < 0f
+        || movementTargetRefreshInterval <= 0f
+        || summonAvoidanceRadius < 0f
+        || movementTargetDistance < 0f
+        || bossVisibilityHalfWidth <= 0f
+        || bossVisibilityHalfHeight <= 0f) {
+      throw new IllegalArgumentException("Boss movement values are invalid");
+    }
+  }
+
+  private void validateStepMovement() {
+    if (!Float.isFinite(bossStepSpeed)
+        || !Float.isFinite(bossStepMinDistance)
+        || !Float.isFinite(bossStepMaxDistance)
+        || !Float.isFinite(bossStepPauseDuration)) {
+      throw new IllegalArgumentException("Boss step movement values must be finite");
+    }
+
+    if (bossStepSpeed <= 0f
+        || bossStepMinDistance <= 0f
+        || bossStepMaxDistance < bossStepMinDistance
+        || bossStepPauseDuration < 0f) {
+      throw new IllegalArgumentException("Boss step movement values are invalid");
+    }
+  }
+
+  private void validatePetrification() {
+    if (petrificationWarningDuration < 0f
+        || petrificationRadius < 0f
+        || petrificationSlowMultiplier < 0f
+        || petrificationSlowMultiplier > 1f
+        || petrificationSlowDuration < 0f
+        || petrificationCooldown <= 0f) {
+      throw new IllegalArgumentException("Petrification values are invalid");
+    }
+  }
+
+  private void validateChargeAttack() {
+    if (!Float.isFinite(bossChargeAttackDelay)
+        || !Float.isFinite(bossChargeDistance)
+        || bossChargeAttackDelay < 0f
+        || bossChargeDistance <= 0f) {
+      throw new IllegalArgumentException("Boss charge attack values are invalid");
+    }
+  }
+
+  private void validateFormation() {
+    if (!Float.isFinite(waveOneFormationRadius)
+        || !Float.isFinite(waveTwoFormationRadius)
+        || waveOneFormationRadius <= 0f
+        || waveTwoFormationRadius <= 0f) {
+      throw new IllegalArgumentException("Formation radii must be finite and positive");
+    }
+  }
+}
