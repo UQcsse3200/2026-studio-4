@@ -163,9 +163,9 @@ public class NPCFactory {
   }
 
   /**
-   * Creates the snake mini-boss entity. Moves toward the player and, once close enough, performs
-   * a telegraphed coil attack that poisons the player over time. Once its own health drops below
-   * 50%, it also gains a ranged venom-spit attack that creates a damaging pool on the ground.
+   * Creates the snake mini-boss entity. Moves toward the player and, once close enough, performs a
+   * telegraphed coil attack that poisons the player over time. Once its own health drops below 50%,
+   * it also gains a ranged venom-spit attack that creates a damaging pool on the ground.
    *
    * @param target entity to chase
    * @return entity
