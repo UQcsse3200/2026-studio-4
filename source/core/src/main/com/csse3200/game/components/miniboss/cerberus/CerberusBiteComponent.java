@@ -77,18 +77,7 @@ public class CerberusBiteComponent extends Component {
         break;
 
       case LUNGE:
-        if (!hit && inRange(HIT_RANGE)) {
-          hit = true;
-          targetStats.takeDamage(combatStats.getBaseAttack(), entity);
-        }
-
-        remaining -= delta;
-        if (remaining <= 0f) {
-          state = State.COOLDOWN;
-          remaining = COOLDOWN_TIME;
-          finishAttack();
-          entity.getEvents().trigger("default");
-        }
+        updateLunge(delta);
         break;
 
       case COOLDOWN:
@@ -97,6 +86,21 @@ public class CerberusBiteComponent extends Component {
           state = State.READY;
         }
         break;
+    }
+  }
+
+  private void updateLunge(float delta) {
+    if (!hit && inRange(HIT_RANGE)) {
+      hit = true;
+      targetStats.takeDamage(combatStats.getBaseAttack(), entity);
+    }
+
+    remaining -= delta;
+    if (remaining <= 0f) {
+      state = State.COOLDOWN;
+      remaining = COOLDOWN_TIME;
+      finishAttack();
+      entity.getEvents().trigger("default");
     }
   }
 
