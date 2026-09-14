@@ -192,5 +192,9 @@ public class InventoryDisplay extends UIComponent {
 
   public void setVisible(boolean set) {
     table.setVisible(set);
+    if (set) {
+      // Enemy health bars may have been added to the stage since the book was created.
+      table.toFront();
+    }
   }
 }
