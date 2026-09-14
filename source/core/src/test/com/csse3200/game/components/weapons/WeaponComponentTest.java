@@ -304,6 +304,15 @@ class WeaponComponentTest {
     assertEquals(15, weapon.resolveHeavyHitboxDamage()); // round(10 * 1.5)
   }
 
+  @Test
+  void shouldApplyExtraScaleOnTopOfHeavyUpgradeDamage() {
+    RecordingHeavyWeapon weapon = new RecordingHeavyWeapon();
+    createHeavyWielder(weapon, true);
+
+    assertEquals(30, weapon.resolveHeavyHitboxDamage(2f)); // round(10 * 1.5 * 2)
+    assertEquals(15, weapon.resolveHeavyHitboxDamage(1f));
+  }
+
   /** Base attack 10, 0.5s cooldown; upgrade gives x1.2 light, x1.5 heavy damage, x3 cooldown. */
   private static Entity createHeavyWielder(RecordingHeavyWeapon weapon, boolean upgraded) {
     WeaponUpgradeComponent upgrades =
