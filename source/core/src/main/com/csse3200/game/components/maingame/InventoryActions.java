@@ -12,6 +12,7 @@ public class InventoryActions extends Component {
     this.inventoryDisplay = inventoryDisplay;
   }
 
+  @Override
   public void create() {
     entity.getEvents().addListener("nextPage", this::nextPage);
   }

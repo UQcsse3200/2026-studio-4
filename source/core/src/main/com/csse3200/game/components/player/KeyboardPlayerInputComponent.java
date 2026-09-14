@@ -58,6 +58,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         return true;
       case Keys.I:
         entity.getComponent(InventoryComponent.class).toggleDisplay();
+        return true;
       default:
         return false;
     }

@@ -8,13 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.ui.UIComponent;
-import java.awt.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Displays a button to exit the Main Game screen to the Main Menu screen. */
 public class InventoryDisplay extends UIComponent {
-  private static final Logger logger = LoggerFactory.getLogger(MainGameExitDisplay.class);
+  private static final Logger logger = LoggerFactory.getLogger(InventoryDisplay.class);
   private static final float Z_INDEX = 2f;
   private boolean charmsPage = true;
   private Table table;
