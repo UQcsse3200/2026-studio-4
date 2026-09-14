@@ -1,10 +1,14 @@
 {
+  "giantEnemy" : {
+    "health": 30,
+    "baseAttack": 3
+  },
   "bombEnemy" : {
     "health": 10,
     "baseAttack": 7
   },
   "chaseEnemy" : {
-    "health": 60,
+    "health": 20,
     "baseAttack": 6
   },
   "floatingDemon" : {
@@ -18,6 +22,10 @@
       "y": 3
     }
   },
+  "cerberus" : {
+    "health": 250,
+    "baseAttack": 20
+  },
   "snakeMiniBoss" : {
     "health": 150,
     "baseAttack": 10,
@@ -27,7 +35,5 @@
     }
   }
 }
-
-
 
 

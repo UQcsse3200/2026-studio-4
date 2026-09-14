@@ -6,9 +6,12 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.CerberusFactory;
+import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.WeaponItem;
+import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -46,27 +49,77 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
     switch (spawn.type) {
-      case BOMB:
-        return NPCFactory.createBombEnemy(target);
-      case CHASE:
-        return NPCFactory.createChaseEnemy(target, true);
-      case FLOATING_DEMON:
+      // Egyptian
+      case BEETLE:
+        return NPCFactory.createBombEnemy(target, "images/beetle.atlas", 2f);
+      case CRAB:
+        Entity crab = NPCFactory.createChaseEnemy(target, true, "images/crab.atlas");
+        crab.setScale(1.5f, 1.5f);
+        crab.getComponent(HitboxComponent.class)
+                .setAsBox(
+                        new Vector2(1f, 0.5f),
+                        new Vector2(crab.getCenterPosition().x, crab.getCenterPosition().y / 2));
+        return crab;
+      case MUMMY:
+        Entity mummy = NPCFactory.createGiantEnemy(target, "images/mummy.atlas");
+        mummy.getComponent(HitboxComponent.class).setAsBox(new Vector2(1f, 1.5f));
+        return mummy;
+      case SNAKE_MINI_BOSS:
+        return NPCFactory.createSnakeMiniBoss(target);
+      // Greek
+      case GOLEM:
+        Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
+        golem.setScale(1.5F, 1.5F);
+        golem
+                .getComponent(HitboxComponent.class)
+                .setAsBox(
+                        new Vector2(1, 1),
+                        new Vector2(golem.getCenterPosition().x, golem.getCenterPosition().y / 2));
+        return golem;
+      case MEDUSA:
+        Entity medusa = NPCFactory.createChaseEnemy(target, true, "images/medusa.atlas");
+        medusa.setScale(1.5f, 1.5f);
+        medusa.getComponent(HitboxComponent.class).setAsBox(new Vector2(1, 1));
+        return medusa;
+      case HARPY:
         TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
         Vector2 leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);
         Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
         Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
         return NPCFactory.createFloatingDemon(
-                target, leftPoint, topPoint, rightPoint, this::spawnEntity);
-      case SNAKE_MINI_BOSS:
-        return NPCFactory.createSnakeMiniBoss(target);
+                target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/harpy.atlas");
+      case CYCLOPS:
+        Entity cyclops = NPCFactory.createGiantEnemy(target, "images/cyclops.atlas");
+        cyclops
+                .getComponent(HitboxComponent.class)
+                .setAsBox(
+                        new Vector2(1f, 1.5f),
+                        new Vector2(cyclops.getCenterPosition().x, cyclops.getCenterPosition().y / 2));
+        return cyclops;
+      case CERBERUS:
+        TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
+        Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
+        return CerberusFactory.createCerberus(
+                target, anchorPoint, this::spawnAndTrackCerberusHead, "images/cerberus.atlas");
+      case BOW:
+        return ItemFactory.createItem(WeaponItem.createWeaponItem(WeaponItem.WeaponType.BOW));
+      case FINAL_BOSS:
+        return FinalBossFactory.createFinalBoss(target, this::spawnEntity);
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
     }
   }
 
   /** Tracks an enemy and any children it spawns. Package-private for testing. */
+  private void spawnAndTrackCerberusHead(Entity head) {
+    track(head);
+    spawnEntity(head);
+  }
+
+  /** Tracks an enemy and any children it spawns. Package-private for testing. */
   void track(Entity enemy) {
     activeEnemies.add(enemy);
+    enemy.getEvents().<Entity>addListener("cerberusProjectileSpawned", this::spawnEntity);
     enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy));
     enemy
             .getEvents()
@@ -87,7 +140,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   private void spawnItemDrop(Entity enemy) {
-    Entity item = ItemFactory.createDrop(ItemType.STRENGTH_CHARM, enemy.getPosition());
+    Entity item = ItemFactory.createDrop(enemy.getPosition());
 
     // spawning item should not use the spawnEntity as items are stored in their own list.
     droppedItems.add(item);
@@ -117,3 +170,4 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     super.dispose();
   }
 }
+
