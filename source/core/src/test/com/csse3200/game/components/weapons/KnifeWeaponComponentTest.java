@@ -379,6 +379,27 @@ class KnifeWeaponComponentTest {
   }
 
   @Test
+  void shouldSpawnQueuedStrikesInFrontOfTheWielderNotOnThem() {
+    KnifeWeaponComponent knife = new KnifeWeaponComponent();
+    Entity wielder = upgradableWielder(knife, true, 1f);
+    assertTrue(knife.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+
+    tickStrikeInterval(knife);
+    tickStrikeInterval(knife);
+    List<Entity> strikes = registeredHitboxes(3);
+
+    // Queued strikes are rendered before their FollowComponent first updates, so they must already
+    // sit on their offset: the second slash opens at -35 degrees, the finisher straight ahead.
+    Vector2 slashCentre =
+        wielder.getCenterPosition().add(new Vector2(EXPECTED_REACH, 0f).setAngleDeg(-35f));
+    assertEquals(slashCentre.x, strikes.get(1).getCenterPosition().x, TOLERANCE);
+    assertEquals(slashCentre.y, strikes.get(1).getCenterPosition().y, TOLERANCE);
+    Vector2 finisherCentre = wielder.getCenterPosition().add(EXPECTED_REACH, 0f);
+    assertEquals(finisherCentre.x, strikes.get(2).getCenterPosition().x, TOLERANCE);
+    assertEquals(finisherCentre.y, strikes.get(2).getCenterPosition().y, TOLERANCE);
+  }
+
+  @Test
   void shouldKeepEveryStrikeAimedWhereTheFlurryStarted() {
     KnifeWeaponComponent knife = new KnifeWeaponComponent();
     upgradableWielder(knife, true, 1f);
