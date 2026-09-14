@@ -91,7 +91,8 @@ public class FinalBossStageTwoContactDamageComponent extends Component {
   }
 
   private boolean canDamageTarget() {
-    if (phaseController.getCurrentPhase() != FinalBossPhase.STAGE_TWO) {
+    if (phaseController.getCurrentPhase() != FinalBossPhase.STAGE_TWO
+        || phaseController.isTransitioning()) {
       return false;
     }
 

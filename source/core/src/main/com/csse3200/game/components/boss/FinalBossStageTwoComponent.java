@@ -68,6 +68,7 @@ public class FinalBossStageTwoComponent extends Component {
         // Switch to pause phase
         isAttacking = false;
         cycleTimer = 0f;
+        movementComponent.cancelChargeAttack();
         movementComponent.setMode(FinalBossMovementComponent.Mode.STOPPED);
       }
     } else {
@@ -98,6 +99,7 @@ public class FinalBossStageTwoComponent extends Component {
 
     if (health <= healthThreshold) {
       transitionSent = true;
+      movementComponent.cancelChargeAttack();
       entity.getEvents().trigger(FinalBossEvents.STAGE_COMPLETED, FinalBossPhase.STAGE_TWO);
     }
   }

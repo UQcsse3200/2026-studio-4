@@ -115,6 +115,13 @@ public class FinalBossMovementComponent extends Component {
     return chargeWarningRemaining > 0f;
   }
 
+  /** Cancels any active charge attack (warning, charging, or delay). */
+  public void cancelChargeAttack() {
+    chargeDestination = null;
+    chargeDelayRemaining = 0f;
+    chargeWarningRemaining = 0f;
+  }
+
   @Override
   public void update() {
     if (disposed) {

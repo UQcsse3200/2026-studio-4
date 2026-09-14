@@ -13,7 +13,7 @@ public class FinalBossStageTwoConfig {
 
   // Stage 2 attack/pause cycle
   public float attackDuration = 20f; // Boss attacks for 20 seconds
-  public float pauseDuration = 5f; // Boss stands still for 7 seconds
+  public float pauseDuration = 7f; // Boss stands still for 7 seconds
 
   public void validate() {
     validateChargeAttack();
