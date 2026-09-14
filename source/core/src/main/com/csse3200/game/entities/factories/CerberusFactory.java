@@ -5,10 +5,12 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.*;
 import com.csse3200.game.components.miniboss.cerberus.CerberusAnimationController;
+import com.csse3200.game.components.miniboss.cerberus.CerberusAttackCoordinator;
 import com.csse3200.game.components.miniboss.cerberus.CerberusBiteComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusMistComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusMovementComponent;
+import com.csse3200.game.components.miniboss.cerberus.CerberusPhaseComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusProjectileComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
@@ -55,9 +57,7 @@ public class CerberusFactory {
    * @return Cerberus mini-boss entity
    */
   private static Entity createBaseCerberusMiniBoss() {
-    Entity miniBoss = createBaseCerberusPart();
-    miniBoss.addComponent(new BossPhaseComponent());
-    return miniBoss;
+    return createBaseCerberusPart();
   }
 
   /**
@@ -131,7 +131,9 @@ public class CerberusFactory {
     Entity rightHead =
         createCerberusSideHead(mainHead, new Vector2(0.55f, 0.25f), conf.health / 2, skin);
 
-    mainHead.addComponent(new CerberusDeathComponent(leftHead, rightHead));
+    mainHead
+        .addComponent(new CerberusDeathComponent(leftHead, rightHead))
+        .addComponent(new CerberusPhaseComponent(leftHead, rightHead));
 
     if (target != null) {
       mainHead
@@ -144,6 +146,14 @@ public class CerberusFactory {
               projectile -> mainHead.getEvents().trigger("cerberusProjectileSpawned", projectile)));
 
       leftHead.addComponent(new CerberusMistComponent(target));
+
+      CerberusAttackCoordinator coordinator =
+          new CerberusAttackCoordinator(
+              leftHead, mainHead, rightHead, mainHead.getComponent(CerberusPhaseComponent.class));
+
+      leftHead.getComponent(CerberusMistComponent.class).setAttackCoordinator(coordinator);
+      mainHead.getComponent(CerberusBiteComponent.class).setAttackCoordinator(coordinator);
+      rightHead.getComponent(CerberusProjectileComponent.class).setAttackCoordinator(coordinator);
     }
 
     sideHeadSpawner.accept(leftHead);

@@ -117,4 +117,89 @@ class CerberusBiteComponentTest {
     verify(movement).setMaxSpeed(new Vector2(6f, 6f));
     verify(movement).setMoving(true);
   }
+
+  @Test
+  void shouldWaitForCoordinatorBeforeStartingWindup() {
+    CerberusAttackCoordinator coordinator = mock(CerberusAttackCoordinator.class);
+    bite.setAttackCoordinator(coordinator);
+
+    int[] windups = {0};
+    boss.getEvents().addListener("biteWindup", () -> windups[0]++);
+
+    when(coordinator.tryStart(boss)).thenReturn(false);
+
+    tick(0f);
+    tick(0.5f);
+    tick(0.35f);
+
+    assertEquals(0, windups[0]);
+    assertEquals(100, playerStats.getHealth());
+
+    when(coordinator.tryStart(boss)).thenReturn(true);
+
+    tick(0f);
+
+    assertEquals(1, windups[0]);
+
+    tick(0.5f);
+    tick(0.35f);
+
+    assertEquals(80, playerStats.getHealth());
+  }
+
+  @Test
+  void shouldReleaseAttackAfterLungeBeforeCooldownEnds() {
+    CerberusAttackCoordinator coordinator = mock(CerberusAttackCoordinator.class);
+    bite.setAttackCoordinator(coordinator);
+    when(coordinator.tryStart(boss)).thenReturn(true);
+
+    tick(0f);
+    tick(0.5f);
+
+    verify(coordinator, never()).finish(boss);
+
+    tick(0.35f);
+
+    verify(coordinator).finish(boss);
+    assertEquals(80, playerStats.getHealth());
+    tick(1f);
+
+    verify(coordinator, times(1)).tryStart(boss);
+  }
+
+  @Test
+  void shouldReleaseAttackWhenHeadDiesDuringWindup() {
+    CerberusAttackCoordinator coordinator = mock(CerberusAttackCoordinator.class);
+    bite.setAttackCoordinator(coordinator);
+    when(coordinator.tryStart(boss)).thenReturn(true);
+
+    tick(0f);
+
+    verify(coordinator, never()).finish(boss);
+
+    bossStats.setHealth(0);
+    verify(coordinator).finish(boss);
+
+    tick(0.5f);
+    tick(0.35f);
+
+    assertEquals(100, playerStats.getHealth());
+    verify(coordinator, times(1)).tryStart(boss);
+  }
+
+  @Test
+  void shouldReleaseAttackWhenDisposedDuringWindup() {
+    CerberusAttackCoordinator coordinator = mock(CerberusAttackCoordinator.class);
+    bite.setAttackCoordinator(coordinator);
+    when(coordinator.tryStart(boss)).thenReturn(true);
+
+    tick(0f);
+
+    verify(coordinator, never()).finish(boss);
+
+    bite.dispose();
+
+    verify(coordinator).finish(boss);
+    assertEquals(100, playerStats.getHealth());
+  }
 }

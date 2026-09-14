@@ -32,6 +32,7 @@ public class CerberusBiteComponent extends Component {
   private Vector2 destination;
   private float remaining;
   private boolean hit;
+  private CerberusAttackCoordinator attackCoordinator;
 
   public CerberusBiteComponent(Entity target, Vector2 anchor, float radius) {
     this.target = target;
@@ -56,7 +57,7 @@ public class CerberusBiteComponent extends Component {
 
     switch (state) {
       case READY:
-        if (inRange(TRIGGER_RANGE)) {
+        if (canStartAttack() && (attackCoordinator == null || attackCoordinator.tryStart(entity))) {
           destination =
               target.getPosition().sub(anchor).limit(Math.max(0f, radius - 0.5f)).add(anchor);
           hit = false;
@@ -85,6 +86,7 @@ public class CerberusBiteComponent extends Component {
         if (remaining <= 0f) {
           state = State.COOLDOWN;
           remaining = COOLDOWN_TIME;
+          finishAttack();
           entity.getEvents().trigger("default");
         }
         break;
@@ -132,5 +134,33 @@ public class CerberusBiteComponent extends Component {
     remaining = 0f;
     destination = null;
     hit = false;
+    finishAttack();
+  }
+
+  @Override
+  public void dispose() {
+    cancel();
+    super.dispose();
+  }
+
+  /** Connects this skill after it has been added to its head entity. */
+  public void setAttackCoordinator(CerberusAttackCoordinator coordinator) {
+    attackCoordinator = coordinator;
+    coordinator.register(entity, this::canStartAttack);
+  }
+
+  private boolean canStartAttack() {
+    return combatStats != null
+        && !combatStats.isDead()
+        && targetStats != null
+        && !targetStats.isDead()
+        && state == State.READY
+        && inRange(TRIGGER_RANGE);
+  }
+
+  private void finishAttack() {
+    if (attackCoordinator != null) {
+      attackCoordinator.finish(entity);
+    }
   }
 }
