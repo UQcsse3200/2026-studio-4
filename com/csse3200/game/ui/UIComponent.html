@@ -98,7 +98,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="../components/gamearea/GameAreaDisplay.html" title="class in com.csse3200.game.components.gamearea">GameAreaDisplay</a></code>, <code><a href="../components/maingame/MainGameExitDisplay.html" title="class in com.csse3200.game.components.maingame">MainGameExitDisplay</a></code>, <code><a href="../components/mainmenu/MainMenuDisplay.html" title="class in com.csse3200.game.components.mainmenu">MainMenuDisplay</a></code>, <code><a href="../components/gamearea/PerformanceDisplay.html" title="class in com.csse3200.game.components.gamearea">PerformanceDisplay</a></code>, <code><a href="../components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></code>, <code><a href="../components/settingsmenu/SettingsMenuDisplay.html" title="class in com.csse3200.game.components.settingsmenu">SettingsMenuDisplay</a></code>, <code><a href="terminal/TerminalDisplay.html" title="class in com.csse3200.game.ui.terminal">TerminalDisplay</a></code></dd>
+<dd><code><a href="../components/npc/EnemyStatDisplay.html" title="class in com.csse3200.game.components.npc">EnemyStatDisplay</a></code>, <code><a href="../components/gamearea/GameAreaDisplay.html" title="class in com.csse3200.game.components.gamearea">GameAreaDisplay</a></code>, <code><a href="../components/maingame/MainGameExitDisplay.html" title="class in com.csse3200.game.components.maingame">MainGameExitDisplay</a></code>, <code><a href="../components/mainmenu/MainMenuDisplay.html" title="class in com.csse3200.game.components.mainmenu">MainMenuDisplay</a></code>, <code><a href="../components/gamearea/PerformanceDisplay.html" title="class in com.csse3200.game.components.gamearea">PerformanceDisplay</a></code>, <code><a href="../components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></code>, <code><a href="../components/settingsmenu/SettingsMenuDisplay.html" title="class in com.csse3200.game.components.settingsmenu">SettingsMenuDisplay</a></code>, <code><a href="terminal/TerminalDisplay.html" title="class in com.csse3200.game.ui.terminal">TerminalDisplay</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public abstract class </span><span class="element-name type-name-label">UIComponent</span>
@@ -118,11 +118,14 @@ implements <a href="../rendering/Renderable.html" title="interface in com.csse32
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>protected static final com.badlogic.gdx.scenes.scene2d.ui.Skin</code></div>
-<div class="col-second even-row-color"><code><a href="#skin" class="member-name-link">skin</a></code></div>
+<div class="col-second even-row-color"><code><a href="#hud" class="member-name-link">hud</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected com.badlogic.gdx.scenes.scene2d.Stage</code></div>
-<div class="col-second odd-row-color"><code><a href="#stage" class="member-name-link">stage</a></code></div>
+<div class="col-first odd-row-color"><code>protected static final com.badlogic.gdx.scenes.scene2d.ui.Skin</code></div>
+<div class="col-second odd-row-color"><code><a href="#skin" class="member-name-link">skin</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>protected com.badlogic.gdx.scenes.scene2d.Stage</code></div>
+<div class="col-second even-row-color"><code><a href="#stage" class="member-name-link">stage</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-com.csse3200.game.components.Component">Fields inherited from class&nbsp;com.csse3200.game.components.<a href="../components/Component.html" title="class in com.csse3200.game.components">Component</a></h3>
@@ -201,6 +204,12 @@ implements <a href="../rendering/Renderable.html" title="interface in com.csse32
 <section class="detail" id="skin">
 <h3>skin</h3>
 <div class="member-signature"><span class="modifiers">protected static final</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.ui.Skin</span>&nbsp;<span class="element-name">skin</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="hud">
+<h3>hud</h3>
+<div class="member-signature"><span class="modifiers">protected static final</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.ui.Skin</span>&nbsp;<span class="element-name">hud</span></div>
 </section>
 </li>
 <li>
