@@ -1,5 +1,6 @@
 package com.csse3200.game.ui.terminal.commands;
 
+import com.csse3200.game.components.weapons.KnifeWeaponComponent;
 import com.csse3200.game.components.weapons.SwordWeaponComponent;
 import com.csse3200.game.components.weapons.WeaponComponent;
 import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
@@ -11,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Terminal command that applies or reverts a weapon upgrade so QA does not need a pickup or shop:
- * {@code upgrade sword} or {@code upgrade sword off}.
+ * {@code upgrade sword|knife}, or {@code upgrade sword|knife off} to revert.
  *
  * <p>Applying is idempotent: running {@code upgrade sword} again leaves the sword upgraded.
  */
@@ -19,7 +20,7 @@ public class UpgradeCommand implements Command {
   private static final Logger logger = LoggerFactory.getLogger(UpgradeCommand.class);
   private static final String OFF = "off";
   private static final Map<String, Class<? extends WeaponComponent>> WEAPONS =
-      Map.of("sword", SwordWeaponComponent.class);
+      Map.of("sword", SwordWeaponComponent.class, "knife", KnifeWeaponComponent.class);
 
   private final Entity player;
 
@@ -33,7 +34,8 @@ public class UpgradeCommand implements Command {
   /**
    * Upgrades the named weapon, or reverts it when followed by {@code off}.
    *
-   * @param args {@code sword} to upgrade, or {@code sword off} to revert
+   * @param args a weapon ({@code sword} or {@code knife}) to upgrade, optionally followed by {@code
+   *     off} to revert
    * @return true if the upgrade state was set
    */
   @Override

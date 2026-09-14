@@ -59,8 +59,21 @@ class WeaponUpgradeComponentTest {
   void shouldRejectWeaponWithoutUpgradeStats() {
     WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
 
-    assertFalse(upgrades.setUpgraded(KnifeWeaponComponent.class, true));
-    assertFalse(upgrades.isUpgraded(KnifeWeaponComponent.class));
+    assertFalse(upgrades.setUpgraded(BowWeaponComponent.class, true));
+    assertFalse(upgrades.isUpgraded(BowWeaponComponent.class));
+  }
+
+  @Test
+  void shouldApplyKnifeUpgradeStats() {
+    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+
+    assertTrue(upgrades.setUpgraded(KnifeWeaponComponent.class, true));
+
+    assertEquals(1.2f, upgrades.getLightDamageMultiplier(KnifeWeaponComponent.class));
+    assertEquals(0.6f, upgrades.getHeavyDamageMultiplier(KnifeWeaponComponent.class));
+    assertEquals(3f, upgrades.getHeavyCooldownMultiplier(KnifeWeaponComponent.class));
+    // Upgrading the knife leaves the sword alone.
+    assertFalse(upgrades.isUpgraded(SwordWeaponComponent.class));
   }
 
   @Test

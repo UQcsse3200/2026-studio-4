@@ -24,12 +24,20 @@ public class WeaponUpgradeComponent extends Component {
   /** Sword: +20% light damage, +35% heavy damage, heavy attack doubles the cooldown. */
   static final WeaponUpgradeStats SWORD_UPGRADE = new WeaponUpgradeStats(1.2f, 1.35f, 2f);
 
+  /**
+   * Knife: +20% light damage; each flurry slash deals 0.6x (the finisher doubles it), and the
+   * flurry triples the cooldown.
+   */
+  static final WeaponUpgradeStats KNIFE_UPGRADE = new WeaponUpgradeStats(1.2f, 0.6f, 3f);
+
   private final Map<Class<? extends WeaponComponent>, WeaponUpgradeStats> stats;
   private final Set<Class<? extends WeaponComponent>> upgraded = new HashSet<>();
 
   /** Create with the default upgrade stats for every weapon that has an upgrade. */
   public WeaponUpgradeComponent() {
-    this(Map.of(SwordWeaponComponent.class, SWORD_UPGRADE));
+    this(
+        Map.of(
+            SwordWeaponComponent.class, SWORD_UPGRADE, KnifeWeaponComponent.class, KNIFE_UPGRADE));
   }
 
   /**

@@ -220,8 +220,19 @@ public abstract class WeaponComponent extends Component {
    * @return {@code round(wielder.effectiveBaseAttack * multiplier * heavyUpgradeMultiplier)}
    */
   protected int resolveHeavyHitboxDamage() {
-    float scale = upgrades == null ? 1f : upgrades.getHeavyDamageMultiplier(getClass());
-    return stats.resolveHitboxDamage(resolveBaseAttack(), scale);
+    return resolveHeavyHitboxDamage(1f);
+  }
+
+  /**
+   * Heavy attack damage with an extra scale, for heavy attacks made of several hits that deal
+   * different damage (e.g. a combo finisher).
+   *
+   * @param scale extra damage scale on top of the heavy upgrade multiplier; 1 for none
+   * @return {@code round(wielder.baseAttack * multiplier * heavyUpgradeMultiplier * scale)}
+   */
+  protected int resolveHeavyHitboxDamage(float scale) {
+    float heavy = upgrades == null ? 1f : upgrades.getHeavyDamageMultiplier(getClass());
+    return stats.resolveHitboxDamage(resolveBaseAttack(), heavy * scale);
   }
 
   private int resolveBaseAttack() {

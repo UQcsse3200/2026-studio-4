@@ -70,7 +70,8 @@ class SwordWeaponComponentTest {
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextures(new String[] {"images/weapons/sword.png"});
+    resourceService.loadTextures(
+        new String[] {SwordWeaponComponent.TEXTURE, SwordWeaponComponent.UPGRADED_TEXTURE});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
@@ -266,6 +267,33 @@ class SwordWeaponComponentTest {
 
     assertEquals(new Vector2(1.0f, 0.4f), hitbox.getScale());
     assertEquals(8, hitbox.getComponent(CombatStatsComponent.class).getBaseAttack());
+  }
+
+  @Test
+  void shouldUseTheBaseSpriteWhenNotUpgraded() {
+    SwordWeaponComponent sword = new SwordWeaponComponent();
+    createUpgradableWielder(sword, false);
+
+    assertEquals(SwordWeaponComponent.TEXTURE, sword.resolveTexture());
+  }
+
+  @Test
+  void shouldUseTheUpgradedSpriteForBothAttacksOnceUpgraded() {
+    SwordWeaponComponent sword = new SwordWeaponComponent();
+    Entity wielder = createUpgradableWielder(sword, true);
+
+    assertEquals(SwordWeaponComponent.UPGRADED_TEXTURE, sword.resolveTexture());
+    // Both attacks still spawn a textured blade with the upgraded sprite loaded.
+    assertTrue(sword.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    assertNotNull(captureRegisteredHitbox().getComponent(RotatingTextureRenderComponent.class));
+    wielder.getComponent(WeaponStatsComponent.class).update(10f);
+    assertTrue(sword.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+
+    // Reverting the upgrade brings the base sprite back.
+    wielder
+        .getComponent(WeaponUpgradeComponent.class)
+        .setUpgraded(SwordWeaponComponent.class, false);
+    assertEquals(SwordWeaponComponent.TEXTURE, sword.resolveTexture());
   }
 
   @Test

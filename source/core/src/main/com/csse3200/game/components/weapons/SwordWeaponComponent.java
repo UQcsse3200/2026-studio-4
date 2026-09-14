@@ -18,6 +18,12 @@ public class SwordWeaponComponent extends WeaponComponent {
   /** Sprite drawn for the sword's sweeping attack. Loaded by {@link WeaponAssetsComponent}. */
   public static final String TEXTURE = "images/weapons/sword.png";
 
+  /**
+   * Fancier sprite drawn for both attacks once the sword is upgraded. Cut from the same sheet and
+   * drawn at the same angle as {@link #TEXTURE}. Loaded by {@link WeaponAssetsComponent}.
+   */
+  public static final String UPGRADED_TEXTURE = "images/weapons/sword_upgraded.png";
+
   // weapon attributes
   private static final float LIGHT_LIFETIME = 0.25f; // How long the light sweep takes
   // How long the heavy spin takes. Slower than the light sweep so the full turn reads clearly;
@@ -57,6 +63,13 @@ public class SwordWeaponComponent extends WeaponComponent {
   @Override
   protected float getHeavyAttackDuration() {
     return HEAVY_LIFETIME;
+  }
+
+  /**
+   * @return the upgraded sprite once the sword is upgraded, otherwise the base sprite
+   */
+  String resolveTexture() {
+    return isUpgraded() ? UPGRADED_TEXTURE : TEXTURE;
   }
 
   /**
@@ -106,7 +119,7 @@ public class SwordWeaponComponent extends WeaponComponent {
             .knockback(stats.getKnockback())
             .owner(entity)
             .localOffset(offset)
-            .texture(TEXTURE)
+            .texture(resolveTexture())
             .visualSource(entity)
             .visualScale(new Vector2(SPRITE_SIZE, SPRITE_SIZE))
             .visualOffset(new Vector2(SPRITE_PULL_IN, 0f))
