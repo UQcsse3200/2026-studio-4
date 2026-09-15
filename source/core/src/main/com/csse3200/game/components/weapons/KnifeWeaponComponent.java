@@ -21,6 +21,13 @@ public class KnifeWeaponComponent extends WeaponComponent {
   /** Sprite drawn for the knife's stab. Loaded by {@link WeaponAssetsComponent}. */
   public static final String TEXTURE = "images/weapons/knife.png";
 
+  /**
+   * Fancier sprite drawn for every strike (stab, slash, finisher) once the knife is upgraded. Cut
+   * from the same sheet and drawn at the same angle as {@link #TEXTURE}. Loaded by {@link
+   * WeaponAssetsComponent}.
+   */
+  public static final String UPGRADED_TEXTURE = "images/weapons/knife_upgraded.png";
+
   private static final float BLADE_LENGTH = 1.0f;
   private static final float BLADE_WIDTH = 0.5f;
   // Must stay below the attack cooldown (0.5s at attackSpeed 1.0). A longer-lived stab is still
@@ -210,11 +217,18 @@ public class KnifeWeaponComponent extends WeaponComponent {
         .damage(damage)
         .knockback(knockback)
         .owner(entity)
-        .texture(TEXTURE)
+        .texture(resolveTexture())
         .visualSource(entity)
         .visualScale(new Vector2(SPRITE_SIZE, SPRITE_SIZE))
         .visualOffset(new Vector2(SPRITE_PULL_IN, 0f))
         .rotationOffset(SPRITE_ANGLE_OFFSET);
+  }
+
+  /**
+   * @return {@link #UPGRADED_TEXTURE} once upgraded, otherwise {@link #TEXTURE}
+   */
+  String resolveTexture() {
+    return isUpgraded() ? UPGRADED_TEXTURE : TEXTURE;
   }
 
   /** Snap a direction to the nearest axis: right, left, up or down. */
