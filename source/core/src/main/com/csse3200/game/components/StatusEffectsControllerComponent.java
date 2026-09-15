@@ -211,12 +211,26 @@ public class StatusEffectsControllerComponent extends Component {
     }
   }
 
+  /**
+   * Runs the removal callback of every effect that has just come off this entity.
+   *
+   * <p>Call this only once the effects are already off the list, so anything a callback asks the
+   * controller sees the finished state rather than a half-cleared one.
+   *
+   * @param removed the effects that were taken off, in the order they were removed.
+   */
   private static void notifyRemoved(List<StatusEffect> removed) {
     for (StatusEffect effect : removed) {
       effect.onRemoved();
     }
   }
 
+  /**
+   * Ends every effect on this entity and stops the controller for good.
+   *
+   * <p>Each effect still running is removed and told, so none is left believing it is on an entity
+   * that no longer exists. A disposed controller ticks nothing further and refuses new effects.
+   */
   @Override
   public void dispose() {
     disposed = true;

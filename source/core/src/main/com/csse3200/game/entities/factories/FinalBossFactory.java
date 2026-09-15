@@ -10,11 +10,14 @@ import com.csse3200.game.components.boss.FinalBossPetrificationWarningRenderComp
 import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
 import com.csse3200.game.components.boss.FinalBossProximityDamageComponent;
 import com.csse3200.game.components.boss.FinalBossStageOneComponent;
+import com.csse3200.game.components.boss.FinalBossStageTwoComponent;
+import com.csse3200.game.components.boss.FinalBossStageTwoContactDamageComponent;
 import com.csse3200.game.components.boss.FinalBossSummonVisualComponent;
 import com.csse3200.game.components.boss.FinalBossVisualComponent;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageOneConfig;
+import com.csse3200.game.entities.configs.FinalBossStageTwoConfig;
 import java.util.function.Consumer;
 
 /** Creates the Final Boss and its Stage 1 summons. */
@@ -34,7 +37,9 @@ public final class FinalBossFactory {
     }
 
     FinalBossStageOneConfig config = new FinalBossStageOneConfig();
+    FinalBossStageTwoConfig stageTwoConfig = new FinalBossStageTwoConfig();
     config.validate();
+    stageTwoConfig.validate();
 
     Entity boss =
         NPCFactory.createBaseNPC()
@@ -42,8 +47,10 @@ public final class FinalBossFactory {
             .addComponent(new FinalBossVisualComponent(target, config))
             .addComponent(new FinalBossPhaseControllerComponent())
             .addComponent(new FinalBossDamageControllerComponent())
-            .addComponent(new FinalBossMovementComponent(target, config))
+            .addComponent(new FinalBossMovementComponent(target, config, stageTwoConfig))
             .addComponent(new FinalBossStageOneComponent(target, summonSpawner, config))
+            .addComponent(new FinalBossStageTwoComponent(stageTwoConfig))
+            .addComponent(new FinalBossStageTwoContactDamageComponent(target, stageTwoConfig))
             .addComponent(new FinalBossProximityDamageComponent(target, config))
             .addComponent(new FinalBossPetrificationWarningRenderComponent())
             .addComponent(new FinalBossPetrificationComponent(target, config))

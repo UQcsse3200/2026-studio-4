@@ -9,6 +9,7 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageOneConfig;
+import com.csse3200.game.entities.configs.FinalBossStageTwoConfig;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
@@ -32,6 +33,7 @@ public class FinalBossMovementComponent extends Component {
 
   private final Entity target;
   private final FinalBossStageOneConfig config;
+  private final FinalBossStageTwoConfig stageTwoConfig;
 
   private Collection<Entity> activeSummons = Collections.emptyList();
 
@@ -53,14 +55,17 @@ public class FinalBossMovementComponent extends Component {
     activeSummons = summons == null ? Collections.emptyList() : summons;
   }
 
-  public FinalBossMovementComponent(Entity target, FinalBossStageOneConfig config) {
-    if (target == null || config == null) {
-      throw new IllegalArgumentException("Target and config must not be null");
+  public FinalBossMovementComponent(
+      Entity target, FinalBossStageOneConfig config, FinalBossStageTwoConfig stageTwoConfig) {
+    if (target == null || config == null || stageTwoConfig == null) {
+      throw new IllegalArgumentException("Target, config, and stageTwoConfig must not be null");
     }
 
     config.validate();
+    stageTwoConfig.validate();
     this.target = target;
     this.config = config;
+    this.stageTwoConfig = stageTwoConfig;
   }
 
   @Override
@@ -103,12 +108,19 @@ public class FinalBossMovementComponent extends Component {
     chargeAttacksEnabled = true;
     chargeDestination = null;
     chargeDelayRemaining = 0f;
-    chargeWarningRemaining = config.bossChargeAttackDelay;
+    chargeWarningRemaining = stageTwoConfig.bossChargeAttackDelay;
   }
 
   /** Returns whether the boss is currently warning about an imminent charge. */
   public boolean isChargeWarningActive() {
     return chargeWarningRemaining > 0f;
+  }
+
+  /** Cancels any active charge attack (warning, charging, or delay). */
+  public void cancelChargeAttack() {
+    chargeDestination = null;
+    chargeDelayRemaining = 0f;
+    chargeWarningRemaining = 0f;
   }
 
   @Override
@@ -187,13 +199,14 @@ public class FinalBossMovementComponent extends Component {
 
     chargeDelayRemaining = Math.max(0f, chargeDelayRemaining - deltaTime);
     if (chargeDelayRemaining > 0f) {
-      return false;
+      movement.setMoving(false);
+      return true;
     }
 
-    if (config.bossChargeAttackDelay <= 0f) {
+    if (stageTwoConfig.bossChargeAttackDelay <= 0f) {
       beginCharge();
     } else {
-      chargeWarningRemaining = config.bossChargeAttackDelay;
+      chargeWarningRemaining = stageTwoConfig.bossChargeAttackDelay;
     }
     movement.setMoving(false);
     return true;
@@ -202,12 +215,13 @@ public class FinalBossMovementComponent extends Component {
   private void beginCharge() {
     Vector2 direction = target.getCenterPosition().sub(entity.getCenterPosition());
     if (direction.isZero()) {
-      chargeDelayRemaining = config.bossChargeAttackDelay;
+      chargeDelayRemaining = stageTwoConfig.bossChargeAttackDelay;
       return;
     }
 
     chargeDestination =
-        clampToVisibleArea(entity.getPosition().mulAdd(direction.nor(), config.bossChargeDistance));
+        clampToVisibleArea(
+            entity.getCenterPosition().mulAdd(direction.nor(), stageTwoConfig.bossChargeDistance));
   }
 
   private void updateCharge(float deltaTime) {
@@ -230,14 +244,14 @@ public class FinalBossMovementComponent extends Component {
       return;
     }
 
-    movement.setMaxSpeed(new Vector2(config.bossStepSpeed * 10, config.bossStepSpeed * 10));
+    movement.setMaxSpeed(new Vector2(config.bossStepSpeed * 5, config.bossStepSpeed * 5));
     movement.setTarget(nextPosition);
     movement.setMoving(true);
   }
 
   private void finishCharge() {
     chargeDestination = null;
-    chargeDelayRemaining = config.bossChargeAttackDelay;
+    chargeDelayRemaining = stageTwoConfig.bossChargeAttackDelay;
     movement.setMoving(false);
   }
 
