@@ -102,8 +102,8 @@ loadScripts(document, 'script');</script>
  weapon-specific hitbox.
 
  <p>The same entity must also have a <a href="WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponStatsComponent</code></a>. Hitbox damage is <code>
- round(wielder.baseAttack * weapon.multiplier)</code>; use <a href="#resolveHitboxDamage()"><code>resolveHitboxDamage()</code></a> when filling
- <a href="../../entities/factories/HitboxSpec.html#damage(int)"><code>HitboxSpec.damage(int)</code></a>.
+ round(wielder.effectiveBaseAttack * weapon.multiplier)</code>; use <a href="#resolveHitboxDamage()"><code>resolveHitboxDamage()</code></a> when
+ filling <a href="../../entities/factories/HitboxSpec.html#damage(int)"><code>HitboxSpec.damage(int)</code></a>.
 
  <p>Listens for a <code>"weaponAttack"</code> event carrying a <code>Vector2</code> direction (triggered by,
  e.g., a player action or AI controller), and calls <a href="#attack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)"><code>attack(Vector2, Vector2)</code></a> using the
@@ -205,14 +205,14 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected float</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveCooldown()" class="member-name-link">resolveCooldown</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Cooldown for this weapon scaled by the wielder's attack speed, so attack-speed buffs make every
+<div class="block">Cooldown for this weapon scaled by the wielder's effective attack speed, so buffs make every
  weapon fire faster.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveHitboxDamage()" class="member-name-link">resolveHitboxDamage</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Damage for this weapon's spawned hitboxes: the wielder's base attack scaled by the weapon
- multiplier, rounded.</div>
+<div class="block">Damage for this weapon's spawned hitboxes: the wielder's effective base attack scaled by the
+ weapon multiplier, rounded.</div>
 </div>
 </div>
 </div>
@@ -302,11 +302,11 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="resolveHitboxDamage()">
 <h3>resolveHitboxDamage</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">resolveHitboxDamage</span>()</div>
-<div class="block">Damage for this weapon's spawned hitboxes: the wielder's base attack scaled by the weapon
- multiplier, rounded. A wielder without combat stats is treated as 0 base attack.</div>
+<div class="block">Damage for this weapon's spawned hitboxes: the wielder's effective base attack scaled by the
+ weapon multiplier, rounded. A wielder without combat stats is treated as 0 base attack.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd><code>round(wielder.baseAttack * multiplier)</code></dd>
+<dd><code>round(wielder.effectiveBaseAttack * multiplier)</code></dd>
 </dl>
 </section>
 </li>
@@ -314,11 +314,11 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="resolveCooldown()">
 <h3>resolveCooldown</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">resolveCooldown</span>()</div>
-<div class="block">Cooldown for this weapon scaled by the wielder's attack speed, so attack-speed buffs make every
+<div class="block">Cooldown for this weapon scaled by the wielder's effective attack speed, so buffs make every
  weapon fire faster. A wielder without combat stats uses the weapon's base cooldown.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd><code>weapon.cooldown / wielder.attackSpeed</code></dd>
+<dd><code>weapon.cooldown / wielder.effectiveAttackSpeed</code></dd>
 </dl>
 </section>
 </li>

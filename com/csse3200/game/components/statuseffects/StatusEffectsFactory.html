@@ -111,6 +111,18 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Create a burning status effect</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createInvisibility(com.csse3200.game.services.GameTime,long)" class="member-name-link">createInvisibility</a><wbr>(<a href="../../services/GameTime.html" title="class in com.csse3200.game.services">GameTime</a>&nbsp;time,
+ long&nbsp;duration)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Create an invisibility status effect that starts counting down immediately.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createLastStand(com.csse3200.game.services.GameTime,long)" class="member-name-link">createLastStand</a><wbr>(<a href="../../services/GameTime.html" title="class in com.csse3200.game.services">GameTime</a>&nbsp;time,
+ long&nbsp;duration)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Create a last stand status effect that starts counting down immediately.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createRegeneration(com.csse3200.game.components.CombatStatsComponent)" class="member-name-link">createRegeneration</a><wbr>(<a href="../CombatStatsComponent.html" title="class in com.csse3200.game.components">CombatStatsComponent</a>&nbsp;combatStats)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
@@ -156,6 +168,36 @@ loadScripts(document, 'script');</script>
 <dd><code>combatStats</code> - The combat stats component of the entity that regeneration is applied to.</dd>
 <dt>Returns:</dt>
 <dd>The regeneration status effect.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createInvisibility(com.csse3200.game.services.GameTime,long)">
+<h3>createInvisibility</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a></span>&nbsp;<span class="element-name">createInvisibility</span><wbr><span class="parameters">(<a href="../../services/GameTime.html" title="class in com.csse3200.game.services">GameTime</a>&nbsp;time,
+ long&nbsp;duration)</span></div>
+<div class="block">Create an invisibility status effect that starts counting down immediately.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>time</code> - the clock the countdown runs on.</dd>
+<dd><code>duration</code> - how long the wearer stays hidden, in milliseconds.</dd>
+<dt>Returns:</dt>
+<dd>The invisibility status effect.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createLastStand(com.csse3200.game.services.GameTime,long)">
+<h3>createLastStand</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a></span>&nbsp;<span class="element-name">createLastStand</span><wbr><span class="parameters">(<a href="../../services/GameTime.html" title="class in com.csse3200.game.services">GameTime</a>&nbsp;time,
+ long&nbsp;duration)</span></div>
+<div class="block">Create a last stand status effect that starts counting down immediately.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>time</code> - the clock the countdown runs on.</dd>
+<dd><code>duration</code> - how long the wearer stays amplified, in milliseconds.</dd>
+<dt>Returns:</dt>
+<dd>The last stand status effect.</dd>
 </dl>
 </section>
 </li>

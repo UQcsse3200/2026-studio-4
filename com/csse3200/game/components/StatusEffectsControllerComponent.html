@@ -93,6 +93,15 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">StatusEffectsControllerComponent</span>
 <span class="extends-implements">extends <a href="Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
+<div class="block">Holds the status effects currently on an entity and drives them, treating every one of them as a
+ plain <a href="statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects"><code>StatusEffect</code></a> so that nothing here depends on any concrete effect.
+
+ <p>Effects are ticked once per frame in <a href="#update()"><code>update()</code></a> and dropped when they report done. The
+ query methods (<a href="#isConcealed()"><code>isConcealed()</code></a>, <a href="#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)"><code>getStatMultiplier(Stat)</code></a>, <a href="#getTint()"><code>getTint()</code></a>)
+ combine the answers of the effects still running. They are pure reads: an effect past its
+ deadline is ignored the instant it expires, but it is only taken off the list, and its removal
+ callback only runs, on the next frame update. That keeps renderers and AI, which query every
+ frame, from triggering lifecycle callbacks mid-query.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -123,7 +132,7 @@ loadScripts(document, 'script');</script>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
@@ -136,13 +145,67 @@ loadScripts(document, 'script');</script>
 <div class="block">Adds stacks to a status effect.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)" class="member-name-link">addStatusEffect</a><wbr>(<a href="statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Puts a status effect on this entity.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearStatusEffects()" class="member-name-link">clearStatusEffects</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Takes every effect off at once, running each removal callback after the list is empty.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Caches the CombatStatsComponent from entity.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Ends every effect on this entity and stops the controller for good.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)" class="member-name-link">getStatMultiplier</a><wbr>(<a href="statuseffects/Stat.html" title="enum class in com.csse3200.game.components.statuseffects">Stat</a>&nbsp;stat)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns what running effects together multiply the given effective stat by, which is 1 when
+ nothing is running.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.graphics.Color</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTint()" class="member-name-link">getTint</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the combined tint of running effects, or null when none tints.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static com.badlogic.gdx.graphics.Color</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getTint(com.csse3200.game.entities.Entity)" class="member-name-link">getTint</a><wbr>(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Returns the combined sprite tint of the entity's active effects, or null when nothing tints it.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)" class="member-name-link">hasStatusEffect</a><wbr>(<a href="statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns whether the effect is on this entity and still running.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isConcealed()" class="member-name-link">isConcealed</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns whether any running effect hides this entity from hostiles.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#isConcealed(com.csse3200.game.entities.Entity)" class="member-name-link">isConcealed</a><wbr>(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Returns whether hostiles should currently be unable to find, chase or damage the entity.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDisposed()" class="member-name-link">isDisposed</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removeStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)" class="member-name-link">removeStatusEffect</a><wbr>(<a href="statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Takes an effect off early.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Updates the state of all status effects.</div>
 </div>
 </div>
@@ -150,7 +213,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.components.Component">Methods inherited from class&nbsp;com.csse3200.game.components.<a href="Component.html" title="class in com.csse3200.game.components">Component</a></h3>
-<code><a href="Component.html#dispose()">dispose</a>, <a href="Component.html#earlyUpdate()">earlyUpdate</a>, <a href="Component.html#getEntity()">getEntity</a>, <a href="Component.html#setEnabled(boolean)">setEnabled</a>, <a href="Component.html#setEntity(com.csse3200.game.entities.Entity)">setEntity</a>, <a href="Component.html#toString()">toString</a>, <a href="Component.html#triggerEarlyUpdate()">triggerEarlyUpdate</a>, <a href="Component.html#triggerUpdate()">triggerUpdate</a></code></div>
+<code><a href="Component.html#earlyUpdate()">earlyUpdate</a>, <a href="Component.html#getEntity()">getEntity</a>, <a href="Component.html#setEnabled(boolean)">setEnabled</a>, <a href="Component.html#setEntity(com.csse3200.game.entities.Entity)">setEntity</a>, <a href="Component.html#toString()">toString</a>, <a href="Component.html#triggerEarlyUpdate()">triggerEarlyUpdate</a>, <a href="Component.html#triggerUpdate()">triggerUpdate</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
@@ -180,6 +243,72 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="isConcealed(com.csse3200.game.entities.Entity)">
+<h3>isConcealed</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isConcealed</span><wbr><span class="parameters">(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</span></div>
+<div class="block">Returns whether hostiles should currently be unable to find, chase or damage the entity. An
+ entity without a controller is simply not concealed.
+
+ <p>This is the one question enemy AI, boss pursuit and contact damage ask. It names no ability,
+ so any effect that reports <a href="statuseffects/StatusEffect.html#concealsOwner()"><code>StatusEffect.concealsOwner()</code></a> hides whoever is wearing it.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>entity</code> - the entity being looked for; must not be null</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getTint(com.csse3200.game.entities.Entity)">
+<h3>getTint</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">com.badlogic.gdx.graphics.Color</span>&nbsp;<span class="element-name">getTint</span><wbr><span class="parameters">(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</span></div>
+<div class="block">Returns the combined sprite tint of the entity's active effects, or null when nothing tints it.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="statuseffects/StatusEffect.html#getTint()"><code>StatusEffect.getTint()</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="isConcealed()">
+<h3>isConcealed</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isConcealed</span>()</div>
+<div class="block">Returns whether any running effect hides this entity from hostiles.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)">
+<h3>getStatMultiplier</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getStatMultiplier</span><wbr><span class="parameters">(<a href="statuseffects/Stat.html" title="enum class in com.csse3200.game.components.statuseffects">Stat</a>&nbsp;stat)</span></div>
+<div class="block">Returns what running effects together multiply the given effective stat by, which is 1 when
+ nothing is running. Effects compose, so two buffs multiply rather than one winning.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getTint()">
+<h3>getTint</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.graphics.Color</span>&nbsp;<span class="element-name">getTint</span>()</div>
+<div class="block">Returns the combined tint of running effects, or null when none tints. Tints multiply, so being
+ hidden and buffed at once shows both.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="hasStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)">
+<h3>hasStatusEffect</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasStatusEffect</span><wbr><span class="parameters">(<a href="statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</span></div>
+<div class="block">Returns whether the effect is on this entity and still running.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isDisposed()">
+<h3>isDisposed</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isDisposed</span>()</div>
+</section>
+</li>
+<li>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
@@ -189,6 +318,18 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="Component.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="addStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)">
+<h3>addStatusEffect</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addStatusEffect</span><wbr><span class="parameters">(<a href="statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</span></div>
+<div class="block">Puts a status effect on this entity. The controller now owns its lifetime: it is ticked each
+ frame and its <a href="statuseffects/StatusEffect.html#onRemoved()"><code>StatusEffect.onRemoved()</code></a> runs once when it comes off.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if the controller is disposed or already holds this effect.</dd>
 </dl>
 </section>
 </li>
@@ -207,13 +348,42 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="removeStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)">
+<h3>removeStatusEffect</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">removeStatusEffect</span><wbr><span class="parameters">(<a href="statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</span></div>
+<div class="block">Takes an effect off early. Removing one that is not on this entity changes nothing.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="clearStatusEffects()">
+<h3>clearStatusEffects</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">clearStatusEffects</span>()</div>
+<div class="block">Takes every effect off at once, running each removal callback after the list is empty.</div>
+</section>
+</li>
+<li>
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block">Updates the state of all status effects. Removes status effects that return true from update.</div>
+<div class="block">Updates the state of all status effects. Removes status effects that return true from update,
+ then tells each removed effect, so no callback ever sees a half-cleared list.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="dispose()">
+<h3>dispose</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">dispose</span>()</div>
+<div class="block">Ends every effect on this entity and stops the controller for good.
+
+ <p>Each effect still running is removed and told, so none is left believing it is on an entity
+ that no longer exists. A disposed controller ticks nothing further and refuses new effects.</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="Component.html#dispose()">dispose</a></code>&nbsp;in class&nbsp;<code><a href="Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
 </dl>
 </section>
 </li>

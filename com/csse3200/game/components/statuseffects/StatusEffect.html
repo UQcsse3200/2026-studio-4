@@ -87,11 +87,20 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="Burning.html" title="class in com.csse3200.game.components.statuseffects">Burning</a></code>, <code><a href="Regeneration.html" title="class in com.csse3200.game.components.statuseffects">Regeneration</a></code></dd>
+<dd><code><a href="Burning.html" title="class in com.csse3200.game.components.statuseffects">Burning</a></code>, <code><a href="InvisibilityEffect.html" title="class in com.csse3200.game.components.statuseffects">InvisibilityEffect</a></code>, <code><a href="LastStandEffect.html" title="class in com.csse3200.game.components.statuseffects">LastStandEffect</a></code>, <code><a href="Regeneration.html" title="class in com.csse3200.game.components.statuseffects">Regeneration</a></code>, <code><a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">StatusEffect</span></div>
-<div class="block">Defines the behavior of status effects. Status effects implement these methods.</div>
+<div class="block">Defines the behavior of status effects. Status effects implement these methods.
+
+ <p>Every status effect lasts for some time and is driven by the status effects controller of the
+ entity it is on, which polls <a href="#update()"><code>update()</code></a> once a frame and drops the effect when it reports
+ done. The controller only ever sees this interface, so what an effect does lives on the effect.
+
+ <p>An effect does its work in one of two ways. Self-driven effects such as burning act on the
+ entity inside <a href="#update()"><code>update()</code></a>. Declarative effects such as invisibility instead describe what
+ they do through the query methods below, and combat, rendering and enemy AI ask the controller
+ for the combined answer. The defaults are neutral, so an effect overrides only what it changes.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -100,18 +109,45 @@ loadScripts(document, 'script');</script>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>long</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getRemainingDuration()" class="member-name-link">getRemainingDuration</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#concealsOwner()" class="member-name-link">concealsOwner</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Returns whether hostiles should be unable to find, chase or damage the entity while this runs.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>long</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getRemainingDuration()" class="member-name-link">getRemainingDuration</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default float</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)" class="member-name-link">getStatMultiplier</a><wbr>(<a href="Stat.html" title="enum class in com.csse3200.game.components.statuseffects">Stat</a>&nbsp;stat)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Returns what this effect multiplies the given effective stat by while it runs.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default com.badlogic.gdx.graphics.Color</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getTint()" class="member-name-link">getTint</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Returns the colour this effect multiplies into the sprite of whatever it is on, or null to
+ leave the sprite alone.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isExpired()" class="member-name-link">isExpired</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Returns whether the effect has run its course.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#onRemoved()" class="member-name-link">onRemoved</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Called once by the controller after the effect has been taken off its entity, whether it
+ expired, was removed early, or the entity died or was disposed.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Updates the status effect.</div>
 </div>
 </div>
@@ -147,6 +183,48 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>the time remaining until the status effect should be removed in milliseconds.</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="isExpired()">
+<h3>isExpired</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isExpired</span>()</div>
+<div class="block">Returns whether the effect has run its course. Queries skip expired effects immediately.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="concealsOwner()">
+<h3>concealsOwner</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">concealsOwner</span>()</div>
+<div class="block">Returns whether hostiles should be unable to find, chase or damage the entity while this runs.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)">
+<h3>getStatMultiplier</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getStatMultiplier</span><wbr><span class="parameters">(<a href="Stat.html" title="enum class in com.csse3200.game.components.statuseffects">Stat</a>&nbsp;stat)</span></div>
+<div class="block">Returns what this effect multiplies the given effective stat by while it runs. The raw stats
+ are never touched, so charms and other adjustments keep working underneath and removing the
+ effect cannot leave a rounding remainder behind.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getTint()">
+<h3>getTint</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">com.badlogic.gdx.graphics.Color</span>&nbsp;<span class="element-name">getTint</span>()</div>
+<div class="block">Returns the colour this effect multiplies into the sprite of whatever it is on, or null to
+ leave the sprite alone. Lets an effect show itself without the renderer naming it.
+
+ <p>Treat the returned colour as read only; the caller may be a renderer running every frame.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="onRemoved()">
+<h3>onRemoved</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">onRemoved</span>()</div>
+<div class="block">Called once by the controller after the effect has been taken off its entity, whether it
+ expired, was removed early, or the entity died or was disposed. Runs after the whole batch of
+ expiring effects has been removed, so nothing observing from here sees a half-cleared list.</div>
 </section>
 </li>
 </ul>
