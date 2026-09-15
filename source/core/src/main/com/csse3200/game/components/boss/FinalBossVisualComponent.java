@@ -137,24 +137,61 @@ public class FinalBossVisualComponent extends RenderComponent {
     previousHealth = health;
   }
 
+  /** Snapshot of per-frame layout values needed to draw the boss body and its effects. */
+  private record BodyLayout(
+      boolean ordinary,
+      float hover,
+      float bodyWidth,
+      float bodyHeight,
+      float x,
+      float y,
+      TextureRegion body,
+      boolean damageHit,
+      boolean transitioning) {}
+
   @Override
   protected void draw(SpriteBatch batch) {
     FinalBossStageOneState state = stageOne.getState();
     float stateTime = stageOne.getStateElapsed();
-
-    boolean ordinary =
-        state == FinalBossStageOneState.INTRO
-            || (state == FinalBossStageOneState.TRANSFORMING
-                && stateTime < config.bossTransformDuration * 0.5f);
-
     Vector2 pos = entity.getPosition();
     Vector2 size = entity.getScale();
 
-    boolean airborne =
-        !ordinary
-            && state != FinalBossStageOneState.BREAK_WINDOW
-            && state != FinalBossStageOneState.COMPLETE
-            && !dying;
+    BodyLayout layout = computeBodyLayout(state, stateTime, pos, size);
+    float colour = batch.getPackedColor();
+
+    try {
+      drawBody(batch, layout, pos, size, colour);
+      drawDamageHitEffect(batch, layout, colour);
+
+      if (state == FinalBossStageOneState.TRANSFORMING) {
+        int frame = FinalBossVisualAssets.once(stateTime, config.bossTransformDuration, 12);
+        batch.draw(transform[frame], pos.x, pos.y, size.x, size.y);
+      }
+
+      drawChargeWarning(batch, pos, size);
+      drawShield(batch, pos, size, layout.ordinary());
+    } finally {
+      batch.setPackedColor(colour);
+    }
+  }
+
+  private boolean isOrdinaryPose(FinalBossStageOneState state, float stateTime) {
+    return state == FinalBossStageOneState.INTRO
+        || (state == FinalBossStageOneState.TRANSFORMING
+            && stateTime < config.bossTransformDuration * 0.5f);
+  }
+
+  private boolean isAirborne(FinalBossStageOneState state, boolean ordinary) {
+    return !ordinary
+        && state != FinalBossStageOneState.BREAK_WINDOW
+        && state != FinalBossStageOneState.COMPLETE
+        && !dying;
+  }
+
+  private BodyLayout computeBodyLayout(
+      FinalBossStageOneState state, float stateTime, Vector2 pos, Vector2 size) {
+    boolean ordinary = isOrdinaryPose(state, stateTime);
+    boolean airborne = isAirborne(state, ordinary);
 
     // Reserve headroom inside the physical rectangle, so hovering cannot leave camera bounds.
     float hover = airborne ? 0.12f + 0.035f * MathUtils.sin(elapsed * 4f) : 0f;
@@ -179,75 +216,65 @@ public class FinalBossVisualComponent extends RenderComponent {
 
     boolean transitioning = phaseController != null && phaseController.isTransitioning();
 
-    float colour = batch.getPackedColor();
+    return new BodyLayout(ordinary, hover, bodyWidth, bodyHeight, x, y, body, damageHit, transitioning);
+  }
 
-    try {
-      /*
-       * Draw Boss body.
-       *
-       * During a successful hit in the break window the body briefly receives a warm tint.
-       */
-      if (dying) {
-        batch.setColor(1f, 1f, 1f, Math.max(0f, 1f - deathElapsed / 0.5f));
-      } else if (transitioning) {
-        // Blink red to warn that the boss is about to change stage.
-        float blink = MathUtils.sin(elapsed * 12f) > 0f ? 1f : 0.35f;
-        batch.setColor(1f, blink, blink, 1f);
-      } else if (damageHit) {
-        batch.setColor(1f, 0.5f, 0.5f, 1f);
-      }
+  /**
+   * Draws the boss body. During a successful hit in the break window the body briefly receives a
+   * warm tint.
+   */
+  private void drawBody(SpriteBatch batch, BodyLayout layout, Vector2 pos, Vector2 size, float colour) {
+    applyBodyTint(batch, layout);
 
-      boolean faceLeft = !ordinary && target.getCenterPosition().x < entity.getCenterPosition().x;
+    boolean faceLeft =
+        !layout.ordinary() && target.getCenterPosition().x < entity.getCenterPosition().x;
 
-      batch.draw(
-          body, faceLeft ? x + bodyWidth : x, y, faceLeft ? -bodyWidth : bodyWidth, bodyHeight);
+    batch.draw(
+        layout.body(),
+        faceLeft ? layout.x() + layout.bodyWidth() : layout.x(),
+        layout.y(),
+        faceLeft ? -layout.bodyWidth() : layout.bodyWidth(),
+        layout.bodyHeight());
 
-      // Restore colour so later effects are not unintentionally tinted.
-      batch.setPackedColor(colour);
+    // Restore colour so later effects are not unintentionally tinted.
+    batch.setPackedColor(colour);
+  }
 
-      /*
-       * Orange successful-hit effect.
-       *
-       * This is only drawn when HP really decreased during BREAK_WINDOW.
-       */
-      if (damageHit) {
-        int frame =
-            FinalBossVisualAssets.once(
-                DAMAGE_HIT_DURATION - damageHitRemaining, DAMAGE_HIT_DURATION, impact.length);
-
-        float effectWidth = bodyWidth * 0.8f;
-        float effectHeight = bodyHeight * 0.8f;
-
-        batch.setColor(1f, 0.65f, 0.45f, 1f);
-
-        batch.draw(
-            impact[frame],
-            x + (bodyWidth - effectWidth) * 0.5f,
-            y + (bodyHeight - effectHeight) * 0.5f,
-            effectWidth,
-            effectHeight);
-
-        batch.setPackedColor(colour);
-      }
-
-      /*
-       * Transformation animation.
-       */
-      if (state == FinalBossStageOneState.TRANSFORMING) {
-        int frame = FinalBossVisualAssets.once(stateTime, config.bossTransformDuration, 12);
-
-        batch.draw(transform[frame], pos.x, pos.y, size.x, size.y);
-      }
-
-      drawChargeWarning(batch, pos, size);
-
-      /*
-       * Shield rendering.
-       */
-      drawShield(batch, pos, size, ordinary);
-    } finally {
-      batch.setPackedColor(colour);
+  private void applyBodyTint(SpriteBatch batch, BodyLayout layout) {
+    if (dying) {
+      batch.setColor(1f, 1f, 1f, Math.max(0f, 1f - deathElapsed / 0.5f));
+    } else if (layout.transitioning()) {
+      // Blink red to warn that the boss is about to change stage.
+      float blink = MathUtils.sin(elapsed * 12f) > 0f ? 1f : 0.35f;
+      batch.setColor(1f, blink, blink, 1f);
+    } else if (layout.damageHit()) {
+      batch.setColor(1f, 0.5f, 0.5f, 1f);
     }
+  }
+
+  /** Orange successful-hit effect, only drawn when HP really decreased during BREAK_WINDOW. */
+  private void drawDamageHitEffect(SpriteBatch batch, BodyLayout layout, float colour) {
+    if (!layout.damageHit()) {
+      return;
+    }
+
+    int frame =
+        FinalBossVisualAssets.once(
+            DAMAGE_HIT_DURATION - damageHitRemaining, DAMAGE_HIT_DURATION, impact.length);
+
+    float effectWidth = layout.bodyWidth() * 0.8f;
+    float effectHeight = layout.bodyHeight() * 0.8f;
+
+    batch.setColor(1f, 0.65f, 0.45f, 1f);
+
+    batch.draw(
+        impact[frame],
+        layout.x() + (layout.bodyWidth() - effectWidth) * 0.5f,
+        layout.y() + (layout.bodyHeight() - effectHeight) * 0.5f,
+        effectWidth,
+        effectHeight);
+
+    batch.setPackedColor(colour);
   }
 
   /** Draws the existing Stage 2 charge warning. */
@@ -304,9 +331,9 @@ public class FinalBossVisualComponent extends RenderComponent {
 
   /** Selects the appropriate wizard texture based on current phase and attack state. */
   private TextureRegion[] getActiveWizardFrames() {
-    FinalBossPhaseControllerComponent phaseController =
+    FinalBossPhaseControllerComponent newPhaseController =
         entity.getComponent(FinalBossPhaseControllerComponent.class);
-    if (phaseController == null || phaseController.getCurrentPhase() != FinalBossPhase.STAGE_TWO) {
+    if (newPhaseController == null || newPhaseController.getCurrentPhase() != FinalBossPhase.STAGE_TWO) {
       return wizard;
     }
 
