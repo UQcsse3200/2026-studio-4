@@ -31,6 +31,12 @@ public class FinalBossPhaseControllerComponent extends Component {
     transitionRemaining = Math.max(0f, transitionRemaining - deltaTime);
 
     if (transitionRemaining <= 0f) {
+      FinalBossStageThreeComponent stageThree =
+          entity.getComponent(FinalBossStageThreeComponent.class);
+      if (currentPhase == FinalBossPhase.STAGE_THREE && stageThree != null) {
+        stageThree.startWaveOne();
+        return;
+      }
       FinalBossDamageControllerComponent protection =
           entity.getComponent(FinalBossDamageControllerComponent.class);
       if (protection != null) {
@@ -38,6 +44,8 @@ public class FinalBossPhaseControllerComponent extends Component {
       }
 
       if (currentPhase == FinalBossPhase.STAGE_TWO) {
+        FinalBossStageTwoComponent stageTwo = entity.getComponent(FinalBossStageTwoComponent.class);
+        if (stageTwo != null) stageTwo.applyStageThreeHealthFloor();
         FinalBossMovementComponent movement = entity.getComponent(FinalBossMovementComponent.class);
         if (movement != null) {
           movement.enableChargeAttacks();
@@ -61,6 +69,7 @@ public class FinalBossPhaseControllerComponent extends Component {
     }
 
     currentPhase = nextPhase(currentPhase);
+    if (currentPhase == FinalBossPhase.DEFEATED) transitionRemaining = 0f;
     if (currentPhase == FinalBossPhase.STAGE_TWO) {
       // Charge attacks are enabled once the transition invulnerability window ends.
       FinalBossMovementComponent movement = entity.getComponent(FinalBossMovementComponent.class);

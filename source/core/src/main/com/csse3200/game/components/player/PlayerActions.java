@@ -6,9 +6,12 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Action component for interacting with the player. Player events should be initialised in create()
@@ -18,6 +21,9 @@ public class PlayerActions extends Component {
   private static final float DASH_SPEED_MULTIPLIER = 5;
   private static final long DASH_DURATION_MS = 75;
   private static final long DASH_COOLDOWN_MS = 575;
+  private static final float JUMP_DURATION = 0.85f;
+  private static final float JUMP_HEIGHT = 0.9f;
+  private static final float JUMP_COOLDOWN = 0.35f;
 
   // Event / animation names
   private static final String WALK_UP = "walkUp";
@@ -28,6 +34,70 @@ public class PlayerActions extends Component {
   private static final String IDLE_DOWN = "idleDown";
   private static final String IDLE_LEFT = "idleLeft";
   private static final String IDLE_RIGHT = "idleRight";
+
+  private final Set<Object> controlLocks = new HashSet<>();
+  private final Set<Object> jumpOwners = new HashSet<>();
+  private boolean jumping;
+  private float jumpElapsed;
+  private float jumpCooldownRemaining;
+  private AnimationRenderComponent animator;
+
+  /**
+   * Locks movement, dash and attacks without changing speed buffs. Each owner releases its own
+   * lock.
+   */
+  public void setControlsLocked(Object owner, boolean locked) {
+    if (locked) {
+      controlLocks.add(owner);
+      cancelJump();
+      if (dashOn) entity.getEvents().trigger("dashStop");
+      dashOn = false;
+      if (physicsComponent != null) physicsComponent.getBody().setLinearVelocity(0f, 0f);
+    } else {
+      controlLocks.remove(owner);
+    }
+  }
+
+  public boolean areControlsLocked() {
+    return !controlLocks.isEmpty();
+  }
+
+  /** Replaces the dash action with jumping while at least one owner requests it. */
+  public void setJumpEnabled(Object owner, boolean enabled) {
+    boolean wasEnabled = isJumpEnabled();
+    if (enabled) {
+      jumpOwners.add(owner);
+    } else {
+      jumpOwners.remove(owner);
+    }
+    if (!wasEnabled && isJumpEnabled()) {
+      if (dashOn && entity != null) entity.getEvents().trigger("dashStop");
+      dashOn = false;
+      dashCooldown = false;
+      moving = !walkDirection.isZero();
+      if (physicsComponent != null) {
+        if (moving) updateSpeed();
+        else physicsComponent.getBody().setLinearVelocity(0f, 0f);
+      }
+    } else if (!isJumpEnabled()) {
+      cancelJump();
+    }
+  }
+
+  public boolean isJumpEnabled() {
+    return !jumpOwners.isEmpty();
+  }
+
+  public boolean isJumping() {
+    return jumping;
+  }
+
+  /** Visual height above the ground; the player's physical position stays on the floor. */
+  public float getJumpHeight() {
+    if (!jumping) return 0f;
+    float progress = jumpElapsed / JUMP_DURATION;
+    return JUMP_HEIGHT * 4f * progress * (1f - progress);
+  }
 
   private PhysicsComponent physicsComponent;
   private CombatStatsComponent combatStats;
@@ -47,20 +117,74 @@ public class PlayerActions extends Component {
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
     combatStats = entity.getComponent(CombatStatsComponent.class);
+    animator = entity.getComponent(AnimationRenderComponent.class);
     entity.getEvents().addListener("walk", this::walk);
     entity.getEvents().addListener("walkStop", this::stopWalking);
     entity.getEvents().addListener("dash", this::dash);
     entity.getEvents().addListener("attack", this::attack);
     entity.getEvents().addListener("specialAttack", this::specialAttack);
+    entity.getEvents().addListener("entityDied", this::cancelJump);
   }
 
   @Override
   public void update() {
     updateDashState();
+    updateJumpState();
+    if (areControlsLocked()) {
+      physicsComponent.getBody().setLinearVelocity(0f, 0f);
+      updateIdleAnimation();
+      return;
+    }
     if (moving) {
       updateSpeed();
     }
     updateAnimation();
+  }
+
+  private void updateJumpState() {
+    if (areControlsLocked() || (combatStats != null && combatStats.isDead())) {
+      cancelJump();
+      return;
+    }
+    if (!isJumpEnabled()) return;
+    float delta = ServiceLocator.getTimeSource().getDeltaTime();
+    if (!Float.isFinite(delta) || delta <= 0f) return;
+    if (jumping) {
+      jumpElapsed += delta;
+      if (jumpElapsed >= JUMP_DURATION) {
+        jumping = false;
+        jumpCooldownRemaining = Math.max(0f, JUMP_COOLDOWN - (jumpElapsed - JUMP_DURATION));
+        jumpElapsed = 0f;
+      }
+    } else {
+      jumpCooldownRemaining = Math.max(0f, jumpCooldownRemaining - delta);
+    }
+    updateJumpOffset();
+  }
+
+  private void jump() {
+    if (jumping || jumpCooldownRemaining > 0f || combatStats.isDead()) return;
+    jumping = true;
+    jumpElapsed = 0f;
+    updateJumpOffset();
+  }
+
+  private void cancelJump() {
+    jumping = false;
+    jumpElapsed = 0f;
+    jumpCooldownRemaining = 0f;
+    updateJumpOffset();
+  }
+
+  private void updateJumpOffset() {
+    if (animator != null) animator.setVerticalOffset(getJumpHeight());
+  }
+
+  @Override
+  public void dispose() {
+    jumpOwners.clear();
+    cancelJump();
+    super.dispose();
   }
 
   /** Ends the dash and clears the dash cooldown once their respective durations have elapsed. */
@@ -125,6 +249,10 @@ public class PlayerActions extends Component {
   }
 
   private void updateSpeed() {
+    if (areControlsLocked()) {
+      physicsComponent.getBody().setLinearVelocity(0f, 0f);
+      return;
+    }
     Body body = physicsComponent.getBody();
     Vector2 velocity = body.getLinearVelocity();
     Vector2 desiredVelocity;
@@ -169,6 +297,7 @@ public class PlayerActions extends Component {
 
   /** Makes the player attack. */
   void attack() {
+    if (areControlsLocked()) return;
     entity.getEvents().trigger("weaponAttack", facingDirection);
     Sound attackSound =
         ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
@@ -177,6 +306,7 @@ public class PlayerActions extends Component {
 
   /** Makes the player to do special attack. */
   void specialAttack() {
+    if (areControlsLocked()) return;
     Sound attackSound =
         ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
     attackSound.play();
@@ -186,6 +316,11 @@ public class PlayerActions extends Component {
    * Makes the player dash. The player only dashes if the dash is not currently on or on cooldown.
    */
   void dash(Vector2 direction) {
+    if (areControlsLocked()) return;
+    if (isJumpEnabled()) {
+      jump();
+      return;
+    }
     if (!dashOn && !dashCooldown) {
       this.dashDirection =
           direction.epsilonEquals(Vector2.Zero) ? facingDirection.cpy() : direction.cpy();

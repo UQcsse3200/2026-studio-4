@@ -234,6 +234,9 @@ public class CombatStatsComponent extends Component {
       return;
     }
 
+    // Source-aware hook for scripted hit-count targets; emitted only for positive damage.
+    if (entity != null) entity.getEvents().trigger("damageAttempted", damage, attacker);
+
     if (invulnerable) {
       triggerDamageBlocked();
       return;

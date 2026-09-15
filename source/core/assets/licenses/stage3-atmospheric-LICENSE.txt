@@ -1,0 +1,9 @@
+Alenia Studios Standard License (CC BY 4.0 + Additional Terms)
+
+This work is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
+To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.
+
+ADDITIONAL TERMS:
+1. Attribution is mandatory. You must give appropriate credit to "Alenia Studios / KXLT", provide a link to the license, and indicate if changes were made.
+2. No Resale: You may not resell, sub-license, or distribute the raw assets, individually or as a pack, under any circumstances.
+3. No AI Training: These assets may not be used, directly or indirectly, to train, validate, or test artificial intelligence models, machine learning algorithms, or any related datasets.
