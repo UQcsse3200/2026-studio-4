@@ -168,21 +168,21 @@ public class StatusEffectsControllerComponent extends Component {
         break;
       case 's':
         for (int i = 0; i < stacks; i++) {
-          statusEffects.addLast(StatusEffectsFactory.createSlow(combatStatsComponent));
+          addStatusEffect(StatusEffectsFactory.createSlow(combatStatsComponent));
         }
         break;
       case 'S':
         for (int i = 0; i < stacks; i++) {
-          statusEffects.addLast(StatusEffectsFactory.createSpeed(combatStatsComponent));
+          addStatusEffect(StatusEffectsFactory.createSpeed(combatStatsComponent));
         }
         break;
       case 'v':
         for (int i = 0; i < stacks; i++) {
-          statusEffects.addLast(StatusEffectsFactory.createVulnerable());
+          addStatusEffect(StatusEffectsFactory.createVulnerable());
         }
         break;
       case 'f':
-        statusEffects.addLast(StatusEffectsFactory.createFreeze(combatStatsComponent));
+        addStatusEffect(StatusEffectsFactory.createFreeze(combatStatsComponent));
         break;
       default:
         throw new IllegalArgumentException(
@@ -268,9 +268,7 @@ public class StatusEffectsControllerComponent extends Component {
       }
     }
     if (removed != null) {
-      for (StatusEffect effect : removed) {
-        statusEffects.remove(effect);
-      }
+      notifyRemoved(removed);
     }
     triggerShieldUi();
   }
@@ -283,16 +281,14 @@ public class StatusEffectsControllerComponent extends Component {
   public void damage(Damage damage) {
     ArrayList<StatusEffect> removal = new ArrayList<>();
 
-    for (StatusEffect effect : statusEffects) {
+    for (StatusEffect effect : new ArrayList<>(statusEffects)) {
       if (effect instanceof Damageable damageable && damageable.damage(damage)) {
         removal.addLast(effect);
       }
     }
 
-    for (StatusEffect effect : removal) {
-      statusEffects.remove(effect);
-      notifyRemoved(removal);
-    }
+    statusEffects.removeAll(removal);
+    notifyRemoved(removal);
   }
 
   /**
@@ -315,6 +311,7 @@ public class StatusEffectsControllerComponent extends Component {
    * <p>Each effect still running is removed and told, so none is left believing it is on an entity
    * that no longer exists. A disposed controller ticks nothing further and refuses new effects.
    */
+  @Override
   public void dispose() {
     disposed = true;
     clearStatusEffects();

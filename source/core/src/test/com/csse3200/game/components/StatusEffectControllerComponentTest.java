@@ -9,13 +9,15 @@ import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.EventHandler;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 
-class StatusEffectsControllerComponentTest {
+class StatusEffectControllerComponentTest {
 
   @Mock private CombatStatsComponent combatStatsComponent;
 
@@ -75,11 +77,12 @@ class StatusEffectsControllerComponentTest {
 
   @Test
   void addBurningStatusEffectCreatesCorrectNumberOfEffects() {
-    StatusEffect burn = mock(StatusEffect.class);
-
     try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
-      factory.when(() -> StatusEffectsFactory.createBurn(combatStatsComponent)).thenReturn(burn);
+      // Each stack is a separate effect, so hand out a fresh mock per call.
+      factory
+          .when(() -> StatusEffectsFactory.createBurn(combatStatsComponent))
+          .thenAnswer(invocation -> mock(StatusEffect.class));
 
       StatusEffectsControllerComponent controller = createController();
 
@@ -91,13 +94,11 @@ class StatusEffectsControllerComponentTest {
 
   @Test
   void addRegenerationStatusEffectCreatesCorrectNumberOfEffects() {
-    StatusEffect regeneration = mock(StatusEffect.class);
-
     try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
       factory
           .when(() -> StatusEffectsFactory.createRegeneration(combatStatsComponent))
-          .thenReturn(regeneration);
+          .thenAnswer(invocation -> mock(StatusEffect.class));
 
       StatusEffectsControllerComponent controller = createController();
 
@@ -109,11 +110,11 @@ class StatusEffectsControllerComponentTest {
 
   @Test
   void addSlowStatusEffectCreatesCorrectNumberOfEffects() {
-    StatusEffect slow = mock(StatusEffect.class);
-
     try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
-      factory.when(() -> StatusEffectsFactory.createSlow(combatStatsComponent)).thenReturn(slow);
+      factory
+          .when(() -> StatusEffectsFactory.createSlow(combatStatsComponent))
+          .thenAnswer(invocation -> mock(StatusEffect.class));
 
       StatusEffectsControllerComponent controller = createController();
 
@@ -125,11 +126,11 @@ class StatusEffectsControllerComponentTest {
 
   @Test
   void addSpeedStatusEffectCreatesCorrectNumberOfEffects() {
-    StatusEffect speed = mock(StatusEffect.class);
-
     try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
-      factory.when(() -> StatusEffectsFactory.createSpeed(combatStatsComponent)).thenReturn(speed);
+      factory
+          .when(() -> StatusEffectsFactory.createSpeed(combatStatsComponent))
+          .thenAnswer(invocation -> mock(StatusEffect.class));
 
       StatusEffectsControllerComponent controller = createController();
 
@@ -141,11 +142,11 @@ class StatusEffectsControllerComponentTest {
 
   @Test
   void addVulnerableStatusEffectCreatesCorrectNumberOfEffects() {
-    StatusEffect vulnerable = mock(StatusEffect.class);
-
     try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
-      factory.when(StatusEffectsFactory::createVulnerable).thenReturn(vulnerable);
+      factory
+          .when(StatusEffectsFactory::createVulnerable)
+          .thenAnswer(invocation -> mock(StatusEffect.class));
 
       StatusEffectsControllerComponent controller = createController();
 
@@ -306,11 +307,18 @@ class StatusEffectsControllerComponentTest {
 
   @Test
   void updateCallsUpdateOnAllStatusEffects() {
-    StatusEffect effect = mock(StatusEffect.class);
+    List<StatusEffect> effects = new ArrayList<>();
 
     try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
-      factory.when(() -> StatusEffectsFactory.createBurn(combatStatsComponent)).thenReturn(effect);
+      factory
+          .when(() -> StatusEffectsFactory.createBurn(combatStatsComponent))
+          .thenAnswer(
+              invocation -> {
+                StatusEffect effect = mock(StatusEffect.class);
+                effects.add(effect);
+                return effect;
+              });
 
       StatusEffectsControllerComponent controller = createController();
 
@@ -318,7 +326,8 @@ class StatusEffectsControllerComponentTest {
 
       controller.update();
 
-      verify(effect, times(3)).update();
+      assertEquals(3, effects.size());
+      effects.forEach(effect -> verify(effect).update());
     }
   }
 
