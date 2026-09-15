@@ -160,7 +160,7 @@ public class FinalBossVisualComponent extends RenderComponent {
     float colour = batch.getPackedColor();
 
     try {
-      drawBody(batch, layout, pos, size, colour);
+      drawBody(batch, layout, colour);
       drawDamageHitEffect(batch, layout, colour);
 
       if (state == FinalBossStageOneState.TRANSFORMING) {
@@ -225,7 +225,7 @@ public class FinalBossVisualComponent extends RenderComponent {
    * warm tint.
    */
   private void drawBody(
-      SpriteBatch batch, BodyLayout layout, Vector2 pos, Vector2 size, float colour) {
+      SpriteBatch batch, BodyLayout layout, float colour) {
     applyBodyTint(batch, layout);
 
     boolean faceLeft =
