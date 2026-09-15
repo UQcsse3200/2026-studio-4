@@ -25,6 +25,12 @@ public class PlayerStatsDisplay extends UIComponent {
 
   private static final String LABEL_STYLE = "statDisplay";
 
+  /**
+   * Updates the shield value and maximum shown in the player's HUD.
+   *
+   * @param current the shield's current number of points
+   * @param max the shield's maximum number of points
+   */
   public void updatePlayerShieldUI(int current, int max) {
     shieldLabel.setText(String.format("Shield: %d / %d", current, max));
     shieldBar.setRange(0, max);

@@ -75,18 +75,34 @@ public class StatusEffectsControllerComponent extends Component {
     }
   }
 
+  /**
+   * Activates the entity's absorb-mode shield in response to the {@code shieldAbsorb} event.
+   *
+   * <p>A shield is created and registered lazily the first time either shield mode is activated.
+   */
   public void activateAbsorb() {
     ensureShield();
     shield.activateAbsorb();
     triggerShieldUi();
   }
 
+  /**
+   * Activates the entity's timed shield in response to the {@code shieldTimed} event.
+   *
+   * <p>A shield is created and registered lazily the first time either shield mode is activated.
+   */
   public void activateTimed() {
     ensureShield();
     shield.activateTimed();
     triggerShieldUi();
   }
 
+  /**
+   * Passes incoming damage through the entity's shield, if one has been created.
+   *
+   * @param damage the incoming damage amount
+   * @return the damage remaining after shield mitigation
+   */
   public int modifyIncomingDamage(int damage) {
     if (shield == null) {
       return damage;
