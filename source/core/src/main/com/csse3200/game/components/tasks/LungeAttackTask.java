@@ -31,23 +31,25 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
   private final Entity target;
   private final float restoreSpeed;
   private final GameTime gameTime;
-
   private PhysicsMovementComponent movementComponent;
   private Phase phase;
   private long phaseStartTime;
   private long cooldownEndTime = 0;
   private Vector2 dashTargetPoint;
   private int priority = 0;
+  private Entity enemy;
 
   /**
    * @param target Entity to lunge toward (usually the player).
    * @param restoreSpeed Normal movement speed to return to after the dash ends.
    */
-  public LungeAttackTask(Entity target, int priority, float restoreSpeed) {
+  public LungeAttackTask(Entity target, int priority, float restoreSpeed, Entity enemy) {
     this.target = target;
     this.restoreSpeed = restoreSpeed;
     this.priority = priority;
+    this.enemy = enemy;
     this.gameTime = ServiceLocator.getTimeSource();
+    movementComponent = enemy.getComponent(PhysicsMovementComponent.class);
   }
 
   @Override
@@ -62,6 +64,7 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
     movementComponent.setMoving(false);
     phase = Phase.TELEGRAPH;
     phaseStartTime = gameTime.getTime();
+
     owner.getEntity().getEvents().trigger("lungeTelegraphStart");
   }
 
@@ -155,6 +158,7 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
   }
 
   private void endDash(long now) {
+    PhysicsMovementComponent movementComponent = enemy.getComponent(PhysicsMovementComponent.class);
     movementComponent.setMoving(false);
     movementComponent.setMaxSpeed(new Vector2(restoreSpeed, restoreSpeed));
 

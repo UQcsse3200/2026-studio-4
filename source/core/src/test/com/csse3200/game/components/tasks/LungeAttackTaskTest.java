@@ -53,7 +53,7 @@ class LungeAttackTaskTest {
     StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
     target.addComponent(effects);
     target.setPosition(1f, 0f);
-    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f, owner);
     task.create(taskRunner);
     when(effects.isConcealed()).thenReturn(true);
     assertEquals(-1, task.getPriority());
@@ -66,7 +66,7 @@ class LungeAttackTaskTest {
     StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
     target.addComponent(effects);
     target.setPosition(1f, 0f);
-    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f, owner);
     task.create(taskRunner);
     task.start();
     when(gameTime.getTime()).thenReturn(500L);
@@ -93,7 +93,7 @@ class LungeAttackTaskTest {
     target.setPosition(1f, 0f);
     int[] dashEnds = {0};
     owner.getEvents().addListener("lungeDashEnd", () -> dashEnds[0]++);
-    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f, owner);
     task.create(taskRunner);
     task.start();
     clearInvocations(movementComponent);
@@ -123,7 +123,7 @@ class LungeAttackTaskTest {
     target.setPosition(1f, 0f);
     int[] dashEnds = {0};
     owner.getEvents().addListener("lungeDashEnd", () -> dashEnds[0]++);
-    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f, owner);
     task.create(taskRunner);
     task.start();
     when(gameTime.getTime()).thenReturn(500L);
@@ -161,7 +161,7 @@ class LungeAttackTaskTest {
   @Test
   void shouldBeInactiveWhenTargetIsFar() {
     when(gameTime.getTime()).thenReturn(0L);
-    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f, owner);
     task.create(taskRunner);
 
     target.setPosition(new Vector2(10f, 0f));
@@ -172,7 +172,7 @@ class LungeAttackTaskTest {
   @Test
   void shouldTriggerWhenTargetIsClose() {
     when(gameTime.getTime()).thenReturn(0L);
-    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f, owner);
     task.create(taskRunner);
 
     target.setPosition(new Vector2(2f, 0f));
@@ -183,7 +183,7 @@ class LungeAttackTaskTest {
   @Test
   void shouldFreezeMovementOnStart() {
     when(gameTime.getTime()).thenReturn(1000L);
-    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f, owner);
     task.create(taskRunner);
 
     task.start();
@@ -194,7 +194,7 @@ class LungeAttackTaskTest {
   @Test
   void shouldStartDashAfterTelegraphDuration() {
     when(gameTime.getTime()).thenReturn(1000L);
-    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f, owner);
     task.create(taskRunner);
     task.start();
 
@@ -208,7 +208,7 @@ class LungeAttackTaskTest {
   @Test
   void shouldRespectCooldownAfterDash() {
     when(gameTime.getTime()).thenReturn(0L);
-    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f, owner);
     task.create(taskRunner);
     task.start();
 

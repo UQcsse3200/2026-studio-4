@@ -84,8 +84,11 @@ public class FinalBossExplosiveSummonComponent extends Component {
         movement.setMoving(false);
         return;
       }
-      movement.setTarget(target.getPosition());
-      movement.setMoving(true);
+      // A summon with its own movement component steers itself; only chase directly without one.
+      if (entity.getComponent(FinalBossSummonMovementComponent.class) == null) {
+        movement.setTarget(target.getPosition());
+        movement.setMoving(true);
+      }
       if (entity.getCenterPosition().dst(target.getCenterPosition()) <= triggerDistance) {
         beginDetonation();
       }
@@ -160,6 +163,10 @@ public class FinalBossExplosiveSummonComponent extends Component {
 
   public float getMovementSpeed() {
     return movementSpeed;
+  }
+
+  public float getTriggerDistance() {
+    return triggerDistance;
   }
 
   public int getExplosionDamage() {

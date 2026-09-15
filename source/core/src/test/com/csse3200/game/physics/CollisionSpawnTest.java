@@ -60,7 +60,7 @@ class CollisionSpawnTest {
     ServiceLocator.registerEntityService(entityService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/chaseEnemy.atlas"});
+    resourceService.loadTextureAtlases(new String[] {"images/crab.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
@@ -73,7 +73,7 @@ class CollisionSpawnTest {
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new CombatStatsComponent(ENEMY_HEALTH, 0))
             .addComponent(new EnemyDeathComponent(false))
-            .addComponent(new SplitComponent(new Entity(), "images/chaseEnemy.atlas"));
+            .addComponent(new SplitComponent(new Entity(), "images/crab.atlas"));
     enemy.setPosition(SHARED_POSITION);
     entityService.register(enemy);
     return enemy;

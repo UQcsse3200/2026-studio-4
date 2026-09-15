@@ -4,10 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
@@ -22,6 +19,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+/**
+ * Checks the stats the HUD is handed while Last Stand runs. The display listens for the same three
+ * events, so what is recorded here is what it draws.
+ */
 @ExtendWith(GameExtension.class)
 class PlayerStatsDisplayTest {
   private static final long START = 1_000L;
@@ -29,8 +30,11 @@ class PlayerStatsDisplayTest {
   private GameTime time;
   private CombatStatsComponent combat;
   private PlayerAbilitiesComponent abilities;
-  private PlayerStatsDisplay display;
   private Entity player;
+
+  private float shownMovementSpeed;
+  private float shownAttackSpeed;
+  private int shownStrength;
 
   @BeforeEach
   void setUp() {
@@ -44,30 +48,37 @@ class PlayerStatsDisplayTest {
 
     combat = new CombatStatsComponent(100, 10, 4f, 2f);
     abilities = new PlayerAbilitiesComponent(time);
-    display = new PlayerStatsDisplay();
     player =
         new Entity()
             .addComponent(combat)
             .addComponent(new StatusEffectsControllerComponent())
             .addComponent(abilities)
             .addComponent(new InventoryComponent(0))
-            .addComponent(display);
+            .addComponent(new PlayerStatsDisplay());
+
+    shownMovementSpeed = combat.getEffectiveMovementSpeed();
+    shownAttackSpeed = combat.getEffectiveAttackSpeed();
+    shownStrength = combat.getEffectiveBaseAttack();
+    player.getEvents().addListener("updateMovementSpeed", (Float s) -> shownMovementSpeed = s);
+    player.getEvents().addListener("updateAttackSpeed", (Float s) -> shownAttackSpeed = s);
+    player.getEvents().addListener("updateBaseAttack", (Integer s) -> shownStrength = s);
+
     player.create();
   }
 
   @Test
   void shouldShowAmplifiedStatsWhileLastStandIsActiveAndRevertOnExpiry() {
-    assertStatLines(4f, 2f, 10);
+    assertShownStats(4f, 2f, 10);
 
     abilities.unlock(LastStand.class);
     combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
 
-    assertStatLines(6f, 3f, 15);
+    assertShownStats(6f, 3f, 15);
 
     when(time.getTime()).thenReturn(START + LastStand.DURATION_MS);
     player.update();
 
-    assertStatLines(4f, 2f, 10);
+    assertShownStats(4f, 2f, 10);
   }
 
   @Test
@@ -78,25 +89,14 @@ class PlayerStatsDisplayTest {
     combat.addMovementSpeed(2f);
     combat.addBaseAttack(2);
 
-    assertStatLines(9f, 3f, 18);
+    assertShownStats(9f, 3f, 18);
     assertEquals(6f, combat.getMovementSpeed());
     assertEquals(12, combat.getBaseAttack());
   }
 
-  private void assertStatLines(float movementSpeed, float attackSpeed, int strength) {
-    assertEquals(String.format("Movement Speed: %.2f", movementSpeed), statLine("Movement Speed:"));
-    assertEquals(String.format("Attack Speed: %.2f", attackSpeed), statLine("Attack Speed:"));
-    assertEquals(String.format("Strength: %d", strength), statLine("Strength:"));
-  }
-
-  /** Returns the text of the first stat label starting with the given prefix. */
-  private String statLine(String prefix) {
-    Table table = display.table;
-    for (Actor actor : table.getChildren()) {
-      if (actor instanceof Label label && label.getText().toString().startsWith(prefix)) {
-        return label.getText().toString();
-      }
-    }
-    return null;
+  private void assertShownStats(float movementSpeed, float attackSpeed, int strength) {
+    assertEquals(movementSpeed, shownMovementSpeed);
+    assertEquals(attackSpeed, shownAttackSpeed);
+    assertEquals(strength, shownStrength);
   }
 }

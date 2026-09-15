@@ -56,6 +56,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("interact");
         entity.getEvents().trigger("itemPickup");
         return true;
+      case Keys.I:
+        entity.getComponent(InventoryComponent.class).toggleDisplay();
+        return true;
       default:
         return false;
     }
