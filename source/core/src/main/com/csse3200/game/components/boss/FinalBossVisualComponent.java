@@ -216,14 +216,16 @@ public class FinalBossVisualComponent extends RenderComponent {
 
     boolean transitioning = phaseController != null && phaseController.isTransitioning();
 
-    return new BodyLayout(ordinary, hover, bodyWidth, bodyHeight, x, y, body, damageHit, transitioning);
+    return new BodyLayout(
+        ordinary, hover, bodyWidth, bodyHeight, x, y, body, damageHit, transitioning);
   }
 
   /**
    * Draws the boss body. During a successful hit in the break window the body briefly receives a
    * warm tint.
    */
-  private void drawBody(SpriteBatch batch, BodyLayout layout, Vector2 pos, Vector2 size, float colour) {
+  private void drawBody(
+      SpriteBatch batch, BodyLayout layout, Vector2 pos, Vector2 size, float colour) {
     applyBodyTint(batch, layout);
 
     boolean faceLeft =
@@ -333,7 +335,8 @@ public class FinalBossVisualComponent extends RenderComponent {
   private TextureRegion[] getActiveWizardFrames() {
     FinalBossPhaseControllerComponent newPhaseController =
         entity.getComponent(FinalBossPhaseControllerComponent.class);
-    if (newPhaseController == null || newPhaseController.getCurrentPhase() != FinalBossPhase.STAGE_TWO) {
+    if (newPhaseController == null
+        || newPhaseController.getCurrentPhase() != FinalBossPhase.STAGE_TWO) {
       return wizard;
     }
 
