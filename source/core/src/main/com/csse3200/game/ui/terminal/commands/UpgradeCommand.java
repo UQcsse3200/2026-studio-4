@@ -41,18 +41,19 @@ public class UpgradeCommand implements Command {
   @Override
   public boolean action(ArrayList<String> args) {
     boolean validLength = args.size() == 1 || (args.size() == 2 && OFF.equals(args.get(1)));
-    if (!validLength || !WEAPONS.containsKey(args.get(0))) {
+    String weaponName = validLength ? args.get(0) : null;
+    if (weaponName == null || !WEAPONS.containsKey(weaponName)) {
       logger.debug("Invalid arguments received for 'upgrade' command: {}", args);
       return false;
     }
 
     WeaponUpgradeComponent upgrades = player.getComponent(WeaponUpgradeComponent.class);
     if (upgrades == null) {
-      logger.debug("Player has no WeaponUpgradeComponent; cannot upgrade {}", args.get(0));
+      logger.debug("Player has no WeaponUpgradeComponent; cannot upgrade {}", weaponName);
       return false;
     }
 
     boolean on = args.size() == 1;
-    return upgrades.setUpgraded(WEAPONS.get(args.get(0)), on);
+    return upgrades.setUpgraded(WEAPONS.get(weaponName), on);
   }
 }

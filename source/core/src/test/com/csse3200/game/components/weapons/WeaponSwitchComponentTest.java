@@ -117,7 +117,7 @@ class WeaponSwitchComponentTest {
   void shouldTriggerWeaponSwitchedWithTheNewWeapon() {
     Entity wielder = createWielder();
     List<Class<?>> switched = new ArrayList<>();
-    wielder.getEvents().addListener("weaponSwitched", (Class<?> weapon) -> switched.add(weapon));
+    wielder.getEvents().<Class<?>>addListener("weaponSwitched", switched::add);
 
     wielder.getEvents().trigger("switchWeapon");
 

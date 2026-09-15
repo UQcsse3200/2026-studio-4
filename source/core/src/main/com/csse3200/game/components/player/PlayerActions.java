@@ -18,6 +18,7 @@ public class PlayerActions extends Component {
   private static final float DASH_SPEED_MULTIPLIER = 5;
   private static final long DASH_DURATION_MS = 75;
   private static final long DASH_COOLDOWN_MS = 575;
+  private static final String ATTACK_SOUND = "sounds/Impact4.ogg";
 
   // Event / animation names
   private static final String WALK_UP = "walkUp";
@@ -171,9 +172,7 @@ public class PlayerActions extends Component {
   /** Makes the player attack. */
   void attack() {
     entity.getEvents().trigger("weaponAttack", facingDirection);
-    Sound attackSound =
-        ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
-    attackSound.play();
+    playAttackSound();
   }
 
   /**
@@ -182,15 +181,16 @@ public class PlayerActions extends Component {
    */
   void heavyAttack() {
     entity.getEvents().trigger("weaponHeavyAttack", facingDirection);
-    Sound attackSound =
-        ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
-    attackSound.play();
+    playAttackSound();
   }
 
   /** Makes the player to do special attack. */
   void specialAttack() {
-    Sound attackSound =
-        ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
+    playAttackSound();
+  }
+
+  private void playAttackSound() {
+    Sound attackSound = ServiceLocator.getResourceService().getAsset(ATTACK_SOUND, Sound.class);
     attackSound.play();
   }
 
