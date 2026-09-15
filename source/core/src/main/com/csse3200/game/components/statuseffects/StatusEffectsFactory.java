@@ -51,4 +51,13 @@ public class StatusEffectsFactory {
   public static StatusEffect createSpeed(CombatStatsComponent combatStats) {
     return new Speed(10000, combatStats);
   }
+
+  /**
+   * Create a vulnerable status effect
+   *
+   * @return The vulnerable status effect
+   */
+  public static StatusEffect createVulnerable() {
+    return new Vulnerable(5000);
+  }
 }

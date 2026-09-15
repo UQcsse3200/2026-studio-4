@@ -1,5 +1,6 @@
 package com.csse3200.game.components;
 
+import com.csse3200.game.components.statuseffects.Damageable;
 import com.csse3200.game.components.statuseffects.Shield;
 import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
@@ -60,6 +61,11 @@ public class StatusEffectsControllerComponent extends Component {
           statusEffects.addLast(StatusEffectsFactory.createSpeed(combatStatsComponent));
         }
         break;
+      case 'v':
+        for (int i = 0; i < stacks; i++) {
+          statusEffects.addLast(StatusEffectsFactory.createVulnerable());
+        }
+        break;
       default:
         throw new IllegalArgumentException(
             "statusEffect must be a valid character representation of a status effect.");
@@ -103,6 +109,27 @@ public class StatusEffectsControllerComponent extends Component {
       statusEffects.remove(effect);
     }
     triggerShieldUi();
+  }
+
+  /**
+   * Runs the damage effect of all damageable statuseffects.
+   *
+   * @param damage The damage object to be interacted with.
+   */
+  public void damage(Damage damage) {
+    ArrayList<StatusEffect> removal = new ArrayList<>();
+
+    for (StatusEffect effect : statusEffects) {
+      if (effect instanceof Damageable) {
+        if (((Damageable) effect).damage(damage)) {
+          removal.addLast(effect);
+        }
+      }
+    }
+
+    for (StatusEffect effect : removal) {
+      statusEffects.remove(effect);
+    }
   }
 
   private void ensureShield() {
