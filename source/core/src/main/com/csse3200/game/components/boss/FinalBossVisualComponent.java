@@ -224,8 +224,7 @@ public class FinalBossVisualComponent extends RenderComponent {
    * Draws the boss body. During a successful hit in the break window the body briefly receives a
    * warm tint.
    */
-  private void drawBody(
-      SpriteBatch batch, BodyLayout layout, float colour) {
+  private void drawBody(SpriteBatch batch, BodyLayout layout, float colour) {
     applyBodyTint(batch, layout);
 
     boolean faceLeft =
