@@ -8,11 +8,9 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.CerberusFactory;
-import com.csse3200.game.entities.factories.FinalBossFactory;
-import com.csse3200.game.entities.factories.ItemFactory;
-import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.entities.factories.*;
 import com.csse3200.game.items.WeaponItem;
+import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -55,11 +53,13 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     }
   }
 
-  private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
+  protected Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
     switch (spawn.type) {
       // Egyptian
       case BEETLE:
-        return NPCFactory.createBombEnemy(target, "images/beetle.atlas", 2f);
+        Entity beetle = NPCFactory.createBombEnemy(target, "images/beetle.atlas", 2f);
+        beetle.setScale(0.75f, 0.75f);
+        return beetle;
       case CRAB:
         Entity crab = NPCFactory.createChaseEnemy(target, true, "images/crab.atlas");
         crab.setScale(1.5f, 1.5f);
@@ -70,17 +70,21 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         return crab;
       case MUMMY:
         Entity mummy = NPCFactory.createGiantEnemy(target, "images/mummy.atlas");
-        mummy.getComponent(HitboxComponent.class).setAsBox(new Vector2(1f, 1.5f));
+        mummy
+            .getComponent(HitboxComponent.class)
+            .setAsBox(new Vector2(1f, 1.5f), mummy.getCenterPosition());
+        PhysicsUtils.setScaledCollider(mummy, 0.3f, 0.3f);
         return mummy;
       // Greek
       case GOLEM:
         Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
-        golem.setScale(1.5F, 1.5F);
+        golem.setScale(1.5f, 1.5f);
         golem
             .getComponent(HitboxComponent.class)
             .setAsBox(
                 new Vector2(1, 1),
                 new Vector2(golem.getCenterPosition().x, golem.getCenterPosition().y / 2));
+        PhysicsUtils.setScaledCollider(golem, 0.3f, 0.3f);
         return golem;
       case MEDUSA:
         Entity medusa = NPCFactory.createChaseEnemy(target, true, "images/medusa.atlas");
@@ -101,6 +105,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             .setAsBox(
                 new Vector2(1f, 1.5f),
                 new Vector2(cyclops.getCenterPosition().x, cyclops.getCenterPosition().y / 2));
+        PhysicsUtils.setScaledCollider(cyclops, 0.3f, 0.3f);
         return cyclops;
       case CERBERUS:
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);

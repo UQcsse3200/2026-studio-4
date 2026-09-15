@@ -70,7 +70,6 @@ public class NPCFactory {
         .addComponent(new EnemyAnimationController());
     giantEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
     giantEnemy.setScale(3f, 3f);
-
     giantEnemy.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(0.5f, 0.5f));
 
     return giantEnemy;
@@ -248,7 +247,7 @@ public class NPCFactory {
    *
    * @return entity
    */
-  public static Entity createBaseNPC() {
+  protected static Entity createBaseNPC() {
     Entity npc =
         new Entity()
             .addComponent(new PhysicsComponent())
