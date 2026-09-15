@@ -1,171 +1,28 @@
 package com.csse3200.game.components.maingame;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
-import com.csse3200.game.components.weapons.WeaponSelectionComponent;
-import com.csse3200.game.entities.Entity;
-import com.csse3200.game.items.WeaponItem;
-import com.csse3200.game.items.WeaponItem.WeaponType;
-import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
-import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Displays the inventory book and persistent hotbar with the player's selected weapon. */
+/** Displays the inventory book and its charms and consumables pages. */
 public class InventoryDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(InventoryDisplay.class);
   private static final float Z_INDEX = 2f;
-  private static final float HOTBAR_SLOT_SIZE = 96f;
-  private static final float HOTBAR_EDGE_INSET = 48f;
-  private static final float HOTBAR_SLOT_GAP = 6f;
-  private static final float HOTBAR_SIDE_INSET = 340f;
   private boolean charmsPage = true;
   private Table table;
-  private Table hotbarTable;
-  private Texture hotbarTexture;
-  private final Entity player;
-  private final WeaponSelectionComponent selection;
-  private final Image[] weaponFrames = new Image[3];
-  private boolean disposed;
-
-  /**
-   * @param player player whose equipment and item icons are displayed
-   */
-  public InventoryDisplay(Entity player) {
-    this.player = Objects.requireNonNull(player);
-    selection = Objects.requireNonNull(player.getComponent(WeaponSelectionComponent.class));
-  }
 
   @Override
   public void create() {
     super.create();
-    addActors();
-    updateWeaponSelection(selection.getSelectedWeapon());
-    player.getEvents().addListener("weaponSelected", this::updateWeaponSelection);
-  }
-
-  private void addActors() {
     buildPage();
     table.setVisible(false);
-    buildHotbar();
-  }
-
-  /** Keeps the hotbar on the stage independently of the book's visibility and page changes. */
-  private void buildHotbar() {
-    hotbarTexture = new Texture(Gdx.files.internal("images/ui/ui_big_pieces.png"));
-    hotbarTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-    // The large circular frame in the sprite sheet's bottom-right minimap section.
-    TextureRegionDrawable slot =
-        new TextureRegionDrawable(new TextureRegion(hotbarTexture, 718, 288, 130, 130));
-
-    hotbarTable =
-        new Table() {
-          @Override
-          protected void sizeChanged() {
-            super.sizeChanged();
-            // Slot sizes depend on the viewport, so discard the groups' cached preferred sizes.
-            for (Actor child : getChildren()) {
-              if (child instanceof Table group) {
-                group.invalidate();
-              }
-            }
-          }
-        };
-    hotbarTable.setName("inventory-hotbar");
-    hotbarTable.setFillParent(true);
-    // Keep the existing horizontal layout, anchored 48 pixels above the bottom edge.
-    hotbarTable.bottom().padBottom(HOTBAR_EDGE_INSET).padLeft(HOTBAR_SIDE_INSET);
-    hotbarTable.padRight(
-        new Value() {
-          @Override
-          public float get(Actor context) {
-            float groupsWidth =
-                2f * (3f * hotbarSlotSize(context.getWidth()) + 2f * HOTBAR_SLOT_GAP);
-            // On narrower windows retain room for Exit and a gap between the two groups.
-            return Math.clamp(
-                context.getWidth() - HOTBAR_SIDE_INSET - groupsWidth - 24f, 96f, HOTBAR_SIDE_INSET);
-          }
-        });
-    hotbarTable.setTouchable(Touchable.disabled);
-    hotbarTable.add(createHotbarGroup(slot, true));
-    hotbarTable.add().expandX();
-    hotbarTable.add(createHotbarGroup(slot, false));
-    stage.addActor(hotbarTable);
-  }
-
-  private Table createHotbarGroup(TextureRegionDrawable slot, boolean showWeapons) {
-    Table group = new Table();
-    Value slotSize =
-        new Value() {
-          @Override
-          public float get(Actor context) {
-            return hotbarSlotSize(stage.getWidth());
-          }
-        };
-    for (int i = 0; i < 3; i++) {
-      Image circle = new Image(slot);
-      circle.setScaling(Scaling.fit);
-      Actor content = circle;
-      if (showWeapons) {
-        weaponFrames[i] = circle;
-        circle.setName("weapon-frame-" + (i + 1));
-        content = createWeaponSlot(circle, selection.getWeapons().get(i), i + 1);
-      }
-      group.add(content).size(slotSize).padRight(i < 2 ? HOTBAR_SLOT_GAP : 0f);
-    }
-    return group;
-  }
-
-  private Stack createWeaponSlot(Image frame, WeaponItem item, int key) {
-    Stack slot = new Stack();
-    slot.add(frame);
-    // These textures belong to WeaponAssetsComponent; the UI only borrows them.
-    Texture texture =
-        ServiceLocator.getResourceService().getAsset(item.getTexture(), Texture.class);
-    Image icon = new Image(texture);
-    icon.setName("weapon-icon-" + key);
-    icon.setScaling(Scaling.fit);
-    Container<Image> iconContainer = new Container<>(icon);
-    iconContainer.size(Value.percentWidth(0.55f, slot));
-    slot.add(iconContainer);
-
-    Label.LabelStyle keyStyle = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
-    keyStyle.fontColor = Color.WHITE;
-    Label keyLabel = new Label(Integer.toString(key), keyStyle);
-    keyLabel.setName("weapon-key-" + key);
-    keyLabel.setFontScale(1.05f);
-    Table labelOverlay = new Table();
-    labelOverlay.bottom().add(keyLabel).padBottom(2f);
-    slot.add(labelOverlay);
-    return slot;
-  }
-
-  private void updateWeaponSelection(WeaponType selected) {
-    if (disposed) {
-      return;
-    }
-    for (int i = 0; i < weaponFrames.length; i++) {
-      weaponFrames[i].setColor(
-          WeaponSelectionComponent.SLOT_WEAPONS.get(i) == selected ? Color.WHITE : Color.GRAY);
-    }
-  }
-
-  /** Use the enlarged circles where space permits, shrinking only for narrow windows. */
-  private float hotbarSlotSize(float width) {
-    return Math.clamp(
-        (width - HOTBAR_SIDE_INSET - 96f - 24f - 4f * HOTBAR_SLOT_GAP) / 6f, 1f, HOTBAR_SLOT_SIZE);
   }
 
   /** Builds the inventory page depending on which inventory is being displayed */
@@ -174,15 +31,6 @@ public class InventoryDisplay extends UIComponent {
     table = new Table();
     table.setName("inventory-book");
     table.setFillParent(true);
-    // Preserve the book's existing vertical layout independently of the hotbar's new position.
-    table.padTop(
-        new Value() {
-          @Override
-          public float get(Actor context) {
-            float hotbarBottom = HOTBAR_EDGE_INSET + hotbarSlotSize(context.getWidth());
-            return Math.max(0f, 2f * (hotbarBottom + 12f) + 500f - context.getHeight());
-          }
-        });
     stage.addActor(table);
     // Create initial stack
     Stack bookStack = new Stack();
@@ -224,7 +72,6 @@ public class InventoryDisplay extends UIComponent {
     charmsPage = !charmsPage;
     buildPage();
     table.setVisible(visible);
-    hotbarTable.toFront();
   }
 
   /**
@@ -332,14 +179,11 @@ public class InventoryDisplay extends UIComponent {
 
   @Override
   public void dispose() {
-    disposed = true;
     table.remove();
-    hotbarTable.remove();
-    hotbarTexture.dispose();
     super.dispose();
   }
 
-  /** Shows or hides only the inventory book; the hotbar remains visible. */
+  /** Shows or hides the inventory book. */
   public void setVisible(boolean set) {
     table.setVisible(set);
     if (set) {
