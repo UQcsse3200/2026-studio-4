@@ -66,6 +66,9 @@ public class StatusEffectsControllerComponent extends Component {
           statusEffects.addLast(StatusEffectsFactory.createVulnerable());
         }
         break;
+      case 'f':
+        statusEffects.addLast(StatusEffectsFactory.createFreeze(combatStatsComponent));
+        break;
       default:
         throw new IllegalArgumentException(
             "statusEffect must be a valid character representation of a status effect.");

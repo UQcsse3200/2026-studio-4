@@ -18,11 +18,11 @@ public class Slow implements StatusEffect {
    * @param duration the total time the slow lasts for.
    * @param combatStats the combat stats component of the entity which has the status effect.
    */
-  public Slow(long duration, CombatStatsComponent combatStats) {
+  public Slow(long duration, CombatStatsComponent combatStats, float amount) {
     this.duration = duration;
     this.combatStats = combatStats;
     slowInit = time.getTime();
-    combatStats.addMovementSpeed(-0.5f);
+    combatStats.addMovementSpeed(amount);
   }
 
   /**

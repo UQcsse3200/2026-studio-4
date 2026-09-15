@@ -39,7 +39,7 @@ public class StatusEffectsFactory {
    * @return The slow status effect.
    */
   public static StatusEffect createSlow(CombatStatsComponent combatStats) {
-    return new Slow(10000, combatStats);
+    return new Slow(10000, combatStats, -0.5f);
   }
 
   /**
@@ -59,5 +59,16 @@ public class StatusEffectsFactory {
    */
   public static StatusEffect createVulnerable() {
     return new Vulnerable(5000);
+  }
+
+  /**
+   * Create a new freeze status effect.
+   *
+   * @param combatStats The combat stats component of the entity that is frozen
+   * @return the freeze status effect (a slow status effect that slows to 0)
+   */
+  public static StatusEffect createFreeze(CombatStatsComponent combatStats) {
+    float speed = combatStats.getMovementSpeed();
+    return new Slow(3000, combatStats, speed);
   }
 }
