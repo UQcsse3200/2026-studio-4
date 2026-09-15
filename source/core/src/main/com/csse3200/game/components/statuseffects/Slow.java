@@ -9,6 +9,8 @@ public class Slow implements StatusEffect {
 
   private final long duration;
   private final long slowInit;
+  private final float amount;
+  private final boolean success;
 
   private final CombatStatsComponent combatStats;
 
@@ -22,7 +24,13 @@ public class Slow implements StatusEffect {
     this.duration = duration;
     this.combatStats = combatStats;
     slowInit = time.getTime();
-    combatStats.addMovementSpeed(amount);
+    this.amount = amount;
+    if (!((combatStats.getMovementSpeed() + amount) < 0)) {
+      combatStats.addMovementSpeed(amount);
+      success = true;
+    } else {
+      success = false;
+    }
   }
 
   /**
@@ -32,8 +40,8 @@ public class Slow implements StatusEffect {
    */
   @Override
   public boolean update() {
-    if (time.getTimeSince(slowInit) > duration) {
-      combatStats.addMovementSpeed(0.5f);
+    if (time.getTimeSince(slowInit) > duration && success) {
+      combatStats.addMovementSpeed(amount);
     }
     return time.getTimeSince(slowInit) > duration;
   }
