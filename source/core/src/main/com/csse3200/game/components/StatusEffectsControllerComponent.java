@@ -140,7 +140,7 @@ public class StatusEffectsControllerComponent extends Component {
 
     for (StatusEffect effect : statusEffects) {
       if (effect instanceof Damageable damageable && damageable.damage(damage)) {
-          removal.addLast(effect);
+        removal.addLast(effect);
       }
     }
 

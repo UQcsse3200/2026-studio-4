@@ -24,7 +24,7 @@ public class Vulnerable implements StatusEffect, Damageable {
 
   @Override
   public boolean update() {
-      return time.getTimeSince(vulnerableInit) >= duration;
+    return time.getTimeSince(vulnerableInit) >= duration;
   }
 
   @Override
