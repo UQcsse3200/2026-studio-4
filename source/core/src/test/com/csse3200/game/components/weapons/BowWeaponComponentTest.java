@@ -217,8 +217,9 @@ class BowWeaponComponentTest {
     }
 
     // Centre arrow spawns on the aim line (y == 0); the two side arrows are offset above and
-    // below it by the spread angle, so all three y-positions should be distinct.
-    List<Float> yPositions = arrows.stream().map(a -> a.getPosition().y).toList();
+    // below it by the spread angle. HitboxSpec positions by bottom-left corner, so compare centre
+    // positions rather than raw position.
+    List<Float> yPositions = arrows.stream().map(a -> a.getCenterPosition().y).toList();
     long centreCount = yPositions.stream().filter(y -> Math.abs(y) < 0.01f).count();
     assertEquals(1, centreCount);
     assertTrue(yPositions.stream().anyMatch(y -> y > 0.01f));

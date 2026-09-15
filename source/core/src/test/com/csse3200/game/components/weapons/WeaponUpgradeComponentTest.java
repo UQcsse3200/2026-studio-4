@@ -60,18 +60,15 @@ class WeaponUpgradeComponentTest {
   void shouldRejectWeaponWithoutUpgradeStats() {
     // Explicit map with only the sword defined, so the knife has no upgrade stats here.
     WeaponUpgradeComponent upgrades =
-        new WeaponUpgradeComponent(Map.of(SwordWeaponComponent.class, upgradesStats()));
+        new WeaponUpgradeComponent(
+            Map.of(SwordWeaponComponent.class, WeaponUpgradeComponent.SWORD_UPGRADE));
 
     assertFalse(upgrades.setUpgraded(KnifeWeaponComponent.class, true));
     assertFalse(upgrades.isUpgraded(KnifeWeaponComponent.class));
   }
 
-  private static WeaponUpgradeStats upgradesStats() {
-    return new WeaponUpgradeStats(1.2f, 1.35f, 2f);
-  }
-
   @Test
-  void shouldApplyBowUpgrade() {
+  void shouldApplyBowUpgradeStats() {
     WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
 
     assertTrue(upgrades.setUpgraded(BowWeaponComponent.class, true));

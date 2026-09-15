@@ -35,8 +35,7 @@ public class BowWeaponComponent extends WeaponComponent {
   // tip at the top-left, a measured 135 degrees. Correcting it here keeps the pixel art crisp,
   // where rotating the PNG off-axis would resample and soften it.
   private static final float SPRITE_ANGLE_OFFSET = -135f;
-  // Upgrade: angle each side arrow is rotated from the aim direction. Within the ticket's
-  // suggested 15-20 degree range.
+  // Angle each side arrow is rotated from the aim direction once upgraded.
   private static final float SPREAD_ANGLE_DEG = 15f;
 
   @Override

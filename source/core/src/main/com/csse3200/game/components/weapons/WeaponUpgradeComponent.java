@@ -31,9 +31,8 @@ public class WeaponUpgradeComponent extends Component {
   static final WeaponUpgradeStats KNIFE_UPGRADE = new WeaponUpgradeStats(1.2f, 0.6f, 3f);
 
   /**
-   * Bow: no damage or cooldown change. The splitting-arrow upgrade instead changes the light
-   * attack itself &mdash; one attack fires three arrows instead of one, each at full damage &mdash;
-   * so no heavy attack or multiplier is needed here. See {@link BowWeaponComponent}.
+   * Bow: no stat change. The upgrade fires three arrows instead of one; see {@link
+   * BowWeaponComponent}.
    */
   static final WeaponUpgradeStats BOW_UPGRADE = new WeaponUpgradeStats(1f, 1f, 1f);
 

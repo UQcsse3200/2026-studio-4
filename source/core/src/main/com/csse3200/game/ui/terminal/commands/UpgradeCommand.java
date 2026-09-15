@@ -38,8 +38,8 @@ public class UpgradeCommand implements Command {
   /**
    * Upgrades the named weapon, or reverts it when followed by {@code off}.
    *
-   * @param args a weapon ({@code sword} or {@code knife}) to upgrade, optionally followed by {@code
-   *     off} to revert
+   * @param args a weapon ({@code sword}, {@code knife}, or {@code bow}) to upgrade, optionally
+   *     followed by {@code off} to revert
    * @return true if the upgrade state was set
    */
   @Override
