@@ -10,6 +10,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.GridPoint2;
@@ -172,6 +173,19 @@ class EnemyManagerComponentTest {
     assertTrue(first.getComponent(CombatStatsComponent.class).isDead());
     assertTrue(second.getComponent(CombatStatsComponent.class).isDead());
     assertTrue(enemyManager.isCleared());
+  }
+
+  @Test
+  void shouldScaleAllEnemies() {
+    Entity[] enemies = trackEnemies(3);
+    CombatStatsComponent stats = mock(CombatStatsComponent.class);
+    for (Entity enemy : enemies) {
+      when(enemy.getComponent(CombatStatsComponent.class)).thenReturn(stats);
+    }
+
+    enemyManager.scale(1);
+
+    verify(stats, times(3)).scale(anyInt());
   }
 
   private Entity combatEnemy() {
