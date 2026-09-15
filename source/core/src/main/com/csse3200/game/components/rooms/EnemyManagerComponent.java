@@ -170,6 +170,20 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     }
   }
 
+  /**
+   * Iterates through the active enemies and calls scale on their {@link CombatStatsComponent}
+   *
+   * <p>This method should be called during the room creatation.
+   */
+  public void scale(int mult) {
+    for (Entity enemy : new ArrayList<>(activeEnemies)) {
+      CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
+      if (stats != null) {
+        stats.scale(mult);
+      }
+    }
+  }
+
   @Override
   public void dispose() {
     for (Entity item : droppedItems) {
