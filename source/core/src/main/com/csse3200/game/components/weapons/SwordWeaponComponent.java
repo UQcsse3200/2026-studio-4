@@ -26,9 +26,13 @@ public class SwordWeaponComponent extends WeaponComponent {
 
   // weapon attributes
   private static final float LIGHT_LIFETIME = 0.25f; // How long the light sweep takes
-  // How long the heavy spin takes. Slower than the light sweep so the full turn reads clearly;
-  // must stay below the heavy cooldown so one spin ends before the next can start.
+
+  /**
+   * How long the heavy spin takes. Slower than the light sweep so the full turn reads clearly, and
+   * kept below the heavy cooldown so one spin ends before the next can start.
+   */
   private static final float HEAVY_LIFETIME = 0.8f;
+
   private static final float BLADE_LENGTH = 1.0f; // the length of the hitbox when sweeping
   private static final float BLADE_WIDTH = 0.4f; // the width of the hitbox when sweeping
   private static final float ARC_DEGREES = 90f; // the arc of the sweep attack

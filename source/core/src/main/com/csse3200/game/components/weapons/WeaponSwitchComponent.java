@@ -63,7 +63,7 @@ public class WeaponSwitchComponent extends Component {
         carried.setEnabled(weaponClass == weapon);
       }
     }
-    logger.debug("Equipped {}", weapon.getSimpleName());
+    logger.debug("Equipped {}", weapon);
     entity.getEvents().trigger("weaponSwitched", weapon);
     return true;
   }
