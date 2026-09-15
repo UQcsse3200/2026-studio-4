@@ -113,29 +113,38 @@ public class FinalBossStageThreeComponent extends Component {
     updateEffects(delta);
     if (state == FinalBossStageThreeState.INACTIVE && !phases.isTransitioning()) startWaveOne();
     if (state == FinalBossStageThreeState.INACTIVE) return;
-    CombatStatsComponent playerStats = target.getComponent(CombatStatsComponent.class);
-    if (playerStats != null && playerStats.isDead()) {
-      if (!playerDefeated) {
-        playerDefeated = true;
-        clearFreeze();
-        bolts.clear();
-        clearStatueCombat();
-        stop(entity);
-      }
-      return;
-    }
+    if (stopIfPlayerDefeated()) return;
     stateTime += delta;
     switch (state) {
       case WAVE_ONE -> updateWaveOne(delta);
-      case CHARGING -> {
-        if (stateTime >= config.chargeDuration) startWaveTwo();
-      }
+      case CHARGING -> updateCharge();
       case WAVE_TWO -> updateStatues(delta);
-      case ENDING -> {
-        if (stateTime >= config.returnTransformDuration) finishEncounter();
+      case ENDING -> updateEnding();
+      default -> {
+        // Inactive and peaceful states have no combat behaviour to advance.
       }
-      default -> {}
     }
+  }
+
+  private boolean stopIfPlayerDefeated() {
+    CombatStatsComponent playerStats = target.getComponent(CombatStatsComponent.class);
+    if (playerStats == null || !playerStats.isDead()) return false;
+    if (!playerDefeated) {
+      playerDefeated = true;
+      clearFreeze();
+      bolts.clear();
+      clearStatueCombat();
+      stop(entity);
+    }
+    return true;
+  }
+
+  private void updateCharge() {
+    if (stateTime >= config.chargeDuration) startWaveTwo();
+  }
+
+  private void updateEnding() {
+    if (stateTime >= config.returnTransformDuration) finishEncounter();
   }
 
   private void updateEffects(float delta) {
@@ -491,8 +500,7 @@ public class FinalBossStageThreeComponent extends Component {
       return;
     }
     for (Statue statue : statues) {
-      if (statue.broken) continue;
-      if (updateStatueEvade(statue, delta)) continue;
+      if (statue.broken || updateStatueEvade(statue, delta)) continue;
       if (!updateStatueSlam(statue, delta)) updateStoneMovement(statue, delta);
     }
   }
@@ -532,7 +540,9 @@ public class FinalBossStageThreeComponent extends Component {
     Vector2 away = origin.cpy().sub(player);
     if (away.isZero()) away.set(1f, 0f);
     // A sideways retreat breaks the player's line of attack without always choosing a corner.
-    float side = (statue.hitsRemaining / config.statueEvadeHits) % 2 == 0 ? 1f : -1f;
+    // Integer groups deliberately keep the same side throughout each three-hit block.
+    int evadeGroup = statue.hitsRemaining / config.statueEvadeHits;
+    float side = evadeGroup % 2 == 0 ? 1f : -1f;
     Vector2 preferred =
         origin.cpy().add(away.nor().rotateDeg(side * 60f).scl(config.statueEvadeDistance));
     Vector2 size = statueClearanceSize(statue.entity.getScale());
@@ -658,18 +668,7 @@ public class FinalBossStageThreeComponent extends Component {
 
   private Vector2 chooseStatueDestination(Statue statue, Vector2 centre) {
     Vector2 size = statueClearanceSize(statue.entity.getScale());
-    Vector2 away = new Vector2();
-    float spacing = config.statueMinSpacing + STATUE_SPACING_BUFFER;
-    for (Statue other : statues) {
-      if (other == statue || other.broken) continue;
-      Vector2 separation = centre.cpy().sub(other.entity.getCenterPosition());
-      if (separation.len2() < spacing * spacing) {
-        if (separation.isZero()) {
-          separation.set(1f, 0f).setAngleDeg(360f * statues.indexOf(statue) / statues.size());
-        }
-        away.add(separation.nor());
-      }
-    }
+    Vector2 away = statueSeparationDirection(statue, centre);
     float startAngle = away.isZero() ? MathUtils.random(360f) : away.angleDeg();
     // Try tangents and shorter steps before waiting. Roaming never teleports to a fallback
     // point.
@@ -685,6 +684,22 @@ public class FinalBossStageThreeComponent extends Component {
       }
     }
     return null;
+  }
+
+  private Vector2 statueSeparationDirection(Statue statue, Vector2 centre) {
+    Vector2 away = new Vector2();
+    float spacing = config.statueMinSpacing + STATUE_SPACING_BUFFER;
+    for (Statue other : statues) {
+      if (other == statue || other.broken) continue;
+      Vector2 separation = centre.cpy().sub(other.entity.getCenterPosition());
+      if (separation.len2() < spacing * spacing) {
+        if (separation.isZero()) {
+          separation.set(1f, 0f).setAngleDeg(360f * statues.indexOf(statue) / statues.size());
+        }
+        away.add(separation.nor());
+      }
+    }
+    return away;
   }
 
   /** Reserves the whole route, including every peer's current position and remaining route. */
@@ -890,11 +905,8 @@ public class FinalBossStageThreeComponent extends Component {
           bestFallback = candidate;
           bestFallbackDistance = distance;
         }
-        if (clearSpace(candidate, size)
-            && (distance > bestClearDistance
-                || (distance == bestClearDistance
-                    && bestClear != null
-                    && candidate.dst2(preferred) < bestClear.dst2(preferred)))) {
+        if (isBetterClearSpawn(
+            candidate, distance, size, preferred, bestClear, bestClearDistance)) {
           bestClear = candidate;
           bestClearDistance = distance;
         }
@@ -902,6 +914,20 @@ public class FinalBossStageThreeComponent extends Component {
     }
     // An undersized arena still receives the most separated available positions.
     return bestClear == null ? bestFallback : bestClear;
+  }
+
+  private boolean isBetterClearSpawn(
+      Vector2 candidate,
+      float distance,
+      Vector2 size,
+      Vector2 preferred,
+      Vector2 bestClear,
+      float bestClearDistance) {
+    return clearSpace(candidate, size)
+        && (distance > bestClearDistance
+            || (distance == bestClearDistance
+                && bestClear != null
+                && candidate.dst2(preferred) < bestClear.dst2(preferred)));
   }
 
   private float nearestStatueDistanceSquared(Vector2 point) {

@@ -139,7 +139,7 @@ class FinalBossStageThreeSlamTest {
   }
 
   @Test
-  void aSlamWarnsStopsMovesUpAndLandsWithOneRingAndShortCameraShake() {
+  void aSlamWarnsAndStopsMovementBeforeTheStatueJumps() {
     startStatues();
     FinalBossStageThreeComponent.Statue first = stage.statues.getFirst();
     tick(config.statueSlamInitialDelay - 0.01f);
@@ -155,19 +155,29 @@ class FinalBossStageThreeSlamTest {
 
     tick(config.statueSlamWarning - 0.01f);
     assertFalse(first.airborne);
-    tick(0.02f);
+  }
+
+  @Test
+  void aSlamJumpRaisesTheSpriteWithoutMovingItsGroundPosition() {
+    FinalBossStageThreeComponent.Statue first = startFirstStatueJump();
     assertTrue(first.airborne);
     assertEquals(0f, first.jumpHeight, EPSILON);
     Vector2 launch = first.entity.getCenterPosition();
-    Vector2 floor =
-        new Vector2(
-            first.entity.getPosition().x + first.entity.getScale().x / 2f,
-            first.entity.getPosition().y + first.entity.getScale().y * 0.15f);
     tick(config.statueJumpDuration / 2f);
     assertTrue(first.airborne);
     assertEquals(config.statueJumpHeight, first.jumpHeight, EPSILON);
     assertTrue(first.entity.getCenterPosition().epsilonEquals(launch, EPSILON));
     assertTrue(stage.shockwaves.isEmpty());
+  }
+
+  @Test
+  void aSlamLandingCreatesOneExpandingRingAtTheFeetAndOneShortCameraShake() {
+    FinalBossStageThreeComponent.Statue first = startFirstStatueJump();
+    Vector2 floor =
+        new Vector2(
+            first.entity.getPosition().x + first.entity.getScale().x / 2f,
+            first.entity.getPosition().y + first.entity.getScale().y * 0.15f);
+    tick(config.statueJumpDuration / 2f);
     tick(config.statueJumpDuration / 2f + 0.01f);
     assertFalse(first.airborne);
     assertEquals(0f, first.jumpHeight, EPSILON);
@@ -179,18 +189,34 @@ class FinalBossStageThreeSlamTest {
             FinalBossStageThreeComponent.groundPosition(first.entity), EPSILON));
     assertEquals(0f, wave.radius, EPSILON);
     assertTrue(wave.maxRadius >= floor.dst(new Vector2(-12f, -8f)));
-    assertEquals(7.5f, first.slamCooldown, EPSILON);
     verify(renderer).shake(stage, 0.3f, 0.10f);
     tick(0.1f);
     assertEquals(config.shockwaveSpeed * 0.1f, wave.radius, EPSILON);
     verify(renderer, times(1)).shake(any(), anyFloat(), anyFloat());
+  }
 
+  @Test
+  void aLandedStatueWaitsForItsFullCooldownBeforeWarningAgain() {
+    FinalBossStageThreeComponent.Statue first = startFirstStatueJump();
+    tick(config.statueJumpDuration / 2f);
+    tick(config.statueJumpDuration / 2f + 0.01f);
+    assertEquals(7.5f, first.slamCooldown, EPSILON);
+    tick(0.1f);
     stage.statues.stream().skip(1).forEach(statue -> statue.slamCooldown = 100f);
     tick(first.slamCooldown - 0.01f);
     assertEquals(0f, first.warningRemaining);
     assertFalse(first.airborne);
     tick(0.02f);
     assertEquals(config.statueSlamWarning, first.warningRemaining, EPSILON);
+  }
+
+  private FinalBossStageThreeComponent.Statue startFirstStatueJump() {
+    startStatues();
+    tick(config.statueSlamInitialDelay - 0.01f);
+    tick(0.02f);
+    tick(config.statueSlamWarning - 0.01f);
+    tick(0.02f);
+    return stage.statues.getFirst();
   }
 
   @Test

@@ -26,6 +26,7 @@ public class PlayerActions extends Component {
   private static final float JUMP_COOLDOWN = 0.35f;
 
   // Event / animation names
+  private static final String DASH_STOP = "dashStop";
   private static final String WALK_UP = "walkUp";
   private static final String WALK_DOWN = "walkDown";
   private static final String WALK_LEFT = "walkLeft";
@@ -50,7 +51,7 @@ public class PlayerActions extends Component {
     if (locked) {
       controlLocks.add(owner);
       cancelJump();
-      if (dashOn) entity.getEvents().trigger("dashStop");
+      if (dashOn) entity.getEvents().trigger(DASH_STOP);
       dashOn = false;
       if (physicsComponent != null) physicsComponent.getBody().setLinearVelocity(0f, 0f);
     } else {
@@ -71,7 +72,7 @@ public class PlayerActions extends Component {
       jumpOwners.remove(owner);
     }
     if (!wasEnabled && isJumpEnabled()) {
-      if (dashOn && entity != null) entity.getEvents().trigger("dashStop");
+      if (dashOn && entity != null) entity.getEvents().trigger(DASH_STOP);
       dashOn = false;
       dashCooldown = false;
       moving = !walkDirection.isZero();
@@ -192,7 +193,7 @@ public class PlayerActions extends Component {
     // dashInit is 0 until the first dash. Do not treat that as an expired dash.
     if (dashOn && time.getTimeSince(dashInit) >= DASH_DURATION_MS) {
       dashOn = false;
-      entity.getEvents().trigger("dashStop");
+      entity.getEvents().trigger(DASH_STOP);
     }
     if (dashCooldown && time.getTimeSince(dashInit) >= DASH_COOLDOWN_MS) {
       dashCooldown = false;

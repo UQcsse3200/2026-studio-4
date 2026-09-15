@@ -40,7 +40,8 @@ class PlayerJumpTest {
     ServiceLocator.registerPhysicsService(new PhysicsService());
     ServiceLocator.registerRenderService(mock(RenderService.class));
     ResourceService resources = mock(ResourceService.class);
-    when(resources.getAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(mock(Sound.class));
+    Sound impactSound = mock(Sound.class);
+    when(resources.getAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(impactSound);
     ServiceLocator.registerResourceService(resources);
     actions = new PlayerActions();
     animator = new AnimationRenderComponent(mock(TextureAtlas.class));

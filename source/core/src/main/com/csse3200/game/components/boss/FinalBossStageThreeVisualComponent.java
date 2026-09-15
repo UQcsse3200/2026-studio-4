@@ -153,10 +153,7 @@ public class FinalBossStageThreeVisualComponent extends RenderComponent {
       for (FinalBossStageThreeComponent.Burst burst : stage.bursts) {
         TextureRegion frame =
             FinalBossStageThreeAssets.frame(
-                burst.ice ? iceHit : (burst.grey ? grey : blue),
-                burst.elapsed,
-                stage.config.disappearanceDuration,
-                false);
+                selectBurstFrames(burst), burst.elapsed, stage.config.disappearanceDuration, false);
         centred(batch, frame, burst.position, 2.4f, 2.4f);
       }
       if (stage.getState() == FinalBossStageThreeState.ENDING) {
@@ -172,6 +169,11 @@ public class FinalBossStageThreeVisualComponent extends RenderComponent {
     } finally {
       batch.setPackedColor(colour);
     }
+  }
+
+  private TextureRegion[] selectBurstFrames(FinalBossStageThreeComponent.Burst burst) {
+    if (burst.ice) return iceHit;
+    return burst.grey ? grey : blue;
   }
 
   @Override
@@ -331,16 +333,12 @@ public class FinalBossStageThreeVisualComponent extends RenderComponent {
       float sin = MathUtils.sin(angle);
       float nextCos = MathUtils.cos(nextAngle);
       float nextSin = MathUtils.sin(nextAngle);
-      drawQuad(
-          batch,
-          centre.x + inner * cos,
-          centre.y + inner * sin,
-          centre.x + outer * cos,
-          centre.y + outer * sin,
-          centre.x + outer * nextCos,
-          centre.y + outer * nextSin,
-          centre.x + inner * nextCos,
-          centre.y + inner * nextSin);
+      float colour = batch.getPackedColor();
+      setVertex(0, centre.x + inner * cos, centre.y + inner * sin, colour);
+      setVertex(5, centre.x + outer * cos, centre.y + outer * sin, colour);
+      setVertex(10, centre.x + outer * nextCos, centre.y + outer * nextSin, colour);
+      setVertex(15, centre.x + inner * nextCos, centre.y + inner * nextSin, colour);
+      drawQuad(batch);
     }
   }
 
@@ -348,34 +346,20 @@ public class FinalBossStageThreeVisualComponent extends RenderComponent {
     for (int i = 0; i < 24; i++) {
       float angle = MathUtils.PI2 * i / 24f;
       float nextAngle = MathUtils.PI2 * (i + 1) / 24f;
-      drawQuad(
-          batch,
-          x,
-          y,
-          x + radiusX * MathUtils.cos(angle),
-          y + radiusY * MathUtils.sin(angle),
+      float colour = batch.getPackedColor();
+      setVertex(0, x, y, colour);
+      setVertex(5, x + radiusX * MathUtils.cos(angle), y + radiusY * MathUtils.sin(angle), colour);
+      setVertex(
+          10,
           x + radiusX * MathUtils.cos(nextAngle),
           y + radiusY * MathUtils.sin(nextAngle),
-          x,
-          y);
+          colour);
+      setVertex(15, x, y, colour);
+      drawQuad(batch);
     }
   }
 
-  private void drawQuad(
-      SpriteBatch batch,
-      float x1,
-      float y1,
-      float x2,
-      float y2,
-      float x3,
-      float y3,
-      float x4,
-      float y4) {
-    float colour = batch.getPackedColor();
-    setVertex(0, x1, y1, colour);
-    setVertex(5, x2, y2, colour);
-    setVertex(10, x3, y3, colour);
-    setVertex(15, x4, y4, colour);
+  private void drawQuad(SpriteBatch batch) {
     batch.draw(pixel, quadVertices, 0, quadVertices.length);
   }
 

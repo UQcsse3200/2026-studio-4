@@ -53,7 +53,7 @@ The default strike lands roughly 1.25 seconds after freezing the player and rele
 
 ## Selected artwork
 
-Source PNG bytes are preserved; sprites are sliced at runtime with nearest-neighbour filtering. The old tornado images remain in the repository but are no longer loaded by Stage 3.
+Source PNG bytes are preserved; sprites are sliced at runtime with nearest-neighbour filtering. Stage 3 loads only the artwork listed below. Unused tornado frames and their dedicated license have been removed.
 
 | Purpose | Uploaded source |
 | --- | --- |
@@ -64,7 +64,7 @@ Source PNG bytes are preserved; sprites are sliced at runtime with nearest-neigh
 | Black shockwave, shadow and statue healthbar | Rendered geometry; one shared white pixel texture |
 | Shared shield, impact and peaceful Grandpa | Existing Stage 1 assets |
 
-Tornado attribution: Alenia Studios / KXLT. The supplied license is copied to `core/assets/licenses/stage3-atmospheric-LICENSE.txt`; it names CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/) and additional terms, including no redistribution of raw assets. Confirm permission before adding its raw PNGs to a public repository. The wizard, ice, statue and burst source packs should retain their original download-page license records. No license is inferred from a filename containing “Free”.
+The wizard, ice, statue and burst source packs should retain their original download-page license records. No license is inferred from a filename containing “Free”.
 
 ## Validation and playtest
 
