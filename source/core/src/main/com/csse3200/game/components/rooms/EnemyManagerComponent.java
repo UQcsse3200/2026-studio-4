@@ -72,6 +72,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         Entity mummy = NPCFactory.createGiantEnemy(target, "images/mummy.atlas");
         mummy.getComponent(HitboxComponent.class).setAsBox(new Vector2(1f, 1.5f));
         return mummy;
+      case SNAKE_MINI_BOSS:
+        return NPCFactory.createSnakeMiniBoss(target);
       // Greek
       case GOLEM:
         Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);

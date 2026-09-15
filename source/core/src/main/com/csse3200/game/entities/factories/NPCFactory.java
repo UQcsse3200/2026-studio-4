@@ -7,9 +7,11 @@ import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.*;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
+import com.csse3200.game.components.tasks.CoilAttackTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
 import com.csse3200.game.components.tasks.PatrolTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
+import com.csse3200.game.components.tasks.VenomSpitAttackTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
@@ -58,7 +60,10 @@ public class NPCFactory {
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+    // Longer frame duration so the (currently single-frame) death pose is actually
+    // visible before the entity is removed, instead of disappearing in one-tenth of a
+    // second.
+    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     giantEnemy
@@ -96,7 +101,10 @@ public class NPCFactory {
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+    // Longer frame duration so the (currently single-frame) death pose is actually
+    // visible before the entity is removed, instead of disappearing in one-tenth of a
+    // second.
+    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("fuse", 0.1f, Animation.PlayMode.LOOP);
 
@@ -137,7 +145,10 @@ public class NPCFactory {
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+    // Longer frame duration so the (currently single-frame) death pose is actually
+    // visible before the entity is removed, instead of disappearing in one-tenth of a
+    // second.
+    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
 
     chaseEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
@@ -162,7 +173,56 @@ public class NPCFactory {
   }
 
   /**
-   * Creates a floating demon which patrols in a straight horizontal line. (这是那个比较短的快捷包装方法)
+   * Creates the snake mini-boss entity. Moves toward the player and, once close enough, performs a
+   * telegraphed coil attack that poisons the player over time. Once its own health drops below 50%,
+   * it also gains a ranged venom-spit attack that creates a damaging pool on the ground.
+   *
+   * @param target entity to chase
+   * @return entity
+   */
+  public static Entity createSnakeMiniBoss(Entity target) {
+    Entity snakeBoss = createBaseNPC();
+    SnakeMiniBossConfig config = configs.snakeMiniBoss;
+
+    AITaskComponent aiComponent =
+        new AITaskComponent(target)
+            .addTask(new WanderTask(config.movement, 1f))
+            .addTask(new ChaseTask(target, 10, 3f, 10f))
+            .addTask(new CoilAttackTask(target, CHASE_SPEED))
+            .addTask(new VenomSpitAttackTask(target));
+
+    // Shravika's own hand-drawn snake sprite sheet.
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset("images/snake.atlas", TextureAtlas.class));
+    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+    // Longer frame duration so the (currently single-frame) death pose is actually
+    // visible before the entity is removed, instead of disappearing in one-tenth of a
+    // second.
+    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
+
+    snakeBoss
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
+        .addComponent(aiComponent)
+        .addComponent(animator)
+        .addComponent(new EnemyDeathComponent(true))
+        .addComponent(new EnemyAnimationController());
+
+    animator.scaleEntity();
+    animator.startAnimation(DEFAULT_ANIMATION);
+
+    snakeBoss
+        .getComponent(PhysicsMovementComponent.class)
+        .setMaxSpeed(new Vector2(CHASE_SPEED, CHASE_SPEED));
+
+    return snakeBoss;
+  }
+
+  /**
+   * Creates a floating demon which patrols in a straight horizontal line.
    *
    * @param target target entity to attack
    * @param leftPoint left point of its patrol path
@@ -212,7 +272,10 @@ public class NPCFactory {
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+    // Longer frame duration so the (currently single-frame) death pose is actually
+    // visible before the entity is removed, instead of disappearing in one-tenth of a
+    // second.
+    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     Entity demon = createBaseNPC();
