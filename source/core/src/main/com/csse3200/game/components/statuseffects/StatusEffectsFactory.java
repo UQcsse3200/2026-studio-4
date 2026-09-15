@@ -97,6 +97,6 @@ public class StatusEffectsFactory {
    */
   public static StatusEffect createFreeze(CombatStatsComponent combatStats) {
     float speed = combatStats.getMovementSpeed();
-    return new Slow(3000, combatStats, speed);
+    return new Slow(3000, combatStats, -speed);
   }
 }
