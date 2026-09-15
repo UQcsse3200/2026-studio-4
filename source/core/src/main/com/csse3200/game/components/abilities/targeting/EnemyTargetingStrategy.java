@@ -4,10 +4,9 @@ import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.entities.Entity;
 
 /**
- * Selects which enemy entities a spell should affect. Implementations decide the "how" (all
- * enemies, closest enemy, on-screen enemies, etc.); the spell component decides the "what happens
- * to them" (damage, stun, ...). This separation lets new targeting modes be added without touching
- * any spell's effect logic, and lets the same strategy be reused across multiple spells.
+ * Selects which enemy entities an ability should affect.
+ * Implementations determine targeting specifics (i.e. all enemies, closest enemy, on-screen enemies)
+ * Keeps targeting separate from ability effects
  */
 public interface EnemyTargetingStrategy {
     /**
