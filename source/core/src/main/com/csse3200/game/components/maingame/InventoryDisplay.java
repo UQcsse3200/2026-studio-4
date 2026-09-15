@@ -5,11 +5,21 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
+import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Payload;
+import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Source;
+import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Target;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Scaling;
+import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.items.charms.Charm;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Objects;
 
 /** Displays an Inventory UI over the main game screen. */
 public class InventoryDisplay extends UIComponent {
@@ -17,6 +27,16 @@ public class InventoryDisplay extends UIComponent {
   private static final float Z_INDEX = 2f;
   private boolean charmsPage = true;
   private Table table;
+  private DragAndDrop dragAndDrop;
+  private InventoryComponent inventoryComponent;
+
+  public InventoryDisplay (InventoryComponent inventoryComponent) {
+    this.inventoryComponent = inventoryComponent;
+  }
+
+  public InventoryDisplay () {
+
+  }
 
   @Override
   public void create() {
@@ -33,6 +53,7 @@ public class InventoryDisplay extends UIComponent {
   private void buildPage() {
     // Create main table
     table = new Table();
+    this.dragAndDrop = new DragAndDrop();
     table.setFillParent(true);
     stage.addActor(table);
     // Create initial stack
@@ -99,7 +120,7 @@ public class InventoryDisplay extends UIComponent {
     leftPage.row();
     leftPage.add(new Label("Equipped", skin)).colspan(3);
     leftPage.row();
-    Table leftGrid = gridDraw(3, 3, 72);
+    Table leftGrid = gridDraw(3, 3, 72, "Active");
     leftPage.add(leftGrid);
 
     pagesContainer.add(leftPage).size(365, 500);
@@ -109,7 +130,7 @@ public class InventoryDisplay extends UIComponent {
         new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
 
     // Create Grid
-    Table rightGrid = gridDraw(4, 20, 64);
+    Table rightGrid = gridDraw(4, 20, 64, "Consumable");
 
     rightPage.add(rightGrid).center().pad(10);
     pagesContainer.add(rightPage).size(365, 500);
@@ -142,7 +163,7 @@ public class InventoryDisplay extends UIComponent {
         new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
 
     // Create Grid
-    Table rightGrid = gridDraw(4, 20, 64);
+    Table rightGrid = gridDraw(4, 20, 64, "Charms");
 
     rightPage.add(rightGrid).center().pad(10);
     pagesContainer.add(rightPage).size(365, 500);
@@ -156,22 +177,64 @@ public class InventoryDisplay extends UIComponent {
    * @param columns number of columns in the inventory
    * @param totalSlots number of total slots in the inventory
    * @param slotSize size of the slots in the inventory
+   * @param type what inventory the grid is being built for
    * @return a table component to be displayed in the inventory
    */
-  private Table gridDraw(int columns, int totalSlots, int slotSize) {
+  private Table gridDraw(int columns, int totalSlots, int slotSize, String type) {
     // Grid Table building
     Table grid = new Table();
+    java.util.List<Charm> charms = inventoryComponent.getCharms();
+    Dictionary<Charm, Integer> charmDict = countCharms(charms);
+    java.util.Enumeration<Charm> uniqueCharms = charmDict.keys();
+
     for (int i = 0; i < totalSlots; i++) {
+      Stack slotStack = new Stack();
       ImageButton slotBackground = new ImageButton(inventory, "inventory-box");
+      slotStack.add(slotBackground);
 
-      grid.add(slotBackground).size(slotSize).pad(3);
+      if (Objects.equals(type, "Charms") && uniqueCharms.hasMoreElements()) {
+        Charm currentCharm = uniqueCharms.nextElement();
+        int quantity = charmDict.get(currentCharm);
+        ImageButton charmIcon = new ImageButton(inventory, "Charms");
+        slotStack.add(charmIcon);
+        if (quantity > 1) {
+          Table textOverlayTable = new Table();
+          textOverlayTable.bottom().right();
 
+          Label quantityLabel = new Label(String.valueOf(quantity), skin);
+          textOverlayTable.add(quantityLabel).padBottom(2).padRight(4);
+          slotStack.add(textOverlayTable);
+        }
+        grid.add(slotStack).size(slotSize).pad(3);
+      } else {
+        grid.add(slotBackground).size(slotSize).pad(3);
+      }
       // Break to a new row after reaching the column limit
       if ((i + 1) % columns == 0) {
         grid.row();
       }
     }
     return grid;
+  }
+
+  /**
+   * Creates a dictionary of charms and their count
+   * @param charms List of charms in the inventory of the player
+   * @return a dictionary with charm types as keys and their count as value
+   */
+  private Dictionary<Charm, Integer> countCharms(java.util.List<Charm> charms) {
+    java.util.Dictionary<Charm, Integer> charmsDict = new java.util.Hashtable<>();
+
+    for (Charm charm : charms) {
+      Integer currentCount = charmsDict.get(charm);
+
+      if (currentCount == null) {
+        charmsDict.put(charm, 1);
+      } else {
+        charmsDict.put(charm, currentCount + 1);
+      }
+    }
+    return charmsDict;
   }
 
   @Override

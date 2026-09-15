@@ -161,7 +161,7 @@ public class MainGameScreen extends ScreenAdapter {
     // constructor) must end up on the same Terminal instance that is attached to the UI below.
     terminal.addCommand("weapon", new WeaponCommand(player));
 
-    InventoryDisplay inventoryDisplay = new InventoryDisplay();
+    InventoryDisplay inventoryDisplay = new InventoryDisplay(player.getComponent(InventoryComponent.class));
     InventoryActions inventoryActions = new InventoryActions(inventoryDisplay);
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
 
