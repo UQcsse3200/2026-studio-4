@@ -10,27 +10,27 @@ import com.csse3200.game.services.ServiceLocator;
  * array if no enemies are registered.
  */
 public class StrategyTargetClosest implements EnemyTargetingStrategy {
-    @Override
-    public Array<Entity> selectTargets(Entity caster) {
-        Vector2 casterCenter = caster.getCenterPosition();
-        Entity closest = null;
-        float closestDistSq = Float.MAX_VALUE;
+  @Override
+  public Array<Entity> selectTargets(Entity caster) {
+    Vector2 casterCenter = caster.getCenterPosition();
+    Entity closest = null;
+    float closestDistSq = Float.MAX_VALUE;
 
-        for (Entity candidate : ServiceLocator.getEntityService().getEntities()) {
-            if (candidate.equals(caster) || !EnemyUtils.isEnemy(candidate)) {
-                continue;
-            }
-            float distSq = candidate.getCenterPosition().dst2(casterCenter);
-            if (distSq < closestDistSq) {
-                closestDistSq = distSq;
-                closest = candidate;
-            }
-        }
-
-        Array<Entity> targets = new Array<>();
-        if (closest != null) {
-            targets.add(closest);
-        }
-        return targets;
+    for (Entity candidate : ServiceLocator.getEntityService().getEntities()) {
+      if (candidate.equals(caster) || !EnemyUtils.isEnemy(candidate)) {
+        continue;
+      }
+      float distSq = candidate.getCenterPosition().dst2(casterCenter);
+      if (distSq < closestDistSq) {
+        closestDistSq = distSq;
+        closest = candidate;
+      }
     }
+
+    Array<Entity> targets = new Array<>();
+    if (closest != null) {
+      targets.add(closest);
+    }
+    return targets;
+  }
 }

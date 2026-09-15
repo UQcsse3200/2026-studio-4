@@ -12,14 +12,14 @@ import com.csse3200.game.services.ServiceLocator;
  * class-level note in {@link com.csse3200.game.components.abilities.LightningSpellComponent}).
  */
 public class StrategyTargetAll implements EnemyTargetingStrategy {
-    @Override
-    public Array<Entity> selectTargets(Entity caster) {
-        Array<Entity> targets = new Array<>();
-        for (Entity candidate : ServiceLocator.getEntityService().getEntities()) {
-            if (!candidate.equals(caster) && EnemyUtils.isEnemy(candidate)) {
-                targets.add(candidate);
-            }
-        }
-        return targets;
+  @Override
+  public Array<Entity> selectTargets(Entity caster) {
+    Array<Entity> targets = new Array<>();
+    for (Entity candidate : ServiceLocator.getEntityService().getEntities()) {
+      if (!candidate.equals(caster) && EnemyUtils.isEnemy(candidate)) {
+        targets.add(candidate);
+      }
     }
+    return targets;
+  }
 }
