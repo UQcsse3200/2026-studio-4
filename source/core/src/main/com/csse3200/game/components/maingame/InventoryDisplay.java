@@ -94,9 +94,8 @@ public class InventoryDisplay extends UIComponent {
             float groupsWidth =
                 2f * (3f * hotbarSlotSize(context.getWidth()) + 2f * HOTBAR_SLOT_GAP);
             // On narrower windows retain room for Exit and a gap between the two groups.
-            return Math.min(
-                HOTBAR_SIDE_INSET,
-                Math.max(96f, context.getWidth() - HOTBAR_SIDE_INSET - groupsWidth - 24f));
+            return Math.clamp(
+                context.getWidth() - HOTBAR_SIDE_INSET - groupsWidth - 24f, 96f, HOTBAR_SIDE_INSET);
           }
         });
     hotbarTable.setTouchable(Touchable.disabled);
@@ -165,9 +164,8 @@ public class InventoryDisplay extends UIComponent {
 
   /** Use the enlarged circles where space permits, shrinking only for narrow windows. */
   private float hotbarSlotSize(float width) {
-    return Math.min(
-        HOTBAR_SLOT_SIZE,
-        Math.max(1f, (width - HOTBAR_SIDE_INSET - 96f - 24f - 4f * HOTBAR_SLOT_GAP) / 6f));
+    return Math.clamp(
+        (width - HOTBAR_SIDE_INSET - 96f - 24f - 4f * HOTBAR_SLOT_GAP) / 6f, 1f, HOTBAR_SLOT_SIZE);
   }
 
   /** Builds the inventory page depending on which inventory is being displayed */

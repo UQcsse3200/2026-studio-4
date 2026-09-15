@@ -12,6 +12,7 @@ import com.csse3200.game.utils.math.Vector2Utils;
  * keyboard input.
  */
 public class KeyboardPlayerInputComponent extends InputComponent {
+  private static final String EQUIP_WEAPON_EVENT = "equipWeapon";
   private final Vector2 walkDirection = Vector2.Zero.cpy();
 
   public KeyboardPlayerInputComponent() {
@@ -28,13 +29,13 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   public boolean keyDown(int keycode) {
     switch (keycode) {
       case Keys.NUM_1:
-        entity.getEvents().trigger("equipWeapon", WeaponType.SWORD);
+        entity.getEvents().trigger(EQUIP_WEAPON_EVENT, WeaponType.SWORD);
         return true;
       case Keys.NUM_2:
-        entity.getEvents().trigger("equipWeapon", WeaponType.DAGGER);
+        entity.getEvents().trigger(EQUIP_WEAPON_EVENT, WeaponType.DAGGER);
         return true;
       case Keys.NUM_3:
-        entity.getEvents().trigger("equipWeapon", WeaponType.BOW);
+        entity.getEvents().trigger(EQUIP_WEAPON_EVENT, WeaponType.BOW);
         return true;
       case Keys.W:
         walkDirection.add(Vector2Utils.UP);

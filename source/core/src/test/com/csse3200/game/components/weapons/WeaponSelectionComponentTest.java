@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.ui.terminal.commands.WeaponCommand;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ class WeaponSelectionComponentTest {
             .addComponent(spy(new BowWeaponComponent()))
             .addComponent(new WeaponStatsComponent(0.5f, 1f, 2f))
             .addComponent(selection);
-    player.getEvents().addListener("weaponSelected", (WeaponType type) -> changes.add(type));
+    player.getEvents().addListener("weaponSelected", (EventListener1<WeaponType>) changes::add);
     selection.create();
   }
 
@@ -39,7 +40,8 @@ class WeaponSelectionComponentTest {
     }
     assertEquals(
         List.of(WeaponType.SWORD, WeaponType.DAGGER, WeaponType.BOW, WeaponType.SWORD), changes);
-    assertThrows(UnsupportedOperationException.class, () -> selection.getWeapons().clear());
+    var weapons = selection.getWeapons();
+    assertThrows(UnsupportedOperationException.class, weapons::clear);
   }
 
   @Test

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.items.WeaponItem.WeaponType;
@@ -59,7 +60,7 @@ class KeyboardPlayerInputComponentTest {
   @Test
   void numberKeysSelectWeaponsOnlyOnKeyDown() {
     List<WeaponType> selected = new ArrayList<>();
-    player.getEvents().addListener("equipWeapon", (WeaponType type) -> selected.add(type));
+    player.getEvents().addListener("equipWeapon", (EventListener1<WeaponType>) selected::add);
     for (int key : new int[] {Keys.NUM_1, Keys.NUM_2, Keys.NUM_3}) {
       assertTrue(input.keyDown(key));
       assertFalse(input.keyUp(key));
@@ -71,7 +72,7 @@ class KeyboardPlayerInputComponentTest {
   @Test
   void openTerminalConsumesNumberKeysBeforePlayerInput() {
     List<WeaponType> selected = new ArrayList<>();
-    player.getEvents().addListener("equipWeapon", (WeaponType type) -> selected.add(type));
+    player.getEvents().addListener("equipWeapon", (EventListener1<WeaponType>) selected::add);
     InputService service = new InputService();
     Terminal terminal = new Terminal();
     service.register(input);
