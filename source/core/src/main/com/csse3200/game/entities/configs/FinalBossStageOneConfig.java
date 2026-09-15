@@ -9,8 +9,8 @@ public class FinalBossStageOneConfig {
 
   // Boss and summon health
   public int bossHealth = 100;
-  public int waveOneSummonCount = 1;
-  public int waveTwoSummonCount = 1;
+  public int waveOneSummonCount = 8;
+  public int waveTwoSummonCount = 16;
   public int summonHealth = 10;
   public int summonExplosionDamage = 10;
 
