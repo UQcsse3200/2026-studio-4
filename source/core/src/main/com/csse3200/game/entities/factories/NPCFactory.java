@@ -193,8 +193,7 @@ public class NPCFactory {
     // Shravika's own hand-drawn snake sprite sheet.
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/snake.atlas", TextureAtlas.class));
+            ServiceLocator.getResourceService().getAsset("images/snake.atlas", TextureAtlas.class));
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
