@@ -11,7 +11,7 @@ import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Displays an Inventory UI over the main game screen. */
+/** Displays the inventory book and its charms and consumables pages. */
 public class InventoryDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(InventoryDisplay.class);
   private static final float Z_INDEX = 2f;
@@ -21,10 +21,6 @@ public class InventoryDisplay extends UIComponent {
   @Override
   public void create() {
     super.create();
-    addActors();
-  }
-
-  private void addActors() {
     buildPage();
     table.setVisible(false);
   }
@@ -33,6 +29,7 @@ public class InventoryDisplay extends UIComponent {
   private void buildPage() {
     // Create main table
     table = new Table();
+    table.setName("inventory-book");
     table.setFillParent(true);
     stage.addActor(table);
     // Create initial stack
@@ -70,15 +67,11 @@ public class InventoryDisplay extends UIComponent {
 
   /** Changes the current page to the other inactive page and sets the flag */
   public void changePage() {
-    if (charmsPage) {
-      table.clear();
-      charmsPage = false;
-      buildPage();
-    } else {
-      table.clear();
-      charmsPage = true;
-      buildPage();
-    }
+    boolean visible = table.isVisible();
+    table.remove();
+    charmsPage = !charmsPage;
+    buildPage();
+    table.setVisible(visible);
   }
 
   /**
@@ -186,10 +179,11 @@ public class InventoryDisplay extends UIComponent {
 
   @Override
   public void dispose() {
-    table.clear();
+    table.remove();
     super.dispose();
   }
 
+  /** Shows or hides the inventory book. */
   public void setVisible(boolean set) {
     table.setVisible(set);
     if (set) {
