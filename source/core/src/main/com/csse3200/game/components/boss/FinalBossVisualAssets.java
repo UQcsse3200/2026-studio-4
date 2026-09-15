@@ -9,6 +9,8 @@ import java.util.Arrays;
 public enum FinalBossVisualAssets {
   GRANDPA("grandpa.png", 16, 5, 10),
   WIZARD("wizard.png", 192, 4, 14),
+  WIZARD_STAGE_TWO("wizard-stage-2.png", 192, 4, 14),
+  WIZARD_TIRED("wizard-tired.png", 192, 4, 14),
   TRANSFORM("transform.png", 32, 6, 12),
   SPAWN("summon-spawn.png", 32, 6, 12),
   SHIELD("shield.png", 72, 8, 8),

@@ -75,6 +75,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             .setAsBox(new Vector2(1f, 1.5f), mummy.getCenterPosition());
         PhysicsUtils.setScaledCollider(mummy, 0.3f, 0.3f);
         return mummy;
+      case SNAKE_MINI_BOSS:
+        return NPCFactory.createSnakeMiniBoss(target);
       // Greek
       case GOLEM:
         Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
