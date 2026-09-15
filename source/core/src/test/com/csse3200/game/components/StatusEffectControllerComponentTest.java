@@ -17,501 +17,408 @@ import org.mockito.MockitoAnnotations;
 
 class StatusEffectsControllerComponentTest {
 
-    @Mock
-    private CombatStatsComponent combatStatsComponent;
+  @Mock private CombatStatsComponent combatStatsComponent;
 
-    @Mock
-    private Entity entity;
+  @Mock private Entity entity;
 
-    @Mock
-    private EventHandler eventHandler;
+  @Mock private EventHandler eventHandler;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+  @BeforeEach
+  void setUp() {
+    MockitoAnnotations.openMocks(this);
 
-        when(entity.getComponent(CombatStatsComponent.class))
-                .thenReturn(combatStatsComponent);
+    when(entity.getComponent(CombatStatsComponent.class)).thenReturn(combatStatsComponent);
 
-        when(entity.getEvents())
-                .thenReturn(eventHandler);
+    when(entity.getEvents()).thenReturn(eventHandler);
+  }
+
+  private StatusEffectsControllerComponent createController() {
+    StatusEffectsControllerComponent controller = new StatusEffectsControllerComponent();
+
+    controller.setEntity(entity);
+    controller.create();
+
+    return controller;
+  }
+
+  // ---------------------------------------------------------
+  // create()
+  // ---------------------------------------------------------
+
+  @Test
+  void createCachesCombatStatsComponent() {
+    StatusEffectsControllerComponent controller = createController();
+
+    assertNotNull(controller);
+
+    verify(entity).getComponent(CombatStatsComponent.class);
+  }
+
+  @Test
+  void createThrowsIfCombatStatsComponentMissing() {
+    when(entity.getComponent(CombatStatsComponent.class)).thenReturn(null);
+
+    StatusEffectsControllerComponent controller = new StatusEffectsControllerComponent();
+
+    controller.setEntity(entity);
+
+    IllegalStateException exception = assertThrows(IllegalStateException.class, controller::create);
+
+    assertEquals(
+        "StatusEffectsController requires CombatStatsComponent on the same entity.",
+        exception.getMessage());
+  }
+
+  // ---------------------------------------------------------
+  // addStatusEffect()
+  // ---------------------------------------------------------
+
+  @Test
+  void addBurningStatusEffectCreatesCorrectNumberOfEffects() {
+    StatusEffect burn = mock(StatusEffect.class);
+
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
+
+      factory.when(() -> StatusEffectsFactory.createBurn(combatStatsComponent)).thenReturn(burn);
+
+      StatusEffectsControllerComponent controller = createController();
+
+      controller.addStatusEffect(3, 'b');
+
+      factory.verify(() -> StatusEffectsFactory.createBurn(combatStatsComponent), times(3));
     }
+  }
 
-    private StatusEffectsControllerComponent createController() {
-        StatusEffectsControllerComponent controller =
-                new StatusEffectsControllerComponent();
+  @Test
+  void addRegenerationStatusEffectCreatesCorrectNumberOfEffects() {
+    StatusEffect regeneration = mock(StatusEffect.class);
 
-        controller.setEntity(entity);
-        controller.create();
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
-        return controller;
+      factory
+          .when(() -> StatusEffectsFactory.createRegeneration(combatStatsComponent))
+          .thenReturn(regeneration);
+
+      StatusEffectsControllerComponent controller = createController();
+
+      controller.addStatusEffect(4, 'r');
+
+      factory.verify(() -> StatusEffectsFactory.createRegeneration(combatStatsComponent), times(4));
     }
+  }
 
-    // ---------------------------------------------------------
-    // create()
-    // ---------------------------------------------------------
+  @Test
+  void addSlowStatusEffectCreatesCorrectNumberOfEffects() {
+    StatusEffect slow = mock(StatusEffect.class);
 
-    @Test
-    void createCachesCombatStatsComponent() {
-        StatusEffectsControllerComponent controller =
-                createController();
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
-        assertNotNull(controller);
+      factory.when(() -> StatusEffectsFactory.createSlow(combatStatsComponent)).thenReturn(slow);
 
-        verify(entity).getComponent(CombatStatsComponent.class);
+      StatusEffectsControllerComponent controller = createController();
+
+      controller.addStatusEffect(2, 's');
+
+      factory.verify(() -> StatusEffectsFactory.createSlow(combatStatsComponent), times(2));
     }
+  }
 
-    @Test
-    void createThrowsIfCombatStatsComponentMissing() {
-        when(entity.getComponent(CombatStatsComponent.class))
-                .thenReturn(null);
+  @Test
+  void addSpeedStatusEffectCreatesCorrectNumberOfEffects() {
+    StatusEffect speed = mock(StatusEffect.class);
 
-        StatusEffectsControllerComponent controller =
-                new StatusEffectsControllerComponent();
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
-        controller.setEntity(entity);
+      factory.when(() -> StatusEffectsFactory.createSpeed(combatStatsComponent)).thenReturn(speed);
 
-        IllegalStateException exception =
-                assertThrows(
-                        IllegalStateException.class,
-                        controller::create);
+      StatusEffectsControllerComponent controller = createController();
 
-        assertEquals(
-                "StatusEffectsController requires CombatStatsComponent on the same entity.",
-                exception.getMessage());
+      controller.addStatusEffect(5, 'S');
+
+      factory.verify(() -> StatusEffectsFactory.createSpeed(combatStatsComponent), times(5));
     }
+  }
 
-    // ---------------------------------------------------------
-    // addStatusEffect()
-    // ---------------------------------------------------------
+  @Test
+  void addVulnerableStatusEffectCreatesCorrectNumberOfEffects() {
+    StatusEffect vulnerable = mock(StatusEffect.class);
 
-    @Test
-    void addBurningStatusEffectCreatesCorrectNumberOfEffects() {
-        StatusEffect burn = mock(StatusEffect.class);
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
-        try (MockedStatic<StatusEffectsFactory> factory =
-                     mockStatic(StatusEffectsFactory.class)) {
+      factory.when(StatusEffectsFactory::createVulnerable).thenReturn(vulnerable);
 
-            factory.when(
-                            () -> StatusEffectsFactory.createBurn(combatStatsComponent))
-                    .thenReturn(burn);
+      StatusEffectsControllerComponent controller = createController();
 
-            StatusEffectsControllerComponent controller =
-                    createController();
+      controller.addStatusEffect(3, 'v');
 
-            controller.addStatusEffect(3, 'b');
-
-            factory.verify(
-                    () -> StatusEffectsFactory.createBurn(combatStatsComponent),
-                    times(3));
-        }
+      factory.verify(StatusEffectsFactory::createVulnerable, times(3));
     }
+  }
 
-    @Test
-    void addRegenerationStatusEffectCreatesCorrectNumberOfEffects() {
-        StatusEffect regeneration = mock(StatusEffect.class);
+  @Test
+  void addFreezeStatusEffectCreatesOneFreeze() {
+    StatusEffect freeze = mock(StatusEffect.class);
 
-        try (MockedStatic<StatusEffectsFactory> factory =
-                     mockStatic(StatusEffectsFactory.class)) {
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
-            factory.when(
-                            () -> StatusEffectsFactory.createRegeneration(combatStatsComponent))
-                    .thenReturn(regeneration);
+      factory
+          .when(() -> StatusEffectsFactory.createFreeze(combatStatsComponent))
+          .thenReturn(freeze);
 
-            StatusEffectsControllerComponent controller =
-                    createController();
+      StatusEffectsControllerComponent controller = createController();
 
-            controller.addStatusEffect(4, 'r');
+      controller.addStatusEffect(5, 'f');
 
-            factory.verify(
-                    () -> StatusEffectsFactory.createRegeneration(combatStatsComponent),
-                    times(4));
-        }
+      /*
+       * Notice that the implementation currently only creates
+       * ONE freeze regardless of the number of stacks.
+       */
+      factory.verify(() -> StatusEffectsFactory.createFreeze(combatStatsComponent), times(1));
     }
+  }
 
-    @Test
-    void addSlowStatusEffectCreatesCorrectNumberOfEffects() {
-        StatusEffect slow = mock(StatusEffect.class);
+  @Test
+  void addStatusEffectRejectsZeroStacks() {
+    StatusEffectsControllerComponent controller = createController();
 
-        try (MockedStatic<StatusEffectsFactory> factory =
-                     mockStatic(StatusEffectsFactory.class)) {
+    assertThrows(IllegalArgumentException.class, () -> controller.addStatusEffect(0, 'b'));
+  }
 
-            factory.when(
-                            () -> StatusEffectsFactory.createSlow(combatStatsComponent))
-                    .thenReturn(slow);
+  @Test
+  void addStatusEffectRejectsNegativeStacks() {
+    StatusEffectsControllerComponent controller = createController();
 
-            StatusEffectsControllerComponent controller =
-                    createController();
+    assertThrows(IllegalArgumentException.class, () -> controller.addStatusEffect(-1, 'b'));
+  }
 
-            controller.addStatusEffect(2, 's');
+  @Test
+  void addStatusEffectRejectsInvalidCharacter() {
+    StatusEffectsControllerComponent controller = createController();
 
-            factory.verify(
-                    () -> StatusEffectsFactory.createSlow(combatStatsComponent),
-                    times(2));
-        }
+    IllegalArgumentException exception =
+        assertThrows(IllegalArgumentException.class, () -> controller.addStatusEffect(1, 'x'));
+
+    assertEquals(
+        "statusEffect must be a valid character representation of a status effect.",
+        exception.getMessage());
+  }
+
+  // ---------------------------------------------------------
+  // Shield
+  // ---------------------------------------------------------
+
+  @Test
+  void activateAbsorbCreatesShield() {
+    Shield shield = mock(Shield.class);
+
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
+
+      factory.when(StatusEffectsFactory::createShield).thenReturn(shield);
+
+      when(shield.getCurrent()).thenReturn(50);
+      when(shield.getMax()).thenReturn(100);
+
+      StatusEffectsControllerComponent controller = createController();
+
+      controller.activateAbsorb();
+
+      verify(shield).activateAbsorb();
+
+      verify(eventHandler).trigger("updateShield", 50, 100);
     }
+  }
 
-    @Test
-    void addSpeedStatusEffectCreatesCorrectNumberOfEffects() {
-        StatusEffect speed = mock(StatusEffect.class);
+  @Test
+  void activateTimedCreatesShield() {
+    Shield shield = mock(Shield.class);
 
-        try (MockedStatic<StatusEffectsFactory> factory =
-                     mockStatic(StatusEffectsFactory.class)) {
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
-            factory.when(
-                            () -> StatusEffectsFactory.createSpeed(combatStatsComponent))
-                    .thenReturn(speed);
+      factory.when(StatusEffectsFactory::createShield).thenReturn(shield);
 
-            StatusEffectsControllerComponent controller =
-                    createController();
+      when(shield.getCurrent()).thenReturn(25);
+      when(shield.getMax()).thenReturn(100);
 
-            controller.addStatusEffect(5, 'S');
+      StatusEffectsControllerComponent controller = createController();
 
-            factory.verify(
-                    () -> StatusEffectsFactory.createSpeed(combatStatsComponent),
-                    times(5));
-        }
+      controller.activateTimed();
+
+      verify(shield).activateTimed();
+
+      verify(eventHandler).trigger("updateShield", 25, 100);
     }
+  }
 
-    @Test
-    void addVulnerableStatusEffectCreatesCorrectNumberOfEffects() {
-        StatusEffect vulnerable = mock(StatusEffect.class);
+  @Test
+  void shieldIsOnlyCreatedOnce() {
+    Shield shield = mock(Shield.class);
 
-        try (MockedStatic<StatusEffectsFactory> factory =
-                     mockStatic(StatusEffectsFactory.class)) {
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
-            factory.when(
-                            StatusEffectsFactory::createVulnerable)
-                    .thenReturn(vulnerable);
+      factory.when(StatusEffectsFactory::createShield).thenReturn(shield);
 
-            StatusEffectsControllerComponent controller =
-                    createController();
+      when(shield.getCurrent()).thenReturn(50);
+      when(shield.getMax()).thenReturn(100);
 
-            controller.addStatusEffect(3, 'v');
+      StatusEffectsControllerComponent controller = createController();
 
-            factory.verify(
-                    StatusEffectsFactory::createVulnerable,
-                    times(3));
-        }
+      controller.activateAbsorb();
+      controller.activateTimed();
+
+      factory.verify(StatusEffectsFactory::createShield, times(1));
+
+      verify(shield).activateAbsorb();
+      verify(shield).activateTimed();
     }
+  }
 
-    @Test
-    void addFreezeStatusEffectCreatesOneFreeze() {
-        StatusEffect freeze = mock(StatusEffect.class);
+  @Test
+  void modifyIncomingDamageUsesShield() {
+    Shield shield = mock(Shield.class);
 
-        try (MockedStatic<StatusEffectsFactory> factory =
-                     mockStatic(StatusEffectsFactory.class)) {
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
-            factory.when(
-                            () -> StatusEffectsFactory.createFreeze(combatStatsComponent))
-                    .thenReturn(freeze);
+      factory.when(StatusEffectsFactory::createShield).thenReturn(shield);
 
-            StatusEffectsControllerComponent controller =
-                    createController();
+      when(shield.getCurrent()).thenReturn(30);
+      when(shield.getMax()).thenReturn(100);
+      when(shield.modifyIncomingDamage(80)).thenReturn(50);
 
-            controller.addStatusEffect(5, 'f');
+      StatusEffectsControllerComponent controller = createController();
 
-            /*
-             * Notice that the implementation currently only creates
-             * ONE freeze regardless of the number of stacks.
-             */
-            factory.verify(
-                    () -> StatusEffectsFactory.createFreeze(combatStatsComponent),
-                    times(1));
-        }
+      controller.activateAbsorb();
+
+      clearInvocations(eventHandler);
+
+      int result = controller.modifyIncomingDamage(80);
+
+      assertEquals(50, result);
+
+      verify(shield).modifyIncomingDamage(80);
+
+      verify(eventHandler).trigger("updateShield", 30, 100);
     }
+  }
 
-    @Test
-    void addStatusEffectRejectsZeroStacks() {
-        StatusEffectsControllerComponent controller =
-                createController();
+  // ---------------------------------------------------------
+  // update()
+  // ---------------------------------------------------------
 
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> controller.addStatusEffect(0, 'b'));
+  @Test
+  void updateCallsUpdateOnAllStatusEffects() {
+    StatusEffect effect = mock(StatusEffect.class);
+
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
+
+      factory.when(() -> StatusEffectsFactory.createBurn(combatStatsComponent)).thenReturn(effect);
+
+      StatusEffectsControllerComponent controller = createController();
+
+      controller.addStatusEffect(3, 'b');
+
+      controller.update();
+
+      verify(effect, times(3)).update();
     }
+  }
 
-    @Test
-    void addStatusEffectRejectsNegativeStacks() {
-        StatusEffectsControllerComponent controller =
-                createController();
+  @Test
+  void updateRemovesStatusEffectsThatReturnTrue() {
+    StatusEffect removedEffect = mock(StatusEffect.class);
+    StatusEffect remainingEffect = mock(StatusEffect.class);
 
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> controller.addStatusEffect(-1, 'b'));
+    when(removedEffect.update()).thenReturn(true);
+    when(remainingEffect.update()).thenReturn(false);
+
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
+
+      factory
+          .when(() -> StatusEffectsFactory.createBurn(combatStatsComponent))
+          .thenReturn(removedEffect);
+
+      factory
+          .when(() -> StatusEffectsFactory.createRegeneration(combatStatsComponent))
+          .thenReturn(remainingEffect);
+
+      StatusEffectsControllerComponent controller = createController();
+
+      controller.addStatusEffect(1, 'b');
+      controller.addStatusEffect(1, 'r');
+
+      controller.update();
+
+      /*
+       * Call update a second time.
+       *
+       * If removedEffect was successfully removed,
+       * it should not receive another update.
+       */
+      controller.update();
+
+      verify(removedEffect, times(1)).update();
+      verify(remainingEffect, times(2)).update();
     }
+  }
 
-    @Test
-    void addStatusEffectRejectsInvalidCharacter() {
-        StatusEffectsControllerComponent controller =
-                createController();
+  @Test
+  void updateTriggersShieldUiWhenShieldExists() {
+    Shield shield = mock(Shield.class);
 
-        IllegalArgumentException exception =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> controller.addStatusEffect(1, 'x'));
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
-        assertEquals(
-                "statusEffect must be a valid character representation of a status effect.",
-                exception.getMessage());
+      factory.when(StatusEffectsFactory::createShield).thenReturn(shield);
+
+      when(shield.getCurrent()).thenReturn(40);
+      when(shield.getMax()).thenReturn(100);
+
+      StatusEffectsControllerComponent controller = createController();
+
+      controller.activateAbsorb();
+
+      clearInvocations(eventHandler);
+
+      controller.update();
+
+      verify(eventHandler).trigger("updateShield", 40, 100);
     }
+  }
 
-    // ---------------------------------------------------------
-    // Shield
-    // ---------------------------------------------------------
+  // ---------------------------------------------------------
+  // damage()
+  // ---------------------------------------------------------
 
-    @Test
-    void activateAbsorbCreatesShield() {
-        Shield shield = mock(Shield.class);
+  @Test
+  void damageOnlyDamagesDamageableEffects() {
+    StatusEffect normalEffect = mock(StatusEffect.class);
 
-        try (MockedStatic<StatusEffectsFactory> factory =
-                     mockStatic(StatusEffectsFactory.class)) {
+    StatusEffect damageableEffect =
+        mock(StatusEffect.class, withSettings().extraInterfaces(Damageable.class));
 
-            factory.when(StatusEffectsFactory::createShield)
-                    .thenReturn(shield);
+    Damageable damageable = (Damageable) damageableEffect;
 
-            when(shield.getCurrent()).thenReturn(50);
-            when(shield.getMax()).thenReturn(100);
+    Damage damage = mock(Damage.class);
 
-            StatusEffectsControllerComponent controller =
-                    createController();
+    when(damageable.damage(damage)).thenReturn(false);
 
-            controller.activateAbsorb();
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
-            verify(shield).activateAbsorb();
+      factory
+          .when(() -> StatusEffectsFactory.createBurn(combatStatsComponent))
+          .thenReturn(normalEffect);
 
-            verify(eventHandler).trigger(
-                    "updateShield",
-                    50,
-                    100);
-        }
+      factory
+          .when(() -> StatusEffectsFactory.createRegeneration(combatStatsComponent))
+          .thenReturn(damageableEffect);
+
+      StatusEffectsControllerComponent controller = createController();
+
+      controller.addStatusEffect(1, 'b');
+      controller.addStatusEffect(1, 'r');
+
+      controller.damage(damage);
+
+      verify(damageable).damage(damage);
+      verifyNoInteractions(normalEffect);
     }
-
-    @Test
-    void activateTimedCreatesShield() {
-        Shield shield = mock(Shield.class);
-
-        try (MockedStatic<StatusEffectsFactory> factory =
-                     mockStatic(StatusEffectsFactory.class)) {
-
-            factory.when(StatusEffectsFactory::createShield)
-                    .thenReturn(shield);
-
-            when(shield.getCurrent()).thenReturn(25);
-            when(shield.getMax()).thenReturn(100);
-
-            StatusEffectsControllerComponent controller =
-                    createController();
-
-            controller.activateTimed();
-
-            verify(shield).activateTimed();
-
-            verify(eventHandler).trigger(
-                    "updateShield",
-                    25,
-                    100);
-        }
-    }
-
-    @Test
-    void shieldIsOnlyCreatedOnce() {
-        Shield shield = mock(Shield.class);
-
-        try (MockedStatic<StatusEffectsFactory> factory =
-                     mockStatic(StatusEffectsFactory.class)) {
-
-            factory.when(StatusEffectsFactory::createShield)
-                    .thenReturn(shield);
-
-            when(shield.getCurrent()).thenReturn(50);
-            when(shield.getMax()).thenReturn(100);
-
-            StatusEffectsControllerComponent controller =
-                    createController();
-
-            controller.activateAbsorb();
-            controller.activateTimed();
-
-            factory.verify(
-                    StatusEffectsFactory::createShield,
-                    times(1));
-
-            verify(shield).activateAbsorb();
-            verify(shield).activateTimed();
-        }
-    }
-
-
-    @Test
-    void modifyIncomingDamageUsesShield() {
-        Shield shield = mock(Shield.class);
-
-        try (MockedStatic<StatusEffectsFactory> factory =
-                     mockStatic(StatusEffectsFactory.class)) {
-
-            factory.when(StatusEffectsFactory::createShield)
-                    .thenReturn(shield);
-
-            when(shield.getCurrent()).thenReturn(30);
-            when(shield.getMax()).thenReturn(100);
-            when(shield.modifyIncomingDamage(80))
-                    .thenReturn(50);
-
-            StatusEffectsControllerComponent controller =
-                    createController();
-
-            controller.activateAbsorb();
-
-            clearInvocations(eventHandler);
-
-            int result =
-                    controller.modifyIncomingDamage(80);
-
-            assertEquals(50, result);
-
-            verify(shield).modifyIncomingDamage(80);
-
-            verify(eventHandler).trigger(
-                    "updateShield",
-                    30,
-                    100);
-        }
-    }
-
-    // ---------------------------------------------------------
-    // update()
-    // ---------------------------------------------------------
-
-    @Test
-    void updateCallsUpdateOnAllStatusEffects() {
-        StatusEffect effect = mock(StatusEffect.class);
-
-        try (MockedStatic<StatusEffectsFactory> factory =
-                     mockStatic(StatusEffectsFactory.class)) {
-
-            factory.when(
-                            () -> StatusEffectsFactory.createBurn(combatStatsComponent))
-                    .thenReturn(effect);
-
-            StatusEffectsControllerComponent controller =
-                    createController();
-
-            controller.addStatusEffect(3, 'b');
-
-            controller.update();
-
-            verify(effect, times(3)).update();
-        }
-    }
-
-    @Test
-    void updateRemovesStatusEffectsThatReturnTrue() {
-        StatusEffect removedEffect = mock(StatusEffect.class);
-        StatusEffect remainingEffect = mock(StatusEffect.class);
-
-        when(removedEffect.update()).thenReturn(true);
-        when(remainingEffect.update()).thenReturn(false);
-
-        try (MockedStatic<StatusEffectsFactory> factory =
-                     mockStatic(StatusEffectsFactory.class)) {
-
-            factory.when(
-                            () -> StatusEffectsFactory.createBurn(combatStatsComponent))
-                    .thenReturn(removedEffect);
-
-            factory.when(
-                            () -> StatusEffectsFactory.createRegeneration(combatStatsComponent))
-                    .thenReturn(remainingEffect);
-
-            StatusEffectsControllerComponent controller =
-                    createController();
-
-            controller.addStatusEffect(1, 'b');
-            controller.addStatusEffect(1, 'r');
-
-            controller.update();
-
-            /*
-             * Call update a second time.
-             *
-             * If removedEffect was successfully removed,
-             * it should not receive another update.
-             */
-            controller.update();
-
-            verify(removedEffect, times(1)).update();
-            verify(remainingEffect, times(2)).update();
-        }
-    }
-
-    @Test
-    void updateTriggersShieldUiWhenShieldExists() {
-        Shield shield = mock(Shield.class);
-
-        try (MockedStatic<StatusEffectsFactory> factory =
-                     mockStatic(StatusEffectsFactory.class)) {
-
-            factory.when(StatusEffectsFactory::createShield)
-                    .thenReturn(shield);
-
-            when(shield.getCurrent()).thenReturn(40);
-            when(shield.getMax()).thenReturn(100);
-
-            StatusEffectsControllerComponent controller =
-                    createController();
-
-            controller.activateAbsorb();
-
-            clearInvocations(eventHandler);
-
-            controller.update();
-
-            verify(eventHandler).trigger(
-                    "updateShield",
-                    40,
-                    100);
-        }
-    }
-
-    // ---------------------------------------------------------
-    // damage()
-    // ---------------------------------------------------------
-
-    @Test
-    void damageOnlyDamagesDamageableEffects() {
-        StatusEffect normalEffect = mock(StatusEffect.class);
-
-        StatusEffect damageableEffect =
-                mock(StatusEffect.class, withSettings().extraInterfaces(Damageable.class));
-
-        Damageable damageable = (Damageable) damageableEffect;
-
-        Damage damage = mock(Damage.class);
-
-        when(damageable.damage(damage)).thenReturn(false);
-
-        try (MockedStatic<StatusEffectsFactory> factory =
-                     mockStatic(StatusEffectsFactory.class)) {
-
-            factory.when(
-                            () -> StatusEffectsFactory.createBurn(combatStatsComponent))
-                    .thenReturn(normalEffect);
-
-            factory.when(
-                            () -> StatusEffectsFactory.createRegeneration(combatStatsComponent))
-                    .thenReturn(damageableEffect);
-
-            StatusEffectsControllerComponent controller =
-                    createController();
-
-            controller.addStatusEffect(1, 'b');
-            controller.addStatusEffect(1, 'r');
-
-            controller.damage(damage);
-
-            verify(damageable).damage(damage);
-            verifyNoInteractions(normalEffect);
-        }
-    }
+  }
 }
