@@ -4,8 +4,8 @@ import com.csse3200.game.components.Damage;
 import com.csse3200.game.services.GameTime;
 
 public class Vulnerable implements StatusEffect, Damageable {
-  private long duration;
-  private long vulnerableInit;
+  private final long duration;
+  private final long vulnerableInit;
 
   private final GameTime time = new GameTime();
 
@@ -24,10 +24,7 @@ public class Vulnerable implements StatusEffect, Damageable {
 
   @Override
   public boolean update() {
-    if (time.getTimeSince(vulnerableInit) >= duration) {
-      return true;
-    }
-    return false;
+      return time.getTimeSince(vulnerableInit) >= duration;
   }
 
   @Override

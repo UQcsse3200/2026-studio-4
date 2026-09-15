@@ -25,7 +25,7 @@ public class Slow implements StatusEffect {
     this.combatStats = combatStats;
     slowInit = time.getTime();
     this.amount = amount;
-    if (!((combatStats.getMovementSpeed() + amount) < 0)) {
+    if (0 < (combatStats.getMovementSpeed() + amount)) {
       combatStats.addMovementSpeed(amount);
       success = true;
     } else {

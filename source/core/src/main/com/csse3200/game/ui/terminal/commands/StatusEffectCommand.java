@@ -1,7 +1,6 @@
 package com.csse3200.game.ui.terminal.commands;
 
 import com.csse3200.game.components.StatusEffectsControllerComponent;
-import com.csse3200.game.components.statuseffects.*;
 import com.csse3200.game.entities.Entity;
 import java.util.ArrayList;
 import java.util.Map;

@@ -4,20 +4,20 @@ import com.csse3200.game.entities.Entity;
 
 // Damage class for the game. Handles passing damage relevant values between systems.
 public class Damage {
-  private int damage;
+  private int damageValue;
   private final Entity attacker;
 
   public Damage(int damage, Entity attacker) {
-    this.damage = damage;
+    this.damageValue = damage;
     this.attacker = attacker;
   }
 
   public int getDamage() {
-    return damage;
+    return damageValue;
   }
 
   public void setDamage(int damage) {
-    this.damage = damage;
+    this.damageValue = damage;
   }
 
   public Entity getAttacker() {
