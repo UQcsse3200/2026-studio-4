@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -187,5 +188,89 @@ class BowWeaponComponentTest {
     bow.attack(new Vector2(0.5f, 0.5f), new Vector2(1f, 0f));
 
     verify(entityService, never()).register(any());
+  }
+
+  @Test
+  void shouldFireThreeArrowsWhenUpgraded() {
+    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+    BowWeaponComponent bow = new BowWeaponComponent();
+    Entity wielder =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new WeaponStatsComponent(0.5f, 0.8f, 0f))
+            .addComponent(upgrades)
+            .addComponent(bow);
+    wielder.create();
+    upgrades.setUpgraded(BowWeaponComponent.class, true);
+
+    assertTrue(bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+
+    ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService, times(3)).register(captor.capture());
+    List<Entity> arrows = captor.getAllValues();
+    assertEquals(3, arrows.size());
+
+    // Every arrow deals full (unscaled) hitbox damage: round(10 * 0.8) = 8.
+    for (Entity arrow : arrows) {
+      assertEquals(8, arrow.getComponent(CombatStatsComponent.class).getBaseAttack());
+      assertNull(arrow.getComponent(FollowComponent.class));
+    }
+
+    // Centre arrow spawns on the aim line (y == 0); the two side arrows are offset above and
+    // below it by the spread angle, so all three y-positions should be distinct.
+    List<Float> yPositions = arrows.stream().map(a -> a.getPosition().y).toList();
+    long centreCount = yPositions.stream().filter(y -> Math.abs(y) < 0.01f).count();
+    assertEquals(1, centreCount);
+    assertTrue(yPositions.stream().anyMatch(y -> y > 0.01f));
+    assertTrue(yPositions.stream().anyMatch(y -> y < -0.01f));
+  }
+
+  @Test
+  void shouldFireOneArrowWhenUpgradeReverted() {
+    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+    BowWeaponComponent bow = new BowWeaponComponent();
+    Entity wielder =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new WeaponStatsComponent(0.5f, 0.8f, 0f))
+            .addComponent(upgrades)
+            .addComponent(bow);
+    wielder.create();
+    upgrades.setUpgraded(BowWeaponComponent.class, true);
+    upgrades.setUpgraded(BowWeaponComponent.class, false);
+
+    assertTrue(bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+
+    // Reverted upgrade behaves exactly like the Sprint 1 bow: a single arrow.
+    verify(entityService, times(1)).register(any());
+  }
+
+  @Test
+  void shouldFireOnlySideArrowsWhenCentreSpawnBlocked() {
+    // Small wall centred on the straight-line spawn point only. The two side arrows, spread by
+    // the upgrade's +-15 degree angle, clear this wall's y-span well above and below it.
+    Entity wall =
+        new Entity()
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+    wall.setScale(0.2f, 0.1f);
+    wall.setPosition(0.4f, -0.05f);
+    wall.create();
+
+    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+    BowWeaponComponent bow = new BowWeaponComponent();
+    Entity wielder =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new WeaponStatsComponent(0.5f, 1f, 0f))
+            .addComponent(upgrades)
+            .addComponent(bow);
+    wielder.create();
+    upgrades.setUpgraded(BowWeaponComponent.class, true);
+
+    bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f));
+
+    // Centre arrow is blocked; the two side arrows still fire independently.
+    verify(entityService, times(2)).register(any());
   }
 }

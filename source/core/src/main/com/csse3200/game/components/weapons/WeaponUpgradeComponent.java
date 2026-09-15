@@ -30,6 +30,13 @@ public class WeaponUpgradeComponent extends Component {
    */
   static final WeaponUpgradeStats KNIFE_UPGRADE = new WeaponUpgradeStats(1.2f, 0.6f, 3f);
 
+  /**
+   * Bow: no damage or cooldown change. The splitting-arrow upgrade instead changes the light
+   * attack itself &mdash; one attack fires three arrows instead of one, each at full damage &mdash;
+   * so no heavy attack or multiplier is needed here. See {@link BowWeaponComponent}.
+   */
+  static final WeaponUpgradeStats BOW_UPGRADE = new WeaponUpgradeStats(1f, 1f, 1f);
+
   private final Map<Class<? extends WeaponComponent>, WeaponUpgradeStats> stats;
   private final Set<Class<? extends WeaponComponent>> upgraded = new HashSet<>();
 
@@ -37,7 +44,9 @@ public class WeaponUpgradeComponent extends Component {
   public WeaponUpgradeComponent() {
     this(
         Map.of(
-            SwordWeaponComponent.class, SWORD_UPGRADE, KnifeWeaponComponent.class, KNIFE_UPGRADE));
+            SwordWeaponComponent.class, SWORD_UPGRADE,
+            KnifeWeaponComponent.class, KNIFE_UPGRADE,
+            BowWeaponComponent.class, BOW_UPGRADE));
   }
 
   /**

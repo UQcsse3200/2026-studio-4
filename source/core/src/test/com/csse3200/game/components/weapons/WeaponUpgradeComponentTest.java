@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -57,9 +58,38 @@ class WeaponUpgradeComponentTest {
 
   @Test
   void shouldRejectWeaponWithoutUpgradeStats() {
+    // Explicit map with only the sword defined, so the knife has no upgrade stats here.
+    WeaponUpgradeComponent upgrades =
+        new WeaponUpgradeComponent(Map.of(SwordWeaponComponent.class, upgradesStats()));
+
+    assertFalse(upgrades.setUpgraded(KnifeWeaponComponent.class, true));
+    assertFalse(upgrades.isUpgraded(KnifeWeaponComponent.class));
+  }
+
+  private static WeaponUpgradeStats upgradesStats() {
+    return new WeaponUpgradeStats(1.2f, 1.35f, 2f);
+  }
+
+  @Test
+  void shouldApplyBowUpgrade() {
     WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
 
-    assertFalse(upgrades.setUpgraded(BowWeaponComponent.class, true));
+    assertTrue(upgrades.setUpgraded(BowWeaponComponent.class, true));
+
+    assertTrue(upgrades.isUpgraded(BowWeaponComponent.class));
+    // Bow's upgrade is structural (arrow count), not a damage or cooldown scale.
+    assertEquals(1f, upgrades.getLightDamageMultiplier(BowWeaponComponent.class));
+    assertEquals(1f, upgrades.getHeavyDamageMultiplier(BowWeaponComponent.class));
+    assertEquals(1f, upgrades.getHeavyCooldownMultiplier(BowWeaponComponent.class));
+  }
+
+  @Test
+  void shouldRevertBowUpgrade() {
+    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+    upgrades.setUpgraded(BowWeaponComponent.class, true);
+
+    assertTrue(upgrades.setUpgraded(BowWeaponComponent.class, false));
+
     assertFalse(upgrades.isUpgraded(BowWeaponComponent.class));
   }
 
