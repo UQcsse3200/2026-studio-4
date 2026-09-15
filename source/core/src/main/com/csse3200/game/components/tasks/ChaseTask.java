@@ -13,7 +13,7 @@ import com.csse3200.game.services.ServiceLocator;
 /** Chases a target entity until they get too far away or line of sight is lost */
 public class ChaseTask extends DefaultTask implements PriorityTask {
   private final Entity target;
-  private final int priority;
+  private int priority;
   private final float viewDistance;
   private final float maxChaseDistance;
   private final PhysicsEngine physics;
@@ -68,6 +68,11 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
     }
 
     return getInactivePriority();
+  }
+
+  @Override
+  public void setPriority(int status) {
+    this.priority = status;
   }
 
   private float getDistanceToTarget() {

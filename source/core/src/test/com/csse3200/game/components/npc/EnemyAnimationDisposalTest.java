@@ -47,7 +47,7 @@ class EnemyAnimationDisposalTest {
   @Test
   void shouldScheduleFloatingDemonDisposal() {
     AnimationRenderComponent animator = finishedAnimator();
-    FloatingDemonAnimationController controller = new FloatingDemonAnimationController();
+    EnemyAnimationController controller = new EnemyAnimationController();
     Entity demon =
         new Entity()
             .addComponent(animator)
@@ -56,7 +56,7 @@ class EnemyAnimationDisposalTest {
             .addComponent(controller);
     demon.create();
 
-    demon.getEvents().trigger("dieAnimation");
+    demon.getEvents().trigger("flyingDeath");
     controller.update();
 
     verify(entityService).scheduleDisposal(demon);

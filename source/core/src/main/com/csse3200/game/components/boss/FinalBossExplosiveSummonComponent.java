@@ -78,7 +78,9 @@ public class FinalBossExplosiveSummonComponent extends Component {
       return;
     }
 
-    movement.setTarget(target.getPosition());
+    if (entity.getComponent(FinalBossSummonMovementComponent.class) == null) {
+      movement.setTarget(target.getPosition());
+    }
 
     if (!warningActive
         && entity.getCenterPosition().dst(target.getCenterPosition()) <= triggerDistance) {
@@ -158,6 +160,10 @@ public class FinalBossExplosiveSummonComponent extends Component {
 
   public float getMovementSpeed() {
     return movementSpeed;
+  }
+
+  public float getTriggerDistance() {
+    return triggerDistance;
   }
 
   public int getExplosionDamage() {

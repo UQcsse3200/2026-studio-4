@@ -62,6 +62,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.NUM_9:
         entity.getEvents().trigger("shieldTimed");
         return true;
+      case Keys.I:
+        entity.getComponent(InventoryComponent.class).toggleDisplay();
+        return true;
       default:
         return false;
     }

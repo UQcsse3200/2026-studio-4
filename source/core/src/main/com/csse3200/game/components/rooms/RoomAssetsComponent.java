@@ -2,6 +2,7 @@ package com.csse3200.game.components.rooms;
 
 import com.badlogic.gdx.audio.Music;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.boss.FinalBossVisualAssets;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -19,12 +20,22 @@ public class RoomAssetsComponent extends Component {
   private static final String[] MUSIC = {BACKGROUND_MUSIC};
   private static final String[] SOUNDS = {IMPACT_SOUND};
   private static final String[] TEXTURE_ATLASES = {
-    "images/bombEnemy.atlas", "images/chaseEnemy.atlas", "images/floatingDemon.atlas"
+    "images/bombEnemy.atlas",
+    "images/beetle.atlas",
+    "images/medusa.atlas",
+    "images/mummy.atlas",
+    "images/crab.atlas",
+    "images/golem.atlas",
+    "images/cyclops.atlas",
+    "images/floatingDemon.atlas",
+    "images/harpy.atlas",
+    "images/cerberus.atlas"
   };
 
   public RoomAssetsComponent() {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(TEXTURES);
+    resourceService.loadTextures(FinalBossVisualAssets.paths());
     resourceService.loadTextureAtlases(TEXTURE_ATLASES);
     resourceService.loadMusic(MUSIC);
     resourceService.loadSounds(SOUNDS);
@@ -44,6 +55,7 @@ public class RoomAssetsComponent extends Component {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.getAsset(BACKGROUND_MUSIC, Music.class).stop();
     resourceService.unloadAssets(TEXTURES);
+    resourceService.unloadAssets(FinalBossVisualAssets.paths());
     resourceService.unloadAssets(TEXTURE_ATLASES);
     resourceService.unloadAssets(MUSIC);
     resourceService.unloadAssets(SOUNDS);

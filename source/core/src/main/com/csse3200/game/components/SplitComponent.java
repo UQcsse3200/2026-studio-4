@@ -45,13 +45,12 @@ public class SplitComponent extends Component {
     }
     int halfHealth = Math.max(1, stats.getMaxHealth() / 2);
     int halfAttack = Math.max(1, stats.getBaseAttack() / 2);
-    // Hit reactions fire from collisions while the physics world is locked. A locked world can
-    // neither create the children's bodies nor destroy the original's, so both are deferred.
+
     ServiceLocator.getEntityService()
         .schedule(
             () -> {
-              spawnChild(-0.8f, halfHealth, halfAttack);
-              spawnChild(0.8f, halfHealth, halfAttack);
+              spawnChild(-2f, halfHealth, halfAttack);
+              spawnChild(2f, halfHealth, halfAttack);
             });
     ServiceLocator.getEntityService().scheduleDisposal(entity);
     hasSplit = true;
@@ -66,8 +65,9 @@ public class SplitComponent extends Component {
    */
   private void spawnChild(float xOffset, int health, int attack) {
     Entity child = NPCFactory.createChaseEnemy(target, false, this.skin);
-    child.scaleWidth(child.getScale().x / 1.2f);
-    child.scaleHeight(child.getScale().y / 1.2f);
+    child.scaleWidth(getEntity().getScale().x / 1.2f);
+    child.scaleHeight(getEntity().getScale().y / 1.2f);
+    child.setScale(entity.getScale().x / 2, entity.getScale().y / 2);
 
     CombatStatsComponent childStats = child.getComponent(CombatStatsComponent.class);
     if (childStats != null) {

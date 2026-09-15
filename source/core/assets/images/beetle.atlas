@@ -1,4 +1,4 @@
-chaseEnemy.png
+beetle.png
 size: 96, 96
 format: RGBA8888
 filter: Nearest,Nearest
@@ -59,10 +59,17 @@ dieAnimation
   orig: 32, 32
   offset: 0, 0
   index: 5
-mini
+fuse
+   rotate: false
+   xy: 0, 0
+   size: 32, 32
+   orig: 32, 32
+   offset: 0, 0
+   index: 0
+fuse
   rotate: false
-  xy: 64, 64
+  xy: 128, 128
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 6
+  index: 1
