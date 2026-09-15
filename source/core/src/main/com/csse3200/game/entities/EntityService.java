@@ -136,8 +136,4 @@ public class EntityService {
       entity.dispose();
     }
   }
-
-  public Array<Entity> getEntities() {
-    return entities;
-  }
 }
