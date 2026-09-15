@@ -1,8 +1,8 @@
 package com.csse3200.game.components;
 
+import com.badlogic.gdx.graphics.Color;
 import com.csse3200.game.components.statuseffects.Damageable;
 import com.csse3200.game.components.statuseffects.Shield;
-import com.badlogic.gdx.graphics.Color;
 import com.csse3200.game.components.statuseffects.Stat;
 import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
@@ -267,8 +267,10 @@ public class StatusEffectsControllerComponent extends Component {
         removed.add(effect);
       }
     }
-    for (StatusEffect effect : removed) {
-      statusEffects.remove(effect);
+    if (removed != null) {
+      for (StatusEffect effect : removed) {
+        statusEffects.remove(effect);
+      }
     }
     triggerShieldUi();
   }
@@ -289,9 +291,9 @@ public class StatusEffectsControllerComponent extends Component {
 
     for (StatusEffect effect : removal) {
       statusEffects.remove(effect);
-        notifyRemoved(removal);
+      notifyRemoved(removal);
     }
-    }
+  }
 
   /**
    * Runs the removal callback of every effect that has just come off this entity.
