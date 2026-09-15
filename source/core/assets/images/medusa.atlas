@@ -33,7 +33,7 @@ move
     index: 2
 move
     rotate: false
-    xy: 364, 0
+    xy: 384, 0
     size: 128, 128
     orig: 128, 128
     offset: 0, 0

@@ -67,6 +67,7 @@ public class SplitComponent extends Component {
     Entity child = NPCFactory.createChaseEnemy(target, false, this.skin);
     child.scaleWidth(getEntity().getScale().x / 1.2f);
     child.scaleHeight(getEntity().getScale().y / 1.2f);
+    child.setScale(entity.getScale().x / 2, entity.getScale().y / 2);
 
     CombatStatsComponent childStats = child.getComponent(CombatStatsComponent.class);
     if (childStats != null) {

@@ -62,14 +62,14 @@ public class NPCFactory {
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     giantEnemy
-        .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
         .addComponent(aiComponent)
         .addComponent(new EnemyDeathComponent(true))
         .addComponent(animator)
         .addComponent(new EnemyAnimationController());
     giantEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
-    giantEnemy.setScale(2, 2);
+    giantEnemy.setScale(3f, 3f);
 
     giantEnemy.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(0.5f, 0.5f));
 
@@ -94,7 +94,7 @@ public class NPCFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
-    animator.addAnimation("move", 0.7f, Animation.PlayMode.LOOP);
+    animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
@@ -129,13 +129,13 @@ public class NPCFactory {
         new AITaskComponent(target)
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new ChaseTask(target, 10, 3f, 10f))
-            .addTask(new LungeAttackTask(target, 20, CHASE_SPEED));
+            .addTask(new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
 
@@ -144,7 +144,7 @@ public class NPCFactory {
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
         .addComponent(aiComponent)
         .addComponent(animator)
-        .addComponent(new EnemyDeathComponent(true))
+        .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(new EnemyAnimationController());
     if (shouldSplit) {
       chaseEnemy.addComponent(new SplitComponent(target, skin));
@@ -154,8 +154,9 @@ public class NPCFactory {
     animator.startAnimation(DEFAULT_ANIMATION);
 
     chaseEnemy
-        .getComponent(PhysicsMovementComponent.class)
-        .setMaxSpeed(new Vector2(CHASE_SPEED, CHASE_SPEED));
+        .getComponent(PhysicsComponent.class)
+        .getBody()
+        .setLinearVelocity(CHASE_SPEED, CHASE_SPEED);
 
     return chaseEnemy;
   }
@@ -208,7 +209,7 @@ public class NPCFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
 
-    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);

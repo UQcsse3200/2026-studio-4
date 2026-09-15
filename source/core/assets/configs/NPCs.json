@@ -1,6 +1,6 @@
 {
   "giantEnemy" : {
-    "health": 20,
+    "health": 30,
     "baseAttack": 3
   },
   "bombEnemy" : {

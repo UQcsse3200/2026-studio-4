@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.services.ServiceLocator;
 
 public class CameraComponent extends Component {
   private final Camera camera;
@@ -16,6 +17,12 @@ public class CameraComponent extends Component {
   public CameraComponent(Camera camera) {
     this.camera = camera;
     lastPosition = Vector2.Zero.cpy();
+  }
+
+  @Override
+  public void create() {
+    super.create();
+    ServiceLocator.registerWorldCamera(camera);
   }
 
   @Override

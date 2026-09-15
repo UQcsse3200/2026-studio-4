@@ -13,6 +13,7 @@ import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.items.WeaponItem;
+import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -56,15 +57,35 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
     switch (spawn.type) {
-      case GIANT:
-        return NPCFactory.createGiantEnemy(target, "images/bombEnemy.atlas");
-      case BOMB:
-        return NPCFactory.createBombEnemy(target, "images/bombEnemy.atlas", 2f);
+      // Egyptian
       case BEETLE:
-        return NPCFactory.createChaseEnemy(target, true, "images/chaseEnemy.atlas");
+        return NPCFactory.createBombEnemy(target, "images/beetle.atlas", 2f);
+      case CRAB:
+        Entity crab = NPCFactory.createChaseEnemy(target, true, "images/crab.atlas");
+        crab.setScale(1.5f, 1.5f);
+        crab.getComponent(HitboxComponent.class)
+            .setAsBox(
+                new Vector2(1f, 0.5f),
+                new Vector2(crab.getCenterPosition().x, crab.getCenterPosition().y / 2));
+        return crab;
+      case MUMMY:
+        Entity mummy = NPCFactory.createGiantEnemy(target, "images/mummy.atlas");
+        mummy.getComponent(HitboxComponent.class).setAsBox(new Vector2(1f, 1.5f));
+        return mummy;
+      // Greek
+      case GOLEM:
+        Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
+        golem.setScale(1.5F, 1.5F);
+        golem
+            .getComponent(HitboxComponent.class)
+            .setAsBox(
+                new Vector2(1, 1),
+                new Vector2(golem.getCenterPosition().x, golem.getCenterPosition().y / 2));
+        return golem;
       case MEDUSA:
         Entity medusa = NPCFactory.createChaseEnemy(target, true, "images/medusa.atlas");
-        medusa.setScale(2, 2);
+        medusa.setScale(1.5f, 1.5f);
+        medusa.getComponent(HitboxComponent.class).setAsBox(new Vector2(1, 1));
         return medusa;
       case HARPY:
         TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
@@ -73,11 +94,19 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
         return NPCFactory.createFloatingDemon(
             target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/harpy.atlas");
+      case CYCLOPS:
+        Entity cyclops = NPCFactory.createGiantEnemy(target, "images/cyclops.atlas");
+        cyclops
+            .getComponent(HitboxComponent.class)
+            .setAsBox(
+                new Vector2(1f, 1.5f),
+                new Vector2(cyclops.getCenterPosition().x, cyclops.getCenterPosition().y / 2));
+        return cyclops;
       case CERBERUS:
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
         return CerberusFactory.createCerberus(
-            anchorPoint, this::spawnEntity, "images/cerberus.atlas");
+            target, anchorPoint, this::spawnAndTrackCerberusHead, "images/cerberus.atlas");
       case BOW:
         return ItemFactory.createItem(WeaponItem.createWeaponItem(WeaponItem.WeaponType.BOW));
       case FINAL_BOSS:
@@ -92,8 +121,15 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   /** Tracks an enemy and any children it spawns. Package-private for testing. */
+  private void spawnAndTrackCerberusHead(Entity head) {
+    track(head);
+    spawnEntity(head);
+  }
+
+  /** Tracks an enemy and any children it spawns. Package-private for testing. */
   void track(Entity enemy) {
     activeEnemies.add(enemy);
+    enemy.getEvents().<Entity>addListener("cerberusProjectileSpawned", this::spawnEntity);
     enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy));
     enemy
         .getEvents()
