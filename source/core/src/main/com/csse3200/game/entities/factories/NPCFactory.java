@@ -233,17 +233,6 @@ public class NPCFactory {
   }
 
   /**
-   * Creates a generic base entity for Mini Bosses.
-   *
-   * @return entity
-   */
-  public static Entity createBaseMiniBoss() {
-    Entity miniBoss = createBaseNPC();
-    miniBoss.addComponent(new BossPhaseComponent());
-    return miniBoss;
-  }
-
-  /**
    * Creates a generic NPC to be used as a base entity by more specific NPC creation methods.
    *
    * @return entity
