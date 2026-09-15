@@ -15,6 +15,8 @@ import com.csse3200.game.components.weapons.KnifeWeaponComponent;
 import com.csse3200.game.components.weapons.SwordWeaponComponent;
 import com.csse3200.game.components.weapons.WeaponAssetsComponent;
 import com.csse3200.game.components.weapons.WeaponStatsComponent;
+import com.csse3200.game.components.weapons.WeaponSwitchComponent;
+import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
 import com.csse3200.game.files.FileLoader;
@@ -83,12 +85,16 @@ public class PlayerFactory {
             // therefore scale weapon hits too.
             .addComponent(new WeaponAssetsComponent())
             .addComponent(new WeaponStatsComponent(0.5f, 1f, 2f))
+            // Tracks which weapons are upgraded; the "upgrade" terminal command grants them.
+            .addComponent(new WeaponUpgradeComponent())
+            // Cycles the equipped weapon on the L key.
+            .addComponent(new WeaponSwitchComponent())
             .addComponent(new SwordWeaponComponent())
             .addComponent(new KnifeWeaponComponent())
             .addComponent(new StatusEffectsControllerComponent())
             .addComponent(new BowWeaponComponent());
 
-    // Sword is equipped by default; the "weapon" terminal command switches at runtime.
+    // Sword is equipped by default; the L key and the "weapon" terminal command switch at runtime.
     player.getComponent(KnifeWeaponComponent.class).setEnabled(false);
     player.getComponent(BowWeaponComponent.class).setEnabled(false);
 

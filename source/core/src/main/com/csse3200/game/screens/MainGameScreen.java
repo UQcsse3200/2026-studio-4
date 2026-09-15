@@ -31,6 +31,7 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.ui.terminal.commands.AbilityCommand;
+import com.csse3200.game.ui.terminal.commands.UpgradeCommand;
 import com.csse3200.game.ui.terminal.commands.WeaponCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,6 +163,7 @@ public class MainGameScreen extends ScreenAdapter {
     // constructor) must end up on the same Terminal instance that is attached to the UI below.
     terminal.addCommand("weapon", new WeaponCommand(player));
     terminal.addCommand("ability", new AbilityCommand(player));
+    terminal.addCommand("upgrade", new UpgradeCommand(player));
 
     InventoryDisplay inventoryDisplay = new InventoryDisplay();
     InventoryActions inventoryActions = new InventoryActions(inventoryDisplay);
