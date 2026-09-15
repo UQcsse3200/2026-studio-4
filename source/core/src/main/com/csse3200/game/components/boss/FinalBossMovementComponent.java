@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageOneConfig;
 import com.csse3200.game.entities.configs.FinalBossStageTwoConfig;
@@ -132,6 +133,13 @@ public class FinalBossMovementComponent extends Component {
     keepInsideVisibleArea();
 
     if (mode == Mode.STOPPED) {
+      movement.setMoving(false);
+      return;
+    }
+
+    // Both remaining modes steer by the player, so a concealed player leaves the boss nothing to
+    // steer by and it holds position until they reappear.
+    if (StatusEffectsControllerComponent.isConcealed(target)) {
       movement.setMoving(false);
       return;
     }
