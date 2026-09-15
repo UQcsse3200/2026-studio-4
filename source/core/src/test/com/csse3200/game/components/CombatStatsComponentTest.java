@@ -529,4 +529,16 @@ class CombatStatsComponentTest {
 
     assertThrows(IllegalArgumentException.class, () -> combat.setMinimumHealth(101));
   }
+
+  @Test
+  void shouldScaleStats() {
+    CombatStatsComponent stats = new CombatStatsComponent(100, 100);
+    stats.setAttackScaleFactor(1f);
+    stats.setHealthScaleFactor(1f);
+    stats.scale(1);
+
+    assertEquals(200, stats.getBaseAttack());
+    assertEquals(200, stats.getMaxHealth());
+    assertTrue(stats.getMaxHealth() == stats.getHealth());
+  }
 }

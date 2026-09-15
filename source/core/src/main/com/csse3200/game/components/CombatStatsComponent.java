@@ -48,6 +48,7 @@ public class CombatStatsComponent extends Component {
    */
   public void scale(int amount) {
     maxHealth += scaleStat(maxHealth, healthScaleFactor, amount);
+    setHealth(maxHealth);
     baseAttack += scaleStat(baseAttack, attackScaleFactor, amount);
   }
 
@@ -460,5 +461,13 @@ public class CombatStatsComponent extends Component {
     if (entity != null) {
       entity.getEvents().trigger("damageBlocked");
     }
+  }
+
+  public void setAttackScaleFactor(float attackScaleFactor) {
+    this.attackScaleFactor = attackScaleFactor;
+  }
+
+  public void setHealthScaleFactor(float healthScaleFactor) {
+    this.healthScaleFactor = healthScaleFactor;
   }
 }
