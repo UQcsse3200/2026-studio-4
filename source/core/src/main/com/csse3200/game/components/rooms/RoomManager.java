@@ -213,7 +213,7 @@ public class RoomManager {
       display.showStatus(message);
     }
   }
-  
+
   /** Package private setter for unit testing */
   void setCurrentRoom(Entity room) {
     this.currentRoom = room;

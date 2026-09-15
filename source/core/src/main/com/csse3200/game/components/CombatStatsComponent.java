@@ -353,10 +353,10 @@ public class CombatStatsComponent extends Component {
   }
 
   public void setAttackScaleFactor(float attackScaleFactor) {
-	this.attackScaleFactor = attackScaleFactor;
+    this.attackScaleFactor = attackScaleFactor;
   }
 
   public void setHealthScaleFactor(float healthScaleFactor) {
-	this.healthScaleFactor = healthScaleFactor;
+    this.healthScaleFactor = healthScaleFactor;
   }
 }
