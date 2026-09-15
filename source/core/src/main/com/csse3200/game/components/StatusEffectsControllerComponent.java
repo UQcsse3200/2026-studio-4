@@ -1,6 +1,8 @@
 package com.csse3200.game.components;
 
 import com.badlogic.gdx.graphics.Color;
+import com.csse3200.game.components.statuseffects.Damageable;
+import com.csse3200.game.components.statuseffects.Shield;
 import com.csse3200.game.components.statuseffects.Stat;
 import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
@@ -24,6 +26,7 @@ public class StatusEffectsControllerComponent extends Component {
   private CombatStatsComponent combatStatsComponent;
 
   private final ArrayList<StatusEffect> statusEffects = new ArrayList<>();
+  private Shield shield;
   private boolean disposed;
 
   /**
@@ -120,6 +123,8 @@ public class StatusEffectsControllerComponent extends Component {
       throw new IllegalStateException(
           "StatusEffectsController requires CombatStatsComponent on the same entity.");
     }
+    entity.getEvents().addListener("shieldAbsorb", this::activateAbsorb);
+    entity.getEvents().addListener("shieldTimed", this::activateTimed);
     entity.getEvents().addListener("entityDied", this::clearStatusEffects);
   }
 
@@ -161,6 +166,24 @@ public class StatusEffectsControllerComponent extends Component {
           addStatusEffect(StatusEffectsFactory.createRegeneration(combatStatsComponent));
         }
         break;
+      case 's':
+        for (int i = 0; i < stacks; i++) {
+          addStatusEffect(StatusEffectsFactory.createSlow(combatStatsComponent));
+        }
+        break;
+      case 'S':
+        for (int i = 0; i < stacks; i++) {
+          addStatusEffect(StatusEffectsFactory.createSpeed(combatStatsComponent));
+        }
+        break;
+      case 'v':
+        for (int i = 0; i < stacks; i++) {
+          addStatusEffect(StatusEffectsFactory.createVulnerable());
+        }
+        break;
+      case 'f':
+        addStatusEffect(StatusEffectsFactory.createFreeze(combatStatsComponent));
+        break;
       default:
         throw new IllegalArgumentException(
             "statusEffect must be a valid character representation of a status effect.");
@@ -182,6 +205,44 @@ public class StatusEffectsControllerComponent extends Component {
     List<StatusEffect> removed = new ArrayList<>(statusEffects);
     statusEffects.clear();
     notifyRemoved(removed);
+  }
+
+  /**
+   * Activates the entity's absorb-mode shield in response to the {@code shieldAbsorb} event.
+   *
+   * <p>A shield is created and registered lazily the first time either shield mode is activated.
+   */
+  public void activateAbsorb() {
+    ensureShield();
+    shield.activateAbsorb();
+    triggerShieldUi();
+  }
+
+  /**
+   * Activates the entity's timed shield in response to the {@code shieldTimed} event.
+   *
+   * <p>A shield is created and registered lazily the first time either shield mode is activated.
+   */
+  public void activateTimed() {
+    ensureShield();
+    shield.activateTimed();
+    triggerShieldUi();
+  }
+
+  /**
+   * Passes incoming damage through the entity's shield, if one has been created.
+   *
+   * @param damage the incoming damage amount
+   * @return the damage remaining after shield mitigation
+   */
+  public int modifyIncomingDamage(int damage) {
+    if (shield == null) {
+      return damage;
+    }
+
+    int remainingDamage = shield.modifyIncomingDamage(damage);
+    triggerShieldUi();
+    return remainingDamage;
   }
 
   /**
@@ -209,6 +270,25 @@ public class StatusEffectsControllerComponent extends Component {
     if (removed != null) {
       notifyRemoved(removed);
     }
+    triggerShieldUi();
+  }
+
+  /**
+   * Runs the damage effect of all damageable statuseffects.
+   *
+   * @param damage The damage object to be interacted with.
+   */
+  public void damage(Damage damage) {
+    ArrayList<StatusEffect> removal = new ArrayList<>();
+
+    for (StatusEffect effect : new ArrayList<>(statusEffects)) {
+      if (effect instanceof Damageable damageable && damageable.damage(damage)) {
+        removal.addLast(effect);
+      }
+    }
+
+    statusEffects.removeAll(removal);
+    notifyRemoved(removal);
   }
 
   /**
@@ -235,5 +315,19 @@ public class StatusEffectsControllerComponent extends Component {
   public void dispose() {
     disposed = true;
     clearStatusEffects();
+  }
+
+  private void ensureShield() {
+    if (shield == null) {
+      shield = StatusEffectsFactory.createShield();
+      statusEffects.add(shield);
+    }
+  }
+
+  private void triggerShieldUi() {
+    if (entity == null || shield == null) {
+      return;
+    }
+    entity.getEvents().trigger("updateShield", shield.getCurrent(), shield.getMax());
   }
 }

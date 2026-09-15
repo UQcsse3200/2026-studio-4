@@ -20,6 +20,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   /**
    * Triggers player events on specific keycodes.
    *
+   * <p>The number 0 key requests absorb-mode shield activation and the number 9 key requests timed
+   * shield activation.
+   *
    * @return whether the input was processed
    * @see InputProcessor#keyDown(int)
    */
@@ -55,6 +58,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         // Keep Room navigation and Team 5 item pickup on separate event contracts.
         entity.getEvents().trigger("interact");
         entity.getEvents().trigger("itemPickup");
+        return true;
+      case Keys.NUM_0:
+        entity.getEvents().trigger("shieldAbsorb");
+        return true;
+      case Keys.NUM_9:
+        entity.getEvents().trigger("shieldTimed");
         return true;
       case Keys.I:
         entity.getComponent(InventoryComponent.class).toggleDisplay();
