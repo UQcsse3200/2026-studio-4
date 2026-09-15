@@ -71,6 +71,7 @@ public class SwordWeaponComponent extends WeaponComponent {
             .owner(entity)
             .localOffset(offset)
             .texture(TEXTURE)
+            .visualSource(entity)
             .visualScale(new Vector2(SPRITE_SIZE, SPRITE_SIZE))
             .visualOffset(new Vector2(SPRITE_PULL_IN, 0f))
             .rotation(startAngle)
