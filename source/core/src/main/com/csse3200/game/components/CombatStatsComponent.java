@@ -214,8 +214,9 @@ public class CombatStatsComponent extends Component {
   }
 
   /**
-   * Core method for dealing raw damage directly. Handles health reduction, hit reaction, and death
-   * checks. Compatible with Task 2 ticket spec.
+   * Core method for dealing raw damage directly. Applies status-effect mitigation, including an
+   * active shield, before handling health reduction, hit reaction, and death checks. Compatible
+   * with Task 2 ticket spec.
    *
    * @param damage Amount of damage to deal
    */

@@ -20,6 +20,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   /**
    * Triggers player events on specific keycodes.
    *
+   * <p>The number 0 key requests absorb-mode shield activation and the number 9 key requests timed
+   * shield activation.
+   *
    * @return whether the input was processed
    * @see InputProcessor#keyDown(int)
    */

@@ -18,6 +18,11 @@ public class StatusEffectsFactory {
     return new Burning(1, 1000, 10000, combatStats);
   }
 
+  /**
+   * Creates a rechargeable shield status effect with the default shield configuration.
+   *
+   * @return a new shield status effect
+   */
   public static Shield createShield() {
     return new Shield();
   }
