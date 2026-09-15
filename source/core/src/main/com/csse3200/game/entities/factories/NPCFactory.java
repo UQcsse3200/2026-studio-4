@@ -65,7 +65,7 @@ public class NPCFactory {
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
         .addComponent(aiComponent)
-        .addComponent(new EnemyDeathComponent(true))
+        .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(animator)
         .addComponent(new EnemyAnimationController());
     giantEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
@@ -102,7 +102,7 @@ public class NPCFactory {
     bombEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
         .addComponent(aiComponent)
-        .addComponent(new EnemyDeathComponent(true))
+        .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(animator)
         .addComponent(new ExplodeComponent(target, fuseTime))
         .addComponent(new EnemyAnimationController());

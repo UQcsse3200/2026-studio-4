@@ -21,7 +21,7 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener("wanderStart", this::animateWander);
     entity.getEvents().addListener("chaseStart", this::animateChase);
     entity.getEvents().addListener("dieAnimation", this::animateDie);
-    entity.getEvents().addListener("flyingDeath", this::animateFlyingDeath);
+    entity.getEvents().addListener("enemyDeathAnimation", this::animateEnemyDeath);
     entity.getEvents().addListener("patrolStart", this::animatePatrol);
     entity.getEvents().addListener("rangedAttack", this::animateAttack);
     entity.getEvents().addListener("fuseStarted", this::animateFuse);
@@ -33,7 +33,7 @@ public class EnemyAnimationController extends Component {
     animator.startAnimation("dieAnimation");
   }
 
-  private void animateFlyingDeath() {
+  private void animateEnemyDeath() {
     entity.getComponent(AITaskComponent.class).setEnabled(false);
     entity.getComponent(PhysicsMovementComponent.class).setMoving(false);
     animateDie();
