@@ -3,13 +3,24 @@ package com.csse3200.game.components.weapons;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.player.abilities.Invisibility;
+import com.csse3200.game.components.player.abilities.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -22,6 +33,8 @@ import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,6 +84,85 @@ class SwordWeaponComponentTest {
     ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
     verify(entityService).register(captor.capture());
     return captor.getValue();
+  }
+
+  @Test
+  void shouldRenderSpawnedSwordWithLivePlayerAbilitiesAndExpiry() {
+    PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(gameTime);
+    CombatStatsComponent combat = new CombatStatsComponent(100, 10);
+    SwordWeaponComponent sword = new SwordWeaponComponent();
+    Entity player =
+        new Entity()
+            .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities)
+            .addComponent(new WeaponStatsComponent(0.5f, 0.8f, 2f))
+            .addComponent(sword);
+    player.create();
+    assertTrue(sword.attack(new Vector2(), new Vector2(1f, 0f)));
+    ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService).register(captor.capture());
+    RotatingTextureRenderComponent render =
+        captor.getValue().getComponent(RotatingTextureRenderComponent.class);
+    assertNotNull(render);
+
+    SpriteBatch batch = mock(SpriteBatch.class);
+    Color original = new Color(0.8f, 0.6f, 0.4f, 0.5f);
+    Color color = new Color(original);
+    when(batch.getColor()).thenReturn(color);
+    doAnswer(
+            invocation -> {
+              color.set(
+                  invocation.getArgument(0), invocation.getArgument(1),
+                  invocation.getArgument(2), invocation.getArgument(3));
+              return null;
+            })
+        .when(batch)
+        .setColor(anyFloat(), anyFloat(), anyFloat(), anyFloat());
+    List<Color> drawn = new ArrayList<>();
+    doAnswer(
+            invocation -> {
+              drawn.add(new Color(color));
+              return null;
+            })
+        .when(batch)
+        .draw(
+            any(TextureRegion.class),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat());
+
+    render.render(batch);
+    assertEquals(original, color);
+    // Activate after spawning so a snapshot of the player's appearance cannot pass.
+    abilities.unlock(LastStand.class);
+    combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
+    render.render(batch);
+    assertEquals(original, color);
+    assertTrue(abilities.tryActivate(Invisibility.class));
+    render.render(batch);
+    assertEquals(original, color);
+    // Render directly, without an entity update frame, at each effect's deadline.
+    when(gameTime.getTime()).thenReturn(LastStand.DURATION_MS);
+    render.render(batch);
+    assertEquals(original, color);
+    when(gameTime.getTime()).thenReturn(Invisibility.DURATION_MS);
+    render.render(batch);
+    assertEquals(original, color);
+    assertEquals(
+        List.of(
+            original,
+            new Color(0.8f, 0.6f * 0.35f, 0.4f * 0.35f, 0.5f),
+            new Color(0.8f, 0.6f * 0.35f, 0.4f * 0.35f, 0.5f * 0.35f),
+            new Color(0.8f, 0.6f, 0.4f, 0.5f * 0.35f),
+            original),
+        drawn);
   }
 
   @Test
