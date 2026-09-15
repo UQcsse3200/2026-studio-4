@@ -60,7 +60,10 @@ public class NPCFactory {
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+    // Longer frame duration so the (currently single-frame) death pose is actually
+    // visible before the entity is removed, instead of disappearing in one-tenth of a
+    // second.
+    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     giantEnemy
@@ -98,7 +101,10 @@ public class NPCFactory {
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+    // Longer frame duration so the (currently single-frame) death pose is actually
+    // visible before the entity is removed, instead of disappearing in one-tenth of a
+    // second.
+    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("fuse", 0.1f, Animation.PlayMode.LOOP);
 
@@ -139,7 +145,10 @@ public class NPCFactory {
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+    // Longer frame duration so the (currently single-frame) death pose is actually
+    // visible before the entity is removed, instead of disappearing in one-tenth of a
+    // second.
+    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
 
     chaseEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
@@ -181,17 +190,18 @@ public class NPCFactory {
             .addTask(new CoilAttackTask(target, CHASE_SPEED))
             .addTask(new VenomSpitAttackTask(target));
 
-    // Placeholder art until the snake's own sprite sheet is ready - reuses the Beetle enemy's
-    // atlas (the old "chaseEnemy" atlas was renamed to "beetle" in the team refactor) so the
-    // boss is visible and testable in the meantime.
+    // Shravika's own hand-drawn snake sprite sheet.
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/beetle.atlas", TextureAtlas.class));
+                .getAsset("images/snake.atlas", TextureAtlas.class));
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+    // Longer frame duration so the (currently single-frame) death pose is actually
+    // visible before the entity is removed, instead of disappearing in one-tenth of a
+    // second.
+    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
 
     snakeBoss
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
@@ -262,7 +272,10 @@ public class NPCFactory {
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+    // Longer frame duration so the (currently single-frame) death pose is actually
+    // visible before the entity is removed, instead of disappearing in one-tenth of a
+    // second.
+    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     Entity demon = createBaseNPC();
