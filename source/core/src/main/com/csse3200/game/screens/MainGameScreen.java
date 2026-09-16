@@ -78,7 +78,7 @@ public class MainGameScreen extends ScreenAdapter {
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
     loadAssets();
     logger.debug("Initialising main game screen entities");
-    player = PlayerFactory.createPlayer();
+    player = PlayerFactory.createPlayer(renderer.getCamera());
     WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     if (world == null) {
       throw new IllegalStateException("Unable to load configs/rooms.json");
