@@ -49,8 +49,8 @@ public class SplitComponent extends Component {
     ServiceLocator.getEntityService()
         .schedule(
             () -> {
-              spawnChild(-2f, halfHealth, halfAttack);
-              spawnChild(2f, halfHealth, halfAttack);
+              spawnChild(-0.5f, halfHealth, halfAttack);
+              spawnChild(0.5f, halfHealth, halfAttack);
             });
     ServiceLocator.getEntityService().scheduleDisposal(entity);
     hasSplit = true;
