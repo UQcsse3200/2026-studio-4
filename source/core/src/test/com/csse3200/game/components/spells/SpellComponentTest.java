@@ -87,7 +87,9 @@ class SpellComponentTest {
       float cooldown, String castEvent, Color colour, EnemyTargetingStrategy strategy) {
     return new SpellComponent(cooldown, castEvent, colour, strategy) {
       @Override
-      protected void applyTo(Entity target) {}
+      protected void applyTo(Entity target) {
+        // Never reached: these spells exist only to be rejected by the constructor.
+      }
     };
   }
 

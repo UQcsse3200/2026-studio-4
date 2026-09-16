@@ -15,12 +15,16 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   private Vector2 maxSpeed = Vector2Utils.ONE;
 
   private PhysicsComponent physicsComponent;
+  private StatusEffectsControllerComponent statusEffects;
   private Vector2 targetPosition;
   private boolean movementEnabled = true;
 
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
+    // Looked up once: every steered entity asks this every frame, and an entity cannot gain a
+    // controller after creation. An entity without one is simply never immobilised.
+    statusEffects = entity.getComponent(StatusEffectsControllerComponent.class);
   }
 
   @Override
@@ -29,7 +33,7 @@ public class PhysicsMovementComponent extends Component implements MovementContr
       Body body = physicsComponent.getBody();
       // Every steered entity stops here rather than each task learning to hold still, and the
       // target is left alone so the entity resumes its approach once the effect ends.
-      if (StatusEffectsControllerComponent.isImmobilised(entity)) {
+      if (statusEffects != null && statusEffects.isImmobilised()) {
         setToVelocity(body, Vector2.Zero);
         return;
       }

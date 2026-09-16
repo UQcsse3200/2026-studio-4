@@ -45,9 +45,9 @@ class CerberusStatusEffectsTest {
     // A real physics service, so Box2D's natives are loaded and colliders can actually be built.
     ServiceLocator.registerPhysicsService(new PhysicsService());
 
+    TextureAtlas atlas = mock(TextureAtlas.class);
     ResourceService resources = mock(ResourceService.class);
-    when(resources.getAsset(anyString(), eq(TextureAtlas.class)))
-        .thenReturn(mock(TextureAtlas.class));
+    when(resources.getAsset(anyString(), eq(TextureAtlas.class))).thenReturn(atlas);
     ServiceLocator.registerResourceService(resources);
   }
 

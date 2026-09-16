@@ -1,10 +1,10 @@
 package com.csse3200.game.components.spells;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.rendering.RadialTextureFactory;
 import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -82,28 +82,8 @@ public class SpellAoeVisualComponent extends RenderComponent {
 
   /** A white disc, faint inside with a solid rim, tinted by whatever colour the cast asked for. */
   private static Texture createDisc() {
-    Pixmap pixmap = new Pixmap(TEXTURE_SIZE, TEXTURE_SIZE, Pixmap.Format.RGBA8888);
-    try {
-      pixmap.setBlending(Pixmap.Blending.None);
-      for (int y = 0; y < TEXTURE_SIZE; y++) {
-        for (int x = 0; x < TEXTURE_SIZE; x++) {
-          float dx = (x + 0.5f - TEXTURE_SIZE / 2f) / (TEXTURE_SIZE / 2f);
-          float dy = (y + 0.5f - TEXTURE_SIZE / 2f) / (TEXTURE_SIZE / 2f);
-          float distance = (float) Math.sqrt(dx * dx + dy * dy);
-          if (distance >= 1f) {
-            continue;
-          }
-          float alpha = distance < RIM_START ? FILL_ALPHA : RIM_ALPHA;
-          pixmap.setColor(1f, 1f, 1f, alpha);
-          pixmap.drawPixel(x, y);
-        }
-      }
-      Texture texture = new Texture(pixmap);
-      texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-      return texture;
-    } finally {
-      pixmap.dispose();
-    }
+    return RadialTextureFactory.create(
+        TEXTURE_SIZE, distance -> distance < RIM_START ? FILL_ALPHA : RIM_ALPHA);
   }
 
   /** Behind every sprite in the layer, so the area reads as being painted on the floor. */

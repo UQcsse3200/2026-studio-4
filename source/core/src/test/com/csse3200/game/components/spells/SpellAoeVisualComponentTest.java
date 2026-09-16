@@ -1,5 +1,6 @@
 package com.csse3200.game.components.spells;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -183,8 +184,8 @@ class SpellAoeVisualComponentTest {
   void disposingTwiceIsHarmless() {
     visual.show(PURPLE, 3f);
     visual.draw(batch);
+    visual.dispose();
 
-    visual.dispose();
-    visual.dispose();
+    assertDoesNotThrow(visual::dispose, "the disc must not be handed back to GL twice");
   }
 }
