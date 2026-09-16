@@ -14,10 +14,10 @@ import com.csse3200.game.services.ServiceLocator;
  * travels in a straight line via {@link ProjectileComponent}. It despawns on its first enemy or
  * obstacle hit, or when its lifetime runs out.
  *
- * <p>Once upgraded (see {@link WeaponUpgradeComponent}), a single attack fires three arrows instead
- * of one - one along the aim direction, plus one to each side at {@link #SPREAD_ANGLE_DEG}. Each
- * arrow spawns and checks its own path, so a wall blocking one does not stop the other two. Every
- * arrow deals full {@link #resolveHitboxDamage()} - the upgrade adds arrow count, not damage.
+ * <p>Once upgraded (see {@link WeaponUpgradeComponent}) the light shot deals 20% more damage, and
+ * the bow also has a heavy attack: three arrows at once - one along the aim direction, plus one to
+ * each side at {@link #SPREAD_ANGLE_DEG} - each checking its own path independently, so a wall
+ * blocking the centre arrow does not stop the other two.
  */
 public class BowWeaponComponent extends WeaponComponent {
   /** Sprite drawn for the thrown blade in flight. Loaded by {@link WeaponAssetsComponent}. */
@@ -33,23 +33,29 @@ public class BowWeaponComponent extends WeaponComponent {
   // tip at the top-left, a measured 135 degrees. Correcting it here keeps the pixel art crisp,
   // where rotating the PNG off-axis would resample and soften it.
   private static final float SPRITE_ANGLE_OFFSET = -135f;
-  // Angle each side arrow is rotated from the aim direction once upgraded.
+  // Angle each side arrow is rotated from the aim direction on the heavy attack.
   private static final float SPREAD_ANGLE_DEG = 15f;
 
   @Override
   protected void createAttack(Vector2 origin, Vector2 direction) {
+    fireArrow(origin, direction.cpy().nor(), resolveHitboxDamage());
+  }
+
+  @Override
+  protected boolean hasHeavyAttack() {
+    return true;
+  }
+
+  @Override
+  protected void createHeavyAttack(Vector2 origin, Vector2 direction) {
     Vector2 dir = direction.cpy().nor();
+    int damage = resolveHeavyHitboxDamage();
 
-    if (!isUpgraded()) {
-      fireArrow(origin, dir);
-      return;
-    }
-
-    // Splitting-arrow upgrade: centre arrow plus one to each side. Independent spawn/path checks
-    // per arrow, so one blocked arrow (e.g. a wall on one side) does not stop the other two.
-    fireArrow(origin, dir);
-    fireArrow(origin, dir.cpy().rotateDeg(SPREAD_ANGLE_DEG));
-    fireArrow(origin, dir.cpy().rotateDeg(-SPREAD_ANGLE_DEG));
+    // Centre arrow plus one to each side. Independent spawn/path checks per arrow, so one blocked
+    // arrow (e.g. a wall on one side) does not stop the other two.
+    fireArrow(origin, dir, damage);
+    fireArrow(origin, dir.cpy().rotateDeg(SPREAD_ANGLE_DEG), damage);
+    fireArrow(origin, dir.cpy().rotateDeg(-SPREAD_ANGLE_DEG), damage);
   }
 
   /**
@@ -58,8 +64,9 @@ public class BowWeaponComponent extends WeaponComponent {
    *
    * @param origin world position of the attack (the wielder's centre)
    * @param dir normalised travel direction for this arrow
+   * @param damage damage dealt to the first enemy this arrow hits
    */
-  private void fireArrow(Vector2 origin, Vector2 dir) {
+  private void fireArrow(Vector2 origin, Vector2 dir, int damage) {
     WeaponStatsComponent stats = entity.getComponent(WeaponStatsComponent.class);
 
     // Spawn just outside the wielder so the arrow visibly starts at their edge.
@@ -81,7 +88,7 @@ public class BowWeaponComponent extends WeaponComponent {
             .lifetime(LIFETIME)
             .layer(PhysicsLayer.WEAPON)
             .targetLayer(PhysicsLayer.NPC)
-            .damage(resolveHitboxDamage())
+            .damage(damage)
             .knockback(stats.getKnockback())
             .texture(TEXTURE)
             .visualSource(entity)

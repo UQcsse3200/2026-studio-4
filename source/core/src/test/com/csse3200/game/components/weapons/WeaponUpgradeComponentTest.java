@@ -124,10 +124,11 @@ class WeaponUpgradeComponentTest {
     assertTrue(upgrades.setUpgraded(BowWeaponComponent.class, true));
 
     assertTrue(upgrades.isUpgraded(BowWeaponComponent.class));
-    // Bow's upgrade is structural (arrow count), not a damage or cooldown scale.
-    assertEquals(1f, upgrades.getLightDamageMultiplier(BowWeaponComponent.class));
+    // Bow follows the same pattern as sword and knife: +20% light damage, and the heavy attack
+    // (three arrows) deals unscaled per-arrow damage but doubles the cooldown afterwards.
+    assertEquals(1.2f, upgrades.getLightDamageMultiplier(BowWeaponComponent.class));
     assertEquals(1f, upgrades.getHeavyDamageMultiplier(BowWeaponComponent.class));
-    assertEquals(1f, upgrades.getHeavyCooldownMultiplier(BowWeaponComponent.class));
+    assertEquals(2f, upgrades.getHeavyCooldownMultiplier(BowWeaponComponent.class));
   }
 
   @Test

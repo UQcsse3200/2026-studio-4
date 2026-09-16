@@ -1,6 +1,7 @@
 package com.csse3200.game.components.weapons;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -191,7 +192,45 @@ class BowWeaponComponentTest {
   }
 
   @Test
-  void shouldFireThreeArrowsWhenUpgraded() {
+  void shouldBoostLightDamageWhenUpgraded() {
+    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+    BowWeaponComponent bow = new BowWeaponComponent();
+    Entity wielder =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new WeaponStatsComponent(0.5f, 1f, 0f))
+            .addComponent(upgrades)
+            .addComponent(bow);
+    wielder.create();
+    upgrades.setUpgraded(BowWeaponComponent.class, true);
+
+    assertTrue(bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+
+    // Light attack still fires exactly one arrow; only its damage changes: round(10 * 1 * 1.2).
+    ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService, times(1)).register(captor.capture());
+    assertEquals(12, captor.getValue().getComponent(CombatStatsComponent.class).getBaseAttack());
+  }
+
+  @Test
+  void shouldNotHeavyAttackWhenNotUpgraded() {
+    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+    BowWeaponComponent bow = new BowWeaponComponent();
+    Entity wielder =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new WeaponStatsComponent(0.5f, 1f, 0f))
+            .addComponent(upgrades)
+            .addComponent(bow);
+    wielder.create();
+
+    assertFalse(bow.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+
+    verify(entityService, never()).register(any());
+  }
+
+  @Test
+  void shouldFireThreeArrowsOnHeavyAttackWhenUpgraded() {
     WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
     BowWeaponComponent bow = new BowWeaponComponent();
     Entity wielder =
@@ -203,14 +242,15 @@ class BowWeaponComponentTest {
     wielder.create();
     upgrades.setUpgraded(BowWeaponComponent.class, true);
 
-    assertTrue(bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    assertTrue(bow.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
 
     ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
     verify(entityService, times(3)).register(captor.capture());
     List<Entity> arrows = captor.getAllValues();
     assertEquals(3, arrows.size());
 
-    // Every arrow deals full (unscaled) hitbox damage: round(10 * 0.8) = 8.
+    // Each arrow of the burst deals the same damage as an unupgraded shot: round(10 * 0.8 * 1) =
+    // 8 -- the heavy attack's power comes from firing three at once, not a per-arrow bonus.
     for (Entity arrow : arrows) {
       assertEquals(8, arrow.getComponent(CombatStatsComponent.class).getBaseAttack());
       assertNull(arrow.getComponent(FollowComponent.class));
@@ -227,7 +267,7 @@ class BowWeaponComponentTest {
   }
 
   @Test
-  void shouldFireOneArrowWhenUpgradeReverted() {
+  void shouldRevertToSprintOneBowWhenUpgradeRemoved() {
     WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
     BowWeaponComponent bow = new BowWeaponComponent();
     Entity wielder =
@@ -240,16 +280,20 @@ class BowWeaponComponentTest {
     upgrades.setUpgraded(BowWeaponComponent.class, true);
     upgrades.setUpgraded(BowWeaponComponent.class, false);
 
-    assertTrue(bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    // No heavy attack once reverted.
+    assertFalse(bow.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
 
-    // Reverted upgrade behaves exactly like the Sprint 1 bow: a single arrow.
-    verify(entityService, times(1)).register(any());
+    // Light attack behaves exactly like the Sprint 1 bow: one arrow, base damage.
+    assertTrue(bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService, times(1)).register(captor.capture());
+    assertEquals(8, captor.getValue().getComponent(CombatStatsComponent.class).getBaseAttack());
   }
 
   @Test
-  void shouldFireOnlySideArrowsWhenCentreSpawnBlocked() {
+  void shouldFireOnlySideArrowsWhenCentreSpawnBlockedOnHeavyAttack() {
     // Small wall centred on the straight-line spawn point only. The two side arrows, spread by
-    // the upgrade's +-15 degree angle, clear this wall's y-span well above and below it.
+    // the heavy attack's +-15 degree angle, clear this wall's y-span well above and below it.
     Entity wall =
         new Entity()
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
@@ -269,7 +313,7 @@ class BowWeaponComponentTest {
     wielder.create();
     upgrades.setUpgraded(BowWeaponComponent.class, true);
 
-    bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f));
+    bow.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f));
 
     // Centre arrow is blocked; the two side arrows still fire independently.
     verify(entityService, times(2)).register(any());
