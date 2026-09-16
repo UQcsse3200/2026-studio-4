@@ -84,6 +84,54 @@ class BombEnemyTest {
   }
 
   @Test
+  void testBombEnemyIgnoresCollisionFromDifferentFixture() {
+    Entity player =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent())
+            .addComponent(new CombatStatsComponent(100, 10));
+    player.create();
+
+    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas", 0.05f);
+    bombEnemy.create();
+
+    Fixture bombFixture = bombEnemy.getComponent(HitboxComponent.class).getFixture();
+    Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
+
+    EventListener0 fuseStarted = mock(EventListener0.class);
+    bombEnemy.getEvents().addListener("fuseStarted", fuseStarted);
+
+    bombEnemy.getEvents().trigger("collisionStart", playerFixture, bombFixture);
+
+    verify(fuseStarted, never()).handle();
+  }
+
+  @Test
+  void testBombEnemyLightsFuseOnlyOnce() {
+    Entity player =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent())
+            .addComponent(new CombatStatsComponent(100, 10));
+    player.create();
+
+    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas", 0.05f);
+    bombEnemy.create();
+
+    Fixture bombFixture = bombEnemy.getComponent(HitboxComponent.class).getFixture();
+    Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
+
+    EventListener0 fuseStarted = mock(EventListener0.class);
+    bombEnemy.getEvents().addListener("fuseStarted", fuseStarted);
+
+    bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
+    bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
+    bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
+
+    verify(fuseStarted, times(1)).handle();
+  }
+
+  @Test
   void testBombEnemyDoesNotExplodeOnNonPlayerCollision() {
     Entity player =
         new Entity().addComponent(new PhysicsComponent()).addComponent(new HitboxComponent());
