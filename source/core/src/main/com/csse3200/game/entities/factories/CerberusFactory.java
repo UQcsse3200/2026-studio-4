@@ -13,6 +13,7 @@ import com.csse3200.game.components.miniboss.cerberus.CerberusMistComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusMovementComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusPhaseComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusProjectileComponent;
+import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.files.FileLoader;
@@ -87,6 +88,7 @@ public class CerberusFactory {
     sideHead
         .addComponent(new CombatStatsComponent(health, 10))
         .addComponent(new HeadAttachmentComponent(mainHead, offset))
+        .addComponent(new EnemyStatDisplay(1.5f))
         .addComponent(animator);
 
     animator.startAnimation("idle");
@@ -125,7 +127,8 @@ public class CerberusFactory {
         .addComponent(new CombatStatsComponent(conf.health, conf.baseAttack))
         .addComponent(animator)
         .addComponent(new ChainRestrictionComponent(anchorPoint, 3f))
-        .addComponent(new CerberusAnimationController());
+        .addComponent(new CerberusAnimationController())
+        .addComponent(new EnemyStatDisplay(2.0f));
 
     Entity leftHead =
         createCerberusSideHead(mainHead, new Vector2(-0.3f, 0.15f), conf.health / 2, skin);

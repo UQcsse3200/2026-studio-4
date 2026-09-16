@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.*;
 import com.csse3200.game.components.npc.EnemyAnimationController;
+import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.CoilAttackTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
@@ -72,7 +73,8 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(animator)
-        .addComponent(new EnemyAnimationController());
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(2.0f));
     giantEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
     giantEnemy.setScale(3f, 3f);
     giantEnemy.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(0.5f, 0.5f));
@@ -113,7 +115,8 @@ public class NPCFactory {
         .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(animator)
         .addComponent(new ExplodeComponent(target, fuseTime))
-        .addComponent(new EnemyAnimationController());
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f));
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
 
     return bombEnemy;
@@ -155,7 +158,8 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(animator)
         .addComponent(new EnemyDeathComponent(true, true))
-        .addComponent(new EnemyAnimationController());
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f));
     if (shouldSplit) {
       chaseEnemy.addComponent(new SplitComponent(target, skin));
     }
@@ -208,7 +212,8 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(animator)
         .addComponent(new EnemyDeathComponent(true))
-        .addComponent(new EnemyAnimationController());
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f));
 
     animator.scaleEntity();
     animator.startAnimation(DEFAULT_ANIMATION);
@@ -284,7 +289,8 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(animator)
         .addComponent(new EnemyDeathComponent(true, true))
-        .addComponent(new EnemyAnimationController());
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f));
 
     animator.scaleEntity();
     animator.startAnimation("move");

@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.ChainRestrictionComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusPhaseComponent;
+import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.CerberusFactory;
@@ -56,6 +57,7 @@ class CerberusTest {
     assertNotNull(cerberus.getComponent(CombatStatsComponent.class));
     assertNotNull(cerberus.getComponent(CerberusPhaseComponent.class));
     assertNotNull(cerberus.getComponent(AnimationRenderComponent.class));
+    assertNotNull(cerberus.getComponent(EnemyStatDisplay.class));
 
     verify(entityService, times(2)).register(any(Entity.class));
   }
