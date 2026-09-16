@@ -1,5 +1,6 @@
 package com.csse3200.game.components.maingame;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -7,16 +8,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Payload;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Source;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Target;
 import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.items.Item;
 import com.csse3200.game.items.charms.Charm;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,12 +158,57 @@ public class InventoryDisplay extends UIComponent {
         new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
 
     // Create Grid
-    Table rightGrid = gridDraw(4, 20, 64, "Charms");
+    Table rightGrid = drawItemGrid(4, 20, 64, inventoryComponent.getCharms());
 
     rightPage.add(rightGrid).center().pad(10);
     pagesContainer.add(rightPage).size(365, 500);
 
     return pagesContainer;
+  }
+
+  /** draws an item grid from a list of items */
+  private Table drawItemGrid(
+      int columns, int totalSlots, int slotSize, List<? extends Item> items) {
+    Table grid = new Table();
+    items.sort(Comparator.comparing(Item::getName));
+
+    for (int i = 0; i < totalSlots; i++) {
+
+      Stack slotStack = new Stack();
+      ImageButton slotBackground = new ImageButton(inventory, "inventory-box");
+      slotStack.add(slotBackground);
+
+      if (i < items.size()) {
+        Item currentItem = items.get(i);
+        // create an image with the items texture then extract the Drawable to draw the button
+        ImageButton itemButton = new ImageButton(new Image(getTexture(currentItem)).getDrawable());
+        itemButton.addListener(
+            new ClickListener() {
+              @Override
+              public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                logger.info("Mouse enter on item: {}", currentItem.getName());
+              }
+
+              @Override
+              public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                logger.info("Mouse exit on item: {}", currentItem.getName());
+              }
+            });
+        slotStack.add(itemButton);
+      }
+
+      grid.add(slotStack).size(slotSize).pad(3);
+      // Break to a new row after reaching the column limit
+      if ((i + 1) % columns == 0) {
+        grid.row();
+      }
+    }
+
+    return grid;
+  }
+
+  private static Texture getTexture(Item item) {
+    return ServiceLocator.getResourceService().getAsset(item.getTexture(), Texture.class);
   }
 
   /**
