@@ -2,10 +2,10 @@
 
 ## Scope and revisions
 
-Tested implementation: `96de98e` (the following documentation commit changes no code).
+Tested implementation: `a110647` (the following documentation commit changes no code).
 
-- Previous local items: `5937b52`.
-- Integrated main: `521e21b`, including merged PR #161 (final Boss) and #166 (random item factory).
+- Previous local items: `c30a1d5`; earlier four-key implementation: `5937b52`.
+- Integrated local and remote main: `9625e56`, including merged PR #153 (minibosses), #161 (final Boss) and #166 (random item factory). Local main was fast-forwarded from `8ba827c`; its two untracked Sprint 1 documents were preserved.
 - Remote items incorporated: `03e8986`; no remote items commits were missing before this integration.
 - HUD source: `dbb3076`; input source: `71f53ea`; both original histories are retained.
 - Production policy: `fc017e7`; original integration: `62c46f1`.
@@ -27,20 +27,21 @@ Four fixed direct-use keys: 8 Health, 9 Shield, 0 Speed, minus Strength. Weapons
 - Preserved captured death positions, deferred registration, duplicate-event guards and room disposal cancellation.
 - Retained the reviewed main changes, including PlayerFactory's Boss-related player components, alongside Team 5 components.
 - The latest HUD remains top-right. A regression creates the real Team 4 hotbar and Team 5 panel together, lays them out at 1920x1080, 1280x720 and 906x600, and verifies vertical separation and the panel's upper viewport boundary.
-- Unmerged cross-team feature branches were not imported. Observed open work includes PR #173 enemy scaling, #165 spells, #153 minibosses, #142 popups and #140 invisibility potion.
+- Incorporated the 31 additional main commits since `521e21b`, including Cerberus phases, snake miniboss, wasp assets and player mist debuffs. The only textual merge conflict in this pass was EnemyManagerComponent imports; Team 5 drop policy imports and all new enemy spawning behavior were retained.
+- Added a regression using the actual PlayerCerberusMistDebuffComponent with the fixed-key Speed Potion: entering/leaving mist and potion expiry remove only their own modifiers; two uses consume exactly two potions and restore the original speed.
+- Unmerged cross-team feature branches were not imported.
 
 ## Validation
 
 From `source/`:
 
 ```sh
-./gradlew --offline spotlessApply core:test core:javadoc
-./gradlew --offline spotlessCheck
+./gradlew --offline spotlessCheck core:test core:javadoc
 ```
 
-Both commands succeeded. **875 tests, 0 failures, 0 errors, 0 skipped**, counted from Gradle JUnit XML. Formatting passes. JavaDoc succeeds with existing documentation warnings; this is not a warning-free claim. JavaDoc was generated successfully earlier in the same integration run and was up-to-date in the final run, whose subsequent code edits were tests only.
+The command succeeded. **946 tests, 0 failures, 0 errors, 0 skipped**, counted from Gradle JUnit XML. Formatting passes. JavaDoc succeeds with existing documentation warnings; this is not a warning-free claim. JavaDoc was generated successfully earlier in the same integration run and was up-to-date in the final run, whose subsequent code edits were tests only.
 
-Logs: `/tmp/team5-main-compatibility.log`, `/tmp/team5-main-format-check.log`.
+Latest validation log: `/tmp/team5-miniboss-main-sync.log`. Earlier compatibility logs remain historical evidence.
 
 The full suite retains real-factory enemy reward → pickup → inventory → HUD → keyboard → effect regressions, fixed-key use, empty/full-health rejection, damage blocking, timed expiry, permanent Charm interaction and room lifecycle coverage.
 
@@ -56,7 +57,7 @@ The full suite retains real-factory enemy reward → pickup → inventory → HU
 | ConsumableEffectComponent | 95.7% | 81.6% |
 | ConsumableLoadoutComponent | 100.0% | 87.5% |
 | Team5CombatHudDisplay | 98.1% | 76.5% |
-| EnemyManagerComponent (also owns other teams' spawning) | 47.7% | 51.4% |
+| EnemyManagerComponent (also owns other teams' spawning) | 44.1% | 48.7% |
 
 Source: `core/build/reports/jacoco/test/jacocoTestReport.xml`. Whole-class figures, not SonarCloud new-code coverage or proof of exhaustive gameplay testing.
 
