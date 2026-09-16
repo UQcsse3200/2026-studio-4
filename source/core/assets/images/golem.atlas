@@ -83,17 +83,17 @@ chase
 dieAnimation
   rotate: false
   xy: 104, 152
-  size: 20, 16
-  orig: 20, 16
+  size: 20, 8
+  orig: 20, 8
   offset: 8, 0
   index: 0
 dieAnimation
-  rotate: false
-  xy: 136, 153
-  size: 20, 16
-  orig: 20, 16
-  offset: 8, 0
-  index: 1
+    rotate: false
+    xy: 136, 152
+    size: 20, 7
+    orig: 20, 7
+    offset: 0, 0
+    index: 1
 fuse
   rotate: false
   xy: 8, 20
