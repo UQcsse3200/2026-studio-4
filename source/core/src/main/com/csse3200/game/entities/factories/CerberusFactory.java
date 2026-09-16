@@ -5,11 +5,15 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.*;
 import com.csse3200.game.components.miniboss.cerberus.CerberusAnimationController;
+import com.csse3200.game.components.miniboss.cerberus.CerberusAttackCoordinator;
 import com.csse3200.game.components.miniboss.cerberus.CerberusBiteComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
+import com.csse3200.game.components.miniboss.cerberus.CerberusEnrageVisualComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusMistComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusMovementComponent;
+import com.csse3200.game.components.miniboss.cerberus.CerberusPhaseComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusProjectileComponent;
+import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.files.FileLoader;
@@ -55,9 +59,7 @@ public class CerberusFactory {
    * @return Cerberus mini-boss entity
    */
   private static Entity createBaseCerberusMiniBoss() {
-    Entity miniBoss = createBaseCerberusPart();
-    miniBoss.addComponent(new BossPhaseComponent());
-    return miniBoss;
+    return createBaseCerberusPart();
   }
 
   /**
@@ -81,13 +83,15 @@ public class CerberusFactory {
 
     animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("lunge", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation("idle", 0.1f, Animation.PlayMode.LOOP);
 
     sideHead
         .addComponent(new CombatStatsComponent(health, 10))
         .addComponent(new HeadAttachmentComponent(mainHead, offset))
+        .addComponent(new EnemyStatDisplay(1.5f))
         .addComponent(animator);
 
-    animator.startAnimation("move");
+    animator.startAnimation("idle");
 
     return sideHead;
   }
@@ -116,22 +120,31 @@ public class CerberusFactory {
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
 
     animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("idle", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation("idle", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("lunge", 0.1f, Animation.PlayMode.NORMAL);
 
     mainHead
         .addComponent(new CombatStatsComponent(conf.health, conf.baseAttack))
         .addComponent(animator)
         .addComponent(new ChainRestrictionComponent(anchorPoint, 3f))
-        .addComponent(new CerberusAnimationController());
+        .addComponent(new CerberusAnimationController())
+        .addComponent(new EnemyStatDisplay(2.0f));
 
     Entity leftHead =
-        createCerberusSideHead(mainHead, new Vector2(-0.55f, 0.25f), conf.health / 2, skin);
+        createCerberusSideHead(mainHead, new Vector2(-0.3f, 0.15f), conf.health / 2, skin);
 
     Entity rightHead =
-        createCerberusSideHead(mainHead, new Vector2(0.55f, 0.25f), conf.health / 2, skin);
+        createCerberusSideHead(mainHead, new Vector2(0.3f, 0.15f), conf.health / 2, skin);
 
-    mainHead.addComponent(new CerberusDeathComponent(leftHead, rightHead));
+    CerberusPhaseComponent phase = new CerberusPhaseComponent(leftHead, rightHead);
+
+    mainHead
+        .addComponent(new CerberusDeathComponent(leftHead, rightHead))
+        .addComponent(phase)
+        .addComponent(new CerberusEnrageVisualComponent(phase));
+
+    leftHead.addComponent(new CerberusEnrageVisualComponent(phase));
+    rightHead.addComponent(new CerberusEnrageVisualComponent(phase));
 
     if (target != null) {
       mainHead
@@ -144,12 +157,20 @@ public class CerberusFactory {
               projectile -> mainHead.getEvents().trigger("cerberusProjectileSpawned", projectile)));
 
       leftHead.addComponent(new CerberusMistComponent(target));
+
+      CerberusAttackCoordinator coordinator =
+          new CerberusAttackCoordinator(
+              leftHead, mainHead, rightHead, mainHead.getComponent(CerberusPhaseComponent.class));
+
+      leftHead.getComponent(CerberusMistComponent.class).setAttackCoordinator(coordinator);
+      mainHead.getComponent(CerberusBiteComponent.class).setAttackCoordinator(coordinator);
+      rightHead.getComponent(CerberusProjectileComponent.class).setAttackCoordinator(coordinator);
     }
 
     sideHeadSpawner.accept(leftHead);
     sideHeadSpawner.accept(rightHead);
 
-    animator.startAnimation("move");
+    animator.startAnimation("idle");
 
     return mainHead;
   }

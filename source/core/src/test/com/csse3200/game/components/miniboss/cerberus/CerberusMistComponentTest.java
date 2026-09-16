@@ -17,6 +17,7 @@ class CerberusMistComponentTest {
   private GameTime time;
   private RenderService renderService;
   private Entity player;
+  private Entity leftHead;
   private CombatStatsComponent leftStats;
   private CerberusMistComponent mist;
   private int entered;
@@ -37,7 +38,7 @@ class CerberusMistComponentTest {
     leftStats = new CombatStatsComponent(100, 10);
     mist = new CerberusMistComponent(player);
 
-    Entity leftHead = new Entity().addComponent(leftStats).addComponent(mist);
+    leftHead = new Entity().addComponent(leftStats).addComponent(mist);
     leftHead.create();
   }
 
@@ -149,5 +150,89 @@ class CerberusMistComponentTest {
 
     assertFalse(mist.isMistActive());
     assertEquals(1, exited);
+  }
+
+  @Test
+  void shouldWaitForCoordinatorWithoutRestartingCooldown() {
+    CerberusAttackCoordinator coordinator = mock(CerberusAttackCoordinator.class);
+    mist.setAttackCoordinator(coordinator);
+    when(coordinator.tryStart(leftHead)).thenReturn(false);
+
+    tick(5f);
+
+    assertFalse(mist.isMistActive());
+    assertEquals(0, entered);
+
+    when(coordinator.tryStart(leftHead)).thenReturn(true);
+    tick(0f);
+
+    assertTrue(mist.isMistActive());
+    assertEquals(1, entered);
+  }
+
+  @Test
+  void shouldHoldAttackUntilMistExpiresThenReleaseDuringCooldown() {
+    CerberusAttackCoordinator coordinator = mock(CerberusAttackCoordinator.class);
+    mist.setAttackCoordinator(coordinator);
+    when(coordinator.tryStart(leftHead)).thenReturn(true);
+
+    tick(5f);
+    tick(2f);
+
+    assertTrue(mist.isMistActive());
+    verify(coordinator, never()).finish(leftHead);
+    verify(coordinator, times(1)).tryStart(leftHead);
+
+    tick(1f);
+
+    assertFalse(mist.isMistActive());
+    assertEquals(1, exited);
+    verify(coordinator).finish(leftHead);
+
+    tick(4f);
+
+    assertFalse(mist.isMistActive());
+    verify(coordinator, times(1)).tryStart(leftHead);
+  }
+
+  @Test
+  void shouldReleaseAttackImmediatelyWhenLeftHeadDies() {
+    CerberusAttackCoordinator coordinator = mock(CerberusAttackCoordinator.class);
+    mist.setAttackCoordinator(coordinator);
+    when(coordinator.tryStart(leftHead)).thenReturn(true);
+
+    tick(5f);
+
+    assertTrue(mist.isMistActive());
+    verify(coordinator, never()).finish(leftHead);
+
+    leftStats.setHealth(0);
+
+    assertFalse(mist.isMistActive());
+    assertEquals(1, exited);
+    verify(coordinator).finish(leftHead);
+
+    tick(10f);
+
+    assertFalse(mist.isMistActive());
+    verify(coordinator, times(1)).tryStart(leftHead);
+  }
+
+  @Test
+  void shouldReleaseAttackWhenActiveMistIsDisposed() {
+    CerberusAttackCoordinator coordinator = mock(CerberusAttackCoordinator.class);
+    mist.setAttackCoordinator(coordinator);
+    when(coordinator.tryStart(leftHead)).thenReturn(true);
+
+    tick(5f);
+
+    assertTrue(mist.isMistActive());
+
+    mist.dispose();
+
+    assertFalse(mist.isMistActive());
+    assertEquals(1, exited);
+    verify(coordinator).finish(leftHead);
+    verify(renderService).unregister(mist);
   }
 }

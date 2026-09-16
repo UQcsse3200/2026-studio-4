@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.enemy;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -44,9 +45,26 @@ class ChaseEnemyTest {
     ServiceLocator.registerEntityService(entityService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/crab.atlas"});
+    resourceService.loadTextureAtlases(new String[] {"images/crab.atlas", "images/medusa.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
+  }
+
+  @Test
+  void shouldHaveChaseEnemyAnimations() {
+    Entity medusa = NPCFactory.createChaseEnemy(new Entity(), true, "images/medusa.atlas");
+    Entity crab = NPCFactory.createChaseEnemy(new Entity(), true, "images/crab.atlas");
+    AnimationRenderComponent golemAnimator = crab.getComponent(AnimationRenderComponent.class);
+    AnimationRenderComponent beetleAnimator = medusa.getComponent(AnimationRenderComponent.class);
+
+    assertTrue(golemAnimator.hasAnimation("move"));
+    assertTrue(golemAnimator.hasAnimation("chase"));
+    assertTrue(golemAnimator.hasAnimation("dieAnimation"));
+    assertTrue(golemAnimator.hasAnimation("default"));
+    assertTrue(beetleAnimator.hasAnimation("move"));
+    assertTrue(beetleAnimator.hasAnimation("chase"));
+    assertTrue(beetleAnimator.hasAnimation("dieAnimation"));
+    assertTrue(beetleAnimator.hasAnimation("default"));
   }
 
   @Test

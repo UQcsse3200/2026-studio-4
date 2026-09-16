@@ -16,7 +16,7 @@ public class EnemyDeathComponent extends Component {
   /** Indicates whether the entity should play a death animation before being disposed. */
   private final boolean hasDeathAnimation;
 
-  private boolean isFlying = false;
+  private boolean isEnemy = false;
 
   /** Creates component that immediately disposes of the entity when it dies. */
   public EnemyDeathComponent() {
@@ -38,11 +38,11 @@ public class EnemyDeathComponent extends Component {
    *
    * @param hasDeathAnimation true to trigger the event when the entity dies; false to dispose of
    *     the entity immediately
-   * @param isFlying to differentiate the death animation in EnemyDeathAnimation
+   * @param isEnemy to differentiate the death animation in EnemyAnimationController
    */
-  public EnemyDeathComponent(boolean hasDeathAnimation, boolean isFlying) {
+  public EnemyDeathComponent(boolean hasDeathAnimation, boolean isEnemy) {
     this.hasDeathAnimation = hasDeathAnimation;
-    this.isFlying = isFlying;
+    this.isEnemy = isEnemy;
   }
 
   /**
@@ -62,8 +62,8 @@ public class EnemyDeathComponent extends Component {
    * Otherwise, it immediately disposes of the entity.
    */
   private void disposal() {
-    if (isFlying) {
-      entity.getEvents().trigger("flyingDeath");
+    if (isEnemy) {
+      entity.getEvents().trigger("enemyDeathAnimation");
     } else if (hasDeathAnimation) {
       entity.getEvents().trigger("dieAnimation");
     } else {
