@@ -1,180 +1,96 @@
 # Consumable Items, Currency and Combat HUD — Sprint 2
 
-> **Status:** This page describes Team 5's verified Sprint 2 implementation and the integration boundaries agreed with Teams 2 and 4 as of 13 September 2026.
+Local publication draft, updated 2026-09-16. This file is not a claim that the Wiki or remote items/main has been updated.
 
-## Overview
+## Player guide
 
-Sprint 2 extends the Sprint 1 item pipeline with four consumable types and Gold currency:
+Defeated tracked enemies drop **5 Gold**, and independently have a **35% chance** to drop one consumable. Each of Health, Shield, Speed and Strength has equal probability within that 35%. The values are initial tuning defaults, not a claimed cross-team balance decision. Gold is picked up rather than immediately credited. Stand within pickup range and press **E**; each press collects one nearby entity. If Gold and a potion overlap, collect both with two presses.
 
-- Health Potion
-- Shield
-- Speed Potion
-- Strength Potion
-- Gold Coin
+All four consumables stack in inventory. The Team 5 panel shows Gold, all four counts, and three configurable quick slots. Press **8**, **9**, or **0** to immediately use the item assigned to that slot. Click its **Change** button to cycle Health → Shield → Speed → Strength; changing assignments never consumes an item. Defaults are Health, Shield and Speed. Empty stock cannot be used. Keys **1–3** still select weapons, **K** still performs the weapon heavy attack, and **I** still opens the existing inventory.
 
-The intended player flow is:
+| Item | Successful use |
+|---|---|
+| Health Potion | Restores up to 25 HP, capped at maximum health. At full health, consumes nothing. |
+| Shield | Blocks damage routed through the shared damage/status pipeline for 8 seconds. Does not conceal the player or overwrite other invulnerability. |
+| Speed Potion | Multiplies effective movement speed by 1.5 for 8 seconds. |
+| Strength Potion | Multiplies effective attack by 1.5 for 8 seconds. |
+
+Repeated use of the same timed consumable refreshes its duration, without multiplying that consumable's bonus again. Different status effects compose through the existing controller. Permanent Strength Charm changes remain in raw attack and survive expiry. Timers use the registered `GameTime` like the shared abilities system; this currently measures elapsed time, so opening an inventory does not promise to pause effect deadlines.
+
+The three-slot mapping follows Team 4's public proposed direction. This implementation is a local Team 5 integration decision; no announcement or acceptance by other teams is implied. The separate Team 5 panel does not implement Team 4's full inventory book or replace its spell frames.
+
+## Contracts and ownership
+
+- `InventoryComponent` owns quantities and Gold. Quantity changes emit `consumableInventoryChanged(ItemType, count)`.
+- `ConsumableLoadoutComponent` owns three assignments. `assignSlot(index, type)` emits `consumableLoadoutChanged`; assignments may refer to an out-of-stock type.
+- Keyboard input calls `useSlot(index)`. `ConsumableEffectComponent.tryUse(type)` or `useConsumable(ItemType)` requests use.
+- **Only ConsumableEffectComponent removes the item on a successful use.** Input and HUD never debit inventory. `itemUsed(ItemType)` is a notification after success, not another request.
+- Temporary modifiers use the existing `StatusEffectsControllerComponent`, `TimedStatusEffect`, `Stat`, and `Damageable` interfaces. No shared combat implementation was changed for these consumables.
+- `EnemyDropPolicy` selects immutable `ItemDropSpec` values. Constructor parameters configure Gold, probability and random generator; tests inject deterministic randomness.
+- `ItemFactory` creates item entities and remains independent of drop probability.
+- `EnemyManagerComponent` accepts one defeat per active tracked enemy, captures the death position, queues generation safely after updates, and owns registration/disposal. Pending rewards are cancelled if their room manager has been disposed.
+- Split parents replaced by children are no longer active tracked enemies; later parent death callbacks do not award duplicate rewards. Their tracked children follow the normal policy. No additional boss-phase reward or special mini-boss Gold bag has been invented.
 
 ```mermaid
-flowchart LR
-    A[Enemy defeated] --> B[ItemFactory drop]
-    B --> C[World item]
-    C --> D[Player pickup]
-    D --> E[InventoryComponent]
-    E --> F[Team 5 combat HUD]
-    E --> G[Select and use consumable]
-    G --> H[Player effect]
-    G --> I[Quantity decreases]
-    I --> F
+classDiagram
+  EnemyManagerComponent --> EnemyDropPolicy : selects rewards
+  EnemyDropPolicy --> ItemDropSpec : produces
+  EnemyManagerComponent --> ItemFactory : creates and registers
+  ItemFactory --> TypedItem : world item
+  TypedItem --> InventoryComponent : pickup
+  ConsumableLoadoutComponent --> ConsumableEffectComponent : requests use
+  ConsumableEffectComponent --> InventoryComponent : debits once
+  ConsumableEffectComponent --> StatusEffectsControllerComponent : timed modifiers
+  Team5CombatHudDisplay --> InventoryComponent : reads counts
+  Team5CombatHudDisplay --> ConsumableLoadoutComponent : assigns slots
 ```
 
-Gold and consumables use the same underlying inventory state as the rest of the game. The Team 5 combat HUD is an always-visible quick bar; it is not a replacement for the complete inventory screen or the shared Player HUD.
-
-## Implemented components
-
-### Item types and drop contract
-
-`ItemType` defines the supported Sprint 2 item types and their display names, descriptions, textures and categories. The four potions are classified as `CONSUMABLE`, while Gold is classified as `CURRENCY`.
-
-`ItemDropSpec` carries the caller-selected item type and quantity. `ItemFactory` creates a new world entity for the requested drop but leaves registration and lifecycle ownership to the caller. This keeps enemy, room and boss systems responsible for when and where drops enter the world.
-
-### Consumable inventory
-
-`InventoryComponent` stores each consumable quantity separately using `ItemType` keys.
-
-The main operations are:
-
-```java
-int getConsumableCount(ItemType type)
-boolean hasConsumable(ItemType type)
-void addConsumable(ItemType type)
-boolean removeConsumable(ItemType type)
+```mermaid
+sequenceDiagram
+  participant Enemy
+  participant Room as EnemyManager
+  participant Policy as EnemyDropPolicy
+  participant Factory as ItemFactory
+  participant Player
+  participant Inventory
+  participant Effects as ConsumableEffectComponent
+  participant HUD
+  Enemy->>Room: entityDied
+  Room->>Room: remove active enemy once, capture position
+  Room->>Policy: selectDrops()
+  Policy-->>Room: Gold + optional consumable
+  Room->>Factory: createDrop after update, if room still alive
+  Player->>Inventory: E pickup via TypedItem
+  Inventory-->>HUD: quantity changed
+  Player->>Effects: 8/9/0 → useSlot → tryUse
+  Effects->>Inventory: validate and remove one
+  Inventory-->>HUD: quantity changed
+  Effects->>Effects: heal or refresh timed effect
+  Effects-->>HUD: itemUsed
 ```
 
-Adding and successfully removing a consumable emits:
+## Verification
 
-```text
-consumableInventoryChanged(ItemType type, int newCount)
+Commands from `source/`:
+
+```sh
+./gradlew --offline spotlessCheck core:test core:javadoc
 ```
 
-Invalid, null and non-consumable item types are ignored by the consumable inventory operations.
+Meaningful regression coverage includes:
 
-### Team 5 combat HUD
+- actual enemy death → real factory entities → pickup fixtures → Gold/stock → Scene2D HUD → keyboard → healing → zero remaining stock;
+- one and two potion inventories, repeated empty use, full-health rejection, invalid/dead/disposed use;
+- real damage during Shield and at the exact expiry boundary;
+- Strength refresh, Charm pickup during the effect, preserving raw values on expiry;
+- Speed combined with another status multiplier;
+- click-driven quick-slot reassignment to the fourth consumable and visible count changes;
+- all four random selections, 0%/100% chance, probability boundary, reproducible seeded policies;
+- duplicate tracking/death events, captured death position, room disposal before deferred generation, drop registration/disposal;
+- HUD removal when replacing the player, existing inventory/charm/factory and shared input regressions.
 
-`Team5CombatHudDisplay` is a separate UI component attached to the player. It displays:
+See `team5-sprint2-integration-verification.md` for tested commits, actual results and remaining visual verification limits. Earlier HUD and input work is retained in Git history; the current contract supersedes the old 1–4 selection plus U design and deterministic demo drops.
 
-- the current Gold total;
-- Health Potion quantity on slot 1;
-- Shield quantity on slot 2;
-- Speed Potion quantity on slot 3;
-- Strength Potion quantity on slot 4; and
-- the currently selected consumable when a selection event is provided.
+## Attribution and scope
 
-Initial quantities are read from `InventoryComponent`, so the HUD does not assume that the inventory starts empty. Later inventory changes update only the matching consumable slot through `consumableInventoryChanged`.
-
-Gold currently uses a read-only inventory check during HUD updates because the shared inventory code does not yet publish a confirmed Gold-change event. This avoids changing another member's component contract while keeping the displayed value correct.
-
-The HUD accepts the agreed selection interface:
-
-```text
-selectedConsumableChanged(ItemType type)
-```
-
-The final input/use component is responsible for publishing this event when the player changes selection.
-
-## Integration boundaries
-
-### Team 2 — shared Player HUD
-
-Team 2 owns the shared HUD presentation, including the HUD shell, Health display, Player stats, interaction prompts, shared visual assets and overall visual consistency. Team 2 confirmed that Team 5 may keep a separate basic Gold/consumable combat-HUD prototype and that Team 2 will later align the sprites and remaining Player HUD presentation with the game.
-
-Team 5 does not modify or replace `PlayerStatsDisplay`, the Health bar, interaction prompts or Team 2's shared HUD lifecycle.
-
-### Team 4 — complete Inventory UI
-
-Team 4 owns the full Inventory UI, including inventory navigation, item management, sorting and detailed Currency/Consumables pages. Team 5's component is only the compact always-visible combat quick bar. Both presentations should read the same `InventoryComponent` state.
-
-### Team 5 responsibilities
-
-| Area | Owner |
-|---|---|
-| Item types, factory and reusable drop contract | Yuezhou |
-| Consumable inventory and stacking | Sumith |
-| Consumable effects | Aarash |
-| Pickup, selection and use input | Devendera |
-| Combat HUD, cross-component integration tests and documentation | Zihan |
-
-Each member owns the unit tests for their component. Zihan owns cross-component verification after the required Team 5 components are available together.
-
-## Event and data contracts
-
-| Contract | Producer | Consumer | Purpose |
-|---|---|---|---|
-| `getGold()` | `InventoryComponent` | Team 5 combat HUD | Read current currency |
-| `getConsumableCount(ItemType)` | `InventoryComponent` | HUD and Inventory UI | Read one consumable stack |
-| `consumableInventoryChanged(ItemType, int)` | `InventoryComponent` | Team 5 combat HUD | Refresh the changed slot |
-| `selectedConsumableChanged(ItemType)` | Selection/input component | Team 5 combat HUD | Highlight the selected item |
-| `itemPickup` | Player input | Item pickup component | Keep item pickup separate from room interaction |
-
-An active-effect indicator and duration display are optional enhancements and are not required for the basic Gold, quantity and selection HUD.
-
-## Testing and verification
-
-The Team 5 HUD test suite currently verifies:
-
-- Gold and slot text formatting, including non-negative display values;
-- all four `ItemType` to HUD-slot mappings;
-- rejection of Gold, Strength Charm and null as consumable selections;
-- consumable-inventory events updating the correct HUD slot;
-- selection events updating the selected-consumable display;
-- real `InventoryComponent` additions and removals producing HUD updates; and
-- Gold being read from the player's actual inventory.
-
-Current local verification on JDK 21:
-
-```bash
-./gradlew spotlessCheck
-./gradlew test --tests com.csse3200.game.components.player.Team5CombatHudDisplayTest
-./gradlew test
-```
-
-- Team 5 HUD tests: **9/9 passed**.
-- Full Gradle test suite: **passed**.
-- `spotlessCheck`: **passed**.
-- Desktop smoke test: the game launched, entered the main game and exited normally.
-
-The remaining end-to-end verification should cover:
-
-1. Enemy defeat creates the configured Gold and/or consumable drop.
-2. Player pickup adds the correct quantity to `InventoryComponent`.
-3. The HUD updates the correct Gold or consumable value.
-4. Player selection updates the selected-consumable indicator.
-5. Player use applies the intended effect and decreases the stack by one.
-6. Room transitions do not duplicate HUD actors or reset valid inventory state.
-7. Sprint 1 Strength Charm behaviour continues to pass regression testing.
-
-## User-facing behaviour
-
-During normal gameplay, the player can see Gold and the quantities assigned to slots 1–4 without opening the full Inventory UI. Quantity changes should appear after pickup or use. When the input component publishes a selection change, the quick bar identifies the selected consumable.
-
-The full Inventory UI remains the place for detailed inventory management. Health, Player stats and interaction prompts remain part of the shared Player HUD.
-
-## Current integration notes
-
-- The inventory count API and `consumableInventoryChanged` event are connected to the Team 5 HUD.
-- Gold display reads the existing inventory value without introducing an unapproved shared event.
-- The HUD is ready to consume `selectedConsumableChanged`; the final event producer must come from the pickup/use-input implementation.
-- The complete enemy-drop-to-use flow must be rerun after the final pickup/input and effect components are integrated.
-- The HUD layout must be visually rechecked after Team 2's updated Player HUD is merged.
-
-## Related work
-
-- [Feature #115 — Consumable Items & Currency System](https://github.com/UQcsse3200/2026-studio-4/issues/115)
-- [Task #117 — Team 5 Combat HUD, Integration Testing and Documentation](https://github.com/UQcsse3200/2026-studio-4/issues/117)
-- [Feature #98 — Team 2 HUD](https://github.com/UQcsse3200/2026-studio-4/issues/98)
-- [Feature #95 — Team 4 Inventory Overhaul + UI](https://github.com/UQcsse3200/2026-studio-4/issues/95)
-- [Task #116 — Consumable Effects](https://github.com/UQcsse3200/2026-studio-4/issues/116)
-- [Sprint 1 — Item Drop, Pickup and Strength Charm](https://github.com/UQcsse3200/2026-studio-4/wiki/Item-Drop,-Pickup-and-Strength-Charm-%E2%80%94-Sprint-1)
-
-## AI assistance
-
-OpenAI Codex assisted Zihan with organising verified repository information, cross-checking component boundaries, drafting documentation and preparing HUD tests. Technical claims were checked against the integrated code, local test results and the agreed cross-team ownership boundaries.
+This integration retains Sumith's inventory, Aarash's effects foundation, Jeremy's HUD work, Dev's input branch history, and Yuezhou's item/factory foundation. Codex assisted with implementation, integration and testing under Yuezhou's direction. Shop, saving inventory across game sessions, full inventory-book interaction, and special boss-phase rewards are outside this delivery.

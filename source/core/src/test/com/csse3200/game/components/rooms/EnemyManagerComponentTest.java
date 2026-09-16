@@ -11,26 +11,40 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.items.ItemComponent;
+import com.csse3200.game.components.items.ItemPickupComponent;
+import com.csse3200.game.components.player.*;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.input.InputService;
 import com.csse3200.game.items.EnemyDropPolicy;
 import com.csse3200.game.items.ItemType;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Random;
+import java.util.random.RandomGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -227,6 +241,75 @@ class EnemyManagerComponentTest {
     assertTrue(first.getComponent(CombatStatsComponent.class).isDead());
     assertTrue(second.getComponent(CombatStatsComponent.class).isDead());
     assertTrue(enemyManager.isCleared());
+  }
+
+  @Test
+  void enemyRewardFlowsThroughPickupHudKeyboardAndEffect() {
+    Stage stage = new Stage(new ScreenViewport(), mock(SpriteBatch.class));
+    when(ServiceLocator.getRenderService().getStage()).thenReturn(stage);
+    ServiceLocator.registerTimeSource(new GameTime());
+    ServiceLocator.registerInputService(new InputService());
+    RandomGenerator random = mock(RandomGenerator.class);
+    when(random.nextInt(4)).thenReturn(0);
+    enemyManager =
+        new EnemyManagerComponent(new EnemySpawnConfig[0], new EnemyDropPolicy(5, 1, random));
+    enemyManager.setEntity(room);
+    enemyManager.create();
+    Entity player =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new InventoryComponent(0))
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(new ConsumableEffectComponent())
+            .addComponent(new ConsumableLoadoutComponent())
+            .addComponent(new KeyboardPlayerInputComponent())
+            .addComponent(new ItemPickupComponent())
+            .addComponent(new Team5CombatHudDisplay());
+    player.create();
+    player.getComponent(CombatStatsComponent.class).setHealth(50);
+    Entity enemy = new Entity();
+    enemyManager.track(enemy);
+    enemy.getEvents().trigger("entityDied");
+    entityService.update();
+    ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService, times(2)).register(captor.capture());
+    for (Entity drop : captor.getAllValues()) {
+      player
+          .getEvents()
+          .trigger(
+              "collisionStart",
+              player.getComponent(HitboxComponent.class).getFixture(),
+              drop.getComponent(HitboxComponent.class).getFixture());
+      player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.E);
+    }
+    player.update();
+    assertEquals(5, player.getComponent(InventoryComponent.class).getGold());
+    assertTrue(hasLabel(stage.getRoot(), "Gold: 5"));
+    assertTrue(hasLabel(stage.getRoot(), "[8] Health x1"));
+    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.NUM_8);
+    assertEquals(75, player.getComponent(CombatStatsComponent.class).getHealth());
+    assertTrue(hasLabel(stage.getRoot(), "[8] Health x0"));
+    assertTrue(hasLabel(stage.getRoot(), "Last used: Health"));
+    enemyManager.dispose();
+    player.dispose();
+    assertEquals(0, stage.getActors().size);
+    stage.dispose();
+  }
+
+  private static boolean hasLabel(Actor actor, String text) {
+    if (actor instanceof Label label && text.contentEquals(label.getText())) {
+      return true;
+    }
+    if (actor instanceof Group group) {
+      for (Actor child : group.getChildren()) {
+        if (hasLabel(child, text)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private Entity combatEnemy() {
