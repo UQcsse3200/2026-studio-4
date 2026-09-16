@@ -21,7 +21,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Displays an Inventory UI over the main game screen. */
+/** Displays the inventory book and its charms and consumables pages. */
 public class InventoryDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(InventoryDisplay.class);
   private static final float Z_INDEX = 2f;

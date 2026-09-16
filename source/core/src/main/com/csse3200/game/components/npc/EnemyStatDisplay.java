@@ -37,6 +37,9 @@ public class EnemyStatDisplay extends UIComponent {
     super.create();
     addActors();
 
+    entity
+        .getEvents()
+        .addListener("enemyHealthBarVisible", (Boolean visible) -> table.setVisible(visible));
     entity.getEvents().addListener("updateHealth", this::updateEnemyHealthUI);
     entity.getEvents().addListener("updateMaxHealth", this::updateEnemyMaxHealthUI);
   }

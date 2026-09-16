@@ -131,6 +131,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     activeEnemies.add(enemy);
     enemy.getEvents().<Entity>addListener("cerberusProjectileSpawned", this::spawnEntity);
     enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy));
+    enemy.getEvents().addListener("finalBossEncounterCompleted", () -> onEnemyDefeated(enemy));
     enemy
         .getEvents()
         .addListener("spawnChildren", (Entity child) -> replaceWithChild(enemy, child));
@@ -150,7 +151,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   private void spawnItemDrop(Entity enemy) {
-    Entity item = ItemFactory.createDrop(enemy.getPosition());
+    Entity item = ItemFactory.createRandomDrop(enemy.getPosition());
 
     // spawning item should not use the spawnEntity as items are stored in their own list.
     droppedItems.add(item);

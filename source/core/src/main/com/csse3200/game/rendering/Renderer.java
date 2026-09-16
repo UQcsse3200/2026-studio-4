@@ -94,14 +94,17 @@ public class Renderer implements Disposable {
   /** Render everything to the render service. */
   public void render() {
     Matrix4 projMatrix = camera.getProjectionMatrix();
-    batch.setProjectionMatrix(projMatrix);
+    Matrix4 worldProjection = renderService.getWorldProjection(projMatrix);
+    batch.setProjectionMatrix(worldProjection);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
     batch.begin();
     renderService.render(batch);
     batch.end();
-    debugRenderer.render(projMatrix);
+    debugRenderer.render(worldProjection);
 
+    // Scene2D supplies its own UI camera; do not leave the world shake on the shared batch.
+    batch.setProjectionMatrix(projMatrix);
     stage.act();
     stage.draw();
   }
