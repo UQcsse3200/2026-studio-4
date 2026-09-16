@@ -2,8 +2,8 @@ package com.csse3200.game.components.statuseffects;
 
 import com.csse3200.game.services.GameTime;
 
-/** A timed movement penalty that composes with buffs without changing the owner's base stats. */
-public class PetrificationEffect extends TimedStatusEffect {
+/** A timed movement penalty with a red blink only while the penalty remains active. */
+public class PetrificationEffect extends RedFlashEffect {
   private final float movementMultiplier;
 
   /**

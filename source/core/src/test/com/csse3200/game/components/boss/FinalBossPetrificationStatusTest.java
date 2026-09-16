@@ -44,6 +44,7 @@ class FinalBossPetrificationStatusTest {
   private FinalBossStageOneConfig config;
   private EventHandler bossEvents;
   private FinalBossPetrificationComponent bossPetrification;
+  private FinalBossPetrificationWarningRenderComponent warning;
 
   @BeforeEach
   void setUp() {
@@ -73,8 +74,7 @@ class FinalBossPetrificationStatusTest {
     config = new FinalBossStageOneConfig();
     FinalBossPhaseControllerComponent phases = mock(FinalBossPhaseControllerComponent.class);
     FinalBossStageOneComponent stageOne = mock(FinalBossStageOneComponent.class);
-    FinalBossPetrificationWarningRenderComponent warning =
-        mock(FinalBossPetrificationWarningRenderComponent.class);
+    warning = new FinalBossPetrificationWarningRenderComponent();
     when(phases.getCurrentPhase()).thenReturn(FinalBossPhase.STAGE_ONE);
     when(stageOne.getState()).thenReturn(FinalBossStageOneState.WAVE_TWO);
     bossEvents = new EventHandler();
@@ -111,6 +111,119 @@ class FinalBossPetrificationStatusTest {
   }
 
   @Test
+  void warningShouldRemainHarmlessUntilItEnds() {
+    tickBoss(0.01f);
+    assertTrue(warning.isVisible());
+    assertFalse(petrification.isPetrified());
+    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
+
+    tickBoss(0.25f);
+    tickBoss(0.125f);
+    assertTrue(warning.isVisible());
+    assertFalse(petrification.isPetrified());
+    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
+
+    tickBoss(0.125f);
+    assertFalse(warning.isVisible());
+    assertTrue(petrification.isPetrified());
+    assertEquals(1.5f, stats.getEffectiveMovementSpeed(), EPSILON);
+  }
+
+  @Test
+  void previousPenaltyShouldExpireBeforeNextWarningStarts() {
+    // Preserve the overlap regression even when a designer uses a shorter cooldown.
+    config.petrificationCooldown = 0.5f;
+    hitPlayer();
+    tickBoss(config.petrificationCooldown);
+    assertFalse(warning.isVisible());
+    assertTrue(petrification.isPetrified());
+    assertEquals(1.5f, stats.getEffectiveMovementSpeed(), EPSILON);
+
+    tickBoss(1.499f);
+    assertFalse(warning.isVisible());
+    assertTrue(petrification.isPetrified());
+
+    // The shared effect expires even before its controller's next cleanup tick.
+    tickBoss(0.001f);
+    assertTrue(warning.isVisible());
+    assertFalse(petrification.isPetrified());
+    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
+
+    tickBoss(0.25f);
+    assertTrue(warning.isVisible());
+    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
+
+    player.setPosition(10f, 0f);
+    tickBoss(0.25f);
+    assertFalse(warning.isVisible());
+    assertFalse(petrification.isPetrified());
+    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
+  }
+
+  @Test
+  void defaultCadenceShouldLeaveRecoveryTimeAfterThePenalty() {
+    hitPlayer();
+    tickBoss(config.petrificationSlowDuration);
+    assertFalse(petrification.isPetrified());
+    assertFalse(warning.isVisible());
+    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
+
+    tickBoss(0.49f);
+    assertFalse(warning.isVisible());
+    tickBoss(0.02f);
+    assertTrue(warning.isVisible());
+    assertFalse(petrification.isPetrified());
+  }
+
+  @Test
+  void dodgingShouldStillGiveTheFullCooldownBeforeAnotherWarning() {
+    tickBoss(0.01f);
+    player.setPosition(10f, 0f);
+    tickBoss(config.petrificationWarningDuration);
+
+    tickBoss(2.49f);
+    assertFalse(warning.isVisible());
+    assertFalse(petrification.isPetrified());
+    tickBoss(0.02f);
+    assertTrue(warning.isVisible());
+    assertEquals(player.getCenterPosition(), bossPetrification.getMarkedPosition());
+  }
+
+  @Test
+  void leavingBeforeResolutionShouldStaySafeEvenIfPlayerReturnsAfterward() {
+    tickBoss(0.01f);
+    Vector2 marked = bossPetrification.getMarkedPosition();
+    tickBoss(0.25f);
+    player.setPosition(10f, 0f);
+    tickBoss(0.25f);
+    assertEquals(marked, bossPetrification.getMarkedPosition());
+    assertFalse(warning.isVisible());
+    assertFalse(petrification.isPetrified());
+
+    player.setPosition(0f, 0f);
+    tickBoss(0.1f);
+    assertFalse(petrification.isPetrified());
+    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
+  }
+
+  @Test
+  void returningBeforeWarningEndsShouldApplyPenaltyOnlyAtExpiry() {
+    tickBoss(0.01f);
+    player.setPosition(10f, 0f);
+    tickBoss(0.25f);
+    player.setPosition(0f, 0f);
+    tickBoss(0.125f);
+    assertTrue(warning.isVisible());
+    assertFalse(petrification.isPetrified());
+    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
+
+    tickBoss(0.125f);
+    assertFalse(warning.isVisible());
+    assertTrue(petrification.isPetrified());
+    assertEquals(1.5f, stats.getEffectiveMovementSpeed(), EPSILON);
+  }
+
+  @Test
   void expiryShouldRestoreSpeedAndPublishTheRestoredValue() {
     float[] displayedSpeed = {stats.getEffectiveMovementSpeed()};
     player
@@ -130,10 +243,10 @@ class FinalBossPetrificationStatusTest {
   }
 
   @Test
-  void repeatedHitsShouldRefreshDurationInsteadOfCompoundingTheSlow() {
+  void repeatedEffectRequestsShouldRefreshDurationInsteadOfCompoundingTheSlow() {
     hitPlayer();
-    tickBoss(config.petrificationCooldown);
-    tickBoss(config.petrificationWarningDuration);
+    advanceEffects(1000);
+    requestEffect();
 
     assertEquals(1.5f, stats.getEffectiveMovementSpeed(), EPSILON);
     // The first hit would now expire, but the second hit has another second left.

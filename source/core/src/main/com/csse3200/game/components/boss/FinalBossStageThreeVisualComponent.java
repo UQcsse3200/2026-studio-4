@@ -7,11 +7,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Stage 3 sprites and floor effects; owns only the shared pixel used to draw geometry. */
 public class FinalBossStageThreeVisualComponent extends RenderComponent {
@@ -35,6 +38,7 @@ public class FinalBossStageThreeVisualComponent extends RenderComponent {
   private TextureRegion[] transform;
   private TextureRegion[] shield;
   private TextureRegion[] impact;
+  private TextureRegion[] tornado;
   private TextureRegion statue;
   private Texture pixel;
   private final float[] quadVertices = new float[20];
@@ -42,6 +46,9 @@ public class FinalBossStageThreeVisualComponent extends RenderComponent {
   private RenderComponent groundEffects;
   private RenderComponent overlay;
   private final List<RenderComponent> statueRenderers = new ArrayList<>();
+  private final Map<FinalBossTornadoController.Tornado, RenderComponent> tornadoRenderers =
+      new HashMap<>();
+  private boolean disposed;
 
   @Override
   public void create() {
@@ -64,6 +71,7 @@ public class FinalBossStageThreeVisualComponent extends RenderComponent {
     transform = FinalBossVisualAssets.TRANSFORM.loadFrames();
     shield = FinalBossVisualAssets.SHIELD.loadFrames();
     impact = FinalBossVisualAssets.SHIELD_HIT.loadFrames();
+    tornado = FinalBossStageThreeAssets.tornadoFrames();
     Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
     try {
       pixmap.setColor(Color.WHITE);
@@ -106,6 +114,7 @@ public class FinalBossStageThreeVisualComponent extends RenderComponent {
 
   @Override
   public void update() {
+    if (disposed) return;
     if (ServiceLocator.getTimeSource() == null) return;
     float delta = ServiceLocator.getTimeSource().getDeltaTime();
     if (Float.isFinite(delta) && delta > 0f) elapsed += delta;
@@ -128,6 +137,70 @@ public class FinalBossStageThreeVisualComponent extends RenderComponent {
       renderer.create();
       statueRenderers.add(renderer);
     }
+    updateTornadoRenderers();
+  }
+
+  private void updateTornadoRenderers() {
+    if (stage.tornadoes == null) return;
+    tornadoRenderers
+        .entrySet()
+        .removeIf(
+            entry -> {
+              if (stage.tornadoes.items.contains(entry.getKey())) return false;
+              entry.getValue().dispose();
+              return true;
+            });
+    for (FinalBossTornadoController.Tornado item : stage.tornadoes.items) {
+      if (tornadoRenderers.containsKey(item)) continue;
+      RenderComponent renderer =
+          new RenderComponent() {
+            @Override
+            public float getZIndex() {
+              return -item.position.y;
+            }
+
+            @Override
+            protected void draw(SpriteBatch batch) {
+              drawTornado(batch, item);
+            }
+          };
+      renderer.setEntity(entity);
+      renderer.create();
+      tornadoRenderers.put(item, renderer);
+    }
+  }
+
+  private void drawTornado(SpriteBatch batch, FinalBossTornadoController.Tornado item) {
+    if (!canDrawTornado(item)) return;
+    float colour = batch.getPackedColor();
+    try {
+      float opacity =
+          MathUtils.clamp(item.elapsed / FinalBossTornadoController.SPAWN_DURATION, 0f, 1f);
+      if (item.dissolving) {
+        opacity *=
+            MathUtils.clamp(
+                1f - item.dissolveElapsed / FinalBossTornadoController.DISSOLVE_DURATION, 0f, 1f);
+      }
+      batch.setColor(1f, 1f, 1f, opacity);
+      batch.draw(
+          FinalBossStageThreeAssets.frame(tornado, item.elapsed + item.animationOffset, 3.6f, true),
+          item.position.x - FinalBossTornadoController.WIDTH / 2f,
+          item.position.y,
+          FinalBossTornadoController.WIDTH,
+          FinalBossTornadoController.HEIGHT);
+    } finally {
+      batch.setPackedColor(colour);
+    }
+  }
+
+  private boolean canDrawTornado(FinalBossTornadoController.Tornado item) {
+    if (disposed || stage.tornadoes == null || !stage.tornadoes.items.contains(item)) return false;
+    FinalBossStageThreeState state = stage.getState();
+    if (state != FinalBossStageThreeState.WAVE_TWO && state != FinalBossStageThreeState.ENDING)
+      return false;
+    if (stage.getTarget() == null) return false;
+    CombatStatsComponent stats = stage.getTarget().getComponent(CombatStatsComponent.class);
+    return stats == null || !stats.isDead();
   }
 
   @Override
@@ -178,10 +251,13 @@ public class FinalBossStageThreeVisualComponent extends RenderComponent {
 
   @Override
   public void dispose() {
+    disposed = true;
     if (groundEffects != null) groundEffects.dispose();
     if (overlay != null) overlay.dispose();
     for (RenderComponent renderer : statueRenderers) renderer.dispose();
     statueRenderers.clear();
+    for (RenderComponent renderer : tornadoRenderers.values()) renderer.dispose();
+    tornadoRenderers.clear();
     if (pixel != null) {
       pixel.dispose();
       pixel = null;

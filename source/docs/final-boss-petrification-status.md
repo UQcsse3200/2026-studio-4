@@ -6,15 +6,24 @@ Status Effects and weapon changes in main.
 
 ## Behaviour
 
-- The warning still records the player's position once; leaving its radius avoids the penalty.
+- The flashing red warning records the player's position once and applies no penalty while active.
+- Only the player's position at warning expiry decides the hit. Leaving its radius before that
+  moment avoids the penalty; returning to the old position after resolution does not trigger it.
 - On a hit, movement speed is multiplied by `petrificationSlowMultiplier` for
   `petrificationSlowDuration` seconds. Current defaults are 0.5 and 2 seconds.
-- Repeated hits replace this one effect and restart its duration instead of stacking penalties.
+- A new warning waits until any previous petrification effect has expired, even if the cooldown
+  has already elapsed. This prevents the previous penalty from overlapping the next red warning.
+- Repeated direct effect requests still refresh the duration instead of stacking penalties.
 - Expiry, the end of Wave 2, Boss disposal, player death and player disposal remove the penalty.
 - Other effects and changes to base speed remain in place. Attack speed, damage and control locks
   are unaffected by this movement penalty.
 - The existing ring under the player is visible only while the actual status effect is active.
-- Existing warning timing (0.5 seconds), radius (1.2) and cooldown (0.5 seconds) are unchanged.
+- While petrified, the player's sprite also alternates between a red tint and its normal appearance
+  every 250 milliseconds. The tint uses the shared effect clock and stops on expiry or removal.
+- Warning duration (0.5 seconds), radius (1.2) and penalty duration (2 seconds) are unchanged.
+  The cooldown after warning resolution is now 2.5 seconds, for about 3 seconds between warning
+  starts. A successful hit leaves about 0.5 seconds of recovery after the penalty ends; a miss
+  still waits the full cooldown. Longer effects also hold the next warning until they expire.
 
 ## Components
 
@@ -34,10 +43,17 @@ knife combo strikes already started before a freeze remains a separate weapon in
 
 ## Validation
 
-All 222 core main sources and 129 test sources compiled with JDK 21. The full core JUnit suite
+For the initial integration, all 222 core main sources and 129 test sources compiled with JDK 21.
+The full core JUnit suite
 passed: 755 tests, zero failures or skips. This includes ten new petrification integration tests
 and a heavy-attack control-lock regression test. Google Java Format 1.28.0 reported no changes
 for the core Java sources and tests.
+
+For the follow-up warning timing fix, 18 petrification tests passed with JDK 21/JUnit,
+including four additional tests covering harmless warning time, previous-penalty expiry,
+leaving before resolution and returning before or after resolution. The overlap test failed
+against the original implementation and passed after the fix. The changed Java files passed
+Google Java Format 1.28.0. The full core suite was not rerun for this follow-up.
 
 The local Gradle offline attempt stopped during configuration because the Sonar Gradle plugin
 was not cached; it did not run the Gradle build tasks. Run `./gradlew build` in `source` locally,

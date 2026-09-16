@@ -15,9 +15,9 @@ At 20% maximum health, incoming damage is blocked and the shield appears for thr
 
 Wave 2 spawns five copies of the selected angel statue and replaces SPACE dash with a jump. A visible SPACE hint explains how to avoid shockwaves. The player can still move and attack in the air; jumping lifts the sprite without moving its ground collider or changing movement-speed buffs. Each jump lasts 0.85 seconds, reaches 0.9 world units, and has a 0.35-second landing cooldown. It protects against the shockwave edge while high enough, rather than granting general invulnerability.
 
-Statues move and pause as before. Their placement and walking routes maintain a configured three-unit centre spacing where the arena has sufficient free space. Spawn selection searches for separated clear positions when a preferred position is obstructed. Walking checks both nearby statues and their reserved routes; a blocked statue changes direction or pauses instead of walking into the group. Their first warnings are staggered at 3, 4.8, 6.6, 8.4 and 10.2 seconds. Each warning lasts 0.6 seconds, followed by a 0.9-second jump; landing creates a room-wide decaying camera shake and a hollow black ring that expands outward. The next jump warning cannot begin until 7.5 seconds after that statue lands. Each ring damages the grounded player once on contact, with hit feedback. Jumping over the moving edge consumes that ring's contact, so landing inside a ring that has already passed does not cause damage. Collision tests include the player's path and the ring's expansion between updates.
+Statues move and pause between attacks. Once the first statue breaks, survivors gradually walk toward a tightening formation near the arena centre. Their required centre spacing decreases from 3.35 units with five alive to 2.35 with one, including clearance margin; walking speed rises from 1.1 to at most 1.5, and pauses shorten so even the final statue can reposition. Walls and reserved routes remain enforced. Spawn selection searches for separated clear positions when a preferred position is obstructed. Walking checks both nearby statues and their reserved routes; a blocked statue changes direction or pauses instead of walking into the group. A shared round-robin scheduler starts the first warning after three seconds. With five living statues, subsequent warnings start three seconds apart; as the number falls to four, three, two and one, the encounter-wide interval decreases to 2.7, 2.4, 2.1 and 1.8 seconds respectively. Each warning lasts 0.6 seconds, followed by a 0.9-second jump; landing creates a room-wide decaying camera shake and a hollow black ring that expands outward. Each statue also has a recovery after landing, calculated from the living count and the shared interval, with a minimum of 0.3 seconds when only one remains. Breaking another statue speeds up waiting timers while leaving any active warning or jump unchanged. Each ring damages the grounded player once on contact, with hit feedback. Jumping over the moving edge consumes that ring's contact, so landing inside a ring that has already passed does not cause damage. Collision tests include the player's path and the ring's expansion between updates.
 
-Every statue displays a world-space healthbar that follows its jump. Ten distinct positive weapon hits defeat it, independent of weapon damage. Repeated contacts from the same weapon hitbox and source-less damage do not count as additional attacks. After every three accepted hits (hits 3, 6 and 9), the statue requests a sideways teleport, aiming for 3.5 world units of separation from its previous position. The move runs after the physics callback, with blue effects at departure and arrival. It stays clear of walls, at least 2.5 units from the player and at least the configured spacing from other statues and their reserved paths. If there is no valid position, it keeps moving normally and retries when space becomes available. A successful dodge cancels its pending jump/slam and starts a fresh 7.5-second cooldown. Health and the ten-hit defeat counter persist through teleports. At the tenth hit the statue stops immediately with a grey break effect. Its collider is disabled when safe, and entity disposal is queued until after the physics step; no physics body is removed from a locked collision callback. Defeated statues do not become tornadoes.
+Every statue displays a world-space healthbar that follows its jump. Ten distinct positive weapon hits defeat it, independent of weapon damage. Repeated contacts from the same weapon hitbox and source-less damage do not count as additional attacks. After every three accepted hits (hits 3, 6 and 9), the statue requests a sideways teleport, aiming for 3.5 world units of separation from its previous position. The move runs after the physics callback, with blue effects at departure and arrival. It stays clear of walls, at least 2.5 units from the player and at least the configured spacing from other statues and their reserved paths. If there is no valid position, it keeps moving normally and retries when space becomes available. A successful dodge cancels its pending jump/slam and starts a fresh recovery using the current living-statue count. The shared attack interval still prevents simultaneous warnings. Health and the ten-hit defeat counter persist through teleports. At the tenth hit the statue stops immediately with a grey break effect. Its collider is disabled when safe, and entity disposal is queued until after the physics step; no physics body is removed from a locked collision callback. Each of the first four defeated statues leaves one animated tornado, capped at four. Tornadoes wander slowly and chase the player when nearby; they stop chasing after sufficient distance is gained. The final statue spawns no tornado: all existing tornadoes stop and dissolve through the same grey burst effect. See `final-boss-tornado-finale.md` for movement and lifecycle details. Contact damage is not enabled in this version.
 
 Defeating all five statues clears all shockwaves and camera shake immediately and restores SPACE dash. A 1.2-second transformation plays at the boss's position, revealing peaceful Grandpa halfway through. Grandpa remains alive and invulnerable. After the transformation, the encounter-completion event clears the room and the dialogue begins. Its three current lines are draft text. Leaving the encounter or player defeat also releases the stage's jump mode and freeze lock.
 
@@ -38,10 +38,11 @@ Defeating all five statues clears all shockwaves and camera shake immediately an
 | Wave 2 threshold / charge | 20% maximum HP / 3 seconds |
 | Statues / hits per statue | 5 / 10 |
 | Hits before evasive teleport / desired travel | 3 / 3.5 world units |
-| Minimum spacing between statue centres | 3 world units |
-| Statue movement speed / step / pause | 1.1 / 2 units / 2 seconds |
-| First slam delay / stagger | 3 / 1.8 seconds |
-| Slam warning / jump / cooldown after landing | 0.6 / 0.9 / 7.5 seconds |
+| Required spacing between statue centres, 5 to 1 living | 3.35 down to 2.35 world units |
+| Statue movement speed / step / normal pause | 1.1–1.5 / 2 units / 2–0.2 seconds as count falls |
+| First slam delay | 3 seconds |
+| Encounter-wide slam interval, 5 / 4 / 3 / 2 / 1 living statues | 3.0 / 2.7 / 2.4 / 2.1 / 1.8 seconds |
+| Slam warning / jump / minimum recovery after landing | 0.6 / 0.9 / 0.3 seconds |
 | Statue jump height | 1.6 world units |
 | Shockwave speed / width / damage | 4.5 units per second / 0.24 units / 6 HP |
 | Player jump duration / height / landing cooldown | 0.85 seconds / 0.9 units / 0.35 seconds |
@@ -53,7 +54,7 @@ The default strike lands roughly 1.25 seconds after freezing the player and rele
 
 ## Selected artwork
 
-Source PNG bytes are preserved; sprites are sliced at runtime with nearest-neighbour filtering. Stage 3 loads only the artwork listed below. Unused tornado frames and their dedicated license have been removed.
+Source PNG bytes are preserved; sprites are sliced at runtime with nearest-neighbour filtering. Stage 3 loads only the artwork listed below. The old unused tornado pack remains removed. The new user-supplied GIF is decoded into two compact sheets with lossless pixel-grid reduction and exact background keying at load time; provenance is recorded in `images/final-boss/stage3/TORNADO-ASSET.md`.
 
 | Purpose | Uploaded source |
 | --- | --- |
@@ -61,6 +62,7 @@ Source PNG bytes are preserved; sprites are sliced at runtime with nearest-neigh
 | Ice flight, hit; freeze start, loop, ending | Ice Effect 01.rar, individual animation sheets |
 | Blue teleport, grey break/disappearance | 79.png, rows 3 and 6 (one-based) |
 | Statue | PixelAngelStatueLite.zip, 15.png |
+| Wandering tornado | clima_tornado_epico_20260915154616.gif, 60 frames |
 | Black shockwave, shadow and statue healthbar | Rendered geometry; one shared white pixel texture |
 | Shared shield, impact and peaceful Grandpa | Existing Stage 1 assets |
 
@@ -68,7 +70,7 @@ The wizard, ice, statue and burst source packs should retain their original down
 
 ## Validation and playtest
 
-The revised main classes compiled with Java 21. The updated tests compiled against the existing JUnit API without requiring the parameterized-test extension. All 96 targeted Boss/config tests passed, including a 22-second simulation of the 7.5-second cooldown and 1.8-second stagger. Evade checks cover hits 3/6/9, a 16-by-8 arena with peer movement routes, wall clearance, duplicate contacts, a real locked Box2D callback, warning/airborne interruption, tenth-hit defeat and blocked destinations. Existing spacing and encounter completion checks also pass. Full Gradle build and graphical gameplay still need checking on the local machine; the final room layout and encounter balance need a playtest.
+The current regression tests simulate repeated landings at every living-statue count, including round-robin fairness and the transition to faster recovery. Evade checks cover hits 3/6/9, spacing, wall clearance, duplicate contacts, a real locked Box2D callback, warning/airborne interruption, tenth-hit defeat and blocked destinations. Tests use the existing JUnit API and do not add dependencies. See the feedback-tuning delivery for current compilation and test results. Full Gradle build and graphical gameplay still need checking on the local machine; the final room layout and encounter balance need a playtest.
 
 Run from `source`:
 
@@ -87,12 +89,12 @@ Play through Stage 1 and Stage 2 to check the handover, then verify:
 - Boss damage is visible during Wave 1; the 20% shield cannot be damaged.
 - Wave 2 has five separated statues with individual healthbars and no boss body/healthbar.
 - SPACE jumps in Wave 2; walking and attacks still work in the air, and dash returns on exit.
-- Statues warn and jump in staggered, low-frequency cycles; each landing shakes the room and creates an expanding hollow black ring.
+- Statues take turns warning and jumping, with the total attack cadence gradually increasing as statues break; each landing shakes the room and creates an expanding hollow black ring.
 - A grounded ring contact causes damage and feedback once; a well-timed jump avoids it. Landing inside a passed ring is safe.
 - Statues remain separated while walking, including when their original routes would converge or cross.
 - Weak and strong weapons each require ten hits per statue. Hits 3, 6 and 9 trigger a blue evasive teleport with no health reset; the tenth hit defeats the statue.
 - An evasive teleport keeps clear of walls, the player and other statues, interrupts its own slam and restarts its attack cooldown.
-- The fifth statue breaking immediately clears remaining rings and shake.
+- The first four statue defeats each leave one slowly wandering/chasing tornado. The fifth statue leaves no fifth tornado: all four stop and fade with grey transformation bursts. Remaining rings and shake clear immediately.
 - Peaceful Grandpa appears through the 1.2-second transformation before dialogue starts.
 - Grandpa and dialogue return; Continue/Enter closes dialogue and restores controls.
 - Leaving the room or restarting during freeze/jump cleans up control locks, visual offsets, shake and spawned actors.

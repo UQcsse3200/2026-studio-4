@@ -27,12 +27,17 @@ public class FinalBossStageThreeConfig {
   public int statueEvadeHits = 3;
   public float statueEvadeDistance = 3.5f;
   public float statueMinSpacing = 3f;
+  public float statueClusterSpacing = 2f;
   public float statueSpeed = 1.1f;
+  public float statueMaxSpeed = 1.5f;
   public float statueStepDistance = 2f;
   public float statuePause = 2f;
+  public float statueMinPause = 0.2f;
   public float statueSlamInitialDelay = 3f;
-  public float statueSlamStagger = 1.8f;
-  public float statueSlamCooldown = 7.5f;
+  // Encounter-wide gap between slam warnings: five statues take turns every 3s,
+  // ramping to a 1.8s gap when only one remains. Warning and jump times stay unchanged.
+  public float statueSlamInterval = 3f;
+  public float statueSlamMinInterval = 1.8f;
   public float statueSlamWarning = 0.6f;
   public float statueJumpDuration = 0.9f;
   public float statueJumpHeight = 1.6f;
@@ -63,13 +68,16 @@ public class FinalBossStageThreeConfig {
         teleportDelay,
         strikeDelay,
         statueSpeed,
+        statueMaxSpeed,
         statueMinSpacing,
+        statueClusterSpacing,
         statueEvadeDistance,
         statueStepDistance,
         statuePause,
+        statueMinPause,
         statueSlamInitialDelay,
-        statueSlamStagger,
-        statueSlamCooldown,
+        statueSlamInterval,
+        statueSlamMinInterval,
         statueSlamWarning,
         statueJumpDuration,
         statueJumpHeight,
@@ -95,6 +103,18 @@ public class FinalBossStageThreeConfig {
     }
     if (dialogue == null || dialogue.length == 0) {
       throw new IllegalArgumentException("Stage 3 requires ending dialogue");
+    }
+    if (statueSlamMinInterval > statueSlamInterval
+        || statueSlamMinInterval <= statueSlamWarning + statueJumpDuration) {
+      throw new IllegalArgumentException(
+          "Statue slam intervals must preserve grounded recovery time");
+    }
+    if (statueClusterSpacing > statueMinSpacing
+        || statueClusterSpacing < 2f
+        || statueMaxSpeed < statueSpeed
+        || statueMinPause > statuePause) {
+      throw new IllegalArgumentException(
+          "Statue clustering must preserve spacing and movement bounds");
     }
     for (String line : dialogue) {
       if (line == null || line.isBlank())

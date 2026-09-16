@@ -2,6 +2,7 @@ package com.csse3200.game.components.boss;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.player.PlayerPetrificationComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageOneConfig;
 import com.csse3200.game.services.GameTime;
@@ -150,6 +151,14 @@ public class FinalBossPetrificationComponent extends Component {
   }
 
   private void beginWarning() {
+    // Let the previous penalty finish so the player can escape each warning without petrification.
+    // Keep the elapsed cooldown at zero and retry after the shared effect actually expires.
+    PlayerPetrificationComponent petrification =
+        target.getComponent(PlayerPetrificationComponent.class);
+    if (petrification != null && petrification.isPetrified()) {
+      return;
+    }
+
     /*
      * IMPORTANT:
      * Capture the player's position once. The warning does NOT follow the player after this point.

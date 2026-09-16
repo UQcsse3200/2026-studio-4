@@ -26,13 +26,15 @@ import java.util.function.Consumer;
 /** Owns ice attacks, jumping hit-count statues, shockwaves and the peaceful ending. */
 public class FinalBossStageThreeComponent extends Component {
   public static final String STATE_CHANGED = "finalBossStageThreeState";
-  private static final float STATUE_SPACING_BUFFER = 0.15f;
+  private static final float STATUE_SPACING_BUFFER = 0.35f;
+  private static final float GRANDPA_RETURN_SIZE = 2.4f;
   private final Entity target;
   private final Consumer<Entity> spawner;
   final FinalBossStageThreeConfig config;
   final List<Bolt> bolts = new ArrayList<>();
   final List<Statue> statues = new ArrayList<>();
   final List<Shockwave> shockwaves = new ArrayList<>();
+  final FinalBossTornadoController tornadoes;
   private final Vector2 previousPlayerPosition = new Vector2();
   final List<Burst> bursts = new ArrayList<>();
   private FinalBossPhaseControllerComponent phases;
@@ -44,6 +46,8 @@ public class FinalBossStageThreeComponent extends Component {
   private int volleysFired;
   private float repositionRemaining;
   private float recoveryRemaining;
+  private float statueWarningGapRemaining;
+  private int nextStatueIndex;
   private int orbitDirection = 1;
   private float freezeRemaining;
   private float comboRemaining;
@@ -68,6 +72,10 @@ public class FinalBossStageThreeComponent extends Component {
     this.target = target;
     this.spawner = spawner;
     this.config = config;
+    tornadoes =
+        new FinalBossTornadoController(
+            target, this::bounds, this::clearSpace, position -> burst(position, true));
+    tornadoes.setStatuePaths(this::statueGroundPaths);
   }
 
   @Override
@@ -104,12 +112,16 @@ public class FinalBossStageThreeComponent extends Component {
 
   @Override
   public void update() {
-    if (disposed
-        || phases.getCurrentPhase() == FinalBossPhase.STAGE_ONE
-        || phases.getCurrentPhase() == FinalBossPhase.STAGE_TWO) return;
+    if (disposed) return;
+    if (phases.getCurrentPhase() == FinalBossPhase.STAGE_ONE
+        || phases.getCurrentPhase() == FinalBossPhase.STAGE_TWO) {
+      if (state != FinalBossStageThreeState.INACTIVE) tornadoes.clear();
+      return;
+    }
     if (ServiceLocator.getTimeSource() == null) return;
     float delta = ServiceLocator.getTimeSource().getDeltaTime();
     if (!Float.isFinite(delta) || delta <= 0f) return;
+    refreshStatuePositions();
     updateEffects(delta);
     if (state == FinalBossStageThreeState.INACTIVE && !phases.isTransitioning()) startWaveOne();
     if (state == FinalBossStageThreeState.INACTIVE) return;
@@ -143,11 +155,80 @@ public class FinalBossStageThreeComponent extends Component {
     if (stateTime >= config.chargeDuration) startWaveTwo();
   }
 
+  /** Physics advances before entity updates, and the boss can update before its statues. */
+  private void refreshStatuePositions() {
+    for (Statue statue : statues) {
+      if (!statue.broken) statue.entity.getComponent(PhysicsComponent.class).earlyUpdate();
+    }
+  }
+
   private void updateEnding() {
+    // The final hit may arrive inside a Box2D callback. Relocate only in this safe update.
+    placeReturningGrandpa();
     if (stateTime >= config.returnTransformDuration) finishEncounter();
   }
 
+  /** Keep the return beside the current player, including if the camera moves during the effect. */
+  private void placeReturningGrandpa() {
+    PhysicsComponent playerPhysics = target.getComponent(PhysicsComponent.class);
+    if (playerPhysics != null) playerPhysics.earlyUpdate();
+    Vector2 player = target.getCenterPosition();
+    // Reserve the full transformation effect, which is wider than Grandpa's ordinary sprite.
+    Vector2 size =
+        new Vector2(
+            Math.max(GRANDPA_RETURN_SIZE, entity.getScale().x),
+            Math.max(GRANDPA_RETURN_SIZE, entity.getScale().y));
+    Vector2 current = entity.getCenterPosition();
+    stop(entity);
+    entity.getComponent(PhysicsComponent.class).getBody().setLinearVelocity(0f, 0f);
+    if (current.dst2(player) <= 9f
+        && current.epsilonEquals(clamp(current, size), 0.0001f)
+        && clearGrandpaReturn(current, size, player)) return;
+    Vector2 destination = grandpaReturnPosition(player, size);
+    entity.setPosition(destination.sub(entity.getScale().scl(0.5f)));
+  }
+
+  private Vector2 grandpaReturnPosition(Vector2 player, Vector2 size) {
+    float distance = (size.x + target.getScale().x) * 0.5f + 0.25f;
+    for (int direction = 0; direction < 8; direction++) {
+      Vector2 candidate =
+          clamp(player.cpy().add(new Vector2(distance, 0f).rotateDeg(direction * 45f)), size);
+      if (clearGrandpaReturn(candidate, size, player)) return candidate;
+    }
+    // If nearby sides are blocked, use the closest clear position within the current view.
+    Rectangle area = bounds();
+    Vector2 min = clamp(new Vector2(area.x, area.y), size);
+    Vector2 max = clamp(new Vector2(area.x + area.width, area.y + area.height), size);
+    int columns = Math.max(1, MathUtils.ceil((max.x - min.x) / 0.35f));
+    int rows = Math.max(1, MathUtils.ceil((max.y - min.y) / 0.35f));
+    Vector2 best = clamp(player, size);
+    float bestDistance = Float.POSITIVE_INFINITY;
+    for (int column = 0; column <= columns; column++) {
+      for (int row = 0; row <= rows; row++) {
+        Vector2 candidate =
+            new Vector2(
+                MathUtils.lerp(min.x, max.x, (float) column / columns),
+                MathUtils.lerp(min.y, max.y, (float) row / rows));
+        float distanceSquared = candidate.dst2(player);
+        if (distanceSquared < bestDistance && clearGrandpaReturn(candidate, size, player)) {
+          best = candidate;
+          bestDistance = distanceSquared;
+        }
+      }
+    }
+    return best;
+  }
+
+  private boolean clearGrandpaReturn(Vector2 candidate, Vector2 size, Vector2 player) {
+    Vector2 separation = size.cpy().add(target.getScale()).scl(0.5f).add(0.15f, 0.15f);
+    boolean besidePlayer =
+        Math.abs(candidate.x - player.x) >= separation.x
+            || Math.abs(candidate.y - player.y) >= separation.y;
+    return besidePlayer && clearSpace(candidate, size);
+  }
+
   private void updateEffects(float delta) {
+    tornadoes.update(delta, state == FinalBossStageThreeState.WAVE_TWO && !playerDefeated);
     castRemaining = Math.max(0f, castRemaining - delta);
     hitRemaining = Math.max(0f, hitRemaining - delta);
     playerHitRemaining = Math.max(0f, playerHitRemaining - delta);
@@ -417,6 +498,8 @@ public class FinalBossStageThreeComponent extends Component {
 
   private void startWaveTwo() {
     changeState(FinalBossStageThreeState.WAVE_TWO);
+    statueWarningGapRemaining = config.statueSlamInitialDelay;
+    nextStatueIndex = 0;
     setJumpEnabled(true);
     previousPlayerPosition.set(groundPosition(target));
     entity.getEvents().trigger("enemyHealthBarVisible", false);
@@ -440,7 +523,6 @@ public class FinalBossStageThreeComponent extends Component {
       statueStats.setInvulnerable(true);
       Statue statue = new Statue(statueEntity, config.statueHits);
       statue.pauseRemaining = config.statuePause * i / config.statueCount;
-      statue.slamCooldown = config.statueSlamInitialDelay + config.statueSlamStagger * i;
       statueEntity
           .getEvents()
           .addListener(
@@ -484,13 +566,72 @@ public class FinalBossStageThreeComponent extends Component {
     statue.airborne = false;
     burst(statue.position, true);
     ServiceLocator.getEntityService().scheduleDisposal(statue.entity);
-    if (getRemainingStatues() == 0) {
+    int remaining = getRemainingStatues();
+    tornadoes.statueBroken(groundPosition(statue.entity), remaining);
+    if (remaining == 0) {
       clearStatueCombat();
       changeState(FinalBossStageThreeState.ENDING);
+    } else {
+      accelerateStatueCooldowns(remaining);
     }
   }
 
+  /** Preserve each waiting statue's progress and ordering as surviving statues speed up. */
+  private void accelerateStatueCooldowns(int remaining) {
+    statueWarningGapRemaining *= statueSlamInterval(remaining) / statueSlamInterval(remaining + 1);
+    float ratio = statueSlamCooldown(remaining) / statueSlamCooldown(remaining + 1);
+    for (Statue statue : statues) {
+      if (statue.broken) continue;
+      // Replan the next walking step toward the smaller cluster instead of teleporting.
+      statue.destination = null;
+      statue.pauseRemaining = Math.min(statue.pauseRemaining, statueMovementPause());
+      if (!statue.airborne && statue.warningRemaining <= 0f) {
+        statue.slamCooldown *= ratio;
+      }
+    }
+  }
+
+  private float statueSlamCooldown(int remaining) {
+    return remaining * statueSlamInterval(remaining)
+        - config.statueSlamWarning
+        - config.statueJumpDuration;
+  }
+
+  private float statueSlamInterval(int remaining) {
+    return MathUtils.lerp(
+        config.statueSlamMinInterval,
+        config.statueSlamInterval,
+        remainingStatueFraction(remaining));
+  }
+
+  private float remainingStatueFraction(int remaining) {
+    return MathUtils.clamp((remaining - 1f) / Math.max(1f, config.statueCount - 1f), 0f, 1f);
+  }
+
+  private float statueSpacing() {
+    return MathUtils.lerp(
+            config.statueClusterSpacing,
+            config.statueMinSpacing,
+            remainingStatueFraction(getRemainingStatues()))
+        + STATUE_SPACING_BUFFER;
+  }
+
+  private float statueMovementSpeed() {
+    return MathUtils.lerp(
+        config.statueMaxSpeed, config.statueSpeed, remainingStatueFraction(getRemainingStatues()));
+  }
+
+  private float statueMovementPause() {
+    return MathUtils.lerp(
+        config.statueMinPause, config.statuePause, remainingStatueFraction(getRemainingStatues()));
+  }
+
+  private float statueRecoveryPause() {
+    return Math.min(statueMovementPause(), statueSlamCooldown(getRemainingStatues()) * 0.25f);
+  }
+
   private void updateStatues(float delta) {
+    statueWarningGapRemaining = Math.max(0f, statueWarningGapRemaining - delta);
     updateShockwaves(delta);
     CombatStatsComponent playerStats = target.getComponent(CombatStatsComponent.class);
     if (playerStats != null && playerStats.isDead()) {
@@ -503,6 +644,36 @@ public class FinalBossStageThreeComponent extends Component {
       if (statue.broken || updateStatueEvade(statue, delta)) continue;
       if (!updateStatueSlam(statue, delta)) updateStoneMovement(statue, delta);
     }
+    startNextStatueSlam();
+  }
+
+  /** A shared round-robin schedule keeps total ring frequency rising without simultaneous slams. */
+  private void startNextStatueSlam() {
+    if (statueWarningGapRemaining > 0f || hasActiveStatueSlam()) return;
+    for (int offset = 0; offset < statues.size(); offset++) {
+      int index = (nextStatueIndex + offset) % statues.size();
+      Statue statue = statues.get(index);
+      if (!readyToSlam(statue)) continue;
+      stop(statue.entity);
+      statue.destination = null;
+      statue.warningRemaining = config.statueSlamWarning;
+      statueWarningGapRemaining = statueSlamInterval(getRemainingStatues());
+      nextStatueIndex = (index + 1) % statues.size();
+      return;
+    }
+  }
+
+  /** Long frames must not start a second telegraph before the first slam has actually landed. */
+  private boolean hasActiveStatueSlam() {
+    return statues.stream()
+        .anyMatch(statue -> !statue.broken && (statue.airborne || statue.warningRemaining > 0f));
+  }
+
+  private boolean readyToSlam(Statue statue) {
+    return !statue.broken
+        && !statue.airborne
+        && statue.warningRemaining <= 0f
+        && statue.slamCooldown <= 0f;
   }
 
   /** A successful dodge interrupts the statue's own slam and gives it a fresh cooldown. */
@@ -523,12 +694,12 @@ public class FinalBossStageThreeComponent extends Component {
     statue.entity.setPosition(destination.cpy().sub(statue.entity.getScale().scl(0.5f)));
     statue.destination = null;
     statue.moveRemaining = 0f;
-    statue.pauseRemaining = config.statuePause;
+    statue.pauseRemaining = statueRecoveryPause();
     statue.warningRemaining = 0f;
     statue.airborne = false;
     statue.jumpElapsed = 0f;
     statue.jumpHeight = 0f;
-    statue.slamCooldown = config.statueSlamCooldown;
+    statue.slamCooldown = statueSlamCooldown(getRemainingStatues());
     statue.evadePending = false;
     burst(destination, false);
     return true;
@@ -576,7 +747,8 @@ public class FinalBossStageThreeComponent extends Component {
 
   /** The landing point must leave room for each peer's entire reserved walking route. */
   private boolean clearStatueEvadePosition(Statue statue, Vector2 candidate) {
-    float spacing = config.statueMinSpacing + STATUE_SPACING_BUFFER;
+    if (!tornadoes.clearStatuePosition(statueGroundAt(statue, candidate))) return false;
+    float spacing = statueSpacing();
     for (Statue other : statues) {
       if (other == statue || other.broken) continue;
       Vector2 start = other.entity.getCenterPosition();
@@ -606,18 +778,14 @@ public class FinalBossStageThreeComponent extends Component {
       return true;
     }
     statue.slamCooldown = Math.max(0f, statue.slamCooldown - delta);
-    if (statue.slamCooldown > 0f) return false;
-    stop(statue.entity);
-    statue.destination = null;
-    statue.warningRemaining = config.statueSlamWarning;
-    return true;
+    return false;
   }
 
   private void landStatue(Statue statue) {
     statue.airborne = false;
     statue.jumpHeight = 0f;
-    statue.slamCooldown = config.statueSlamCooldown;
-    statue.pauseRemaining = config.statuePause;
+    statue.slamCooldown = statueSlamCooldown(getRemainingStatues());
+    statue.pauseRemaining = statueRecoveryPause();
     Vector2 centre = groundPosition(statue.entity);
     Rectangle area = bounds();
     float farX = Math.max(Math.abs(centre.x - area.x), Math.abs(centre.x - area.x - area.width));
@@ -643,23 +811,23 @@ public class FinalBossStageThreeComponent extends Component {
     if (statue.destination == null) {
       statue.destination = chooseStatueDestination(statue, centre);
       if (statue.destination == null) {
-        statue.pauseRemaining = config.statuePause;
+        statue.pauseRemaining = statueMovementPause();
         stop(statue.entity);
         return;
       }
-      statue.moveRemaining = centre.dst(statue.destination) / config.statueSpeed + 1f;
+      statue.moveRemaining = centre.dst(statue.destination) / statueMovementSpeed() + 1f;
     }
     statue.moveRemaining -= delta;
     float distance = centre.dst(statue.destination);
     if (statue.moveRemaining <= 0f || distance < 0.2f) {
       statue.destination = null;
-      statue.pauseRemaining = config.statuePause;
+      statue.pauseRemaining = statueMovementPause();
       stop(statue.entity);
     } else {
       // Box2D may consume an extra accumulated fixed step. Brake before the reserved
       // endpoint.
       float speed =
-          Math.min(config.statueSpeed, distance / (delta + PhysicsEngine.PHYSICS_TIMESTEP));
+          Math.min(statueMovementSpeed(), distance / (delta + PhysicsEngine.PHYSICS_TIMESTEP));
       moveTowards(statue.entity, statue.destination, speed);
       // Apply the new direction now, independent of the entities' component update order.
       statue.entity.getComponent(PhysicsMovementComponent.class).update();
@@ -670,25 +838,42 @@ public class FinalBossStageThreeComponent extends Component {
     Vector2 size = statueClearanceSize(statue.entity.getScale());
     Vector2 away = statueSeparationDirection(statue, centre);
     float startAngle = away.isZero() ? MathUtils.random(360f) : away.angleDeg();
+    boolean clustering = getRemainingStatues() < config.statueCount;
+    Vector2 clusterCentre = clampStatue(bounds().getCenter(new Vector2()), size);
+    float clusterRadius = statueSpacing() / 2f + 0.25f * (getRemainingStatues() - 1);
+    Vector2 best = null;
+    float bestScore = Float.MAX_VALUE;
     // Try tangents and shorter steps before waiting. Roaming never teleports to a fallback
     // point.
     for (float stepScale : new float[] {1f, 0.65f, 0.35f}) {
       for (int direction = 0; direction < 24; direction++) {
-        int offset = (direction + 1) / 2 * (direction % 2 == 0 ? -1 : 1);
-        Vector2 step =
-            new Vector2(config.statueStepDistance * stepScale, 0f)
-                .setAngleDeg(startAngle + offset * 15f);
-        Vector2 candidate = clampStatue(centre.cpy().add(step), size);
-        if (candidate.dst2(centre) >= 0.0625f && safeStatueRoute(statue, centre, candidate))
-          return candidate;
+        Vector2 candidate = statueStepCandidate(centre, size, startAngle, stepScale, direction);
+        if (candidate.dst2(centre) < 0.0625f || !safeStatueRoute(statue, centre, candidate))
+          continue;
+        if (!clustering) return candidate;
+        float score =
+            Math.abs(candidate.dst(clusterCentre) - clusterRadius) + 0.05f * candidate.dst2(centre);
+        if (score < bestScore) {
+          bestScore = score;
+          best = candidate;
+        }
       }
     }
-    return null;
+    return best;
+  }
+
+  private Vector2 statueStepCandidate(
+      Vector2 centre, Vector2 size, float startAngle, float stepScale, int direction) {
+    int offset = (direction + 1) / 2 * (direction % 2 == 0 ? -1 : 1);
+    Vector2 step =
+        new Vector2(config.statueStepDistance * stepScale, 0f)
+            .setAngleDeg(startAngle + offset * 15f);
+    return clampStatue(centre.cpy().add(step), size);
   }
 
   private Vector2 statueSeparationDirection(Statue statue, Vector2 centre) {
     Vector2 away = new Vector2();
-    float spacing = config.statueMinSpacing + STATUE_SPACING_BUFFER;
+    float spacing = statueSpacing();
     for (Statue other : statues) {
       if (other == statue || other.broken) continue;
       Vector2 separation = centre.cpy().sub(other.entity.getCenterPosition());
@@ -708,18 +893,14 @@ public class FinalBossStageThreeComponent extends Component {
     if (!to.epsilonEquals(clampStatue(to, size), 0.0001f)) return false;
     Vector2 sweptSize = size.add(Math.abs(to.x - from.x), Math.abs(to.y - from.y));
     if (!clearSpace(from.cpy().add(to).scl(0.5f), sweptSize)) return false;
-    float spacing = config.statueMinSpacing + STATUE_SPACING_BUFFER;
+    if (!tornadoes.clearStatueRoute(statueGroundAt(statue, from), statueGroundAt(statue, to)))
+      return false;
+    float spacing = statueSpacing();
     float spacingSquared = spacing * spacing;
     for (Statue other : statues) {
       if (other == statue || other.broken) continue;
       Vector2 otherFrom = other.entity.getCenterPosition();
-      Vector2 otherTo =
-          other.destination != null
-                  && other.pauseRemaining <= 0f
-                  && other.warningRemaining <= 0f
-                  && !other.airborne
-              ? other.destination
-              : otherFrom;
+      Vector2 otherTo = reservedStatueDestination(other, otherFrom);
       float currentDistanceSquared = from.dst2(otherFrom);
       float required = Math.min(spacingSquared, currentDistanceSquared);
       if (statueRoutesDistanceSquared(from, to, otherFrom, otherTo) + 0.0001f < required)
@@ -731,6 +912,33 @@ public class FinalBossStageThreeComponent extends Component {
               || to.dst2(otherTo) <= currentDistanceSquared + 0.0001f)) return false;
     }
     return true;
+  }
+
+  /** Share live floor positions and reserved routes so tornadoes yield to moving statues. */
+  private List<FinalBossTornadoController.StatuePath> statueGroundPaths() {
+    List<FinalBossTornadoController.StatuePath> paths = new ArrayList<>();
+    for (Statue statue : statues) {
+      if (statue.broken) continue;
+      Vector2 centre = statue.entity.getCenterPosition();
+      paths.add(
+          new FinalBossTornadoController.StatuePath(
+              statueGroundAt(statue, centre),
+              statueGroundAt(statue, reservedStatueDestination(statue, centre))));
+    }
+    return paths;
+  }
+
+  private static Vector2 reservedStatueDestination(Statue statue, Vector2 currentPosition) {
+    if (statue.destination != null
+        && statue.pauseRemaining <= 0f
+        && statue.warningRemaining <= 0f
+        && !statue.airborne) return statue.destination;
+    return currentPosition;
+  }
+
+  private static Vector2 statueGroundAt(Statue statue, Vector2 centre) {
+    // Entity centre is at 50% of its height; the shared floor anchor is at 15%.
+    return centre.cpy().sub(0f, statue.entity.getScale().y * 0.35f);
   }
 
   private static float statueRoutesDistanceSquared(
@@ -1019,6 +1227,7 @@ public class FinalBossStageThreeComponent extends Component {
   @Override
   public void dispose() {
     disposed = true;
+    tornadoes.clear();
     clearFreeze();
     bolts.clear();
     clearStatueCombat();

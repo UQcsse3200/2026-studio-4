@@ -74,7 +74,7 @@ class FinalBossStageThreeSlamTest {
   }
 
   @Test
-  void fiveStatuesSpawnSeparatelyInsideTheArenaWithIndependentAttackDelays() {
+  void fiveStatuesSpawnSeparatelyInsideTheArenaReadyForTheSharedAttackSchedule() {
     assertFalse(actions.isJumpEnabled());
     startStatues();
     assertTrue(actions.isJumpEnabled());
@@ -87,7 +87,7 @@ class FinalBossStageThreeSlamTest {
       assertTrue(arena.contains(position));
       assertTrue(arena.contains(position.cpy().add(statue.entity.getScale())));
       assertEquals(10, statue.hitsRemaining);
-      assertEquals(3f + 1.8f * i, statue.slamCooldown, EPSILON);
+      assertEquals(0f, statue.slamCooldown, EPSILON);
       assertEquals(0f, statue.warningRemaining);
       assertFalse(statue.airborne);
       for (int j = 0; j < i; j++) {
@@ -171,6 +171,36 @@ class FinalBossStageThreeSlamTest {
   }
 
   @Test
+  void aLongFrameCannotOverlapSlamsOrMakeTwoStatuesLandTogether() {
+    startStatues();
+    player.getComponent(CombatStatsComponent.class).setInvulnerable(true);
+    FinalBossStageThreeComponent.Statue first = stage.statues.getFirst();
+    FinalBossStageThreeComponent.Statue second = stage.statues.get(1);
+    tick(config.statueSlamInitialDelay);
+    assertEquals(config.statueSlamWarning, first.warningRemaining, EPSILON);
+
+    tick(3f);
+    assertTrue(first.airborne);
+    assertEquals(0f, second.warningRemaining);
+    tick(config.statueSlamWarning);
+    assertTrue(first.airborne);
+    assertEquals(0f, second.warningRemaining);
+    assertFalse(second.airborne);
+
+    tick(config.statueJumpDuration);
+    assertFalse(first.airborne);
+    assertEquals(1, stage.shockwaves.size());
+    assertEquals(config.statueSlamWarning, second.warningRemaining, EPSILON);
+    assertFalse(second.airborne);
+    verify(renderer, times(1)).shake(any(), anyFloat(), anyFloat());
+
+    tick(config.statueSlamWarning);
+    tick(config.statueJumpDuration);
+    assertFalse(second.airborne);
+    verify(renderer, times(2)).shake(any(), anyFloat(), anyFloat());
+  }
+
+  @Test
   void aSlamLandingCreatesOneExpandingRingAtTheFeetAndOneShortCameraShake() {
     FinalBossStageThreeComponent.Statue first = startFirstStatueJump();
     Vector2 floor =
@@ -200,7 +230,7 @@ class FinalBossStageThreeSlamTest {
     FinalBossStageThreeComponent.Statue first = startFirstStatueJump();
     tick(config.statueJumpDuration / 2f);
     tick(config.statueJumpDuration / 2f + 0.01f);
-    assertEquals(7.5f, first.slamCooldown, EPSILON);
+    assertEquals(13.5f, first.slamCooldown, EPSILON);
     tick(0.1f);
     stage.statues.stream().skip(1).forEach(statue -> statue.slamCooldown = 100f);
     tick(first.slamCooldown - 0.01f);
@@ -220,7 +250,7 @@ class FinalBossStageThreeSlamTest {
   }
 
   @Test
-  void allFiveStatuesKeepDistinctWarningsAndWaitSevenAndAHalfSecondsAfterLanding() {
+  void allFiveStatuesTakeTurnsEveryThreeSecondsAndKeepTheirOwnRecovery() {
     startStatues();
     player.getComponent(CombatStatsComponent.class).setInvulnerable(true);
     List<List<Float>> warnings = new ArrayList<>();
@@ -230,7 +260,7 @@ class FinalBossStageThreeSlamTest {
       landings.add(new ArrayList<>());
     }
     float step = 0.01f;
-    for (int frame = 1; frame <= 2200; frame++) {
+    for (int frame = 1; frame <= 3200; frame++) {
       boolean[] wasWarning = new boolean[5];
       boolean[] wasAirborne = new boolean[5];
       for (int i = 0; i < 5; i++) {
@@ -248,13 +278,111 @@ class FinalBossStageThreeSlamTest {
       List<Float> warningTimes = warnings.get(i);
       assertTrue(warningTimes.size() >= 2, "Every statue must repeat its attack");
       assertFalse(landings.get(i).isEmpty());
-      assertEquals(3f + 1.8f * i, warningTimes.getFirst(), 0.03f);
-      assertEquals(7.5f, warningTimes.get(1) - landings.get(i).getFirst(), 0.03f);
+      assertEquals(3f + 3f * i, warningTimes.getFirst(), 0.08f);
+      assertEquals(13.5f, warningTimes.get(1) - landings.get(i).getFirst(), 0.08f);
       if (i > 0) {
-        assertEquals(1.8f, warningTimes.getFirst() - warnings.get(i - 1).getFirst(), 0.03f);
-        assertEquals(1.8f, warningTimes.get(1) - warnings.get(i - 1).get(1), 0.03f);
+        assertEquals(3f, warningTimes.getFirst() - warnings.get(i - 1).getFirst(), 0.03f);
+        assertEquals(3f, warningTimes.get(1) - warnings.get(i - 1).get(1), 0.03f);
       }
     }
+  }
+
+  @Test
+  void fiveStatuesKeepOneLandingEveryThreeSeconds() {
+    assertLandingCadence(5, 3f);
+  }
+
+  @Test
+  void fourStatuesIncreaseTheTotalLandingFrequency() {
+    assertLandingCadence(4, 2.7f);
+  }
+
+  @Test
+  void threeStatuesIncreaseTheTotalLandingFrequencyAgain() {
+    assertLandingCadence(3, 2.4f);
+  }
+
+  @Test
+  void twoStatuesAlternateTheirLandingsEveryTwoPointOneSeconds() {
+    assertLandingCadence(2, 2.1f);
+  }
+
+  @Test
+  void theLastStatueRepeatsItsLandingEveryOnePointEightSeconds() {
+    assertLandingCadence(1, 1.8f);
+  }
+
+  private void assertLandingCadence(int remaining, float expectedInterval) {
+    startStatues();
+    player.getComponent(CombatStatsComponent.class).setInvulnerable(true);
+    for (int i = remaining; i < stage.statues.size(); i++) breakStatue(stage.statues.get(i));
+    List<Float> landings = new ArrayList<>();
+    List<Integer> attackers = new ArrayList<>();
+    float step = 0.01f;
+    for (int frame = 1; frame <= 2500; frame++) {
+      boolean[] wasAirborne = new boolean[remaining];
+      for (int i = 0; i < remaining; i++) wasAirborne[i] = stage.statues.get(i).airborne;
+      tick(step);
+      for (int i = 0; i < remaining; i++) {
+        if (wasAirborne[i] && !stage.statues.get(i).airborne) {
+          landings.add(frame * step);
+          attackers.add(i);
+        }
+      }
+    }
+    assertTrue(landings.size() >= 7, "Measure repeated slams, including the next full rotation");
+    for (int i = 0; i < landings.size(); i++) {
+      assertEquals(i % remaining, attackers.get(i), "Every surviving statue gets its turn");
+      if (i > 0) assertEquals(expectedInterval, landings.get(i) - landings.get(i - 1), 0.04f);
+    }
+  }
+
+  @Test
+  void breakingPeersKeepsTheCurrentJumpIntactAndAcceleratesTheNextSlam() {
+    FinalBossStageThreeComponent.Statue first = startFirstStatueJump();
+    tick(config.statueJumpDuration / 2f);
+    float heightBefore = first.jumpHeight;
+    for (int i = 1; i < stage.statues.size(); i++) breakStatue(stage.statues.get(i));
+    assertTrue(first.airborne);
+    assertEquals(heightBefore, first.jumpHeight, EPSILON);
+    assertTrue(stage.shockwaves.isEmpty());
+    tick(config.statueJumpDuration / 2f);
+    assertEquals(1, stage.shockwaves.size());
+    assertEquals(0.3f, first.slamCooldown, EPSILON);
+    tick(0.69f);
+    assertEquals(0f, first.warningRemaining);
+    tick(0.5f);
+    assertEquals(config.statueSlamWarning, first.warningRemaining, EPSILON);
+    assertFalse(first.airborne);
+  }
+
+  @Test
+  void breakingPeersShortensAnExistingCooldownAndEvadingUsesTheFasterRecovery() {
+    FinalBossStageThreeComponent.Statue first = startFirstStatueJump();
+    tick(config.statueJumpDuration);
+    assertEquals(13.5f, first.slamCooldown, EPSILON);
+    for (int i = 1; i < stage.statues.size(); i++) breakStatue(stage.statues.get(i));
+    assertEquals(0.3f, first.slamCooldown, EPSILON);
+    for (int i = 0; i < config.statueEvadeHits; i++) stage.hitStatue(first);
+    assertTrue(first.evadePending);
+    tick(0.01f);
+    assertFalse(first.evadePending);
+    assertEquals(0.3f, first.slamCooldown, EPSILON);
+    assertEquals(0f, first.warningRemaining);
+    assertFalse(first.airborne);
+  }
+
+  @Test
+  void theLastStatueCanWalkBetweenItsLandingAndTheNextSlam() {
+    FinalBossStageThreeComponent.Statue first = startFirstStatueJump();
+    for (int i = 1; i < stage.statues.size(); i++) breakStatue(stage.statues.get(i));
+    tick(config.statueJumpDuration);
+    Vector2 before = first.entity.getCenterPosition();
+    assertEquals(0.075f, first.pauseRemaining, EPSILON);
+    for (int frame = 0; frame < 4; frame++) tickPhysics(0.05f);
+    assertTrue(first.entity.getCenterPosition().dst(before) > 0.05f);
+    assertEquals(0f, first.warningRemaining);
+    assertFalse(first.airborne);
   }
 
   @Test
@@ -263,7 +391,7 @@ class FinalBossStageThreeSlamTest {
     silenceSlams();
     FinalBossStageThreeComponent.Statue statue = stage.statues.getFirst();
     statue.slamCooldown = 0f;
-    tick(0.01f);
+    tick(config.statueSlamInitialDelay);
     tick(config.statueSlamWarning);
     tick(config.statueJumpDuration / 2f);
     assertTrue(statue.airborne);
@@ -276,7 +404,7 @@ class FinalBossStageThreeSlamTest {
     assertFalse(statue.entity.getComponent(PhysicsComponent.class).getBody().isActive());
     assertEquals(0, statue.entity.getComponent(CombatStatsComponent.class).getHealth());
     verify(ServiceLocator.getEntityService()).scheduleDisposal(statue.entity);
-    tick(config.statueJumpDuration + config.statueSlamCooldown);
+    tick(config.statueJumpDuration + config.statueSlamInterval);
     assertEquals(4, stage.getRemainingStatues());
     assertTrue(stage.shockwaves.isEmpty());
     assertEquals(100, playerHealth());

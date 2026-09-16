@@ -160,14 +160,14 @@ class FinalBossStatueEvadeTest {
     FinalBossStageThreeComponent.Statue statue = stage.statues.getFirst();
     putPlayerBeside(statue);
     statue.slamCooldown = 0f;
-    tick(STEP);
+    tick(config.statueSlamInitialDelay);
     assertTrue(statue.warningRemaining > 0f);
     Vector2 before = statue.entity.getCenterPosition();
     hitThreeTimes(statue);
     tick(STEP);
     assertEvaded(statue, before);
     assertSlamCancelled(statue);
-    tick(config.statueSlamCooldown - STEP);
+    tick(13.5f - STEP);
     assertEquals(0f, statue.warningRemaining);
     tick(2f * STEP);
     assertEquals(config.statueSlamWarning, statue.warningRemaining, EPSILON);
@@ -179,7 +179,7 @@ class FinalBossStatueEvadeTest {
     FinalBossStageThreeComponent.Statue statue = stage.statues.getFirst();
     putPlayerBeside(statue);
     statue.slamCooldown = 0f;
-    tick(STEP);
+    tick(config.statueSlamInitialDelay);
     tick(config.statueSlamWarning);
     tick(config.statueJumpDuration / 2f);
     assertTrue(statue.airborne);
@@ -305,7 +305,7 @@ class FinalBossStatueEvadeTest {
     assertEquals(0f, statue.warningRemaining);
     assertFalse(statue.airborne);
     assertEquals(0f, statue.jumpHeight);
-    assertEquals(config.statueSlamCooldown, statue.slamCooldown, EPSILON);
+    assertEquals(13.5f, statue.slamCooldown, EPSILON);
     assertNull(statue.destination);
     assertFalse(statue.entity.getComponent(PhysicsMovementComponent.class).getMoving());
     assertTrue(
