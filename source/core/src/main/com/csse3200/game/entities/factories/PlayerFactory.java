@@ -2,7 +2,6 @@ package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
@@ -15,7 +14,7 @@ import com.csse3200.game.components.player.PlayerDamageFlashComponent;
 import com.csse3200.game.components.player.PlayerPetrificationComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.components.spells.LightningSpellComponent;
-import com.csse3200.game.components.spells.targeting.StrategyOnscreen;
+import com.csse3200.game.components.spells.targeting.StrategyAll;
 import com.csse3200.game.components.weapons.BowWeaponComponent;
 import com.csse3200.game.components.weapons.KnifeWeaponComponent;
 import com.csse3200.game.components.weapons.SwordWeaponComponent;
@@ -50,7 +49,7 @@ public class PlayerFactory {
    *
    * @return entity
    */
-  public static Entity createPlayer(CameraComponent camera) {
+  public static Entity createPlayer() {
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForPlayer();
 
@@ -102,7 +101,7 @@ public class PlayerFactory {
             .addComponent(new BowWeaponComponent())
             // Owns the equipped weapon: equips the sword and disables the rest on create.
             .addComponent(new WeaponSelectionComponent())
-            .addComponent(new LightningSpellComponent(15f, 25, 1500, new StrategyOnscreen(camera)));
+            .addComponent(new LightningSpellComponent(15f, 25, 1500, new StrategyAll()));
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
