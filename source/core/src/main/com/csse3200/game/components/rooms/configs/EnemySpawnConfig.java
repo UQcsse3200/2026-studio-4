@@ -8,12 +8,14 @@ public class EnemySpawnConfig extends PositionConfig {
     CRAB,
     HARPY,
     MUMMY,
+    WASP,
     BEETLE,
     CYCLOPS,
     GOLEM,
     MEDUSA,
     CERBERUS,
     BOW,
-    FINAL_BOSS
+    FINAL_BOSS,
+    SNAKE_MINI_BOSS
   }
 }

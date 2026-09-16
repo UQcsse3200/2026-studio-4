@@ -11,6 +11,7 @@ import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
+import com.csse3200.game.components.player.PlayerCerberusMistDebuffComponent;
 import com.csse3200.game.components.player.PlayerDamageFlashComponent;
 import com.csse3200.game.components.player.PlayerPetrificationComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
@@ -98,6 +99,7 @@ public class PlayerFactory {
             .addComponent(new SwordWeaponComponent())
             .addComponent(new KnifeWeaponComponent())
             .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(new PlayerCerberusMistDebuffComponent())
             .addComponent(new PlayerDamageFlashComponent())
             .addComponent(new PlayerPetrificationComponent())
             .addComponent(new BowWeaponComponent())

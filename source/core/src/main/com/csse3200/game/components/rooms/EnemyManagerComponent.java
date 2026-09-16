@@ -15,6 +15,7 @@ import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.items.EnemyDropPolicy;
 import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.WeaponItem;
+import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -67,10 +68,18 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
+
+    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+    Vector2 leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);
+    Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
+    Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
+
     switch (spawn.type) {
       // Egyptian
       case BEETLE:
-        return NPCFactory.createBombEnemy(target, "images/beetle.atlas", 2f);
+        Entity beetle = NPCFactory.createBombEnemy(target, "images/beetle.atlas", 2f);
+        beetle.setScale(0.75f, 0.75f);
+        return beetle;
       case CRAB:
         Entity crab = NPCFactory.createChaseEnemy(target, true, "images/crab.atlas");
         crab.setScale(1.5f, 1.5f);
@@ -79,19 +88,28 @@ public class EnemyManagerComponent extends EntityManagerComponent {
                 new Vector2(1f, 0.5f),
                 new Vector2(crab.getCenterPosition().x, crab.getCenterPosition().y / 2));
         return crab;
+      case WASP:
+        return NPCFactory.createFloatingDemon(
+            target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/wasp.atlas");
       case MUMMY:
         Entity mummy = NPCFactory.createGiantEnemy(target, "images/mummy.atlas");
-        mummy.getComponent(HitboxComponent.class).setAsBox(new Vector2(1f, 1.5f));
+        mummy
+            .getComponent(HitboxComponent.class)
+            .setAsBox(new Vector2(1f, 1.5f), mummy.getCenterPosition());
+        PhysicsUtils.setScaledCollider(mummy, 0.3f, 0.3f);
         return mummy;
+      case SNAKE_MINI_BOSS:
+        return NPCFactory.createSnakeMiniBoss(target);
       // Greek
       case GOLEM:
         Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
-        golem.setScale(1.5F, 1.5F);
+        golem.setScale(1.5f, 1.5f);
         golem
             .getComponent(HitboxComponent.class)
             .setAsBox(
                 new Vector2(1, 1),
                 new Vector2(golem.getCenterPosition().x, golem.getCenterPosition().y / 2));
+        PhysicsUtils.setScaledCollider(golem, 0.3f, 0.3f);
         return golem;
       case MEDUSA:
         Entity medusa = NPCFactory.createChaseEnemy(target, true, "images/medusa.atlas");
@@ -99,10 +117,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         medusa.getComponent(HitboxComponent.class).setAsBox(new Vector2(1, 1));
         return medusa;
       case HARPY:
-        TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
-        Vector2 leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);
-        Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
-        Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
         return NPCFactory.createFloatingDemon(
             target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/harpy.atlas");
       case CYCLOPS:
@@ -112,6 +126,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             .setAsBox(
                 new Vector2(1f, 1.5f),
                 new Vector2(cyclops.getCenterPosition().x, cyclops.getCenterPosition().y / 2));
+        PhysicsUtils.setScaledCollider(cyclops, 0.3f, 0.3f);
         return cyclops;
       case CERBERUS:
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
