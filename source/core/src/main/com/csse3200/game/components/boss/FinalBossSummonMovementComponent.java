@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.GameTime;
@@ -129,6 +130,12 @@ public class FinalBossSummonMovementComponent extends Component {
     keepInsideVisibleArea();
 
     if (explosive.isWarningActive()) {
+      return;
+    }
+
+    // The formation is built around the player, so a concealed player leaves nothing to close on.
+    if (StatusEffectsControllerComponent.isConcealed(target)) {
+      movement.setMoving(false);
       return;
     }
 

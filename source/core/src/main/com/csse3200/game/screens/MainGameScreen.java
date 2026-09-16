@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.components.maingame.HotbarDisplay;
 import com.csse3200.game.components.maingame.InventoryActions;
 import com.csse3200.game.components.maingame.InventoryDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
@@ -30,6 +31,9 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
+import com.csse3200.game.ui.terminal.commands.AbilityCommand;
+import com.csse3200.game.ui.terminal.commands.StatusEffectCommand;
+import com.csse3200.game.ui.terminal.commands.UpgradeCommand;
 import com.csse3200.game.ui.terminal.commands.WeaponCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,8 +164,12 @@ public class MainGameScreen extends ScreenAdapter {
     // Register on the shared terminal field: commands added elsewhere (e.g. "room" in the
     // constructor) must end up on the same Terminal instance that is attached to the UI below.
     terminal.addCommand("weapon", new WeaponCommand(player));
+    terminal.addCommand("ability", new AbilityCommand(player));
+    terminal.addCommand("effect", new StatusEffectCommand(player));
+    terminal.addCommand("upgrade", new UpgradeCommand(player));
 
     InventoryDisplay inventoryDisplay = new InventoryDisplay(player.getComponent(InventoryComponent.class));
+    HotbarDisplay hotbarDisplay = new HotbarDisplay(player);
     InventoryActions inventoryActions = new InventoryActions(inventoryDisplay);
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
 
@@ -174,6 +182,7 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay())
         .addComponent(inventoryDisplay)
+        .addComponent(hotbarDisplay)
         .addComponent(inventoryActions);
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     ServiceLocator.getEntityService().register(ui);

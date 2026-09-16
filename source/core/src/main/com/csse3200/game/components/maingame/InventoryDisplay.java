@@ -41,10 +41,6 @@ public class InventoryDisplay extends UIComponent {
   @Override
   public void create() {
     super.create();
-    addActors();
-  }
-
-  private void addActors() {
     buildPage();
     table.setVisible(false);
   }
@@ -53,6 +49,7 @@ public class InventoryDisplay extends UIComponent {
   private void buildPage() {
     // Create main table
     table = new Table();
+    table.setName("inventory-book");
     this.dragAndDrop = new DragAndDrop();
     table.setFillParent(true);
     stage.addActor(table);
@@ -91,15 +88,11 @@ public class InventoryDisplay extends UIComponent {
 
   /** Changes the current page to the other inactive page and sets the flag */
   public void changePage() {
-    if (charmsPage) {
-      table.clear();
-      charmsPage = false;
-      buildPage();
-    } else {
-      table.clear();
-      charmsPage = true;
-      buildPage();
-    }
+    boolean visible = table.isVisible();
+    table.remove();
+    charmsPage = !charmsPage;
+    buildPage();
+    table.setVisible(visible);
   }
 
   /**
@@ -249,10 +242,11 @@ public class InventoryDisplay extends UIComponent {
 
   @Override
   public void dispose() {
-    table.clear();
+    table.remove();
     super.dispose();
   }
 
+  /** Shows or hides the inventory book. */
   public void setVisible(boolean set) {
     table.setVisible(set);
     if (set) {

@@ -46,6 +46,10 @@ public class SweepComponent extends Component {
     float angle = startAngleDeg + (endAngleDeg - startAngleDeg) * t;
     Vector2 offset = new Vector2(radius, 0f).setAngleDeg(angle);
     follow.setLocalOffset(offset);
+    // Move to the new offset now rather than on FollowComponent's next update. Component update
+    // order is not guaranteed, and a one-frame lag leaves the blade's position trailing its
+    // rotation, which is visible as a tilted blade on fast sweeps.
+    follow.update();
 
     // Turn the blade with the arc so it points along the swing rather than staying axis-aligned.
     RotatingTextureRenderComponent render =

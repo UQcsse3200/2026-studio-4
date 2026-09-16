@@ -1,0 +1,61 @@
+mummy.png
+size: 144, 256
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+default
+    rotate: false
+    xy: 48,128
+    size: 48, 64
+    orig: 48, 64
+    offset: 0, 0
+    index: 0
+move
+    rotate: false
+    xy: 0, 128
+    size: 48, 64
+    orig: 48, 64
+    offset: 0, 0
+    index: 0
+move
+    rotate: false
+    xy: 48, 128
+    size: 48, 64
+    orig: 48, 64
+    offset: 0, 0
+    index: 1
+move
+    rotate: false
+    xy: 96, 128
+    size: 48, 64
+    orig: 48, 64
+    offset: 0, 0
+    index: 2
+chase
+    rotate: false
+    xy: 0, 128
+    size: 48, 64
+    orig: 48, 64
+    offset: 0, 0
+    index: 0
+chase
+    rotate: false
+    xy: 48, 128
+    size: 48, 64
+    orig: 48, 64
+    offset: 0, 0
+    index: 1
+chase
+    rotate: false
+    xy: 96, 128
+    size: 48, 64
+    orig: 48, 64
+    offset: 0, 0
+    index: 2
+dieAnimation
+    rotate: false
+    xy: 400, 400
+    size: 48, 64
+    orig: 48, 64
+    offset: 0, 0
+    index: 2
