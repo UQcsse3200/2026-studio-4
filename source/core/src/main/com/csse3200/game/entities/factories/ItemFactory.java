@@ -26,14 +26,13 @@ public final class ItemFactory {
   public static Entity createDrop(Vector2 position) {
     Objects.requireNonNull(position, "position cannot be null");
     Random random = new Random();
-    //    Random for now, in future will be determined by entity type.
-    int choice = random.nextInt(3); // Gives 0, 1, or 2
-    final Entity item =
-        switch (choice) {
-          case 0 -> createStrengthCharm();
-          case 1 -> createAttackSpeedCharm();
-          default -> createMovementSpeedCharm();
-        };
+//    Random for now, in future will be determined by entity type.
+    int choice = random.nextInt(3);// Gives 0, 1, or 2
+    final Entity item = switch (choice) {
+      case 0 -> createStrengthCharm();
+      case 1 -> createAttackSpeedCharm();
+      default -> createMovementSpeedCharm();
+    };
     item.setPosition(position);
     return item;
   }
