@@ -15,11 +15,55 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Supplier;
 
 /** Factory for creating item entities. */
 public final class ItemFactory {
 
-  /** Creates the default Strength Charm drop at a world position. */
+  /**
+   * Enum used to determine random drops.
+   *
+   * <p>To added a new drop to the random pool, add a new enum type and pass in a new item to its
+   * constructor function into the enum type's constructor
+   */
+  enum DropTypes {
+    STRENGTH_CHARM(StrengthCharm::new);
+
+    // A functional interface is used so that new instances are created
+    // on drop request
+    private final Supplier<Item> itemSupplier;
+    private static final DropTypes[] VALUES = values();
+
+    DropTypes(Supplier<Item> item) {
+      this.itemSupplier = item;
+    }
+
+    public Item getItemSupplier() {
+      return itemSupplier.get();
+    }
+
+    /** selects a random item type to drop */
+    public static DropTypes randomDrop() {
+      int idx = ThreadLocalRandom.current().nextInt(VALUES.length);
+      return VALUES[idx];
+    }
+  }
+
+  public static Entity createRandomDrop(Vector2 position) {
+    Objects.requireNonNull(position, "position cannot be null");
+
+    Entity item = createItem(DropTypes.randomDrop().getItemSupplier());
+    item.setPosition(position);
+    return item;
+  }
+
+  /**
+   * Creates the requested item at a world position.
+   *
+   * @param position world position assigned to the item entity
+   * @return a non-null, positioned, unregistered item entity for the room to spawn
+   */
   public static Entity createDrop(Vector2 position) {
     return createDrop(ItemType.STRENGTH_CHARM, position);
   }

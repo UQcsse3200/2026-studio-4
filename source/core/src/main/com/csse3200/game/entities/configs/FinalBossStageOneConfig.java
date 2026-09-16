@@ -9,8 +9,8 @@ public class FinalBossStageOneConfig {
 
   // Boss and summon health
   public int bossHealth = 100;
-  public int waveOneSummonCount = 1;
-  public int waveTwoSummonCount = 1;
+  public int waveOneSummonCount = 8;
+  public int waveTwoSummonCount = 16;
   public int summonHealth = 10;
   public int summonExplosionDamage = 10;
 
@@ -59,7 +59,8 @@ public class FinalBossStageOneConfig {
   public float petrificationRadius = 1.2f;
   public float petrificationSlowMultiplier = 0.5f;
   public float petrificationSlowDuration = 2f;
-  public float petrificationCooldown = 0.5f;
+  // Measured from warning resolution; leaves a short recovery after the two-second penalty.
+  public float petrificationCooldown = 2.5f;
 
   /** Validates values required by the Stage 1 runtime. */
   public void validate() {

@@ -126,4 +126,13 @@ class ItemFactoryTest {
   private static ItemType itemTypeOf(Entity entity) {
     return entity.getComponent(ItemComponent.class).getItemType();
   }
+
+  @Test
+  void shouldCreateAtCorrectPostion() {
+    Entity itemEntity = ItemFactory.createDrop(new Vector2(2, 2));
+    Entity randomItemEntity = ItemFactory.createRandomDrop(new Vector2(1, 2));
+
+    assertEquals(itemEntity.getPosition(), new Vector2(2, 2));
+    assertEquals(randomItemEntity.getPosition(), new Vector2(1, 2));
+  }
 }

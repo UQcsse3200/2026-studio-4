@@ -144,6 +144,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     }
     enemy.getEvents().<Entity>addListener("cerberusProjectileSpawned", this::spawnEntity);
     enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy));
+    enemy.getEvents().addListener("finalBossEncounterCompleted", () -> onEnemyDefeated(enemy));
     enemy
         .getEvents()
         .addListener("spawnChildren", (Entity child) -> replaceWithChild(enemy, child));

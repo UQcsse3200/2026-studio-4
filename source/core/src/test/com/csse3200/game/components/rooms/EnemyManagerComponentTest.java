@@ -136,6 +136,26 @@ class EnemyManagerComponentTest {
   }
 
   @Test
+  void bossCompletionAndDeathRewardOnlyOnceInEitherOrder() {
+    int[] cleared = {0};
+    room.getEvents().addListener("roomCleared", () -> cleared[0]++);
+    Entity[] enemies = trackEnemies(2);
+    enemies[0].getEvents().trigger("finalBossEncounterCompleted");
+    enemies[0].getEvents().trigger("entityDied");
+    enemies[1].getEvents().trigger("entityDied");
+    enemies[1].getEvents().trigger("finalBossEncounterCompleted");
+    entityService.update();
+    assertEquals(1, cleared[0]);
+    assertTrue(enemyManager.isCleared());
+    ArgumentCaptor<Entity> drops = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService, times(2)).register(drops.capture());
+    for (Entity drop : drops.getAllValues()) {
+      assertEquals(ItemType.GOLD_COIN, drop.getComponent(ItemComponent.class).getItemType());
+      assertEquals(5, drop.getComponent(ItemComponent.class).getQuantity());
+    }
+  }
+
+  @Test
   void shouldRegisterGoldAtCapturedDefeatedEnemyPosition() {
     Vector2 deathPosition = new Vector2(4f, 6f);
     Entity enemy = new Entity();
