@@ -16,6 +16,7 @@ import com.csse3200.game.components.weapons.SwordWeaponComponent;
 import com.csse3200.game.components.weapons.WeaponAssetsComponent;
 import com.csse3200.game.components.weapons.WeaponSelectionComponent;
 import com.csse3200.game.components.weapons.WeaponStatsComponent;
+import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
 import com.csse3200.game.files.FileLoader;
@@ -84,10 +85,13 @@ public class PlayerFactory {
             // therefore scale weapon hits too.
             .addComponent(new WeaponAssetsComponent())
             .addComponent(new WeaponStatsComponent(0.5f, 1f, 2f))
+            // Tracks which weapons are upgraded; the "upgrade" terminal command grants them.
+            .addComponent(new WeaponUpgradeComponent())
             .addComponent(new SwordWeaponComponent())
             .addComponent(new KnifeWeaponComponent())
             .addComponent(new StatusEffectsControllerComponent())
             .addComponent(new BowWeaponComponent())
+            // Owns the equipped weapon: equips the sword and disables the rest on create.
             .addComponent(new WeaponSelectionComponent());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);

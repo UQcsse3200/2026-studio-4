@@ -26,6 +26,7 @@ class KeyboardPlayerInputComponentTest {
   private int walkCount;
   private int walkStopCount;
   private int attackCount;
+  private int heavyAttackCount;
   private int specialAttackCount;
   private int dashCount;
   private Vector2 lastWalkDirection;
@@ -46,6 +47,7 @@ class KeyboardPlayerInputComponentTest {
             });
     player.getEvents().addListener("walkStop", () -> walkStopCount++);
     player.getEvents().addListener("attack", () -> attackCount++);
+    player.getEvents().addListener("heavyAttack", () -> heavyAttackCount++);
     player.getEvents().addListener("specialAttack", () -> specialAttackCount++);
     player
         .getEvents()
@@ -145,9 +147,10 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldTriggerSpecialAttackOnK() {
+  void shouldTriggerHeavyAttackNotSpecialAttackOnK() {
     assertTrue(input.keyDown(Keys.K));
-    assertEquals(1, specialAttackCount);
+    assertEquals(1, heavyAttackCount);
+    assertEquals(0, specialAttackCount);
   }
 
   @Test
