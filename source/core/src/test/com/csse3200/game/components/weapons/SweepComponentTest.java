@@ -139,6 +139,28 @@ class SweepComponentTest {
   }
 
   @Test
+  void updateMovesHitboxToTheNewOffsetInTheSameFrame() {
+    Entity owner = new Entity();
+    owner.setPosition(2f, 3f);
+    Entity hitbox = new Entity();
+    hitbox.setScale(1f, 0.4f);
+    FollowComponent follow = new FollowComponent(owner, new Vector2(1f, 0f));
+    hitbox.addComponent(follow);
+    SweepComponent sweep = new SweepComponent(1f, 0f, 90f, 1f);
+    hitbox.addComponent(sweep);
+
+    when(gameTime.getDeltaTime()).thenReturn(1f); // jump to the 90 degree end of the arc
+    sweep.update();
+
+    // Without FollowComponent updating again, the hitbox centre already sits on the new offset,
+    // so position never trails the blade's rotation.
+    Vector2 expectedCentre = owner.getCenterPosition().add(new Vector2(1f, 0f).setAngleDeg(90f));
+    Vector2 actualCentre = hitbox.getCenterPosition();
+    assertEquals(expectedCentre.x, actualCentre.x, 0.001f);
+    assertEquals(expectedCentre.y, actualCentre.y, 0.001f);
+  }
+
+  @Test
   void negativeDeltaTimeTreatedAsZero() {
     Entity owner = new Entity();
     Entity hitbox = new Entity();

@@ -15,12 +15,17 @@ import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.player.abilities.Invisibility;
 import com.csse3200.game.components.player.abilities.LastStand;
+import com.csse3200.game.components.statuseffects.InvisibilityEffect;
+import com.csse3200.game.components.statuseffects.PetrificationEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -35,6 +40,47 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class RenderComponentTest {
   @Mock RenderService service;
+
+  @Test
+  void playerAnimationShouldDrawTheLiveRedBlinkAndRestoreBatchColorBetweenSprites() {
+    GameTime time = mock(GameTime.class);
+    ServiceLocator.registerTimeSource(time);
+    TextureAtlas atlas = mock(TextureAtlas.class);
+    TextureAtlas.AtlasRegion frame = mock(TextureAtlas.AtlasRegion.class);
+    when(atlas.findRegions("idle")).thenReturn(new Array<>(new TextureAtlas.AtlasRegion[] {frame}));
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    animator.addAnimation("idle", 0.1f);
+    animator.startAnimation("idle");
+    StatusEffectsControllerComponent effects = new StatusEffectsControllerComponent();
+    new Entity()
+        .addComponent(new CombatStatsComponent(100, 10))
+        .addComponent(effects)
+        .addComponent(animator);
+    effects.addStatusEffect(new PetrificationEffect(time, 2000L, 0.5f));
+    effects.addStatusEffect(new InvisibilityEffect(time, 10000L));
+    Color original = new Color(0.8f, 0.6f, 0.4f, 0.5f);
+    SpriteBatch batch = mutableColorBatch(original);
+    Color drawn = new Color();
+    doAnswer(
+            invocation -> {
+              drawn.set(batch.getColor());
+              return null;
+            })
+        .when(batch)
+        .draw(any(TextureRegion.class), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+
+    animator.render(batch);
+    assertEquals(new Color(0.8f, 0.6f * 0.2f, 0.4f * 0.2f, 0.5f * 0.35f), drawn);
+    assertEquals(original, batch.getColor());
+    when(time.getTime()).thenReturn(250L);
+    animator.render(batch);
+    assertEquals(new Color(0.8f, 0.6f, 0.4f, 0.5f * 0.35f), drawn);
+    assertEquals(original, batch.getColor());
+    when(time.getTime()).thenReturn(2000L);
+    animator.render(batch);
+    assertEquals(new Color(0.8f, 0.6f, 0.4f, 0.5f * 0.35f), drawn);
+    assertEquals(original, batch.getColor());
+  }
 
   @Test
   void shouldMultiplyExistingAlphaForAFadingTintAndRestoreMutableBatchColor() {

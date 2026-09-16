@@ -205,6 +205,20 @@ class HitboxFactoryTest {
   }
 
   @Test
+  void shouldStartOnTheOwnerOffsetRatherThanTheSpawnOrigin() {
+    Entity owner = new Entity();
+    owner.setPosition(3f, 4f); // 1x1, so centred on (3.5, 4.5)
+    HitboxSpec spec = meleeSpec().owner(owner).localOffset(new Vector2(1f, 0f));
+
+    Entity hitbox = HitboxFactory.createHitbox(spec);
+
+    // Before any update runs, the hitbox is already centred on owner centre + offset, not at the
+    // (1, 2) spawn origin, so it never renders a frame in the wrong place.
+    assertEquals(4.5f, hitbox.getCenterPosition().x, 1e-4f);
+    assertEquals(4.5f, hitbox.getCenterPosition().y, 1e-4f);
+  }
+
+  @Test
   void shouldNotFollowWhenOwnerOmitted() {
     Entity hitbox = HitboxFactory.createHitbox(meleeSpec());
     assertNull(hitbox.getComponent(FollowComponent.class));

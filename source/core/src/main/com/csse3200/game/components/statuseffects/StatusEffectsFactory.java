@@ -20,6 +20,15 @@ public class StatusEffectsFactory {
   }
 
   /**
+   * Creates a rechargeable shield status effect with the default shield configuration.
+   *
+   * @return a new shield status effect
+   */
+  public static Shield createShield() {
+    return new Shield();
+  }
+
+  /**
    * Create a regeneration status effect
    *
    * @param combatStats The combat stats component of the entity that regeneration is applied to.
@@ -49,5 +58,45 @@ public class StatusEffectsFactory {
    */
   public static TimedStatusEffect createLastStand(GameTime time, long duration) {
     return new LastStandEffect(time, duration);
+  }
+
+  /**
+   * Create a slow status effect
+   *
+   * @param combatStats The combat stats component of the entity that slow is applied to.
+   * @return The slow status effect.
+   */
+  public static StatusEffect createSlow(CombatStatsComponent combatStats) {
+    return new Slow(10000, combatStats, -0.5f);
+  }
+
+  /**
+   * Create a speed status effect
+   *
+   * @param combatStats The combat stats component of the entity that speed is applied to.
+   * @return The speed status effect.
+   */
+  public static StatusEffect createSpeed(CombatStatsComponent combatStats) {
+    return new Speed(10000, combatStats);
+  }
+
+  /**
+   * Create a vulnerable status effect
+   *
+   * @return The vulnerable status effect
+   */
+  public static StatusEffect createVulnerable() {
+    return new Vulnerable(5000);
+  }
+
+  /**
+   * Create a new freeze status effect.
+   *
+   * @param combatStats The combat stats component of the entity that is frozen
+   * @return the freeze status effect (a slow status effect that slows to 0)
+   */
+  public static StatusEffect createFreeze(CombatStatsComponent combatStats) {
+    float speed = combatStats.getMovementSpeed();
+    return new Slow(3000, combatStats, -speed);
   }
 }

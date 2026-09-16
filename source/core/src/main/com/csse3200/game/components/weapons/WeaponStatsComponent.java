@@ -147,7 +147,20 @@ public class WeaponStatsComponent extends Component {
    * @return {@code round(baseAttack * multiplier)}
    */
   public int resolveHitboxDamage(int baseAttack) {
-    return Math.round(baseAttack * multiplier);
+    return resolveHitboxDamage(baseAttack, 1f);
+  }
+
+  /**
+   * Hitbox damage with an extra scale on top of the weapon multiplier, e.g. an upgrade bonus. The
+   * scale is applied here rather than to {@link #setMultiplier(float)} because every weapon on the
+   * wielder shares this component.
+   *
+   * @param baseAttack wielder's {@code CombatStatsComponent.getBaseAttack()}
+   * @param scale extra damage scale; 1 for none
+   * @return {@code round(baseAttack * multiplier * scale)}
+   */
+  public int resolveHitboxDamage(int baseAttack, float scale) {
+    return Math.round(baseAttack * multiplier * scale);
   }
 
   /**

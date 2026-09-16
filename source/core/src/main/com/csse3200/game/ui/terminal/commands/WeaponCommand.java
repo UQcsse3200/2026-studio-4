@@ -1,10 +1,8 @@
 package com.csse3200.game.ui.terminal.commands;
 
-import com.csse3200.game.components.weapons.BowWeaponComponent;
-import com.csse3200.game.components.weapons.KnifeWeaponComponent;
-import com.csse3200.game.components.weapons.SwordWeaponComponent;
-import com.csse3200.game.components.weapons.WeaponComponent;
+import com.csse3200.game.components.weapons.WeaponSelectionComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.items.WeaponItem.WeaponType;
 import java.util.ArrayList;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -18,11 +16,11 @@ import org.slf4j.LoggerFactory;
  */
 public class WeaponCommand implements Command {
   private static final Logger logger = LoggerFactory.getLogger(WeaponCommand.class);
-  private static final Map<String, Class<? extends WeaponComponent>> WEAPONS =
+  private static final Map<String, WeaponType> WEAPONS =
       Map.of(
-          "knife", KnifeWeaponComponent.class,
-          "sword", SwordWeaponComponent.class,
-          "bow", BowWeaponComponent.class);
+          "knife", WeaponType.DAGGER,
+          "sword", WeaponType.SWORD,
+          "bow", WeaponType.BOW);
 
   private final Entity player;
 
@@ -46,13 +44,7 @@ public class WeaponCommand implements Command {
       return false;
     }
 
-    Class<? extends WeaponComponent> selected = WEAPONS.get(args.get(0));
-    for (Class<? extends WeaponComponent> weaponClass : WEAPONS.values()) {
-      WeaponComponent weapon = player.getComponent(weaponClass);
-      if (weapon != null) {
-        weapon.setEnabled(weaponClass == selected);
-      }
-    }
-    return true;
+    WeaponSelectionComponent selection = player.getComponent(WeaponSelectionComponent.class);
+    return selection != null && selection.equip(WEAPONS.get(args.get(0)));
   }
 }

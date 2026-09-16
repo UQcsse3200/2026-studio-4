@@ -126,6 +126,28 @@ class AnimationRenderComponentTest {
     assertNull(animator.getCurrentAnimation());
   }
 
+  @Test
+  void shouldOffsetOnlyTheRenderedSpriteAndResetWithoutDrift() {
+    ServiceLocator.registerTimeSource(mock(GameTime.class));
+    TextureAtlas atlas = createMockAtlas("idle", 1);
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    Entity entity = new Entity();
+    entity.setPosition(2f, 3f);
+    animator.setEntity(entity);
+    animator.addAnimation("idle", 1f);
+    animator.startAnimation("idle");
+    SpriteBatch batch = mock(SpriteBatch.class);
+    animator.setVerticalOffset(0.9f);
+    animator.draw(batch);
+    verify(batch).draw(atlas.findRegions("idle").first(), 2f, 3.9f, 1f, 1f);
+    assertEquals(3f, entity.getPosition().y);
+    animator.setVerticalOffset(0f);
+    animator.draw(batch);
+    verify(batch).draw(atlas.findRegions("idle").first(), 2f, 3f, 1f, 1f);
+    assertEquals(0f, animator.getVerticalOffset());
+    assertEquals(3f, entity.getPosition().y);
+  }
+
   static TextureAtlas createMockAtlas(String animationName, int numRegions) {
     TextureAtlas atlas = mock(TextureAtlas.class);
     Array<AtlasRegion> regions = new Array<>(numRegions);
