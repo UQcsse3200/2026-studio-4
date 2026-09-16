@@ -12,29 +12,24 @@ import com.csse3200.game.entities.factories.CerberusFactory;
 import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.items.EnemyDropPolicy;
 import com.csse3200.game.items.ItemDropSpec;
-import com.csse3200.game.items.ItemType;
 import com.csse3200.game.items.WeaponItem;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /** Spawns configured enemies and tracks when the room has been cleared. */
 public class EnemyManagerComponent extends EntityManagerComponent {
-  private static final List<ItemType> DEMO_DROP_TYPES =
-      List.of(
-          ItemType.HEALTH_POTION,
-          ItemType.SHIELD,
-          ItemType.SPEED_POTION,
-          ItemType.STRENGTH_POTION,
-          ItemType.GOLD_COIN);
   private final EnemySpawnConfig[] spawnConfigs;
   private final Set<Entity> activeEnemies = new HashSet<>();
   private final List<Entity> droppedItems = new ArrayList<>();
-  private int nextDemoDropIndex;
+  private final EnemyDropPolicy dropPolicy;
+  private boolean disposed;
   private CameraComponent camera;
 
   /** Creates an empty manager for tests and rooms with no enemies. */
@@ -48,7 +43,13 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs) {
+    this(spawnConfigs, new EnemyDropPolicy());
+  }
+
+  /** Uses a configured policy; this manager alone owns spawning and disposal. */
+  public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs, EnemyDropPolicy dropPolicy) {
     this.spawnConfigs = spawnConfigs;
+    this.dropPolicy = Objects.requireNonNull(dropPolicy);
   }
 
   @Override
@@ -138,7 +139,9 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   /** Tracks an enemy and any children it spawns. Package-private for testing. */
   void track(Entity enemy) {
-    activeEnemies.add(enemy);
+    if (disposed || !activeEnemies.add(enemy)) {
+      return;
+    }
     enemy.getEvents().<Entity>addListener("cerberusProjectileSpawned", this::spawnEntity);
     enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy));
     enemy
@@ -147,10 +150,16 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   private void onEnemyDefeated(Entity enemy) {
-    if (activeEnemies.remove(enemy) && activeEnemies.isEmpty()) {
+    if (disposed || !activeEnemies.remove(enemy)) {
+      return;
+    }
+    // Capture before deferred disposal or room changes can move/remove the enemy.
+    Vector2 position = enemy.getPosition().cpy();
+    List<ItemDropSpec> drops = dropPolicy.selectDrops();
+    ServiceLocator.getEntityService().schedule(() -> spawnItemDrops(position, drops));
+    if (activeEnemies.isEmpty()) {
       entity.getEvents().trigger("roomCleared");
     }
-    ServiceLocator.getEntityService().schedule(() -> spawnItemDrop(enemy));
   }
 
   private void replaceWithChild(Entity parent, Entity child) {
@@ -159,18 +168,15 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     spawnEntity(child);
   }
 
-  private void spawnItemDrop(Entity enemy) {
-    ItemType itemType = DEMO_DROP_TYPES.get(nextDemoDropIndex);
-    nextDemoDropIndex = (nextDemoDropIndex + 1) % DEMO_DROP_TYPES.size();
-    ItemDropSpec dropSpec =
-        itemType == ItemType.GOLD_COIN
-            ? new ItemDropSpec(itemType, 25)
-            : ItemDropSpec.single(itemType);
-    Entity item = ItemFactory.createDrop(dropSpec, enemy.getPosition());
-
-    // spawning item should not use the spawnEntity as items are stored in their own list.
-    droppedItems.add(item);
-    ServiceLocator.getEntityService().register(item);
+  private void spawnItemDrops(Vector2 position, List<ItemDropSpec> drops) {
+    if (disposed) {
+      return;
+    }
+    for (ItemDropSpec spec : drops) {
+      Entity item = ItemFactory.createDrop(spec, position);
+      droppedItems.add(item);
+      ServiceLocator.getEntityService().register(item);
+    }
   }
 
   /** Returns whether the room has any living enemies. */
@@ -190,9 +196,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   @Override
   public void dispose() {
+    disposed = true;
+    activeEnemies.clear();
     for (Entity item : droppedItems) {
       item.dispose();
     }
+    droppedItems.clear();
     super.dispose();
   }
 }

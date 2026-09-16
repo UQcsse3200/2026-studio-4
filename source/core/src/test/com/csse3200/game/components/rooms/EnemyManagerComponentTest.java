@@ -17,10 +17,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.items.ItemComponent;
+import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.items.EnemyDropPolicy;
 import com.csse3200.game.items.ItemType;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
@@ -28,7 +30,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.List;
+import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,7 +74,9 @@ class EnemyManagerComponentTest {
     ServiceLocator.registerResourceService(resourceService);
 
     room = createMockRoom();
-    enemyManager = new EnemyManagerComponent();
+    enemyManager =
+        new EnemyManagerComponent(
+            new EnemySpawnConfig[0], new EnemyDropPolicy(5, 0, new Random(1)));
     enemyManager.setEntity(room);
     enemyManager.create();
   }
@@ -83,6 +87,7 @@ class EnemyManagerComponentTest {
     for (int i = 0; i < n; i++) {
       Entity enemy = mock(Entity.class);
       when(enemy.getEvents()).thenReturn(new EventHandler());
+      when(enemy.getPosition()).thenReturn(new Vector2());
       enemyManager.track(enemy);
       enemies[i] = enemy;
     }
@@ -117,13 +122,14 @@ class EnemyManagerComponentTest {
   }
 
   @Test
-  void shouldRegisterHealthPotionAtDefeatedEnemyPosition() {
+  void shouldRegisterGoldAtCapturedDefeatedEnemyPosition() {
     Vector2 deathPosition = new Vector2(4f, 6f);
     Entity enemy = new Entity();
     enemy.setPosition(deathPosition);
     enemyManager.track(enemy);
 
     enemy.getEvents().trigger("entityDied");
+    enemy.setPosition(20, 20);
     verify(entityService, never()).register(Mockito.any(Entity.class));
 
     entityService.update();
@@ -135,8 +141,8 @@ class EnemyManagerComponentTest {
 
     assertEquals(deathPosition, drop.getPosition());
     assertNotNull(item);
-    assertEquals(ItemType.HEALTH_POTION, item.getItemType());
-    assertEquals(1, item.getQuantity());
+    assertEquals(ItemType.GOLD_COIN, item.getItemType());
+    assertEquals(5, item.getQuantity());
     assertEquals(PhysicsLayer.ITEM, drop.getComponent(HitboxComponent.class).getLayer());
 
     entityService.update();
@@ -144,34 +150,47 @@ class EnemyManagerComponentTest {
   }
 
   @Test
-  void shouldCycleThroughEveryDemoDropType() {
-    List<ItemType> expectedTypes =
-        List.of(
-            ItemType.HEALTH_POTION,
-            ItemType.SHIELD,
-            ItemType.SPEED_POTION,
-            ItemType.STRENGTH_POTION,
-            ItemType.GOLD_COIN,
-            ItemType.HEALTH_POTION);
-    Entity[] enemies = new Entity[expectedTypes.size()];
-    for (int i = 0; i < enemies.length; i++) {
-      enemies[i] = new Entity();
-      enemyManager.track(enemies[i]);
-      enemies[i].getEvents().trigger("entityDied");
-    }
-
+  void shouldRegisterGoldAndConsumableOnceDespiteRepeatedDeathAndTracking() {
+    enemyManager =
+        new EnemyManagerComponent(
+            new EnemySpawnConfig[0], new EnemyDropPolicy(7, 1, new Random(2)));
+    enemyManager.setEntity(room);
+    enemyManager.create();
+    Entity enemy = new Entity();
+    enemyManager.track(enemy);
+    enemyManager.track(enemy);
+    enemy.getEvents().trigger("entityDied");
+    enemy.getEvents().trigger("entityDied");
     entityService.update();
+    ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService, times(2)).register(captor.capture());
+    assertEquals(
+        ItemType.GOLD_COIN,
+        captor.getAllValues().get(0).getComponent(ItemComponent.class).getItemType());
+    assertEquals(7, captor.getAllValues().get(0).getComponent(ItemComponent.class).getQuantity());
+    assertTrue(
+        captor
+            .getAllValues()
+            .get(1)
+            .getComponent(ItemComponent.class)
+            .getItemType()
+            .isConsumable());
+    enemyManager.dispose();
+    for (Entity drop : captor.getAllValues()) {
+      verify(entityService).unregister(drop);
+    }
+  }
 
-    ArgumentCaptor<Entity> dropCaptor = ArgumentCaptor.forClass(Entity.class);
-    verify(entityService, times(expectedTypes.size())).register(dropCaptor.capture());
-    List<ItemType> actualTypes =
-        dropCaptor.getAllValues().stream()
-            .map(drop -> drop.getComponent(ItemComponent.class).getItemType())
-            .toList();
-    assertEquals(expectedTypes, actualTypes);
-
-    Entity goldDrop = dropCaptor.getAllValues().get(expectedTypes.size() - 2);
-    assertEquals(25, goldDrop.getComponent(ItemComponent.class).getQuantity());
+  @Test
+  void shouldNotSpawnQueuedRewardsAfterOwningRoomIsDisposed() {
+    Entity enemy = new Entity();
+    enemyManager.track(enemy);
+    enemy.getEvents().trigger("entityDied");
+    enemyManager.dispose();
+    entityService.update();
+    enemy.getEvents().trigger("entityDied");
+    entityService.update();
+    verify(entityService, never()).register(Mockito.any(Entity.class));
   }
 
   @Test
@@ -219,6 +238,7 @@ class EnemyManagerComponentTest {
   private static Entity enemyMock() {
     Entity enemy = mock(Entity.class);
     when(enemy.getEvents()).thenReturn(new EventHandler());
+    when(enemy.getPosition()).thenReturn(new Vector2());
     when(enemy.getCenterPosition()).thenReturn(new Vector2());
     return enemy;
   }
