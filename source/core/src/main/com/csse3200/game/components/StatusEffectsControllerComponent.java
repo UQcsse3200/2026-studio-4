@@ -123,8 +123,6 @@ public class StatusEffectsControllerComponent extends Component {
       throw new IllegalStateException(
           "StatusEffectsController requires CombatStatsComponent on the same entity.");
     }
-//    entity.getEvents().addListener("shieldAbsorb", this::activateAbsorb);
-//    entity.getEvents().addListener("shieldTimed", this::activateTimed);
     entity.getEvents().addListener("entityDied", this::clearStatusEffects);
   }
 
