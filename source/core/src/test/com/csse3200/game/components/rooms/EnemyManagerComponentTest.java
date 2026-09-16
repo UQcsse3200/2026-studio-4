@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -62,8 +63,7 @@ class EnemyManagerComponentTest {
 
     ResourceService resourceService = mock(ResourceService.class);
     Texture texture = mock(Texture.class);
-    when(resourceService.getAsset("images/strength_charm_pixel.png", Texture.class))
-        .thenReturn(texture);
+    when(resourceService.getAsset(anyString(), any())).thenReturn(texture);
     when(texture.getWidth()).thenReturn(1270);
     when(texture.getHeight()).thenReturn(1239);
     ServiceLocator.registerResourceService(resourceService);

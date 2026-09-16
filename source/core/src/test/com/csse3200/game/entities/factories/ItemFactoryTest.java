@@ -9,6 +9,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.Item;
+import com.csse3200.game.items.charms.AttackSpeedCharm;
+import com.csse3200.game.items.charms.SpeedCharm;
 import com.csse3200.game.items.charms.StrengthCharm;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
@@ -37,7 +39,8 @@ class ItemFactoryTest {
     ServiceLocator.registerPhysicsService(new PhysicsService());
     // Couldn't make tests work without the resourceService
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextures(new String[] {StrengthCharm.TEXTURE});
+    resourceService.loadTextures(
+        new String[] {StrengthCharm.TEXTURE, SpeedCharm.TEXTURE, AttackSpeedCharm.TEXTURE});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
 
