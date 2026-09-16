@@ -82,14 +82,14 @@ chase
   index: 5
 dieAnimation
   rotate: false
-  xy: 104, 152
+  xy: 72, 144
   size: 20, 16
   orig: 20, 16
   offset: 8, 0
   index: 0
 dieAnimation
   rotate: false
-  xy: 136, 153
+  xy: 104, 144
   size: 20, 16
   orig: 20, 16
   offset: 8, 0
@@ -101,3 +101,10 @@ fuse
   orig: 20, 16
   offset: 8, 0
   index: 0
+fuse
+  rotate: false
+  xy: 256, 160
+  size: 20, 16
+  orig: 20, 16
+  offset: 8, 0
+  index: 1
