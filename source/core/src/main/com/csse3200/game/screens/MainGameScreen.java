@@ -170,7 +170,8 @@ public class MainGameScreen extends ScreenAdapter {
 
     InventoryDisplay inventoryDisplay = new InventoryDisplay(player.getComponent(InventoryComponent.class));
     HotbarDisplay hotbarDisplay = new HotbarDisplay(player);
-    InventoryActions inventoryActions = new InventoryActions(inventoryDisplay);
+    InventoryActions inventoryActions = new InventoryActions(inventoryDisplay,
+            player.getComponent(InventoryComponent.class));
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
 
     Entity ui = new Entity();

@@ -185,37 +185,15 @@ public class InventoryDisplay extends UIComponent {
       Stack slotStack = new Stack();
       ImageButton slotBackground = new ImageButton(inventory, "inventory-box");
       slotStack.add(slotBackground);
-      dragAndDrop.addTarget(new DragAndDrop.Target(slotBackground) {
-        @Override
-        public boolean drag(Source source, Payload payload, float x, float y, int pointer) {
-          return true; // Accepts any dragged item
-        }
-
-        @Override
-        public void drop(Source source, Payload payload, float x, float y, int pointer) {
-          ImageButton draggedIcon = (ImageButton) payload.getDragActor();
-          ImageButton currentTargetSlot = (ImageButton) getActor(); // This is slotBackground
-
-          // Get the stack containing this slot background
-          Stack targetStack = (Stack) currentTargetSlot.getParent();
-
-          // Safely detach the item from its old home
-          draggedIcon.remove();
-
-          // Layer 1: Place the item visually on top of the slot background
-          targetStack.addActorAt(1, draggedIcon);
-
-          // Keep track of where the item currently lives
-          draggedIcon.setUserObject(currentTargetSlot);
-
-          System.out.println("Successfully moved item to slot!");
-        }
-      });
-
       if (Objects.equals(type, "Charms") && uniqueCharms.hasMoreElements()) {
         charmIconDraw(slotStack, charmDict, uniqueCharms);
       } else if (Objects.equals(type, "Consumable") && uniqueCharms.hasMoreElements()) { //Change to consumables once have
         consumableIconDraw(slotStack, charmDict, uniqueCharms, slotBackground);
+        slotBackground.setUserObject("inactive:" + i);
+        registerDropTarget(slotBackground);
+      } else if (Objects.equals(type, "Active")) {
+        slotBackground.setUserObject("active:" + i);
+        registerDropTarget(slotBackground);
       }
       grid.add(slotStack).size(slotSize).pad(3);
       // Break to a new row after reaching the column limit
@@ -224,6 +202,43 @@ public class InventoryDisplay extends UIComponent {
       }
     }
     return grid;
+  }
+
+  private void registerDropTarget(ImageButton slotBackground) {
+    dragAndDrop.addTarget(new DragAndDrop.Target(slotBackground) {
+      @Override
+      public boolean drag(Source source, Payload payload, float x, float y, int pointer) {
+        return true;
+      }
+
+      @Override
+      public void drop(Source source, Payload payload, float x, float y, int pointer) {
+        Actor draggedGroup = payload.getDragActor();
+        ImageButton currentTargetSlot = (ImageButton) getActor();
+        Stack targetStack = (Stack) currentTargetSlot.getParent();
+
+        //Parse original source slot details
+        ImageButton previousSlot = (ImageButton) draggedGroup.getUserObject();
+        String[] fromData = ((String) previousSlot.getUserObject()).split(":");
+        String fromType = fromData[0]; // "active" or "inactive"
+        int fromIndex = Integer.parseInt(fromData[1]);
+
+        //Parse destination target slot details
+        String[] toData = ((String) currentTargetSlot.getUserObject()).split(":");
+        String toType = toData[0]; // "active" or "inactive"
+        int toIndex = Integer.parseInt(toData[1]);
+
+        //Complete visual UI shift
+        draggedGroup.remove();
+        targetStack.addActorAt(1, draggedGroup);
+        draggedGroup.setUserObject(currentTargetSlot);
+        if (Objects.equals(fromType, "active") && Objects.equals(toType, "inactive")) {
+          entity.getEvents().trigger("moveActiveToInactiveItem", fromIndex, toIndex);
+        } else if (Objects.equals(fromType, "inactive") && Objects.equals(toType, "active")) {
+          entity.getEvents().trigger("moveInactiveToActiveItem", fromIndex, toIndex);
+        }
+      }
+    });
   }
 
   /**
