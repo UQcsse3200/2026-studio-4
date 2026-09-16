@@ -221,10 +221,10 @@ public class FinalBossStageThreeComponent extends Component {
 
   private boolean clearGrandpaReturn(Vector2 candidate, Vector2 size, Vector2 player) {
     Vector2 separation = size.cpy().add(target.getScale()).scl(0.5f).add(0.15f, 0.15f);
-    boolean besidePlayer =
+    boolean separatedFromPlayer =
         Math.abs(candidate.x - player.x) >= separation.x
             || Math.abs(candidate.y - player.y) >= separation.y;
-    return besidePlayer && clearSpace(candidate, size);
+    return separatedFromPlayer && clearSpace(candidate, size);
   }
 
   private void updateEffects(float delta) {
