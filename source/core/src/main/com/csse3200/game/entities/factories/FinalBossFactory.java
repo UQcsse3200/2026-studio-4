@@ -2,6 +2,7 @@ package com.csse3200.game.entities.factories;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.boss.FinalBossDamageControllerComponent;
+import com.csse3200.game.components.boss.FinalBossEndingDialogueComponent;
 import com.csse3200.game.components.boss.FinalBossExplosiveSummonComponent;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
 import com.csse3200.game.components.boss.FinalBossPetrificationComponent;
@@ -10,6 +11,8 @@ import com.csse3200.game.components.boss.FinalBossPetrificationWarningRenderComp
 import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
 import com.csse3200.game.components.boss.FinalBossProximityDamageComponent;
 import com.csse3200.game.components.boss.FinalBossStageOneComponent;
+import com.csse3200.game.components.boss.FinalBossStageThreeComponent;
+import com.csse3200.game.components.boss.FinalBossStageThreeVisualComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoContactDamageComponent;
 import com.csse3200.game.components.boss.FinalBossSummonVisualComponent;
@@ -17,6 +20,7 @@ import com.csse3200.game.components.boss.FinalBossVisualComponent;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageOneConfig;
+import com.csse3200.game.entities.configs.FinalBossStageThreeConfig;
 import com.csse3200.game.entities.configs.FinalBossStageTwoConfig;
 import java.util.function.Consumer;
 
@@ -41,6 +45,9 @@ public final class FinalBossFactory {
     config.validate();
     stageTwoConfig.validate();
 
+    FinalBossStageThreeConfig stageThreeConfig = new FinalBossStageThreeConfig();
+    stageThreeConfig.validate();
+
     Entity boss =
         NPCFactory.createBaseNPC()
             .addComponent(new CombatStatsComponent(config.bossHealth, 0))
@@ -50,12 +57,14 @@ public final class FinalBossFactory {
             .addComponent(new FinalBossMovementComponent(target, config, stageTwoConfig))
             .addComponent(new FinalBossStageOneComponent(target, summonSpawner, config))
             .addComponent(new FinalBossStageTwoComponent(stageTwoConfig))
+            .addComponent(new FinalBossStageThreeComponent(target, summonSpawner, stageThreeConfig))
+            .addComponent(new FinalBossStageThreeVisualComponent())
+            .addComponent(new FinalBossEndingDialogueComponent(target, stageThreeConfig))
             .addComponent(new FinalBossStageTwoContactDamageComponent(target, stageTwoConfig))
             .addComponent(new FinalBossProximityDamageComponent(target, config))
             .addComponent(new FinalBossPetrificationWarningRenderComponent())
             .addComponent(new FinalBossPetrificationComponent(target, config))
             .addComponent(new FinalBossPetrificationVisualComponent(target, config))
-            .addComponent(new FinalBossStageOneComponent(target, summonSpawner, config))
             .addComponent(new EnemyStatDisplay(3.0f));
 
     boss.setScale(2f, 2f);

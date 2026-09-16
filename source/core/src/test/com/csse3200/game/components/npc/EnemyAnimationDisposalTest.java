@@ -56,7 +56,7 @@ class EnemyAnimationDisposalTest {
             .addComponent(controller);
     demon.create();
 
-    demon.getEvents().trigger("flyingDeath");
+    demon.getEvents().trigger("enemyDeathAnimation");
     controller.update();
 
     verify(entityService).scheduleDisposal(demon);
