@@ -14,6 +14,7 @@ import com.csse3200.game.components.weapons.BowWeaponComponent;
 import com.csse3200.game.components.weapons.KnifeWeaponComponent;
 import com.csse3200.game.components.weapons.SwordWeaponComponent;
 import com.csse3200.game.components.weapons.WeaponAssetsComponent;
+import com.csse3200.game.components.weapons.WeaponSelectionComponent;
 import com.csse3200.game.components.weapons.WeaponStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
@@ -86,11 +87,8 @@ public class PlayerFactory {
             .addComponent(new SwordWeaponComponent())
             .addComponent(new KnifeWeaponComponent())
             .addComponent(new StatusEffectsControllerComponent())
-            .addComponent(new BowWeaponComponent());
-
-    // Sword is equipped by default; the "weapon" terminal command switches at runtime.
-    player.getComponent(KnifeWeaponComponent.class).setEnabled(false);
-    player.getComponent(BowWeaponComponent.class).setEnabled(false);
+            .addComponent(new BowWeaponComponent())
+            .addComponent(new WeaponSelectionComponent());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
