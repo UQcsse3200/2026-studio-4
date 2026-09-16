@@ -17,7 +17,10 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public class WeaponAssetsComponent extends Component {
   private static final String[] TEXTURES = {
-    SwordWeaponComponent.TEXTURE, KnifeWeaponComponent.TEXTURE, BowWeaponComponent.TEXTURE
+    SwordWeaponComponent.TEXTURE,
+    SwordWeaponComponent.UPGRADED_TEXTURE,
+    KnifeWeaponComponent.TEXTURE,
+    BowWeaponComponent.TEXTURE
   };
 
   /** Loads the weapon sprites. Follows {@code RoomAssetsComponent} in loading on construction. */

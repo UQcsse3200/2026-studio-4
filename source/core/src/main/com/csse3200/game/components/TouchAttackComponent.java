@@ -48,6 +48,13 @@ public class TouchAttackComponent extends Component {
     this.knockbackForce = knockback;
   }
 
+  /**
+   * @return knockback impulse applied to targets hit; 0 for none
+   */
+  public float getKnockbackForce() {
+    return knockbackForce;
+  }
+
   @Override
   public void create() {
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
