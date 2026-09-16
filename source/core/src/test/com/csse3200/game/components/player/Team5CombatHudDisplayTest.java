@@ -22,10 +22,10 @@ class Team5CombatHudDisplayTest {
 
   @Test
   void shouldFormatConsumableSlotsAndClampNegativeCounts() {
-    assertEquals("[8] Health x3", Team5CombatHudDisplay.formatSlot(ConsumableSlot.HEALTH, 3));
-    assertEquals("[9] Shield x0", Team5CombatHudDisplay.formatSlot(ConsumableSlot.SHIELD, -1));
-    assertEquals("[0] Speed x2", Team5CombatHudDisplay.formatSlot(ConsumableSlot.SPEED, 2));
-    assertEquals("[-] Strength x1", Team5CombatHudDisplay.formatSlot(ConsumableSlot.STRENGTH, 1));
+    assertEquals("[7] Health x3", Team5CombatHudDisplay.formatSlot(ConsumableSlot.HEALTH, 3));
+    assertEquals("[8] Shield x0", Team5CombatHudDisplay.formatSlot(ConsumableSlot.SHIELD, -1));
+    assertEquals("[9] Speed x2", Team5CombatHudDisplay.formatSlot(ConsumableSlot.SPEED, 2));
+    assertEquals("[0] Strength x1", Team5CombatHudDisplay.formatSlot(ConsumableSlot.STRENGTH, 1));
   }
 
   @Test

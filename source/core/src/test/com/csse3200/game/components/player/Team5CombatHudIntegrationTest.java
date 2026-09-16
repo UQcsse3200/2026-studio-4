@@ -72,7 +72,7 @@ class Team5CombatHudIntegrationTest {
 
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     assertEquals(3, inventory.getConsumableCount(ItemType.HEALTH_POTION));
-    assertHudContains("[8] Health x3");
+    assertHudContains("[7] Health x3");
   }
 
   @Test
@@ -126,14 +126,14 @@ class Team5CombatHudIntegrationTest {
     Entity player = createPlayerWithHud();
     player.getComponent(CombatStatsComponent.class).setHealth(50);
     pickUp(player, createTypedItem(ItemType.HEALTH_POTION, 2));
-    assertHudContains("[8] Health x2");
-    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.NUM_8);
+    assertHudContains("[7] Health x2");
+    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.NUM_7);
     assertEquals(75, player.getComponent(CombatStatsComponent.class).getHealth());
     assertEquals(
         1,
         player.getComponent(InventoryComponent.class).getConsumableCount(ItemType.HEALTH_POTION));
-    assertHudContains("[8] Health x1");
-    assertHudContains("[8] Health x1");
+    assertHudContains("[7] Health x1");
+    assertHudContains("[7] Health x1");
   }
 
   @Test
@@ -141,10 +141,10 @@ class Team5CombatHudIntegrationTest {
     Entity player = createPlayerWithHud();
     pickUp(player, createTypedItem(ItemType.STRENGTH_POTION, 1));
     assertNull(stage.getRoot().findActor("consumable-change-2"));
-    assertHudContains("[-] Strength x1");
-    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.MINUS);
-    assertHudContains("[-] Strength x0");
-    assertHudContains("[9] Shield x0");
+    assertHudContains("[0] Strength x1");
+    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.NUM_0);
+    assertHudContains("[0] Strength x0");
+    assertHudContains("[8] Shield x0");
     assertEquals(12, player.getComponent(CombatStatsComponent.class).getEffectiveBaseAttack());
   }
 
@@ -160,7 +160,7 @@ class Team5CombatHudIntegrationTest {
     pickUp(player, createTypedItem(ItemType.SHIELD, 2));
     KeyboardPlayerInputComponent input = player.getComponent(KeyboardPlayerInputComponent.class);
     CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
-    input.keyDown(Keys.NUM_9);
+    input.keyDown(Keys.NUM_8);
     assertEquals(1f, bar.getValue());
     assertHudContains("8.0s");
     now.set(4000);
@@ -168,9 +168,9 @@ class Team5CombatHudIntegrationTest {
     assertEquals(0.5f, bar.getValue(), 0.001f);
     stats.takeDamage(10);
     assertEquals(100, stats.getHealth());
-    input.keyDown(Keys.NUM_9);
+    input.keyDown(Keys.NUM_8);
     assertEquals(1f, bar.getValue());
-    input.keyDown(Keys.NUM_9); // Out of stock must not refresh the timer.
+    input.keyDown(Keys.NUM_8); // Out of stock must not refresh the timer.
     now.set(12000);
     player.getComponent(Team5CombatHudDisplay.class).update();
     assertEquals(0f, bar.getValue());
@@ -178,7 +178,7 @@ class Team5CombatHudIntegrationTest {
     stats.takeDamage(10);
     assertEquals(90, stats.getHealth());
     pickUp(player, createTypedItem(ItemType.SHIELD, 1));
-    input.keyDown(Keys.NUM_9);
+    input.keyDown(Keys.NUM_8);
     player.getComponent(StatusEffectsControllerComponent.class).clearStatusEffects();
     player.getComponent(Team5CombatHudDisplay.class).update();
     assertEquals(0f, bar.getValue());

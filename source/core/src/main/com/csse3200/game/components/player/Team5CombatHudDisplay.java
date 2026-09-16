@@ -22,10 +22,10 @@ import java.util.Map;
 public class Team5CombatHudDisplay extends UIComponent {
   /** Fixed consumable presentation order, matching keyboard quick-use slots. */
   public enum ConsumableSlot {
-    HEALTH("Health", "8", ItemType.HEALTH_POTION),
-    SHIELD("Shield", "9", ItemType.SHIELD),
-    SPEED("Speed", "0", ItemType.SPEED_POTION),
-    STRENGTH("Strength", "-", ItemType.STRENGTH_POTION);
+    HEALTH("Health", "7", ItemType.HEALTH_POTION),
+    SHIELD("Shield", "8", ItemType.SHIELD),
+    SPEED("Speed", "9", ItemType.SPEED_POTION),
+    STRENGTH("Strength", "0", ItemType.STRENGTH_POTION);
 
     private final String displayName;
     private final String key;

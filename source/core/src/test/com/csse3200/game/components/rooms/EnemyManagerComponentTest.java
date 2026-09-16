@@ -307,10 +307,10 @@ class EnemyManagerComponentTest {
     player.update();
     assertEquals(5, player.getComponent(InventoryComponent.class).getGold());
     assertTrue(hasLabel(stage.getRoot(), "Gold: 5"));
-    assertTrue(hasLabel(stage.getRoot(), "[8] Health x1"));
-    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.NUM_8);
+    assertTrue(hasLabel(stage.getRoot(), "[7] Health x1"));
+    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.NUM_7);
     assertEquals(75, player.getComponent(CombatStatsComponent.class).getHealth());
-    assertTrue(hasLabel(stage.getRoot(), "[8] Health x0"));
+    assertTrue(hasLabel(stage.getRoot(), "[7] Health x0"));
     enemyManager.dispose();
     player.dispose();
     assertEquals(0, stage.getActors().size);

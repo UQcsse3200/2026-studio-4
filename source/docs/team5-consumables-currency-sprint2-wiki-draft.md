@@ -6,7 +6,7 @@ Local publication draft, updated 2026-09-16. This file is not a claim that the W
 
 Defeated tracked enemies drop **5 Gold**, and independently have a **35% chance** to drop one consumable. Each of Health, Shield, Speed and Strength has equal probability within that 35%. The values are initial tuning defaults, not a claimed cross-team balance decision. Gold is picked up rather than immediately credited. Stand within pickup range and press **E**; each press collects one nearby entity. If Gold and a potion overlap, collect both with two presses.
 
-All four consumables stack in inventory. The compact top-right Team 5 panel shows Gold and one row per item, with its world-item icon, fixed key and current stock. Press **8** for Health, **9** for Shield, **0** for Speed, or **-** (minus beside 0) for Strength. There are no Change buttons or Last used label. Empty stock cannot be used. Keys **1–3** still select weapons, **K** still performs the weapon heavy attack, and **I** still opens the existing inventory.
+All four consumables stack in inventory. The compact top-right Team 5 panel shows Gold and one row per item, with its world-item icon, fixed key and current stock. Press **7** for Health, **8** for Shield, **9** for Speed, or **0** for Strength. There are no Change buttons or Last used label. Empty stock cannot be used. Keys **1–3** still select weapons, **K** still performs the weapon heavy attack, and **I** still opens the existing inventory.
 
 The Shield row includes a horizontal duration bar and seconds remaining, read from the actual active consumable effect. Successful use fills it for 8 seconds; another successful use refreshes it. It empties at expiry or early removal, even before the status controller's next update. This is duration, not absorb points, and is separate from Team 2's existing shield-point HUD.
 
@@ -66,7 +66,7 @@ sequenceDiagram
   Room->>Factory: createDrop after update, if room still alive
   Player->>Inventory: E pickup via TypedItem
   Inventory-->>HUD: quantity changed
-  Player->>Effects: 8/9/0/minus → useSlot → tryUse
+  Player->>Effects: 7/8/9/0 → useSlot → tryUse
   Effects->>Inventory: validate and remove one
   Inventory-->>HUD: quantity changed
   Effects->>Effects: heal or refresh timed effect

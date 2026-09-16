@@ -37,16 +37,16 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.NUM_3:
         entity.getEvents().trigger(EQUIP_WEAPON_EVENT, WeaponType.BOW);
         return true;
+      case Keys.NUM_7:
       case Keys.NUM_8:
       case Keys.NUM_9:
       case Keys.NUM_0:
-      case Keys.MINUS:
         ConsumableLoadoutComponent loadout = entity.getComponent(ConsumableLoadoutComponent.class);
         if (loadout != null) {
           loadout.useSlot(
-              keycode == Keys.NUM_8
+              keycode == Keys.NUM_7
                   ? 0
-                  : keycode == Keys.NUM_9 ? 1 : keycode == Keys.NUM_0 ? 2 : 3);
+                  : keycode == Keys.NUM_8 ? 1 : keycode == Keys.NUM_9 ? 2 : 3);
         }
         return true;
       case Keys.W:

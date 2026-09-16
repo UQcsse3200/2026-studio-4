@@ -7,14 +7,14 @@ Tested implementation: `a110647` (the following documentation commit changes no 
 - Previous local items: `c30a1d5`; earlier four-key implementation: `5937b52`.
 - Integrated local and remote main: `9625e56`, including merged PR #153 (minibosses), #161 (final Boss) and #166 (random item factory). Local main was fast-forwarded from `8ba827c`; its two untracked Sprint 1 documents were preserved.
 - Remote items incorporated: `03e8986`; no remote items commits were missing before this integration.
-- HUD source: `dbb3076`; input source: `71f53ea`; both original histories are retained.
+- HUD source: `dbb3076`; input source: `26f7caf` (including `8910780` and `71f53ea`); both original histories are retained.
 - Production policy: `fc017e7`; original integration: `62c46f1`.
 
 All integration remains local. No remote branch, PR, review, issue or chat was modified.
 
 ## Locked interface
 
-Four fixed direct-use keys: 8 Health, 9 Shield, 0 Speed, minus Strength. Weapons retain 1–3 and K; inventory retains I. The user explicitly confirmed the four-key interface in this task. Other teams' acceptance is not implied.
+Four fixed direct-use keys: 7 Health, 8 Shield, 9 Speed, 0 Strength. Weapons retain 1–3 and K; inventory retains I. The user explicitly confirmed the four-key interface in this task. Other teams' acceptance is not implied.
 
 `TypedItem extends Item` preserves the shared item abstraction while `ItemType` identifies Team 5 quantities and requests. Input invokes `useSlot` / `tryUse`, or `useConsumable(ItemType)`; only the effects component removes stock. `itemUsed(ItemType)` is emitted after successful use. The direct-use HUD does not depend on `selectedConsumableChanged`.
 
@@ -66,3 +66,7 @@ Source: `core/build/reports/jacoco/test/jacocoTestReport.xml`. Whole-class figur
 No full manual gameplay playthrough or visual approval of this merged revision is claimed. Automated Scene2D layout verification does not replace a screenshot or user playtest. The earlier pre-merge game launch only reached MAIN_MENU. Final gameplay evidence and Sprint 2 SAF submission remain separate work.
 
 Original inventory, effects, HUD and input authorship is preserved in Git history. No demo branch was merged and no existing branch was deleted. Codex assisted with compatibility resolution, regression tests and this evidence under Yuezhou's direction.
+
+## DV key alignment — 2026-09-17
+
+Fetched and merged DV’s latest `origin/task/consumable-use-input` at `26f7caf` using a history-preserving merge. Yuezhou requested adopting DV’s 7/8/9/0 keys. Retained the integrated direct-use effect pipeline (rather than reverting to select-then-U); updated HUD labels, integration tests and Wiki draft together. Original commits `8910780`, `71f53ea` and `26f7caf` remain ancestors with unchanged authorship. `./gradlew --offline spotlessCheck core:test` passed: 946 tests, zero failures/errors/skips. Log: `/tmp/team5-dv-key-alignment.log`. This update is local only.

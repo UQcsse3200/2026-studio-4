@@ -65,10 +65,10 @@ class ConsumableUseIntegrationTest {
     player
         .getEvents()
         .addListener(ConsumableEffectComponent.USED, (ItemType type) -> used.incrementAndGet());
-    assertTrue(input.keyDown(Keys.NUM_8));
+    assertTrue(input.keyDown(Keys.NUM_7));
     assertEquals(75, stats.getHealth());
     assertEquals(0, inventory.getConsumableCount(ItemType.HEALTH_POTION));
-    input.keyDown(Keys.NUM_8);
+    input.keyDown(Keys.NUM_7);
     assertEquals(75, stats.getHealth());
     assertEquals(1, used.get());
   }
@@ -87,7 +87,7 @@ class ConsumableUseIntegrationTest {
   @Test
   void shieldBlocksActualDamageAndExpiresBeforeControllerTick() {
     inventory.addConsumable(ItemType.SHIELD);
-    input.keyDown(Keys.NUM_9);
+    input.keyDown(Keys.NUM_8);
     assertTrue(consumables.isShielded());
     stats.takeDamage(30, new Entity());
     assertEquals(100, stats.getHealth());
@@ -100,13 +100,13 @@ class ConsumableUseIntegrationTest {
   @Test
   void strengthRefreshDoesNotCompoundOrRemoveNewCharm() {
     inventory.addConsumable(ItemType.STRENGTH_POTION, 2);
-    input.keyDown(Keys.MINUS);
+    input.keyDown(Keys.NUM_0);
     assertEquals(15, stats.getEffectiveBaseAttack());
     new StrengthCharm().pickUp(player);
     assertEquals(20, stats.getBaseAttack());
     assertEquals(30, stats.getEffectiveBaseAttack());
     now.set(4000);
-    input.keyDown(Keys.MINUS);
+    input.keyDown(Keys.NUM_0);
     assertEquals(30, stats.getEffectiveBaseAttack());
     now.set(8000);
     effects.update();
@@ -127,7 +127,7 @@ class ConsumableUseIntegrationTest {
           }
         });
     inventory.addConsumable(ItemType.SPEED_POTION);
-    input.keyDown(Keys.NUM_0);
+    input.keyDown(Keys.NUM_9);
     assertEquals(3f, stats.getEffectiveMovementSpeed());
     stats.setMovementSpeed(6);
     assertEquals(4.5f, stats.getEffectiveMovementSpeed());
@@ -144,7 +144,7 @@ class ConsumableUseIntegrationTest {
     mist.create();
     Entity source = new Entity();
     inventory.addConsumable(ItemType.SPEED_POTION, 2);
-    input.keyDown(Keys.NUM_0);
+    input.keyDown(Keys.NUM_9);
     assertEquals(6f, stats.getEffectiveMovementSpeed());
     player.getEvents().trigger(CerberusMistComponent.ENTERED, source);
     assertEquals(3f, stats.getEffectiveMovementSpeed());
@@ -155,7 +155,7 @@ class ConsumableUseIntegrationTest {
     effects.update();
     assertEquals(2f, stats.getEffectiveMovementSpeed());
     assertTrue(mist.isMistDebuffed());
-    input.keyDown(Keys.NUM_0);
+    input.keyDown(Keys.NUM_9);
     assertEquals(3f, stats.getEffectiveMovementSpeed());
     player.getEvents().trigger(CerberusMistComponent.EXITED, source);
     assertEquals(6f, stats.getEffectiveMovementSpeed());
