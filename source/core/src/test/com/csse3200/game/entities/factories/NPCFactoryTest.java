@@ -2,6 +2,7 @@ package com.csse3200.game.entities.factories;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
@@ -15,7 +16,6 @@ import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 
 @ExtendWith(GameExtension.class)
 class NPCFactoryTest {
@@ -25,7 +25,7 @@ class NPCFactoryTest {
     ServiceLocator.registerPhysicsService(new PhysicsService());
 
     RenderService renderService = new RenderService();
-    renderService.setDebug(Mockito.mock(DebugRenderer.class));
+    renderService.setDebug(mock(DebugRenderer.class));
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resourceService = new ResourceService();
