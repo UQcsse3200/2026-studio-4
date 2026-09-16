@@ -22,17 +22,17 @@ class Team5CombatHudDisplayTest {
 
   @Test
   void shouldFormatConsumableSlotsAndClampNegativeCounts() {
-    assertEquals("[1] Health x3", Team5CombatHudDisplay.formatSlot(ConsumableSlot.HEALTH, 3));
-    assertEquals("[2] Shield x0", Team5CombatHudDisplay.formatSlot(ConsumableSlot.SHIELD, -1));
-    assertEquals("[3] Speed x2", Team5CombatHudDisplay.formatSlot(ConsumableSlot.SPEED, 2));
-    assertEquals("[4] Strength x1", Team5CombatHudDisplay.formatSlot(ConsumableSlot.STRENGTH, 1));
+    assertEquals("Health x3", Team5CombatHudDisplay.formatSlot(ConsumableSlot.HEALTH, 3));
+    assertEquals("Shield x0", Team5CombatHudDisplay.formatSlot(ConsumableSlot.SHIELD, -1));
+    assertEquals("Speed x2", Team5CombatHudDisplay.formatSlot(ConsumableSlot.SPEED, 2));
+    assertEquals("Strength x1", Team5CombatHudDisplay.formatSlot(ConsumableSlot.STRENGTH, 1));
   }
 
   @Test
   void shouldFormatSelectedConsumable() {
-    assertEquals("Selected: None", Team5CombatHudDisplay.formatSelected(null));
+    assertEquals("Last used: None", Team5CombatHudDisplay.formatSelected(null));
     assertEquals(
-        "Selected: Strength", Team5CombatHudDisplay.formatSelected(ConsumableSlot.STRENGTH));
+        "Last used: Strength", Team5CombatHudDisplay.formatSelected(ConsumableSlot.STRENGTH));
   }
 
   @Test
@@ -92,7 +92,7 @@ class Team5CombatHudDisplayTest {
     Entity player = new Entity().addComponent(hud);
     hud.registerEventListeners();
 
-    player.getEvents().trigger("selectedConsumableChanged", ItemType.SHIELD);
+    player.getEvents().trigger(ConsumableEffectComponent.USED, ItemType.SHIELD);
 
     verify(hud).updateSelectedConsumable(ConsumableSlot.SHIELD);
   }

@@ -4,19 +4,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.input.InputService;
 import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.ItemType;
 import com.csse3200.game.items.charms.StrengthCharm;
@@ -25,6 +29,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +44,8 @@ class Team5CombatHudIntegrationTest {
 
   @BeforeEach
   void beforeEach() {
+    ServiceLocator.registerInputService(new InputService());
+    ServiceLocator.registerTimeSource(new GameTime());
     ServiceLocator.registerPhysicsService(new PhysicsService());
     ServiceLocator.registerEntityService(new EntityService());
 
@@ -62,7 +69,7 @@ class Team5CombatHudIntegrationTest {
 
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     assertEquals(3, inventory.getConsumableCount(ItemType.HEALTH_POTION));
-    assertHudContains("[1] Health x3");
+    assertHudContains("Health x3");
   }
 
   @Test
@@ -111,6 +118,38 @@ class Team5CombatHudIntegrationTest {
     assertEquals(8, stats.getBaseAttack());
   }
 
+  @Test
+  void pickupThenKeyboardUseUpdatesHealthStockAndHudTogether() {
+    Entity player = createPlayerWithHud();
+    player.getComponent(CombatStatsComponent.class).setHealth(50);
+    pickUp(player, createTypedItem(ItemType.HEALTH_POTION, 2));
+    assertHudContains("[8] Health x2");
+    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.NUM_8);
+    assertEquals(75, player.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals(
+        1,
+        player.getComponent(InventoryComponent.class).getConsumableCount(ItemType.HEALTH_POTION));
+    assertHudContains("Health x1");
+    assertHudContains("[8] Health x1");
+    assertHudContains("Last used: Health");
+  }
+
+  @Test
+  void changeButtonMakesFourthTypeUsableAndSurvivesUpdates() {
+    Entity player = createPlayerWithHud();
+    pickUp(player, createTypedItem(ItemType.STRENGTH_POTION, 1));
+    Actor change = stage.getRoot().findActor("consumable-change-2");
+    change.fire(new ChangeListener.ChangeEvent());
+    assertEquals(
+        ItemType.STRENGTH_POTION, player.getComponent(ConsumableLoadoutComponent.class).getSlot(2));
+    assertHudContains("[0] Strength x1");
+    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.NUM_0);
+    assertHudContains("[0] Strength x0");
+    assertEquals(12, player.getComponent(CombatStatsComponent.class).getEffectiveBaseAttack());
+    player.update();
+    assertHudContains("Last used: Strength");
+  }
+
   private Entity createPlayerWithHud() {
     Entity player =
         new Entity()
@@ -118,6 +157,10 @@ class Team5CombatHudIntegrationTest {
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
             .addComponent(new CombatStatsComponent(100, 8))
             .addComponent(new InventoryComponent(0))
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(new ConsumableEffectComponent())
+            .addComponent(new ConsumableLoadoutComponent())
+            .addComponent(new KeyboardPlayerInputComponent())
             .addComponent(new ItemPickupComponent())
             .addComponent(new Team5CombatHudDisplay());
     player.create();
