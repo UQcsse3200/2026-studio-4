@@ -6,7 +6,7 @@ Local publication draft, updated 2026-09-16. This file is not a claim that the W
 
 Defeated tracked enemies drop **5 Gold**, and independently have a **35% chance** to drop one consumable. Each of Health, Shield, Speed and Strength has equal probability within that 35%. The values are initial tuning defaults, not a claimed cross-team balance decision. Gold is picked up rather than immediately credited. Stand within pickup range and press **E**; each press collects one nearby entity. If Gold and a potion overlap, collect both with two presses.
 
-All four consumables stack in inventory. The compact Team 5 panel shows Gold and one row per item, with its world-item icon, fixed key and current stock. Press **8** for Health, **9** for Shield, **0** for Speed, or **-** (minus beside 0) for Strength. There are no Change buttons or Last used label. Empty stock cannot be used. Keys **1–3** still select weapons, **K** still performs the weapon heavy attack, and **I** still opens the existing inventory.
+All four consumables stack in inventory. The compact top-right Team 5 panel shows Gold and one row per item, with its world-item icon, fixed key and current stock. Press **8** for Health, **9** for Shield, **0** for Speed, or **-** (minus beside 0) for Strength. There are no Change buttons or Last used label. Empty stock cannot be used. Keys **1–3** still select weapons, **K** still performs the weapon heavy attack, and **I** still opens the existing inventory.
 
 The Shield row includes a horizontal duration bar and seconds remaining, read from the actual active consumable effect. Successful use fills it for 8 seconds; another successful use refreshes it. It empties at expiry or early removal, even before the status controller's next update. This is duration, not absorb points, and is separate from Team 2's existing shield-point HUD.
 
@@ -31,6 +31,8 @@ The fixed four-key mapping follows Yuezhou's playtest request on 2026-09-16 and 
 - `EnemyDropPolicy` selects immutable `ItemDropSpec` values. Constructor parameters configure Gold, probability and random generator; tests inject deterministic randomness.
 - `ItemFactory` creates item entities and remains independent of drop probability.
 - `EnemyManagerComponent` accepts one defeat per active tracked enemy, captures the death position, queues generation safely after updates, and owns registration/disposal. Pending rewards are cancelled if their room manager has been disposed.
+- The main-branch `createRandomDrop` interface remains available for callers using its Charm pool. Normal enemy rewards use `EnemyDropPolicy` instead, to guarantee currency and allow consumables.
+- Final Boss encounter completion and ordinary death share the same reward guard; receiving both events cannot pay twice.
 - Split parents replaced by children are no longer active tracked enemies; later parent death callbacks do not award duplicate rewards. Their tracked children follow the normal policy. No additional boss-phase reward or special mini-boss Gold bag has been invented.
 
 ```mermaid
@@ -89,7 +91,8 @@ Meaningful regression coverage includes:
 - fixed Strength key, visible count changes, shield progress at half duration, refresh, expiry and early removal;
 - all four random selections, 0%/100% chance, probability boundary, reproducible seeded policies;
 - duplicate tracking/death events, captured death position, room disposal before deferred generation, drop registration/disposal;
-- HUD removal when replacing the player, existing inventory/charm/factory and shared input regressions.
+- HUD removal when replacing the player, existing inventory/charm/factory and shared input regressions;
+- final Boss completion/death events in either order and coexistence with Team 4 hotbar at three window sizes.
 
 See `team5-sprint2-integration-verification.md` for tested commits, actual results and remaining visual verification limits. Earlier HUD and input work is retained in Git history; the current contract supersedes the old 1–4 selection plus U design and deterministic demo drops.
 
