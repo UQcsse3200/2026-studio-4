@@ -1,4 +1,4 @@
-package com.csse3200.game.components.spells.targeting;
+package com.csse3200.game.components.abilities.targeting;
 
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.entities.Entity;
