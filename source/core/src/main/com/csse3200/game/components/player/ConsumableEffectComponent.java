@@ -2,153 +2,131 @@ package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.Damage;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.statuseffects.Damageable;
+import com.csse3200.game.components.statuseffects.Stat;
+import com.csse3200.game.components.statuseffects.TimedStatusEffect;
 import com.csse3200.game.items.ItemType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ServiceLocator;
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
- * Applies gameplay effects when a consumable item is used.
- *
- * <p>Listens for the "itemUsed" event, fired with the ItemType being consumed. This event contract
- * matches the Pickup & Use Input task (Devendera) — see PR #162.
+ * Owns consumable use: validates, removes exactly one item, applies its effect, then emits
+ * itemUsed. Input requests use through tryUse or useConsumable; itemUsed is a success notification
+ * only.
  */
 public class ConsumableEffectComponent extends Component {
-  private static final Logger logger = LoggerFactory.getLogger(ConsumableEffectComponent.class);
-
-  private static final int HEALTH_POTION_HEAL_AMOUNT = 25;
-  private static final long SHIELD_DURATION_MS = 8000;
-  private static final long SPEED_DURATION_MS = 8000;
-  private static final long STRENGTH_DURATION_MS = 8000;
-  private static final float SPEED_MULTIPLIER = 1.5f;
-  private static final float STRENGTH_MULTIPLIER = 1.5f;
-
-  private CombatStatsComponent combatStats;
+  public static final String USE_REQUEST = "useConsumable";
+  public static final String USED = "itemUsed";
+  public static final long DURATION_MS = 8000;
+  private final Map<ItemType, TimedStatusEffect> active = new EnumMap<>(ItemType.class);
+  private CombatStatsComponent stats;
   private InventoryComponent inventory;
-
-  // Shield
-  private boolean shielded = false;
-  private long shieldExpiryTime = 0;
-
-  // Speed
-  private boolean speedActive = false;
-  private long speedExpiryTime = 0;
-  private float baseMovementSpeed;
-
-  // Strength
-  private boolean strengthActive = false;
-  private long strengthExpiryTime = 0;
-  private int baseAttack;
+  private StatusEffectsControllerComponent effects;
+  private GameTime time;
+  private boolean disposed;
 
   @Override
   public void create() {
-    combatStats = entity.getComponent(CombatStatsComponent.class);
+    stats = entity.getComponent(CombatStatsComponent.class);
     inventory = entity.getComponent(InventoryComponent.class);
-    entity.getEvents().addListener("itemUsed", this::applyEffect);
+    effects = entity.getComponent(StatusEffectsControllerComponent.class);
+    time = ServiceLocator.getTimeSource();
+    entity.getEvents().addListener(USE_REQUEST, this::applyEffect);
   }
 
-  @Override
-  public void update() {
-    long now = System.currentTimeMillis();
-
-    if (shielded && now >= shieldExpiryTime) {
-      shielded = false;
-      logger.info("Shield expired");
-    }
-
-    if (speedActive && now >= speedExpiryTime) {
-      combatStats.setMovementSpeed(baseMovementSpeed);
-      speedActive = false;
-      logger.info("Speed Potion expired, movement speed reverted to {}", baseMovementSpeed);
-    }
-
-    if (strengthActive && now >= strengthExpiryTime) {
-      combatStats.setBaseAttack(baseAttack);
-      strengthActive = false;
-      logger.info("Strength Potion expired, attack reverted to {}", baseAttack);
-    }
+  /** Event-compatible use request. This method never assumes the caller already removed an item. */
+  public void applyEffect(ItemType type) {
+    tryUse(type);
   }
 
   /**
-   * True while the player is under an active Shield effect. Damage-dealing code (e.g. enemy
-   * attack/collision handling) should check this before applying damage to the player, and skip the
-   * damage if true. This is the integration point other teams' combat code needs to call.
+   * Applies one available item. Invalid, dead, disposed or full-health requests consume nothing.
    */
+  public boolean tryUse(ItemType type) {
+    if (disposed
+        || type == null
+        || !type.isConsumable()
+        || stats == null
+        || stats.isDead()
+        || inventory == null
+        || !inventory.hasConsumable(type)) {
+      return false;
+    }
+    if (type == ItemType.HEALTH_POTION) {
+      if (stats.getHealth() >= stats.getMaxHealth()) {
+        return false;
+      }
+    } else if (effects == null || effects.isDisposed() || time == null) {
+      return false;
+    }
+    if (!inventory.removeConsumable(type)) {
+      return false;
+    }
+    if (type == ItemType.HEALTH_POTION) {
+      stats.addHealth(25);
+    } else {
+      refresh(type);
+    }
+    entity.getEvents().trigger(USED, type);
+    return true;
+  }
+
+  private void refresh(ItemType type) {
+    effects.removeStatusEffect(active.remove(type));
+    TimedStatusEffect effect = new ConsumableBuff(time, type);
+    active.put(type, effect);
+    effect.setOnEnded(
+        () -> {
+          active.remove(type, effect);
+          stats.notifyEffectiveStatsChanged();
+        });
+    effects.addStatusEffect(effect);
+    stats.notifyEffectiveStatsChanged();
+  }
+
+  /** Returns whether this consumable's protection is still active at the current game time. */
   public boolean isShielded() {
-    return shielded;
+    return effects != null && effects.hasStatusEffect(active.get(ItemType.SHIELD));
   }
 
-  public void applyEffect(ItemType type) {
-    if (type == null || !type.isConsumable()) {
-      return;
+  @Override
+  public void dispose() {
+    disposed = true;
+    if (effects != null) {
+      for (TimedStatusEffect effect : active.values().toArray(TimedStatusEffect[]::new)) {
+        effects.removeStatusEffect(effect);
+      }
     }
-    if (inventory == null || !inventory.hasConsumable(type)) {
-      logger.info("No {} available to use", type);
-      return;
-    }
-
-    switch (type) {
-      case HEALTH_POTION:
-        applyHealthPotion();
-        break;
-      case SHIELD:
-        applyShield();
-        break;
-      case SPEED_POTION:
-        applySpeedPotion();
-        break;
-      case STRENGTH_POTION:
-        applyStrengthPotion();
-        break;
-      default:
-        logger.warn("No effect defined for consumable type: {}", type);
-    }
+    active.clear();
   }
 
-  private void applyHealthPotion() {
-    if (combatStats == null) {
-      logger.warn("No CombatStatsComponent found on entity — cannot heal");
-      return;
-    }
-    inventory.removeConsumable(ItemType.HEALTH_POTION);
-    int newHealth = combatStats.getHealth() + HEALTH_POTION_HEAL_AMOUNT;
-    combatStats.setHealth(newHealth);
-    logger.info("Health Potion used: healed {} HP", HEALTH_POTION_HEAL_AMOUNT);
-  }
+  /** Refreshable consumable modifiers use the shared status and damage interfaces. */
+  private static final class ConsumableBuff extends TimedStatusEffect implements Damageable {
+    private final ItemType type;
 
-  private void applyShield() {
-    inventory.removeConsumable(ItemType.SHIELD);
-    shielded = true;
-    shieldExpiryTime = System.currentTimeMillis() + SHIELD_DURATION_MS;
-    logger.info("Shield activated for {} ms", SHIELD_DURATION_MS);
-  }
+    ConsumableBuff(GameTime time, ItemType type) {
+      super(time, DURATION_MS);
+      this.type = type;
+    }
 
-  private void applySpeedPotion() {
-    if (combatStats == null) {
-      logger.warn("No CombatStatsComponent found on entity — cannot boost speed");
-      return;
+    @Override
+    public float getStatMultiplier(Stat stat) {
+      return (type == ItemType.STRENGTH_POTION && stat == Stat.ATTACK)
+              || (type == ItemType.SPEED_POTION && stat == Stat.MOVEMENT_SPEED)
+          ? 1.5f
+          : 1f;
     }
-    inventory.removeConsumable(ItemType.SPEED_POTION);
-    if (!speedActive) {
-      baseMovementSpeed = combatStats.getMovementSpeed();
-    }
-    combatStats.setMovementSpeed(baseMovementSpeed * SPEED_MULTIPLIER);
-    speedActive = true;
-    speedExpiryTime = System.currentTimeMillis() + SPEED_DURATION_MS;
-    logger.info("Speed Potion used: movement speed boosted for {} ms", SPEED_DURATION_MS);
-  }
 
-  private void applyStrengthPotion() {
-    if (combatStats == null) {
-      logger.warn("No CombatStatsComponent found on entity — cannot boost attack");
-      return;
+    @Override
+    public boolean damage(Damage damage) {
+      if (type == ItemType.SHIELD && !isExpired()) {
+        damage.setDamage(0);
+      }
+      return false;
     }
-    inventory.removeConsumable(ItemType.STRENGTH_POTION);
-    if (!strengthActive) {
-      baseAttack = combatStats.getBaseAttack();
-    }
-    combatStats.setBaseAttack(Math.round(baseAttack * STRENGTH_MULTIPLIER));
-    strengthActive = true;
-    strengthExpiryTime = System.currentTimeMillis() + STRENGTH_DURATION_MS;
-    logger.info("Strength Potion used: attack boosted for {} ms", STRENGTH_DURATION_MS);
   }
 }
