@@ -9,12 +9,16 @@ import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
+import com.csse3200.game.components.player.PlayerDamageFlashComponent;
+import com.csse3200.game.components.player.PlayerPetrificationComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.components.weapons.BowWeaponComponent;
 import com.csse3200.game.components.weapons.KnifeWeaponComponent;
 import com.csse3200.game.components.weapons.SwordWeaponComponent;
 import com.csse3200.game.components.weapons.WeaponAssetsComponent;
+import com.csse3200.game.components.weapons.WeaponSelectionComponent;
 import com.csse3200.game.components.weapons.WeaponStatsComponent;
+import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
 import com.csse3200.game.files.FileLoader;
@@ -83,14 +87,16 @@ public class PlayerFactory {
             // therefore scale weapon hits too.
             .addComponent(new WeaponAssetsComponent())
             .addComponent(new WeaponStatsComponent(0.5f, 1f, 2f))
+            // Tracks which weapons are upgraded; the "upgrade" terminal command grants them.
+            .addComponent(new WeaponUpgradeComponent())
             .addComponent(new SwordWeaponComponent())
             .addComponent(new KnifeWeaponComponent())
             .addComponent(new StatusEffectsControllerComponent())
-            .addComponent(new BowWeaponComponent());
-
-    // Sword is equipped by default; the "weapon" terminal command switches at runtime.
-    player.getComponent(KnifeWeaponComponent.class).setEnabled(false);
-    player.getComponent(BowWeaponComponent.class).setEnabled(false);
+            .addComponent(new PlayerDamageFlashComponent())
+            .addComponent(new PlayerPetrificationComponent())
+            .addComponent(new BowWeaponComponent())
+            // Owns the equipped weapon: equips the sword and disables the rest on create.
+            .addComponent(new WeaponSelectionComponent());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);

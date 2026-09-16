@@ -299,7 +299,7 @@ public class NPCFactory {
    *
    * @return entity
    */
-  protected static Entity createBaseNPC() {
+  public static Entity createBaseNPC() {
     Entity npc =
         new Entity()
             .addComponent(new PhysicsComponent())

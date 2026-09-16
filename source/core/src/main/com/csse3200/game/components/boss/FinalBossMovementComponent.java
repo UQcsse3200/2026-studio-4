@@ -129,6 +129,15 @@ public class FinalBossMovementComponent extends Component {
       return;
     }
 
+    FinalBossPhaseControllerComponent phases =
+        entity.getComponent(FinalBossPhaseControllerComponent.class);
+    if (phases != null
+        && (phases.getCurrentPhase() == FinalBossPhase.STAGE_THREE
+            || phases.getCurrentPhase() == FinalBossPhase.DEFEATED)) {
+      if (phases.isTransitioning()) movement.setMoving(false);
+      return;
+    }
+
     // Apply during movement and pauses, including the vulnerability window.
     keepInsideVisibleArea();
 

@@ -2,6 +2,7 @@ package com.csse3200.game.components.rooms;
 
 import com.badlogic.gdx.audio.Music;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.boss.FinalBossStageThreeAssets;
 import com.csse3200.game.components.boss.FinalBossVisualAssets;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -38,6 +39,7 @@ public class RoomAssetsComponent extends Component {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(TEXTURES);
     resourceService.loadTextures(FinalBossVisualAssets.paths());
+    resourceService.loadTextures(FinalBossStageThreeAssets.paths());
     resourceService.loadTextureAtlases(TEXTURE_ATLASES);
     resourceService.loadMusic(MUSIC);
     resourceService.loadSounds(SOUNDS);
@@ -58,6 +60,7 @@ public class RoomAssetsComponent extends Component {
     resourceService.getAsset(BACKGROUND_MUSIC, Music.class).stop();
     resourceService.unloadAssets(TEXTURES);
     resourceService.unloadAssets(FinalBossVisualAssets.paths());
+    resourceService.unloadAssets(FinalBossStageThreeAssets.paths());
     resourceService.unloadAssets(TEXTURE_ATLASES);
     resourceService.unloadAssets(MUSIC);
     resourceService.unloadAssets(SOUNDS);
