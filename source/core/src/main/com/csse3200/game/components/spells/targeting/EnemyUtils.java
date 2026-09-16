@@ -1,4 +1,4 @@
-package com.csse3200.game.components.abilities.targeting;
+package com.csse3200.game.components.spells.targeting;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.entities.Entity;

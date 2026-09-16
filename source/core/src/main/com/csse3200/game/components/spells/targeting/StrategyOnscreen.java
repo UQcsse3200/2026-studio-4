@@ -1,4 +1,4 @@
-package com.csse3200.game.components.abilities.targeting;
+package com.csse3200.game.components.spells.targeting;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;

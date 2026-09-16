@@ -1,9 +1,9 @@
-package com.csse3200.game.components.abilities;
+package com.csse3200.game.components.spells;
 
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.abilities.targeting.EnemyTargetingStrategy;
+import com.csse3200.game.components.spells.targeting.EnemyTargetingStrategy;
 import com.csse3200.game.components.statuseffects.Slow;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
