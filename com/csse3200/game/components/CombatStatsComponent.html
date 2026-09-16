@@ -541,8 +541,9 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="takeDamage(int)">
 <h3>takeDamage</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">takeDamage</span><wbr><span class="parameters">(int&nbsp;damage)</span></div>
-<div class="block">Core method for dealing raw damage directly. Handles health reduction, hit reaction, and death
- checks. Compatible with Task 2 ticket spec.</div>
+<div class="block">Core method for dealing raw damage directly. Applies status-effect mitigation, including an
+ active shield, before handling health reduction, hit reaction, and death checks. Compatible
+ with Task 2 ticket spec.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>damage</code> - Amount of damage to deal</dd>
