@@ -61,10 +61,7 @@ public class NPCFactory {
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    // Longer frame duration so the (currently single-frame) death pose is actually
-    // visible before the entity is removed, instead of disappearing in one-tenth of a
-    // second.
-    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     giantEnemy
@@ -102,10 +99,7 @@ public class NPCFactory {
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    // Longer frame duration so the (currently single-frame) death pose is actually
-    // visible before the entity is removed, instead of disappearing in one-tenth of a
-    // second.
-    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("fuse", 0.1f, Animation.PlayMode.LOOP);
 
@@ -147,10 +141,7 @@ public class NPCFactory {
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    // Longer frame duration so the (currently single-frame) death pose is actually
-    // visible before the entity is removed, instead of disappearing in one-tenth of a
-    // second.
-    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
 
     chaseEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
@@ -201,10 +192,7 @@ public class NPCFactory {
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    // Longer frame duration so the (currently single-frame) death pose is actually
-    // visible before the entity is removed, instead of disappearing in one-tenth of a
-    // second.
-    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
 
     snakeBoss
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
