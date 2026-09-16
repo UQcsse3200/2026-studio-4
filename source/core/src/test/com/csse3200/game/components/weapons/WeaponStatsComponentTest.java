@@ -38,6 +38,14 @@ class WeaponStatsComponentTest {
   }
 
   @Test
+  void shouldApplyExtraDamageScaleOnTopOfMultiplier() {
+    WeaponStatsComponent stats = new WeaponStatsComponent(0.4f, 0.8f, 0f);
+    assertEquals(11, stats.resolveHitboxDamage(10, 1.35f)); // round(10.8)
+    assertEquals(8, stats.resolveHitboxDamage(10, 1f));
+    assertEquals(0.8f, stats.getMultiplier()); // shared multiplier is left untouched
+  }
+
+  @Test
   void shouldResolveZeroDamageForZeroMultiplier() {
     WeaponStatsComponent stats = new WeaponStatsComponent(0.4f, 0f, 0f);
     assertEquals(0, stats.resolveHitboxDamage(10));

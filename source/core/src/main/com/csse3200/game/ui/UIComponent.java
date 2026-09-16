@@ -13,7 +13,8 @@ public abstract class UIComponent extends RenderComponent implements Renderable 
   protected static final Skin skin =
       new Skin(Gdx.files.internal("flat-earth/skin/flat-earth-ui.json"));
   protected static final Skin hud = new Skin(Gdx.files.internal("hud_items/skin/skin.json"));
-
+  protected static final Skin inventory =
+      new Skin(Gdx.files.internal("flat-earth/skin/InventoryUI.json"));
   protected Stage stage;
 
   @Override

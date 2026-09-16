@@ -2,7 +2,9 @@ package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
 import com.csse3200.game.items.ItemType;
+import com.csse3200.game.components.maingame.InventoryDisplay;
 import com.csse3200.game.items.charms.Charm;
+import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -16,6 +18,10 @@ public class InventoryComponent extends Component {
   private int gold;
   private final List<Charm> charms;
   private final Map<ItemType, Integer> consumables;
+
+  private InventoryDisplay display;
+
+  private boolean displayed;
 
   public InventoryComponent(int gold) {
     setGold(gold);
@@ -119,5 +125,20 @@ public class InventoryComponent extends Component {
       entity.getEvents().trigger("consumableInventoryChanged", type, newCount);
     }
     return true;
+  }
+
+  public void setDisplay(InventoryDisplay display) {
+    this.display = display;
+  }
+
+  public void toggleDisplay() {
+    if (displayed) {
+      this.display.setVisible(false);
+      displayed = false;
+    } else {
+      this.display.setVisible(true);
+      displayed = true;
+    }
+    ServiceLocator.getEntityService().toggleUpdate();
   }
 }

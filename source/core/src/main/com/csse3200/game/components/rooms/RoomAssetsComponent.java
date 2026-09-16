@@ -21,8 +21,12 @@ public class RoomAssetsComponent extends Component {
   private static final String[] SOUNDS = {IMPACT_SOUND};
   private static final String[] TEXTURE_ATLASES = {
     "images/bombEnemy.atlas",
-    "images/chaseEnemy.atlas",
+    "images/beetle.atlas",
     "images/medusa.atlas",
+    "images/mummy.atlas",
+    "images/crab.atlas",
+    "images/golem.atlas",
+    "images/cyclops.atlas",
     "images/floatingDemon.atlas",
     "images/harpy.atlas",
     "images/cerberus.atlas"
