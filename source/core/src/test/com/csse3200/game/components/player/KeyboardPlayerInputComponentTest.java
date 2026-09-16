@@ -57,7 +57,9 @@ class KeyboardPlayerInputComponentTest {
               dashCount++;
               lastDashDirection = direction.cpy();
             });
-        player.getEvents().addListener("consumableSelected", (ItemType type) -> selectedEvents.add(type));
+    player
+        .getEvents()
+        .addListener("selectedConsumableChanged", (ItemType type) -> selectedEvents.add(type));
     player.getEvents().addListener("itemUsed", (ItemType type) -> usedEvents.add(type));
   }
 

@@ -96,7 +96,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
 
   private void selectConsumable(ItemType type) {
     selectedConsumable = type;
-    entity.getEvents().trigger("consumableSelected", type);
+    entity.getEvents().trigger("selectedConsumableChanged", type);
   }
 
   private void useSelectedConsumable() {
