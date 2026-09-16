@@ -1,4 +1,4 @@
-package com.csse3200.game.components.abilities.targeting;
+package com.csse3200.game.components.spells.targeting;
 
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.entities.Entity;
@@ -9,7 +9,7 @@ import com.csse3200.game.services.ServiceLocator;
  * or camera visibility. Suitable for a "hit everything in the level/room" spell as long as your
  * game keeps only the current room's entities registered at once &mdash; if multiple rooms' worth
  * of entities can be registered simultaneously, this will also hit enemies in other rooms (see the
- * class-level note in {@link com.csse3200.game.components.abilities.LightningSpellComponent}).
+ * class-level note in {@link com.csse3200.game.components.spells.LightningSpellComponent}).
  */
 public class StrategyAll implements EnemyTargetingStrategy {
   @Override
