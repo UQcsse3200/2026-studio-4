@@ -20,4 +20,9 @@ public class AttackSpeedCharm extends Charm {
   public void removeEffect(Entity player) {
     player.getComponent(CombatStatsComponent.class).addAttackSpeed(-VALUE);
   }
+
+  @Override
+  public String getEffectSummary() {
+    return "Attack Speed +" + formatAmount(VALUE);
+  }
 }

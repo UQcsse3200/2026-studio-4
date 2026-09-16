@@ -20,4 +20,9 @@ public class StrengthCharm extends Charm {
   public void removeEffect(Entity player) {
     player.getComponent(CombatStatsComponent.class).addBaseAttack(-VALUE);
   }
+
+  @Override
+  public String getEffectSummary() {
+    return "Attack +" + VALUE;
+  }
 }
