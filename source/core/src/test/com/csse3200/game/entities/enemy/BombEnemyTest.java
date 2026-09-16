@@ -1,11 +1,16 @@
 package com.csse3200.game.entities.enemy;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.ExplodeComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.player.abilities.Invisibility;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.NPCFactory;
@@ -105,5 +110,49 @@ class BombEnemyTest {
     bombEnemy.getEvents().trigger("collisionStart", bombFixture, otherFixture);
 
     verify(dieAnimationListener, times(0)).handle();
+  }
+
+  @Test
+  void testBombEnemyDoesNotExplodeOnInvisiblePlayerCollision() {
+    GameTime abilityTime = mock(GameTime.class);
+    when(abilityTime.getTime()).thenReturn(1_000L);
+    PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(abilityTime);
+
+    Entity player =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent())
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
+    player.create();
+
+    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas", 0.05f);
+    bombEnemy.create();
+
+    Fixture bombFixture = bombEnemy.getComponent(HitboxComponent.class).getFixture();
+    Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
+
+    EventListener0 fuseStarted = mock(EventListener0.class);
+    bombEnemy.getEvents().addListener("fuseStarted", fuseStarted);
+    ExplodeComponent explode = bombEnemy.getComponent(ExplodeComponent.class);
+
+    assertTrue(abilities.tryActivate(Invisibility.class));
+    bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
+    explode.update();
+
+    verify(fuseStarted, times(0)).handle();
+    assertFalse(bombEnemy.getComponent(CombatStatsComponent.class).isDead());
+
+    // The player is still standing on the bomb when invisibility wears off: the fuse lights on the
+    // next frame without the fixtures having to separate and touch again.
+    when(abilityTime.getTime()).thenReturn(1_000L + Invisibility.DURATION_MS);
+    explode.update();
+    verify(fuseStarted, times(1)).handle();
+
+    // A repeat contact does not light a second fuse.
+    bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
+    explode.update();
+    verify(fuseStarted, times(1)).handle();
   }
 }
