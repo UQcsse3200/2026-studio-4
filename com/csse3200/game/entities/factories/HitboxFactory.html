@@ -144,7 +144,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="createHitbox(com.csse3200.game.entities.factories.HitboxSpec)">
 <h3>createHitbox</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createHitbox</span><wbr><span class="parameters">(<a href="HitboxSpec.html" title="class in com.csse3200.game.entities.factories">HitboxSpec</a>&nbsp;spec)</span></div>
-<div class="block">Create an unregistered kinematic sensor that damages <code>spec.targetLayer</code> on contact.</div>
+<div class="block">Create an unregistered kinematic sensor that damages <code>spec.targetLayer</code> on contact.
+
+ <p>A hitbox with an owner starts centred on <code>owner centre + localOffset</code>, matching where
+ its <a href="../../components/weapons/FollowComponent.html" title="class in com.csse3200.game.components.weapons"><code>FollowComponent</code></a> keeps it; <code>spec.position</code> only places ownerless hitboxes.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>spec</code> - spawn configuration</dd>

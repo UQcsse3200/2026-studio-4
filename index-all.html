@@ -88,6 +88,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Toggles debug mode on or off if the corresponding argument is received.</div>
 </dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/UpgradeCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/UpgradeCommand.html" title="class in com.csse3200.game.ui.terminal.commands">UpgradeCommand</a></dt>
+<dd>
+<div class="block">Upgrades the named weapon, or reverts it when followed by <code>off</code>.</div>
+</dd>
 <dt><a href="com/csse3200/game/ui/terminal/commands/WeaponCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/WeaponCommand.html" title="class in com.csse3200.game.ui.terminal.commands">WeaponCommand</a></dt>
 <dd>
 <div class="block">Equips the named weapon.</div>
@@ -739,8 +743,9 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></dt>
 <dd>
-<div class="block">Caches <a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponStatsComponent</code></a> from the same entity and subscribes to the <code>
- "weaponAttack"</code> event.</div>
+<div class="block">Caches <a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponStatsComponent</code></a> (and <a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponUpgradeComponent</code></a>, if present) from the
+ same entity and subscribes to the <code>"weaponAttack"</code> and <code>"weaponHeavyAttack"</code>
+ events.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html" title="class in com.csse3200.game.components.weapons">WeaponSelectionComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -874,6 +879,16 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/NPCFactory.html#createGiantEnemy(com.csse3200.game.entities.Entity,java.lang.String)" class="member-name-link">createGiantEnemy(Entity, String)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/NPCFactory.html" title="class in com.csse3200.game.entities.factories">NPCFactory</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/KnifeWeaponComponent.html#createHeavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createHeavyAttack(Vector2, Vector2)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/KnifeWeaponComponent.html" title="class in com.csse3200.game.components.weapons">KnifeWeaponComponent</a></dt>
+<dd>
+<div class="block">Start the flurry: the first slash spawns now and the rest are queued.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/weapons/SwordWeaponComponent.html#createHeavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createHeavyAttack(Vector2, Vector2)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/SwordWeaponComponent.html" title="class in com.csse3200.game.components.weapons">SwordWeaponComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponComponent.html#createHeavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createHeavyAttack(Vector2, Vector2)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></dt>
+<dd>
+<div class="block">Spawn this weapon's heavy attack hitbox.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/factories/HitboxFactory.html#createHitbox(com.csse3200.game.entities.factories.HitboxSpec)" class="member-name-link">createHitbox(HitboxSpec)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HitboxFactory.html" title="class in com.csse3200.game.entities.factories">HitboxFactory</a></dt>
 <dd>
 <div class="block">Create an unregistered kinematic sensor that damages <code>spec.targetLayer</code> on contact.</div>
@@ -1310,6 +1325,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/RoomConfig.html#entryPoints" class="member-name-link">entryPoints</a> - Variable in class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeStats</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/Entity.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html#equip(com.csse3200.game.items.WeaponItem.WeaponType)" class="member-name-link">equip(WeaponItem.WeaponType)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html" title="class in com.csse3200.game.components.weapons">WeaponSelectionComponent</a></dt>
@@ -1748,6 +1767,16 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the entity's health.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/weapons/KnifeWeaponComponent.html#getHeavyAttackDuration()" class="member-name-link">getHeavyAttackDuration()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/KnifeWeaponComponent.html" title="class in com.csse3200.game.components.weapons">KnifeWeaponComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/SwordWeaponComponent.html#getHeavyAttackDuration()" class="member-name-link">getHeavyAttackDuration()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/SwordWeaponComponent.html" title="class in com.csse3200.game.components.weapons">SwordWeaponComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponComponent.html#getHeavyAttackDuration()" class="member-name-link">getHeavyAttackDuration()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html#getHeavyCooldownMultiplier(java.lang.Class)" class="member-name-link">getHeavyCooldownMultiplier(Class&lt;? extends WeaponComponent&gt;)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html#getHeavyDamageMultiplier(java.lang.Class)" class="member-name-link">getHeavyDamageMultiplier(Class&lt;? extends WeaponComponent&gt;)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/raycast/AllHitCallback.html#getHitsAndClear()" class="member-name-link">getHitsAndClear()</a> - Method in class com.csse3200.game.physics.raycast.<a href="com/csse3200/game/physics/raycast/AllHitCallback.html" title="class in com.csse3200.game.physics.raycast">AllHitCallback</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainTile.html#getId()" class="member-name-link">getId()</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainTile.html" title="class in com.csse3200.game.areas.terrain">TerrainTile</a></dt>
@@ -1776,6 +1805,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/HitboxSpec.html#getKnockback()" class="member-name-link">getKnockback()</a> - Method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HitboxSpec.html" title="class in com.csse3200.game.entities.factories">HitboxSpec</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/TouchAttackComponent.html#getKnockbackForce()" class="member-name-link">getKnockbackForce()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/TouchAttackComponent.html" title="class in com.csse3200.game.components">TouchAttackComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainComponent.html#getLayer()" class="member-name-link">getLayer()</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/HitboxSpec.html#getLayer()" class="member-name-link">getLayer()</a> - Method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HitboxSpec.html" title="class in com.csse3200.game.entities.factories">HitboxSpec</a></dt>
@@ -1791,6 +1822,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/ui/UIComponent.html#getLayer()" class="member-name-link">getLayer()</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/HitboxSpec.html#getLifetime()" class="member-name-link">getLifetime()</a> - Method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HitboxSpec.html" title="class in com.csse3200.game.entities.factories">HitboxSpec</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html#getLightDamageMultiplier(java.lang.Class)" class="member-name-link">getLightDamageMultiplier(Class&lt;? extends WeaponComponent&gt;)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/weapons/FollowComponent.html#getLocalOffset()" class="member-name-link">getLocalOffset()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/FollowComponent.html" title="class in com.csse3200.game.components.weapons">FollowComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -2118,7 +2151,17 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns if the player has a certain amount of gold.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeStats</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/Entity.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/KnifeWeaponComponent.html#hasHeavyAttack()" class="member-name-link">hasHeavyAttack()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/KnifeWeaponComponent.html" title="class in com.csse3200.game.components.weapons">KnifeWeaponComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/SwordWeaponComponent.html#hasHeavyAttack()" class="member-name-link">hasHeavyAttack()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/SwordWeaponComponent.html" title="class in com.csse3200.game.components.weapons">SwordWeaponComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponComponent.html#hasHeavyAttack()" class="member-name-link">hasHeavyAttack()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/StatusEffectsControllerComponent.html#hasStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)" class="member-name-link">hasStatusEffect(StatusEffect)</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/StatusEffectsControllerComponent.html" title="class in com.csse3200.game.components">StatusEffectsControllerComponent</a></dt>
 <dd>
@@ -2130,6 +2173,18 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/BaseEntityConfig.html#health" class="member-name-link">health</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/BaseEntityConfig.html" title="class in com.csse3200.game.entities.configs">BaseEntityConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponComponent.html#heavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">heavyAttack(Vector2, Vector2)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></dt>
+<dd>
+<div class="block">Attempt a heavy attack.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html#heavyCooldownMultiplier()" class="member-name-link">heavyCooldownMultiplier()</a> - Method in record class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeStats</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./com/csse3200/game/components/weapons/WeaponUpgradeStats.html#param-heavyCooldownMultiplier"><code>heavyCooldownMultiplier</code></a> record component.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html#heavyDamageMultiplier()" class="member-name-link">heavyDamageMultiplier()</a> - Method in record class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeStats</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./com/csse3200/game/components/weapons/WeaponUpgradeStats.html#param-heavyDamageMultiplier"><code>heavyDamageMultiplier</code></a> record component.</div>
+</dd>
 <dt><a href="com/csse3200/game/files/UserSettings.DisplaySettings.html#height" class="member-name-link">height</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.DisplaySettings.html" title="class in com.csse3200.game.files">UserSettings.DisplaySettings</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainComponent.TerrainOrientation.html#HEXAGONAL" class="member-name-link">HEXAGONAL</a> - Enum constant in enum class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainComponent.TerrainOrientation.html" title="enum class in com.csse3200.game.areas.terrain">TerrainComponent.TerrainOrientation</a></dt>
@@ -2335,6 +2390,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/player/PlayerAbility.html#isUnlocked()" class="member-name-link">isUnlocked()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponComponent.html#isUpgraded()" class="member-name-link">isUpgraded()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html#isUpgraded(java.lang.Class)" class="member-name-link">isUpgraded(Class&lt;? extends WeaponComponent&gt;)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossPetrificationWarningRenderComponent.html#isVisible()" class="member-name-link">isVisible()</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossPetrificationWarningRenderComponent.html" title="class in com.csse3200.game.components.boss">FinalBossPetrificationWarningRenderComponent</a></dt>
 <dd>
 <div class="block">Returns whether the warning circle is currently visible.</div>
@@ -2531,6 +2590,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/weapons/LifetimeComponent.html#%3Cinit%3E(float)" class="member-name-link">LifetimeComponent(float)</a> - Constructor for class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/LifetimeComponent.html" title="class in com.csse3200.game.components.weapons">LifetimeComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html#lightDamageMultiplier()" class="member-name-link">lightDamageMultiplier()</a> - Method in record class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeStats</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./com/csse3200/game/components/weapons/WeaponUpgradeStats.html#param-lightDamageMultiplier"><code>lightDamageMultiplier</code></a> record component.</div>
+</dd>
 <dt><a href="com/csse3200/game/services/ResourceService.html#loadAll()" class="member-name-link">loadAll()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ResourceService.html" title="class in com.csse3200.game.services">ResourceService</a></dt>
 <dd>
 <div class="block">Blocking call to load all assets.</div>
@@ -3232,14 +3295,28 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Cooldown scaled by the wielder's attack speed: faster wielders attack more often.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponComponent.html#resolveHeavyHitboxDamage()" class="member-name-link">resolveHeavyHitboxDamage()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></dt>
+<dd>
+<div class="block">Damage for this weapon's heavy attack hitboxes: like <a href="com/csse3200/game/components/weapons/WeaponComponent.html#resolveHitboxDamage()"><code>WeaponComponent.resolveHitboxDamage()</code></a> but scaled
+ by the upgrade's heavy damage multiplier instead.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponComponent.html#resolveHeavyHitboxDamage(float)" class="member-name-link">resolveHeavyHitboxDamage(float)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></dt>
+<dd>
+<div class="block">Heavy attack damage with an extra scale, for heavy attacks made of several hits that deal
+ different damage (e.g.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponComponent.html#resolveHitboxDamage()" class="member-name-link">resolveHitboxDamage()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></dt>
 <dd>
 <div class="block">Damage for this weapon's spawned hitboxes: the wielder's effective base attack scaled by the
- weapon multiplier, rounded.</div>
+ weapon multiplier and, once upgraded, the upgrade's light damage multiplier, rounded.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html#resolveHitboxDamage(int)" class="member-name-link">resolveHitboxDamage(int)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons">WeaponStatsComponent</a></dt>
 <dd>
 <div class="block">Hitbox damage copied onto a spawned sensor.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html#resolveHitboxDamage(int,float)" class="member-name-link">resolveHitboxDamage(int, float)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons">WeaponStatsComponent</a></dt>
+<dd>
+<div class="block">Hitbox damage with an extra scale on top of the weapon multiplier, e.g.</div>
 </dd>
 <dt><a href="com/csse3200/game/services/ResourceService.html" class="type-name-link" title="class in com.csse3200.game.services">ResourceService</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
 <dd>
@@ -3436,6 +3513,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Enable or disable the component.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/weapons/KnifeWeaponComponent.html#setEnabled(boolean)" class="member-name-link">setEnabled(boolean)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/KnifeWeaponComponent.html" title="class in com.csse3200.game.components.weapons">KnifeWeaponComponent</a></dt>
+<dd>
+<div class="block">Disabling the knife (e.g.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/Entity.html#setEnabled(boolean)" class="member-name-link">setEnabled(boolean)</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
 <dd>
 <div class="block">Enable or disable an entity.</div>
@@ -3626,6 +3707,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/screens/SettingsScreen.html#%3Cinit%3E(com.csse3200.game.GdxGame)" class="member-name-link">SettingsScreen(GdxGame)</a> - Constructor for class com.csse3200.game.screens.<a href="com/csse3200/game/screens/SettingsScreen.html" title="class in com.csse3200.game.screens">SettingsScreen</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html#setUpgraded(java.lang.Class,boolean)" class="member-name-link">setUpgraded(Class&lt;? extends WeaponComponent&gt;, boolean)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeComponent</a></dt>
+<dd>
+<div class="block">Apply or revert a weapon's upgrade.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html#setVisible(boolean)" class="member-name-link">setVisible(boolean)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a></dt>
 <dd>
 <div class="block">Shows or hides the inventory book.</div>
@@ -4038,6 +4123,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/Component.html#toString()" class="member-name-link">toString()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/Component.html" title="class in com.csse3200.game.components">Component</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html#toString()" class="member-name-link">toString()</a> - Method in record class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeStats</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/Entity.html#toString()" class="member-name-link">toString()</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/StringDecorator.html#toString()" class="member-name-link">toString()</a> - Method in class com.csse3200.game.utils.<a href="com/csse3200/game/utils/StringDecorator.html" title="class in com.csse3200.game.utils">StringDecorator</a></dt>
@@ -4325,6 +4414,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/weapons/FollowComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/FollowComponent.html" title="class in com.csse3200.game.components.weapons">FollowComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/KnifeWeaponComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/KnifeWeaponComponent.html" title="class in com.csse3200.game.components.weapons">KnifeWeaponComponent</a></dt>
+<dd>
+<div class="block">Counts down queued flurry strikes and spawns each one when its time comes.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/weapons/LifetimeComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/LifetimeComponent.html" title="class in com.csse3200.game.components.weapons">LifetimeComponent</a></dt>
 <dd>
 <div class="block">Tick remaining lifetime using the registered time source.</div>
@@ -4395,6 +4488,17 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/player/PlayerStatsDisplay.html#updatePlayerStrengthUI(int)" class="member-name-link">updatePlayerStrengthUI(int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></dt>
 <dd>
 <div class="block">Updates the player's strength on the ui.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/UpgradeCommand.html" class="type-name-link" title="class in com.csse3200.game.ui.terminal.commands">UpgradeCommand</a> - Class in <a href="com/csse3200/game/ui/terminal/commands/package-summary.html">com.csse3200.game.ui.terminal.commands</a></dt>
+<dd>
+<div class="block">Terminal command that applies or reverts a weapon upgrade so QA does not need a pickup or shop:
+ <code>upgrade sword|knife</code>, or <code>upgrade sword|knife off</code> to revert.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/UpgradeCommand.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">UpgradeCommand(Entity)</a> - Constructor for class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/UpgradeCommand.html" title="class in com.csse3200.game.ui.terminal.commands">UpgradeCommand</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/SwordWeaponComponent.html#UPGRADED_TEXTURE" class="member-name-link">UPGRADED_TEXTURE</a> - Static variable in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/SwordWeaponComponent.html" title="class in com.csse3200.game.components.weapons">SwordWeaponComponent</a></dt>
+<dd>
+<div class="block">Fancier sprite drawn for both attacks once the sword is upgraded.</div>
 </dd>
 <dt><a href="com/csse3200/game/files/UserSettings.html" class="type-name-link" title="class in com.csse3200.game.files">UserSettings</a> - Class in <a href="com/csse3200/game/files/package-summary.html">com.csse3200.game.files</a></dt>
 <dd>
@@ -4676,6 +4780,24 @@ the order they are declared.</div>
 <dt><a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html#%3Cinit%3E(float,float,float)" class="member-name-link">WeaponStatsComponent(float, float, float)</a> - Constructor for class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons">WeaponStatsComponent</a></dt>
 <dd>
 <div class="block">Create weapon stats.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html" class="type-name-link" title="class in com.csse3200.game.components.weapons">WeaponUpgradeComponent</a> - Class in <a href="com/csse3200/game/components/weapons/package-summary.html">com.csse3200.game.components.weapons</a></dt>
+<dd>
+<div class="block">Tracks which of a wielder's weapons are upgraded and the stats each upgrade grants.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html#%3Cinit%3E()" class="member-name-link">WeaponUpgradeComponent()</a> - Constructor for class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeComponent</a></dt>
+<dd>
+<div class="block">Create with the default upgrade stats for every weapon that has an upgrade.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html#%3Cinit%3E(java.util.Map)" class="member-name-link">WeaponUpgradeComponent(Map&lt;Class&lt;? extends WeaponComponent&gt;, WeaponUpgradeStats&gt;)</a> - Constructor for class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html" class="type-name-link" title="class in com.csse3200.game.components.weapons">WeaponUpgradeStats</a> - Record Class in <a href="com/csse3200/game/components/weapons/package-summary.html">com.csse3200.game.components.weapons</a></dt>
+<dd>
+<div class="block">Multipliers a weapon gains once upgraded.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html#%3Cinit%3E(float,float,float)" class="member-name-link">WeaponUpgradeStats(float, float, float)</a> - Constructor for record class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeStats</a></dt>
+<dd>
+<div class="block">Creates an instance of a <code>WeaponUpgradeStats</code> record class.</div>
 </dd>
 <dt><a href="com/csse3200/game/files/UserSettings.DisplaySettings.html#width" class="member-name-link">width</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.DisplaySettings.html" title="class in com.csse3200.game.files">UserSettings.DisplaySettings</a></dt>
 <dd>&nbsp;</dd>

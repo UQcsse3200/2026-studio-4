@@ -112,6 +112,12 @@ loadScripts(document, 'script');</script>
  directly &mdash; <code>entity.getComponent</code> in this engine matches by exact class, so a lookup
  by the abstract <code>WeaponComponent</code> type will not find a subclass instance.
 
+ <p>Upgrades: if the wielder has a <a href="WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponUpgradeComponent</code></a> and this weapon is upgraded,
+ light hitbox damage gains the upgrade's light multiplier, and a <code>"weaponHeavyAttack"</code> event
+ (also carrying a <code>Vector2</code> direction) calls <a href="#heavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)"><code>heavyAttack(Vector2, Vector2)</code></a>. Weapons
+ with a heavy attack override <a href="#hasHeavyAttack()"><code>hasHeavyAttack()</code></a> and <a href="#createHeavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)"><code>createHeavyAttack(Vector2, Vector2)</code></a>, using <a href="#resolveHeavyHitboxDamage()"><code>resolveHeavyHitboxDamage()</code></a> for its damage. Without the upgrade the
+ weapon behaves exactly as if no upgrade component existed.
+
  <p>Example melee subclass:
 
  <pre>
@@ -193,8 +199,9 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Caches <a href="WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponStatsComponent</code></a> from the same entity and subscribes to the <code>
- "weaponAttack"</code> event.</div>
+<div class="block">Caches <a href="WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponStatsComponent</code></a> (and <a href="WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponUpgradeComponent</code></a>, if present) from the
+ same entity and subscribes to the <code>"weaponAttack"</code> and <code>"weaponHeavyAttack"</code>
+ events.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#createAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createAttack</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;origin,
@@ -202,17 +209,50 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Spawn this weapon's hitbox.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected float</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveCooldown()" class="member-name-link">resolveCooldown</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createHeavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createHeavyAttack</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;origin,
+ com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Spawn this weapon's heavy attack hitbox.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected float</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHeavyAttackDuration()" class="member-name-link">getHeavyAttackDuration</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasHeavyAttack()" class="member-name-link">hasHeavyAttack</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#heavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">heavyAttack</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;origin,
+ com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Attempt a heavy attack.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isUpgraded()" class="member-name-link">isUpgraded</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected float</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveCooldown()" class="member-name-link">resolveCooldown</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Cooldown for this weapon scaled by the wielder's effective attack speed, so buffs make every
  weapon fire faster.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveHeavyHitboxDamage()" class="member-name-link">resolveHeavyHitboxDamage</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Damage for this weapon's heavy attack hitboxes: like <a href="#resolveHitboxDamage()"><code>resolveHitboxDamage()</code></a> but scaled
+ by the upgrade's heavy damage multiplier instead.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveHitboxDamage()" class="member-name-link">resolveHitboxDamage</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveHeavyHitboxDamage(float)" class="member-name-link">resolveHeavyHitboxDamage</a><wbr>(float&nbsp;scale)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Heavy attack damage with an extra scale, for heavy attacks made of several hits that deal
+ different damage (e.g.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveHitboxDamage()" class="member-name-link">resolveHitboxDamage</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Damage for this weapon's spawned hitboxes: the wielder's effective base attack scaled by the
- weapon multiplier, rounded.</div>
+ weapon multiplier and, once upgraded, the upgrade's light damage multiplier, rounded.</div>
 </div>
 </div>
 </div>
@@ -252,8 +292,9 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
-<div class="block">Caches <a href="WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponStatsComponent</code></a> from the same entity and subscribes to the <code>
- "weaponAttack"</code> event.</div>
+<div class="block">Caches <a href="WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponStatsComponent</code></a> (and <a href="WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponUpgradeComponent</code></a>, if present) from the
+ same entity and subscribes to the <code>"weaponAttack"</code> and <code>"weaponHeavyAttack"</code>
+ events.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
@@ -299,14 +340,109 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="heavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
+<h3>heavyAttack</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">heavyAttack</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;origin,
+ com.badlogic.gdx.math.Vector2&nbsp;direction)</span></div>
+<div class="block">Attempt a heavy attack. Only upgraded weapons that have one can heavy attack. When ready,
+ delegates to <a href="#createHeavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)"><code>createHeavyAttack(Vector2, Vector2)</code></a> then starts the shared cooldown,
+ lengthened by the upgrade's heavy cooldown multiplier and never shorter than <a href="#getHeavyAttackDuration()"><code>getHeavyAttackDuration()</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>origin</code> - world position of the attack</dd>
+<dd><code>direction</code> - facing or aim direction</dd>
+<dt>Returns:</dt>
+<dd>true if <code>createHeavyAttack</code> ran; false if the weapon has no heavy attack, is not
+     upgraded, or is still cooling down</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if origin or direction is null</dd>
+<dt>Require:</dt>
+<dd>origin != null &amp;&amp; direction != null</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getHeavyAttackDuration()">
+<h3>getHeavyAttackDuration</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getHeavyAttackDuration</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>seconds a heavy attack stays active; its cooldown is never shorter than this. 0 by
+     default</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="hasHeavyAttack()">
+<h3>hasHeavyAttack</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasHeavyAttack</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true if this weapon has a heavy attack; false by default</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createHeavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
+<h3>createHeavyAttack</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">createHeavyAttack</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;origin,
+ com.badlogic.gdx.math.Vector2&nbsp;direction)</span></div>
+<div class="block">Spawn this weapon's heavy attack hitbox. Only called for upgraded weapons whose <a href="#hasHeavyAttack()"><code>hasHeavyAttack()</code></a> is true. Does nothing by default.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>origin</code> - world position of the attack</dd>
+<dd><code>direction</code> - facing or aim direction</dd>
+<dt>Require:</dt>
+<dd>origin != null &amp;&amp; direction != null</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="isUpgraded()">
+<h3>isUpgraded</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isUpgraded</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true if the wielder has a <a href="WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponUpgradeComponent</code></a> with this weapon upgraded</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="resolveHitboxDamage()">
 <h3>resolveHitboxDamage</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">resolveHitboxDamage</span>()</div>
 <div class="block">Damage for this weapon's spawned hitboxes: the wielder's effective base attack scaled by the
- weapon multiplier, rounded. A wielder without combat stats is treated as 0 base attack.</div>
+ weapon multiplier and, once upgraded, the upgrade's light damage multiplier, rounded. A wielder
+ without combat stats is treated as 0 base attack.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd><code>round(wielder.effectiveBaseAttack * multiplier)</code></dd>
+<dd><code>round(wielder.effectiveBaseAttack * multiplier * lightUpgradeMultiplier)</code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="resolveHeavyHitboxDamage()">
+<h3>resolveHeavyHitboxDamage</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">resolveHeavyHitboxDamage</span>()</div>
+<div class="block">Damage for this weapon's heavy attack hitboxes: like <a href="#resolveHitboxDamage()"><code>resolveHitboxDamage()</code></a> but scaled
+ by the upgrade's heavy damage multiplier instead.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd><code>round(wielder.effectiveBaseAttack * multiplier * heavyUpgradeMultiplier)</code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="resolveHeavyHitboxDamage(float)">
+<h3>resolveHeavyHitboxDamage</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">resolveHeavyHitboxDamage</span><wbr><span class="parameters">(float&nbsp;scale)</span></div>
+<div class="block">Heavy attack damage with an extra scale, for heavy attacks made of several hits that deal
+ different damage (e.g. a combo finisher).</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>scale</code> - extra damage scale on top of the heavy upgrade multiplier; 1 for none</dd>
+<dt>Returns:</dt>
+<dd><code>round(wielder.baseAttack * multiplier * heavyUpgradeMultiplier * scale)</code></dd>
 </dl>
 </section>
 </li>

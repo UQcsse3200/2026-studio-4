@@ -96,7 +96,10 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">SwordWeaponComponent</span>
 <span class="extends-implements">extends <a href="WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></span></div>
 <div class="block">Slower sweeping attack. Spawns a rectangular sword hitbox that moves along a predetermined arc of
- attack using SweepComponent.</div>
+ attack using SweepComponent.
+
+ <p>Once upgraded (see <a href="WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponUpgradeComponent</code></a>) the sword also has a heavy attack: the same
+ blade swept a full 360 degrees around the wielder.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -113,6 +116,11 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><code><a href="#TEXTURE" class="member-name-link">TEXTURE</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">Sprite drawn for the sword's sweeping attack.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#UPGRADED_TEXTURE" class="member-name-link">UPGRADED_TEXTURE</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Fancier sprite drawn for both attacks once the sword is upgraded.</div>
 </div>
 </div>
 <div class="inherited-list">
@@ -150,12 +158,24 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Spawn this weapon's hitbox.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createHeavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createHeavyAttack</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;origin,
+ com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Spawn this weapon's heavy attack hitbox.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected float</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHeavyAttackDuration()" class="member-name-link">getHeavyAttackDuration</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasHeavyAttack()" class="member-name-link">hasHeavyAttack</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.components.weapons.WeaponComponent">Methods inherited from class&nbsp;com.csse3200.game.components.weapons.<a href="WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></h3>
-<code><a href="WeaponComponent.html#attack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">attack</a>, <a href="WeaponComponent.html#create()">create</a>, <a href="WeaponComponent.html#resolveCooldown()">resolveCooldown</a>, <a href="WeaponComponent.html#resolveHitboxDamage()">resolveHitboxDamage</a></code></div>
+<code><a href="WeaponComponent.html#attack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">attack</a>, <a href="WeaponComponent.html#create()">create</a>, <a href="WeaponComponent.html#heavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">heavyAttack</a>, <a href="WeaponComponent.html#isUpgraded()">isUpgraded</a>, <a href="WeaponComponent.html#resolveCooldown()">resolveCooldown</a>, <a href="WeaponComponent.html#resolveHeavyHitboxDamage()">resolveHeavyHitboxDamage</a>, <a href="WeaponComponent.html#resolveHeavyHitboxDamage(float)">resolveHeavyHitboxDamage</a>, <a href="WeaponComponent.html#resolveHitboxDamage()">resolveHitboxDamage</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.components.Component">Methods inherited from class&nbsp;com.csse3200.game.components.<a href="../Component.html" title="class in com.csse3200.game.components">Component</a></h3>
 <code><a href="../Component.html#dispose()">dispose</a>, <a href="../Component.html#earlyUpdate()">earlyUpdate</a>, <a href="../Component.html#getEntity()">getEntity</a>, <a href="../Component.html#setEnabled(boolean)">setEnabled</a>, <a href="../Component.html#setEntity(com.csse3200.game.entities.Entity)">setEntity</a>, <a href="../Component.html#toString()">toString</a>, <a href="../Component.html#triggerEarlyUpdate()">triggerEarlyUpdate</a>, <a href="../Component.html#triggerUpdate()">triggerUpdate</a>, <a href="../Component.html#update()">update</a></code></div>
@@ -183,6 +203,22 @@ loadScripts(document, 'script');</script>
 <dd>
 <ul class="tag-list">
 <li><a href="../../../../../constant-values.html#com.csse3200.game.components.weapons.SwordWeaponComponent.TEXTURE">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="UPGRADED_TEXTURE">
+<h3>UPGRADED_TEXTURE</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">UPGRADED_TEXTURE</span></div>
+<div class="block">Fancier sprite drawn for both attacks once the sword is upgraded. Cut from the same sheet and
+ drawn at the same angle as <a href="#TEXTURE"><code>TEXTURE</code></a>. Loaded by <a href="WeaponAssetsComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponAssetsComponent</code></a>.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.components.weapons.SwordWeaponComponent.UPGRADED_TEXTURE">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
@@ -224,6 +260,47 @@ loadScripts(document, 'script');</script>
 <dt>Parameters:</dt>
 <dd><code>origin</code> - world position of the attack</dd>
 <dd><code>direction</code> - facing or aim direction</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="hasHeavyAttack()">
+<h3>hasHeavyAttack</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasHeavyAttack</span>()</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="WeaponComponent.html#hasHeavyAttack()">hasHeavyAttack</a></code>&nbsp;in class&nbsp;<code><a href="WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></code></dd>
+<dt>Returns:</dt>
+<dd>true if this weapon has a heavy attack; false by default</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createHeavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
+<h3>createHeavyAttack</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">createHeavyAttack</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;origin,
+ com.badlogic.gdx.math.Vector2&nbsp;direction)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="WeaponComponent.html#createHeavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">WeaponComponent</a></code></span></div>
+<div class="block">Spawn this weapon's heavy attack hitbox. Only called for upgraded weapons whose <a href="WeaponComponent.html#hasHeavyAttack()"><code>WeaponComponent.hasHeavyAttack()</code></a> is true. Does nothing by default.</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="WeaponComponent.html#createHeavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">createHeavyAttack</a></code>&nbsp;in class&nbsp;<code><a href="WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>origin</code> - world position of the attack</dd>
+<dd><code>direction</code> - facing or aim direction</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getHeavyAttackDuration()">
+<h3>getHeavyAttackDuration</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getHeavyAttackDuration</span>()</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="WeaponComponent.html#getHeavyAttackDuration()">getHeavyAttackDuration</a></code>&nbsp;in class&nbsp;<code><a href="WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></code></dd>
+<dt>Returns:</dt>
+<dd>seconds a heavy attack stays active; its cooldown is never shorter than this. 0 by
+     default</dd>
 </dl>
 </section>
 </li>
