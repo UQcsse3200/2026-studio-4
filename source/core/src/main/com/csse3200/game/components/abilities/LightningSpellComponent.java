@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.abilities.targeting.EnemyTargetingStrategy;
+import com.csse3200.game.components.statuseffects.Slow;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ public class LightningSpellComponent extends Component {
 
   private final float cooldown;
   private final int damage;
-  private final float stunDuration;
+  private final long stunDuration;
   private EnemyTargetingStrategy targetingStrategy;
   private float remainingCooldown;
 
@@ -32,7 +33,7 @@ public class LightningSpellComponent extends Component {
    * @throws IllegalArgumentException if a numeric argument is negative or targetingStrategy is null
    */
   public LightningSpellComponent(
-      float cooldown, int damage, float stunDuration, EnemyTargetingStrategy targetingStrategy) {
+      float cooldown, int damage, long stunDuration, EnemyTargetingStrategy targetingStrategy) {
     if (cooldown < 0f || damage < 0 || stunDuration < 0f) {
       logger.error(
           "Invalid LightningSpellComponent args: cooldown={}, damage={}, stunDuration={}",
@@ -103,7 +104,7 @@ public class LightningSpellComponent extends Component {
       if (targetStats != null) {
         targetStats.hit(spellStats);
         // Apply stun status effect
-        // new Slow(stunDuration, targetStats, 0);
+        new Slow(stunDuration, targetStats, 0);
       }
     }
   }

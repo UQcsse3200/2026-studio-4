@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.abilities.targeting.EnemyTargetingStrategy;
+import com.csse3200.game.components.statuseffects.Slow;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -13,12 +14,12 @@ public class FreezeSpellComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(LightningSpellComponent.class);
 
   private final float cooldown;
-  private final float freezeDuration;
+  private final long freezeDuration;
   private EnemyTargetingStrategy targetingStrategy;
   private float remainingCooldown;
 
   public FreezeSpellComponent(
-      float cooldown, float freezeDuration, EnemyTargetingStrategy targetingStrategy) {
+      float cooldown, long freezeDuration, EnemyTargetingStrategy targetingStrategy) {
     if (cooldown < 0f || freezeDuration < 0f) {
       logger.error(
           "Invalid FreezeSpellComponent args: cooldown={}, freezeDuration={}",
@@ -72,7 +73,7 @@ public class FreezeSpellComponent extends Component {
       CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
       if (targetStats != null) {
         // Apply freeze status effect
-        // new Slow(freezeDuration, targetStats, 0);
+        new Slow(freezeDuration, targetStats, 0);
       }
     }
   }
