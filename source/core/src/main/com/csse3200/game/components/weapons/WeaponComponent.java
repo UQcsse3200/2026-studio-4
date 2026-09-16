@@ -86,13 +86,6 @@ public abstract class WeaponComponent extends Component {
     entity.getEvents().addListener("weaponHeavyAttack", this::onWeaponHeavyAttack);
   }
 
-  /**
-   * @return true if this weapon is equipped, i.e. enabled and responding to attack input
-   */
-  public boolean isEnabled() {
-    return enabled;
-  }
-
   private void onWeaponAttack(Vector2 direction) {
     // An entity can carry several weapons; only the enabled one responds to attack input.
     if (!enabled) {

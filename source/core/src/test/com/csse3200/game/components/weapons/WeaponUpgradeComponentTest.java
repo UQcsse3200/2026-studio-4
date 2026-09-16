@@ -68,6 +68,19 @@ class WeaponUpgradeComponentTest {
   }
 
   @Test
+  void shouldApplyKnifeUpgradeStats() {
+    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+
+    assertTrue(upgrades.setUpgraded(KnifeWeaponComponent.class, true));
+
+    assertEquals(1.2f, upgrades.getLightDamageMultiplier(KnifeWeaponComponent.class));
+    assertEquals(0.6f, upgrades.getHeavyDamageMultiplier(KnifeWeaponComponent.class));
+    assertEquals(3f, upgrades.getHeavyCooldownMultiplier(KnifeWeaponComponent.class));
+    // Upgrading the knife leaves the sword alone.
+    assertFalse(upgrades.isUpgraded(SwordWeaponComponent.class));
+  }
+
+  @Test
   void shouldApplyBowUpgradeStats() {
     WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
 
@@ -88,19 +101,6 @@ class WeaponUpgradeComponentTest {
     assertTrue(upgrades.setUpgraded(BowWeaponComponent.class, false));
 
     assertFalse(upgrades.isUpgraded(BowWeaponComponent.class));
-  }
-
-  @Test
-  void shouldApplyKnifeUpgradeStats() {
-    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
-
-    assertTrue(upgrades.setUpgraded(KnifeWeaponComponent.class, true));
-
-    assertEquals(1.2f, upgrades.getLightDamageMultiplier(KnifeWeaponComponent.class));
-    assertEquals(0.6f, upgrades.getHeavyDamageMultiplier(KnifeWeaponComponent.class));
-    assertEquals(3f, upgrades.getHeavyCooldownMultiplier(KnifeWeaponComponent.class));
-    // Upgrading the knife leaves the sword alone.
-    assertFalse(upgrades.isUpgraded(SwordWeaponComponent.class));
   }
 
   @Test

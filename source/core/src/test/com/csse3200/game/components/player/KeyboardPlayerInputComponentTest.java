@@ -7,7 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.input.InputService;
+import com.csse3200.game.items.WeaponItem.WeaponType;
+import com.csse3200.game.ui.terminal.KeyboardTerminalInputComponent;
+import com.csse3200.game.ui.terminal.Terminal;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,6 +57,34 @@ class KeyboardPlayerInputComponentTest {
               dashCount++;
               lastDashDirection = direction.cpy();
             });
+  }
+
+  @Test
+  void numberKeysSelectWeaponsOnlyOnKeyDown() {
+    List<WeaponType> selected = new ArrayList<>();
+    player.getEvents().addListener("equipWeapon", (EventListener1<WeaponType>) selected::add);
+    for (int key : new int[] {Keys.NUM_1, Keys.NUM_2, Keys.NUM_3}) {
+      assertTrue(input.keyDown(key));
+      assertFalse(input.keyUp(key));
+    }
+    assertFalse(input.keyDown(Keys.NUM_4));
+    assertEquals(List.of(WeaponType.SWORD, WeaponType.DAGGER, WeaponType.BOW), selected);
+  }
+
+  @Test
+  void openTerminalConsumesNumberKeysBeforePlayerInput() {
+    List<WeaponType> selected = new ArrayList<>();
+    player.getEvents().addListener("equipWeapon", (EventListener1<WeaponType>) selected::add);
+    InputService service = new InputService();
+    Terminal terminal = new Terminal();
+    service.register(input);
+    service.register(new KeyboardTerminalInputComponent(terminal));
+    terminal.setOpen();
+    assertTrue(service.keyDown(Keys.NUM_2));
+    assertTrue(selected.isEmpty());
+    terminal.setClosed();
+    assertTrue(service.keyDown(Keys.NUM_2));
+    assertEquals(List.of(WeaponType.DAGGER), selected);
   }
 
   @Test
@@ -116,18 +151,6 @@ class KeyboardPlayerInputComponentTest {
     assertTrue(input.keyDown(Keys.K));
     assertEquals(1, heavyAttackCount);
     assertEquals(0, specialAttackCount);
-  }
-
-  @Test
-  void shouldTriggerSwitchWeaponOnL() {
-    int[] switches = {0};
-    player.getEvents().addListener("switchWeapon", () -> switches[0]++);
-
-    assertTrue(input.keyDown(Keys.L));
-
-    assertEquals(1, switches[0]);
-    assertEquals(0, attackCount);
-    assertEquals(0, heavyAttackCount);
   }
 
   @Test
