@@ -12,7 +12,6 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import java.util.Objects;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
@@ -26,7 +25,9 @@ public final class ItemFactory {
    * constructor function into the enum type's constructor
    */
   enum DropTypes {
-    STRENGTH_CHARM(StrengthCharm::new);
+    STRENGTH_CHARM(StrengthCharm::new),
+    SPEED_CHARM(SpeedCharm::new),
+    ATKSPD_CHARM(AttackSpeedCharm::new);
 
     // A functional interface is used so that new instances are created
     // on drop request
@@ -64,15 +65,7 @@ public final class ItemFactory {
    */
   public static Entity createDrop(Vector2 position) {
     Objects.requireNonNull(position, "position cannot be null");
-    Random random = new Random();
-    //    Random for now, in future will be determined by entity type.
-    int choice = random.nextInt(3); // Gives 0, 1, or 2
-    final Entity item =
-        switch (choice) {
-          case 0 -> createStrengthCharm();
-          case 1 -> createAttackSpeedCharm();
-          default -> createMovementSpeedCharm();
-        };
+    Entity item = createItem(new StrengthCharm());
     item.setPosition(position);
     return item;
   }
