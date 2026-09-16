@@ -3,6 +3,7 @@ package com.csse3200.game.components.maingame;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Payload;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Source;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Target;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.items.charms.Charm;
@@ -183,16 +185,39 @@ public class InventoryDisplay extends UIComponent {
       Stack slotStack = new Stack();
       ImageButton slotBackground = new ImageButton(inventory, "inventory-box");
       slotStack.add(slotBackground);
+      dragAndDrop.addTarget(new DragAndDrop.Target(slotBackground) {
+        @Override
+        public boolean drag(Source source, Payload payload, float x, float y, int pointer) {
+          return true; // Accepts any dragged item
+        }
+
+        @Override
+        public void drop(Source source, Payload payload, float x, float y, int pointer) {
+          ImageButton draggedIcon = (ImageButton) payload.getDragActor();
+          ImageButton currentTargetSlot = (ImageButton) getActor(); // This is slotBackground
+
+          // Get the stack containing this slot background
+          Stack targetStack = (Stack) currentTargetSlot.getParent();
+
+          // Safely detach the item from its old home
+          draggedIcon.remove();
+
+          // Layer 1: Place the item visually on top of the slot background
+          targetStack.addActorAt(1, draggedIcon);
+
+          // Keep track of where the item currently lives
+          draggedIcon.setUserObject(currentTargetSlot);
+
+          System.out.println("Successfully moved item to slot!");
+        }
+      });
 
       if (Objects.equals(type, "Charms") && uniqueCharms.hasMoreElements()) {
         charmIconDraw(slotStack, charmDict, uniqueCharms);
-        grid.add(slotStack).size(slotSize).pad(3);
       } else if (Objects.equals(type, "Consumable") && uniqueCharms.hasMoreElements()) { //Change to consumables once have
-        consumableIconDraw(slotStack, charmDict, uniqueCharms);
-        grid.add(slotStack).size(slotSize).pad(3);
-      } else {
-        grid.add(slotBackground).size(slotSize).pad(3);
+        consumableIconDraw(slotStack, charmDict, uniqueCharms, slotBackground);
       }
+      grid.add(slotStack).size(slotSize).pad(3);
       // Break to a new row after reaching the column limit
       if ((i + 1) % columns == 0) {
         grid.row();
@@ -211,7 +236,7 @@ public class InventoryDisplay extends UIComponent {
     String currentCharm = uniqueCharms.nextElement();
     int quantity = charmDict.get(currentCharm);
     if (currentCharm.equals("Strength Charm")) {
-      ImageButton strengthCharmIcon = new ImageButton(inventory, "strengthCharms");
+      ImageButton strengthCharmIcon = new ImageButton(inventory, "strengthCharm");
       slotStack.add(strengthCharmIcon);
     }
     // add other charms when added
@@ -232,24 +257,48 @@ public class InventoryDisplay extends UIComponent {
    * @param uniqueConsumable Enumeration of the consumables
    */
   private void consumableIconDraw (Stack slotStack, Dictionary<String, Integer> consumableDict,
-                                   Enumeration<String> uniqueConsumable) {
+                                   Enumeration<String> uniqueConsumable, ImageButton slotBackground) {
+    //Convert to consumables when added
     String currentCharm = uniqueConsumable.nextElement();
     int quantity = consumableDict.get(currentCharm);
-    if (currentCharm.equals("Strength Charm")) {
-      ImageButton strengthCharmIcon = new ImageButton(inventory, "strengthCharms");
-      slotStack.add(strengthCharmIcon);
-    }
-    // add other charms when added
-    if (quantity >= 1) {
-      Table textOverlayTable = new Table();
-      textOverlayTable.bottom().right();
 
-      Label quantityLabel = new Label(String.valueOf(quantity), skin);
-      textOverlayTable.add(quantityLabel).padBottom(2).padRight(4);
-      slotStack.add(textOverlayTable);
+    if (currentCharm.equals("Strength Charm")) {
+      ImageButton strengthCharmIcon = new ImageButton(inventory, "strengthCharm");
+      strengthCharmIcon.setUserObject(slotBackground);
+
+      slotStack.add(strengthCharmIcon);
+      // add other consumables when added
+      if (quantity >= 1) {
+        Table textOverlayTable = new Table();
+        textOverlayTable.bottom().right();
+
+        Label quantityLabel = new Label(String.valueOf(quantity), skin);
+        textOverlayTable.add(quantityLabel).padBottom(2).padRight(4);
+        slotStack.add(textOverlayTable);
+        dragAndDrop.addSource(new
+          DragAndDrop.Source(strengthCharmIcon) {
+            @Override
+            public Payload dragStart(InputEvent event,float x, float y, int pointer){
+              Payload payload = new Payload();
+              table.addActor(getActor());
+              payload.setDragActor(getActor());
+              dragAndDrop.setDragActorPosition(getActor().getWidth() / 2, -getActor().getHeight() / 2 );
+              return payload;
+            }
+
+            @Override
+            public void dragStop(InputEvent event, float x, float y, int pointer, Payload payload, Target target) {
+              if (target == null) {
+                ImageButton originalSlot = (ImageButton) getActor().getUserObject();
+                Stack originalStack = (Stack) originalSlot.getParent();
+                getActor().remove();
+                originalStack.addActorAt(1, getActor());
+              }
+            }
+          });
+      }
     }
   }
-
 
   /**
    * Creates a dictionary of charms and their count
