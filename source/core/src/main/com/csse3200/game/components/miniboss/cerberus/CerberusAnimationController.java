@@ -5,7 +5,7 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 
 public class CerberusAnimationController extends Component {
-  private static final String ANIM_MOVE = "move";
+  private static final String ANIM_MOVE = "idle";
 
   private AnimationRenderComponent animator;
   private CombatStatsComponent stats;

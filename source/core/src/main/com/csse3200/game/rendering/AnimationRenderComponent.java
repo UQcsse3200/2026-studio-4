@@ -41,6 +41,7 @@ public class AnimationRenderComponent extends RenderComponent {
   private Animation<TextureRegion> currentAnimation;
   private String currentAnimationName;
   private float animationPlayTime;
+  private float verticalOffset;
 
   /**
    * Create the component for a given texture atlas.
@@ -174,6 +175,15 @@ public class AnimationRenderComponent extends RenderComponent {
     return currentAnimation != null && currentAnimation.isAnimationFinished(animationPlayTime);
   }
 
+  /** Sets a world-space visual offset without moving the entity's ground position or collider. */
+  public void setVerticalOffset(float offset) {
+    verticalOffset = Float.isFinite(offset) ? offset : 0f;
+  }
+
+  public float getVerticalOffset() {
+    return verticalOffset;
+  }
+
   @Override
   protected void draw(SpriteBatch batch) {
     if (currentAnimation == null) {
@@ -182,7 +192,7 @@ public class AnimationRenderComponent extends RenderComponent {
     TextureRegion region = currentAnimation.getKeyFrame(animationPlayTime);
     Vector2 pos = entity.getPosition();
     Vector2 scale = entity.getScale();
-    batch.draw(region, pos.x, pos.y, scale.x, scale.y);
+    batch.draw(region, pos.x, pos.y + verticalOffset, scale.x, scale.y);
     animationPlayTime += timeSource.getDeltaTime();
   }
 }
