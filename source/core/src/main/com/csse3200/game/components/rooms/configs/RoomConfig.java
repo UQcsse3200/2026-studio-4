@@ -11,8 +11,8 @@ public class RoomConfig {
   public String title;
   public EntryPointConfig[] entryPoints = new EntryPointConfig[0];
   public EnemySpawnConfig[] enemySpawns = new EnemySpawnConfig[0];
-  public ObstacleConfig[] obstacles = new ObstacleConfig[0];
   public ExitConfig[] exits = new ExitConfig[0];
+  public RoomSpawnConfig obstacles = new RoomSpawnConfig();
 
   /** Finds a named entry point, or null if the definition has none. */
   public EntryPointConfig getEntryPoint(String entryPointId) {
