@@ -24,6 +24,7 @@ public class PlayerActions extends Component {
   private static final float JUMP_DURATION = 0.85f;
   private static final float JUMP_HEIGHT = 0.9f;
   private static final float JUMP_COOLDOWN = 0.35f;
+  private static final String ATTACK_SOUND = "sounds/Impact4.ogg";
 
   // Event / animation names
   private static final String DASH_STOP = "dashStop";
@@ -123,6 +124,7 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("walkStop", this::stopWalking);
     entity.getEvents().addListener("dash", this::dash);
     entity.getEvents().addListener("attack", this::attack);
+    entity.getEvents().addListener("heavyAttack", this::heavyAttack);
     entity.getEvents().addListener("specialAttack", this::specialAttack);
     entity.getEvents().addListener("entityDied", this::cancelJump);
   }
@@ -300,16 +302,27 @@ public class PlayerActions extends Component {
   void attack() {
     if (areControlsLocked()) return;
     entity.getEvents().trigger("weaponAttack", facingDirection);
-    Sound attackSound =
-        ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
-    attackSound.play();
+    playAttackSound();
+  }
+
+  /**
+   * Makes the player do a heavy weapon attack. Only an upgraded weapon with a heavy attack
+   * responds; the sound plays either way.
+   */
+  void heavyAttack() {
+    if (areControlsLocked()) return;
+    entity.getEvents().trigger("weaponHeavyAttack", facingDirection);
+    playAttackSound();
   }
 
   /** Makes the player to do special attack. */
   void specialAttack() {
     if (areControlsLocked()) return;
-    Sound attackSound =
-        ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
+    playAttackSound();
+  }
+
+  private void playAttackSound() {
+    Sound attackSound = ServiceLocator.getResourceService().getAsset(ATTACK_SOUND, Sound.class);
     attackSound.play();
   }
 
