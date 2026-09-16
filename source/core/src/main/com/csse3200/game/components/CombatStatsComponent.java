@@ -275,8 +275,9 @@ public class CombatStatsComponent extends Component {
   }
 
   /**
-   * Core method for dealing raw damage directly. Handles health reduction, hit reaction, and death
-   * checks. Compatible with Task 2 ticket spec.
+   * Core method for dealing raw damage directly. Applies status-effect mitigation, including an
+   * active shield, before handling health reduction, hit reaction, and death checks. Compatible
+   * with Task 2 ticket spec.
    *
    * @param damage Amount of damage to deal
    */
@@ -306,7 +307,27 @@ public class CombatStatsComponent extends Component {
       return;
     }
 
-    int adjustedDamage = Math.round(damage * incomingDamageMultiplier);
+    int remainingDamage = damage;
+
+    if (entity != null) {
+      StatusEffectsControllerComponent effects =
+          entity.getComponent(StatusEffectsControllerComponent.class);
+
+      if (effects != null) {
+        remainingDamage = effects.modifyIncomingDamage(damage);
+
+        Damage damageObject = new Damage(remainingDamage, attacker);
+        effects.damage(damageObject);
+        remainingDamage = damageObject.getDamage();
+      }
+    }
+
+    if (remainingDamage <= 0) {
+      triggerDamageBlocked();
+      return;
+    }
+
+    int adjustedDamage = Math.round(remainingDamage * incomingDamageMultiplier);
     int newHealth = Math.max(minimumHealth, health - adjustedDamage);
 
     if (newHealth == health) {
