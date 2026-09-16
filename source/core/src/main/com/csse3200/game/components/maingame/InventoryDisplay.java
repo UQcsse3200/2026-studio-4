@@ -185,18 +185,10 @@ public class InventoryDisplay extends UIComponent {
       slotStack.add(slotBackground);
 
       if (Objects.equals(type, "Charms") && uniqueCharms.hasMoreElements()) {
-        String currentCharm = uniqueCharms.nextElement();
-        int quantity = charmDict.get(currentCharm);
-        ImageButton charmIcon = new ImageButton(inventory, "Charms");
-        slotStack.add(charmIcon);
-        if (quantity >= 1) {
-          Table textOverlayTable = new Table();
-          textOverlayTable.bottom().right();
-
-          Label quantityLabel = new Label(String.valueOf(quantity), skin);
-          textOverlayTable.add(quantityLabel).padBottom(2).padRight(4);
-          slotStack.add(textOverlayTable);
-        }
+        charmIconDraw(slotStack, charmDict, uniqueCharms);
+        grid.add(slotStack).size(slotSize).pad(3);
+      } else if (Objects.equals(type, "Consumable") && uniqueCharms.hasMoreElements()) { //Change to consumables once have
+        consumableIconDraw(slotStack, charmDict, uniqueCharms);
         grid.add(slotStack).size(slotSize).pad(3);
       } else {
         grid.add(slotBackground).size(slotSize).pad(3);
@@ -208,6 +200,56 @@ public class InventoryDisplay extends UIComponent {
     }
     return grid;
   }
+
+  /**
+   * Draws a charm icon on top of an inventory slot
+   * @param slotStack The stack the icon is being drawn on top of
+   * @param charmDict The dictionary containing the charms and their quantities
+   * @param uniqueCharms Enumeration of the charms
+   */
+  private void charmIconDraw (Stack slotStack, Dictionary<String, Integer> charmDict, Enumeration<String> uniqueCharms) {
+    String currentCharm = uniqueCharms.nextElement();
+    int quantity = charmDict.get(currentCharm);
+    if (currentCharm.equals("Strength Charm")) {
+      ImageButton strengthCharmIcon = new ImageButton(inventory, "strengthCharms");
+      slotStack.add(strengthCharmIcon);
+    }
+    // add other charms when added
+    if (quantity >= 1) {
+      Table textOverlayTable = new Table();
+      textOverlayTable.bottom().right();
+
+      Label quantityLabel = new Label(String.valueOf(quantity), skin);
+      textOverlayTable.add(quantityLabel).padBottom(2).padRight(4);
+      slotStack.add(textOverlayTable);
+    }
+  }
+
+  /**
+   * Draws a Consumable icon on top of an inventory slot
+   * @param slotStack The stack the icon is being drawn on top of
+   * @param consumableDict The dictionary containing the consumables and their quantities
+   * @param uniqueConsumable Enumeration of the consumables
+   */
+  private void consumableIconDraw (Stack slotStack, Dictionary<String, Integer> consumableDict,
+                                   Enumeration<String> uniqueConsumable) {
+    String currentCharm = uniqueConsumable.nextElement();
+    int quantity = consumableDict.get(currentCharm);
+    if (currentCharm.equals("Strength Charm")) {
+      ImageButton strengthCharmIcon = new ImageButton(inventory, "strengthCharms");
+      slotStack.add(strengthCharmIcon);
+    }
+    // add other charms when added
+    if (quantity >= 1) {
+      Table textOverlayTable = new Table();
+      textOverlayTable.bottom().right();
+
+      Label quantityLabel = new Label(String.valueOf(quantity), skin);
+      textOverlayTable.add(quantityLabel).padBottom(2).padRight(4);
+      slotStack.add(textOverlayTable);
+    }
+  }
+
 
   /**
    * Creates a dictionary of charms and their count
