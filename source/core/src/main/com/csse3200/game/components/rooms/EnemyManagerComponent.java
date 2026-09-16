@@ -75,7 +75,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       // Greek
       case GOLEM:
         Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
-        golem.setScale(1.5F, 1.5F);
+        golem.setScale(0.8F, 0.8F);
         golem
             .getComponent(HitboxComponent.class)
             .setAsBox(
@@ -84,7 +84,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         return golem;
       case MEDUSA:
         Entity medusa = NPCFactory.createChaseEnemy(target, true, "images/medusa.atlas");
-        medusa.setScale(1.5f, 1.5f);
+        medusa.setScale(1f, 1f);
         medusa.getComponent(HitboxComponent.class).setAsBox(new Vector2(1, 1));
         return medusa;
       case HARPY:
@@ -99,7 +99,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         cyclops
             .getComponent(HitboxComponent.class)
             .setAsBox(
-                new Vector2(1f, 1.5f),
+                new Vector2(1f, 1f),
                 new Vector2(cyclops.getCenterPosition().x, cyclops.getCenterPosition().y / 2));
         return cyclops;
       case CERBERUS:

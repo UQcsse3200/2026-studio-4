@@ -1,222 +1,173 @@
 cyclops.png
-size:960, 1280
+size: 960, 1280
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 default
   rotate: false
-  xy: 0, 0
-  size: 64, 64
-  orig: 64, 64
+  xy: 0, 26
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 0
 move
   rotate: false
-  xy: 0, 64
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 1
-move
-  rotate: false
-  xy: 64, 64
-  size: 64, 64
-  orig: 64, 64
+  xy: 0, 90
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 0
 move
   rotate: false
-  xy: 128, 64
-  size: 64, 64
-  orig: 64, 64
+  xy: 64, 90
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 1
 move
   rotate: false
-  xy: 192, 64
-  size: 64, 64
-  orig: 64, 64
+  xy: 128, 90
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 2
 move
   rotate: false
-  xy: 256, 64
-  size: 64, 64
-  orig: 64, 64
+  xy: 192, 90
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 3
 move
   rotate: false
-  xy: 320, 64
-  size: 64, 64
-  orig: 64, 64
+  xy: 256, 90
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 4
 move
   rotate: false
-  xy: 384, 64
-  size: 64, 64
-  orig: 64, 64
+  xy: 320, 90
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 5
 move
   rotate: false
-  xy: 448, 64
-  size: 64, 64
-  orig: 64, 64
+  xy: 384, 90
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 6
-chase
+move
   rotate: false
-  xy: 0, 512
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 0
-chase
-  rotate: false
-  xy: 64, 512
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 1
-chase
-  rotate: false
-  xy: 128, 512
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 2
-chase
-  rotate: false
-  xy: 192, 512
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 3
-chase
-  rotate: false
-  xy: 128, 512
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 4
-chase
-  rotate: false
-  xy: 64, 512
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 5
-chase
-  rotate: false
-  xy: 0, 1152
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 5
-chase
-  rotate: false
-  xy: 64, 1152
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 6
-chase
-  rotate: false
-  xy: 128, 1152
-  size: 64, 64
-  orig: 64, 64
+  xy: 448, 90
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 7
 chase
   rotate: false
-  xy: 192, 1152
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 8
-chase
-  rotate: false
-  xy: 128, 1152
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 9
-chase
-  rotate: false
-  xy: 64, 1152
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 10
-chase
-  rotate: false
-  xy: 0, 1152
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 11
-dieAnimation
-  rotate: false
-  xy: 0, 384
-  size: 64, 64
-  orig: 64, 64
+  xy: 0, 538
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 0
-dieAnimation
+chase
   rotate: false
-  xy: 64, 384
-  size: 64, 64
-  orig: 64, 64
+  xy: 64, 538
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 1
-dieAnimation
+chase
   rotate: false
-  xy: 128, 384
-  size: 64, 64
-  orig: 64, 64
+  xy: 128, 538
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 2
-dieAnimation
+chase
   rotate: false
-  xy: 192, 384
-  size: 64, 64
-  orig: 64, 64
+  xy: 192, 538
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 3
-dieAnimation
+chase
   rotate: false
-  xy: 256, 384
-  size: 64, 64
-  orig: 64, 64
+  xy: 256, 538
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 4
-dieAnimation
+chase
   rotate: false
-  xy: 320, 384
-  size: 64, 64
-  orig: 64, 64
+  xy: 320, 538
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 5
 dieAnimation
   rotate: false
-  xy: 384, 384
-  size: 64, 64
-  orig: 64, 64
+  xy: 0, 410
+  size: 64, 38
+  orig: 64, 38
+  offset: 0, 0
+  index: 0
+dieAnimation
+  rotate: false
+  xy: 64, 410
+  size: 64, 38
+  orig: 64, 38
+  offset: 0, 0
+  index: 1
+dieAnimation
+  rotate: false
+  xy: 128, 410
+  size: 64, 38
+  orig: 64, 38
+  offset: 0, 0
+  index: 2
+dieAnimation
+  rotate: false
+  xy: 192, 410
+  size: 64, 38
+  orig: 64, 38
+  offset: 0, 0
+  index: 3
+dieAnimation
+  rotate: false
+  xy: 256, 410
+  size: 64, 38
+  orig: 64, 38
+  offset: 0, 0
+  index: 4
+dieAnimation
+  rotate: false
+  xy: 320, 410
+  size: 64, 38
+  orig: 64, 38
+  offset: 0, 0
+  index: 5
+dieAnimation
+  rotate: false
+  xy: 384, 410
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 6
 dieAnimation
   rotate: false
-  xy: 448, 384
-  size: 64, 64
-  orig: 64, 64
+  xy: 448, 410
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 7
 dieAnimation
   rotate: false
-  xy: 512, 384
-  size: 64, 64
-  orig: 64, 64
+  xy: 512, 410
+  size: 64, 38
+  orig: 64, 38
   offset: 0, 0
   index: 8

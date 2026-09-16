@@ -5,162 +5,162 @@ filter: Nearest,Nearest
 repeat: none
 default
     rotate: false
-    xy: 0,0
-    size: 128, 128
+    xy: 45, 48
+    size: 47, 76
     orig: 128, 128
-    offset: 0, 0
+    offset: 45, 48
     index: 0
 move
     rotate: false
-    xy: 0, 0
-    size: 128, 128
+    xy: 45, 48
+    size: 47, 76
     orig: 128, 128
-    offset: 0, 0
+    offset: 45, 48
     index: 0
 move
     rotate: false
-    xy: 128,0
-    size: 128, 128
+    xy: 173, 48
+    size: 47, 76
     orig: 128, 128
-    offset: 0, 0
+    offset: 45, 48
     index: 1
 move
     rotate: false
-    xy: 256, 0
-    size: 128, 128
+    xy: 301, 48
+    size: 47, 76
     orig: 128, 128
-    offset: 0, 0
+    offset: 45, 48
     index: 2
 move
     rotate: false
-    xy: 384, 0
-    size: 128, 128
+    xy: 429, 48
+    size: 47, 76
     orig: 128, 128
-    offset: 0, 0
+    offset: 45, 48
     index: 3
 move
     rotate: false
-    xy: 512,0
-    size: 128, 128
+    xy: 557, 48
+    size: 47, 76
     orig: 128, 128
-    offset: 0, 0
+    offset: 45, 48
     index: 4
 move
     rotate: false
-    xy: 640, 0
-    size: 128, 128
+    xy: 685, 48
+    size: 47, 76
     orig: 128, 128
-    offset: 0, 0
+    offset: 45, 48
     index: 5
 move
     rotate: false
-    xy: 768, 0
-    size: 128, 128
+    xy: 813, 48
+    size: 47, 76
     orig: 128, 128
-    offset: 0, 0
+    offset: 45, 48
     index: 6
 move
     rotate: false
-    xy: 0,128
-    size: 128, 128
+    xy: 45, 176
+    size: 47, 76
     orig: 128, 128
-    offset: 0, 0
+    offset: 45, 48
     index: 7
 move
     rotate: false
-    xy: 128, 128
-    size: 128, 128
+    xy: 173, 176
+    size: 47, 76
     orig: 128, 128
-    offset: 0, 0
+    offset: 45, 48
     index: 8
 move
     rotate: false
-    xy: 256,128
-    size: 128, 128
+    xy: 301, 176
+    size: 47, 76
     orig: 128, 128
-    offset: 0, 0
+    offset: 45, 48
     index: 9
 move
     rotate: false
-    xy: 384, 128
-    size: 128, 128
+    xy: 429, 176
+    size: 47, 76
     orig: 128, 128
-    offset: 0, 0
+    offset: 45, 48
     index: 10
 move
     rotate: false
-    xy: 512, 128
-    size: 128, 128
+    xy: 557, 176
+    size: 47, 76
     orig: 128, 128
-    offset: 0, 0
+    offset: 45, 48
     index: 11
 chase
     rotate: false
-    xy: 0, 256
-    size: 128, 128
+    xy: 43, 303
+    size: 53, 77
     orig: 128, 128
-    offset: 0, 0
+    offset: 43, 47
     index: 0
 chase
     rotate: false
-    xy: 128, 256
-    size: 128, 128
+    xy: 171, 303
+    size: 55, 77
     orig: 128, 128
-    offset: 0, 0
+    offset: 43, 47
     index: 1
 chase
     rotate: false
-    xy: 256, 256
-    size: 128, 128
+    xy: 300, 303
+    size: 52, 77
     orig: 128, 128
-    offset: 0, 0
+    offset: 44, 47
     index: 2
 chase
     rotate: false
-    xy: 384, 256
-    size: 128, 128
+    xy: 431, 305
+    size: 47, 75
     orig: 128, 128
-    offset: 0, 0
+    offset: 47, 49
     index: 3
 chase
     rotate: false
-    xy: 512, 256
-    size: 128, 128
+    xy: 559, 305
+    size: 61, 75
     orig: 128, 128
-    offset: 0, 0
+    offset: 47, 49
     index: 4
 chase
     rotate: false
-    xy: 640, 256
-    size: 128, 128
+    xy: 686, 304
+    size: 58, 76
     orig: 128, 128
-    offset: 0, 0
+    offset: 46, 48
     index: 5
 chase
     rotate: false
-    xy: 768, 256
-    size: 128, 128
+    xy: 814, 303
+    size: 50, 77
     orig: 128, 128
-    offset: 0, 0
+    offset: 46, 47
     index: 6
 dieAnimation
     rotate: false
-    xy: 0, 384
-    size: 128, 128
+    xy: 43, 432
+    size: 50, 92
     orig: 128, 128
-    offset: 0, 0
+    offset: 43, 32
     index: 0
 dieAnimation
     rotate: false
-    xy: 128, 384
-    size: 128, 128
+    xy: 171, 431
+    size: 50, 93
     orig: 128, 128
-    offset: 0, 0
+    offset: 43, 31
     index: 1
 dieAnimation
     rotate: false
-    xy: 256, 384
-    size: 128, 128
+    xy: 288, 502
+    size: 65, 22
     orig: 128, 128
-    offset: 0, 0
+    offset: 32, 102
     index: 2
