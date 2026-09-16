@@ -42,7 +42,9 @@ import org.slf4j.LoggerFactory;
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
   private static final String[] mainGameTextures = {
-    "images/heart.png", "images/strength_charm_pixel.png"
+    "images/heart.png", "images/strength_charm_pixel.png",
+//          Temp
+          "images/ghost.png", "images/ghost_1.png"
   };
   private static final String[] mainGameTextureAtlases = {"images/idle_down.atlas"};
 

@@ -4,12 +4,15 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.items.Item;
+import com.csse3200.game.items.charms.AttackSpeedCharm;
+import com.csse3200.game.items.charms.SpeedCharm;
 import com.csse3200.game.items.charms.StrengthCharm;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import java.util.Objects;
+import java.util.Random;
 
 /** Factory for creating item entities. */
 public final class ItemFactory {
@@ -22,8 +25,14 @@ public final class ItemFactory {
    */
   public static Entity createDrop(Vector2 position) {
     Objects.requireNonNull(position, "position cannot be null");
-
-    Entity item = createStrengthCharm();
+    Random random = new Random();
+//    Random for now, in future will be determined by entity type.
+    int choice = random.nextInt(3);// Gives 0, 1, or 2
+    final Entity item = switch (choice) {
+      case 0 -> createStrengthCharm();
+      case 1 -> createAttackSpeedCharm();
+      default -> createMovementSpeedCharm();
+    };
     item.setPosition(position);
     return item;
   }
@@ -50,8 +59,31 @@ public final class ItemFactory {
    * @return an unregistered Strength Charm entity
    */
   public static Entity createStrengthCharm() {
-    StrengthCharm strengthCharm = new StrengthCharm();
-    return createItem(strengthCharm);
+    return createItem(new StrengthCharm());
+  }
+
+  /**
+   * Creates the Strength Charm used for Sprint 1 item drops.
+   *
+   * <p>The returned entity is not positioned or registered. The room that requests the item owns
+   * those responsibilities.
+   *
+   * @return an unregistered Strength Charm entity
+   */
+  public static Entity createMovementSpeedCharm() {
+    return createItem(new SpeedCharm());
+  }
+
+  /**
+   * Creates the Strength Charm used for Sprint 1 item drops.
+   *
+   * <p>The returned entity is not positioned or registered. The room that requests the item owns
+   * those responsibilities.
+   *
+   * @return an unregistered Strength Charm entity
+   */
+  public static Entity createAttackSpeedCharm() {
+    return createItem(new AttackSpeedCharm());
   }
 
   private ItemFactory() {
