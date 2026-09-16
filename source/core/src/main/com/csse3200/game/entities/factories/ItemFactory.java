@@ -59,10 +59,14 @@ public final class ItemFactory {
     Entity itemEntity =
         new Entity()
             .addComponent(new RotatingTextureRenderComponent(item.getTexture()))
-            .addComponent(new ItemSpinComponent())
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ITEM))
             .addComponent(new ItemComponent(item, quantity));
+
+    // Only charms, consumables, and currency use the spinning visual.
+    if (item instanceof StrengthCharm || item instanceof TypedItem) {
+      itemEntity.addComponent(new ItemSpinComponent());
+    }
     // Preserve the original item sizing based on the texture aspect ratio.
     var texture =
         com.csse3200.game.services.ServiceLocator.getResourceService()

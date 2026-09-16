@@ -3,6 +3,7 @@ package com.csse3200.game.entities.factories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -61,7 +62,7 @@ class ItemFactoryTest {
 
     assertNotNull(itemEntity.getComponent(ItemComponent.class));
     assertNotNull(itemEntity.getComponent(RotatingTextureRenderComponent.class));
-    assertNotNull(itemEntity.getComponent(ItemSpinComponent.class));
+    assertNull(itemEntity.getComponent(ItemSpinComponent.class));
     assertNotNull(itemEntity.getComponent(HitboxComponent.class));
     assertNotNull(itemEntity.getComponent(PhysicsComponent.class));
     assertEquals(PhysicsLayer.ITEM, itemEntity.getComponent(HitboxComponent.class).getLayer());
