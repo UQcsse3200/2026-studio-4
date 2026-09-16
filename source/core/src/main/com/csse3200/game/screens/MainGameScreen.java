@@ -46,9 +46,11 @@ import org.slf4j.LoggerFactory;
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
   private static final String[] mainGameTextures = {
-    "images/heart.png", "images/strength_charm_pixel.png",
-//          Temp
-          "images/ghost.png", "images/ghost_1.png"
+    "images/heart.png",
+    "images/strength_charm_pixel.png",
+    //          Temp
+    "images/ghost.png",
+    "images/ghost_1.png"
   };
   private static final String[] mainGameTextureAtlases = {"images/idle_down.atlas"};
 
@@ -170,10 +172,11 @@ public class MainGameScreen extends ScreenAdapter {
     terminal.addCommand("effect", new StatusEffectCommand(player));
     terminal.addCommand("upgrade", new UpgradeCommand(player));
 
-    InventoryDisplay inventoryDisplay = new InventoryDisplay(player.getComponent(InventoryComponent.class));
+    InventoryDisplay inventoryDisplay =
+        new InventoryDisplay(player.getComponent(InventoryComponent.class));
     HotbarDisplay hotbarDisplay = new HotbarDisplay(player);
-    InventoryActions inventoryActions = new InventoryActions(inventoryDisplay,
-            player.getComponent(InventoryComponent.class));
+    InventoryActions inventoryActions =
+        new InventoryActions(inventoryDisplay, player.getComponent(InventoryComponent.class));
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
 
     Entity ui = new Entity();
