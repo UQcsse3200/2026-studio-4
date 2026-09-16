@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.Item;
@@ -57,5 +58,14 @@ class ItemFactoryTest {
     assertNotNull(itemEntity.getComponent(PhysicsComponent.class));
 
     assertEquals(PhysicsLayer.ITEM, itemEntity.getComponent(HitboxComponent.class).getLayer());
+  }
+
+  @Test
+  void shoulCreateAtCorrectPostion() {
+    Entity itemEntity = ItemFactory.createDrop(new Vector2(2, 2));
+    Entity randomItemEntity = ItemFactory.createRandomDrop(new Vector2(1, 2));
+
+    assertEquals(itemEntity.getPosition(), new Vector2(2, 2));
+    assertEquals(randomItemEntity.getPosition(), new Vector2(1, 2));
   }
 }
