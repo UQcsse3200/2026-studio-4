@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.ai.movement.MovementController;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.utils.math.Vector2Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,12 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   public void update() {
     if (movementEnabled && targetPosition != null) {
       Body body = physicsComponent.getBody();
+      // Every steered entity stops here rather than each task learning to hold still, and the
+      // target is left alone so the entity resumes its approach once the effect ends.
+      if (StatusEffectsControllerComponent.isImmobilised(entity)) {
+        setToVelocity(body, Vector2.Zero);
+        return;
+      }
       updateDirection(body);
     }
   }

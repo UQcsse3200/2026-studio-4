@@ -299,6 +299,13 @@ public class CombatStatsComponent extends Component {
       return;
     }
 
+    // A blow from something that cannot act never lands, wherever it was dealt from. Guarding the
+    // victim's one entry point covers contact damage, bites, auras and scripted boss damage alike,
+    // rather than every attacker in the game learning to check first.
+    if (StatusEffectsControllerComponent.isImmobilised(attacker)) {
+      return;
+    }
+
     // Source-aware hook for scripted hit-count targets; emitted only for positive damage.
     if (entity != null) entity.getEvents().trigger("damageAttempted", damage, attacker);
 

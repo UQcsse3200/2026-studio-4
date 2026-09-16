@@ -1,6 +1,7 @@
 package com.csse3200.game.ai.tasks;
 
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import java.util.*;
 import org.slf4j.Logger;
@@ -60,6 +61,11 @@ public class AITaskComponent extends Component implements TaskRunner {
    */
   @Override
   public void update() {
+    // An immobilised entity decides nothing: the task list is what would otherwise step, chase or
+    // fire. Priorities are left untouched, so it picks up where it left off once the effect ends.
+    if (StatusEffectsControllerComponent.isImmobilised(entity)) {
+      return;
+    }
 
     PriorityTask desiredtask = getHighestPriorityTask();
     if (desiredtask == null || desiredtask.getPriority() < 0) {

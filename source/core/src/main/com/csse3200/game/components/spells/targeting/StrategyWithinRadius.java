@@ -6,35 +6,47 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * Selects all enemies within a custom radius or default radius of 10 from the caster returns an
- * empty array if no enemies are registered
+ * Selects every enemy within a radius of the caster. Returns an empty array if none are in range.
+ *
+ * <p>The radius is fixed when the strategy is built so that whoever casts through it can also show
+ * the area it covers, rather than the reach living in one place and the circle drawn in another.
  */
 public class StrategyWithinRadius implements EnemyTargetingStrategy {
+  private static final float DEFAULT_RADIUS = 10f;
 
-  public Array<Entity> selectTargets(Entity caster) {
-    Vector2 casterCenter = caster.getCenterPosition();
-    float radius = 10f;
-    float radiusSq = radius * radius;
-    Array<Entity> targets = new Array<>();
+  private final float radius;
 
-    for (Entity candidate : ServiceLocator.getEntityService().getEntities()) {
-      if (candidate.equals(caster) || !EnemyUtils.isEnemy(candidate)) {
-        continue;
-      }
-      float distSq = candidate.getCenterPosition().dst2(casterCenter);
-      if (distSq < radiusSq) {
-        targets.add(candidate);
-      }
-    }
-
-    return targets;
+  /** Uses the default radius of {@value #DEFAULT_RADIUS}. */
+  public StrategyWithinRadius() {
+    this(DEFAULT_RADIUS);
   }
 
   /**
-   * Selects targets within given radius
+   * @param radius distance from the centre of the caster, in world units
+   * @throws IllegalArgumentException if radius is negative
+   */
+  public StrategyWithinRadius(float radius) {
+    if (radius < 0f) {
+      throw new IllegalArgumentException("radius must be >= 0");
+    }
+    this.radius = radius;
+  }
+
+  @Override
+  public float getRadius() {
+    return radius;
+  }
+
+  @Override
+  public Array<Entity> selectTargets(Entity caster) {
+    return selectTargets(caster, radius);
+  }
+
+  /**
+   * Selects targets within a one-off radius, ignoring this strategy's own.
    *
-   * @param caster the player entity
-   * @param radius distance from the center of the player entity
+   * @param caster the entity casting the spell
+   * @param radius distance from the centre of the caster, in world units
    * @return list of enemy entities satisfying the targeting conditions
    */
   public Array<Entity> selectTargets(Entity caster, float radius) {
@@ -46,8 +58,7 @@ public class StrategyWithinRadius implements EnemyTargetingStrategy {
       if (candidate.equals(caster) || !EnemyUtils.isEnemy(candidate)) {
         continue;
       }
-      float distSq = candidate.getCenterPosition().dst2(casterCenter);
-      if (distSq < radiusSq) {
+      if (candidate.getCenterPosition().dst2(casterCenter) < radiusSq) {
         targets.add(candidate);
       }
     }

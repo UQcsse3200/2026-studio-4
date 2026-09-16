@@ -1,80 +1,41 @@
 package com.csse3200.game.components.spells;
 
-import com.badlogic.gdx.utils.Array;
-import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.Component;
+import com.badlogic.gdx.graphics.Color;
 import com.csse3200.game.components.spells.targeting.EnemyTargetingStrategy;
-import com.csse3200.game.components.statuseffects.Slow;
+import com.csse3200.game.components.statuseffects.FrozenEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class FreezeSpellComponent extends Component {
-  private static final Logger logger = LoggerFactory.getLogger(LightningSpellComponent.class);
+/**
+ * Freeze spell: on cast, freezes every enemy its targeting strategy selects, leaving each one
+ * tinted light blue and unable to move or attack until it thaws.
+ */
+public class FreezeSpellComponent extends SpellComponent {
+  /** Event on the caster that casts this spell. */
+  public static final String CAST_EVENT = "castFreeze";
 
-  private final float cooldown;
+  /** Light blue, drawn over the frozen area. */
+  private static final Color AOE_COLOUR = new Color(0.5f, 0.8f, 1f, 0.85f);
+
   private final long freezeDuration;
-  private EnemyTargetingStrategy targetingStrategy;
-  private float remainingCooldown;
 
+  /**
+   * @param cooldown seconds between casts
+   * @param freezeDuration how long each caught enemy stays frozen, in milliseconds
+   * @param targetingStrategy how targets are selected on cast
+   * @throws IllegalArgumentException if a numeric argument is negative or targetingStrategy is null
+   */
   public FreezeSpellComponent(
       float cooldown, long freezeDuration, EnemyTargetingStrategy targetingStrategy) {
-    if (cooldown < 0f || freezeDuration < 0f) {
-      logger.error(
-          "Invalid FreezeSpellComponent args: cooldown={}, freezeDuration={}",
-          cooldown,
-          freezeDuration);
-      throw new IllegalArgumentException("cooldown and freezeDuration must be >= 0");
+    super(cooldown, CAST_EVENT, AOE_COLOUR, targetingStrategy);
+    if (freezeDuration < 0L) {
+      throw new IllegalArgumentException("freezeDuration must be >= 0");
     }
-    if (targetingStrategy == null) {
-      throw new IllegalArgumentException("targetingStrategy must not be null");
-    }
-    this.cooldown = cooldown;
     this.freezeDuration = freezeDuration;
-    this.targetingStrategy = targetingStrategy;
-  }
-
-  public void setTargetingStrategy(EnemyTargetingStrategy targetingStrategy) {
-    if (targetingStrategy == null) {
-      throw new IllegalArgumentException("targetingStrategy must not be null");
-    }
-    this.targetingStrategy = targetingStrategy;
   }
 
   @Override
-  public void create() {
-    entity.getEvents().addListener("specialAttack", this::cast);
-  }
-
-  @Override
-  public void update() {
-    if (remainingCooldown <= 0f) {
-      return;
-    }
-    float dt = ServiceLocator.getTimeSource().getDeltaTime();
-    remainingCooldown = Math.max(0f, remainingCooldown - Math.max(0f, dt));
-  }
-
-  public boolean canCast() {
-    return remainingCooldown <= 0f;
-  }
-
-  private void cast() {
-    if (!canCast()) {
-      return;
-    }
-    remainingCooldown = cooldown;
-    strike(targetingStrategy.selectTargets(entity));
-  }
-
-  private void strike(Array<Entity> targets) {
-    for (Entity target : targets) {
-      CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
-      if (targetStats != null) {
-        // Apply freeze status effect
-        new Slow(freezeDuration, targetStats, 0);
-      }
-    }
+  protected void applyTo(Entity target) {
+    addEffect(target, new FrozenEffect(ServiceLocator.getTimeSource(), freezeDuration));
   }
 }

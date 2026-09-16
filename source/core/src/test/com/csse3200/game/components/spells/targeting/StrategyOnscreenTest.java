@@ -1,139 +1,118 @@
 package com.csse3200.game.components.spells.targeting;
 
 import static com.csse3200.game.components.spells.targeting.TargetingTestHelper.enemyAt;
+import static com.csse3200.game.components.spells.targeting.TargetingTestHelper.givenWorld;
 import static com.csse3200.game.components.spells.targeting.TargetingTestHelper.nonEnemyAt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.services.ServiceLocator;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-/**
- * Unit tests for {@link StrategyOnscreen}.
- *
- * <p>Uses a real {@link CameraComponent} rather than mocking it &mdash; it has no physics/rendering
- * dependencies to construct, and its viewport is easy to fix deterministically via {@link
- * CameraComponent#resize} with its position set directly on the underlying LibGDX {@code Camera}.
- * See {@link AllEnemiesTargetingStrategyTest} for the other scaffolding assumptions shared by this
- * test class.
- */
+/** {@link StrategyOnscreen}: enemies the player can actually see. */
 @ExtendWith(GameExtension.class)
-class OnScreenEnemiesTargetingStrategyTest {
-  private EntityService entityService;
-  private CameraComponent cameraComponent;
-  private Entity caster;
+class StrategyOnscreenTest {
 
-  @BeforeEach
-  void setUp() {
-    entityService = mock(EntityService.class);
-    ServiceLocator.registerEntityService(entityService);
-
-    cameraComponent = new CameraComponent();
-    // screenWidth == screenHeight -> ratio 1 -> a 10x10 square viewport (half-extent 5 on each
-    // axis), fixed and easy to reason about.
-    cameraComponent.resize(20, 20, 10);
-    cameraComponent.getCamera().position.set(0f, 0f, 0f);
-
-    caster = mock(Entity.class);
-    when(caster.getCenterPosition()).thenReturn(new Vector2(0f, 0f));
-  }
-
-  private void givenWorldEntities(Entity... entities) {
-    Array<Entity> array = new Array<>();
-    for (Entity entity : entities) {
-      array.add(entity);
-    }
-    when(entityService.getEntities()).thenReturn(array);
+  /** A camera of the given size, looking at the given point. */
+  private static CameraComponent cameraAt(float centreX, float centreY, float width, float height) {
+    Camera camera = new OrthographicCamera();
+    camera.position.set(centreX, centreY, 0f);
+    CameraComponent component = mock(CameraComponent.class);
+    when(component.getCamera()).thenReturn(camera);
+    // A fresh vector per call: the strategy halves it in place.
+    when(component.getCameraSize()).thenAnswer(invocation -> new Vector2(width, height));
+    return component;
   }
 
   @Test
-  void constructorRejectsNullCamera() {
+  void selectsAnEnemyWellInsideTheViewport() {
+    Entity caster = nonEnemyAt(0f, 0f);
+    Entity onScreen = enemyAt(1f, 1f);
+    givenWorld(caster, onScreen);
+
+    Array<Entity> targets = new StrategyOnscreen(cameraAt(0f, 0f, 20f, 10f)).selectTargets(caster);
+
+    assertEquals(1, targets.size);
+    assertTrue(targets.contains(onScreen, true));
+  }
+
+  @Test
+  void excludesAnEnemyPastTheEdgeOfTheViewport() {
+    Entity caster = nonEnemyAt(0f, 0f);
+    givenWorld(caster, enemyAt(50f, 0f), enemyAt(0f, 50f));
+
+    assertEquals(0, new StrategyOnscreen(cameraAt(0f, 0f, 20f, 10f)).selectTargets(caster).size);
+  }
+
+  @Test
+  void includesAnEnemyExactlyOnTheViewportBoundary() {
+    Entity caster = nonEnemyAt(0f, 0f);
+    Entity onTheEdge = enemyAt(10f, 5f);
+    givenWorld(caster, onTheEdge);
+
+    Array<Entity> targets = new StrategyOnscreen(cameraAt(0f, 0f, 20f, 10f)).selectTargets(caster);
+
+    assertEquals(1, targets.size);
+  }
+
+  @Test
+  void followsTheCameraRatherThanTheWorldOrigin() {
+    Entity caster = nonEnemyAt(100f, 100f);
+    Entity nearTheCamera = enemyAt(101f, 100f);
+    Entity nearTheOrigin = enemyAt(0f, 0f);
+    givenWorld(caster, nearTheCamera, nearTheOrigin);
+
+    Array<Entity> targets =
+        new StrategyOnscreen(cameraAt(100f, 100f, 20f, 10f)).selectTargets(caster);
+
+    assertEquals(1, targets.size);
+    assertTrue(targets.contains(nearTheCamera, true));
+  }
+
+  @Test
+  void judgesEachEnemyIndependentlyRatherThanCorruptingLaterReads() {
+    // The strategy subtracts the camera centre from each position in place, so a bug here would
+    // show up only once several enemies are checked in one pass.
+    Entity caster = nonEnemyAt(0f, 0f);
+    Entity first = enemyAt(1f, 1f);
+    Entity second = enemyAt(2f, 2f);
+    Entity third = enemyAt(3f, 3f);
+    givenWorld(caster, first, second, third);
+
+    Array<Entity> targets = new StrategyOnscreen(cameraAt(0f, 0f, 20f, 10f)).selectTargets(caster);
+
+    assertEquals(3, targets.size);
+  }
+
+  @Test
+  void excludesTheCasterAndOffLayerEntitiesEvenWhenTheyAreOnScreen() {
+    Entity caster = enemyAt(0f, 0f);
+    Entity enemy = enemyAt(1f, 1f);
+    givenWorld(caster, enemy, nonEnemyAt(2f, 2f));
+
+    Array<Entity> targets = new StrategyOnscreen(cameraAt(0f, 0f, 20f, 10f)).selectTargets(caster);
+
+    assertEquals(1, targets.size);
+    assertTrue(targets.contains(enemy, true));
+  }
+
+  @Test
+  void rejectsBeingBuiltWithoutACamera() {
     assertThrows(IllegalArgumentException.class, () -> new StrategyOnscreen(null));
   }
 
   @Test
-  void includesEnemyWellWithinTheViewport() {
-    StrategyOnscreen strategy = new StrategyOnscreen(cameraComponent);
-    Entity onScreen = enemyAt(2f, 2f); // within the 5-unit half-viewport
-    givenWorldEntities(onScreen);
-
-    Array<Entity> targets = strategy.selectTargets(caster);
-
-    assertEquals(1, targets.size);
-    assertSame(onScreen, targets.first());
-  }
-
-  @Test
-  void excludesEnemyOutsideTheViewport() {
-    StrategyOnscreen strategy = new StrategyOnscreen(cameraComponent);
-    Entity offScreen = enemyAt(50f, 0f); // far beyond the 5-unit half-viewport
-    givenWorldEntities(offScreen);
-
-    Array<Entity> targets = strategy.selectTargets(caster);
-
-    assertEquals(0, targets.size);
-  }
-
-  @Test
-  void includesEnemyExactlyOnTheViewportBoundary() {
-    StrategyOnscreen strategy = new StrategyOnscreen(cameraComponent);
-    // Half-viewport is (5,5); the bounds check uses <=, not <, so a centre exactly 5 units out is
-    // still included.
-    Entity onBoundary = enemyAt(5f, 0f);
-    givenWorldEntities(onBoundary);
-
-    Array<Entity> targets = strategy.selectTargets(caster);
-
-    assertEquals(1, targets.size);
-    assertSame(onBoundary, targets.first());
-  }
-
-  @Test
-  void excludesNonEnemyEntitiesEvenOnScreen() {
-    StrategyOnscreen strategy = new StrategyOnscreen(cameraComponent);
-    Entity player = nonEnemyAt(1f, 1f);
-    givenWorldEntities(player);
-
-    Array<Entity> targets = strategy.selectTargets(caster);
-
-    assertEquals(0, targets.size);
-  }
-
-  @Test
-  void excludesTheCasterEvenWhenOnScreenAndOnTheEnemyLayer() {
-    StrategyOnscreen strategy = new StrategyOnscreen(cameraComponent);
-    Entity npcCaster = enemyAt(0f, 0f);
-    givenWorldEntities(npcCaster);
-
-    Array<Entity> targets = strategy.selectTargets(npcCaster);
-
-    assertEquals(0, targets.size);
-  }
-
-  @Test
-  void viewportIsRelativeToCameraPositionNotTheWorldOrigin() {
-    StrategyOnscreen strategy = new StrategyOnscreen(cameraComponent);
-    // Move the camera away from the origin: an enemy near the old origin should now be off-screen,
-    // and one near the camera's new position should be on-screen.
-    cameraComponent.getCamera().position.set(100f, 100f, 0f);
-    Entity nearOldOrigin = enemyAt(0f, 0f);
-    Entity nearCamera = enemyAt(101f, 99f);
-    givenWorldEntities(nearOldOrigin, nearCamera);
-
-    Array<Entity> targets = strategy.selectTargets(caster);
-
-    assertEquals(1, targets.size);
-    assertSame(nearCamera, targets.first());
+  void reportsNoRadiusBecauseAViewportIsNotACircle() {
+    assertEquals(0f, new StrategyOnscreen(cameraAt(0f, 0f, 20f, 10f)).getRadius());
   }
 }
