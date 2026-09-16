@@ -27,3 +27,11 @@ Suggested manual check: collect a Health Potion and Shield, take damage, press 7
 - Future optional polish: quiet success sound; distinct Speed/Strength feedback; clear empty-stock/full-health feedback outside the backpack. These are ideas, not completed work.
 
 Codex assisted implementation and tests under Yuezhou Wang's direction. No remote publication is implied.
+
+## Runtime screenshots — 2026-09-17
+
+Captured from the actual desktop game renderer at implementation commit `0e34305`, using a temporary local capture launcher. The launcher opened MainGameScreen, preloaded one Shield and one Health Potion, and used the real ConsumableEffectComponent.tryUse entry point. For the healing capture it cleared the shield, set HP to 50, then consumed one Health Potion: the screenshot shows 75/100 HP and three plus signs. These are staged visual demonstrations, not evidence of the full enemy-drop/pickup flow. The capture launcher is outside the repository and is not shipped.
+
+![Shield aura in the running game](evidence/consumable-vfx/shield-aura.png)
+
+![Three healing plus signs in the running game](evidence/consumable-vfx/healing-pluses.png)
