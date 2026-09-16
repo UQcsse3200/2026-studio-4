@@ -151,13 +151,13 @@ class KeyboardPlayerInputComponentTest {
 
   @Test
   void shouldSelectEachConsumableOnNumberKeys() {
-    assertTrue(input.keyDown(Keys.NUM_1));
+    assertTrue(input.keyDown(Keys.NUM_7));
     assertEquals(ItemType.HEALTH_POTION, input.getSelectedConsumable());
-    assertTrue(input.keyDown(Keys.NUM_2));
+    assertTrue(input.keyDown(Keys.NUM_8));
     assertEquals(ItemType.SHIELD, input.getSelectedConsumable());
-    assertTrue(input.keyDown(Keys.NUM_3));
+    assertTrue(input.keyDown(Keys.NUM_9));
     assertEquals(ItemType.SPEED_POTION, input.getSelectedConsumable());
-    assertTrue(input.keyDown(Keys.NUM_4));
+    assertTrue(input.keyDown(Keys.NUM_0));
     assertEquals(ItemType.STRENGTH_POTION, input.getSelectedConsumable());
     assertEquals(4, selectedEvents.size());
   }
@@ -170,7 +170,7 @@ class KeyboardPlayerInputComponentTest {
 
   @Test
   void shouldDoNothingOnUseWhenSelectedConsumableNotInInventory() {
-    input.keyDown(Keys.NUM_1);
+    input.keyDown(Keys.NUM_7);
     assertTrue(input.keyDown(Keys.U));
     assertTrue(usedEvents.isEmpty());
     assertEquals(0, inventory.getConsumableCount(ItemType.HEALTH_POTION));
@@ -179,7 +179,7 @@ class KeyboardPlayerInputComponentTest {
   @Test
   void shouldFireItemUsedAndDecrementInventoryWhenAvailable() {
     inventory.addConsumable(ItemType.HEALTH_POTION, 2);
-    input.keyDown(Keys.NUM_1);
+    input.keyDown(Keys.NUM_7);
     assertTrue(input.keyDown(Keys.U));
     assertEquals(1, usedEvents.size());
     assertEquals(ItemType.HEALTH_POTION, usedEvents.get(0));
@@ -189,7 +189,7 @@ class KeyboardPlayerInputComponentTest {
   @Test
   void shouldNotConsumeBelowZeroOnRepeatedUse() {
     inventory.addConsumable(ItemType.SHIELD, 1);
-    input.keyDown(Keys.NUM_2);
+    input.keyDown(Keys.NUM_8);
     input.keyDown(Keys.U);
     input.keyDown(Keys.U);
     assertEquals(1, usedEvents.size());

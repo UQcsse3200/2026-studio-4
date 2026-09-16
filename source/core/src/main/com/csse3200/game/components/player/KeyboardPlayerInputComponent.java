@@ -46,16 +46,16 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("interact");
         entity.getEvents().trigger("itemPickup");
         return true;
-      case Keys.NUM_1:
+      case Keys.NUM_7:
         selectConsumable(ItemType.HEALTH_POTION);
         return true;
-      case Keys.NUM_2:
+      case Keys.NUM_8:
         selectConsumable(ItemType.SHIELD);
         return true;
-      case Keys.NUM_3:
+      case Keys.NUM_9:
         selectConsumable(ItemType.SPEED_POTION);
         return true;
-      case Keys.NUM_4:
+      case Keys.NUM_0:
         selectConsumable(ItemType.STRENGTH_POTION);
         return true;
       case Keys.U:
