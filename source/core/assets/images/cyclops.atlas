@@ -108,6 +108,34 @@ chase
   orig: 64, 38
   offset: 0, 0
   index: 5
+chase
+   rotate: false
+   xy: 0, 1178
+   size: 64, 38
+   orig: 64, 38
+   offset: 0, 0
+   index: 6
+chase
+   rotate: false
+   xy: 64, 1178
+   size: 64, 38
+   orig: 64, 38
+   offset: 0, 0
+   index: 7
+chase
+   rotate: false
+   xy: 128, 1178
+   size: 64, 38
+   orig: 64, 38
+   offset: 0, 0
+   index: 8
+chase
+   rotate: false
+   xy: 192, 1178
+   size: 64, 38
+   orig: 64, 38
+   offset: 0, 0
+   index: 9
 dieAnimation
   rotate: false
   xy: 0, 410
