@@ -66,7 +66,8 @@ class KnifeWeaponComponentTest {
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextures(new String[] {"images/weapons/knife.png"});
+    resourceService.loadTextures(
+        new String[] {KnifeWeaponComponent.TEXTURE, KnifeWeaponComponent.UPGRADED_TEXTURE});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
@@ -530,5 +531,30 @@ class KnifeWeaponComponentTest {
     // Clamped to the 0.45s combo: two 0.15s intervals plus the 0.15s finisher.
     assertEquals(
         0.45f, wielder.getComponent(WeaponStatsComponent.class).getRemainingCooldown(), TOLERANCE);
+  }
+
+  @Test
+  void shouldUseTheBaseSpriteWhenNotUpgraded() {
+    KnifeWeaponComponent knife = new KnifeWeaponComponent();
+    upgradableWielder(knife, false, 1f);
+
+    assertEquals(KnifeWeaponComponent.TEXTURE, knife.resolveTexture());
+  }
+
+  @Test
+  void shouldUseTheUpgradedSpriteForEveryStrikeOnceUpgraded() {
+    KnifeWeaponComponent knife = new KnifeWeaponComponent();
+    Entity wielder = upgradableWielder(knife, true, 1f);
+
+    assertEquals(KnifeWeaponComponent.UPGRADED_TEXTURE, knife.resolveTexture());
+    assertTrue(knife.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    assertNotNull(registeredHitboxes(1).get(0).getComponent(RotatingTextureRenderComponent.class));
+    wielder.getComponent(WeaponStatsComponent.class).update(10f);
+    assertTrue(knife.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+
+    wielder
+        .getComponent(WeaponUpgradeComponent.class)
+        .setUpgraded(KnifeWeaponComponent.class, false);
+    assertEquals(KnifeWeaponComponent.TEXTURE, knife.resolveTexture());
   }
 }
