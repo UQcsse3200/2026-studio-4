@@ -6,7 +6,9 @@ Local publication draft, updated 2026-09-16. This file is not a claim that the W
 
 Defeated tracked enemies drop **5 Gold**, and independently have a **35% chance** to drop one consumable. Each of Health, Shield, Speed and Strength has equal probability within that 35%. The values are initial tuning defaults, not a claimed cross-team balance decision. Gold is picked up rather than immediately credited. Stand within pickup range and press **E**; each press collects one nearby entity. If Gold and a potion overlap, collect both with two presses.
 
-All four consumables stack in inventory. The Team 5 panel shows Gold, all four counts, and three configurable quick slots. Press **8**, **9**, or **0** to immediately use the item assigned to that slot. Click its **Change** button to cycle Health → Shield → Speed → Strength; changing assignments never consumes an item. Defaults are Health, Shield and Speed. Empty stock cannot be used. Keys **1–3** still select weapons, **K** still performs the weapon heavy attack, and **I** still opens the existing inventory.
+All four consumables stack in inventory. The compact Team 5 panel shows Gold and one row per item, with its world-item icon, fixed key and current stock. Press **8** for Health, **9** for Shield, **0** for Speed, or **-** (minus beside 0) for Strength. There are no Change buttons or Last used label. Empty stock cannot be used. Keys **1–3** still select weapons, **K** still performs the weapon heavy attack, and **I** still opens the existing inventory.
+
+The Shield row includes a horizontal duration bar and seconds remaining, read from the actual active consumable effect. Successful use fills it for 8 seconds; another successful use refreshes it. It empties at expiry or early removal, even before the status controller's next update. This is duration, not absorb points, and is separate from Team 2's existing shield-point HUD.
 
 | Item | Successful use |
 |---|---|
@@ -17,12 +19,12 @@ All four consumables stack in inventory. The Team 5 panel shows Gold, all four c
 
 Repeated use of the same timed consumable refreshes its duration, without multiplying that consumable's bonus again. Different status effects compose through the existing controller. Permanent Strength Charm changes remain in raw attack and survive expiry. Timers use the registered `GameTime` like the shared abilities system; this currently measures elapsed time, so opening an inventory does not promise to pause effect deadlines.
 
-The three-slot mapping follows Team 4's public proposed direction. This implementation is a local Team 5 integration decision; no announcement or acceptance by other teams is implied. The separate Team 5 panel does not implement Team 4's full inventory book or replace its spell frames.
+The fixed four-key mapping follows Yuezhou's playtest request on 2026-09-16 and supersedes the earlier three configurable slots. No announcement or acceptance by other teams is implied. The separate Team 5 panel does not implement Team 4's full inventory book or replace its spell frames.
 
 ## Contracts and ownership
 
 - `InventoryComponent` owns quantities and Gold. Quantity changes emit `consumableInventoryChanged(ItemType, count)`.
-- `ConsumableLoadoutComponent` owns three assignments. `assignSlot(index, type)` emits `consumableLoadoutChanged`; assignments may refer to an out-of-stock type.
+- `ConsumableLoadoutComponent` defines four fixed slots (Health, Shield, Speed, Strength); `getSlot(index)` exposes their types.
 - Keyboard input calls `useSlot(index)`. `ConsumableEffectComponent.tryUse(type)` or `useConsumable(ItemType)` requests use.
 - **Only ConsumableEffectComponent removes the item on a successful use.** Input and HUD never debit inventory. `itemUsed(ItemType)` is a notification after success, not another request.
 - Temporary modifiers use the existing `StatusEffectsControllerComponent`, `TimedStatusEffect`, `Stat`, and `Damageable` interfaces. No shared combat implementation was changed for these consumables.
@@ -42,7 +44,7 @@ classDiagram
   ConsumableEffectComponent --> InventoryComponent : debits once
   ConsumableEffectComponent --> StatusEffectsControllerComponent : timed modifiers
   Team5CombatHudDisplay --> InventoryComponent : reads counts
-  Team5CombatHudDisplay --> ConsumableLoadoutComponent : assigns slots
+  Team5CombatHudDisplay --> ConsumableEffectComponent : reads shield duration
 ```
 
 ```mermaid
@@ -62,7 +64,7 @@ sequenceDiagram
   Room->>Factory: createDrop after update, if room still alive
   Player->>Inventory: E pickup via TypedItem
   Inventory-->>HUD: quantity changed
-  Player->>Effects: 8/9/0 → useSlot → tryUse
+  Player->>Effects: 8/9/0/minus → useSlot → tryUse
   Effects->>Inventory: validate and remove one
   Inventory-->>HUD: quantity changed
   Effects->>Effects: heal or refresh timed effect
@@ -84,7 +86,7 @@ Meaningful regression coverage includes:
 - real damage during Shield and at the exact expiry boundary;
 - Strength refresh, Charm pickup during the effect, preserving raw values on expiry;
 - Speed combined with another status multiplier;
-- click-driven quick-slot reassignment to the fourth consumable and visible count changes;
+- fixed Strength key, visible count changes, shield progress at half duration, refresh, expiry and early removal;
 - all four random selections, 0%/100% chance, probability boundary, reproducible seeded policies;
 - duplicate tracking/death events, captured death position, room disposal before deferred generation, drop registration/disposal;
 - HUD removal when replacing the player, existing inventory/charm/factory and shared input regressions.

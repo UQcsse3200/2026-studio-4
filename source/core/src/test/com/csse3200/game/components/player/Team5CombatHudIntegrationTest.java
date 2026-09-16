@@ -1,8 +1,10 @@
 package com.csse3200.game.components.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
@@ -31,6 +33,7 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,7 +72,7 @@ class Team5CombatHudIntegrationTest {
 
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     assertEquals(3, inventory.getConsumableCount(ItemType.HEALTH_POTION));
-    assertHudContains("Health x3");
+    assertHudContains("[8] Health x3");
   }
 
   @Test
@@ -129,25 +132,56 @@ class Team5CombatHudIntegrationTest {
     assertEquals(
         1,
         player.getComponent(InventoryComponent.class).getConsumableCount(ItemType.HEALTH_POTION));
-    assertHudContains("Health x1");
     assertHudContains("[8] Health x1");
-    assertHudContains("Last used: Health");
+    assertHudContains("[8] Health x1");
   }
 
   @Test
-  void changeButtonMakesFourthTypeUsableAndSurvivesUpdates() {
+  void fixedStrengthKeyWorksWithoutChangeControls() {
     Entity player = createPlayerWithHud();
     pickUp(player, createTypedItem(ItemType.STRENGTH_POTION, 1));
-    Actor change = stage.getRoot().findActor("consumable-change-2");
-    change.fire(new ChangeListener.ChangeEvent());
-    assertEquals(
-        ItemType.STRENGTH_POTION, player.getComponent(ConsumableLoadoutComponent.class).getSlot(2));
-    assertHudContains("[0] Strength x1");
-    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.NUM_0);
-    assertHudContains("[0] Strength x0");
+    assertNull(stage.getRoot().findActor("consumable-change-2"));
+    assertHudContains("[-] Strength x1");
+    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.MINUS);
+    assertHudContains("[-] Strength x0");
+    assertHudContains("[9] Shield x0");
     assertEquals(12, player.getComponent(CombatStatsComponent.class).getEffectiveBaseAttack());
-    player.update();
-    assertHudContains("Last used: Strength");
+  }
+
+  @Test
+  void shieldBarTracksActualProtectionRefreshExpiryAndRemoval() {
+    AtomicLong now = new AtomicLong();
+    GameTime time = mock(GameTime.class);
+    when(time.getTime()).thenAnswer(inv -> now.get());
+    ServiceLocator.registerTimeSource(time);
+    Entity player = createPlayerWithHud();
+    ProgressBar bar = stage.getRoot().findActor("consumable-shield-progress");
+    assertEquals(0f, bar.getValue());
+    pickUp(player, createTypedItem(ItemType.SHIELD, 2));
+    KeyboardPlayerInputComponent input = player.getComponent(KeyboardPlayerInputComponent.class);
+    CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
+    input.keyDown(Keys.NUM_9);
+    assertEquals(1f, bar.getValue());
+    assertHudContains("8.0s");
+    now.set(4000);
+    player.getComponent(Team5CombatHudDisplay.class).update();
+    assertEquals(0.5f, bar.getValue(), 0.001f);
+    stats.takeDamage(10);
+    assertEquals(100, stats.getHealth());
+    input.keyDown(Keys.NUM_9);
+    assertEquals(1f, bar.getValue());
+    input.keyDown(Keys.NUM_9); // Out of stock must not refresh the timer.
+    now.set(12000);
+    player.getComponent(Team5CombatHudDisplay.class).update();
+    assertEquals(0f, bar.getValue());
+    assertHudContains("--");
+    stats.takeDamage(10);
+    assertEquals(90, stats.getHealth());
+    pickUp(player, createTypedItem(ItemType.SHIELD, 1));
+    input.keyDown(Keys.NUM_9);
+    player.getComponent(StatusEffectsControllerComponent.class).clearStatusEffects();
+    player.getComponent(Team5CombatHudDisplay.class).update();
+    assertEquals(0f, bar.getValue());
   }
 
   private Entity createPlayerWithHud() {

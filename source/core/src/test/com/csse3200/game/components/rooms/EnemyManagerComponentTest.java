@@ -291,7 +291,6 @@ class EnemyManagerComponentTest {
     player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.NUM_8);
     assertEquals(75, player.getComponent(CombatStatsComponent.class).getHealth());
     assertTrue(hasLabel(stage.getRoot(), "[8] Health x0"));
-    assertTrue(hasLabel(stage.getRoot(), "Last used: Health"));
     enemyManager.dispose();
     player.dispose();
     assertEquals(0, stage.getActors().size);

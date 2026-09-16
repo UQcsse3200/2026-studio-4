@@ -93,6 +93,12 @@ public class ConsumableEffectComponent extends Component {
     return effects != null && effects.hasStatusEffect(active.get(ItemType.SHIELD));
   }
 
+  /** Remaining duration of the actual active consumable shield, in milliseconds. */
+  public long getShieldRemainingMs() {
+    TimedStatusEffect shield = active.get(ItemType.SHIELD);
+    return isShielded() ? shield.getRemainingDuration() : 0;
+  }
+
   @Override
   public void dispose() {
     disposed = true;

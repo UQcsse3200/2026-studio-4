@@ -99,14 +99,13 @@ class ConsumableUseIntegrationTest {
   @Test
   void strengthRefreshDoesNotCompoundOrRemoveNewCharm() {
     inventory.addConsumable(ItemType.STRENGTH_POTION, 2);
-    loadout.assignSlot(2, ItemType.STRENGTH_POTION);
-    input.keyDown(Keys.NUM_0);
+    input.keyDown(Keys.MINUS);
     assertEquals(15, stats.getEffectiveBaseAttack());
     new StrengthCharm().pickUp(player);
     assertEquals(20, stats.getBaseAttack());
     assertEquals(30, stats.getEffectiveBaseAttack());
     now.set(4000);
-    input.keyDown(Keys.NUM_0);
+    input.keyDown(Keys.MINUS);
     assertEquals(30, stats.getEffectiveBaseAttack());
     now.set(8000);
     effects.update();
@@ -172,20 +171,15 @@ class ConsumableUseIntegrationTest {
   }
 
   @Test
-  void allFourTypesCanBeAssignedWithoutConsumingAndInvalidSlotsAreRejected() {
-    for (ItemType type :
-        new ItemType[] {
-          ItemType.HEALTH_POTION, ItemType.SHIELD, ItemType.SPEED_POTION, ItemType.STRENGTH_POTION
-        }) {
-      loadout.assignSlot(0, type);
-      assertEquals(type, loadout.getSlot(0));
-      assertFalse(loadout.useSlot(0));
+  void fixedSlotsMatchAllFourTypesAndRejectInvalidIndices() {
+    ItemType[] expected = {
+      ItemType.HEALTH_POTION, ItemType.SHIELD, ItemType.SPEED_POTION, ItemType.STRENGTH_POTION
+    };
+    for (int i = 0; i < expected.length; i++) {
+      assertEquals(expected[i], loadout.getSlot(i));
+      assertFalse(loadout.useSlot(i));
     }
-    loadout.cycleSlot(0);
-    assertEquals(ItemType.HEALTH_POTION, loadout.getSlot(0));
-    loadout.assignSlot(0, null);
-    assertFalse(loadout.useSlot(0));
-    assertThrows(IllegalArgumentException.class, () -> loadout.assignSlot(0, ItemType.GOLD_COIN));
-    assertThrows(IllegalArgumentException.class, () -> loadout.getSlot(3));
+    assertThrows(IllegalArgumentException.class, () -> loadout.getSlot(-1));
+    assertThrows(IllegalArgumentException.class, () -> loadout.getSlot(4));
   }
 }

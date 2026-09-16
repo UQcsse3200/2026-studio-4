@@ -40,9 +40,13 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.NUM_8:
       case Keys.NUM_9:
       case Keys.NUM_0:
+      case Keys.MINUS:
         ConsumableLoadoutComponent loadout = entity.getComponent(ConsumableLoadoutComponent.class);
         if (loadout != null) {
-          loadout.useSlot(keycode == Keys.NUM_8 ? 0 : keycode == Keys.NUM_9 ? 1 : 2);
+          loadout.useSlot(
+              keycode == Keys.NUM_8
+                  ? 0
+                  : keycode == Keys.NUM_9 ? 1 : keycode == Keys.NUM_0 ? 2 : 3);
         }
         return true;
       case Keys.W:
