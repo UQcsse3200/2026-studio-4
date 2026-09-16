@@ -171,31 +171,3 @@ dieAnimation
           orig: 28, 40
   offset: 0, 0
   index: 4
-dieAnimation
-  rotate: false
-  xy: 339, 431
-  size: 28, 40
-                  orig: 28, 40
-  offset: 0, 0
-  index: 5
-dieAnimation
-  rotate: false
-  xy: 403, 434
-  size: 28, 40
-                  orig: 28, 40
-  offset: 0, 0
-  index: 6
-dieAnimation
-  rotate: false
-  xy: 467, 434
-  size: 28, 40
-                  orig: 28, 40
-  offset: 0, 0
-  index: 7
-dieAnimation
-  rotate: false
-  xy: 531, 434
-  size: 28, 40
-                  orig: 28, 40
-  offset: 0, 0
-  index: 8
