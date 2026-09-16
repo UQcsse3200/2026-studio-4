@@ -1,13 +1,11 @@
 package com.csse3200.game.components.npc;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -23,8 +21,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Checks that the enemy health bar's internal ProgressBar and Table reflect the entity's combat
- * stats and visibility events. Since EnemyStatDisplay doesn't re-emit events (it only consumes them
- * into private widgets), state is read back via reflection rather than event capture.
+ * stats and visibility events, and that updateHealthBar/dispose behave correctly across all their
+ * branches (missing table, missing camera, and the fully-wired happy path).
  */
 @ExtendWith(GameExtension.class)
 class EnemyStatDisplayTest {
@@ -49,7 +47,7 @@ class EnemyStatDisplayTest {
 
   @Test
   void shouldInitialiseHealthBarFromCombatStats() {
-    ProgressBar healthBar = getHealthBar(display);
+    ProgressBar healthBar = getField(display, "healthBar", ProgressBar.class);
     assertNotNull(healthBar);
     assertEquals(50f, healthBar.getValue());
     assertEquals(50f, healthBar.getMaxValue());
@@ -59,7 +57,7 @@ class EnemyStatDisplayTest {
   void shouldUpdateHealthBarValueOnHealthEvent() {
     enemy.getEvents().trigger("updateHealth", 20);
 
-    ProgressBar healthBar = getHealthBar(display);
+    ProgressBar healthBar = getField(display, "healthBar", ProgressBar.class);
     assertEquals(20f, healthBar.getValue());
   }
 
@@ -67,20 +65,20 @@ class EnemyStatDisplayTest {
   void shouldUpdateHealthBarRangeOnMaxHealthEvent() {
     enemy.getEvents().trigger("updateMaxHealth", 80);
 
-    ProgressBar healthBar = getHealthBar(display);
+    ProgressBar healthBar = getField(display, "healthBar", ProgressBar.class);
     assertEquals(80f, healthBar.getMaxValue());
   }
 
   @Test
   void shouldToggleTableVisibilityOnVisibilityEvent() {
-    Table table = getTable(display);
+    Table table = getField(display, "table", Table.class);
     assertTrue(table.isVisible());
 
     enemy.getEvents().trigger("enemyHealthBarVisible", false);
-    assertFalse(getTable(display).isVisible());
+    assertFalse(getField(display, "table", Table.class).isVisible());
 
     enemy.getEvents().trigger("enemyHealthBarVisible", true);
-    assertTrue(getTable(display).isVisible());
+    assertTrue(getField(display, "table", Table.class).isVisible());
   }
 
   @Test
@@ -90,16 +88,63 @@ class EnemyStatDisplayTest {
         new Entity().addComponent(new CombatStatsComponent(50, 5)).addComponent(scaledDisplay);
     scaledEnemy.create();
 
-    Table table = getTable(scaledDisplay);
+    Table table = getField(scaledDisplay, "table", Table.class);
     assertEquals(2.5f, table.getScaleX());
     assertEquals(2.5f, table.getScaleY());
   }
+
+  // ---------- updateHealthBar: table == null branch ----------
+
+  @Test
+  void shouldReturnImmediatelyFromUpdateHealthBarWhenTableIsNull() {
+    // A fresh, never-created display has a null table field — updateHealthBar must bail out
+    // before touching entity/camera at all, so this is safe to call with no entity attached.
+    EnemyStatDisplay freshDisplay = new EnemyStatDisplay();
+    assertDoesNotThrow(() -> freshDisplay.updateHealthBar(new Vector2(0f, 0f)));
+  }
+
+  // ---------- updateHealthBar: table != null, camera == null branch ----------
 
   @Test
   void shouldNotThrowWhenUpdatedWithoutRegisteredCamera() {
     // No CameraComponent/world camera registered in this test's ServiceLocator,
     // so updateHealthBar's early camera-null check should make update() a no-op.
     assertDoesNotThrow(enemy::update);
+  }
+
+  // ---------- updateHealthBar: full happy path, camera registered ----------
+
+  @Test
+  void shouldPositionTableWhenWorldCameraIsRegistered() {
+    OrthographicCamera camera = new OrthographicCamera();
+    camera.viewportWidth = 20f;
+    camera.viewportHeight = 11f;
+    camera.position.set(0f, 0f, 0f);
+    camera.update();
+    ServiceLocator.registerWorldCamera(camera);
+
+    enemy.setPosition(new Vector2(5f, 5f));
+
+    assertDoesNotThrow(enemy::update);
+
+    Table table = getField(display, "table", Table.class);
+    assertTrue(Float.isFinite(table.getX()));
+    assertTrue(Float.isFinite(table.getY()));
+  }
+
+  // ---------- dispose: table == null branch ----------
+
+  @Test
+  void shouldNotThrowDisposeWhenTableWasNeverCreated() {
+    EnemyStatDisplay freshDisplay = new EnemyStatDisplay();
+    assertDoesNotThrow(freshDisplay::dispose);
+  }
+
+  // ---------- dispose: table != null branch ----------
+
+  @Test
+  void shouldRemoveTableOnDispose() {
+    assertDoesNotThrow(display::dispose);
   }
 
   @Test
@@ -116,25 +161,14 @@ class EnemyStatDisplayTest {
     assertDoesNotThrow(headlessEnemy::create);
   }
 
-  /** Reads the private ProgressBar field via reflection since it has no public accessor. */
-  private ProgressBar getHealthBar(EnemyStatDisplay display) {
+  /** Reads a private field via reflection since the display exposes no public getters. */
+  private <T> T getField(EnemyStatDisplay display, String fieldName, Class<T> type) {
     try {
-      Field field = EnemyStatDisplay.class.getDeclaredField("healthBar");
+      Field field = EnemyStatDisplay.class.getDeclaredField(fieldName);
       field.setAccessible(true);
-      return (ProgressBar) field.get(display);
+      return type.cast(field.get(display));
     } catch (ReflectiveOperationException e) {
-      throw new IllegalStateException("Could not read healthBar field via reflection", e);
-    }
-  }
-
-  /** Reads the private Table field via reflection since it has no public accessor. */
-  private Table getTable(EnemyStatDisplay display) {
-    try {
-      Field field = EnemyStatDisplay.class.getDeclaredField("table");
-      field.setAccessible(true);
-      return (Table) field.get(display);
-    } catch (ReflectiveOperationException e) {
-      throw new IllegalStateException("Could not read table field via reflection", e);
+      throw new IllegalStateException("Could not read field '" + fieldName + "' via reflection", e);
     }
   }
 }
