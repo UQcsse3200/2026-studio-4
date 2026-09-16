@@ -400,6 +400,83 @@ class KnifeWeaponComponentTest {
   }
 
   @Test
+  void shouldFadeEveryFlurryStrikeWithThePlayerWhileInvisible() {
+    PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(gameTime);
+    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+    KnifeWeaponComponent knife = new KnifeWeaponComponent();
+    Entity player =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities)
+            .addComponent(new WeaponStatsComponent(0.5f, 1f, 2f))
+            .addComponent(upgrades)
+            .addComponent(knife);
+    player.create();
+    upgrades.setUpgraded(KnifeWeaponComponent.class, true);
+
+    assertTrue(knife.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    tickStrikeInterval(knife);
+    tickStrikeInterval(knife);
+    List<Entity> strikes = registeredHitboxes(3);
+
+    // Activate after the strikes spawned: each one reads the player's appearance as it renders.
+    assertTrue(abilities.tryActivate(Invisibility.class));
+    Color tint = StatusEffectsControllerComponent.getTint(player);
+    assertNotNull(tint, "invisibility should tint the player");
+    Color base = new Color(0.8f, 0.6f, 0.4f, 0.5f);
+    Color faded = new Color(base.r * tint.r, base.g * tint.g, base.b * tint.b, base.a * tint.a);
+
+    // Both slashes and the finisher fade, not just the stab the light attack spawns.
+    for (Entity strike : strikes) {
+      assertEquals(faded, drawnColour(strike, base));
+    }
+  }
+
+  /** Render a spawned hitbox against a batch holding {@code base}, and return the colour drawn. */
+  private static Color drawnColour(Entity hitbox, Color base) {
+    RotatingTextureRenderComponent render =
+        hitbox.getComponent(RotatingTextureRenderComponent.class);
+    assertNotNull(render);
+    SpriteBatch batch = mock(SpriteBatch.class);
+    Color colour = new Color(base);
+    when(batch.getColor()).thenReturn(colour);
+    doAnswer(
+            invocation -> {
+              colour.set(
+                  invocation.getArgument(0), invocation.getArgument(1),
+                  invocation.getArgument(2), invocation.getArgument(3));
+              return null;
+            })
+        .when(batch)
+        .setColor(anyFloat(), anyFloat(), anyFloat(), anyFloat());
+    List<Color> drawn = new ArrayList<>();
+    doAnswer(
+            invocation -> {
+              drawn.add(new Color(colour));
+              return null;
+            })
+        .when(batch)
+        .draw(
+            any(TextureRegion.class),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat());
+
+    render.render(batch);
+    assertEquals(1, drawn.size());
+    // The batch colour is restored for whatever renders next.
+    assertEquals(base, colour);
+    return drawn.get(0);
+  }
+
+  @Test
   void shouldKeepEveryStrikeAimedWhereTheFlurryStarted() {
     KnifeWeaponComponent knife = new KnifeWeaponComponent();
     upgradableWielder(knife, true, 1f);
