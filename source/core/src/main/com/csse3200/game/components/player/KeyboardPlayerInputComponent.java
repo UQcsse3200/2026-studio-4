@@ -71,12 +71,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("interact");
         entity.getEvents().trigger("itemPickup");
         return true;
-      case Keys.NUM_0:
-        entity.getEvents().trigger("shieldAbsorb");
-        return true;
-      case Keys.NUM_9:
-        entity.getEvents().trigger("shieldTimed");
-        return true;
       case Keys.I:
         entity.getComponent(InventoryComponent.class).toggleDisplay();
         return true;
