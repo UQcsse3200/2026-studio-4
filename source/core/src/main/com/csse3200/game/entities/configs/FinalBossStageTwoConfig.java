@@ -4,7 +4,7 @@ public class FinalBossStageTwoConfig {
   // Stage 2 charge attacks
   public float bossChargeAttackDelay = 0.5f;
   public float bossChargeDistance = 6f;
-  public float stageThreeHealthThreshold = 0.4f;
+  public float stageThreeHealthThreshold = 0.6f;
 
   // Stage 2 contact damage
   public float stageTwoContactDamageRadius = 1f;

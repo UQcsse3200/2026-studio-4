@@ -151,6 +151,9 @@ public class FinalBossVisualComponent extends RenderComponent {
 
   @Override
   protected void draw(SpriteBatch batch) {
+    if (entity.getComponent(FinalBossStageThreeComponent.class) != null
+        && (phaseController.getCurrentPhase() == FinalBossPhase.STAGE_THREE
+            || phaseController.getCurrentPhase() == FinalBossPhase.DEFEATED)) return;
     FinalBossStageOneState state = stageOne.getState();
     float stateTime = stageOne.getStateElapsed();
     Vector2 pos = entity.getPosition();

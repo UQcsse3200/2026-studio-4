@@ -5,12 +5,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.player.PlayerPetrificationComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageOneConfig;
 import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
-/** Plays stone impacts at the marked location and a temporary petrification-request cue. */
+/** Plays stone impacts at the marked location and a cue while the player is actually slowed. */
 public class FinalBossPetrificationVisualComponent extends RenderComponent {
   private static final float IMPACT_DURATION = 0.32f;
   private final Entity target;
@@ -19,7 +20,7 @@ public class FinalBossPetrificationVisualComponent extends RenderComponent {
   private TextureRegion[] stones;
   private Texture ring;
   private float impactRemaining;
-  private float cueRemaining;
+  private PlayerPetrificationComponent petrification;
 
   public FinalBossPetrificationVisualComponent(Entity target, FinalBossStageOneConfig config) {
     this.target = target;
@@ -28,6 +29,7 @@ public class FinalBossPetrificationVisualComponent extends RenderComponent {
 
   @Override
   public void create() {
+    petrification = target.getComponent(PlayerPetrificationComponent.class);
     stones = FinalBossVisualAssets.STONE.loadFrames();
     entity.getEvents().addListener(FinalBossEvents.PETRIFICATION_WARNING, this::onWarning);
     entity.getEvents().addListener(FinalBossEvents.PETRIFICATION_HIT, this::onHit);
@@ -42,8 +44,6 @@ public class FinalBossPetrificationVisualComponent extends RenderComponent {
 
   private void onHit(Entity player) {
     impactRemaining = IMPACT_DURATION;
-    // This visual represents the requested duration; the status-effects team owns actual slowing.
-    cueRemaining = config.petrificationSlowDuration;
   }
 
   private void onMiss(Vector2 position) {
@@ -54,7 +54,6 @@ public class FinalBossPetrificationVisualComponent extends RenderComponent {
   private void onStateChanged(FinalBossStageOneState state) {
     if (state != FinalBossStageOneState.WAVE_TWO) {
       impactRemaining = 0f;
-      cueRemaining = 0f;
     }
   }
 
@@ -63,13 +62,12 @@ public class FinalBossPetrificationVisualComponent extends RenderComponent {
     float delta = ServiceLocator.getTimeSource().getDeltaTime();
     if (Float.isFinite(delta) && delta > 0f) {
       impactRemaining = Math.max(0f, impactRemaining - delta);
-      cueRemaining = Math.max(0f, cueRemaining - delta);
     }
   }
 
   @Override
   protected void draw(SpriteBatch batch) {
-    if (cueRemaining > 0f) {
+    if (petrification != null && petrification.isPetrified()) {
       ensureRing();
       Vector2 feet = target.getPosition();
       Vector2 size = target.getScale();
