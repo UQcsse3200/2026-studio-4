@@ -666,6 +666,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/KnockbackComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/KnockbackComponent.html" title="class in com.csse3200.game.components">KnockbackComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/HotbarDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/HotbarDisplay.html" title="class in com.csse3200.game.components.maingame">HotbarDisplay</a></dt>
+<dd>
+<div class="block">Creates the actors, reads the initial selection, and subscribes once to later selection
+ changes.The player's weapon textures must be loaded before this method runs.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/maingame/InventoryActions.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InventoryActions.html" title="class in com.csse3200.game.components.maingame">InventoryActions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a></dt>
@@ -737,6 +742,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Caches <a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponStatsComponent</code></a> from the same entity and subscribes to the <code>
  "weaponAttack"</code> event.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html" title="class in com.csse3200.game.components.weapons">WeaponSelectionComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/Entity.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
 <dd>
 <div class="block">Create the entity and start running.</div>
@@ -1035,6 +1042,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.gamearea.<a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html" title="class in com.csse3200.game.components.gamearea">PerformanceDisplay</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/HotbarDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/HotbarDisplay.html" title="class in com.csse3200.game.components.maingame">HotbarDisplay</a></dt>
+<dd>
+<div class="block">Removes the hotbar actor and releases only its owned frame texture.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/MainGameExitDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/MainGameExitDisplay.html" title="class in com.csse3200.game.components.maingame">MainGameExitDisplay</a></dt>
@@ -1115,6 +1126,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.gamearea.<a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html" title="class in com.csse3200.game.components.gamearea">PerformanceDisplay</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/HotbarDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/HotbarDisplay.html" title="class in com.csse3200.game.components.maingame">HotbarDisplay</a></dt>
+<dd>
+<div class="block">Leaves rendering to the shared Scene2D stage rather than drawing the hotbar twice.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/MainGameExitDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/MainGameExitDisplay.html" title="class in com.csse3200.game.components.maingame">MainGameExitDisplay</a></dt>
@@ -1297,6 +1312,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/Entity.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html#equip(com.csse3200.game.items.WeaponItem.WeaponType)" class="member-name-link">equip(WeaponItem.WeaponType)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html" title="class in com.csse3200.game.components.weapons">WeaponSelectionComponent</a></dt>
+<dd>
+<div class="block">Equips an available weapon without changing shared combat stats or cooldown.</div>
+</dd>
 <dt><a href="com/csse3200/game/events/EventHandler.html" class="type-name-link" title="class in com.csse3200.game.events">EventHandler</a> - Class in <a href="com/csse3200/game/events/package-summary.html">com.csse3200.game.events</a></dt>
 <dd>
 <div class="block">Send and receive events between objects.</div>
@@ -1915,6 +1934,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the entity's scale.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html#getSelectedWeapon()" class="member-name-link">getSelectedWeapon()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html" title="class in com.csse3200.game.components.weapons">WeaponSelectionComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/HitboxSpec.html#getSize()" class="member-name-link">getSize()</a> - Method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HitboxSpec.html" title="class in com.csse3200.game.entities.factories">HitboxSpec</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/Renderer.html#getStage()" class="member-name-link">getStage()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/Renderer.html" title="class in com.csse3200.game.rendering">Renderer</a></dt>
@@ -2009,6 +2030,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossExplosiveSummonComponent.html#getWarningDuration()" class="member-name-link">getWarningDuration()</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossExplosiveSummonComponent.html" title="class in com.csse3200.game.components.boss">FinalBossExplosiveSummonComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html#getWeapons()" class="member-name-link">getWeapons()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html" title="class in com.csse3200.game.components.weapons">WeaponSelectionComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsEngine.html#getWorld()" class="member-name-link">getWorld()</a> - Method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsEngine.html" title="class in com.csse3200.game.physics">PhysicsEngine</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/ServiceLocator.html#getWorldCamera()" class="member-name-link">getWorldCamera()</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
@@ -2024,6 +2047,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.gamearea.<a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html" title="class in com.csse3200.game.components.gamearea">PerformanceDisplay</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/HotbarDisplay.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/HotbarDisplay.html" title="class in com.csse3200.game.components.maingame">HotbarDisplay</a></dt>
+<dd>
+<div class="block">Returns the component render priority; sibling actor order is managed by Scene2D.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/MainGameExitDisplay.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/MainGameExitDisplay.html" title="class in com.csse3200.game.components.maingame">MainGameExitDisplay</a></dt>
@@ -2139,6 +2166,14 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/HomingProjectileMovementComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity,float,float)" class="member-name-link">HomingProjectileMovementComponent(Entity, float, float)</a> - Constructor for class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/HomingProjectileMovementComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">HomingProjectileMovementComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/HotbarDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">HotbarDisplay</a> - Class in <a href="com/csse3200/game/components/maingame/package-summary.html">com.csse3200.game.components.maingame</a></dt>
+<dd>
+<div class="block">Displays two groups of three circular slots at the bottom of the UI stage.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/maingame/HotbarDisplay.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">HotbarDisplay(Entity)</a> - Constructor for class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/HotbarDisplay.html" title="class in com.csse3200.game.components.maingame">HotbarDisplay</a></dt>
+<dd>
+<div class="block">Binds the display to the player.</div>
+</dd>
 <dt><a href="com/csse3200/game/ui/UIComponent.html#hud" class="member-name-link">hud</a> - Static variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></dt>
 <dd>&nbsp;</dd>
 </dl>
@@ -2210,7 +2245,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a> - Class in <a href="com/csse3200/game/components/maingame/package-summary.html">com.csse3200.game.components.maingame</a></dt>
 <dd>
-<div class="block">Displays an Inventory UI over the main game screen.</div>
+<div class="block">Displays the inventory book and its charms and consumables pages.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html#%3Cinit%3E()" class="member-name-link">InventoryDisplay()</a> - Constructor for class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a></dt>
 <dd>&nbsp;</dd>
@@ -3592,7 +3627,9 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/screens/SettingsScreen.html#%3Cinit%3E(com.csse3200.game.GdxGame)" class="member-name-link">SettingsScreen(GdxGame)</a> - Constructor for class com.csse3200.game.screens.<a href="com/csse3200/game/screens/SettingsScreen.html" title="class in com.csse3200.game.screens">SettingsScreen</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html#setVisible(boolean)" class="member-name-link">setVisible(boolean)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Shows or hides the inventory book.</div>
+</dd>
 <dt><a href="com/csse3200/game/rendering/RotatingTextureRenderComponent.html#setVisualOffset(com.badlogic.gdx.math.Vector2)" class="member-name-link">setVisualOffset(Vector2)</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RotatingTextureRenderComponent.html" title="class in com.csse3200.game.rendering">RotatingTextureRenderComponent</a></dt>
 <dd>
 <div class="block">Shifts the sprite in the frame that <a href="com/csse3200/game/rendering/RotatingTextureRenderComponent.html#setRotation(float)"><code>RotatingTextureRenderComponent.setRotation(float)</code></a> defines, where +x points along
@@ -3635,6 +3672,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/factories/HitboxSpec.html#size(com.badlogic.gdx.math.Vector2)" class="member-name-link">size(Vector2)</a> - Method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HitboxSpec.html" title="class in com.csse3200.game.entities.factories">HitboxSpec</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/UIComponent.html#skin" class="member-name-link">skin</a> - Static variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html#SLOT_WEAPONS" class="member-name-link">SLOT_WEAPONS</a> - Static variable in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html" title="class in com.csse3200.game.components.weapons">WeaponSelectionComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/SortedIntMap.html" class="type-name-link" title="class in com.csse3200.game.utils">SortedIntMap&lt;V&gt;</a> - Class in <a href="com/csse3200/game/utils/package-summary.html">com.csse3200.game.utils</a></dt>
 <dd>
@@ -4623,6 +4662,12 @@ the order they are declared.</div>
 <div class="block">Provides pickup and drop behaviour for weapons.</div>
 </dd>
 <dt><a href="com/csse3200/game/items/WeaponItem.WeaponType.html" class="type-name-link" title="enum class in com.csse3200.game.items">WeaponItem.WeaponType</a> - Enum Class in <a href="com/csse3200/game/items/package-summary.html">com.csse3200.game.items</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html" class="type-name-link" title="class in com.csse3200.game.components.weapons">WeaponSelectionComponent</a> - Class in <a href="com/csse3200/game/components/weapons/package-summary.html">com.csse3200.game.components.weapons</a></dt>
+<dd>
+<div class="block">Owns the player's equipped weapon; keyboard, terminal, and UI share this state.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html#%3Cinit%3E()" class="member-name-link">WeaponSelectionComponent()</a> - Constructor for class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html" title="class in com.csse3200.game.components.weapons">WeaponSelectionComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html" class="type-name-link" title="class in com.csse3200.game.components.weapons">WeaponStatsComponent</a> - Class in <a href="com/csse3200/game/components/weapons/package-summary.html">com.csse3200.game.components.weapons</a></dt>
 <dd>
