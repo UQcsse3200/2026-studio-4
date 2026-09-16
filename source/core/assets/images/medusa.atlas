@@ -145,13 +145,6 @@ chase
     index: 6
 dieAnimation
     rotate: false
-    xy: 43, 432
-    size: 50, 92
-    orig: 128, 128
-    offset: 43, 32
-    index: 0
-dieAnimation
-    rotate: false
     xy: 171, 431
     size: 50, 93
     orig: 128, 128
