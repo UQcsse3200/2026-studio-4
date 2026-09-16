@@ -9,7 +9,7 @@ import com.csse3200.game.services.ServiceLocator;
  * Selects the single enemy closest to the caster (by centre-to-centre distance). Returns an empty
  * array if no enemies are registered.
  */
-public class StrategyTargetClosest implements EnemyTargetingStrategy {
+public class StrategyClosest implements EnemyTargetingStrategy {
   @Override
   public Array<Entity> selectTargets(Entity caster) {
     Vector2 casterCenter = caster.getCenterPosition();

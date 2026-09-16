@@ -5,6 +5,10 @@ import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
+/**
+ * Selects all enemies within a custom radius or default radius of 10 from the caster returns an
+ * empty array if no enemies are registered
+ */
 public class StrategyWithinRadius implements EnemyTargetingStrategy {
 
   public Array<Entity> selectTargets(Entity caster) {
@@ -26,6 +30,13 @@ public class StrategyWithinRadius implements EnemyTargetingStrategy {
     return targets;
   }
 
+  /**
+   * Selects targets within given radius
+   *
+   * @param caster the player entity
+   * @param radius distance from the center of the player entity
+   * @return list of enemy entities satisfying the targeting conditions
+   */
   public Array<Entity> selectTargets(Entity caster, float radius) {
     Vector2 casterCenter = caster.getCenterPosition();
     float radiusSq = radius * radius;

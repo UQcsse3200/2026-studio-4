@@ -11,14 +11,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Lightning spell: on cast, deals a fixed amount of damage and applies a stun to every enemy
- * selected by its {@link EnemyTargetingStrategy}. Which enemies get hit (all of them, just the
- * closest, on-screen only, ...) is fully decoupled from this class &mdash; swap the strategy to
- * change targeting behaviour without touching the spell's effect logic.
- *
- * <p>Deliberately does not reuse {@link com.csse3200.game.components.weapons.WeaponComponent}: a
- * wielder can only have one {@code WeaponStatsComponent} (component lookup in this engine is by
- * exact class), and that slot is already used by whatever melee weapon is equipped. This component
- * tracks its own cooldown instead, so it can coexist with a weapon on the same entity.
+ * selected by its targeting strategy. Which enemies get hit (all of them, just the closest,
+ * on-screen only, ...) is fully decoupled from this class. Swap the strategy to change targeting
+ * behaviour without touching the spell's effect logic.
  */
 public class LightningSpellComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(LightningSpellComponent.class);
@@ -34,8 +29,6 @@ public class LightningSpellComponent extends Component {
    * @param damage damage dealt to each struck enemy
    * @param stunDuration seconds each struck enemy is stunned for
    * @param targetingStrategy how targets are selected on cast
-   * @require cooldown &gt;= 0 &amp;&amp; damage &gt;= 0 &amp;&amp; stunDuration &gt;= 0 &amp;&amp;
-   *     targetingStrategy != null
    * @throws IllegalArgumentException if a numeric argument is negative or targetingStrategy is null
    */
   public LightningSpellComponent(
@@ -109,10 +102,9 @@ public class LightningSpellComponent extends Component {
       CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
       if (targetStats != null) {
         targetStats.hit(spellStats);
+        // Apply stun status effect
+        // new Slow(stunDuration, targetStats, 0);
       }
-
-      // TODO: hook up the existing stun component here once its class/method are confirmed, e.g.:
-
     }
   }
 }
