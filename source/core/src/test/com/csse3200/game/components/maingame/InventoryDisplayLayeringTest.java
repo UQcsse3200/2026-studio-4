@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ServiceLocator;
@@ -25,14 +26,15 @@ class InventoryDisplayLayeringTest {
     RenderService renderer = new RenderService();
     renderer.setStage(stage);
     ServiceLocator.registerRenderService(renderer);
-    // Attach the display to an entity and initialise it using the shared stage above.
-    // Only the display's lifecycle is needed here, so we do not register a full game entity.
+    ServiceLocator.registerEntityService(new EntityService());
+    // The inventory no longer needs a player or weapon textures.
     InventoryDisplay display = new InventoryDisplay();
-    new Entity().addComponent(display);
-    display.create();
+    Entity ui = new Entity().addComponent(display);
+    ServiceLocator.getEntityService().register(ui);
     try {
-      // The book is the only actor initially added to this isolated stage, and starts closed.
-      Actor book = stage.getActors().first();
+      // Find the book by its stable actor name.
+      Actor book = stage.getRoot().findActor("inventory-book");
+      assertNotNull(book);
       assertFalse(book.isVisible());
       // A plain actor stands in for an enemy health bar: only its stage order matters here.
       Actor enemyOverlay = new Actor();
@@ -49,8 +51,9 @@ class InventoryDisplayLayeringTest {
 
         // Page switching rebuilds the book; the replacement must also cover the health bar.
         display.changePage();
-        // peek() returns the last stage actor, which is the newly added book table.
-        book = stage.getActors().peek();
+        // Resolve the rebuilt book by name rather than holding the removed page actor.
+        book = stage.getRoot().findActor("inventory-book");
+        assertNotNull(book);
         assertNotSame(enemyOverlay, book);
         assertTrue(book.isVisible());
         assertTrue(book.getZIndex() > enemyOverlay.getZIndex());
@@ -62,8 +65,8 @@ class InventoryDisplayLayeringTest {
         enemyOverlay.remove();
       }
     } finally {
-      // Release the display and stage even if an assertion fails.
-      display.dispose();
+      // Remove the book and release the headless stage even if an assertion fails.
+      ui.dispose();
       stage.dispose();
     }
   }
