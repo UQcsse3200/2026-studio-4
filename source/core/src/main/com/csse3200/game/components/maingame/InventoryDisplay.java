@@ -1,5 +1,6 @@
 package com.csse3200.game.components.maingame;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -18,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.Enumeration;
 import java.util.Objects;
 
 /** Displays an Inventory UI over the main game screen. */
@@ -34,9 +35,7 @@ public class InventoryDisplay extends UIComponent {
     this.inventoryComponent = inventoryComponent;
   }
 
-  public InventoryDisplay () {
-
-  }
+  public InventoryDisplay () {}
 
   @Override
   public void create() {
@@ -177,8 +176,8 @@ public class InventoryDisplay extends UIComponent {
     // Grid Table building
     Table grid = new Table();
     java.util.List<Charm> charms = inventoryComponent.getCharms();
-    Dictionary<Charm, Integer> charmDict = countCharms(charms);
-    java.util.Enumeration<Charm> uniqueCharms = charmDict.keys();
+    Dictionary<String, Integer> charmDict = countCharms(charms);
+    Enumeration<String> uniqueCharms = charmDict.keys();
 
     for (int i = 0; i < totalSlots; i++) {
       Stack slotStack = new Stack();
@@ -186,11 +185,11 @@ public class InventoryDisplay extends UIComponent {
       slotStack.add(slotBackground);
 
       if (Objects.equals(type, "Charms") && uniqueCharms.hasMoreElements()) {
-        Charm currentCharm = uniqueCharms.nextElement();
+        String currentCharm = uniqueCharms.nextElement();
         int quantity = charmDict.get(currentCharm);
         ImageButton charmIcon = new ImageButton(inventory, "Charms");
         slotStack.add(charmIcon);
-        if (quantity > 1) {
+        if (quantity >= 1) {
           Table textOverlayTable = new Table();
           textOverlayTable.bottom().right();
 
@@ -215,16 +214,17 @@ public class InventoryDisplay extends UIComponent {
    * @param charms List of charms in the inventory of the player
    * @return a dictionary with charm types as keys and their count as value
    */
-  private Dictionary<Charm, Integer> countCharms(java.util.List<Charm> charms) {
-    java.util.Dictionary<Charm, Integer> charmsDict = new java.util.Hashtable<>();
+  private Dictionary<String, Integer> countCharms(java.util.List<Charm> charms) {
+    java.util.Dictionary<String, Integer> charmsDict = new java.util.Hashtable<>();
 
     for (Charm charm : charms) {
-      Integer currentCount = charmsDict.get(charm);
+      String charmKey = charm.getName();
+      Integer currentCount = charmsDict.get(charmKey);
 
       if (currentCount == null) {
-        charmsDict.put(charm, 1);
+        charmsDict.put(charmKey, 1);
       } else {
-        charmsDict.put(charm, currentCount + 1);
+        charmsDict.put(charmKey, currentCount + 1);
       }
     }
     return charmsDict;
