@@ -61,7 +61,7 @@ class ItemFactoryTest {
   }
 
   @Test
-  void shoulCreateAtCorrectPostion() {
+  void shouldCreateAtCorrectPostion() {
     Entity itemEntity = ItemFactory.createDrop(new Vector2(2, 2));
     Entity randomItemEntity = ItemFactory.createRandomDrop(new Vector2(1, 2));
 
