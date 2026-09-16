@@ -12,106 +12,106 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class PlayerCerberusMistDebuffComponentTest {
-    private Entity player;
-    private Entity leftHead;
-    private Entity anotherHead;
-    private CombatStatsComponent stats;
-    private PlayerCerberusMistDebuffComponent mistDebuff;
+  private Entity player;
+  private Entity leftHead;
+  private Entity anotherHead;
+  private CombatStatsComponent stats;
+  private PlayerCerberusMistDebuffComponent mistDebuff;
 
-    @BeforeEach
-    void setUp() {
-        stats = new CombatStatsComponent(100, 10, 4f, 1f);
-        mistDebuff = new PlayerCerberusMistDebuffComponent();
+  @BeforeEach
+  void setUp() {
+    stats = new CombatStatsComponent(100, 10, 4f, 1f);
+    mistDebuff = new PlayerCerberusMistDebuffComponent();
 
-        player =
-                new Entity()
-                        .addComponent(stats)
-                        .addComponent(new StatusEffectsControllerComponent())
-                        .addComponent(mistDebuff);
-        player.create();
+    player =
+        new Entity()
+            .addComponent(stats)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(mistDebuff);
+    player.create();
 
-        leftHead = new Entity();
-        anotherHead = new Entity();
-    }
+    leftHead = new Entity();
+    anotherHead = new Entity();
+  }
 
-    @Test
-    void shouldSlowPlayerAndDoubleIncomingDamageInsideMist() {
-        player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
+  @Test
+  void shouldSlowPlayerAndDoubleIncomingDamageInsideMist() {
+    player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
 
-        assertTrue(mistDebuff.isMistDebuffed());
-        assertEquals(2f, stats.getEffectiveMovementSpeed());
+    assertTrue(mistDebuff.isMistDebuffed());
+    assertEquals(2f, stats.getEffectiveMovementSpeed());
 
-        stats.takeDamage(10);
+    stats.takeDamage(10);
 
-        assertEquals(80, stats.getHealth());
-    }
+    assertEquals(80, stats.getHealth());
+  }
 
-    @Test
-    void shouldRestoreSpeedAndDamageAfterLeavingMist() {
-        player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
+  @Test
+  void shouldRestoreSpeedAndDamageAfterLeavingMist() {
+    player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
 
-        stats.takeDamage(10);
-        player.getEvents().trigger(CerberusMistComponent.EXITED, leftHead);
+    stats.takeDamage(10);
+    player.getEvents().trigger(CerberusMistComponent.EXITED, leftHead);
 
-        assertFalse(mistDebuff.isMistDebuffed());
-        assertEquals(4f, stats.getEffectiveMovementSpeed());
+    assertFalse(mistDebuff.isMistDebuffed());
+    assertEquals(4f, stats.getEffectiveMovementSpeed());
 
-        stats.takeDamage(10);
+    stats.takeDamage(10);
 
-        assertEquals(70, stats.getHealth());
-    }
+    assertEquals(70, stats.getHealth());
+  }
 
-    @Test
-    void shouldNotStackWhenEnteringTheSameMistMoreThanOnce() {
-        player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
-        player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
+  @Test
+  void shouldNotStackWhenEnteringTheSameMistMoreThanOnce() {
+    player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
+    player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
 
-        assertEquals(2f, stats.getEffectiveMovementSpeed());
+    assertEquals(2f, stats.getEffectiveMovementSpeed());
 
-        stats.takeDamage(10);
+    stats.takeDamage(10);
 
-        assertEquals(80, stats.getHealth());
-    }
+    assertEquals(80, stats.getHealth());
+  }
 
-    @Test
-    void shouldIgnoreExitFromAnotherMistSource() {
-        player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
-        player.getEvents().trigger(CerberusMistComponent.EXITED, anotherHead);
+  @Test
+  void shouldIgnoreExitFromAnotherMistSource() {
+    player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
+    player.getEvents().trigger(CerberusMistComponent.EXITED, anotherHead);
 
-        assertTrue(mistDebuff.isMistDebuffed());
-        assertEquals(2f, stats.getEffectiveMovementSpeed());
+    assertTrue(mistDebuff.isMistDebuffed());
+    assertEquals(2f, stats.getEffectiveMovementSpeed());
 
-        player.getEvents().trigger(CerberusMistComponent.EXITED, leftHead);
+    player.getEvents().trigger(CerberusMistComponent.EXITED, leftHead);
 
-        assertFalse(mistDebuff.isMistDebuffed());
-        assertEquals(4f, stats.getEffectiveMovementSpeed());
-    }
+    assertFalse(mistDebuff.isMistDebuffed());
+    assertEquals(4f, stats.getEffectiveMovementSpeed());
+  }
 
-    @Test
-    void shouldClearEffectsWhenPlayerDiesAndAllowNewMistAfterHealing() {
-        player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
-        stats.setHealth(0);
+  @Test
+  void shouldClearEffectsWhenPlayerDiesAndAllowNewMistAfterHealing() {
+    player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
+    stats.setHealth(0);
 
-        assertFalse(mistDebuff.isMistDebuffed());
+    assertFalse(mistDebuff.isMistDebuffed());
 
-        stats.setHealth(100);
-        player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
+    stats.setHealth(100);
+    player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
 
-        assertTrue(mistDebuff.isMistDebuffed());
-        assertEquals(2f, stats.getEffectiveMovementSpeed());
-    }
+    assertTrue(mistDebuff.isMistDebuffed());
+    assertEquals(2f, stats.getEffectiveMovementSpeed());
+  }
 
-    @Test
-    void shouldClearEffectsWhenComponentIsDisposed() {
-        player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
+  @Test
+  void shouldClearEffectsWhenComponentIsDisposed() {
+    player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
 
-        mistDebuff.dispose();
+    mistDebuff.dispose();
 
-        assertFalse(mistDebuff.isMistDebuffed());
-        assertEquals(4f, stats.getEffectiveMovementSpeed());
+    assertFalse(mistDebuff.isMistDebuffed());
+    assertEquals(4f, stats.getEffectiveMovementSpeed());
 
-        player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
+    player.getEvents().trigger(CerberusMistComponent.ENTERED, leftHead);
 
-        assertFalse(mistDebuff.isMistDebuffed());
-    }
+    assertFalse(mistDebuff.isMistDebuffed());
+  }
 }
