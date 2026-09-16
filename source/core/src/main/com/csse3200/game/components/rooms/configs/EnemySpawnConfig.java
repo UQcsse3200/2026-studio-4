@@ -8,6 +8,7 @@ public class EnemySpawnConfig extends PositionConfig {
     CRAB,
     HARPY,
     MUMMY,
+    WASP,
     BEETLE,
     CYCLOPS,
     GOLEM,
