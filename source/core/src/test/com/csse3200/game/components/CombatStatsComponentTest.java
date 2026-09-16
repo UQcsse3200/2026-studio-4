@@ -539,6 +539,8 @@ class CombatStatsComponentTest {
 
     assertEquals(200, stats.getBaseAttack());
     assertEquals(200, stats.getMaxHealth());
-    assertTrue(stats.getMaxHealth() == stats.getHealth());
+
+    // check that the health gets raised to the new max health
+    assertEquals(stats.getMaxHealth(), stats.getHealth());
   }
 }
