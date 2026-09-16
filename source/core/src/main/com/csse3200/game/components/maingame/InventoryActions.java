@@ -10,7 +10,8 @@ public class InventoryActions extends Component {
   private final InventoryDisplay inventoryDisplay;
   private InventoryComponent inventoryComponent;
 
-  public InventoryActions(InventoryDisplay inventoryDisplay, InventoryComponent inventoryComponent) {
+  public InventoryActions(
+      InventoryDisplay inventoryDisplay, InventoryComponent inventoryComponent) {
     this.inventoryDisplay = inventoryDisplay;
     this.inventoryComponent = inventoryComponent;
   }
@@ -32,11 +33,11 @@ public class InventoryActions extends Component {
     inventoryDisplay.changePage();
   }
 
-  private void moveActiveToInactiveItem (int fromIndex, int toIndex) {
+  private void moveActiveToInactiveItem(int fromIndex, int toIndex) {
     logger.info("Move an active item to an inactive item");
   }
 
-  private void moveInactiveToActiveItem (int fromIndex, int toIndex) {
+  private void moveInactiveToActiveItem(int fromIndex, int toIndex) {
     logger.info("Move an inactive item to an active item");
   }
 }

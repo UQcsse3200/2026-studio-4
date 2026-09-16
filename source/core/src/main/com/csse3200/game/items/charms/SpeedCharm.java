@@ -8,7 +8,7 @@ public class SpeedCharm extends Charm {
   public static final String TEXTURE = "images/ghost_1.png";
 
   public SpeedCharm() {
-    super("Strength Charm", "You feel yourself getting stronger.", TEXTURE);
+    super("Speed Charm", "You feel yourself getting stronger.", TEXTURE);
   }
 
   @Override
