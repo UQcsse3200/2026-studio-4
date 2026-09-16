@@ -54,6 +54,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
+
+    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+    Vector2 leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);
+    Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
+    Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
+
     switch (spawn.type) {
       // Egyptian
       case BEETLE:
@@ -69,10 +75,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
                 new Vector2(crab.getCenterPosition().x, crab.getCenterPosition().y / 2));
         return crab;
       case WASP:
-        TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
-        Vector2 leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);
-        Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
-        Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
         return NPCFactory.createFloatingDemon(
             target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/wasp.atlas");
       case MUMMY:
@@ -101,10 +103,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         medusa.getComponent(HitboxComponent.class).setAsBox(new Vector2(1, 1));
         return medusa;
       case HARPY:
-        terrain = entity.getComponent(TerrainComponent.class);
-        leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);
-        topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
-        rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
         return NPCFactory.createFloatingDemon(
             target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/harpy.atlas");
       case CYCLOPS:

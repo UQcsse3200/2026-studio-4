@@ -47,19 +47,27 @@ class BombEnemyTest {
     ServiceLocator.registerEntityService(entityService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/bombEnemy.atlas"});
+    resourceService.loadTextureAtlases(
+        new String[] {"images/golem.atlas", "images/bombEnemy.atlas", "images/beetle.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
 
   @Test
   void shouldHaveBombEnemyAnimations() {
-    Entity bombEnemy = NPCFactory.createBombEnemy(new Entity(), "images/bombEnemy.atlas", 0.05f);
-    AnimationRenderComponent animator = bombEnemy.getComponent(AnimationRenderComponent.class);
+    Entity golem = NPCFactory.createBombEnemy(new Entity(), "images/golem.atlas", 0.05f);
+    Entity beetle = NPCFactory.createBombEnemy(new Entity(), "images/beetle.atlas", 0.05f);
+    AnimationRenderComponent golemAnimator = golem.getComponent(AnimationRenderComponent.class);
+    AnimationRenderComponent beetleAnimator = beetle.getComponent(AnimationRenderComponent.class);
 
-    assertTrue(animator.hasAnimation("move"));
-    assertTrue(animator.hasAnimation("chase"));
-    assertTrue(animator.hasAnimation("dieAnimation"));
+    assertTrue(golemAnimator.hasAnimation("move"));
+    assertTrue(golemAnimator.hasAnimation("chase"));
+    assertTrue(golemAnimator.hasAnimation("dieAnimation"));
+    assertTrue(golemAnimator.hasAnimation("default"));
+    assertTrue(beetleAnimator.hasAnimation("move"));
+    assertTrue(beetleAnimator.hasAnimation("chase"));
+    assertTrue(beetleAnimator.hasAnimation("dieAnimation"));
+    assertTrue(beetleAnimator.hasAnimation("default"));
   }
 
   @Test
