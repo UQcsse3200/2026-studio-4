@@ -126,14 +126,24 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="DebugRenderer.html" title="class in com.csse3200.game.rendering">DebugRenderer</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDebug()" class="member-name-link">getDebug</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearShake(java.lang.Object)" class="member-name-link">clearShake</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;owner)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Cancel the active pulse only when it belongs to this exact owner token.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.scenes.scene2d.Stage</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getStage()" class="member-name-link">getStage</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="DebugRenderer.html" title="class in com.csse3200.game.rendering">DebugRenderer</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDebug()" class="member-name-link">getDebug</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.scenes.scene2d.Stage</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getStage()" class="member-name-link">getStage</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.math.Matrix4</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getWorldProjection(com.badlogic.gdx.math.Matrix4)" class="member-name-link">getWorldProjection</a><wbr>(com.badlogic.gdx.math.Matrix4&nbsp;base)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Advance the shake once per rendered frame and return a world-only projection.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#register(com.csse3200.game.rendering.Renderable)" class="member-name-link">register</a><wbr>(<a href="Renderable.html" title="interface in com.csse3200.game.rendering">Renderable</a>&nbsp;renderable)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -151,8 +161,15 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setStage(com.badlogic.gdx.scenes.scene2d.Stage)" class="member-name-link">setStage</a><wbr>(com.badlogic.gdx.scenes.scene2d.Stage&nbsp;stage)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unregister(com.csse3200.game.rendering.Renderable)" class="member-name-link">unregister</a><wbr>(<a href="Renderable.html" title="interface in com.csse3200.game.rendering">Renderable</a>&nbsp;renderable)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#shake(java.lang.Object,float,float)" class="member-name-link">shake</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;owner,
+ float&nbsp;duration,
+ float&nbsp;strength)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Start a decaying world shake, replacing any previous pulse.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unregister(com.csse3200.game.rendering.Renderable)" class="member-name-link">unregister</a><wbr>(<a href="Renderable.html" title="interface in com.csse3200.game.rendering">Renderable</a>&nbsp;renderable)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Unregister a renderable.</div>
 </div>
 </div>
@@ -216,6 +233,43 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>batch</code> - batch to render to.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="shake(java.lang.Object,float,float)">
+<h3>shake</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">shake</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;owner,
+ float&nbsp;duration,
+ float&nbsp;strength)</span></div>
+<div class="block">Start a decaying world shake, replacing any previous pulse. UI and gameplay cameras are never
+ modified. Null owners and nonpositive or nonfinite values are ignored.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>owner</code> - identity token used to cancel this pulse during cleanup</dd>
+<dd><code>duration</code> - pulse duration in seconds</dd>
+<dd><code>strength</code> - maximum displacement in world units</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="clearShake(java.lang.Object)">
+<h3>clearShake</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">clearShake</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;owner)</span></div>
+<div class="block">Cancel the active pulse only when it belongs to this exact owner token.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getWorldProjection(com.badlogic.gdx.math.Matrix4)">
+<h3>getWorldProjection</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.Matrix4</span>&nbsp;<span class="element-name">getWorldProjection</span><wbr><span class="parameters">(com.badlogic.gdx.math.Matrix4&nbsp;base)</span></div>
+<div class="block">Advance the shake once per rendered frame and return a world-only projection. The supplied
+ camera matrix is never modified, so following and gameplay bounds remain steady.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>base</code> - unmodified camera projection</dd>
+<dt>Returns:</dt>
+<dd>reusable projection, valid until the next call; callers must not modify it</dd>
 </dl>
 </section>
 </li>

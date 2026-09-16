@@ -95,9 +95,9 @@ loadScripts(document, 'script');</script>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
 <div class="block">Controls the Stage 1 Wave 2 petrification punishment.
 
- <p>The Enemy Team owns targeting, warning timing and hit detection only. Applying and removing
- the movement-speed status effect is delegated through player events so that the Status Effects
- team can implement the actual effect independently.</div>
+ <p>This component owns targeting, warning timing and hit detection. Player events connect to
+ PlayerPetrificationComponent, which applies the movement penalty through the shared status-effect
+ controller.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
