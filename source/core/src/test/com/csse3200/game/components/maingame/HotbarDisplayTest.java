@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.weapons.*;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -108,7 +109,7 @@ class HotbarDisplayTest {
 
   @Test
   void hotbarPersistsAcrossBookVisibilityAndPageChanges() {
-    InventoryDisplay bookDisplay = new InventoryDisplay();
+    InventoryDisplay bookDisplay = new InventoryDisplay(mock(InventoryComponent.class));
     Entity bookUi =
         new Entity().addComponent(bookDisplay).addComponent(new InventoryActions(bookDisplay));
     ServiceLocator.getEntityService().register(bookUi);

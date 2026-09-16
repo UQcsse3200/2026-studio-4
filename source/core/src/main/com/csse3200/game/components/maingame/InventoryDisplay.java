@@ -34,8 +34,6 @@ public class InventoryDisplay extends UIComponent {
     this.inventoryComponent = inventoryComponent;
   }
 
-  public InventoryDisplay() {}
-
   @Override
   public void create() {
     super.create();
