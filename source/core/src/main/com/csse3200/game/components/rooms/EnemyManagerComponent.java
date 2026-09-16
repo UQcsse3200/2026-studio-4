@@ -12,7 +12,6 @@ import com.csse3200.game.entities.factories.CerberusFactory;
 import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
-import com.csse3200.game.items.WeaponItem;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -107,8 +106,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
         return CerberusFactory.createCerberus(
             target, anchorPoint, this::spawnAndTrackCerberusHead, "images/cerberus.atlas");
-      case BOW:
-        return ItemFactory.createItem(WeaponItem.createWeaponItem(WeaponItem.WeaponType.BOW));
       case FINAL_BOSS:
         Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnEntity);
         if (camera != null) {
