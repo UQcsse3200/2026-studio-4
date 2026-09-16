@@ -20,6 +20,7 @@ public class WeaponAssetsComponent extends Component {
     SwordWeaponComponent.TEXTURE,
     SwordWeaponComponent.UPGRADED_TEXTURE,
     KnifeWeaponComponent.TEXTURE,
+    KnifeWeaponComponent.UPGRADED_TEXTURE,
     BowWeaponComponent.TEXTURE
   };
 
