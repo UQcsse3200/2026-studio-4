@@ -31,7 +31,7 @@ public class InventoryDisplay extends UIComponent {
   private final Map<ItemType, Texture> textures = new EnumMap<>(ItemType.class);
   private final Map<ItemType, Label> counts = new EnumMap<>(ItemType.class);
   private final Map<ItemType, Label> timers = new EnumMap<>(ItemType.class);
-  private final Map<ItemType, TextButton> useButtons = new EnumMap<>(ItemType.class);
+  private final Map<ItemType, ImageButton> useButtons = new EnumMap<>(ItemType.class);
   private Label gold;
   private Label feedback;
 
@@ -125,55 +125,44 @@ public class InventoryDisplay extends UIComponent {
     pages.pad(40, 50, 40, 50);
     Table left =
         new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a")).top();
-    left.pad(28);
-    left.add(new Label("Consumables", skin)).left().padBottom(20);
+    left.add(new Label("Consumables", skin)).top().pad(25f);
     left.row();
-    gold = new Label("Gold: 0", skin);
-    gold.setName("inventory-gold");
-    left.add(gold).left().padBottom(16);
+    left.add(new Label("Equipped", skin));
     left.row();
-    Label help =
-        new Label(
-            "Use an item here or press its number during combat.\n\n7 Health: restores 25 HP\n8 Shield: blocks damage for 8s\n9 Speed: 1.5x speed for 8s\n0 Strength: 1.5x attack for 8s",
-            skin);
-    help.setWrap(true);
-    left.add(help).width(285).left().padBottom(20);
-    left.row();
-    feedback = new Label("", skin);
-    feedback.setName("inventory-use-feedback");
-    feedback.setWrap(true);
-    left.add(feedback).width(285).left();
-    pages.add(left).size(365, 500);
-
-    Table right =
-        new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a")).top();
-    right.pad(24, 18, 20, 18);
+    Table equipped = new Table();
+    equipped.setName("inventory-equipped-slots");
+    Table rightGrid = new Table();
+    rightGrid.setName("inventory-stock-slots");
     int[] keys = {7, 8, 9, 0};
     ItemType[] types = {
       ItemType.HEALTH_POTION, ItemType.SHIELD, ItemType.SPEED_POTION, ItemType.STRENGTH_POTION
     };
     for (int i = 0; i < types.length; i++) {
       ItemType type = types[i];
-      Texture texture =
-          textures.computeIfAbsent(type, t -> new Texture(Gdx.files.internal(t.getTexturePath())));
-      Image icon = new Image(texture);
-      icon.setScaling(Scaling.fit);
-      Table row = new Table();
-      row.add(icon).size(40).padRight(8);
-      Table info = new Table();
-      Label count = new Label("", skin);
-      count.setName("inventory-count-" + type.name());
-      counts.put(type, count);
-      info.add(count).width(185).left();
-      info.row();
-      Label timer = new Label("", skin);
-      timer.setName("inventory-effect-" + type.name());
-      timers.put(type, timer);
-      info.add(timer).left();
-      row.add(info).expandX().left();
-      TextButton use = new TextButton("Use", skin);
+      ImageButton use = new ImageButton(inventory, "inventory-box");
       use.setName("inventory-use-" + type.name());
       useButtons.put(type, use);
+      use.add(itemIcon(type)).size(42);
+      Stack quickSlot = new Stack();
+      quickSlot.add(use);
+      Table keyOverlay = new Table();
+      keyOverlay.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
+      Label key = new Label(Integer.toString(keys[i]), skin);
+      key.setFontScale(0.7f);
+      key.setStyle(
+          new Label.LabelStyle(
+              key.getStyle().font, new com.badlogic.gdx.graphics.Color(1f, 0.9f, 0.7f, 1f)));
+      keyOverlay.top().left().add(key).pad(5);
+      quickSlot.add(keyOverlay);
+      Table slot = new Table();
+      slot.add(quickSlot).size(72);
+      slot.row();
+      Label timer = new Label("", skin);
+      timer.setFontScale(0.6f);
+      timer.setName("inventory-effect-" + type.name());
+      timers.put(type, timer);
+      slot.add(timer).height(18);
+      equipped.add(slot).pad(3);
       use.addListener(
           new ChangeListener() {
             @Override
@@ -189,15 +178,54 @@ public class InventoryDisplay extends UIComponent {
               refreshInventory();
             }
           });
-      row.add(use).width(64).height(36);
-      right.add(new Label("[" + keys[i] + "] " + type.getDisplayName(), skin)).left();
-      right.row();
-      right.add(row).width(325).padBottom(16);
-      right.row();
+      Stack stockSlot = new Stack();
+      ImageButton box = new ImageButton(inventory, "inventory-box");
+      box.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
+      box.add(itemIcon(type)).size(40);
+      stockSlot.add(box);
+      Table countOverlay = new Table();
+      countOverlay.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
+      Label count = new Label("", skin);
+      count.setFontScale(0.7f);
+      count.setStyle(
+          new Label.LabelStyle(
+              count.getStyle().font, new com.badlogic.gdx.graphics.Color(1f, 0.9f, 0.7f, 1f)));
+      count.setName("inventory-count-" + type.name());
+      counts.put(type, count);
+      countOverlay.bottom().right().add(count).pad(4);
+      stockSlot.add(countOverlay);
+      rightGrid.add(stockSlot).size(64).pad(3);
     }
+    for (int i = 4; i < 20; i++) {
+      if (i % 4 == 0) {
+        rightGrid.row();
+      }
+      rightGrid.add(new ImageButton(inventory, "inventory-box")).size(64).pad(3);
+    }
+    left.add(equipped);
+    left.row();
+    gold = new Label("Gold: 0", skin);
+    gold.setName("inventory-gold");
+    left.add(gold).padTop(18);
+    left.row();
+    feedback = new Label("Click a slot to use", skin);
+    feedback.setFontScale(0.7f);
+    feedback.setName("inventory-use-feedback");
+    left.add(feedback).padTop(12);
+    pages.add(left).size(365, 500);
+    Table right = new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
+    right.add(rightGrid).center().pad(10);
     pages.add(right).size(365, 500);
     refreshInventory();
     return pages;
+  }
+
+  private Image itemIcon(ItemType type) {
+    Texture texture =
+        textures.computeIfAbsent(type, t -> new Texture(Gdx.files.internal(t.getTexturePath())));
+    Image icon = new Image(texture);
+    icon.setScaling(Scaling.fit);
+    return icon;
   }
 
   /**
@@ -217,7 +245,7 @@ public class InventoryDisplay extends UIComponent {
     for (Map.Entry<ItemType, Label> entry : counts.entrySet()) {
       ItemType type = entry.getKey();
       int count = stock == null ? 0 : stock.getConsumableCount(type);
-      entry.getValue().setText("Owned: " + count);
+      entry.getValue().setText("x" + count);
       boolean fullHealth =
           type == ItemType.HEALTH_POTION
               && stats != null
@@ -231,8 +259,8 @@ public class InventoryDisplay extends UIComponent {
           .get(type)
           .setText(
               remaining > 0
-                  ? String.format(Locale.ROOT, "Active: %.1fs", remaining / 1000f)
-                  : fullHealth ? "Health full" : "");
+                  ? String.format(Locale.ROOT, "%.1fs", remaining / 1000f)
+                  : fullHealth ? "Full" : "");
     }
   }
 

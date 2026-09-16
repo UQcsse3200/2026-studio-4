@@ -7,9 +7,9 @@ import static org.mockito.Mockito.when;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.components.CombatStatsComponent;
@@ -95,12 +95,12 @@ class InventoryDisplayTest {
     stats.setHealth(60);
     display.setVisible(true);
     assertEquals("Gold: 12", label("inventory-gold"));
-    assertEquals("Owned: 2", label("inventory-count-HEALTH_POTION"));
-    TextButton use = stage.getRoot().findActor("inventory-use-HEALTH_POTION");
+    assertEquals("x2", label("inventory-count-HEALTH_POTION"));
+    ImageButton use = stage.getRoot().findActor("inventory-use-HEALTH_POTION");
     use.fire(new ChangeEvent());
     assertEquals(85, stats.getHealth());
     assertEquals(1, stock.getConsumableCount(ItemType.HEALTH_POTION));
-    assertEquals("Owned: 1", label("inventory-count-HEALTH_POTION"));
+    assertEquals("x1", label("inventory-count-HEALTH_POTION"));
     use.fire(new ChangeEvent());
     assertEquals(100, stats.getHealth());
     assertEquals(0, stock.getConsumableCount(ItemType.HEALTH_POTION));
@@ -108,20 +108,20 @@ class InventoryDisplayTest {
     stock.addGold(3);
     stage.act(0f); // The UI component is disabled, but Scene2D remains active for the paused book.
     assertEquals("Gold: 15", label("inventory-gold"));
-    assertEquals("Owned: 1", label("inventory-count-HEALTH_POTION"));
+    assertEquals("x1", label("inventory-count-HEALTH_POTION"));
     assertTrue(use.isDisabled());
     use.fire(new ChangeEvent());
     assertEquals(1, stock.getConsumableCount(ItemType.HEALTH_POTION));
     display.setVisible(false);
     stock.addConsumable(ItemType.SPEED_POTION, 3);
     display.setVisible(true);
-    assertEquals("Owned: 3", label("inventory-count-SPEED_POTION"));
+    assertEquals("x3", label("inventory-count-SPEED_POTION"));
     for (int i = 0; i < 3; i++) {
       display.changePage();
       display.changePage();
       assertEquals(1, stage.getActors().size);
     }
-    assertEquals("Owned: 3", label("inventory-count-SPEED_POTION"));
+    assertEquals("x3", label("inventory-count-SPEED_POTION"));
     player.dispose();
   }
 
@@ -137,10 +137,10 @@ class InventoryDisplayTest {
     display.setVisible(true);
     for (ItemType type :
         new ItemType[] {ItemType.SHIELD, ItemType.SPEED_POTION, ItemType.STRENGTH_POTION}) {
-      TextButton use = stage.getRoot().findActor("inventory-use-" + type.name());
+      ImageButton use = stage.getRoot().findActor("inventory-use-" + type.name());
       use.fire(new ChangeEvent());
       assertEquals(0, stock.getConsumableCount(type));
-      assertEquals("Active: 8.0s", label("inventory-effect-" + type.name()));
+      assertEquals("8.0s", label("inventory-effect-" + type.name()));
       assertTrue(use.isDisabled());
     }
     CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);

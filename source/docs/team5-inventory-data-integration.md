@@ -8,7 +8,7 @@ The existing Team 4 inventory book is already in main `9625e56` and items. This 
 
 - I opens the existing book, initially on its Consumables page; the existing arrow still switches to Charms.
 - Gold and the four consumable stack counts read the same InventoryComponent used by the combat HUD.
-- Each consumable shows its actual icon, fixed key (7/8/9/0), quantity and a Use button.
+- Team 4’s original book artwork, headings and 4 × 5 stock grid are retained. The Equipped row expands from three to four original-style slots, with fixed keys 7/8/9/0 and click-to-use. Actual stack counts appear on the first four stock cells; compact timers appear beneath the equipped slots.
 - Use delegates to ConsumableEffectComponent.tryUse, which owns validation, the single inventory decrement, the effect and the success notification. The book never decrements inventory itself.
 - Empty inventory, dead players and full-health healing attempts cannot consume a potion.
 - Shield, Speed and Strength show actual active-effect time. Health is instant.
@@ -30,6 +30,6 @@ Result: 949 tests, 0 failures, 0 errors, 0 skipped; formatting passed. Log: `/tm
 
 Regression coverage includes real stock -> button -> healing/temporary effect -> exactly one decrement, full-health rejection, empty buttons, gold refresh, reopen/flip behaviour, actor cleanup and stage refresh while the UI component is disabled. Existing book layout and project regression tests are included.
 
-No manual visual approval is claimed by this document. Review by opening I with collected items, using one, then closing the book and checking the combat HUD and effect.
+Local framebuffer captures compare items, the previous text-list adaptation and the restored grid at `/Users/yuri/CSSE3200/inventory-comparison-2026-09-17/`. A temporary external launcher seeds 2/3/4/5 consumables and 50 HP for these captures; it is not production code. Both local builds were launched and the Consumables page inspected. User visual approval is still pending.
 
 OpenAI Codex assisted implementation and tests under Yuezhou Wang's direction.
