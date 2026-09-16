@@ -89,7 +89,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       // Greek
       case GOLEM:
         Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
-        golem.setScale(0.8F, 0.8F);
+        golem.setScale(0.7F, 0.7F);
         golem
             .getComponent(HitboxComponent.class)
             .setAsBox(
