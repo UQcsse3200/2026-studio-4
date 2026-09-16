@@ -2,6 +2,7 @@ package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.items.ItemComponent;
+import com.csse3200.game.components.items.ItemSpinComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemDropSpec;
@@ -11,7 +12,7 @@ import com.csse3200.game.items.charms.StrengthCharm;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,11 +58,16 @@ public final class ItemFactory {
     Objects.requireNonNull(item, "item cannot be null");
     Entity itemEntity =
         new Entity()
-            .addComponent(new TextureRenderComponent(item.getTexture()))
+            .addComponent(new RotatingTextureRenderComponent(item.getTexture()))
+            .addComponent(new ItemSpinComponent())
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ITEM))
             .addComponent(new ItemComponent(item, quantity));
-    itemEntity.getComponent(TextureRenderComponent.class).scaleEntity();
+    // Preserve the original item sizing based on the texture aspect ratio.
+    var texture =
+        com.csse3200.game.services.ServiceLocator.getResourceService()
+            .getAsset(item.getTexture(), com.badlogic.gdx.graphics.Texture.class);
+    itemEntity.setScale(1f, (float) texture.getHeight() / texture.getWidth());
     return itemEntity;
   }
 

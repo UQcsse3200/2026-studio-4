@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.items.ItemComponent;
+import com.csse3200.game.components.items.ItemSpinComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.Item;
@@ -22,7 +23,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.rendering.RenderService;
-import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
@@ -59,7 +60,8 @@ class ItemFactoryTest {
     Entity itemEntity = ItemFactory.createItem(item);
 
     assertNotNull(itemEntity.getComponent(ItemComponent.class));
-    assertNotNull(itemEntity.getComponent(TextureRenderComponent.class));
+    assertNotNull(itemEntity.getComponent(RotatingTextureRenderComponent.class));
+    assertNotNull(itemEntity.getComponent(ItemSpinComponent.class));
     assertNotNull(itemEntity.getComponent(HitboxComponent.class));
     assertNotNull(itemEntity.getComponent(PhysicsComponent.class));
     assertEquals(PhysicsLayer.ITEM, itemEntity.getComponent(HitboxComponent.class).getLayer());
