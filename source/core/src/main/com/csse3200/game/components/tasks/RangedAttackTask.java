@@ -3,6 +3,7 @@ package com.csse3200.game.components.tasks;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.FloatingDemonProjectileFactory;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
@@ -40,6 +41,9 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
   @Override
   public int getPriority() {
+    if (StatusEffectsControllerComponent.isConcealed(target)) {
+      return -1;
+    }
     float distance = owner.getEntity().getPosition().dst(target.getPosition());
 
     if (status == Status.ACTIVE && distance <= EXIT_RANGE) {
@@ -67,6 +71,9 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
   @Override
   public void update() {
+    if (StatusEffectsControllerComponent.isConcealed(target)) {
+      return;
+    }
     cooldownLeft -= ServiceLocator.getTimeSource().getDeltaTime();
 
     if (cooldownLeft <= 0f) {
@@ -90,6 +97,9 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
     ServiceLocator.getEntityService()
         .runAfterUpdate(
             () -> {
+              if (StatusEffectsControllerComponent.isConcealed(target)) {
+                return;
+              }
               Entity projectile =
                   FloatingDemonProjectileFactory.createProjectile(position, direction, damage);
               projectileSpawner.accept(projectile);

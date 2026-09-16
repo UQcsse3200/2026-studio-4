@@ -9,8 +9,8 @@ public class FinalBossStageOneConfig {
 
   // Boss and summon health
   public int bossHealth = 100;
-  public int waveOneSummonCount = 8;
-  public int waveTwoSummonCount = 16;
+  public int waveOneSummonCount = 1;
+  public int waveTwoSummonCount = 1;
   public int summonHealth = 10;
   public int summonExplosionDamage = 10;
 
@@ -42,10 +42,6 @@ public class FinalBossStageOneConfig {
   public float bossStepMinDistance = 2f;
   public float bossStepMaxDistance = 4f;
   public float bossStepPauseDuration = 3f;
-
-  // Stage 2 charge attacks
-  public float bossChargeAttackDelay = 1f;
-  public float bossChargeDistance = 4f;
 
   // Previous movement settings retained for compatibility
   public float bossWanderSpeed = 0.8f;
@@ -115,7 +111,6 @@ public class FinalBossStageOneConfig {
 
     validateMovement();
     validateStepMovement();
-    validateChargeAttack();
     validatePetrification();
     validateFormation();
   }
@@ -156,15 +151,6 @@ public class FinalBossStageOneConfig {
         || petrificationSlowDuration < 0f
         || petrificationCooldown <= 0f) {
       throw new IllegalArgumentException("Petrification values are invalid");
-    }
-  }
-
-  private void validateChargeAttack() {
-    if (!Float.isFinite(bossChargeAttackDelay)
-        || !Float.isFinite(bossChargeDistance)
-        || bossChargeAttackDelay < 0f
-        || bossChargeDistance <= 0f) {
-      throw new IllegalArgumentException("Boss charge attack values are invalid");
     }
   }
 
