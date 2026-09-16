@@ -9,6 +9,7 @@ import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
+import com.csse3200.game.components.player.PlayerPetrificationComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.components.weapons.BowWeaponComponent;
 import com.csse3200.game.components.weapons.KnifeWeaponComponent;
@@ -90,6 +91,7 @@ public class PlayerFactory {
             .addComponent(new SwordWeaponComponent())
             .addComponent(new KnifeWeaponComponent())
             .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(new PlayerPetrificationComponent())
             .addComponent(new BowWeaponComponent())
             // Owns the equipped weapon: equips the sword and disables the rest on create.
             .addComponent(new WeaponSelectionComponent());

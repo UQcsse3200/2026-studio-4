@@ -10,9 +10,9 @@ import com.csse3200.game.services.ServiceLocator;
 /**
  * Controls the Stage 1 Wave 2 petrification punishment.
  *
- * <p>The Enemy Team owns targeting, warning timing and hit detection only. Applying and removing
- * the movement-speed status effect is delegated through player events so that the Status Effects
- * team can implement the actual effect independently.
+ * <p>This component owns targeting, warning timing and hit detection. Player events connect to
+ * PlayerPetrificationComponent, which applies the movement penalty through the shared status-effect
+ * controller.
  */
 public class FinalBossPetrificationComponent extends Component {
   private final Entity target;
@@ -190,7 +190,7 @@ public class FinalBossPetrificationComponent extends Component {
        * Cross-team interface:
        *
        * Enemy Team only reports that petrification hit.
-       * Status Effects Team owns the actual movement-speed modification and restoration.
+       * PlayerPetrificationComponent applies and clears the shared timed movement effect.
        *
        * Arguments:
        *   1. requested movement multiplier
@@ -223,7 +223,7 @@ public class FinalBossPetrificationComponent extends Component {
   /**
    * Requests removal of any petrification effect when Stage 1 ends.
    *
-   * <p>The Status Effects team can listen for this event and restore the player's movement state.
+   * <p>The player adapter removes only its own petrification effect, preserving other buffs.
    */
   private void requestPetrificationClear() {
     target.getEvents().trigger(FinalBossEvents.PETRIFICATION_EFFECT_CLEAR_REQUESTED);
