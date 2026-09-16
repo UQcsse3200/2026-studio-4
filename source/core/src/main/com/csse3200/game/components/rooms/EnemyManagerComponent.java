@@ -107,6 +107,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/harpy.atlas");
       case CYCLOPS:
         Entity cyclops = NPCFactory.createGiantEnemy(target, "images/cyclops.atlas");
+        cyclops.setScale(1.5f, 1.5f);
         cyclops
             .getComponent(HitboxComponent.class)
             .setAsBox(
