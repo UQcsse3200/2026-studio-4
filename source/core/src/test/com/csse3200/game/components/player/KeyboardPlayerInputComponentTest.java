@@ -154,18 +154,6 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldTriggerSwitchWeaponOnL() {
-    int[] switches = {0};
-    player.getEvents().addListener("switchWeapon", () -> switches[0]++);
-
-    assertTrue(input.keyDown(Keys.L));
-
-    assertEquals(1, switches[0]);
-    assertEquals(0, attackCount);
-    assertEquals(0, heavyAttackCount);
-  }
-
-  @Test
   void shouldDashOnSpace() {
     input.keyDown(Keys.A);
     assertTrue(input.keyDown(Keys.SPACE));

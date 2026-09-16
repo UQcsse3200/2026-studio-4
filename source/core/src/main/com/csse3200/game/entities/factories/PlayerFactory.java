@@ -16,7 +16,6 @@ import com.csse3200.game.components.weapons.SwordWeaponComponent;
 import com.csse3200.game.components.weapons.WeaponAssetsComponent;
 import com.csse3200.game.components.weapons.WeaponSelectionComponent;
 import com.csse3200.game.components.weapons.WeaponStatsComponent;
-import com.csse3200.game.components.weapons.WeaponSwitchComponent;
 import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
@@ -88,8 +87,6 @@ public class PlayerFactory {
             .addComponent(new WeaponStatsComponent(0.5f, 1f, 2f))
             // Tracks which weapons are upgraded; the "upgrade" terminal command grants them.
             .addComponent(new WeaponUpgradeComponent())
-            // Cycles the equipped weapon on the L key.
-            .addComponent(new WeaponSwitchComponent())
             .addComponent(new SwordWeaponComponent())
             .addComponent(new KnifeWeaponComponent())
             .addComponent(new StatusEffectsControllerComponent())

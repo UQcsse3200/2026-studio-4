@@ -63,9 +63,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         // Heavy weapon attack; "specialAttack" is reserved for special abilities.
         entity.getEvents().trigger("heavyAttack");
         return true;
-      case Keys.L:
-        entity.getEvents().trigger("switchWeapon");
-        return true;
       case Keys.E:
         // Keep Room navigation and Team 5 item pickup on separate event contracts.
         entity.getEvents().trigger("interact");
