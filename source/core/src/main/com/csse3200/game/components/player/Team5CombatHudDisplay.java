@@ -51,8 +51,9 @@ public class Team5CombatHudDisplay extends UIComponent {
   private final List<Texture> iconTextures = new ArrayList<>();
   private Table table;
   private Label goldLabel;
-  private Label shieldTime;
-  private ProgressBar shieldProgress;
+  private final Map<ConsumableSlot, Label> effectTimes = new EnumMap<>(ConsumableSlot.class);
+  private final Map<ConsumableSlot, ProgressBar> effectProgress =
+      new EnumMap<>(ConsumableSlot.class);
   private int displayedGold;
   private boolean disposed;
 
@@ -61,7 +62,7 @@ public class Team5CombatHudDisplay extends UIComponent {
     super.create();
     addActors();
     registerEventListeners();
-    updateShieldProgress();
+    updateEffectProgress();
   }
 
   void registerEventListeners() {
@@ -70,7 +71,7 @@ public class Team5CombatHudDisplay extends UIComponent {
         .addListener("consumableInventoryChanged", this::onConsumableInventoryChanged);
     entity
         .getEvents()
-        .addListener(ConsumableEffectComponent.USED, (ItemType type) -> updateShieldProgress());
+        .addListener(ConsumableEffectComponent.USED, (ItemType type) -> updateEffectProgress());
   }
 
   private void addActors() {
@@ -104,7 +105,7 @@ public class Team5CombatHudDisplay extends UIComponent {
       Label label = new Label(formatSlot(slot, count), style);
       quantityLabels.put(slot, label);
       panel.add(label).left().expandX().padBottom(4f);
-      if (slot == ConsumableSlot.SHIELD) {
+      if (slot != ConsumableSlot.HEALTH) {
         panel.row();
         ProgressBar.ProgressBarStyle barStyle = new ProgressBar.ProgressBarStyle();
         barStyle.background = skin.newDrawable("white", new Color(0.18f, 0.23f, 0.27f, 1f));
@@ -112,15 +113,18 @@ public class Team5CombatHudDisplay extends UIComponent {
         barStyle.knobBefore = skin.newDrawable("white", new Color(0.36f, 0.72f, 0.84f, 1f));
         barStyle.knobBefore.setMinWidth(0f);
         barStyle.knobBefore.setMinHeight(6f);
-        shieldProgress = new ProgressBar(0f, 1f, 0.001f, false, barStyle);
-        shieldProgress.setName("consumable-shield-progress");
-        Table shieldStatus = new Table();
-        shieldStatus.add(shieldProgress).width(142f).height(8f).padRight(8f);
-        shieldTime = new Label("--", muted);
-        shieldTime.setName("consumable-shield-time");
-        shieldStatus.add(shieldTime).left();
+        ProgressBar progress = new ProgressBar(0f, 1f, 0.001f, false, barStyle);
+        String effectName = slot.name().toLowerCase(Locale.ROOT);
+        progress.setName("consumable-" + effectName + "-progress");
+        effectProgress.put(slot, progress);
+        Table effectStatus = new Table();
+        effectStatus.add(progress).width(142f).height(8f).padRight(8f);
+        Label remainingTime = new Label("--", muted);
+        remainingTime.setName("consumable-" + effectName + "-time");
+        effectTimes.put(slot, remainingTime);
+        effectStatus.add(remainingTime).left();
         panel.add().width(28f);
-        panel.add(shieldStatus).left().padBottom(8f);
+        panel.add(effectStatus).left().padBottom(8f);
       }
     }
     stage.addActor(table);
@@ -135,18 +139,21 @@ public class Team5CombatHudDisplay extends UIComponent {
     if (inventory != null && inventory.getGold() != displayedGold) {
       updateGold(inventory.getGold());
     }
-    updateShieldProgress();
+    updateEffectProgress();
   }
 
-  private void updateShieldProgress() {
-    if (disposed || shieldProgress == null) {
+  private void updateEffectProgress() {
+    if (disposed) {
       return;
     }
     ConsumableEffectComponent effects = entity.getComponent(ConsumableEffectComponent.class);
-    long remaining = effects == null ? 0 : effects.getShieldRemainingMs();
-    shieldProgress.setValue((float) remaining / ConsumableEffectComponent.DURATION_MS);
-    shieldTime.setText(
-        remaining > 0 ? String.format(Locale.ROOT, "%.1fs", remaining / 1000f) : "--");
+    for (Map.Entry<ConsumableSlot, ProgressBar> entry : effectProgress.entrySet()) {
+      long remaining = effects == null ? 0 : effects.getRemainingMs(entry.getKey().itemType);
+      entry.getValue().setValue((float) remaining / ConsumableEffectComponent.DURATION_MS);
+      effectTimes
+          .get(entry.getKey())
+          .setText(remaining > 0 ? String.format(Locale.ROOT, "%.1fs", remaining / 1000f) : "--");
+    }
   }
 
   /** Updates currency from the real inventory. */
