@@ -31,7 +31,7 @@ import org.mockito.MockedStatic;
 class RoomManagerTest {
   @Test
   void shouldFollowPairedDoorsAndRememberClearedRooms() {
-    WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
+    WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms_tests.json");
     world.startRoomId = "dungeonOneEntrance";
     world.startEntryPointId = "fromSelection";
     RoomConfig entrance = world.getRoom("dungeonOneEntrance");

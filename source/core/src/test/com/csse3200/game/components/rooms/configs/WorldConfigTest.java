@@ -15,7 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class WorldConfigTest {
   @Test
   void shouldLoadGameWorldDefinition() {
-    WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
+    WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms_tests.json");
 
     assertNotNull(world);
     assertDoesNotThrow(world::validate);
@@ -25,7 +25,7 @@ class WorldConfigTest {
 
   @Test
   void shouldRejectBrokenRoomReference() {
-    WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
+    WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms_tests.json");
     world.rooms[0].exits[0].destinationRoomId = "missing";
 
     assertThrows(IllegalArgumentException.class, world::validate);
