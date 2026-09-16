@@ -1,7 +1,7 @@
 package com.csse3200.game.components.player;
 
-import com.csse3200.game.components.Component;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.Component;
 import com.csse3200.game.items.ItemType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Applies gameplay effects when a consumable item is used.
  *
- * <p>Listens for the "itemUsed" event, fired with the ItemType being consumed. This event
- * contract matches the Pickup & Use Input task (Devendera) — see PR #162.
+ * <p>Listens for the "itemUsed" event, fired with the ItemType being consumed. This event contract
+ * matches the Pickup & Use Input task (Devendera) — see PR #162.
  */
 public class ConsumableEffectComponent extends Component {
     private static final Logger logger = LoggerFactory.getLogger(ConsumableEffectComponent.class);
