@@ -27,7 +27,9 @@ Sprites cut from that sheet, unaltered apart from being cropped out of the grid:
 | `images/weapons/sword.png` | row 2, column 7 | sword attack hitbox |
 | `images/weapons/sword_upgraded.png` | row 6, column 8 | upgraded sword attack hitbox |
 | `images/weapons/knife.png` | row 0, column 3 | knife attack hitbox |
+| `images/weapons/knife_upgraded.png` | row 0, column 4 | upgraded knife attack hitbox |
 | `images/weapons/throwing_knife.png` | row 13, column 6 | bow projectile |
+| `images/weapons/throwing_knife_upgraded.png` | row 13, column 7 | upgraded bow projectile |
 
 No pixel data inside the sprites was modified, and no recolouring or rotation was applied.
 

@@ -63,7 +63,8 @@ class BowWeaponComponentTest {
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextures(new String[] {"images/weapons/throwing_knife.png"});
+    resourceService.loadTextures(
+        new String[] {BowWeaponComponent.TEXTURE, BowWeaponComponent.UPGRADED_TEXTURE});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
@@ -210,6 +211,52 @@ class BowWeaponComponentTest {
     ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
     verify(entityService, times(1)).register(captor.capture());
     assertEquals(12, captor.getValue().getComponent(CombatStatsComponent.class).getBaseAttack());
+  }
+
+  @Test
+  void shouldUseTheBaseSpriteWhenNotUpgraded() {
+    BowWeaponComponent bow = new BowWeaponComponent();
+    Entity wielder =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new WeaponStatsComponent(0.5f, 1f, 0f))
+            .addComponent(new WeaponUpgradeComponent())
+            .addComponent(bow);
+    wielder.create();
+
+    assertEquals(BowWeaponComponent.TEXTURE, bow.resolveTexture());
+    assertTrue(bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService, times(1)).register(captor.capture());
+    assertNotNull(captor.getValue().getComponent(RotatingTextureRenderComponent.class));
+  }
+
+  @Test
+  void shouldUseTheUpgradedSpriteForEveryArrowOnceUpgraded() {
+    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+    BowWeaponComponent bow = new BowWeaponComponent();
+    Entity wielder =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new WeaponStatsComponent(0.5f, 1f, 0f))
+            .addComponent(upgrades)
+            .addComponent(bow);
+    wielder.create();
+    upgrades.setUpgraded(BowWeaponComponent.class, true);
+
+    assertEquals(BowWeaponComponent.UPGRADED_TEXTURE, bow.resolveTexture());
+
+    // Every arrow of the three-arrow volley is drawn, not just the centre one.
+    assertTrue(bow.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+    ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService, times(3)).register(captor.capture());
+    for (Entity arrow : captor.getAllValues()) {
+      assertNotNull(arrow.getComponent(RotatingTextureRenderComponent.class));
+    }
+
+    // Reverting the upgrade brings the base sprite back.
+    upgrades.setUpgraded(BowWeaponComponent.class, false);
+    assertEquals(BowWeaponComponent.TEXTURE, bow.resolveTexture());
   }
 
   @Test

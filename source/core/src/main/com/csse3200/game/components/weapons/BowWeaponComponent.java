@@ -14,14 +14,20 @@ import com.csse3200.game.services.ServiceLocator;
  * travels in a straight line via {@link ProjectileComponent}. It despawns on its first enemy or
  * obstacle hit, or when its lifetime runs out.
  *
- * <p>Once upgraded (see {@link WeaponUpgradeComponent}) the light shot deals 20% more damage, and
- * the bow also has a heavy attack: three arrows at once - one along the aim direction, plus one to
- * each side at {@link #SPREAD_ANGLE_DEG} - each checking its own path independently, so a wall
- * blocking the centre arrow does not stop the other two.
+ * <p>Once upgraded (see {@link WeaponUpgradeComponent}) the light shot deals 20% more damage, every
+ * arrow is drawn with a fancier sprite, and the bow also has a heavy attack: three arrows at once -
+ * one along the aim direction, plus one to each side at {@link #SPREAD_ANGLE_DEG} - each checking
+ * its own path independently, so a wall blocking the centre arrow does not stop the other two.
  */
 public class BowWeaponComponent extends WeaponComponent {
   /** Sprite drawn for the thrown blade in flight. Loaded by {@link WeaponAssetsComponent}. */
   public static final String TEXTURE = "images/weapons/throwing_knife.png";
+
+  /**
+   * Fancier sprite drawn for every arrow once the bow is upgraded. Cut from the same sheet and
+   * drawn at the same angle as {@link #TEXTURE}. Loaded by {@link WeaponAssetsComponent}.
+   */
+  public static final String UPGRADED_TEXTURE = "images/weapons/throwing_knife_upgraded.png";
 
   private static final float ARROW_SIZE = 0.25f;
   private static final float ARROW_SPEED = 5f; // metres per second
@@ -35,6 +41,13 @@ public class BowWeaponComponent extends WeaponComponent {
   private static final float SPRITE_ANGLE_OFFSET = -135f;
   // Angle each side arrow is rotated from the aim direction on the heavy attack.
   private static final float SPREAD_ANGLE_DEG = 15f;
+
+  /**
+   * @return {@link #UPGRADED_TEXTURE} once upgraded, otherwise {@link #TEXTURE}
+   */
+  String resolveTexture() {
+    return isUpgraded() ? UPGRADED_TEXTURE : TEXTURE;
+  }
 
   @Override
   protected void createAttack(Vector2 origin, Vector2 direction) {
@@ -90,7 +103,7 @@ public class BowWeaponComponent extends WeaponComponent {
             .targetLayer(PhysicsLayer.NPC)
             .damage(damage)
             .knockback(stats.getKnockback())
-            .texture(TEXTURE)
+            .texture(resolveTexture())
             .visualSource(entity)
             .visualScale(new Vector2(SPRITE_SIZE, SPRITE_SIZE))
             .rotation(dir.angleDeg())
