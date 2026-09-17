@@ -20,6 +20,9 @@ import com.csse3200.game.items.charms.Charm;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.ItemTooltip;
 import com.csse3200.game.ui.UIComponent;
+
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.List;
@@ -69,9 +72,9 @@ public class InventoryDisplay extends UIComponent {
 
     Table pagesContainer;
     if (charmsPage) {
-      pagesContainer = charmsCreate();
-    } else {
       pagesContainer = consumableCreate();
+    } else {
+      pagesContainer = charmsCreate();
     }
     // combine all together
     bookStack.add(pagesContainer);
@@ -119,7 +122,9 @@ public class InventoryDisplay extends UIComponent {
     leftPage.row();
     leftPage.add(new Label("Equipped", skin)).colspan(3);
     leftPage.row();
-    Table leftGrid = gridDraw(3, 3, 72, "Active");
+
+    // Please pass in list of equiped consumabls
+    Table leftGrid = drawItemGrid(3, 3, 72, new ArrayList<>(), true);
     leftPage.add(leftGrid);
 
     pagesContainer.add(leftPage).size(365, 500);
@@ -128,8 +133,8 @@ public class InventoryDisplay extends UIComponent {
     Table rightPage =
         new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
 
-    // Create Grid
-    Table rightGrid = gridDraw(4, 20, 64, "Consumable");
+    // Please pass in list of consumabls in inventory
+    Table rightGrid = drawItemGrid(4, 20, 64, new ArrayList<>(), true);
 
     rightPage.add(rightGrid).center().pad(10);
     pagesContainer.add(rightPage).size(365, 500);
@@ -162,7 +167,7 @@ public class InventoryDisplay extends UIComponent {
         new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
 
     // Create Grid
-    Table rightGrid = drawItemGrid(4, 20, 64, inventoryComponent.getCharms());
+    Table rightGrid = drawItemGrid(4, 20, 64, inventoryComponent.getCharms(), false);
 
     rightPage.add(rightGrid).center().pad(10);
     pagesContainer.add(rightPage).size(365, 500);
@@ -170,15 +175,18 @@ public class InventoryDisplay extends UIComponent {
     return pagesContainer;
   }
 
-  /** draws an item grid from a list of items */
+  /** draws an item grid from a list of items
+   * @param enableDrag set this to true to add drag functionality
+   */
   private Table drawItemGrid(
-      int columns, int totalSlots, int slotSize, List<? extends Item> items) {
+      int columns, int totalSlots, int slotSize, List<? extends Item> items, boolean enableDrag) {
     Table grid = new Table();
 
     for (int i = 0; i < totalSlots; i++) {
 
       Stack slotStack = new Stack();
       ImageButton slotBackground = new ImageButton(inventory, "inventory-box");
+      if (enableDrag) registerDropTarget(slotBackground);
       slotStack.add(slotBackground);
 
       if (i < items.size()) {
@@ -186,7 +194,9 @@ public class InventoryDisplay extends UIComponent {
         // create an image with the items texture then extract the Drawable to draw the button
         ImageButton itemButton = new ImageButton(new Image(getTexture(currentItem)).getDrawable());
         itemButton.addListener(ItemTooltip.forItem(currentItem, skin));
+        if (enableDrag) registerDragSource(itemButton);
         slotStack.add(itemButton);
+
       }
 
       grid.add(slotStack).size(slotSize).pad(3);
@@ -203,46 +213,7 @@ public class InventoryDisplay extends UIComponent {
     return ServiceLocator.getResourceService().getAsset(item.getTexture(), Texture.class);
   }
 
-  /**
-   * Builds a grid style inventory according to the parameters given
-   *
-   * @param columns number of columns in the inventory
-   * @param totalSlots number of total slots in the inventory
-   * @param slotSize size of the slots in the inventory
-   * @param type what inventory the grid is being built for
-   * @return a table component to be displayed in the inventory
-   */
-  private Table gridDraw(int columns, int totalSlots, int slotSize, String type) {
-    // Grid Table building
-    Table grid = new Table();
-    java.util.List<Charm> charms = inventoryComponent.getCharms();
-    Dictionary<Charm, Integer> charmDict = countCharms(charms);
-    Enumeration<Charm> uniqueCharms = charmDict.keys();
-
-    for (int i = 0; i < totalSlots; i++) {
-      Stack slotStack = new Stack();
-      ImageButton slotBackground = new ImageButton(inventory, "inventory-box");
-      slotStack.add(slotBackground);
-      if (Objects.equals(type, "Charms") && uniqueCharms.hasMoreElements()) {
-        charmIconDraw(slotStack, charmDict, uniqueCharms);
-      } else if (Objects.equals(type, "Consumable")
-          && uniqueCharms.hasMoreElements()) { // Change to consumables once have
-        consumableIconDraw(slotStack, charmDict, uniqueCharms, slotBackground);
-        slotBackground.setUserObject("inactive:" + i);
-        registerDropTarget(slotBackground);
-      } else if (Objects.equals(type, "Active")) {
-        slotBackground.setUserObject("active:" + i);
-        registerDropTarget(slotBackground);
-      }
-      grid.add(slotStack).size(slotSize).pad(3);
-      // Break to a new row after reaching the column limit
-      if ((i + 1) % columns == 0) {
-        grid.row();
-      }
-    }
-    return grid;
-  }
-
+  /** Registers the item slot as a drop target */
   private void registerDropTarget(ImageButton slotBackground) {
     dragAndDrop.addTarget(
         new DragAndDrop.Target(slotBackground) {
@@ -281,137 +252,32 @@ public class InventoryDisplay extends UIComponent {
         });
   }
 
-  /**
-   * Draws a charm icon on top of an inventory slot
-   *
-   * @param slotStack The stack the icon is being drawn on top of
-   * @param charmDict The dictionary containing the charms and their quantities
-   * @param uniqueCharms Enumeration of the charms
-   */
-  /**
-   * Draws a charm icon on top of an inventory slot
-   *
-   * @param slotStack The stack the icon is being drawn on top of
-   * @param charmDict The dictionary containing the charm objects and their quantities
-   * @param uniqueCharms Enumeration of the charm objects
-   */
-  private void charmIconDraw(
-      Stack slotStack, Dictionary<Charm, Integer> charmDict, Enumeration<Charm> uniqueCharms) {
-    Charm currentCharm = uniqueCharms.nextElement();
-    int quantity = charmDict.get(currentCharm);
+  /** Added dragging behaviour to the ImageButton currently not implemented */
+  private void registerDragSource(ImageButton item) {
+    dragAndDrop.addSource(
+      new DragAndDrop.Source(item) {
+        @Override
+        public Payload dragStart(InputEvent event, float x, float y, int pointer) {
+          Payload payload = new Payload();
+          table.addActor(getActor());
+          payload.setDragActor(getActor());
+          dragAndDrop.setDragActorPosition(
+            getActor().getWidth() / 2, -getActor().getHeight() / 2);
+          return payload;
+        }
 
-    switch (currentCharm.getName()) {
-      case "Strength Charm" -> {
-        ImageButton strengthCharmIcon = new ImageButton(inventory, "strengthCharm");
-        strengthCharmIcon.addListener(ItemTooltip.forItem(currentCharm, skin));
-        slotStack.add(strengthCharmIcon);
-      }
-      case "Speed Charm" -> {
-        Image speedCharmIcon = new Image(skin, "button-c");
-        speedCharmIcon.addListener(ItemTooltip.forItem(currentCharm, skin));
-        slotStack.add(speedCharmIcon);
-      }
-      case "Attack Speed Charm" -> {
-        Image attackSpeedCharmIcon = new Image(skin, "button-pressed-c");
-        attackSpeedCharmIcon.addListener(ItemTooltip.forItem(currentCharm, skin));
-        slotStack.add(attackSpeedCharmIcon);
-      }
-    }
-    // add other charms when added
-
-    if (quantity >= 1) {
-      Table textOverlayTable = new Table();
-      textOverlayTable.bottom().right();
-      textOverlayTable.setTouchable(Touchable.disabled); // Prevents text from blocking hover
-
-      Label quantityLabel = new Label(String.valueOf(quantity), skin);
-      textOverlayTable.add(quantityLabel).padBottom(2).padRight(4);
-      slotStack.add(textOverlayTable);
-    }
-  }
-
-  /**
-   * Draws a Consumable icon on top of an inventory slot
-   *
-   * @param slotStack The stack the icon is being drawn on top of
-   * @param consumableDict The dictionary containing the consumables and their quantities
-   * @param uniqueConsumable Enumeration of the consumables
-   */
-  private void consumableIconDraw(
-      Stack slotStack,
-      Dictionary<Charm, Integer> consumableDict,
-      Enumeration<Charm> uniqueConsumable,
-      ImageButton slotBackground) {
-    // Convert to consumables when added
-    Charm currentCharm = uniqueConsumable.nextElement();
-    int quantity = consumableDict.get(currentCharm);
-
-    if (currentCharm.getName().equals("Strength Charm")) {
-      ImageButton strengthCharmIcon = new ImageButton(inventory, "strengthCharm");
-      strengthCharmIcon.setUserObject(slotBackground);
-
-      // Add tooltip for hover detection
-      strengthCharmIcon.addListener(ItemTooltip.forItem(currentCharm, skin));
-
-      slotStack.add(strengthCharmIcon);
-      // add other consumables when added
-      if (quantity >= 1) {
-        Table textOverlayTable = new Table();
-        textOverlayTable.bottom().right();
-        textOverlayTable.setTouchable(Touchable.disabled); // Prevents text from blocking hover
-
-        Label quantityLabel = new Label(String.valueOf(quantity), skin);
-        textOverlayTable.add(quantityLabel).padBottom(2).padRight(4);
-        slotStack.add(textOverlayTable);
-
-        dragAndDrop.addSource(
-            new DragAndDrop.Source(strengthCharmIcon) {
-              @Override
-              public Payload dragStart(InputEvent event, float x, float y, int pointer) {
-                Payload payload = new Payload();
-                table.addActor(getActor());
-                payload.setDragActor(getActor());
-                dragAndDrop.setDragActorPosition(
-                    getActor().getWidth() / 2, -getActor().getHeight() / 2);
-                return payload;
-              }
-
-              @Override
-              public void dragStop(
-                  InputEvent event, float x, float y, int pointer, Payload payload, Target target) {
-                if (target == null) {
-                  ImageButton originalSlot = (ImageButton) getActor().getUserObject();
-                  Stack originalStack = (Stack) originalSlot.getParent();
-                  getActor().remove();
-                  originalStack.addActorAt(1, getActor());
-                }
-              }
-            });
-      }
-    }
-  }
-
-  /**
-   * Creates a dictionary of charms and their count
-   *
-   * @param charms List of charms in the inventory of the player
-   * @return a dictionary with charm types as keys and their count as value
-   */
-  private Dictionary<Charm, Integer> countCharms(java.util.List<Charm> charms) {
-    java.util.Dictionary<Charm, Integer> charmsDict = new java.util.Hashtable<>();
-
-    for (Charm charm : charms) {
-      // We now use the Charm object itself as the key
-      Integer currentCount = charmsDict.get(charm);
-
-      if (currentCount == null) {
-        charmsDict.put(charm, 1);
-      } else {
-        charmsDict.put(charm, currentCount + 1);
-      }
-    }
-    return charmsDict;
-  }
+        @Override
+        public void dragStop(
+          InputEvent event, float x, float y, int pointer, Payload payload, Target target) {
+          if (target == null) {
+            ImageButton originalSlot = (ImageButton) getActor().getUserObject();
+            Stack originalStack = (Stack) originalSlot.getParent();
+            getActor().remove();
+            originalStack.addActorAt(1, getActor());
+          }
+        }
+      });
+  } 
 
   @Override
   public void draw(SpriteBatch batch) {
