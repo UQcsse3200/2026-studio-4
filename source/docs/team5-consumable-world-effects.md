@@ -35,3 +35,7 @@ Captured from the actual desktop game renderer at implementation commit `0e34305
 ![Shield aura in the running game](evidence/consumable-vfx/shield-aura.png)
 
 ![Three healing plus signs in the running game](evidence/consumable-vfx/healing-pluses.png)
+
+## Integration refresh — 2026-09-17
+
+Synced locally with items `0c7f3b0`, including main `9182adb` and restoration of the shared random Charm drop pool. The other independent Team 5 feature branch is not included. Earlier screenshots show the feature before this baseline refresh.

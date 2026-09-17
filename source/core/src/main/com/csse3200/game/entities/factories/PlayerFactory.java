@@ -9,6 +9,7 @@ import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.ConsumableLoadoutComponent;
 import com.csse3200.game.components.player.ConsumableVisualComponent;
 import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.player.InvisibilityPotionComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
@@ -87,6 +88,7 @@ public class PlayerFactory {
             .addComponent(new ConsumableEffectComponent())
             .addComponent(new ConsumableVisualComponent())
             .addComponent(new ConsumableLoadoutComponent())
+            .addComponent(new InvisibilityPotionComponent())
             .addComponent(new ItemPickupComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())
