@@ -5,10 +5,13 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
+import com.csse3200.game.components.player.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.player.InvisibilityPotionComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
+import com.csse3200.game.components.player.PlayerCerberusMistDebuffComponent;
 import com.csse3200.game.components.player.PlayerDamageFlashComponent;
 import com.csse3200.game.components.player.PlayerPetrificationComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
@@ -79,10 +82,12 @@ public class PlayerFactory {
                     stats.health, stats.baseAttack, stats.movementSpeed, stats.attackSpeed))
             .addComponent(new PlayerAbilitiesComponent())
             .addComponent(new InventoryComponent(stats.gold))
+            .addComponent(new InvisibilityPotionComponent())
             .addComponent(new ItemPickupComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())
             .addComponent(new PlayerStatsDisplay())
+            .addComponent(new InteractionPromptDisplay())
             // Weapon damage = round(baseAttack * multiplier); charms that raise base attack
             // therefore scale weapon hits too.
             .addComponent(new WeaponAssetsComponent())
@@ -92,6 +97,7 @@ public class PlayerFactory {
             .addComponent(new SwordWeaponComponent())
             .addComponent(new KnifeWeaponComponent())
             .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(new PlayerCerberusMistDebuffComponent())
             .addComponent(new PlayerDamageFlashComponent())
             .addComponent(new PlayerPetrificationComponent())
             .addComponent(new BowWeaponComponent())

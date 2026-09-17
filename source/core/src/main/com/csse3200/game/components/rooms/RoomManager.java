@@ -5,6 +5,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.items.ItemPickupComponent;
+import com.csse3200.game.components.player.InteractionPrompt;
+import com.csse3200.game.components.player.InteractionPromptDisplay;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.components.rooms.configs.PositionConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
@@ -20,8 +23,6 @@ import java.util.Set;
 public class RoomManager {
   private static final float INTERACTION_RANGE = 1f;
   private static final int ARRIVAL_OFFSET_TILES = 3;
-  private static final String CLEAR_REQUIRED_MESSAGE = "Defeat all enemies first.";
-  private static final String COMPLETED_MESSAGE = "Dungeon completed.";
 
   private Entity currentRoom;
   private final Entity player;
@@ -51,6 +52,15 @@ public class RoomManager {
     cameraFollowingComponent.setTarget(player);
   }
 
+  /** Package private constructer to create empty room manager for testing */
+  RoomManager(Entity player) {
+    this.player = player;
+
+    this.world = null;
+    this.camera = null;
+    this.initialEntryPoint = null;
+  }
+
   /** Registers the active room and player, then positions the player at its entry point. */
   public void create() {
     EntityService entityService = ServiceLocator.getEntityService();
@@ -59,9 +69,11 @@ public class RoomManager {
     start(initialEntryPoint);
   }
 
-  private void start(PositionConfig entryPoint) {
+  /** Package private for testing */
+  void start(PositionConfig entryPoint) {
     currentRoom.getEvents().addListener("roomCleared", this::onRoomCleared);
     currentRoom.getEvents().trigger("RoomCreated", player);
+    scaleRoom(currentRoom);
     Vector2 position =
         currentRoom
             .getComponent(TerrainComponent.class)
@@ -69,8 +81,19 @@ public class RoomManager {
     player.setPosition(position);
   }
 
+  /**
+   * Calls scale on a room entities {@link EnemyManagerComponent}
+   *
+   * <p>uses the number of cleared dungeons {@link #completedDungeonIds} to determine amount to
+   * scale
+   */
+  private void scaleRoom(Entity entity) {
+    entity.getComponent(EnemyManagerComponent.class).scale(completedDungeonIds.size());
+  }
+
   /** Applies a requested room switch after the current physics step has completed. */
   public void update() {
+    refreshInteractionPrompt();
     if (clearRequested) {
       clearRequested = false;
       currentRoom.getComponent(EnemyManagerComponent.class).clear();
@@ -95,18 +118,18 @@ public class RoomManager {
       return;
     }
     if (!exit.available) {
-      showStatus(exit.message == null ? "This dungeon is not available yet." : exit.message);
+      showStatus(exit.message == null ? InteractionPrompt.DUNGEON_UNAVAILABLE : exit.message);
       return;
     }
     RoomConfig destination = world.getRoom(exit.destinationRoomId);
     if (destination.dungeonId != null && completedDungeonIds.contains(destination.dungeonId)) {
-      showStatus(COMPLETED_MESSAGE);
+      showStatus(InteractionPrompt.DUNGEON_COMPLETED);
       return;
     }
     EnemyManagerComponent enemies = currentRoom.getComponent(EnemyManagerComponent.class);
     boolean roomCleared = enemies.isCleared();
     if (exit.requiresClear && !roomCleared) {
-      showStatus(CLEAR_REQUIRED_MESSAGE);
+      showStatus(InteractionPrompt.CLEAR_REQUIRED);
       return;
     }
     if (roomCleared) {
@@ -186,10 +209,44 @@ public class RoomManager {
     return arrival;
   }
 
+  private void refreshInteractionPrompt() {
+    InteractionPromptDisplay display = player.getComponent(InteractionPromptDisplay.class);
+    if (display == null) {
+      return;
+    }
+    display.setPrompt(InteractionPrompt.resolve(getItemPrompt(), getExitPrompt()));
+  }
+
+  private String getItemPrompt() {
+    ItemPickupComponent pickup = player.getComponent(ItemPickupComponent.class);
+    return pickup == null ? null : pickup.getPickupPrompt();
+  }
+
+  private String getExitPrompt() {
+    ExitConfig exit = findNearestExit();
+    if (exit == null) {
+      return null;
+    }
+    RoomConfig destination =
+        exit.destinationRoomId == null ? null : world.getRoom(exit.destinationRoomId);
+    boolean dungeonCompleted =
+        destination != null
+            && destination.dungeonId != null
+            && completedDungeonIds.contains(destination.dungeonId);
+    EnemyManagerComponent enemies = currentRoom.getComponent(EnemyManagerComponent.class);
+    boolean roomCleared = enemies != null && enemies.isCleared();
+    return InteractionPrompt.forExit(exit, roomCleared, dungeonCompleted);
+  }
+
   private void showStatus(String message) {
     GameAreaDisplay display = currentRoom.getComponent(GameAreaDisplay.class);
     if (display != null) {
       display.showStatus(message);
     }
+  }
+
+  /** Package private setter for unit testing */
+  void setCurrentRoom(Entity room) {
+    this.currentRoom = room;
   }
 }

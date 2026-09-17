@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -18,6 +19,7 @@ import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.items.Item;
 import com.csse3200.game.items.charms.Charm;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.ItemTooltip;
 import com.csse3200.game.ui.UIComponent;
 import java.util.Comparator;
 import java.util.Dictionary;
@@ -45,6 +47,10 @@ public class InventoryDisplay extends UIComponent {
     super.create();
     buildPage();
     table.setVisible(false);
+    TooltipManager manager = TooltipManager.getInstance();
+    manager.initialTime = 0.2f; // Show after 0.2 seconds instead of 2 seconds
+    manager.resetTime = 0.4f; // Reset delay when moving between items quickly
+    manager.subsequentTime = 0.2f;
   }
 
   /** Builds the inventory page depending on which inventory is being displayed */
@@ -224,8 +230,8 @@ public class InventoryDisplay extends UIComponent {
     // Grid Table building
     Table grid = new Table();
     java.util.List<Charm> charms = inventoryComponent.getCharms();
-    Dictionary<String, Integer> charmDict = countCharms(charms);
-    Enumeration<String> uniqueCharms = charmDict.keys();
+    Dictionary<Charm, Integer> charmDict = countCharms(charms);
+    Enumeration<Charm> uniqueCharms = charmDict.keys();
 
     for (int i = 0; i < totalSlots; i++) {
       Stack slotStack = new Stack();
@@ -296,26 +302,41 @@ public class InventoryDisplay extends UIComponent {
    * @param charmDict The dictionary containing the charms and their quantities
    * @param uniqueCharms Enumeration of the charms
    */
+  /**
+   * Draws a charm icon on top of an inventory slot
+   *
+   * @param slotStack The stack the icon is being drawn on top of
+   * @param charmDict The dictionary containing the charm objects and their quantities
+   * @param uniqueCharms Enumeration of the charm objects
+   */
   private void charmIconDraw(
-      Stack slotStack, Dictionary<String, Integer> charmDict, Enumeration<String> uniqueCharms) {
-    String currentCharm = uniqueCharms.nextElement();
+      Stack slotStack, Dictionary<Charm, Integer> charmDict, Enumeration<Charm> uniqueCharms) {
+    Charm currentCharm = uniqueCharms.nextElement();
     int quantity = charmDict.get(currentCharm);
-    if (currentCharm.equals("Strength Charm")) {
-      ImageButton strengthCharmIcon = new ImageButton(inventory, "strengthCharm");
-      slotStack.add(strengthCharmIcon);
-    }
-    if (currentCharm.equals("Speed Charm")) {
-      Image speedCharmIcon = new Image(skin, "button-c");
-      slotStack.add(speedCharmIcon);
-    }
-    if (currentCharm.equals("Attack Speed Charm")) {
-      Image attackSpeedCharmIcon = new Image(skin, "button-pressed-c");
-      slotStack.add(attackSpeedCharmIcon);
+
+    switch (currentCharm.getName()) {
+      case "Strength Charm" -> {
+        ImageButton strengthCharmIcon = new ImageButton(inventory, "strengthCharm");
+        strengthCharmIcon.addListener(ItemTooltip.forItem(currentCharm, skin));
+        slotStack.add(strengthCharmIcon);
+      }
+      case "Speed Charm" -> {
+        Image speedCharmIcon = new Image(skin, "button-c");
+        speedCharmIcon.addListener(ItemTooltip.forItem(currentCharm, skin));
+        slotStack.add(speedCharmIcon);
+      }
+      case "Attack Speed Charm" -> {
+        Image attackSpeedCharmIcon = new Image(skin, "button-pressed-c");
+        attackSpeedCharmIcon.addListener(ItemTooltip.forItem(currentCharm, skin));
+        slotStack.add(attackSpeedCharmIcon);
+      }
     }
     // add other charms when added
+
     if (quantity >= 1) {
       Table textOverlayTable = new Table();
       textOverlayTable.bottom().right();
+      textOverlayTable.setTouchable(Touchable.disabled); // Prevents text from blocking hover
 
       Label quantityLabel = new Label(String.valueOf(quantity), skin);
       textOverlayTable.add(quantityLabel).padBottom(2).padRight(4);
@@ -332,26 +353,31 @@ public class InventoryDisplay extends UIComponent {
    */
   private void consumableIconDraw(
       Stack slotStack,
-      Dictionary<String, Integer> consumableDict,
-      Enumeration<String> uniqueConsumable,
+      Dictionary<Charm, Integer> consumableDict,
+      Enumeration<Charm> uniqueConsumable,
       ImageButton slotBackground) {
     // Convert to consumables when added
-    String currentCharm = uniqueConsumable.nextElement();
+    Charm currentCharm = uniqueConsumable.nextElement();
     int quantity = consumableDict.get(currentCharm);
 
-    if (currentCharm.equals("Strength Charm")) {
+    if (currentCharm.getName().equals("Strength Charm")) {
       ImageButton strengthCharmIcon = new ImageButton(inventory, "strengthCharm");
       strengthCharmIcon.setUserObject(slotBackground);
+
+      // Add tooltip for hover detection
+      strengthCharmIcon.addListener(ItemTooltip.forItem(currentCharm, skin));
 
       slotStack.add(strengthCharmIcon);
       // add other consumables when added
       if (quantity >= 1) {
         Table textOverlayTable = new Table();
         textOverlayTable.bottom().right();
+        textOverlayTable.setTouchable(Touchable.disabled); // Prevents text from blocking hover
 
         Label quantityLabel = new Label(String.valueOf(quantity), skin);
         textOverlayTable.add(quantityLabel).padBottom(2).padRight(4);
         slotStack.add(textOverlayTable);
+
         dragAndDrop.addSource(
             new DragAndDrop.Source(strengthCharmIcon) {
               @Override
@@ -385,17 +411,17 @@ public class InventoryDisplay extends UIComponent {
    * @param charms List of charms in the inventory of the player
    * @return a dictionary with charm types as keys and their count as value
    */
-  private Dictionary<String, Integer> countCharms(java.util.List<Charm> charms) {
-    java.util.Dictionary<String, Integer> charmsDict = new java.util.Hashtable<>();
+  private Dictionary<Charm, Integer> countCharms(java.util.List<Charm> charms) {
+    java.util.Dictionary<Charm, Integer> charmsDict = new java.util.Hashtable<>();
 
     for (Charm charm : charms) {
-      String charmKey = charm.getName();
-      Integer currentCount = charmsDict.get(charmKey);
+      // We now use the Charm object itself as the key
+      Integer currentCount = charmsDict.get(charm);
 
       if (currentCount == null) {
-        charmsDict.put(charmKey, 1);
+        charmsDict.put(charm, 1);
       } else {
-        charmsDict.put(charmKey, currentCount + 1);
+        charmsDict.put(charm, currentCount + 1);
       }
     }
     return charmsDict;

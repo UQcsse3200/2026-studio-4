@@ -174,6 +174,19 @@ class EnemyManagerComponentTest {
     assertTrue(enemyManager.isCleared());
   }
 
+  @Test
+  void shouldScaleAllEnemies() {
+    Entity[] enemies = trackEnemies(3);
+    CombatStatsComponent stats = mock(CombatStatsComponent.class);
+    for (Entity enemy : enemies) {
+      when(enemy.getComponent(CombatStatsComponent.class)).thenReturn(stats);
+    }
+
+    enemyManager.scale(1);
+
+    verify(stats, times(3)).scale(anyInt());
+  }
+
   private Entity combatEnemy() {
     Entity enemy = new Entity().addComponent(new CombatStatsComponent(10, 1));
     entityService.register(enemy);
