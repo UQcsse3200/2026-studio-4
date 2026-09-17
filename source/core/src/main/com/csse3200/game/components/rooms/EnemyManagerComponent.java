@@ -191,6 +191,10 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       droppedItems.add(item);
       ServiceLocator.getEntityService().register(item);
     }
+    // Keep the shared main-branch random pool (including Charms) alongside Team 5 rewards.
+    Entity sharedDrop = ItemFactory.createRandomDrop(position);
+    droppedItems.add(sharedDrop);
+    ServiceLocator.getEntityService().register(sharedDrop);
   }
 
   /** Returns whether the room has any living enemies. */

@@ -149,15 +149,22 @@ class EnemyManagerComponentTest {
     assertEquals(1, cleared[0]);
     assertTrue(enemyManager.isCleared());
     ArgumentCaptor<Entity> drops = ArgumentCaptor.forClass(Entity.class);
-    verify(entityService, times(2)).register(drops.capture());
-    for (Entity drop : drops.getAllValues()) {
-      assertEquals(ItemType.GOLD_COIN, drop.getComponent(ItemComponent.class).getItemType());
-      assertEquals(5, drop.getComponent(ItemComponent.class).getQuantity());
-    }
+    verify(entityService, times(4)).register(drops.capture());
+    assertEquals(
+        2,
+        drops.getAllValues().stream()
+            .filter(
+                drop -> drop.getComponent(ItemComponent.class).getItemType() == ItemType.GOLD_COIN)
+            .count());
+    assertEquals(
+        2,
+        drops.getAllValues().stream()
+            .filter(drop -> drop.getComponent(ItemComponent.class).getCharm() != null)
+            .count());
   }
 
   @Test
-  void shouldRegisterGoldAtCapturedDefeatedEnemyPosition() {
+  void shouldRegisterGoldAndSharedCharmAtCapturedDefeatedEnemyPosition() {
     Vector2 deathPosition = new Vector2(4f, 6f);
     Entity enemy = new Entity();
     enemy.setPosition(deathPosition);
@@ -170,8 +177,11 @@ class EnemyManagerComponentTest {
     entityService.update();
 
     ArgumentCaptor<Entity> dropCaptor = ArgumentCaptor.forClass(Entity.class);
-    verify(entityService, times(1)).register(dropCaptor.capture());
-    Entity drop = dropCaptor.getValue();
+    verify(entityService, times(2)).register(dropCaptor.capture());
+    Entity drop = dropCaptor.getAllValues().get(0);
+    Entity charm = dropCaptor.getAllValues().get(1);
+    assertNotNull(charm.getComponent(ItemComponent.class).getCharm());
+    assertEquals(deathPosition, charm.getPosition());
     ItemComponent item = drop.getComponent(ItemComponent.class);
 
     assertEquals(deathPosition, drop.getPosition());
@@ -181,7 +191,7 @@ class EnemyManagerComponentTest {
     assertEquals(PhysicsLayer.ITEM, drop.getComponent(HitboxComponent.class).getLayer());
 
     entityService.update();
-    verify(entityService, times(1)).register(Mockito.any(Entity.class));
+    verify(entityService, times(2)).register(Mockito.any(Entity.class));
   }
 
   @Test
@@ -198,7 +208,7 @@ class EnemyManagerComponentTest {
     enemy.getEvents().trigger("entityDied");
     entityService.update();
     ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
-    verify(entityService, times(2)).register(captor.capture());
+    verify(entityService, times(3)).register(captor.capture());
     assertEquals(
         ItemType.GOLD_COIN,
         captor.getAllValues().get(0).getComponent(ItemComponent.class).getItemType());
@@ -210,6 +220,7 @@ class EnemyManagerComponentTest {
             .getComponent(ItemComponent.class)
             .getItemType()
             .isConsumable());
+    assertNotNull(captor.getAllValues().get(2).getComponent(ItemComponent.class).getCharm());
     enemyManager.dispose();
     for (Entity drop : captor.getAllValues()) {
       verify(entityService).unregister(drop);
@@ -295,7 +306,7 @@ class EnemyManagerComponentTest {
     enemy.getEvents().trigger("entityDied");
     entityService.update();
     ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
-    verify(entityService, times(2)).register(captor.capture());
+    verify(entityService, times(3)).register(captor.capture());
     for (Entity drop : captor.getAllValues()) {
       player
           .getEvents()
@@ -307,6 +318,7 @@ class EnemyManagerComponentTest {
     }
     player.update();
     assertEquals(5, player.getComponent(InventoryComponent.class).getGold());
+    assertEquals(1, player.getComponent(InventoryComponent.class).getCharms().size());
     assertTrue(hasLabel(stage.getRoot(), "Gold: 5"));
     assertTrue(hasLabel(stage.getRoot(), "[7] Health x1"));
     player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.NUM_7);
