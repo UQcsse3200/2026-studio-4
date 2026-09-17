@@ -1,77 +1,164 @@
 package com.csse3200.game.ui.terminal.commands;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.player.InvisibilityPotionComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.player.PlayerAbilitiesComponent;
+import com.csse3200.game.components.player.abilities.Invisibility;
+import com.csse3200.game.components.player.abilities.LastStand;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.services.GameTime;
-import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class AbilityCommandTest {
-  private final AtomicLong nowMs = new AtomicLong();
+  private GameTime time;
+  private CombatStatsComponent stats;
+  private PlayerAbilitiesComponent abilities;
   private AbilityCommand command;
-  private InvisibilityPotionComponent invisibility;
+  private Entity hostile;
+  private final List<String> used = new ArrayList<>();
 
   @BeforeEach
   void setUp() {
-    GameTime time = mock(GameTime.class);
-    when(time.getTime()).thenAnswer(invocation -> nowMs.get());
-    ServiceLocator.registerTimeSource(time);
-    nowMs.set(0L);
-
-    invisibility = new InvisibilityPotionComponent();
+    time = mock(GameTime.class);
+    when(time.getTime()).thenReturn(1_000L);
+    stats = new CombatStatsComponent(100, 10);
+    abilities = new PlayerAbilitiesComponent(time);
     Entity player =
-        new Entity().addComponent(new CombatStatsComponent(100, 10)).addComponent(invisibility);
+        new Entity()
+            .addComponent(stats)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities);
     player.create();
+    player.getEvents().addListener("abilityUsed", (EventListener1<String>) used::add);
     command = new AbilityCommand(player);
+    hostile = new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
   }
 
   @Test
-  void shouldApplyInvisibilityForQa() {
-    assertTrue(command.action(new ArrayList<>(List.of("invisibility"))));
-    assertTrue(invisibility.isInvisible());
+  void shouldRejectNullEmptyExtraAndUnknownArgumentsWithoutActivatingAbilities() {
+    assertFalse(command.action(null));
+    assertFalse(command.action(args()));
+    assertFalse(command.action(args("invisibility", "laststand")));
+    assertFalse(command.action(args("laststand", "extra")));
+    for (String invalid :
+        List.of("", "unknown", "Invisibility", "LASTSTAND", " invisibility", "laststand ")) {
+      assertFalse(command.action(args(invalid)), invalid);
+    }
+    assertFalse(abilities.isActive(Invisibility.class));
+    assertEquals(0, abilities.getCooldownRemainingMs(Invisibility.class));
+    stats.takeDamage(81, hostile);
+    assertFalse(abilities.isActive(LastStand.class));
+    assertEquals(0, abilities.getCooldownRemainingMs(LastStand.class));
+    assertTrue(used.isEmpty());
   }
 
   @Test
-  void shouldRejectUnknownAbility() {
-    assertFalse(command.action(new ArrayList<>(List.of("dash"))));
-    assertFalse(invisibility.isInvisible());
+  void shouldRejectMissingPlayerOrAbilitiesForBothCommands() {
+    for (AbilityCommand unavailable :
+        List.of(new AbilityCommand(null), new AbilityCommand(new Entity()))) {
+      assertFalse(unavailable.action(args("invisibility")));
+      assertFalse(unavailable.action(args("laststand")));
+    }
   }
 
   @Test
-  void shouldRejectMissingArgs() {
-    assertFalse(command.action(new ArrayList<>()));
-    assertFalse(invisibility.isInvisible());
+  void shouldCastInvisibilityWithoutBypassingOrResettingCooldown() {
+    assertTrue(command.action(args("invisibility")));
+    assertTrue(abilities.isActive(Invisibility.class));
+    assertFalse(command.action(args("invisibility")));
+    when(time.getTime()).thenReturn(6_000L);
+    assertFalse(command.action(args("invisibility")));
+    assertEquals(10_000, abilities.getRemainingMs(Invisibility.class));
+    assertEquals(40_000, abilities.getCooldownRemainingMs(Invisibility.class));
+    when(time.getTime()).thenReturn(16_000L);
+    assertFalse(command.action(args("invisibility")));
+    assertFalse(abilities.isActive(Invisibility.class));
+    when(time.getTime()).thenReturn(45_999L);
+    assertFalse(command.action(args("invisibility")));
+    assertEquals(1, abilities.getCooldownRemainingMs(Invisibility.class));
+    assertEquals(List.of("invisibility"), used);
+    when(time.getTime()).thenReturn(46_000L);
+    assertTrue(command.action(args("invisibility")));
+    assertEquals(15_000, abilities.getRemainingMs(Invisibility.class));
+    assertEquals(45_000, abilities.getCooldownRemainingMs(Invisibility.class));
+    assertEquals(List.of("invisibility", "invisibility"), used);
   }
 
   @Test
-  void shouldFailWhenPlayerHasNoInvisibilityComponent() {
-    AbilityCommand missing = new AbilityCommand(new Entity());
-    assertFalse(missing.action(new ArrayList<>(List.of("invisibility"))));
+  void shouldEnableLastStandIdempotentlyWithoutDirectActivationOrCooldownBypass() {
+    stats.setHealth(19);
+    assertTrue(command.action(args("laststand")));
+    assertTrue(command.action(args("laststand")));
+    assertFalse(abilities.isActive(LastStand.class));
+    assertEquals(0, abilities.getCooldownRemainingMs(LastStand.class));
+    assertTrue(used.isEmpty());
+    stats.takeDamage(1, hostile);
+    assertTrue(abilities.isActive(LastStand.class));
+    when(time.getTime()).thenReturn(6_000L);
+    assertTrue(command.action(args("laststand")));
+    stats.takeDamage(1, hostile);
+    assertEquals(5_000, abilities.getRemainingMs(LastStand.class));
+    assertEquals(55_000, abilities.getCooldownRemainingMs(LastStand.class));
+    when(time.getTime()).thenReturn(60_999L);
+    assertTrue(command.action(args("laststand")));
+    stats.takeDamage(1, hostile);
+    assertFalse(abilities.isActive(LastStand.class));
+    assertEquals(1, abilities.getCooldownRemainingMs(LastStand.class));
+    when(time.getTime()).thenReturn(61_000L);
+    assertTrue(command.action(args("laststand")));
+    assertFalse(abilities.isActive(LastStand.class));
+    stats.takeDamage(1, hostile);
+    assertTrue(abilities.isActive(LastStand.class));
+    assertEquals(60_000, abilities.getCooldownRemainingMs(LastStand.class));
+    assertEquals(List.of("laststand", "laststand"), used);
   }
 
   @Test
-  void qaCommandShouldBypassCooldown() {
-    assertTrue(invisibility.tryUse());
-    nowMs.set(20_000L);
-    invisibility.update();
-    assertFalse(invisibility.tryUse());
+  void shouldRejectDeadPlayerCastAndNotEnablePassiveWhileDead() {
+    stats.setHealth(0);
+    assertFalse(command.action(args("invisibility")));
+    // Unlocking is refused while dead, and the terminal is told so.
+    assertFalse(command.action(args("laststand")));
+    stats.setHealth(19);
+    stats.takeDamage(1, hostile);
+    assertFalse(abilities.isActive(LastStand.class));
+    assertTrue(used.isEmpty());
+  }
 
-    assertTrue(command.action(new ArrayList<>(List.of("invisibility"))));
-    assertTrue(invisibility.isInvisible());
-    assertEquals("Invisibility: 15s", invisibility.getDurationHudText());
+  @Test
+  void shouldNotActivateDisposedOrUncreatedAbilitiesOrAbilitiesWithoutStats() {
+    abilities.dispose();
+    assertFalse(command.action(args("invisibility")));
+    assertFalse(command.action(args("laststand")));
+    stats.takeDamage(81, hostile);
+    assertFalse(abilities.isActive(LastStand.class));
+    assertTrue(used.isEmpty());
+
+    PlayerAbilitiesComponent incomplete = new PlayerAbilitiesComponent(time);
+    Entity target = new Entity().addComponent(incomplete);
+    AbilityCommand incompleteCommand = new AbilityCommand(target);
+    // Without stats the player is never "alive", so neither casting nor unlocking succeeds.
+    assertFalse(incompleteCommand.action(args("invisibility")));
+    assertFalse(incompleteCommand.action(args("laststand")));
+    target.create();
+    assertFalse(incompleteCommand.action(args("invisibility")));
+    assertFalse(incompleteCommand.action(args("laststand")));
+    assertFalse(incomplete.isActive(LastStand.class));
+  }
+
+  private ArrayList<String> args(String... values) {
+    return new ArrayList<>(List.of(values));
   }
 }

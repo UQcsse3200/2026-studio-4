@@ -4,9 +4,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
@@ -16,7 +18,6 @@ import org.slf4j.LoggerFactory;
 public class MainMenuDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(MainMenuDisplay.class);
   private static final float Z_INDEX = 2f;
-  private Table table;
 
   @Override
   public void create() {
@@ -25,12 +26,25 @@ public class MainMenuDisplay extends UIComponent {
   }
 
   private void addActors() {
-    table = new Table();
-    table.setFillParent(true);
-    Image title =
+    Image background =
         new Image(
             ServiceLocator.getResourceService()
-                .getAsset("images/box_boy_title.png", Texture.class));
+                .getAsset("CutScreens/main_menu.jpg", Texture.class));
+
+    background.setFillParent(true);
+    background.setScaling(Scaling.fill); // stretch/crop to fill screen, keeps aspect
+
+    Label title = new Label("Book Boy", skin, "title");
+    title.setFontScale(5f);
+
+    Table rootTable = new Table();
+    rootTable.setFillParent(true); // always matches current stage size, any screen
+
+    rootTable.top().padTop(50f); // title near the top
+    rootTable.add(title).center();
+    rootTable.row();
+
+    Table buttonRow = new Table();
 
     TextButton startBtn = new TextButton("Start", skin);
     TextButton loadBtn = new TextButton("Load", skin);
@@ -75,17 +89,16 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    table.add(title);
-    table.row();
-    table.add(startBtn).padTop(30f);
-    table.row();
-    table.add(loadBtn).padTop(15f);
-    table.row();
-    table.add(settingsBtn).padTop(15f);
-    table.row();
-    table.add(exitBtn).padTop(15f);
+    buttonRow.add(startBtn);
+    buttonRow.add(loadBtn).padLeft(250f);
+    buttonRow.add(settingsBtn).padLeft(250f);
+    buttonRow.add(exitBtn).padLeft(250f);
 
-    stage.addActor(table);
+    rootTable.row().expand().bottom().padBottom(150f);
+    rootTable.add(buttonRow);
+
+    stage.addActor(background);
+    stage.addActor(rootTable);
   }
 
   @Override
@@ -96,11 +109,5 @@ public class MainMenuDisplay extends UIComponent {
   @Override
   public float getZIndex() {
     return Z_INDEX;
-  }
-
-  @Override
-  public void dispose() {
-    table.clear();
-    super.dispose();
   }
 }

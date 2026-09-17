@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.enemy;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -44,10 +45,26 @@ class ChaseEnemyTest {
     ServiceLocator.registerEntityService(entityService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(
-        new String[] {"images/chaseEnemy.atlas", "images.miniEnemy.atlas"});
+    resourceService.loadTextureAtlases(new String[] {"images/crab.atlas", "images/medusa.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
+  }
+
+  @Test
+  void shouldHaveChaseEnemyAnimations() {
+    Entity medusa = NPCFactory.createChaseEnemy(new Entity(), true, "images/medusa.atlas");
+    Entity crab = NPCFactory.createChaseEnemy(new Entity(), true, "images/crab.atlas");
+    AnimationRenderComponent golemAnimator = crab.getComponent(AnimationRenderComponent.class);
+    AnimationRenderComponent beetleAnimator = medusa.getComponent(AnimationRenderComponent.class);
+
+    assertTrue(golemAnimator.hasAnimation("move"));
+    assertTrue(golemAnimator.hasAnimation("chase"));
+    assertTrue(golemAnimator.hasAnimation("dieAnimation"));
+    assertTrue(golemAnimator.hasAnimation("default"));
+    assertTrue(beetleAnimator.hasAnimation("move"));
+    assertTrue(beetleAnimator.hasAnimation("chase"));
+    assertTrue(beetleAnimator.hasAnimation("dieAnimation"));
+    assertTrue(beetleAnimator.hasAnimation("default"));
   }
 
   @Test
@@ -60,7 +77,7 @@ class ChaseEnemyTest {
             .addComponent(new com.csse3200.game.components.CombatStatsComponent(20, 0));
     player.create();
 
-    Entity chaseEnemy = NPCFactory.createChaseEnemy(player, true, "images/chaseEnemy.atlas");
+    Entity chaseEnemy = NPCFactory.createChaseEnemy(player, true, "images/crab.atlas");
     chaseEnemy.create();
 
     Fixture chaseFixture = chaseEnemy.getComponent(HitboxComponent.class).getFixture();
@@ -84,7 +101,7 @@ class ChaseEnemyTest {
             .addComponent(new com.csse3200.game.components.CombatStatsComponent(20, 0));
     player.create();
 
-    Entity chaseEnemy = NPCFactory.createChaseEnemy(player, true, "images/chaseEnemy.atlas");
+    Entity chaseEnemy = NPCFactory.createChaseEnemy(player, true, "images/crab.atlas");
     chaseEnemy.create();
 
     Entity otherEntity =
@@ -109,7 +126,7 @@ class ChaseEnemyTest {
 
   @Test
   void shouldUseConfiguredHealth() {
-    Entity chaseEnemy = NPCFactory.createChaseEnemy(new Entity(), true, "images/chaseEnemy.atlas");
+    Entity chaseEnemy = NPCFactory.createChaseEnemy(new Entity(), true, "images/crab.atlas");
     CombatStatsComponent stats = chaseEnemy.getComponent(CombatStatsComponent.class);
 
     assertEquals(20, stats.getHealth());
@@ -118,7 +135,7 @@ class ChaseEnemyTest {
 
   @Test
   void shouldStartDefaultAnimationImmediately() {
-    Entity chaseChild = NPCFactory.createChaseEnemy(new Entity(), false, "images/chaseEnemy.atlas");
+    Entity chaseChild = NPCFactory.createChaseEnemy(new Entity(), false, "images/crab.atlas");
     AnimationRenderComponent animator = chaseChild.getComponent(AnimationRenderComponent.class);
 
     assertEquals("default", animator.getCurrentAnimation());

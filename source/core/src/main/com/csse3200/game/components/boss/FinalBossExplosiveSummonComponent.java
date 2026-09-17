@@ -3,6 +3,7 @@ package com.csse3200.game.components.boss;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.weapons.ProjectileComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
@@ -78,15 +79,19 @@ public class FinalBossExplosiveSummonComponent extends Component {
       return;
     }
 
-    movement.setTarget(target.getPosition());
-
-    if (!warningActive
-        && entity.getCenterPosition().dst(target.getCenterPosition()) <= triggerDistance) {
-      beginDetonation();
-      return;
-    }
-
     if (!warningActive) {
+      if (StatusEffectsControllerComponent.isConcealed(target)) {
+        movement.setMoving(false);
+        return;
+      }
+      // A summon with its own movement component steers itself; only chase directly without one.
+      if (entity.getComponent(FinalBossSummonMovementComponent.class) == null) {
+        movement.setTarget(target.getPosition());
+        movement.setMoving(true);
+      }
+      if (entity.getCenterPosition().dst(target.getCenterPosition()) <= triggerDistance) {
+        beginDetonation();
+      }
       return;
     }
 
@@ -158,6 +163,10 @@ public class FinalBossExplosiveSummonComponent extends Component {
 
   public float getMovementSpeed() {
     return movementSpeed;
+  }
+
+  public float getTriggerDistance() {
+    return triggerDistance;
   }
 
   public int getExplosionDamage() {

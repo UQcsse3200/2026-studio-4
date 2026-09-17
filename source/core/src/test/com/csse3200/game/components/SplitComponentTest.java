@@ -50,13 +50,13 @@ class SplitComponentTest {
     ServiceLocator.registerEntityService(entityService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/chaseEnemy.atlas"});
+    resourceService.loadTextureAtlases(new String[] {"images/crab.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
 
   private Entity createSplitEnemy() {
-    Entity enemy = NPCFactory.createChaseEnemy(new Entity(), true, "images/chaseEnemy.atlas");
+    Entity enemy = NPCFactory.createChaseEnemy(new Entity(), true, "images/crab.atlas");
     enemy.create();
     return enemy;
   }
