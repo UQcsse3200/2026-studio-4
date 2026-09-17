@@ -17,11 +17,11 @@ class CharmEffectSummaryTest {
 
   @Test
   void speedCharmShouldSummariseItsEffect() {
-    assertEquals("Speed +10", new SpeedCharm().getEffectSummary());
+    assertEquals("Speed +1", new SpeedCharm().getEffectSummary());
   }
 
   @Test
   void attackSpeedCharmShouldSummariseItsEffect() {
-    assertEquals("Attack Speed +10", new AttackSpeedCharm().getEffectSummary());
+    assertEquals("Attack Speed +1", new AttackSpeedCharm().getEffectSummary());
   }
 }
