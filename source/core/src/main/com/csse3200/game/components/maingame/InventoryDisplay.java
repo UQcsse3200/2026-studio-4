@@ -263,19 +263,23 @@ public class InventoryDisplay extends UIComponent {
     Charm currentCharm = uniqueCharms.nextElement();
     int quantity = charmDict.get(currentCharm);
 
-    if (currentCharm.getName().equals("Strength Charm")) {
-      ImageButton strengthCharmIcon = new ImageButton(inventory, "strengthCharm");
-      strengthCharmIcon.addListener(ItemTooltip.forItem(currentCharm, skin));
-      slotStack.add(strengthCharmIcon);
-    } else if (currentCharm.getName().equals("Speed Charm")) {
-      Image speedCharmIcon = new Image(skin, "button-c");
-      speedCharmIcon.addListener(ItemTooltip.forItem(currentCharm, skin));
-      slotStack.add(speedCharmIcon);
-    } else if (currentCharm.getName().equals("Attack Speed Charm")) {
-      Image attackSpeedCharmIcon = new Image(skin, "button-pressed-c");
-      attackSpeedCharmIcon.addListener(ItemTooltip.forItem(currentCharm, skin));
-      slotStack.add(attackSpeedCharmIcon);
-    }
+      switch (currentCharm.getName()) {
+          case "Strength Charm" -> {
+              ImageButton strengthCharmIcon = new ImageButton(inventory, "strengthCharm");
+              strengthCharmIcon.addListener(ItemTooltip.forItem(currentCharm, skin));
+              slotStack.add(strengthCharmIcon);
+          }
+          case "Speed Charm" -> {
+              Image speedCharmIcon = new Image(skin, "button-c");
+              speedCharmIcon.addListener(ItemTooltip.forItem(currentCharm, skin));
+              slotStack.add(speedCharmIcon);
+          }
+          case "Attack Speed Charm" -> {
+              Image attackSpeedCharmIcon = new Image(skin, "button-pressed-c");
+              attackSpeedCharmIcon.addListener(ItemTooltip.forItem(currentCharm, skin));
+              slotStack.add(attackSpeedCharmIcon);
+          }
+      }
     // add other charms when added
 
     if (quantity >= 1) {
