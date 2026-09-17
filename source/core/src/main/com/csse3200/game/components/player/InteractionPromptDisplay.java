@@ -3,11 +3,12 @@ package com.csse3200.game.components.player;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.ui.UIComponent;
 
 /**
- * Screen-space prompt for nearby interactions. Lives on the player so it survives room changes and
- * sits at the bottom centre, away from the health HUD.
+ * Screen-space prompt for nearby interactions. Lives on the player so it survives room changes.
+ * Pin to the bottom of the screen so it does not sit over the play area.
  */
 public class InteractionPromptDisplay extends UIComponent {
   private Table table;
@@ -19,8 +20,8 @@ public class InteractionPromptDisplay extends UIComponent {
     super.create();
     table = new Table();
     table.setFillParent(true);
-    table.bottom().center();
-    table.padBottom(32f);
+    table.align(Align.bottom | Align.center);
+    table.padBottom(80f);
     promptLabel = new Label("", skin, "statDisplay");
     promptLabel.setVisible(false);
     table.add(promptLabel);
