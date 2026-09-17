@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 /** Displays the inventory book and its charms and consumables pages. */
 public class InventoryDisplay extends UIComponent {
+  private static final String INVENTORY_BOX_STYLE = "inventory-box";
   private static final Logger logger = LoggerFactory.getLogger(InventoryDisplay.class);
   private static final float Z_INDEX = 2f;
   private boolean charmsPage = false;
@@ -139,7 +140,7 @@ public class InventoryDisplay extends UIComponent {
     };
     for (int i = 0; i < types.length; i++) {
       ItemType type = types[i];
-      ImageButton use = new ImageButton(inventory, "inventory-box");
+      ImageButton use = new ImageButton(inventory, INVENTORY_BOX_STYLE);
       use.setName("inventory-use-" + type.name());
       useButtons.put(type, use);
       use.add(itemIcon(type)).size(42);
@@ -179,7 +180,7 @@ public class InventoryDisplay extends UIComponent {
             }
           });
       Stack stockSlot = new Stack();
-      ImageButton box = new ImageButton(inventory, "inventory-box");
+      ImageButton box = new ImageButton(inventory, INVENTORY_BOX_STYLE);
       box.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
       box.add(itemIcon(type)).size(40);
       stockSlot.add(box);
@@ -200,7 +201,7 @@ public class InventoryDisplay extends UIComponent {
       if (i % 4 == 0) {
         rightGrid.row();
       }
-      rightGrid.add(new ImageButton(inventory, "inventory-box")).size(64).pad(3);
+      rightGrid.add(new ImageButton(inventory, INVENTORY_BOX_STYLE)).size(64).pad(3);
     }
     left.add(equipped);
     left.row();
@@ -243,25 +244,35 @@ public class InventoryDisplay extends UIComponent {
         player == null ? null : player.getComponent(CombatStatsComponent.class);
     gold.setText("Gold: " + (stock == null ? 0 : stock.getGold()));
     for (Map.Entry<ItemType, Label> entry : counts.entrySet()) {
-      ItemType type = entry.getKey();
-      int count = stock == null ? 0 : stock.getConsumableCount(type);
-      entry.getValue().setText("x" + count);
-      boolean fullHealth =
-          type == ItemType.HEALTH_POTION
-              && stats != null
-              && stats.getHealth() >= stats.getMaxHealth();
-      useButtons
-          .get(type)
-          .setDisabled(
-              count == 0 || effects == null || stats == null || stats.isDead() || fullHealth);
-      long remaining = effects == null ? 0 : effects.getRemainingMs(type);
-      timers
-          .get(type)
-          .setText(
-              remaining > 0
-                  ? String.format(Locale.ROOT, "%.1fs", remaining / 1000f)
-                  : fullHealth ? "Full" : "");
+      refreshConsumable(entry, stock, effects, stats);
     }
+  }
+
+  private void refreshConsumable(
+      Map.Entry<ItemType, Label> entry,
+      InventoryComponent stock,
+      ConsumableEffectComponent effects,
+      CombatStatsComponent stats) {
+    ItemType type = entry.getKey();
+    int count = stock == null ? 0 : stock.getConsumableCount(type);
+    entry.getValue().setText("x" + count);
+    boolean fullHealth =
+        type == ItemType.HEALTH_POTION
+            && stats != null
+            && stats.getHealth() >= stats.getMaxHealth();
+    useButtons
+        .get(type)
+        .setDisabled(
+            count == 0 || effects == null || stats == null || stats.isDead() || fullHealth);
+    long remaining = effects == null ? 0 : effects.getRemainingMs(type);
+    timers.get(type).setText(timerText(remaining, fullHealth));
+  }
+
+  private static String timerText(long remaining, boolean fullHealth) {
+    if (remaining > 0) {
+      return String.format(Locale.ROOT, "%.1fs", remaining / 1000f);
+    }
+    return fullHealth ? "Full" : "";
   }
 
   /**
@@ -309,7 +320,7 @@ public class InventoryDisplay extends UIComponent {
     // Grid Table building
     Table grid = new Table();
     for (int i = 0; i < totalSlots; i++) {
-      ImageButton slotBackground = new ImageButton(inventory, "inventory-box");
+      ImageButton slotBackground = new ImageButton(inventory, INVENTORY_BOX_STYLE);
 
       grid.add(slotBackground).size(slotSize).pad(3);
 
