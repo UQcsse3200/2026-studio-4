@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -16,15 +15,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Target;
 import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.items.Item;
-import com.csse3200.game.items.charms.Charm;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.ItemTooltip;
 import com.csse3200.game.ui.UIComponent;
-
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
@@ -175,7 +169,9 @@ public class InventoryDisplay extends UIComponent {
     return pagesContainer;
   }
 
-  /** draws an item grid from a list of items
+  /**
+   * draws an item grid from a list of items
+   *
    * @param enableDrag set this to true to add drag functionality
    */
   private Table drawItemGrid(
@@ -196,7 +192,6 @@ public class InventoryDisplay extends UIComponent {
         itemButton.addListener(ItemTooltip.forItem(currentItem, skin));
         if (enableDrag) registerDragSource(itemButton);
         slotStack.add(itemButton);
-
       }
 
       grid.add(slotStack).size(slotSize).pad(3);
@@ -255,29 +250,29 @@ public class InventoryDisplay extends UIComponent {
   /** Added dragging behaviour to the ImageButton currently not implemented */
   private void registerDragSource(ImageButton item) {
     dragAndDrop.addSource(
-      new DragAndDrop.Source(item) {
-        @Override
-        public Payload dragStart(InputEvent event, float x, float y, int pointer) {
-          Payload payload = new Payload();
-          table.addActor(getActor());
-          payload.setDragActor(getActor());
-          dragAndDrop.setDragActorPosition(
-            getActor().getWidth() / 2, -getActor().getHeight() / 2);
-          return payload;
-        }
-
-        @Override
-        public void dragStop(
-          InputEvent event, float x, float y, int pointer, Payload payload, Target target) {
-          if (target == null) {
-            ImageButton originalSlot = (ImageButton) getActor().getUserObject();
-            Stack originalStack = (Stack) originalSlot.getParent();
-            getActor().remove();
-            originalStack.addActorAt(1, getActor());
+        new DragAndDrop.Source(item) {
+          @Override
+          public Payload dragStart(InputEvent event, float x, float y, int pointer) {
+            Payload payload = new Payload();
+            table.addActor(getActor());
+            payload.setDragActor(getActor());
+            dragAndDrop.setDragActorPosition(
+                getActor().getWidth() / 2, -getActor().getHeight() / 2);
+            return payload;
           }
-        }
-      });
-  } 
+
+          @Override
+          public void dragStop(
+              InputEvent event, float x, float y, int pointer, Payload payload, Target target) {
+            if (target == null) {
+              ImageButton originalSlot = (ImageButton) getActor().getUserObject();
+              Stack originalStack = (Stack) originalSlot.getParent();
+              getActor().remove();
+              originalStack.addActorAt(1, getActor());
+            }
+          }
+        });
+  }
 
   @Override
   public void draw(SpriteBatch batch) {
