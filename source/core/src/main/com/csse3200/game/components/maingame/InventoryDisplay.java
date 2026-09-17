@@ -176,7 +176,6 @@ public class InventoryDisplay extends UIComponent {
   private Table drawItemGrid(
       int columns, int totalSlots, int slotSize, List<? extends Item> items) {
     Table grid = new Table();
-    items.sort(Comparator.comparing(Item::getName));
 
     for (int i = 0; i < totalSlots; i++) {
 
@@ -188,18 +187,7 @@ public class InventoryDisplay extends UIComponent {
         Item currentItem = items.get(i);
         // create an image with the items texture then extract the Drawable to draw the button
         ImageButton itemButton = new ImageButton(new Image(getTexture(currentItem)).getDrawable());
-        itemButton.addListener(
-            new ClickListener() {
-              @Override
-              public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                logger.info("Mouse enter on item: {}", currentItem.getName());
-              }
-
-              @Override
-              public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                logger.info("Mouse exit on item: {}", currentItem.getName());
-              }
-            });
+        itemButton.addListener(ItemTooltip.forItem(currentItem, skin));
         slotStack.add(itemButton);
       }
 
