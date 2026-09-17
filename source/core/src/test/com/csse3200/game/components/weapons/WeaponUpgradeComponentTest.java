@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -57,10 +58,13 @@ class WeaponUpgradeComponentTest {
 
   @Test
   void shouldRejectWeaponWithoutUpgradeStats() {
-    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+    // Explicit map with only the sword defined, so the knife has no upgrade stats here.
+    WeaponUpgradeComponent upgrades =
+        new WeaponUpgradeComponent(
+            Map.of(SwordWeaponComponent.class, WeaponUpgradeComponent.SWORD_UPGRADE));
 
-    assertFalse(upgrades.setUpgraded(BowWeaponComponent.class, true));
-    assertFalse(upgrades.isUpgraded(BowWeaponComponent.class));
+    assertFalse(upgrades.setUpgraded(KnifeWeaponComponent.class, true));
+    assertFalse(upgrades.isUpgraded(KnifeWeaponComponent.class));
   }
 
   @Test
@@ -111,5 +115,29 @@ class WeaponUpgradeComponentTest {
     assertThrows(IllegalArgumentException.class, () -> new WeaponUpgradeStats(-1f, 1f, 1f));
     assertThrows(IllegalArgumentException.class, () -> new WeaponUpgradeStats(1f, -1f, 1f));
     assertThrows(IllegalArgumentException.class, () -> new WeaponUpgradeStats(1f, 1f, -1f));
+  }
+
+  @Test
+  void shouldApplyBowUpgradeStats() {
+    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+
+    assertTrue(upgrades.setUpgraded(BowWeaponComponent.class, true));
+
+    assertTrue(upgrades.isUpgraded(BowWeaponComponent.class));
+    // Bow follows the same pattern as sword and knife: +20% light damage, and the heavy attack
+    // (three arrows) deals unscaled per-arrow damage but doubles the cooldown afterwards.
+    assertEquals(1.2f, upgrades.getLightDamageMultiplier(BowWeaponComponent.class));
+    assertEquals(1f, upgrades.getHeavyDamageMultiplier(BowWeaponComponent.class));
+    assertEquals(2f, upgrades.getHeavyCooldownMultiplier(BowWeaponComponent.class));
+  }
+
+  @Test
+  void shouldRevertBowUpgrade() {
+    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+    upgrades.setUpgraded(BowWeaponComponent.class, true);
+
+    assertTrue(upgrades.setUpgraded(BowWeaponComponent.class, false));
+
+    assertFalse(upgrades.isUpgraded(BowWeaponComponent.class));
   }
 }

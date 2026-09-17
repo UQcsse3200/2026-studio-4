@@ -3,6 +3,7 @@ package com.csse3200.game.ui.terminal.commands;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.csse3200.game.components.weapons.BowWeaponComponent;
 import com.csse3200.game.components.weapons.KnifeWeaponComponent;
 import com.csse3200.game.components.weapons.SwordWeaponComponent;
 import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
@@ -62,8 +63,13 @@ class UpgradeCommandTest {
   }
 
   @Test
-  void shouldRejectWeaponWithoutAnUpgrade() {
-    assertFalse(command.action(args("bow")));
+  void shouldUpgradeAndRevertBow() {
+    assertTrue(command.action(args("bow")));
+    assertTrue(upgrades.isUpgraded(BowWeaponComponent.class));
+    assertFalse(upgrades.isUpgraded(SwordWeaponComponent.class));
+
+    assertTrue(command.action(args("bow", "off")));
+    assertFalse(upgrades.isUpgraded(BowWeaponComponent.class));
   }
 
   @Test
