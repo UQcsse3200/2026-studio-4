@@ -97,7 +97,7 @@ loadScripts(document, 'script');</script>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="Command.html" title="interface in com.csse3200.game.ui.terminal.commands">Command</a></span></div>
 <div class="block">Terminal command that applies or reverts a weapon upgrade so QA does not need a pickup or shop:
- <code>upgrade sword|knife</code>, or <code>upgrade sword|knife off</code> to revert.
+ <code>upgrade sword|knife|bow</code>, or <code>upgrade sword|knife|bow off</code> to revert.
 
  <p>Applying is idempotent: running <code>upgrade sword</code> again leaves the sword upgraded.</div>
 </section>
@@ -176,8 +176,8 @@ implements <a href="Command.html" title="interface in com.csse3200.game.ui.termi
 <dt>Specified by:</dt>
 <dd><code><a href="Command.html#action(java.util.ArrayList)">action</a></code>&nbsp;in interface&nbsp;<code><a href="Command.html" title="interface in com.csse3200.game.ui.terminal.commands">Command</a></code></dd>
 <dt>Parameters:</dt>
-<dd><code>args</code> - a weapon (<code>sword</code> or <code>knife</code>) to upgrade, optionally followed by <code>
-     off</code> to revert</dd>
+<dd><code>args</code> - a weapon (<code>sword</code>, <code>knife</code>, or <code>bow</code>) to upgrade, optionally
+     followed by <code>off</code> to revert</dd>
 <dt>Returns:</dt>
 <dd>true if the upgrade state was set</dd>
 </dl>
