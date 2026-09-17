@@ -83,21 +83,25 @@ public class ConsumableVisualComponent extends RenderComponent {
             false);
       }
       if (healing) {
-        if (plusTexture == null) {
-          plusTexture = createPlusTexture();
-        }
-        float progress = elapsed / (float) HEAL_DURATION_MS;
-        float alpha = Math.min(1f, (1f - progress) * 2f);
-        batch.setColor(1f, 0.16f, 0.22f, alpha);
-        for (int i = 0; i < 3; i++) {
-          float x = centre.x + (i - 1) * size * 0.38f;
-          float y = centre.y + size * (0.1f + progress * 0.65f + (i == 1 ? 0.2f : 0f));
-          float width = size * 0.19f;
-          batch.draw(plusTexture, x - width / 2f, y, width, width);
-        }
+        drawHealing(batch, centre, size, elapsed);
       }
     } finally {
       batch.setPackedColor(original);
+    }
+  }
+
+  private void drawHealing(SpriteBatch batch, Vector2 centre, float size, long elapsed) {
+    if (plusTexture == null) {
+      plusTexture = createPlusTexture();
+    }
+    float progress = elapsed / (float) HEAL_DURATION_MS;
+    float alpha = Math.min(1f, (1f - progress) * 2f);
+    batch.setColor(1f, 0.16f, 0.22f, alpha);
+    for (int i = 0; i < 3; i++) {
+      float x = centre.x + (i - 1) * size * 0.38f;
+      float y = centre.y + size * (0.1f + progress * 0.65f + (i == 1 ? 0.2f : 0f));
+      float width = size * 0.19f;
+      batch.draw(plusTexture, x - width / 2f, y, width, width);
     }
   }
 
