@@ -12,8 +12,6 @@ import com.csse3200.game.entities.factories.CerberusFactory;
 import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
-import com.csse3200.game.items.EnemyDropPolicy;
-import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -22,13 +20,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.random.RandomGenerator;
 
 /** Spawns configured enemies and tracks when the room has been cleared. */
 public class EnemyManagerComponent extends EntityManagerComponent {
   private final EnemySpawnConfig[] spawnConfigs;
   private final Set<Entity> activeEnemies = new HashSet<>();
   private final List<Entity> droppedItems = new ArrayList<>();
-  private final EnemyDropPolicy dropPolicy;
+  private final RandomGenerator random;
   private boolean disposed;
   private CameraComponent camera;
 
@@ -43,13 +42,13 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs) {
-    this(spawnConfigs, new EnemyDropPolicy());
+    this(spawnConfigs, RandomGenerator.getDefault());
   }
 
-  /** Uses a configured policy; this manager alone owns spawning and disposal. */
-  public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs, EnemyDropPolicy dropPolicy) {
+  /** Uses injectable randomness; this manager alone owns spawning and disposal. */
+  public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs, RandomGenerator random) {
     this.spawnConfigs = spawnConfigs;
-    this.dropPolicy = Objects.requireNonNull(dropPolicy);
+    this.random = Objects.requireNonNull(random);
   }
 
   @Override
@@ -169,8 +168,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     }
     // Capture before deferred disposal or room changes can move/remove the enemy.
     Vector2 position = enemy.getPosition().cpy();
-    List<ItemDropSpec> drops = dropPolicy.selectDrops();
-    ServiceLocator.getEntityService().schedule(() -> spawnItemDrops(position, drops));
+    ServiceLocator.getEntityService().schedule(() -> spawnItemDrop(position));
     if (activeEnemies.isEmpty()) {
       entity.getEvents().trigger("roomCleared");
     }
@@ -182,19 +180,13 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     spawnEntity(child);
   }
 
-  private void spawnItemDrops(Vector2 position, List<ItemDropSpec> drops) {
+  private void spawnItemDrop(Vector2 position) {
     if (disposed) {
       return;
     }
-    for (ItemDropSpec spec : drops) {
-      Entity item = ItemFactory.createDrop(spec, position);
-      droppedItems.add(item);
-      ServiceLocator.getEntityService().register(item);
-    }
-    // Keep the shared main-branch random pool (including Charms) alongside Team 5 rewards.
-    Entity sharedDrop = ItemFactory.createRandomDrop(position);
-    droppedItems.add(sharedDrop);
-    ServiceLocator.getEntityService().register(sharedDrop);
+    Entity item = ItemFactory.createRandomDrop(position, random);
+    droppedItems.add(item);
+    ServiceLocator.getEntityService().register(item);
   }
 
   /** Returns whether the room has any living enemies. */

@@ -34,7 +34,6 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
-import com.csse3200.game.items.EnemyDropPolicy;
 import com.csse3200.game.items.ItemType;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
@@ -44,7 +43,6 @@ import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.Random;
 import java.util.random.RandomGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -89,9 +87,7 @@ class EnemyManagerComponentTest {
     ServiceLocator.registerResourceService(resourceService);
 
     room = createMockRoom();
-    enemyManager =
-        new EnemyManagerComponent(
-            new EnemySpawnConfig[0], new EnemyDropPolicy(5, 0, new Random(1)));
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(5));
     enemyManager.setEntity(room);
     enemyManager.create();
   }
@@ -149,22 +145,16 @@ class EnemyManagerComponentTest {
     assertEquals(1, cleared[0]);
     assertTrue(enemyManager.isCleared());
     ArgumentCaptor<Entity> drops = ArgumentCaptor.forClass(Entity.class);
-    verify(entityService, times(4)).register(drops.capture());
-    assertEquals(
-        2,
+    verify(entityService, times(2)).register(drops.capture());
+    assertTrue(
         drops.getAllValues().stream()
-            .filter(
-                drop -> drop.getComponent(ItemComponent.class).getItemType() == ItemType.GOLD_COIN)
-            .count());
-    assertEquals(
-        2,
-        drops.getAllValues().stream()
-            .filter(drop -> drop.getComponent(ItemComponent.class).getCharm() != null)
-            .count());
+            .allMatch(
+                drop ->
+                    drop.getComponent(ItemComponent.class).getItemType() == ItemType.GOLD_COIN));
   }
 
   @Test
-  void shouldRegisterGoldAndSharedCharmAtCapturedDefeatedEnemyPosition() {
+  void shouldRegisterSharedPoolDropAtCapturedDefeatedEnemyPosition() {
     Vector2 deathPosition = new Vector2(4f, 6f);
     Entity enemy = new Entity();
     enemy.setPosition(deathPosition);
@@ -177,11 +167,8 @@ class EnemyManagerComponentTest {
     entityService.update();
 
     ArgumentCaptor<Entity> dropCaptor = ArgumentCaptor.forClass(Entity.class);
-    verify(entityService, times(2)).register(dropCaptor.capture());
+    verify(entityService, times(1)).register(dropCaptor.capture());
     Entity drop = dropCaptor.getAllValues().get(0);
-    Entity charm = dropCaptor.getAllValues().get(1);
-    assertNotNull(charm.getComponent(ItemComponent.class).getCharm());
-    assertEquals(deathPosition, charm.getPosition());
     ItemComponent item = drop.getComponent(ItemComponent.class);
 
     assertEquals(deathPosition, drop.getPosition());
@@ -191,14 +178,12 @@ class EnemyManagerComponentTest {
     assertEquals(PhysicsLayer.ITEM, drop.getComponent(HitboxComponent.class).getLayer());
 
     entityService.update();
-    verify(entityService, times(2)).register(Mockito.any(Entity.class));
+    verify(entityService, times(1)).register(Mockito.any(Entity.class));
   }
 
   @Test
-  void shouldRegisterGoldAndConsumableOnceDespiteRepeatedDeathAndTracking() {
-    enemyManager =
-        new EnemyManagerComponent(
-            new EnemySpawnConfig[0], new EnemyDropPolicy(7, 1, new Random(2)));
+  void shouldRegisterSingleConsumableDespiteRepeatedDeathAndTracking() {
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(1));
     enemyManager.setEntity(room);
     enemyManager.create();
     Entity enemy = new Entity();
@@ -208,19 +193,9 @@ class EnemyManagerComponentTest {
     enemy.getEvents().trigger("entityDied");
     entityService.update();
     ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
-    verify(entityService, times(3)).register(captor.capture());
+    verify(entityService, times(1)).register(captor.capture());
     assertEquals(
-        ItemType.GOLD_COIN,
-        captor.getAllValues().get(0).getComponent(ItemComponent.class).getItemType());
-    assertEquals(7, captor.getAllValues().get(0).getComponent(ItemComponent.class).getQuantity());
-    assertTrue(
-        captor
-            .getAllValues()
-            .get(1)
-            .getComponent(ItemComponent.class)
-            .getItemType()
-            .isConsumable());
-    assertNotNull(captor.getAllValues().get(2).getComponent(ItemComponent.class).getCharm());
+        ItemType.HEALTH_POTION, captor.getValue().getComponent(ItemComponent.class).getItemType());
     enemyManager.dispose();
     for (Entity drop : captor.getAllValues()) {
       verify(entityService).unregister(drop);
@@ -282,9 +257,8 @@ class EnemyManagerComponentTest {
     ServiceLocator.registerTimeSource(new GameTime());
     ServiceLocator.registerInputService(new InputService());
     RandomGenerator random = mock(RandomGenerator.class);
-    when(random.nextInt(4)).thenReturn(0);
-    enemyManager =
-        new EnemyManagerComponent(new EnemySpawnConfig[0], new EnemyDropPolicy(5, 1, random));
+    when(random.nextInt(6)).thenReturn(5, 0, 1);
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], random);
     enemyManager.setEntity(room);
     enemyManager.create();
     Entity player =
@@ -301,9 +275,11 @@ class EnemyManagerComponentTest {
             .addComponent(new Team5CombatHudDisplay());
     player.create();
     player.getComponent(CombatStatsComponent.class).setHealth(50);
-    Entity enemy = new Entity();
-    enemyManager.track(enemy);
-    enemy.getEvents().trigger("entityDied");
+    for (int i = 0; i < 3; i++) {
+      Entity enemy = new Entity();
+      enemyManager.track(enemy);
+      enemy.getEvents().trigger("entityDied");
+    }
     entityService.update();
     ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
     verify(entityService, times(3)).register(captor.capture());
@@ -355,6 +331,12 @@ class EnemyManagerComponentTest {
     enemyManager.scale(1);
 
     verify(stats, times(3)).scale(anyInt());
+  }
+
+  private static RandomGenerator fixedDrop(int index) {
+    RandomGenerator random = mock(RandomGenerator.class);
+    when(random.nextInt(6)).thenReturn(index);
+    return random;
   }
 
   private Entity combatEnemy() {

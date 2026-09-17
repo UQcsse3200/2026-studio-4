@@ -1,5 +1,7 @@
 # Team 5 Sprint 2 integration verification — 2026-09-16
 
+> Historical verification record: the separate EnemyDropPolicy described below was superseded by `team5-shared-drop-pool-adaptation.md` on 2026-09-17. Counts and coverage below describe the older revision.
+
 ## Scope and revisions
 
 Tested implementation: `a110647` (the following documentation commit changes no code).
