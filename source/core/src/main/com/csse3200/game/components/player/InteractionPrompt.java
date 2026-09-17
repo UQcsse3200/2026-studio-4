@@ -7,8 +7,8 @@ import com.csse3200.game.components.rooms.configs.ExitConfig;
  * key.
  */
 public final class InteractionPrompt {
-  public static final String NEXT_ROOM = "Press E — Next room";
-  public static final String ENTER_DUNGEON = "Press E — Enter dungeon";
+  public static final String NEXT_ROOM = "Press E for Next room";
+  public static final String ENTER_DUNGEON = "Press E to Enter dungeon";
   public static final String CLEAR_REQUIRED = "Defeat all enemies first.";
   public static final String DUNGEON_UNAVAILABLE = "This dungeon is not available yet.";
   public static final String DUNGEON_COMPLETED = "Dungeon completed.";

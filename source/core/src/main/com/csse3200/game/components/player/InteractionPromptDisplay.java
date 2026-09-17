@@ -22,15 +22,15 @@ public class InteractionPromptDisplay extends UIComponent {
     super.create();
     table = new Table();
     table.setFillParent(true);
-    table.align(Align.top | Align.right);
-    table.padTop(20f).padRight(20f);
+    table.align(Align.bottom | Align.center);
+    table.padBottom(20f).padRight(20f);
 
     promptLabel = new Label("", skin, "statDisplay");
     promptLabel.setColor(Color.WHITE);
     promptLabel.setFontScale(1.15f);
 
     bubble = new Table();
-    bubble.setBackground(skin.getDrawable("window-c"));
+    bubble.setBackground(skin.getDrawable("tooltip"));
     bubble.pad(8f, 12f, 8f, 12f);
     bubble.add(promptLabel);
     bubble.setVisible(false);
