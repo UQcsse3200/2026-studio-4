@@ -68,7 +68,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         return beetle;
       case CRAB:
         Entity crab = NPCFactory.createChaseEnemy(target, true, "images/crab.atlas");
-        crab.setScale(1.5f, 1.5f);
+        crab.setScale(1.5f, 1f);
         crab.getComponent(HitboxComponent.class)
             .setAsBox(
                 new Vector2(1f, 0.5f),

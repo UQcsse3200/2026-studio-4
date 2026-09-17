@@ -63,97 +63,97 @@ move
     rotate: false
     xy: 23, 176
     size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
+    orig: 65, 85
+    offset: 0, 0
     index: 7
 move
     rotate: false
     xy: 151, 176
     size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
+    orig: 65, 85
+    offset: 0, 0
     index: 8
 move
     rotate: false
     xy: 279, 176
     size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
+    orig: 65, 85
+    offset: 0, 0
     index: 9
 move
     rotate: false
     xy: 407, 176
     size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
+    orig: 65, 85
+    offset: 0, 0
     index: 10
 move
     rotate: false
     xy: 535, 176
     size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
+    orig: 65, 85
+    offset: 0, 0
     index: 11
 chase
     rotate: false
     xy: 30, 301
     size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
+    orig: 65, 85
+    offset: 0, 0
     index: 0
 chase
     rotate: false
     xy: 159, 303
    size: 65, 85
-       orig: 65, 85
-       offset: 0, 0
+   orig: 65, 85
+   offset: 0, 0
     index: 1
 chase
     rotate: false
     xy: 292, 303
     size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
+    orig: 65, 85
+    offset: 0, 0
     index: 2
 chase
     rotate: false
     xy: 421, 305
     size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
+    orig: 65, 85
+    offset: 0, 0
     index: 3
 chase
     rotate: false
     xy: 547, 305
     size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
+    orig: 65, 85
+    offset: 0, 0
     index: 4
 chase
     rotate: false
     xy: 669, 303
     size: 79, 81
-        orig: 79, 81
-                offset: 0, 0
+    orig: 79, 81
+    offset: 0, 0
     index: 5
 chase
     rotate: false
     xy: 794, 298
     size: 49, 85
-        orig: 49, 85
-        offset: 0, 0
+    orig: 49, 85
+    offset: 0, 0
     index: 6
 dieAnimation
     rotate: false
     xy: 151, 422
     size: 65, 90
-        orig: 65, 90
-        offset: 0, 0
+    orig: 65, 90
+    offset: 0, 0
     index: 1
 dieAnimation
     rotate: false
-    xy: 279, 486
-    size: 83, 26
-        orig: 83, 26
-        offset: 0, 0
+    xy: 279, 422
+    size: 65, 90
+    orig: 65, 90
+    offset: 0, 0
     index: 2
