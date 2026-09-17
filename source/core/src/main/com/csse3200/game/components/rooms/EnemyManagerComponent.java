@@ -18,13 +18,17 @@ import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.random.RandomGenerator;
 
 /** Spawns configured enemies and tracks when the room has been cleared. */
 public class EnemyManagerComponent extends EntityManagerComponent {
   private final EnemySpawnConfig[] spawnConfigs;
   private final Set<Entity> activeEnemies = new HashSet<>();
   private final List<Entity> droppedItems = new ArrayList<>();
+  private final RandomGenerator random;
+  private boolean disposed;
   private CameraComponent camera;
 
   /** Creates an empty manager for tests and rooms with no enemies. */
@@ -38,7 +42,13 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs) {
+    this(spawnConfigs, RandomGenerator.getDefault());
+  }
+
+  /** Uses injectable randomness; this manager alone owns spawning and disposal. */
+  public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs, RandomGenerator random) {
     this.spawnConfigs = spawnConfigs;
+    this.random = Objects.requireNonNull(random);
   }
 
   @Override
@@ -141,7 +151,9 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   /** Tracks an enemy and any children it spawns. Package-private for testing. */
   void track(Entity enemy) {
-    activeEnemies.add(enemy);
+    if (disposed || !activeEnemies.add(enemy)) {
+      return;
+    }
     enemy.getEvents().<Entity>addListener("cerberusProjectileSpawned", this::spawnEntity);
     enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy));
     enemy.getEvents().addListener("finalBossEncounterCompleted", () -> onEnemyDefeated(enemy));
@@ -151,10 +163,15 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   private void onEnemyDefeated(Entity enemy) {
-    if (activeEnemies.remove(enemy) && activeEnemies.isEmpty()) {
+    if (disposed || !activeEnemies.remove(enemy)) {
+      return;
+    }
+    // Capture before deferred disposal or room changes can move/remove the enemy.
+    Vector2 position = enemy.getPosition().cpy();
+    ServiceLocator.getEntityService().schedule(() -> spawnItemDrop(position));
+    if (activeEnemies.isEmpty()) {
       entity.getEvents().trigger("roomCleared");
     }
-    ServiceLocator.getEntityService().schedule(() -> spawnItemDrop(enemy));
   }
 
   private void replaceWithChild(Entity parent, Entity child) {
@@ -163,10 +180,11 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     spawnEntity(child);
   }
 
-  private void spawnItemDrop(Entity enemy) {
-    Entity item = ItemFactory.createRandomDrop(enemy.getPosition());
-
-    // spawning item should not use the spawnEntity as items are stored in their own list.
+  private void spawnItemDrop(Vector2 position) {
+    if (disposed) {
+      return;
+    }
+    Entity item = ItemFactory.createRandomDrop(position, random);
     droppedItems.add(item);
     ServiceLocator.getEntityService().register(item);
   }
@@ -202,9 +220,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   @Override
   public void dispose() {
+    disposed = true;
+    activeEnemies.clear();
     for (Entity item : droppedItems) {
       item.dispose();
     }
+    droppedItems.clear();
     super.dispose();
   }
 }

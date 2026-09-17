@@ -12,22 +12,38 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.items.ItemComponent;
+import com.csse3200.game.components.items.ItemPickupComponent;
+import com.csse3200.game.components.player.*;
+import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.input.InputService;
+import com.csse3200.game.items.ItemType;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.random.RandomGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,14 +79,15 @@ class EnemyManagerComponentTest {
 
     ResourceService resourceService = mock(ResourceService.class);
     Texture texture = mock(Texture.class);
-    when(resourceService.getAsset("images/strength_charm_pixel.png", Texture.class))
-        .thenReturn(texture);
+    for (ItemType itemType : ItemType.values()) {
+      when(resourceService.getAsset(itemType.getTexturePath(), Texture.class)).thenReturn(texture);
+    }
     when(texture.getWidth()).thenReturn(1270);
     when(texture.getHeight()).thenReturn(1239);
     ServiceLocator.registerResourceService(resourceService);
 
     room = createMockRoom();
-    enemyManager = new EnemyManagerComponent();
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(5));
     enemyManager.setEntity(room);
     enemyManager.create();
   }
@@ -81,6 +98,7 @@ class EnemyManagerComponentTest {
     for (int i = 0; i < n; i++) {
       Entity enemy = mock(Entity.class);
       when(enemy.getEvents()).thenReturn(new EventHandler());
+      when(enemy.getPosition()).thenReturn(new Vector2());
       enemyManager.track(enemy);
       enemies[i] = enemy;
     }
@@ -115,28 +133,85 @@ class EnemyManagerComponentTest {
   }
 
   @Test
-  void shouldRegisterStrengthCharmAtDefeatedEnemyPosition() {
+  void bossCompletionAndDeathRewardOnlyOnceInEitherOrder() {
+    int[] cleared = {0};
+    room.getEvents().addListener("roomCleared", () -> cleared[0]++);
+    Entity[] enemies = trackEnemies(2);
+    enemies[0].getEvents().trigger("finalBossEncounterCompleted");
+    enemies[0].getEvents().trigger("entityDied");
+    enemies[1].getEvents().trigger("entityDied");
+    enemies[1].getEvents().trigger("finalBossEncounterCompleted");
+    entityService.update();
+    assertEquals(1, cleared[0]);
+    assertTrue(enemyManager.isCleared());
+    ArgumentCaptor<Entity> drops = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService, times(2)).register(drops.capture());
+    assertTrue(
+        drops.getAllValues().stream()
+            .allMatch(
+                drop ->
+                    drop.getComponent(ItemComponent.class).getItemType() == ItemType.GOLD_COIN));
+  }
+
+  @Test
+  void shouldRegisterSharedPoolDropAtCapturedDefeatedEnemyPosition() {
     Vector2 deathPosition = new Vector2(4f, 6f);
     Entity enemy = new Entity();
     enemy.setPosition(deathPosition);
     enemyManager.track(enemy);
 
     enemy.getEvents().trigger("entityDied");
+    enemy.setPosition(20, 20);
     verify(entityService, never()).register(Mockito.any(Entity.class));
 
     entityService.update();
 
     ArgumentCaptor<Entity> dropCaptor = ArgumentCaptor.forClass(Entity.class);
     verify(entityService, times(1)).register(dropCaptor.capture());
-    Entity drop = dropCaptor.getValue();
+    Entity drop = dropCaptor.getAllValues().get(0);
     ItemComponent item = drop.getComponent(ItemComponent.class);
 
     assertEquals(deathPosition, drop.getPosition());
     assertNotNull(item);
+    assertEquals(ItemType.GOLD_COIN, item.getItemType());
+    assertEquals(5, item.getQuantity());
     assertEquals(PhysicsLayer.ITEM, drop.getComponent(HitboxComponent.class).getLayer());
 
     entityService.update();
     verify(entityService, times(1)).register(Mockito.any(Entity.class));
+  }
+
+  @Test
+  void shouldRegisterSingleConsumableDespiteRepeatedDeathAndTracking() {
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(1));
+    enemyManager.setEntity(room);
+    enemyManager.create();
+    Entity enemy = new Entity();
+    enemyManager.track(enemy);
+    enemyManager.track(enemy);
+    enemy.getEvents().trigger("entityDied");
+    enemy.getEvents().trigger("entityDied");
+    entityService.update();
+    ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService, times(1)).register(captor.capture());
+    assertEquals(
+        ItemType.HEALTH_POTION, captor.getValue().getComponent(ItemComponent.class).getItemType());
+    enemyManager.dispose();
+    for (Entity drop : captor.getAllValues()) {
+      verify(entityService).unregister(drop);
+    }
+  }
+
+  @Test
+  void shouldNotSpawnQueuedRewardsAfterOwningRoomIsDisposed() {
+    Entity enemy = new Entity();
+    enemyManager.track(enemy);
+    enemy.getEvents().trigger("entityDied");
+    enemyManager.dispose();
+    entityService.update();
+    enemy.getEvents().trigger("entityDied");
+    entityService.update();
+    verify(entityService, never()).register(Mockito.any(Entity.class));
   }
 
   @Test
@@ -176,6 +251,76 @@ class EnemyManagerComponentTest {
   }
 
   @Test
+  void enemyRewardFlowsThroughPickupHudKeyboardAndEffect() {
+    Stage stage = new Stage(new ScreenViewport(), mock(SpriteBatch.class));
+    when(ServiceLocator.getRenderService().getStage()).thenReturn(stage);
+    ServiceLocator.registerTimeSource(new GameTime());
+    ServiceLocator.registerInputService(new InputService());
+    RandomGenerator random = mock(RandomGenerator.class);
+    when(random.nextInt(6)).thenReturn(5, 0, 1);
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], random);
+    enemyManager.setEntity(room);
+    enemyManager.create();
+    Entity player =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new InventoryComponent(0))
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(new ConsumableEffectComponent())
+            .addComponent(new ConsumableLoadoutComponent())
+            .addComponent(new KeyboardPlayerInputComponent())
+            .addComponent(new ItemPickupComponent())
+            .addComponent(new Team5CombatHudDisplay());
+    player.create();
+    player.getComponent(CombatStatsComponent.class).setHealth(50);
+    for (int i = 0; i < 3; i++) {
+      Entity enemy = new Entity();
+      enemyManager.track(enemy);
+      enemy.getEvents().trigger("entityDied");
+    }
+    entityService.update();
+    ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
+    verify(entityService, times(3)).register(captor.capture());
+    for (Entity drop : captor.getAllValues()) {
+      player
+          .getEvents()
+          .trigger(
+              "collisionStart",
+              player.getComponent(HitboxComponent.class).getFixture(),
+              drop.getComponent(HitboxComponent.class).getFixture());
+      player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.E);
+    }
+    player.update();
+    assertEquals(5, player.getComponent(InventoryComponent.class).getGold());
+    assertEquals(1, player.getComponent(InventoryComponent.class).getCharms().size());
+    assertTrue(hasLabel(stage.getRoot(), "Gold: 5"));
+    assertTrue(hasLabel(stage.getRoot(), "[7] Health x1"));
+    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.NUM_7);
+    assertEquals(75, player.getComponent(CombatStatsComponent.class).getHealth());
+    assertTrue(hasLabel(stage.getRoot(), "[7] Health x0"));
+    enemyManager.dispose();
+    player.dispose();
+    assertEquals(0, stage.getActors().size);
+    stage.dispose();
+  }
+
+  private static boolean hasLabel(Actor actor, String text) {
+    if (actor instanceof Label label && text.contentEquals(label.getText())) {
+      return true;
+    }
+    if (actor instanceof Group group) {
+      for (Actor child : group.getChildren()) {
+        if (hasLabel(child, text)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  @Test
   void shouldScaleAllEnemies() {
     Entity[] enemies = trackEnemies(3);
     CombatStatsComponent stats = mock(CombatStatsComponent.class);
@@ -188,6 +333,12 @@ class EnemyManagerComponentTest {
     verify(stats, times(3)).scale(anyInt());
   }
 
+  private static RandomGenerator fixedDrop(int index) {
+    RandomGenerator random = mock(RandomGenerator.class);
+    when(random.nextInt(6)).thenReturn(index);
+    return random;
+  }
+
   private Entity combatEnemy() {
     Entity enemy = new Entity().addComponent(new CombatStatsComponent(10, 1));
     entityService.register(enemy);
@@ -197,6 +348,7 @@ class EnemyManagerComponentTest {
   private static Entity enemyMock() {
     Entity enemy = mock(Entity.class);
     when(enemy.getEvents()).thenReturn(new EventHandler());
+    when(enemy.getPosition()).thenReturn(new Vector2());
     when(enemy.getCenterPosition()).thenReturn(new Vector2());
     return enemy;
   }

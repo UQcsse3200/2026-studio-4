@@ -2,24 +2,22 @@ package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.maingame.InventoryDisplay;
+import com.csse3200.game.items.ItemType;
 import com.csse3200.game.items.charms.Charm;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * A component intended to be used by the player to track their inventory.
- *
- * <p>Currently only stores the gold amount but can be extended for more advanced functionality such
- * as storing items. Can also be used as a more generic component for other entities.
- */
+/** A component used by the player to track Gold, charms, and consumable quantities. */
 public class InventoryComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(InventoryComponent.class);
   private int gold;
-  // Stores charms currently held by the player
   private final List<Charm> charms;
+  private final Map<ItemType, Integer> consumables;
 
   private InventoryDisplay display;
 
@@ -28,93 +26,105 @@ public class InventoryComponent extends Component {
   public InventoryComponent(int gold) {
     setGold(gold);
     this.charms = new ArrayList<>();
+    this.consumables = new EnumMap<>(ItemType.class);
   }
 
-  /**
-   * Returns the player's gold.
-   *
-   * @return entity's health
-   */
   public int getGold() {
     return this.gold;
   }
 
-  /**
-   * Returns if the player has a certain amount of gold.
-   *
-   * @param gold required amount of gold
-   * @return player has greater than or equal to the required amount of gold
-   */
   public Boolean hasGold(int gold) {
     return this.gold >= gold;
   }
 
-  /**
-   * Sets the player's gold. Gold has a minimum bound of 0.
-   *
-   * @param gold gold
-   */
+  /** Sets the player's Gold, with a minimum value of zero. */
   public void setGold(int gold) {
     this.gold = Math.max(gold, 0);
     logger.debug("Setting gold to {}", this.gold);
   }
 
-  /**
-   * Adds to the player's gold. The amount added can be negative.
-   *
-   * @param gold gold to add
-   */
+  /** Adds to the player's Gold. The amount may be negative. */
   public void addGold(int gold) {
     setGold(this.gold + gold);
   }
 
-  /**
-   * Returns the charms currently stored in the inventory.
-   *
-   * @return stored charms
-   */
   public List<Charm> getCharms() {
     return this.charms;
   }
 
-  /**
-   * Adds a charm to the player's inventory. Used when the player picks up a charm.
-   *
-   * @param charm charm to add
-   */
+  /** Adds a charm and publishes the existing inventory event when attached to an entity. */
   public void addCharm(Charm charm) {
-    charms.add(charm);
+    this.charms.add(charm);
+    if (entity != null && entity.getEvents() != null) {
+      entity.getEvents().trigger("charmAdded", charm);
+    }
   }
 
-  /**
-   * Removes a charm from the player's inventory. Used when a charm is dropped or removed.
-   *
-   * @param charm charm to remove
-   * @return true if the charm was successfully removed
-   */
+  /** Removes a charm and publishes the existing inventory event when removal succeeds. */
   public boolean removeCharm(Charm charm) {
-    return this.charms.remove(charm);
+    boolean removed = this.charms.remove(charm);
+    if (removed && entity != null && entity.getEvents() != null) {
+      entity.getEvents().trigger("charmRemoved", charm);
+    }
+    return removed;
   }
 
-  /**
-   * Checks whether the player currently has a specific charm. This can be used later when checking
-   * charm effects or buffs.
-   *
-   * @param charm charm to check
-   * @return true if the charm is stored in the inventory
-   */
   public boolean hasCharm(Charm charm) {
     return this.charms.contains(charm);
   }
 
-  /**
-   * Returns the number of charms currently held by the player. Useful for checking and testing the
-   * inventory.
-   *
-   * @return number of stored charms
-   */
   public int getCharmCount() {
     return this.charms.size();
+  }
+
+  /** Returns the stored quantity for a consumable type. */
+  public int getConsumableCount(ItemType type) {
+    if (type == null || !type.isConsumable()) {
+      return 0;
+    }
+    return consumables.getOrDefault(type, 0);
+  }
+
+  public boolean hasConsumable(ItemType type) {
+    return getConsumableCount(type) > 0;
+  }
+
+  /** Adds one consumable. */
+  public void addConsumable(ItemType type) {
+    addConsumable(type, 1);
+  }
+
+  /** Adds a positive quantity of one consumable type and emits one final-count event. */
+  public void addConsumable(ItemType type, int quantity) {
+    if (type == null || !type.isConsumable() || quantity <= 0) {
+      return;
+    }
+    int newCount = getConsumableCount(type) + quantity;
+    consumables.put(type, newCount);
+    if (entity != null && entity.getEvents() != null) {
+      entity.getEvents().trigger("consumableInventoryChanged", type, newCount);
+    }
+  }
+
+  /** Removes one consumable if available. */
+  public boolean removeConsumable(ItemType type) {
+    if (type == null || !type.isConsumable()) {
+      return false;
+    }
+    int currentCount = getConsumableCount(type);
+    if (currentCount <= 0) {
+      return false;
+    }
+    int newCount = currentCount - 1;
+    if (newCount == 0) {
+      consumables.remove(type);
+    } else {
+      consumables.put(type, newCount);
+    }
+    if (entity != null && entity.getEvents() != null) {
+      entity.getEvents().trigger("consumableInventoryChanged", type, newCount);
+    }
+    return true;
   }
 
   public void setDisplay(InventoryDisplay display) {

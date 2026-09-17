@@ -12,19 +12,19 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Lets an entity (the player) pick up charms dropped in the game world.
+ * Lets an entity (the player) pick up items dropped in the game world.
  *
  * <p>Follows the same touch-detection shape as {@link
  * com.csse3200.game.components.TouchAttackComponent}: it listens for {@code collisionStart} /
  * {@code collisionEnd} on its own {@link HitboxComponent} to track which item entities (on the
  * {@link PhysicsLayer#ITEM} layer) are currently in range. Nothing happens on contact alone &mdash;
- * the charm is only picked up once an {@code "itemPickup"} event fires while at least one item is
- * in range. The dedicated event keeps item pickup independent from the Room feature's {@code
+ * an item is only picked up once an {@code "itemPickup"} event fires while at least one item is in
+ * range. The dedicated event keeps item pickup independent from the Room feature's {@code
  * "interact"} event while allowing both actions to share the E key binding.
  *
  * <p>Item entities are expected to carry an {@link ItemComponent} (see {@link
  * com.csse3200.game.entities.factories.ItemFactory}), which is where this component reads the
- * {@link com.csse3200.game.items.charms.Charm} from.
+ * shared {@link Item} from.
  *
  * <p>Requires {@link HitboxComponent} and {@link
  * com.csse3200.game.components.player.InventoryComponent} on this entity.
