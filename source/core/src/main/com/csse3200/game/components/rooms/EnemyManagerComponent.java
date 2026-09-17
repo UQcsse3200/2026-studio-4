@@ -68,7 +68,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         return beetle;
       case CRAB:
         Entity crab = NPCFactory.createChaseEnemy(target, true, "images/crab.atlas");
-        crab.setScale(1.5f, 1.5f);
+        crab.setScale(1.5f, 1f);
         crab.getComponent(HitboxComponent.class)
             .setAsBox(
                 new Vector2(1f, 0.5f),
@@ -89,7 +89,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       // Greek
       case GOLEM:
         Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
-        golem.setScale(1.5f, 1.5f);
+        golem.setScale(0.9F, 0.7F);
         golem
             .getComponent(HitboxComponent.class)
             .setAsBox(
@@ -99,7 +99,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         return golem;
       case MEDUSA:
         Entity medusa = NPCFactory.createChaseEnemy(target, true, "images/medusa.atlas");
-        medusa.setScale(1.5f, 1.5f);
+        medusa.setScale(1f, 1f);
         medusa.getComponent(HitboxComponent.class).setAsBox(new Vector2(1, 1));
         return medusa;
       case HARPY:
@@ -107,10 +107,11 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/harpy.atlas");
       case CYCLOPS:
         Entity cyclops = NPCFactory.createGiantEnemy(target, "images/cyclops.atlas");
+        cyclops.setScale(1.5f, 1.5f);
         cyclops
             .getComponent(HitboxComponent.class)
             .setAsBox(
-                new Vector2(1f, 1.5f),
+                new Vector2(1f, 1f),
                 new Vector2(cyclops.getCenterPosition().x, cyclops.getCenterPosition().y / 2));
         PhysicsUtils.setScaledCollider(cyclops, 0.3f, 0.3f);
         return cyclops;

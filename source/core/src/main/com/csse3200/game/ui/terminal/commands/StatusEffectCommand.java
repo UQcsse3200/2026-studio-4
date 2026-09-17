@@ -8,10 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Terminal command that equips one of the player's weapons: {@code weapon knife|sword|bow}.
+ * Terminal command that applies one of the player's status effects.
  *
- * <p>The player carries all weapon components at once; equipping enables the chosen one and
- * disables the rest, since only enabled weapons respond to attack input.
+ * <p>
  */
 public class StatusEffectCommand implements Command {
   private static final Logger logger = LoggerFactory.getLogger(StatusEffectCommand.class);
@@ -34,7 +33,7 @@ public class StatusEffectCommand implements Command {
   }
 
   /**
-   * Equips the named weapon.
+   * Adds the status effect.
    *
    * @param args single argument: {@code burn}, {@code regeneration}, {@code vulnerable} etc.
    * @return true if a status effect was added.
