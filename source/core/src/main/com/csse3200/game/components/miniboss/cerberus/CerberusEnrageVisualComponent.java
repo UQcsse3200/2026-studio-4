@@ -1,10 +1,10 @@
 package com.csse3200.game.components.miniboss.cerberus;
 
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.rendering.RadialTextureFactory;
 import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -13,6 +13,7 @@ public class CerberusEnrageVisualComponent extends RenderComponent {
   private static final int TEXTURE_SIZE = 64;
   private static final float SIZE_MULTIPLIER = 1.6f;
   private static final float PULSE_PERIOD = 1.2f;
+  private static final float CENTRE_ALPHA = 0.7f;
 
   private final CerberusPhaseComponent phase;
 
@@ -96,33 +97,10 @@ public class CerberusEnrageVisualComponent extends RenderComponent {
     }
   }
 
+  /** Solid at the head and fading to nothing at the edge, so the aura reads as a glow. */
   private void createAuraTexture() {
-    Pixmap pixmap = new Pixmap(TEXTURE_SIZE, TEXTURE_SIZE, Pixmap.Format.RGBA8888);
-
-    try {
-      pixmap.setBlending(Pixmap.Blending.None);
-
-      for (int y = 0; y < TEXTURE_SIZE; y++) {
-        for (int x = 0; x < TEXTURE_SIZE; x++) {
-          float dx = (x + 0.5f - TEXTURE_SIZE / 2f) / (TEXTURE_SIZE / 2f);
-          float dy = (y + 0.5f - TEXTURE_SIZE / 2f) / (TEXTURE_SIZE / 2f);
-          float distance = (float) Math.sqrt(dx * dx + dy * dy);
-
-          if (distance >= 1f) {
-            continue;
-          }
-
-          float alpha = 0.7f * (1f - distance);
-          pixmap.setColor(1f, 1f, 1f, alpha);
-          pixmap.drawPixel(x, y);
-        }
-      }
-
-      auraTexture = new Texture(pixmap);
-      auraTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-    } finally {
-      pixmap.dispose();
-    }
+    auraTexture =
+        RadialTextureFactory.create(TEXTURE_SIZE, distance -> CENTRE_ALPHA * (1f - distance));
   }
 
   @Override

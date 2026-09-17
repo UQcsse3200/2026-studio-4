@@ -54,6 +54,30 @@ public class StatusEffectsControllerComponent extends Component {
     return effects == null ? null : effects.getTint();
   }
 
+  /**
+   * Returns whether the entity currently cannot move or act under its own steam. An entity without
+   * a controller is simply never immobilised.
+   *
+   * <p>This is the one question movement and enemy AI ask. It names no effect, so anything that
+   * reports {@link StatusEffect#immobilisesOwner()} stops whoever is wearing it.
+   *
+   * @param entity the entity about to move or decide; null is treated as free to act
+   */
+  public static boolean isImmobilised(Entity entity) {
+    StatusEffectsControllerComponent effects = findOn(entity);
+    return effects != null && effects.isImmobilised();
+  }
+
+  /**
+   * Returns the combined glow of the entity's active effects, or null when nothing glows.
+   *
+   * @see StatusEffect#getGlow()
+   */
+  public static Color getGlow(Entity entity) {
+    StatusEffectsControllerComponent effects = findOn(entity);
+    return effects == null ? null : effects.getGlow();
+  }
+
   private static StatusEffectsControllerComponent findOn(Entity entity) {
     return entity == null ? null : entity.getComponent(StatusEffectsControllerComponent.class);
   }
@@ -62,6 +86,16 @@ public class StatusEffectsControllerComponent extends Component {
   public boolean isConcealed() {
     for (StatusEffect effect : statusEffects) {
       if (!effect.isExpired() && effect.concealsOwner()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** Returns whether any running effect stops this entity moving and acting. */
+  public boolean isImmobilised() {
+    for (StatusEffect effect : statusEffects) {
+      if (!effect.isExpired() && effect.immobilisesOwner()) {
         return true;
       }
     }
@@ -97,6 +131,27 @@ public class StatusEffectsControllerComponent extends Component {
         combined = new Color(tint);
       } else {
         combined.mul(tint);
+      }
+    }
+    return combined;
+  }
+
+  /**
+   * Returns the combined glow of running effects, or null when none glows. Glows add rather than
+   * multiply, so two glowing effects at once are brighter than either alone rather than dimmer.
+   */
+  public Color getGlow() {
+    Color combined = null;
+    for (StatusEffect effect : statusEffects) {
+      Color glow = effect.isExpired() ? null : effect.getGlow();
+      if (glow == null) {
+        continue;
+      }
+      if (combined == null) {
+        combined = new Color(glow);
+      } else {
+        combined.add(glow);
+        combined.clamp();
       }
     }
     return combined;
