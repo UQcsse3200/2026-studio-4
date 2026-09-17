@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 public class InventoryActions extends Component {
   private static final Logger logger = LoggerFactory.getLogger(InventoryActions.class);
-  private InventoryDisplay inventoryDisplay;
+  private final InventoryDisplay inventoryDisplay;
 
   public InventoryActions(InventoryDisplay inventoryDisplay) {
     this.inventoryDisplay = inventoryDisplay;
@@ -15,11 +15,21 @@ public class InventoryActions extends Component {
   @Override
   public void create() {
     entity.getEvents().addListener("nextPage", this::nextPage);
+    entity.getEvents().addListener("moveActiveToInactiveItem", this::moveActiveToInactiveItem);
+    entity.getEvents().addListener("moveInactiveToActiveItem", this::moveInactiveToActiveItem);
   }
 
   /** Changes page from the current inventory page to the non-displayed page */
   private void nextPage() {
     logger.info("Swap inventory page");
     inventoryDisplay.changePage();
+  }
+
+  private void moveActiveToInactiveItem(int fromIndex, int toIndex) {
+    logger.info("Move an active item to an inactive item");
+  }
+
+  private void moveInactiveToActiveItem(int fromIndex, int toIndex) {
+    logger.info("Move an inactive item to an active item");
   }
 }

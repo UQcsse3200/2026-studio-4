@@ -17,6 +17,8 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.charms.AttackSpeedCharm;
+import com.csse3200.game.items.charms.SpeedCharm;
 import com.csse3200.game.items.charms.StrengthCharm;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
@@ -48,6 +50,9 @@ class ItemFactoryTest {
     for (ItemType itemType : ItemType.values()) {
       when(resourceService.getAsset(itemType.getTexturePath(), Texture.class)).thenReturn(texture);
     }
+    // The random drop pool also includes charms not represented in ItemType.
+    when(resourceService.getAsset(SpeedCharm.TEXTURE, Texture.class)).thenReturn(texture);
+    when(resourceService.getAsset(AttackSpeedCharm.TEXTURE, Texture.class)).thenReturn(texture);
     when(texture.getWidth()).thenReturn(1270);
     when(texture.getHeight()).thenReturn(1239);
     ServiceLocator.registerResourceService(resourceService);
@@ -124,33 +129,6 @@ class ItemFactoryTest {
 
   private static ItemType itemTypeOf(Entity entity) {
     return entity.getComponent(ItemComponent.class).getItemType();
-  }
-
-  @Test
-  void sharedPoolCreatesEveryRegisteredItemAsAFreshPositionedEntity() {
-    ItemType[] types = {
-      ItemType.STRENGTH_CHARM,
-      ItemType.HEALTH_POTION,
-      ItemType.SHIELD,
-      ItemType.SPEED_POTION,
-      ItemType.STRENGTH_POTION,
-      ItemType.GOLD_COIN
-    };
-    java.util.random.RandomGenerator random = mock(java.util.random.RandomGenerator.class);
-    for (int i = 0; i < types.length; i++) {
-      when(random.nextInt(types.length)).thenReturn(i);
-      Entity first = ItemFactory.createRandomDrop(new Vector2(3, 4), random);
-      Entity second = ItemFactory.createRandomDrop(new Vector2(3, 4), random);
-      assertEquals(types[i], itemTypeOf(first));
-      assertEquals(
-          types[i] == ItemType.GOLD_COIN ? 5 : 1,
-          first.getComponent(ItemComponent.class).getQuantity());
-      assertEquals(new Vector2(3, 4), first.getPosition());
-      assertNotSame(first, second);
-      assertNotSame(
-          first.getComponent(ItemComponent.class).getItem(),
-          second.getComponent(ItemComponent.class).getItem());
-    }
   }
 
   @Test

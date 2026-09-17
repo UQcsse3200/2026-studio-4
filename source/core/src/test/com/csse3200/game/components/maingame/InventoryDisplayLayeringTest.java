@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -28,7 +29,7 @@ class InventoryDisplayLayeringTest {
     ServiceLocator.registerRenderService(renderer);
     ServiceLocator.registerEntityService(new EntityService());
     // The inventory no longer needs a player or weapon textures.
-    InventoryDisplay display = new InventoryDisplay();
+    InventoryDisplay display = new InventoryDisplay(mock(InventoryComponent.class));
     Entity ui = new Entity().addComponent(display);
     ServiceLocator.getEntityService().register(ui);
     try {
@@ -46,6 +47,7 @@ class InventoryDisplayLayeringTest {
         assertTrue(enemyOverlay.getZIndex() > book.getZIndex());
         // Opening the inventory must both show the book and move it in front of the overlay.
         display.setVisible(true);
+        book = stage.getRoot().findActor("inventory-book");
         assertTrue(book.isVisible());
         assertTrue(book.getZIndex() > enemyOverlay.getZIndex());
 

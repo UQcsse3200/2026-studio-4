@@ -31,6 +31,18 @@ public class FinalBossPhaseControllerComponent extends Component {
     transitionRemaining = Math.max(0f, transitionRemaining - deltaTime);
 
     if (transitionRemaining <= 0f) {
+      FinalBossDamageControllerComponent protection =
+          entity.getComponent(FinalBossDamageControllerComponent.class);
+      if (protection != null) {
+        protection.disableStageOneProtection();
+      }
+
+      if (currentPhase == FinalBossPhase.STAGE_TWO) {
+        FinalBossMovementComponent movement = entity.getComponent(FinalBossMovementComponent.class);
+        if (movement != null) {
+          movement.enableChargeAttacks();
+        }
+      }
       finishTransition();
     }
   }

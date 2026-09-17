@@ -1,6 +1,7 @@
 package com.csse3200.game.entities;
 
 import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,20 +82,20 @@ public class EntityService {
 
   /** Update all registered entities. Should only be called from the main game loop. */
   public void update() {
-    if (!paused) {
-      updating = true;
-      for (Entity entity : entities) {
+    updating = true;
+    for (Entity entity : entities) {
+      if (!paused || entity.getComponent(UIComponent.class) != null) {
         entity.earlyUpdate();
         entity.update();
       }
-      updating = false;
-
-      for (Runnable action : afterUpdateActions) {
-        action.run();
-      }
-      afterUpdateActions.clear();
-      drainQueues();
     }
+    updating = false;
+
+    for (Runnable action : afterUpdateActions) {
+      action.run();
+    }
+    afterUpdateActions.clear();
+    drainQueues();
   }
 
   public void toggleUpdate() {

@@ -8,6 +8,8 @@ import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.ItemType;
 import com.csse3200.game.items.TypedItem;
+import com.csse3200.game.items.charms.AttackSpeedCharm;
+import com.csse3200.game.items.charms.SpeedCharm;
 import com.csse3200.game.items.charms.StrengthCharm;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -31,6 +33,8 @@ public final class ItemFactory {
    */
   enum DropTypes {
     STRENGTH_CHARM(StrengthCharm::new),
+    SPEED_CHARM(SpeedCharm::new),
+    ATKSPD_CHARM(AttackSpeedCharm::new),
     HEALTH_POTION(() -> new TypedItem(ItemDropSpec.single(ItemType.HEALTH_POTION))),
     SHIELD(() -> new TypedItem(ItemDropSpec.single(ItemType.SHIELD))),
     SPEED_POTION(() -> new TypedItem(ItemDropSpec.single(ItemType.SPEED_POTION))),
@@ -81,6 +85,7 @@ public final class ItemFactory {
    * @return a non-null, positioned, unregistered item entity for the room to spawn
    */
   public static Entity createDrop(Vector2 position) {
+    Objects.requireNonNull(position, NULL_POSITION_MESSAGE);
     return createDrop(ItemType.STRENGTH_CHARM, position);
   }
 

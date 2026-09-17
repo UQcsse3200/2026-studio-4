@@ -16,5 +16,11 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		up: UI_TravelBook_IconArrow01a
 		down: UI_TravelBook_IconArrow01a
 	}
+	strengthCharm: {
+		imageUp: strength_charm_pixel
+		imageDown: strength_charm_pixel
+		up: strength_charm_pixel
+		down: strength_charm_pixel
+	}
 }
 }

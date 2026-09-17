@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -32,7 +33,7 @@ class InventoryDisplayTest {
     renderer.setStage(stage);
     ServiceLocator.registerRenderService(renderer);
     ServiceLocator.registerEntityService(new EntityService());
-    display = new InventoryDisplay();
+    display = new InventoryDisplay(mock(InventoryComponent.class));
     ui = new Entity().addComponent(display);
     ServiceLocator.getEntityService().register(ui);
   }
