@@ -1,10 +1,14 @@
 package com.csse3200.game.components.player;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
@@ -15,13 +19,15 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * Checks the stats the HUD is handed while Last Stand runs. The display listens for the same three
- * events, so what is recorded here is what it draws.
+ * Checks the stats the HUD is handed while Last Stand runs, plus the health/shield bars and stat
+ * labels that back the on-screen display. The display listens for the same events, so what is
+ * recorded/read back here is what it draws.
  */
 @ExtendWith(GameExtension.class)
 class PlayerStatsDisplayTest {
@@ -30,6 +36,7 @@ class PlayerStatsDisplayTest {
   private GameTime time;
   private CombatStatsComponent combat;
   private PlayerAbilitiesComponent abilities;
+  private PlayerStatsDisplay display;
   private Entity player;
 
   private float shownMovementSpeed;
@@ -48,13 +55,14 @@ class PlayerStatsDisplayTest {
 
     combat = new CombatStatsComponent(100, 10, 4f, 2f);
     abilities = new PlayerAbilitiesComponent(time);
+    display = new PlayerStatsDisplay();
     player =
         new Entity()
             .addComponent(combat)
             .addComponent(new StatusEffectsControllerComponent())
             .addComponent(abilities)
             .addComponent(new InventoryComponent(0))
-            .addComponent(new PlayerStatsDisplay());
+            .addComponent(display);
 
     shownMovementSpeed = combat.getEffectiveMovementSpeed();
     shownAttackSpeed = combat.getEffectiveAttackSpeed();
@@ -65,6 +73,8 @@ class PlayerStatsDisplayTest {
 
     player.create();
   }
+
+  // ---------- Original Last Stand coverage ----------
 
   @Test
   void shouldShowAmplifiedStatsWhileLastStandIsActiveAndRevertOnExpiry() {
@@ -98,5 +108,95 @@ class PlayerStatsDisplayTest {
     assertEquals(movementSpeed, shownMovementSpeed);
     assertEquals(attackSpeed, shownAttackSpeed);
     assertEquals(strength, shownStrength);
+  }
+
+  // ---------- New: health bar, shield bar, and stat label coverage ----------
+
+  @Test
+  void shouldInitialiseHealthBarFromCombatStats() {
+    ProgressBar healthBar = getField(display, "healthBar", ProgressBar.class);
+    assertNotNull(healthBar);
+    assertEquals(100f, healthBar.getValue());
+    assertEquals(100f, healthBar.getMaxValue());
+
+    Label healthValueLabel = getField(display, "healthValueLabel", Label.class);
+    assertEquals("100/100", healthValueLabel.getText().toString());
+  }
+
+  @Test
+  void shouldUpdateHealthBarAndLabelOnHealthEvent() {
+    player.getEvents().trigger("updateHealth", 40);
+
+    ProgressBar healthBar = getField(display, "healthBar", ProgressBar.class);
+    assertEquals(40f, healthBar.getValue());
+
+    Label healthValueLabel = getField(display, "healthValueLabel", Label.class);
+    assertEquals("40 / 100", healthValueLabel.getText().toString());
+  }
+
+  @Test
+  void shouldUpdateHealthBarRangeAndLabelOnMaxHealthEvent() {
+    player.getEvents().trigger("updateHealth", 30);
+    player.getEvents().trigger("updateMaxHealth", 150);
+
+    ProgressBar healthBar = getField(display, "healthBar", ProgressBar.class);
+    assertEquals(150f, healthBar.getMaxValue());
+
+    Label healthValueLabel = getField(display, "healthValueLabel", Label.class);
+    assertEquals("30 / 150", healthValueLabel.getText().toString());
+  }
+
+  @Test
+  void shouldUpdateStrengthLabelOnBaseAttackEvent() {
+    player.getEvents().trigger("updateBaseAttack", 18);
+
+    Label strengthLabel = getField(display, "strengthLabel", Label.class);
+    assertEquals("18", strengthLabel.getText().toString());
+  }
+
+  @Test
+  void shouldUpdateMovementSpeedLabelOnEvent() {
+    player.getEvents().trigger("updateMovementSpeed", 6f);
+
+    Label movementSpeedLabel = getField(display, "movementSpeedLabel", Label.class);
+    assertEquals("6.0x", movementSpeedLabel.getText().toString());
+  }
+
+  @Test
+  void shouldUpdateAttackSpeedLabelOnEvent() {
+    player.getEvents().trigger("updateAttackSpeed", 3.5f);
+
+    Label attackSpeedLabel = getField(display, "attackSpeedLabel", Label.class);
+    assertEquals("3.5", attackSpeedLabel.getText().toString());
+  }
+
+  @Test
+  void shouldRemoveBothTablesOnDispose() {
+    assertDoesNotThrow(display::dispose);
+  }
+
+  @Test
+  void shouldNotThrowWhenStageIsUnavailable() {
+    RenderService headlessRenderService = mock(RenderService.class);
+    when(headlessRenderService.getStage()).thenReturn(null);
+    ServiceLocator.registerRenderService(headlessRenderService);
+
+    Entity headlessPlayer =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 10, 4f, 2f))
+            .addComponent(new PlayerStatsDisplay());
+
+    assertDoesNotThrow(headlessPlayer::create);
+  }
+
+  /** Reads a private field via reflection since the display exposes no public getters. */
+  private <T> T getField(PlayerStatsDisplay display, String fieldName, Class<T> type) {
+    try {
+      Field field = PlayerStatsDisplay.class.getDeclaredField(fieldName);
+      field.setAccessible(true);
+      return type.cast(field.get(display));
+    } catch (ReflectiveOperationException e) {
+      throw new IllegalStateException("Could not read field '" + fieldName + "' via reflection", e);
+    }
   }
 }

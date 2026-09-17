@@ -22,12 +22,16 @@
       "y": 3
     }
   },
-  "cerberus":{
-  "health": 250,
-  "baseAttack": 20
+  "cerberus" : {
+    "health": 250,
+    "baseAttack": 20
+  },
+  "snakeMiniBoss" : {
+    "health": 150,
+    "baseAttack": 10,
+    "movement": {
+      "x": 2,
+      "y": 2
+    }
+  }
 }
-}
-
-
-
-

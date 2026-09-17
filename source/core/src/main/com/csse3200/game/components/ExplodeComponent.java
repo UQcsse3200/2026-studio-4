@@ -108,13 +108,15 @@ public class ExplodeComponent extends Component {
   }
 
   private void damagePlayer() {
-    CombatStatsComponent playerStats = player.getComponent(CombatStatsComponent.class);
+    if (!this.getEntity().getComponent(CombatStatsComponent.class).isDead()) {
+      CombatStatsComponent playerStats = player.getComponent(CombatStatsComponent.class);
 
-    if (playerStats != null) {
-      playerStats.takeDamage(entity.getComponent(CombatStatsComponent.class).getBaseAttack());
+      if (playerStats != null) {
+        playerStats.takeDamage(entity.getComponent(CombatStatsComponent.class).getBaseAttack());
+      }
+
+      entity.getComponent(CombatStatsComponent.class).setHealth(0);
     }
-
-    entity.getComponent(CombatStatsComponent.class).setHealth(0);
   }
 
   @Override
