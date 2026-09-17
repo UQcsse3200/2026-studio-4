@@ -1,9 +1,10 @@
-package com.csse3200.game.rooms;
+package com.csse3200.game.components.rooms;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -11,9 +12,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.rooms.EnemyManagerComponent;
-import com.csse3200.game.components.rooms.FollowingCameraComponent;
-import com.csse3200.game.components.rooms.RoomManager;
+import com.csse3200.game.components.rooms.configs.PositionConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
@@ -22,6 +21,7 @@ import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,10 +32,12 @@ class RoomManagerTest {
   @Test
   void shouldFollowPairedDoorsAndRememberClearedRooms() {
     WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
-    world.startRoomId = "dungeonOneEntrance";
+
+    // UPDATED: Changed from dungeonOne to dungeonTwo
+    world.startRoomId = "dungeonTwoEntrance";
     world.startEntryPointId = "fromSelection";
-    RoomConfig entrance = world.getRoom("dungeonOneEntrance");
-    RoomConfig side = world.getRoom("dungeonOneSide");
+    RoomConfig entrance = world.getRoom("dungeonTwoEntrance");
+    RoomConfig side = world.getRoom("dungeonTwoSide");
 
     // Updated GridPoints to match the new sideDoor (32, 29) and returnDoor (10, 44) coordinates
     Entity firstEntrance = room(true, new GridPoint2(32, 29));
@@ -95,5 +97,27 @@ class RoomManagerTest {
     when(room.getEvents()).thenReturn(events);
     when(room.getComponent(FollowingCameraComponent.class)).thenReturn(followingCameraComponent);
     return room;
+  }
+
+  @Test
+  void shouldScaleRoomOnStart() {
+    Entity player = mock(Entity.class);
+    ServiceLocator.registerEntityService(new EntityService());
+    ServiceLocator.registerResourceService(mock(ResourceService.class));
+
+    Entity room = mock(Entity.class);
+    TerrainComponent terrain = mock(TerrainComponent.class);
+    EventHandler events = mock(EventHandler.class);
+    EnemyManagerComponent enemies = mock(EnemyManagerComponent.class);
+    when(room.getComponent(TerrainComponent.class)).thenReturn(terrain);
+    when(room.getEvents()).thenReturn(events);
+    when(room.getComponent(EnemyManagerComponent.class)).thenReturn(enemies);
+
+    RoomManager roomManager = new RoomManager(player);
+    RoomManager spyRoomManager = spy(roomManager);
+    spyRoomManager.setCurrentRoom(room);
+    spyRoomManager.start(new PositionConfig());
+
+    verify(enemies).scale(0);
   }
 }

@@ -24,13 +24,7 @@
           "y": 14
         }
       ],
-      "enemySpawns": [
-        {
-          "type": "BOW",
-          "x": 10,
-          "y": 14
-        }
-      ],
+      "enemySpawns": [],
       "obstacles": {
         "spawns": [
           "............................",

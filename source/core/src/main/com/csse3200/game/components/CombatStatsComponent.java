@@ -24,6 +24,8 @@ public class CombatStatsComponent extends Component {
   private boolean invulnerable;
   private float incomingDamageMultiplier = 1f;
   private int minimumHealth;
+  private float attackScaleFactor = 0.5f;
+  private float healthScaleFactor = 0.5f;
 
   public CombatStatsComponent(int health, int baseAttack) {
     this.maxHealth = health;
@@ -37,6 +39,29 @@ public class CombatStatsComponent extends Component {
     setBaseAttack(baseAttack);
     setMovementSpeed(movementSpeed);
     setAttackSpeed(attackSpeed);
+  }
+
+  /**
+   * Calls scale on maxHealth and baseAttack with their respective scale factors
+   *
+   * @param amount The amount of times scaling is applied
+   */
+  public void scale(int amount) {
+    maxHealth += scaleStat(maxHealth, healthScaleFactor, amount);
+    setHealth(maxHealth);
+    baseAttack += scaleStat(baseAttack, attackScaleFactor, amount);
+  }
+
+  /**
+   * Returns the amount to increase a stat by when scaling it.
+   *
+   * @param stat The base stat to scale off
+   * @param factor The factor to scale by
+   * @param amount The amount of times scaling is applied
+   * @return Amount to increate stat by
+   */
+  private int scaleStat(int stat, float factor, int amount) {
+    return (int) (stat * factor * amount);
   }
 
   /**
@@ -436,5 +461,13 @@ public class CombatStatsComponent extends Component {
     if (entity != null) {
       entity.getEvents().trigger("damageBlocked");
     }
+  }
+
+  public void setAttackScaleFactor(float attackScaleFactor) {
+    this.attackScaleFactor = attackScaleFactor;
+  }
+
+  public void setHealthScaleFactor(float healthScaleFactor) {
+    this.healthScaleFactor = healthScaleFactor;
   }
 }

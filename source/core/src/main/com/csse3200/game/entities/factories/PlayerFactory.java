@@ -6,6 +6,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.player.InvisibilityPotionComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
@@ -80,6 +81,7 @@ public class PlayerFactory {
                     stats.health, stats.baseAttack, stats.movementSpeed, stats.attackSpeed))
             .addComponent(new PlayerAbilitiesComponent())
             .addComponent(new InventoryComponent(stats.gold))
+            .addComponent(new InvisibilityPotionComponent())
             .addComponent(new ItemPickupComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())

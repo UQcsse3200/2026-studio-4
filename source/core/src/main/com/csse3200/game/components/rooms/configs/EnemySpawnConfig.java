@@ -14,7 +14,6 @@ public class EnemySpawnConfig extends PositionConfig {
     GOLEM,
     MEDUSA,
     CERBERUS,
-    BOW,
     FINAL_BOSS,
     SNAKE_MINI_BOSS
   }
