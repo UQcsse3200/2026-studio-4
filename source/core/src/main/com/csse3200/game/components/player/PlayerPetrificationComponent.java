@@ -33,6 +33,11 @@ public class PlayerPetrificationComponent extends Component {
     return !disposed && effects != null && effects.hasStatusEffect(petrification);
   }
 
+  /** HUD copy. Empty when the player is not petrified. */
+  public String getHudText() {
+    return isPetrified() ? "Petrified" : "";
+  }
+
   private void apply(Float multiplier, Float durationSeconds) {
     if (disposed || effects.isDisposed() || stats.isDead()) {
       return;

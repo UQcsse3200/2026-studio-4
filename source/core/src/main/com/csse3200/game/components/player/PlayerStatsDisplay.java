@@ -24,6 +24,7 @@ public class PlayerStatsDisplay extends UIComponent {
   private Label shieldLabel;
   private ProgressBar shieldBar;
   private Table shieldTable;
+  private Label petrifiedLabel;
 
   private static final String LABEL_STYLE = "statDisplay";
 
@@ -174,6 +175,12 @@ public class PlayerStatsDisplay extends UIComponent {
     panel.add(content).expand().top().center();
     table.add(panel).size(panelWidth, panelHeight).top().left().padTop(20f);
 
+    petrifiedLabel = new Label("", skin, LABEL_STYLE);
+    petrifiedLabel.setVisible(false);
+    table.row();
+    table.add(petrifiedLabel).left().padTop(8f);
+    refreshPetrifiedHud();
+
     shieldTable = new Table();
     shieldTable.bottom().left();
     shieldTable.setFillParent(true);
@@ -197,11 +204,22 @@ public class PlayerStatsDisplay extends UIComponent {
   public void update() {
     InvisibilityPotionComponent invisibility =
         entity.getComponent(InvisibilityPotionComponent.class);
-    if (invisibility == null) {
+    if (invisibility != null) {
+      invisibilityLabel.setText(invisibility.getDurationHudText());
+      invisibilityCooldownLabel.setText(invisibility.getCooldownHudText());
+    }
+    refreshPetrifiedHud();
+  }
+
+  private void refreshPetrifiedHud() {
+    if (petrifiedLabel == null) {
       return;
     }
-    invisibilityLabel.setText(invisibility.getDurationHudText());
-    invisibilityCooldownLabel.setText(invisibility.getCooldownHudText());
+    PlayerPetrificationComponent petrification =
+        entity.getComponent(PlayerPetrificationComponent.class);
+    String text = petrification == null ? "" : petrification.getHudText();
+    petrifiedLabel.setText(text);
+    petrifiedLabel.setVisible(!text.isEmpty());
   }
 
   @Override
