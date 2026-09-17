@@ -14,7 +14,6 @@ import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.items.EnemyDropPolicy;
 import com.csse3200.game.items.ItemDropSpec;
-import com.csse3200.game.items.WeaponItem;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -82,7 +81,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         return beetle;
       case CRAB:
         Entity crab = NPCFactory.createChaseEnemy(target, true, "images/crab.atlas");
-        crab.setScale(1.5f, 1.5f);
+        crab.setScale(1.5f, 1f);
         crab.getComponent(HitboxComponent.class)
             .setAsBox(
                 new Vector2(1f, 0.5f),
@@ -103,7 +102,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       // Greek
       case GOLEM:
         Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
-        golem.setScale(1.5f, 1.5f);
+        golem.setScale(0.9F, 0.7F);
         golem
             .getComponent(HitboxComponent.class)
             .setAsBox(
@@ -113,7 +112,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         return golem;
       case MEDUSA:
         Entity medusa = NPCFactory.createChaseEnemy(target, true, "images/medusa.atlas");
-        medusa.setScale(1.5f, 1.5f);
+        medusa.setScale(1f, 1f);
         medusa.getComponent(HitboxComponent.class).setAsBox(new Vector2(1, 1));
         return medusa;
       case HARPY:
@@ -121,10 +120,11 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             target, leftPoint, topPoint, rightPoint, this::spawnEntity, "images/harpy.atlas");
       case CYCLOPS:
         Entity cyclops = NPCFactory.createGiantEnemy(target, "images/cyclops.atlas");
+        cyclops.setScale(1.5f, 1.5f);
         cyclops
             .getComponent(HitboxComponent.class)
             .setAsBox(
-                new Vector2(1f, 1.5f),
+                new Vector2(1f, 1f),
                 new Vector2(cyclops.getCenterPosition().x, cyclops.getCenterPosition().y / 2));
         PhysicsUtils.setScaledCollider(cyclops, 0.3f, 0.3f);
         return cyclops;
@@ -133,8 +133,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
         return CerberusFactory.createCerberus(
             target, anchorPoint, this::spawnAndTrackCerberusHead, "images/cerberus.atlas");
-      case BOW:
-        return ItemFactory.createItem(WeaponItem.createWeaponItem(WeaponItem.WeaponType.BOW));
       case FINAL_BOSS:
         Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnEntity);
         if (camera != null) {
@@ -206,6 +204,20 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
       if (stats != null && !stats.isDead()) {
         stats.setHealth(0);
+      }
+    }
+  }
+
+  /**
+   * Iterates through the active enemies and calls scale on their {@link CombatStatsComponent}
+   *
+   * <p>This method should be called during the room creatation.
+   */
+  public void scale(int mult) {
+    for (Entity enemy : new ArrayList<>(activeEnemies)) {
+      CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
+      if (stats != null) {
+        stats.scale(mult);
       }
     }
   }
