@@ -21,7 +21,8 @@ public class WeaponAssetsComponent extends Component {
     SwordWeaponComponent.UPGRADED_TEXTURE,
     KnifeWeaponComponent.TEXTURE,
     KnifeWeaponComponent.UPGRADED_TEXTURE,
-    BowWeaponComponent.TEXTURE
+    BowWeaponComponent.TEXTURE,
+    BowWeaponComponent.UPGRADED_TEXTURE
   };
 
   /** Loads the weapon sprites. Follows {@code RoomAssetsComponent} in loading on construction. */
