@@ -49,8 +49,8 @@ public class MainGameScreen extends ScreenAdapter {
     "images/heart.png",
     "images/strength_charm_pixel.png",
     //          Temp
-    "images/ghost.png",
-    "images/ghost_1.png"
+    "images/attack_speed_charm.png",
+    "images/speed_charm.png"
   };
   private static final String[] mainGameTextureAtlases = {"images/idle_down.atlas"};
 

@@ -47,6 +47,7 @@ class InventoryDisplayLayeringTest {
         assertTrue(enemyOverlay.getZIndex() > book.getZIndex());
         // Opening the inventory must both show the book and move it in front of the overlay.
         display.setVisible(true);
+        book = stage.getRoot().findActor("inventory-book");
         assertTrue(book.isVisible());
         assertTrue(book.getZIndex() > enemyOverlay.getZIndex());
 

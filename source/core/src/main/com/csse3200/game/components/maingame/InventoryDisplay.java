@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Payload;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Source;
@@ -21,7 +20,6 @@ import com.csse3200.game.items.charms.Charm;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.ItemTooltip;
 import com.csse3200.game.ui.UIComponent;
-import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.List;
@@ -48,7 +46,7 @@ public class InventoryDisplay extends UIComponent {
     buildPage();
     table.setVisible(false);
     TooltipManager manager = TooltipManager.getInstance();
-    manager.initialTime = 0.2f; // Show after 0.2 seconds instead of 2 seconds
+    manager.initialTime = 0.02f; // Show after 0.2 seconds instead of 2 seconds
     manager.resetTime = 0.4f; // Reset delay when moving between items quickly
     manager.subsequentTime = 0.2f;
   }

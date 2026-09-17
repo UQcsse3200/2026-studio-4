@@ -5,7 +5,7 @@ import com.csse3200.game.entities.Entity;
 
 public class SpeedCharm extends Charm {
   private static final float VALUE = 1f;
-  public static final String TEXTURE = "images/ghost_1.png";
+  public static final String TEXTURE = "images/speed_charm.png";
 
   public SpeedCharm() {
     super("Speed Charm", "You feel yourself getting faster.", TEXTURE);
