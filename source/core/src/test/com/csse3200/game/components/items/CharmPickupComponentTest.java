@@ -1,6 +1,7 @@
 package com.csse3200.game.components.items;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -108,6 +109,24 @@ class CharmPickupComponentTest {
     player.getEvents().trigger(ITEM_PICKUP_EVENT);
 
     assertEquals(0, player.getComponent(InventoryComponent.class).getCharmCount());
+  }
+
+  @Test
+  void shouldExposePickupPromptWhileInRangeAndClearAfterPickup() {
+    StrengthCharm charm = new StrengthCharm();
+    Entity player = createPlayer();
+    Entity itemEntity = createItemEntity(charm);
+    ItemPickupComponent pickup = player.getComponent(ItemPickupComponent.class);
+
+    Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
+    Fixture itemFixture = itemEntity.getComponent(HitboxComponent.class).getFixture();
+
+    assertNull(pickup.getPickupPrompt());
+    player.getEvents().trigger("collisionStart", playerFixture, itemFixture);
+    assertEquals("Press E — Pick up Strength Charm", pickup.getPickupPrompt());
+
+    player.getEvents().trigger(ITEM_PICKUP_EVENT);
+    assertNull(pickup.getPickupPrompt());
   }
 
   private Entity createPlayer() {

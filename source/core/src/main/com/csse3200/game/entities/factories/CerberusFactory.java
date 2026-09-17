@@ -17,12 +17,7 @@ import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.files.FileLoader;
-import com.csse3200.game.physics.PhysicsLayer;
-import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
-import com.csse3200.game.physics.components.HitboxComponent;
-import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.function.Consumer;
@@ -39,18 +34,14 @@ public class CerberusFactory {
   /**
    * Creates the shared physics components for a Cerberus part.
    *
+   * <p>Built from the shared NPC base rather than an identical copy of it, so a Cerberus part is an
+   * enemy in every way the rest of the game recognises. Its own base had drifted by omitting the
+   * status effects controller, which left spells and other effects silently doing nothing to it.
+   *
    * @return base Cerberus entity
    */
   private static Entity createBaseCerberusPart() {
-    Entity part =
-        new Entity()
-            .addComponent(new PhysicsComponent())
-            .addComponent(new PhysicsMovementComponent())
-            .addComponent(new ColliderComponent())
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC));
-
-    PhysicsUtils.setScaledCollider(part, 0.9f, 0.4f);
-    return part;
+    return NPCFactory.createBaseNPC();
   }
 
   /**

@@ -32,13 +32,18 @@ class RoomManagerTest {
   @Test
   void shouldFollowPairedDoorsAndRememberClearedRooms() {
     WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
-    world.startRoomId = "dungeonOneEntrance";
+
+    // UPDATED: Changed from dungeonOne to dungeonTwo
+    world.startRoomId = "dungeonTwoEntrance";
     world.startEntryPointId = "fromSelection";
-    RoomConfig entrance = world.getRoom("dungeonOneEntrance");
-    RoomConfig side = world.getRoom("dungeonOneSide");
-    Entity firstEntrance = room(true, new GridPoint2(48, 14));
-    Entity sideRoom = room(true, new GridPoint2(2, 14));
-    Entity revisitedEntrance = room(true, new GridPoint2(48, 14));
+    RoomConfig entrance = world.getRoom("dungeonTwoEntrance");
+    RoomConfig side = world.getRoom("dungeonTwoSide");
+
+    // Updated GridPoints to match the new sideDoor (32, 29) and returnDoor (10, 44) coordinates
+    Entity firstEntrance = room(true, new GridPoint2(32, 29));
+    Entity sideRoom = room(true, new GridPoint2(10, 44));
+    Entity revisitedEntrance = room(true, new GridPoint2(32, 29));
+
     Entity player = mock(Entity.class);
     CameraComponent camera = mock(CameraComponent.class);
     EntityService entities = mock(EntityService.class);
@@ -61,12 +66,14 @@ class RoomManagerTest {
       verify(firstEntrance, never()).dispose();
       manager.update();
 
-      verify(player).setPosition(new Vector2(5, 14));
+      verify(player).setPosition(new Vector2(4, 7));
       manager.interact();
       manager.update();
 
       roomFactory.verify(() -> RoomFactory.createRoom(entrance, camera, true));
-      verify(player).setPosition(new Vector2(45, 14));
+
+      // Since the sideDoor is at x=32 and side=RIGHT, the position -3 offset is 29.
+      verify(player).setPosition(new Vector2(29, 29));
       verify(firstEntrance).dispose();
       verify(sideRoom).dispose();
     }
