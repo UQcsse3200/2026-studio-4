@@ -51,6 +51,15 @@ public class RoomManager {
     cameraFollowingComponent.setTarget(player);
   }
 
+  /** Package private constructer to create empty room manager for testing */
+  RoomManager(Entity player) {
+    this.player = player;
+
+    this.world = null;
+    this.camera = null;
+    this.initialEntryPoint = null;
+  }
+
   /** Registers the active room and player, then positions the player at its entry point. */
   public void create() {
     EntityService entityService = ServiceLocator.getEntityService();
@@ -59,14 +68,26 @@ public class RoomManager {
     start(initialEntryPoint);
   }
 
-  private void start(PositionConfig entryPoint) {
+  /** Package private for testing */
+  void start(PositionConfig entryPoint) {
     currentRoom.getEvents().addListener("roomCleared", this::onRoomCleared);
     currentRoom.getEvents().trigger("RoomCreated", player);
+    scaleRoom(currentRoom);
     Vector2 position =
         currentRoom
             .getComponent(TerrainComponent.class)
             .tileToWorldPosition(new GridPoint2(entryPoint.x, entryPoint.y));
     player.setPosition(position);
+  }
+
+  /**
+   * Calls scale on a room entities {@link EnemyManagerComponent}
+   *
+   * <p>uses the number of cleared dungeons {@link #completedDungeonIds} to determine amount to
+   * scale
+   */
+  private void scaleRoom(Entity entity) {
+    entity.getComponent(EnemyManagerComponent.class).scale(completedDungeonIds.size());
   }
 
   /** Applies a requested room switch after the current physics step has completed. */
@@ -191,5 +212,10 @@ public class RoomManager {
     if (display != null) {
       display.showStatus(message);
     }
+  }
+
+  /** Package private setter for unit testing */
+  void setCurrentRoom(Entity room) {
+    this.currentRoom = room;
   }
 }

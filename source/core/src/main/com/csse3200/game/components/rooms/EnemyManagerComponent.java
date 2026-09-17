@@ -8,8 +8,10 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.*;
-import com.csse3200.game.items.WeaponItem;
+import com.csse3200.game.entities.factories.CerberusFactory;
+import com.csse3200.game.entities.factories.FinalBossFactory;
+import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -120,8 +122,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
         return CerberusFactory.createCerberus(
             target, anchorPoint, this::spawnAndTrackCerberusHead, "images/cerberus.atlas");
-      case BOW:
-        return ItemFactory.createItem(WeaponItem.createWeaponItem(WeaponItem.WeaponType.BOW));
       case FINAL_BOSS:
         Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnEntity);
         if (camera != null) {
@@ -182,6 +182,20 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
       if (stats != null && !stats.isDead()) {
         stats.setHealth(0);
+      }
+    }
+  }
+
+  /**
+   * Iterates through the active enemies and calls scale on their {@link CombatStatsComponent}
+   *
+   * <p>This method should be called during the room creatation.
+   */
+  public void scale(int mult) {
+    for (Entity enemy : new ArrayList<>(activeEnemies)) {
+      CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
+      if (stats != null) {
+        stats.scale(mult);
       }
     }
   }
