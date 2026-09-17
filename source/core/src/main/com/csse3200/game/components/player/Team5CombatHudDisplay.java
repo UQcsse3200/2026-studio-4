@@ -20,6 +20,8 @@ import java.util.Map;
 
 /** Team 5's compact fixed-key consumable HUD, separate from the shared health HUD. */
 public class Team5CombatHudDisplay extends UIComponent {
+  private static final String WHITE_DRAWABLE = "white";
+
   /** Fixed consumable presentation order, matching keyboard quick-use slots. */
   public enum ConsumableSlot {
     HEALTH("Health", "7", ItemType.HEALTH_POTION),
@@ -86,7 +88,7 @@ public class Team5CombatHudDisplay extends UIComponent {
     Label.LabelStyle muted = new Label.LabelStyle(style);
     muted.fontColor = new Color(0.59f, 0.65f, 0.70f, 1f);
     Table panel = new Table();
-    panel.setBackground(skin.newDrawable("white", new Color(0.06f, 0.08f, 0.10f, 0.86f)));
+    panel.setBackground(skin.newDrawable(WHITE_DRAWABLE, new Color(0.06f, 0.08f, 0.10f, 0.86f)));
     panel.pad(12f);
     table.add(panel).width(270f);
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
@@ -108,9 +110,9 @@ public class Team5CombatHudDisplay extends UIComponent {
       if (slot != ConsumableSlot.HEALTH) {
         panel.row();
         ProgressBar.ProgressBarStyle barStyle = new ProgressBar.ProgressBarStyle();
-        barStyle.background = skin.newDrawable("white", new Color(0.18f, 0.23f, 0.27f, 1f));
+        barStyle.background = skin.newDrawable(WHITE_DRAWABLE, new Color(0.18f, 0.23f, 0.27f, 1f));
         barStyle.background.setMinHeight(6f);
-        barStyle.knobBefore = skin.newDrawable("white", new Color(0.36f, 0.72f, 0.84f, 1f));
+        barStyle.knobBefore = skin.newDrawable(WHITE_DRAWABLE, new Color(0.36f, 0.72f, 0.84f, 1f));
         barStyle.knobBefore.setMinWidth(0f);
         barStyle.knobBefore.setMinHeight(6f);
         ProgressBar progress = new ProgressBar(0f, 1f, 0.001f, false, barStyle);
