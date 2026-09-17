@@ -7,6 +7,7 @@ import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.ConsumableLoadoutComponent;
+import com.csse3200.game.components.player.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.InvisibilityPotionComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
@@ -92,6 +93,7 @@ public class PlayerFactory {
             .addComponent(new PlayerAnimationController())
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new Team5CombatHudDisplay())
+            .addComponent(new InteractionPromptDisplay())
             // Weapon damage = round(baseAttack * multiplier); charms that raise base attack
             // therefore scale weapon hits too.
             .addComponent(new WeaponAssetsComponent())
