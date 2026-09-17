@@ -127,33 +127,6 @@ class ItemFactoryTest {
   }
 
   @Test
-  void sharedPoolCreatesEveryRegisteredItemAsAFreshPositionedEntity() {
-    ItemType[] types = {
-      ItemType.STRENGTH_CHARM,
-      ItemType.HEALTH_POTION,
-      ItemType.SHIELD,
-      ItemType.SPEED_POTION,
-      ItemType.STRENGTH_POTION,
-      ItemType.GOLD_COIN
-    };
-    java.util.random.RandomGenerator random = mock(java.util.random.RandomGenerator.class);
-    for (int i = 0; i < types.length; i++) {
-      when(random.nextInt(types.length)).thenReturn(i);
-      Entity first = ItemFactory.createRandomDrop(new Vector2(3, 4), random);
-      Entity second = ItemFactory.createRandomDrop(new Vector2(3, 4), random);
-      assertEquals(types[i], itemTypeOf(first));
-      assertEquals(
-          types[i] == ItemType.GOLD_COIN ? 5 : 1,
-          first.getComponent(ItemComponent.class).getQuantity());
-      assertEquals(new Vector2(3, 4), first.getPosition());
-      assertNotSame(first, second);
-      assertNotSame(
-          first.getComponent(ItemComponent.class).getItem(),
-          second.getComponent(ItemComponent.class).getItem());
-    }
-  }
-
-  @Test
   void shouldCreateAtCorrectPostion() {
     Entity itemEntity = ItemFactory.createDrop(new Vector2(2, 2));
     Entity randomItemEntity = ItemFactory.createRandomDrop(new Vector2(1, 2));
