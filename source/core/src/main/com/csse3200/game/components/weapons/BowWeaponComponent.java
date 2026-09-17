@@ -13,6 +13,11 @@ import com.csse3200.game.services.ServiceLocator;
  * <p>The arrow is a small world-space hitbox (no owner, so it does not follow the wielder) that
  * travels in a straight line via {@link ProjectileComponent}. It despawns on its first enemy or
  * obstacle hit, or when its lifetime runs out.
+ *
+ * <p>Once upgraded (see {@link WeaponUpgradeComponent}) the light shot deals 20% more damage, and
+ * the bow also has a heavy attack: three arrows at once - one along the aim direction, plus one to
+ * each side at {@link #SPREAD_ANGLE_DEG} - each checking its own path independently, so a wall
+ * blocking the centre arrow does not stop the other two.
  */
 public class BowWeaponComponent extends WeaponComponent {
   /** Sprite drawn for the thrown blade in flight. Loaded by {@link WeaponAssetsComponent}. */
@@ -28,11 +33,41 @@ public class BowWeaponComponent extends WeaponComponent {
   // tip at the top-left, a measured 135 degrees. Correcting it here keeps the pixel art crisp,
   // where rotating the PNG off-axis would resample and soften it.
   private static final float SPRITE_ANGLE_OFFSET = -135f;
+  // Angle each side arrow is rotated from the aim direction on the heavy attack.
+  private static final float SPREAD_ANGLE_DEG = 15f;
 
   @Override
   protected void createAttack(Vector2 origin, Vector2 direction) {
-    WeaponStatsComponent stats = entity.getComponent(WeaponStatsComponent.class);
+    fireArrow(origin, direction.cpy().nor(), resolveHitboxDamage());
+  }
+
+  @Override
+  protected boolean hasHeavyAttack() {
+    return true;
+  }
+
+  @Override
+  protected void createHeavyAttack(Vector2 origin, Vector2 direction) {
     Vector2 dir = direction.cpy().nor();
+    int damage = resolveHeavyHitboxDamage();
+
+    // Centre arrow plus one to each side. Independent spawn/path checks per arrow, so one blocked
+    // arrow (e.g. a wall on one side) does not stop the other two.
+    fireArrow(origin, dir, damage);
+    fireArrow(origin, dir.cpy().rotateDeg(SPREAD_ANGLE_DEG), damage);
+    fireArrow(origin, dir.cpy().rotateDeg(-SPREAD_ANGLE_DEG), damage);
+  }
+
+  /**
+   * Spawn a single arrow travelling in {@code dir}. Does nothing if the spawn point is inside a
+   * wall the wielder is touching.
+   *
+   * @param origin world position of the attack (the wielder's centre)
+   * @param dir normalised travel direction for this arrow
+   * @param damage damage dealt to the first enemy this arrow hits
+   */
+  private void fireArrow(Vector2 origin, Vector2 dir, int damage) {
+    WeaponStatsComponent stats = entity.getComponent(WeaponStatsComponent.class);
 
     // Spawn just outside the wielder so the arrow visibly starts at their edge.
     float reach = entity.getScale().len() / 2f + ARROW_SIZE / 2f + GAP;
@@ -53,7 +88,7 @@ public class BowWeaponComponent extends WeaponComponent {
             .lifetime(LIFETIME)
             .layer(PhysicsLayer.WEAPON)
             .targetLayer(PhysicsLayer.NPC)
-            .damage(resolveHitboxDamage())
+            .damage(damage)
             .knockback(stats.getKnockback())
             .texture(TEXTURE)
             .visualSource(entity)

@@ -1,0 +1,146 @@
+From 0ff504f3015a770b5f04994d54b7782b149ef6e0 Mon Sep 17 00:00:00 2001
+From: Yogesh Sevda <yogesh@example.com>
+Date: Wed, 16 Sep 2026 21:03:37 +0000
+Subject: [PATCH] Add upgraded knife sprite
+
+Resolves #126.
+
+Knife's stab and every heavy-flurry strike switch to a fancier
+gold-guard blade (knife_upgraded.png) once upgraded, same shape as
+the base knife, cut from the existing steel-weapons.png sheet
+already in the project (no new attribution needed).
+
+Follows the same resolveTexture() pattern already used for the
+upgraded sword: KnifeWeaponComponent.resolveTexture() picks
+UPGRADED_TEXTURE once isUpgraded() is true, wired into the shared
+baseSpec() so it applies to every strike type.
+---
+ .../assets/images/weapons/knife_upgraded.png  | Bin 0 -> 693 bytes
+ .../weapons/KnifeWeaponComponent.java         |  16 +++++++++-
+ .../weapons/WeaponAssetsComponent.java        |   1 +
+ .../weapons/KnifeWeaponComponentTest.java     |  28 +++++++++++++++++-
+ 4 files changed, 43 insertions(+), 2 deletions(-)
+ create mode 100644 source/core/assets/images/weapons/knife_upgraded.png
+
+diff --git a/source/core/assets/images/weapons/knife_upgraded.png b/source/core/assets/images/weapons/knife_upgraded.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..1f4e1df25764d448b31b7587d0f7817a9d4f8038
+GIT binary patch
+literal 693
+zcmV;m0!safP)<h;3K|Lk000e1NJLTq000mG000mO1^@s6AM^iV0004nX+uL$Nkc;*
+zP;zf(X>4Tx0C=2zkv&MmKp2MKriwqbI9Nf7Lx$>PK~%(1s#pXIrLEAagUO|T(4-+r
+zad8w}3l9D)RvlcNb#-tR1i>E=M<*vm7b)?(q|hS9JC1vJ?|WbFz5|3tg{fxO1fXh`
+zk&4H}Y;INTc|{-1Achc@n5ieyiy3&1uY36Tei!9g-gSSDpprKk;1h}Gm~L3a8^kl4
+zmd<&fIK)blLVQj<ZqNmZAGt2O{KmQHu)s4zMkX~+93mEr9V~Y+D;X;BG;u^xHOd#V
+zE-Re3IIEQ!Yu%H-Fp$?)(p;xCf;g6tKoTNk)KEqR7NWFkq?kz2dCbEfcKk_l$>b`7
+zkz)Z>sE`~#_#gc4ty!3wbdv%xp!>zPKSqI`U7%UF?eAmTZk_=CXW&X}`>PFL_LKB_
+zTZ<e41KYsGbz777fXf|V_(_)x$&viDghBy$KcjET0fV<d|C-yk);UfefDH9&`35*R
+z1jdS#z3%bu-p;=LThr>_4^l94nkJJ3EdT%j>q$gGRCt`Vlf7yJK@^3*T`W`Dr4l4<
+zz)~#i#3pYb1XAQJVqs&QPOw|{B@#r7G}Fuz2->8(rJb<H#-E9<GArc5z|4j7-81*j
+zB!D<YLd8e{a_7jM;|vxL0QjEI@n&~H0OZZ|Iv#6N6uKL-DGH6U?B5{K&?Cf~g(9sd
+zoeM~<1du$Wsk|AV(<$DJR=s{+`Eb5Dc6l@P-rkivCqUcTK-ZjHh2+lZx!cz$%e0*h
+zqQwf=Epb^709a2t06aDuz!$&E)qejI<NU9Spt3$*o+`bOGTT}V+u;?XTwLT26RG@t
+b126zP!K<Q4@=!R=00000NkvXXu0mjft>rwk
+
+literal 0
+HcmV?d00001
+
+diff --git a/source/core/src/main/com/csse3200/game/components/weapons/KnifeWeaponComponent.java b/source/core/src/main/com/csse3200/game/components/weapons/KnifeWeaponComponent.java
+index c44e9c6..8d5f3fe 100644
+--- a/source/core/src/main/com/csse3200/game/components/weapons/KnifeWeaponComponent.java
++++ b/source/core/src/main/com/csse3200/game/components/weapons/KnifeWeaponComponent.java
+@@ -21,6 +21,13 @@ public class KnifeWeaponComponent extends WeaponComponent {
+   /** Sprite drawn for the knife's stab. Loaded by {@link WeaponAssetsComponent}. */
+   public static final String TEXTURE = "images/weapons/knife.png";
+ 
++  /**
++   * Fancier sprite drawn for every strike (stab, slash, finisher) once the knife is upgraded. Cut
++   * from the same sheet and drawn at the same angle as {@link #TEXTURE}. Loaded by {@link
++   * WeaponAssetsComponent}.
++   */
++  public static final String UPGRADED_TEXTURE = "images/weapons/knife_upgraded.png";
++
+   private static final float BLADE_LENGTH = 1.0f;
+   private static final float BLADE_WIDTH = 0.5f;
+   // Must stay below the attack cooldown (0.5s at attackSpeed 1.0). A longer-lived stab is still
+@@ -210,13 +217,20 @@ public class KnifeWeaponComponent extends WeaponComponent {
+         .damage(damage)
+         .knockback(knockback)
+         .owner(entity)
+-        .texture(TEXTURE)
++        .texture(resolveTexture())
+         .visualSource(entity)
+         .visualScale(new Vector2(SPRITE_SIZE, SPRITE_SIZE))
+         .visualOffset(new Vector2(SPRITE_PULL_IN, 0f))
+         .rotationOffset(SPRITE_ANGLE_OFFSET);
+   }
+ 
++  /**
++   * @return {@link #UPGRADED_TEXTURE} once upgraded, otherwise {@link #TEXTURE}
++   */
++  String resolveTexture() {
++    return isUpgraded() ? UPGRADED_TEXTURE : TEXTURE;
++  }
++
+   /** Snap a direction to the nearest axis: right, left, up or down. */
+   private static Vector2 snapToAxis(Vector2 direction) {
+     Vector2 dir = direction.cpy().nor();
+diff --git a/source/core/src/main/com/csse3200/game/components/weapons/WeaponAssetsComponent.java b/source/core/src/main/com/csse3200/game/components/weapons/WeaponAssetsComponent.java
+index 2ec7600..4d0d988 100644
+--- a/source/core/src/main/com/csse3200/game/components/weapons/WeaponAssetsComponent.java
++++ b/source/core/src/main/com/csse3200/game/components/weapons/WeaponAssetsComponent.java
+@@ -20,6 +20,7 @@ public class WeaponAssetsComponent extends Component {
+     SwordWeaponComponent.TEXTURE,
+     SwordWeaponComponent.UPGRADED_TEXTURE,
+     KnifeWeaponComponent.TEXTURE,
++    KnifeWeaponComponent.UPGRADED_TEXTURE,
+     BowWeaponComponent.TEXTURE
+   };
+ 
+diff --git a/source/core/src/test/com/csse3200/game/components/weapons/KnifeWeaponComponentTest.java b/source/core/src/test/com/csse3200/game/components/weapons/KnifeWeaponComponentTest.java
+index beda33f..a98f1ef 100644
+--- a/source/core/src/test/com/csse3200/game/components/weapons/KnifeWeaponComponentTest.java
++++ b/source/core/src/test/com/csse3200/game/components/weapons/KnifeWeaponComponentTest.java
+@@ -66,7 +66,8 @@ class KnifeWeaponComponentTest {
+     ServiceLocator.registerRenderService(renderService);
+ 
+     ResourceService resourceService = new ResourceService();
+-    resourceService.loadTextures(new String[] {"images/weapons/knife.png"});
++    resourceService.loadTextures(
++        new String[] {KnifeWeaponComponent.TEXTURE, KnifeWeaponComponent.UPGRADED_TEXTURE});
+     resourceService.loadAll();
+     ServiceLocator.registerResourceService(resourceService);
+   }
+@@ -531,4 +532,29 @@ class KnifeWeaponComponentTest {
+     assertEquals(
+         0.45f, wielder.getComponent(WeaponStatsComponent.class).getRemainingCooldown(), TOLERANCE);
+   }
++
++  @Test
++  void shouldUseTheBaseSpriteWhenNotUpgraded() {
++    KnifeWeaponComponent knife = new KnifeWeaponComponent();
++    upgradableWielder(knife, false, 1f);
++
++    assertEquals(KnifeWeaponComponent.TEXTURE, knife.resolveTexture());
++  }
++
++  @Test
++  void shouldUseTheUpgradedSpriteForEveryStrikeOnceUpgraded() {
++    KnifeWeaponComponent knife = new KnifeWeaponComponent();
++    Entity wielder = upgradableWielder(knife, true, 1f);
++
++    assertEquals(KnifeWeaponComponent.UPGRADED_TEXTURE, knife.resolveTexture());
++    assertTrue(knife.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
++    assertNotNull(registeredHitboxes(1).get(0).getComponent(RotatingTextureRenderComponent.class));
++    wielder.getComponent(WeaponStatsComponent.class).update(10f);
++    assertTrue(knife.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
++
++    wielder
++        .getComponent(WeaponUpgradeComponent.class)
++        .setUpgraded(KnifeWeaponComponent.class, false);
++    assertEquals(KnifeWeaponComponent.TEXTURE, knife.resolveTexture());
++  }
+ }
+-- 
+2.43.0
+
