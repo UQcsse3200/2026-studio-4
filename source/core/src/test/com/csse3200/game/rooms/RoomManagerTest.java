@@ -51,12 +51,12 @@ class RoomManagerTest {
 
     try (MockedStatic<RoomFactory> roomFactory = mockStatic(RoomFactory.class)) {
       roomFactory
-              .when(() -> RoomFactory.createRoom(entrance, camera, false))
-              .thenReturn(firstEntrance);
+          .when(() -> RoomFactory.createRoom(entrance, camera, false))
+          .thenReturn(firstEntrance);
       roomFactory.when(() -> RoomFactory.createRoom(side, camera, false)).thenReturn(sideRoom);
       roomFactory
-              .when(() -> RoomFactory.createRoom(entrance, camera, true))
-              .thenReturn(revisitedEntrance);
+          .when(() -> RoomFactory.createRoom(entrance, camera, true))
+          .thenReturn(revisitedEntrance);
 
       RoomManager manager = new RoomManager(world, player, camera);
       manager.create();
@@ -84,11 +84,11 @@ class RoomManagerTest {
     FollowingCameraComponent followingCameraComponent = mock(FollowingCameraComponent.class);
     EventHandler events = mock(EventHandler.class);
     when(terrain.tileToWorldPosition(any(GridPoint2.class)))
-            .thenAnswer(
-                    invocation -> {
-                      GridPoint2 tile = invocation.getArgument(0);
-                      return tile.equals(nearbyExit) ? new Vector2() : new Vector2(tile.x, tile.y);
-                    });
+        .thenAnswer(
+            invocation -> {
+              GridPoint2 tile = invocation.getArgument(0);
+              return tile.equals(nearbyExit) ? new Vector2() : new Vector2(tile.x, tile.y);
+            });
     when(enemies.isCleared()).thenReturn(cleared);
     when(room.getComponent(TerrainComponent.class)).thenReturn(terrain);
     when(room.getComponent(EnemyManagerComponent.class)).thenReturn(enemies);

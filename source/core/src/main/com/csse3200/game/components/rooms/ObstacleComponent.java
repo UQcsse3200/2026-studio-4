@@ -16,10 +16,13 @@ public class ObstacleComponent extends EntityManagerComponent {
 
   @Override
   public void create() {
+    // Gets the list of obstacles from the spawnConfig
     List<String> spawnConfig = room.obstacles.spawns;
+    // Gets the height and width of the room
     int height = room.mapHeight;
     int width = room.mapWidth;
 
+    // Loops through the spawn config
     for (int y = 0; y < spawnConfig.size(); y++) {
       String row = spawnConfig.get(y);
 
@@ -27,10 +30,11 @@ public class ObstacleComponent extends EntityManagerComponent {
         char spawnType = row.charAt(x);
 
         Entity entity;
-
+        // If its at the edges add a tile anyway
         if (y == 1 || y == height - 1 || x == 0 || x == width - 1) {
           entity = ObstacleFactory.createTile();
         } else {
+          // Otherwise check for the obstacle that is wanted.
           switch (spawnType) {
             case '#':
               entity = ObstacleFactory.createTile();
@@ -39,7 +43,7 @@ public class ObstacleComponent extends EntityManagerComponent {
             case 'B':
               entity = ObstacleFactory.createBarrel();
               break;
-
+            // otherwise dont create an obstacle
             case '.':
               continue;
 
@@ -48,6 +52,7 @@ public class ObstacleComponent extends EntityManagerComponent {
                   "Unsupported obstacle type '" + spawnType + "' at (" + x + ", " + y + ")");
           }
         }
+        // Spawn the entity at this location.
         spawnEntityAt(entity, new GridPoint2(x, y), true, true);
       }
     }
