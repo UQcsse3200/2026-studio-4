@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
+import java.util.random.RandomGenerator;
 
 /** Factory for creating item entities. */
 public final class ItemFactory {
@@ -28,7 +29,12 @@ public final class ItemFactory {
    * constructor function into the enum type's constructor
    */
   enum DropTypes {
-    STRENGTH_CHARM(StrengthCharm::new);
+    STRENGTH_CHARM(StrengthCharm::new),
+    HEALTH_POTION(() -> new TypedItem(ItemDropSpec.single(ItemType.HEALTH_POTION))),
+    SHIELD(() -> new TypedItem(ItemDropSpec.single(ItemType.SHIELD))),
+    SPEED_POTION(() -> new TypedItem(ItemDropSpec.single(ItemType.SPEED_POTION))),
+    STRENGTH_POTION(() -> new TypedItem(ItemDropSpec.single(ItemType.STRENGTH_POTION))),
+    GOLD_COIN(() -> new TypedItem(new ItemDropSpec(ItemType.GOLD_COIN, 5)));
 
     // A functional interface is used so that new instances are created
     // on drop request
@@ -45,15 +51,24 @@ public final class ItemFactory {
 
     /** selects a random item type to drop */
     public static DropTypes randomDrop() {
-      int idx = ThreadLocalRandom.current().nextInt(VALUES.length);
+      return randomDrop(ThreadLocalRandom.current());
+    }
+
+    static DropTypes randomDrop(RandomGenerator random) {
+      int idx = random.nextInt(VALUES.length);
       return VALUES[idx];
     }
   }
 
   public static Entity createRandomDrop(Vector2 position) {
-    Objects.requireNonNull(position, "position cannot be null");
+    return createRandomDrop(position, ThreadLocalRandom.current());
+  }
 
-    Entity item = createItem(DropTypes.randomDrop().getItemSupplier());
+  /** Uses the shared random pool with injectable randomness for repeatable integration tests. */
+  public static Entity createRandomDrop(Vector2 position, RandomGenerator random) {
+    Objects.requireNonNull(position, "position cannot be null");
+    Objects.requireNonNull(random, "random cannot be null");
+    Entity item = createItem(DropTypes.randomDrop(random).getItemSupplier());
     item.setPosition(position);
     return item;
   }
@@ -117,31 +132,6 @@ public final class ItemFactory {
             .getAsset(item.getTexture(), com.badlogic.gdx.graphics.Texture.class);
     itemEntity.setScale(1f, (float) texture.getHeight() / texture.getWidth());
     return itemEntity;
-  }
-
-  /** Creates an unregistered Strength Charm entity. */
-  public static Entity createStrengthCharm() {
-    return createItem(new StrengthCharm());
-  }
-
-  public static Entity createHealthPotion() {
-    return createItem(new TypedItem(ItemDropSpec.single(ItemType.HEALTH_POTION)));
-  }
-
-  public static Entity createShield() {
-    return createItem(new TypedItem(ItemDropSpec.single(ItemType.SHIELD)));
-  }
-
-  public static Entity createSpeedPotion() {
-    return createItem(new TypedItem(ItemDropSpec.single(ItemType.SPEED_POTION)));
-  }
-
-  public static Entity createStrengthPotion() {
-    return createItem(new TypedItem(ItemDropSpec.single(ItemType.STRENGTH_POTION)));
-  }
-
-  public static Entity createGoldCoin() {
-    return createItem(new TypedItem(ItemDropSpec.single(ItemType.GOLD_COIN)));
   }
 
   private ItemFactory() {
