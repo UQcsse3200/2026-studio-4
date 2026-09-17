@@ -21,6 +21,7 @@ import java.util.random.RandomGenerator;
 
 /** Factory for creating item entities. */
 public final class ItemFactory {
+  private static final String NULL_POSITION_MESSAGE = "position cannot be null";
 
   /**
    * Enum used to determine random drops.
@@ -66,7 +67,7 @@ public final class ItemFactory {
 
   /** Uses the shared random pool with injectable randomness for repeatable integration tests. */
   public static Entity createRandomDrop(Vector2 position, RandomGenerator random) {
-    Objects.requireNonNull(position, "position cannot be null");
+    Objects.requireNonNull(position, NULL_POSITION_MESSAGE);
     Objects.requireNonNull(random, "random cannot be null");
     Entity item = createItem(DropTypes.randomDrop(random).getItemSupplier());
     item.setPosition(position);
@@ -91,7 +92,7 @@ public final class ItemFactory {
   /** Creates a caller-selected item and quantity at a world position. */
   public static Entity createDrop(ItemDropSpec dropSpec, Vector2 position) {
     Objects.requireNonNull(dropSpec, "dropSpec cannot be null");
-    Objects.requireNonNull(position, "position cannot be null");
+    Objects.requireNonNull(position, NULL_POSITION_MESSAGE);
 
     Entity item =
         dropSpec.itemType() == ItemType.STRENGTH_CHARM
@@ -104,7 +105,7 @@ public final class ItemFactory {
   /** Creates every caller-selected drop at the supplied origin. */
   public static List<Entity> createDrops(List<ItemDropSpec> dropSpecs, Vector2 position) {
     Objects.requireNonNull(dropSpecs, "dropSpecs cannot be null");
-    Objects.requireNonNull(position, "position cannot be null");
+    Objects.requireNonNull(position, NULL_POSITION_MESSAGE);
     return dropSpecs.stream().map(dropSpec -> createDrop(dropSpec, position)).toList();
   }
 
