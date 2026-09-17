@@ -18,6 +18,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.physics.components.ColliderComponent;
+import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.function.Consumer;
@@ -67,6 +68,7 @@ public class CerberusFactory {
 
     Entity sideHead = createBaseCerberusPart().addComponent(new EnemyDeathComponent(false));
     sideHead.getComponent(ColliderComponent.class).setSensor(true);
+    sideHead.getComponent(HitboxComponent.class).setAsBox(new Vector2(0.35f, 0.35f));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -103,6 +105,7 @@ public class CerberusFactory {
   public static Entity createCerberus(
       Entity target, Vector2 anchorPoint, Consumer<Entity> sideHeadSpawner, String skin) {
     Entity mainHead = createBaseCerberusMiniBoss();
+    mainHead.getComponent(HitboxComponent.class).setAsBox(new Vector2(0.4f, 0.4f));
 
     BaseEntityConfig conf = configs.cerberus;
 
@@ -122,10 +125,10 @@ public class CerberusFactory {
         .addComponent(new EnemyStatDisplay(2.0f));
 
     Entity leftHead =
-        createCerberusSideHead(mainHead, new Vector2(-0.3f, 0.15f), conf.health / 2, skin);
+        createCerberusSideHead(mainHead, new Vector2(-0.55f, 0.15f), conf.health / 2, skin);
 
     Entity rightHead =
-        createCerberusSideHead(mainHead, new Vector2(0.3f, 0.15f), conf.health / 2, skin);
+        createCerberusSideHead(mainHead, new Vector2(0.55f, 0.15f), conf.health / 2, skin);
 
     CerberusPhaseComponent phase = new CerberusPhaseComponent(leftHead, rightHead);
 
