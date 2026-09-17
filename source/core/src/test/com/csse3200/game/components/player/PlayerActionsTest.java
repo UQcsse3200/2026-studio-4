@@ -159,6 +159,32 @@ class PlayerActionsTest {
   }
 
   @Test
+  void shouldBlockHeavyAttacksUntilEveryControlLockIsReleased() {
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    Sound sound = ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
+    Object freeze = new Object();
+    Object dialogue = new Object();
+    int[] heavyAttacks = {0};
+    player.getEvents().addListener("weaponHeavyAttack", (Vector2 direction) -> heavyAttacks[0]++);
+
+    actions.setControlsLocked(freeze, true);
+    actions.setControlsLocked(dialogue, true);
+    player.getEvents().trigger("heavyAttack");
+    assertEquals(0, heavyAttacks[0]);
+    verify(sound, never()).play();
+
+    actions.setControlsLocked(freeze, false);
+    player.getEvents().trigger("heavyAttack");
+    assertEquals(0, heavyAttacks[0]);
+    verify(sound, never()).play();
+
+    actions.setControlsLocked(dialogue, false);
+    player.getEvents().trigger("heavyAttack");
+    assertEquals(1, heavyAttacks[0]);
+    verify(sound).play();
+  }
+
+  @Test
   void shouldDashFasterThanWalk() {
     walk(Vector2Utils.RIGHT);
     ArgumentCaptor<Vector2> walkImpulse = ArgumentCaptor.forClass(Vector2.class);

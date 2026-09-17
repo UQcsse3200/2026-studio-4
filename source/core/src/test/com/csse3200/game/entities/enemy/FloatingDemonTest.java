@@ -39,9 +39,39 @@ class FloatingDemonTest {
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/harpy.atlas"});
+    resourceService.loadTextureAtlases(new String[] {"images/harpy.atlas", "images/wasp.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
+  }
+
+  @Test
+  void shouldHaveFlyingEnemyAnimation() {
+    Entity harpy =
+        NPCFactory.createFloatingDemon(
+            new Entity(),
+            new Vector2(1f, 3f),
+            new Vector2(5f, 5f),
+            new Vector2(10f, 3f),
+            "images/harpy.atlas");
+    Entity wasp =
+        NPCFactory.createFloatingDemon(
+            new Entity(),
+            new Vector2(1f, 3f),
+            new Vector2(5f, 5f),
+            new Vector2(10f, 3f),
+            "images/wasp.atlas");
+
+    AnimationRenderComponent harpyAnimator = harpy.getComponent(AnimationRenderComponent.class);
+    AnimationRenderComponent waspAnimator = wasp.getComponent(AnimationRenderComponent.class);
+
+    assertTrue(harpyAnimator.hasAnimation("move"));
+    assertTrue(harpyAnimator.hasAnimation("chase"));
+    assertTrue(harpyAnimator.hasAnimation("dieAnimation"));
+    assertTrue(harpyAnimator.hasAnimation("default"));
+    assertTrue(waspAnimator.hasAnimation("move"));
+    assertTrue(waspAnimator.hasAnimation("chase"));
+    assertTrue(waspAnimator.hasAnimation("dieAnimation"));
+    assertTrue(waspAnimator.hasAnimation("default"));
   }
 
   @Test

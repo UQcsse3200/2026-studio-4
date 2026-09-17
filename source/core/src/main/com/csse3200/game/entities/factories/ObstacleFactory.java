@@ -47,6 +47,12 @@ public class ObstacleFactory {
     return createRenderedObstacle(new TextureRegion(texture), 0.6f, 0.7f);
   }
 
+  public static Entity createTile() {
+    Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
+    return createRenderedObstacle(
+        DreamlandTile.BLUE_STONE_WALL.region(new TileSheet(texture, 16)), 0.5f, 0.5f);
+  }
+
   /** Creates a barrel obstacle. */
   public static Entity createBarrel() {
     Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
@@ -62,7 +68,7 @@ public class ObstacleFactory {
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
     obstacle.getComponent(TextureRenderComponent.class).scaleEntity();
-    obstacle.scaleHeight(1f);
+    obstacle.scaleHeight(0.5f);
     PhysicsUtils.setScaledCollider(obstacle, colliderWidth, colliderHeight);
     return obstacle;
   }

@@ -39,19 +39,24 @@ class GiantEnemyTest {
     ServiceLocator.registerEntityService(entityService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/cyclops.atlas"});
+    resourceService.loadTextureAtlases(new String[] {"images/cyclops.atlas", "images/mummy.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
 
   @Test
   void shouldHaveGiantAnimations() {
-    Entity giantEnemy = NPCFactory.createGiantEnemy(new Entity(), "images/cyclops.atlas");
-    AnimationRenderComponent animator = giantEnemy.getComponent(AnimationRenderComponent.class);
+    Entity cyclops = NPCFactory.createGiantEnemy(new Entity(), "images/cyclops.atlas");
+    Entity mummy = NPCFactory.createGiantEnemy(new Entity(), "images/mummy.atlas");
+    AnimationRenderComponent cyclopsAnimator = cyclops.getComponent(AnimationRenderComponent.class);
+    AnimationRenderComponent mummyAnimator = mummy.getComponent(AnimationRenderComponent.class);
 
-    assertTrue(animator.hasAnimation("move"));
-    assertTrue(animator.hasAnimation("chase"));
-    assertTrue(animator.hasAnimation("dieAnimation"));
+    assertTrue(cyclopsAnimator.hasAnimation("move"));
+    assertTrue(cyclopsAnimator.hasAnimation("chase"));
+    assertTrue(cyclopsAnimator.hasAnimation("dieAnimation"));
+    assertTrue(mummyAnimator.hasAnimation("move"));
+    assertTrue(mummyAnimator.hasAnimation("chase"));
+    assertTrue(mummyAnimator.hasAnimation("dieAnimation"));
   }
 
   @Test

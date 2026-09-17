@@ -202,4 +202,87 @@ class CerberusProjectileComponentTest {
     assertEquals(1, spawned.size());
     assertEquals(100, rightStats.getHealth());
   }
+
+  @Test
+  void shouldWaitForCoordinatorWithoutRestartingCooldown() {
+    CerberusAttackCoordinator coordinator = mock(CerberusAttackCoordinator.class);
+    shooter.setAttackCoordinator(coordinator);
+    when(coordinator.tryStart(rightHead)).thenReturn(false);
+
+    tick(2.5f);
+
+    assertEquals(0, pending.size());
+    assertEquals(0, spawned.size());
+
+    when(coordinator.tryStart(rightHead)).thenReturn(true);
+
+    tick(0f);
+
+    assertEquals(1, pending.size());
+
+    runPending();
+
+    assertEquals(List.of(projectile), spawned);
+    verify(coordinator).finish(rightHead);
+  }
+
+  @Test
+  void shouldQueueOnlyOneShotAndReleaseAfterCreation() {
+    CerberusAttackCoordinator coordinator = mock(CerberusAttackCoordinator.class);
+    shooter.setAttackCoordinator(coordinator);
+    when(coordinator.tryStart(rightHead)).thenReturn(true);
+
+    tick(2.5f);
+    tick(3f);
+
+    assertEquals(1, pending.size());
+    assertEquals(0, spawned.size());
+    verify(coordinator, times(1)).tryStart(rightHead);
+    verify(coordinator, never()).finish(rightHead);
+
+    runPending();
+
+    assertEquals(List.of(projectile), spawned);
+    verify(coordinator).finish(rightHead);
+  }
+
+  @Test
+  void shouldReleaseImmediatelyAndCancelQueuedShotOnDeath() {
+    CerberusAttackCoordinator coordinator = mock(CerberusAttackCoordinator.class);
+    shooter.setAttackCoordinator(coordinator);
+    when(coordinator.tryStart(rightHead)).thenReturn(true);
+
+    tick(2.5f);
+
+    assertEquals(1, pending.size());
+    verify(coordinator, never()).finish(rightHead);
+
+    rightStats.setHealth(0);
+    verify(coordinator).finish(rightHead);
+
+    runPending();
+
+    assertEquals(0, spawned.size());
+    projectileFactory.verifyNoInteractions();
+  }
+
+  @Test
+  void shouldReleaseImmediatelyAndCancelQueuedShotOnDisposal() {
+    CerberusAttackCoordinator coordinator = mock(CerberusAttackCoordinator.class);
+    shooter.setAttackCoordinator(coordinator);
+    when(coordinator.tryStart(rightHead)).thenReturn(true);
+
+    tick(2.5f);
+
+    assertEquals(1, pending.size());
+
+    shooter.dispose();
+
+    verify(coordinator).finish(rightHead);
+
+    runPending();
+
+    assertEquals(0, spawned.size());
+    projectileFactory.verifyNoInteractions();
+  }
 }

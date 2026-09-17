@@ -49,8 +49,8 @@ public class SplitComponent extends Component {
     ServiceLocator.getEntityService()
         .schedule(
             () -> {
-              spawnChild(-2f, halfHealth, halfAttack);
-              spawnChild(2f, halfHealth, halfAttack);
+              spawnChild(-0.5f, halfHealth, halfAttack);
+              spawnChild(0.5f, halfHealth, halfAttack);
             });
     ServiceLocator.getEntityService().scheduleDisposal(entity);
     hasSplit = true;
@@ -65,9 +65,7 @@ public class SplitComponent extends Component {
    */
   private void spawnChild(float xOffset, int health, int attack) {
     Entity child = NPCFactory.createChaseEnemy(target, false, this.skin);
-    child.scaleWidth(getEntity().getScale().x / 1.2f);
-    child.scaleHeight(getEntity().getScale().y / 1.2f);
-    child.setScale(entity.getScale().x / 2, entity.getScale().y / 2);
+    child.setScale(entity.getScale().x / 1.2f, entity.getScale().y / 1.2f);
 
     CombatStatsComponent childStats = child.getComponent(CombatStatsComponent.class);
     if (childStats != null) {
