@@ -87,7 +87,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="Burning.html" title="class in com.csse3200.game.components.statuseffects">Burning</a></code>, <code><a href="../miniboss/cerberus/CerberusMistSlowEffect.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusMistSlowEffect</a></code>, <code><a href="InvisibilityEffect.html" title="class in com.csse3200.game.components.statuseffects">InvisibilityEffect</a></code>, <code><a href="LastStandEffect.html" title="class in com.csse3200.game.components.statuseffects">LastStandEffect</a></code>, <code><a href="PetrificationEffect.html" title="class in com.csse3200.game.components.statuseffects">PetrificationEffect</a></code>, <code><a href="RedFlashEffect.html" title="class in com.csse3200.game.components.statuseffects">RedFlashEffect</a></code>, <code><a href="Regeneration.html" title="class in com.csse3200.game.components.statuseffects">Regeneration</a></code>, <code><a href="Shield.html" title="class in com.csse3200.game.components.statuseffects">Shield</a></code>, <code><a href="Slow.html" title="class in com.csse3200.game.components.statuseffects">Slow</a></code>, <code><a href="Speed.html" title="class in com.csse3200.game.components.statuseffects">Speed</a></code>, <code><a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a></code>, <code><a href="Vulnerable.html" title="class in com.csse3200.game.components.statuseffects">Vulnerable</a></code></dd>
+<dd><code><a href="Burning.html" title="class in com.csse3200.game.components.statuseffects">Burning</a></code>, <code><a href="../miniboss/cerberus/CerberusMistSlowEffect.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusMistSlowEffect</a></code>, <code><a href="FlashEffect.html" title="class in com.csse3200.game.components.statuseffects">FlashEffect</a></code>, <code><a href="FrozenEffect.html" title="class in com.csse3200.game.components.statuseffects">FrozenEffect</a></code>, <code><a href="InvisibilityEffect.html" title="class in com.csse3200.game.components.statuseffects">InvisibilityEffect</a></code>, <code><a href="LastStandEffect.html" title="class in com.csse3200.game.components.statuseffects">LastStandEffect</a></code>, <code><a href="PetrificationEffect.html" title="class in com.csse3200.game.components.statuseffects">PetrificationEffect</a></code>, <code><a href="RedFlashEffect.html" title="class in com.csse3200.game.components.statuseffects">RedFlashEffect</a></code>, <code><a href="Regeneration.html" title="class in com.csse3200.game.components.statuseffects">Regeneration</a></code>, <code><a href="Shield.html" title="class in com.csse3200.game.components.statuseffects">Shield</a></code>, <code><a href="Slow.html" title="class in com.csse3200.game.components.statuseffects">Slow</a></code>, <code><a href="Speed.html" title="class in com.csse3200.game.components.statuseffects">Speed</a></code>, <code><a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a></code>, <code><a href="Vulnerable.html" title="class in com.csse3200.game.components.statuseffects">Vulnerable</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">StatusEffect</span></div>
@@ -120,19 +120,31 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Returns whether hostiles should be unable to find, chase or damage the entity while this runs.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>long</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getRemainingDuration()" class="member-name-link">getRemainingDuration</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default float</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)" class="member-name-link">getStatMultiplier</a><wbr>(<a href="Stat.html" title="enum class in com.csse3200.game.components.statuseffects">Stat</a>&nbsp;stat)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default com.badlogic.gdx.graphics.Color</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getGlow()" class="member-name-link">getGlow</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Returns the colour this effect adds on top of the sprite of whatever it is on, or null to add
+ nothing.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>long</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getRemainingDuration()" class="member-name-link">getRemainingDuration</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default float</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)" class="member-name-link">getStatMultiplier</a><wbr>(<a href="Stat.html" title="enum class in com.csse3200.game.components.statuseffects">Stat</a>&nbsp;stat)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Returns what this effect multiplies the given effective stat by while it runs.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default com.badlogic.gdx.graphics.Color</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getTint()" class="member-name-link">getTint</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default com.badlogic.gdx.graphics.Color</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getTint()" class="member-name-link">getTint</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Returns the colour this effect multiplies into the sprite of whatever it is on, or null to
  leave the sprite alone.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#immobilisesOwner()" class="member-name-link">immobilisesOwner</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Returns whether the entity should be unable to act at all while this runs: no movement, and no
+ attack the entity's own AI would otherwise decide to make.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isExpired()" class="member-name-link">isExpired</a>()</code></div>
@@ -200,6 +212,17 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="immobilisesOwner()">
+<h3>immobilisesOwner</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">immobilisesOwner</span>()</div>
+<div class="block">Returns whether the entity should be unable to act at all while this runs: no movement, and no
+ attack the entity's own AI would otherwise decide to make.
+
+ <p>Separate from a zero movement-speed multiplier, which only says the entity is standing
+ still. This says it is not choosing anything either.</div>
+</section>
+</li>
+<li>
 <section class="detail" id="getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)">
 <h3>getStatMultiplier</h3>
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getStatMultiplier</span><wbr><span class="parameters">(<a href="Stat.html" title="enum class in com.csse3200.game.components.statuseffects">Stat</a>&nbsp;stat)</span></div>
@@ -216,6 +239,18 @@ loadScripts(document, 'script');</script>
  leave the sprite alone. Lets an effect show itself without the renderer naming it.
 
  <p>Treat the returned colour as read only; the caller may be a renderer running every frame.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getGlow()">
+<h3>getGlow</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">com.badlogic.gdx.graphics.Color</span>&nbsp;<span class="element-name">getGlow</span>()</div>
+<div class="block">Returns the colour this effect adds on top of the sprite of whatever it is on, or null to add
+ nothing. Unlike <a href="#getTint()"><code>getTint()</code></a>, which multiplies and so cannot lighten a dark sprite at all
+ (black times any colour is still black), a glow shows on every sprite in the game.
+
+ <p>Treat the returned colour as read only; the caller may be a renderer running every frame.
+ Its alpha is the strength of the glow rather than a transparency.</div>
 </section>
 </li>
 <li>

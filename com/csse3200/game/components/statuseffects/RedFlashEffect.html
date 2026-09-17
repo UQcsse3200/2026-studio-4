@@ -48,7 +48,7 @@ loadScripts(document, 'script');</script>
 <ul>
 <li>Field</li>
 <li><a href="#constructor-detail">Constr</a></li>
-<li><a href="#method-detail">Method</a></li>
+<li>Method</li>
 </ul>
 </li>
 </ul>
@@ -66,7 +66,7 @@ loadScripts(document, 'script');</script>
 <li>Detail:&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
 <li><a href="#constructor-detail">Constr</a>&nbsp;|&nbsp;</li>
-<li><a href="#method-detail">Method</a></li>
+<li>Method</li>
 </ul>
 </div>
 <div class="nav-list-search"><a href="../../../../../search.html">SEARCH</a>
@@ -86,7 +86,9 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance"><a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">com.csse3200.game.components.statuseffects.TimedStatusEffect</a>
+<div class="inheritance"><a href="FlashEffect.html" title="class in com.csse3200.game.components.statuseffects">com.csse3200.game.components.statuseffects.FlashEffect</a>
 <div class="inheritance">com.csse3200.game.components.statuseffects.RedFlashEffect</div>
+</div>
 </div>
 </div>
 <section class="class-description" id="class-description">
@@ -100,7 +102,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">RedFlashEffect</span>
-<span class="extends-implements">extends <a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a></span></div>
+<span class="extends-implements">extends <a href="FlashEffect.html" title="class in com.csse3200.game.components.statuseffects">FlashEffect</a></span></div>
 <div class="block">A timed red blink that leaves transparency and the owner's gameplay stats unchanged.</div>
 </section>
 <section class="summary">
@@ -123,22 +125,9 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
-<div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
-<div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
-<div class="summary-table three-column-summary">
-<div class="table-header col-first">Modifier and Type</div>
-<div class="table-header col-second">Method</div>
-<div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.graphics.Color</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTint()" class="member-name-link">getTint</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the colour this effect multiplies into the sprite of whatever it is on, or null to
- leave the sprite alone.</div>
-</div>
-</div>
-</div>
-</div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-com.csse3200.game.components.statuseffects.FlashEffect">Methods inherited from class&nbsp;com.csse3200.game.components.statuseffects.<a href="FlashEffect.html" title="class in com.csse3200.game.components.statuseffects">FlashEffect</a></h3>
+<code><a href="FlashEffect.html#getGlow()">getGlow</a>, <a href="FlashEffect.html#getTint()">getTint</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.components.statuseffects.TimedStatusEffect">Methods inherited from class&nbsp;com.csse3200.game.components.statuseffects.<a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a></h3>
 <code><a href="TimedStatusEffect.html#getDuration()">getDuration</a>, <a href="TimedStatusEffect.html#getRemainingDuration()">getRemainingDuration</a>, <a href="TimedStatusEffect.html#onRemoved()">onRemoved</a>, <a href="TimedStatusEffect.html#setOnEnded(java.lang.Runnable)">setOnEnded</a>, <a href="TimedStatusEffect.html#update()">update</a></code></div>
@@ -147,7 +136,7 @@ loadScripts(document, 'script');</script>
 <code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.components.statuseffects.StatusEffect">Methods inherited from interface&nbsp;com.csse3200.game.components.statuseffects.<a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></h3>
-<code><a href="StatusEffect.html#concealsOwner()">concealsOwner</a>, <a href="StatusEffect.html#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)">getStatMultiplier</a>, <a href="StatusEffect.html#isExpired()">isExpired</a></code></div>
+<code><a href="StatusEffect.html#concealsOwner()">concealsOwner</a>, <a href="StatusEffect.html#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)">getStatMultiplier</a>, <a href="StatusEffect.html#immobilisesOwner()">immobilisesOwner</a>, <a href="StatusEffect.html#isExpired()">isExpired</a></code></div>
 </section>
 </li>
 </ul>
@@ -169,25 +158,6 @@ loadScripts(document, 'script');</script>
 <dd><code>time</code> - the shared gameplay clock</dd>
 <dd><code>duration</code> - total blink duration in milliseconds</dd>
 </dl>
-</section>
-</li>
-</ul>
-</section>
-</li>
-<!-- ============ METHOD DETAIL ========== -->
-<li>
-<section class="method-details" id="method-detail">
-<h2>Method Details</h2>
-<ul class="member-list">
-<li>
-<section class="detail" id="getTint()">
-<h3>getTint</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.graphics.Color</span>&nbsp;<span class="element-name">getTint</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="StatusEffect.html#getTint()">StatusEffect</a></code></span></div>
-<div class="block">Returns the colour this effect multiplies into the sprite of whatever it is on, or null to
- leave the sprite alone. Lets an effect show itself without the renderer naming it.
-
- <p>Treat the returned colour as read only; the caller may be a renderer running every frame.</div>
 </section>
 </li>
 </ul>

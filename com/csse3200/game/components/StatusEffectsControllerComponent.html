@@ -179,6 +179,16 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Ends every effect on this entity and stops the controller for good.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.graphics.Color</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getGlow()" class="member-name-link">getGlow</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the combined glow of running effects, or null when none glows.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static com.badlogic.gdx.graphics.Color</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getGlow(com.csse3200.game.entities.Entity)" class="member-name-link">getGlow</a><wbr>(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Returns the combined glow of the entity's active effects, or null when nothing glows.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)" class="member-name-link">getStatMultiplier</a><wbr>(<a href="statuseffects/Stat.html" title="enum class in com.csse3200.game.components.statuseffects">Stat</a>&nbsp;stat)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -213,6 +223,16 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDisposed()" class="member-name-link">isDisposed</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isImmobilised()" class="member-name-link">isImmobilised</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns whether any running effect stops this entity moving and acting.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#isImmobilised(com.csse3200.game.entities.Entity)" class="member-name-link">isImmobilised</a><wbr>(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Returns whether the entity currently cannot move or act under its own steam.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#modifyIncomingDamage(int)" class="member-name-link">modifyIncomingDamage</a><wbr>(int&nbsp;damage)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -293,10 +313,47 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="isImmobilised(com.csse3200.game.entities.Entity)">
+<h3>isImmobilised</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isImmobilised</span><wbr><span class="parameters">(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</span></div>
+<div class="block">Returns whether the entity currently cannot move or act under its own steam. An entity without
+ a controller is simply never immobilised.
+
+ <p>This is the one question movement and enemy AI ask. It names no effect, so anything that
+ reports <a href="statuseffects/StatusEffect.html#immobilisesOwner()"><code>StatusEffect.immobilisesOwner()</code></a> stops whoever is wearing it.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>entity</code> - the entity about to move or decide; null is treated as free to act</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getGlow(com.csse3200.game.entities.Entity)">
+<h3>getGlow</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">com.badlogic.gdx.graphics.Color</span>&nbsp;<span class="element-name">getGlow</span><wbr><span class="parameters">(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</span></div>
+<div class="block">Returns the combined glow of the entity's active effects, or null when nothing glows.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="statuseffects/StatusEffect.html#getGlow()"><code>StatusEffect.getGlow()</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="isConcealed()">
 <h3>isConcealed</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isConcealed</span>()</div>
 <div class="block">Returns whether any running effect hides this entity from hostiles.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isImmobilised()">
+<h3>isImmobilised</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isImmobilised</span>()</div>
+<div class="block">Returns whether any running effect stops this entity moving and acting.</div>
 </section>
 </li>
 <li>
@@ -313,6 +370,14 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.graphics.Color</span>&nbsp;<span class="element-name">getTint</span>()</div>
 <div class="block">Returns the combined tint of running effects, or null when none tints. Tints multiply, so being
  hidden and buffed at once shows both.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getGlow()">
+<h3>getGlow</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.graphics.Color</span>&nbsp;<span class="element-name">getGlow</span>()</div>
+<div class="block">Returns the combined glow of running effects, or null when none glows. Glows add rather than
+ multiply, so two glowing effects at once are brighter than either alone rather than dimmer.</div>
 </section>
 </li>
 <li>

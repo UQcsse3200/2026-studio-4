@@ -88,6 +88,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Toggles debug mode on or off if the corresponding argument is received.</div>
 </dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/SpellCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/SpellCommand.html" title="class in com.csse3200.game.ui.terminal.commands">SpellCommand</a></dt>
+<dd>
+<div class="block">Casts the named spell.</div>
+</dd>
 <dt><a href="com/csse3200/game/ui/terminal/commands/StatusEffectCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/StatusEffectCommand.html" title="class in com.csse3200.game.ui.terminal.commands">StatusEffectCommand</a></dt>
 <dd>
 <div class="block">Adds the status effect.</div>
@@ -145,6 +149,11 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/Entity.html#addComponent(com.csse3200.game.components.Component)" class="member-name-link">addComponent(Component)</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
 <dd>
 <div class="block">Add a component to the entity.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/spells/SpellComponent.html#addEffect(com.csse3200.game.entities.Entity,com.csse3200.game.components.statuseffects.StatusEffect)" class="member-name-link">addEffect(Entity, StatusEffect)</a> - Static method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellComponent.html" title="class in com.csse3200.game.components.spells">SpellComponent</a></dt>
+<dd>
+<div class="block">Puts an effect on a target that may not be able to carry one, which is the only thing every
+ spell's side effect needs to agree on.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/player/InventoryComponent.html#addGold(int)" class="member-name-link">addGold(int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
 <dd>
@@ -204,6 +213,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/physics/raycast/AllHitCallback.html#%3Cinit%3E()" class="member-name-link">AllHitCallback()</a> - Constructor for class com.csse3200.game.physics.raycast.<a href="com/csse3200/game/physics/raycast/AllHitCallback.html" title="class in com.csse3200.game.physics.raycast">AllHitCallback</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/rendering/RadialTextureFactory.AlphaProfile.html#alphaAt(float)" class="member-name-link">alphaAt(float)</a> - Method in interface com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RadialTextureFactory.AlphaProfile.html" title="interface in com.csse3200.game.rendering">RadialTextureFactory.AlphaProfile</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainConfig.html#alternateTextureOne" class="member-name-link">alternateTextureOne</a> - Variable in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainConfig.html" title="class in com.csse3200.game.areas.terrain">TerrainConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainConfig.html#alternateTextureOneCount" class="member-name-link">alternateTextureOneCount</a> - Variable in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainConfig.html" title="class in com.csse3200.game.areas.terrain">TerrainConfig</a></dt>
@@ -247,6 +258,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/boss/FinalBossStageTwoComponent.html#applyStageThreeHealthFloor()" class="member-name-link">applyStageThreeHealthFloor()</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossStageTwoComponent.html" title="class in com.csse3200.game.components.boss">FinalBossStageTwoComponent</a></dt>
 <dd>
 <div class="block">Prevents a powerful hit from skipping the Stage 3 encounter entirely.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/spells/FreezeSpellComponent.html#applyTo(com.csse3200.game.entities.Entity)" class="member-name-link">applyTo(Entity)</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/FreezeSpellComponent.html" title="class in com.csse3200.game.components.spells">FreezeSpellComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/LightningSpellComponent.html#applyTo(com.csse3200.game.entities.Entity)" class="member-name-link">applyTo(Entity)</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/LightningSpellComponent.html" title="class in com.csse3200.game.components.spells">LightningSpellComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/SpellComponent.html#applyTo(com.csse3200.game.entities.Entity)" class="member-name-link">applyTo(Entity)</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellComponent.html" title="class in com.csse3200.game.components.spells">SpellComponent</a></dt>
+<dd>
+<div class="block">Applies this spell's effect to one enemy it caught.</div>
 </dd>
 <dt><a href="com/csse3200/game/areas/GameArea.html#areaEntities" class="member-name-link">areaEntities</a> - Variable in class com.csse3200.game.areas.<a href="com/csse3200/game/areas/GameArea.html" title="class in com.csse3200.game.areas">GameArea</a></dt>
 <dd>&nbsp;</dd>
@@ -402,6 +421,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html#canAttack()" class="member-name-link">canAttack()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons">WeaponStatsComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/SpellComponent.html#canCast()" class="member-name-link">canCast()</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellComponent.html" title="class in com.csse3200.game.components.spells">SpellComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossMovementComponent.html#cancelChargeAttack()" class="member-name-link">cancelChargeAttack()</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossMovementComponent.html" title="class in com.csse3200.game.components.boss">FinalBossMovementComponent</a></dt>
 <dd>
 <div class="block">Cancels any active charge attack (warning, charging, or delay).</div>
@@ -410,6 +431,18 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/DreamlandTile.html#CANDLE_TABLE_RIGHT" class="member-name-link">CANDLE_TABLE_RIGHT</a> - Enum constant in enum class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/DreamlandTile.html" title="enum class in com.csse3200.game.areas.terrain">DreamlandTile</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/SpellComponent.html#cast()" class="member-name-link">cast()</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellComponent.html" title="class in com.csse3200.game.components.spells">SpellComponent</a></dt>
+<dd>
+<div class="block">Casts the spell, showing the area covered and applying its effect to everything caught.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/spells/FreezeSpellComponent.html#CAST_EVENT" class="member-name-link">CAST_EVENT</a> - Static variable in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/FreezeSpellComponent.html" title="class in com.csse3200.game.components.spells">FreezeSpellComponent</a></dt>
+<dd>
+<div class="block">Event on the caster that casts this spell.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/spells/LightningSpellComponent.html#CAST_EVENT" class="member-name-link">CAST_EVENT</a> - Static variable in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/LightningSpellComponent.html" title="class in com.csse3200.game.components.spells">LightningSpellComponent</a></dt>
+<dd>
+<div class="block">Event on the caster that casts this spell.</div>
+</dd>
 <dt><a href="com/csse3200/game/physics/components/PhysicsComponent.AlignX.html#CENTER" class="member-name-link">CENTER</a> - Enum constant in enum class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsComponent.AlignX.html" title="enum class in com.csse3200.game.physics.components">PhysicsComponent.AlignX</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/components/PhysicsComponent.AlignY.html#CENTER" class="member-name-link">CENTER</a> - Enum constant in enum class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsComponent.AlignY.html" title="enum class in com.csse3200.game.physics.components">PhysicsComponent.AlignY</a></dt>
@@ -587,6 +620,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/rooms/configs/package-summary.html">com.csse3200.game.components.rooms.configs</a> - package com.csse3200.game.components.rooms.configs</dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/settingsmenu/package-summary.html">com.csse3200.game.components.settingsmenu</a> - package com.csse3200.game.components.settingsmenu</dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/package-summary.html">com.csse3200.game.components.spells</a> - package com.csse3200.game.components.spells</dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/package-summary.html">com.csse3200.game.components.spells.targeting</a> - package com.csse3200.game.components.spells.targeting</dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/package-summary.html">com.csse3200.game.components.statuseffects</a> - package com.csse3200.game.components.statuseffects</dt>
 <dd>&nbsp;</dd>
@@ -835,6 +872,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/settingsmenu/SettingsMenuDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.settingsmenu.<a href="com/csse3200/game/components/settingsmenu/SettingsMenuDisplay.html" title="class in com.csse3200.game.components.settingsmenu">SettingsMenuDisplay</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/SpellComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellComponent.html" title="class in com.csse3200.game.components.spells">SpellComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/SplitComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/SplitComponent.html" title="class in com.csse3200.game.components">SplitComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/StatusEffectsControllerComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/StatusEffectsControllerComponent.html" title="class in com.csse3200.game.components">StatusEffectsControllerComponent</a></dt>
@@ -878,6 +917,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/ui/terminal/TouchTerminalInputComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.ui.terminal.<a href="com/csse3200/game/ui/terminal/TouchTerminalInputComponent.html" title="class in com.csse3200.game.ui.terminal">TouchTerminalInputComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/UIComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/rendering/RadialTextureFactory.html#create(int,com.csse3200.game.rendering.RadialTextureFactory.AlphaProfile)" class="member-name-link">create(int, RadialTextureFactory.AlphaProfile)</a> - Static method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RadialTextureFactory.html" title="class in com.csse3200.game.rendering">RadialTextureFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ai/tasks/DefaultTask.html#create(com.csse3200.game.ai.tasks.TaskRunner)" class="member-name-link">create(TaskRunner)</a> - Method in class com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/DefaultTask.html" title="class in com.csse3200.game.ai.tasks">DefaultTask</a></dt>
 <dd>&nbsp;</dd>
@@ -1253,6 +1294,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/settingsmenu/SettingsMenuDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.settingsmenu.<a href="com/csse3200/game/components/settingsmenu/SettingsMenuDisplay.html" title="class in com.csse3200.game.components.settingsmenu">SettingsMenuDisplay</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/SpellAoeVisualComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellAoeVisualComponent.html" title="class in com.csse3200.game.components.spells">SpellAoeVisualComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/StatusEffectsControllerComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/StatusEffectsControllerComponent.html" title="class in com.csse3200.game.components">StatusEffectsControllerComponent</a></dt>
 <dd>
 <div class="block">Ends every effect on this entity and stops the controller for good.</div>
@@ -1336,6 +1379,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/player/PlayerStatsDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/settingsmenu/SettingsMenuDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.settingsmenu.<a href="com/csse3200/game/components/settingsmenu/SettingsMenuDisplay.html" title="class in com.csse3200.game.components.settingsmenu">SettingsMenuDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/SpellAoeVisualComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellAoeVisualComponent.html" title="class in com.csse3200.game.components.spells">SpellAoeVisualComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/AnimationRenderComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -1479,6 +1524,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/npc/EnemyStatDisplay.html#%3Cinit%3E(float)" class="member-name-link">EnemyStatDisplay(float)</a> - Constructor for class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/EnemyStatDisplay.html" title="class in com.csse3200.game.components.npc">EnemyStatDisplay</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/EnemyTargetingStrategy.html" class="type-name-link" title="interface in com.csse3200.game.components.spells.targeting">EnemyTargetingStrategy</a> - Interface in <a href="com/csse3200/game/components/spells/targeting/package-summary.html">com.csse3200.game.components.spells.targeting</a></dt>
+<dd>
+<div class="block">Selects which enemy entities an ability should affect.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/EnemyUtils.html" class="type-name-link" title="class in com.csse3200.game.components.spells.targeting">EnemyUtils</a> - Class in <a href="com/csse3200/game/components/spells/targeting/package-summary.html">com.csse3200.game.components.spells.targeting</a></dt>
+<dd>
+<div class="block">Shared logic for identifying enemy entities, used across targeting strategies.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/player/InteractionPrompt.html#ENTER_DUNGEON" class="member-name-link">ENTER_DUNGEON</a> - Static variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InteractionPrompt.html" title="class in com.csse3200.game.components.player">InteractionPrompt</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html#ENTERED" class="member-name-link">ENTERED</a> - Static variable in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusMistComponent</a></dt>
@@ -1764,6 +1817,16 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Fixture which was hit.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/statuseffects/FlashEffect.html" class="type-name-link" title="class in com.csse3200.game.components.statuseffects">FlashEffect</a> - Class in <a href="com/csse3200/game/components/statuseffects/package-summary.html">com.csse3200.game.components.statuseffects</a></dt>
+<dd>
+<div class="block">A timed blink in one colour that leaves transparency and the owner's gameplay stats unchanged.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/FlashEffect.html#%3Cinit%3E(com.csse3200.game.services.GameTime,long,com.badlogic.gdx.graphics.Color)" class="member-name-link">FlashEffect(GameTime, long, Color)</a> - Constructor for class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/FlashEffect.html" title="class in com.csse3200.game.components.statuseffects">FlashEffect</a></dt>
+<dd>
+<div class="block">A blink that tints only, which leaves a dark sprite looking unchanged.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/FlashEffect.html#%3Cinit%3E(com.csse3200.game.services.GameTime,long,com.badlogic.gdx.graphics.Color,com.badlogic.gdx.graphics.Color)" class="member-name-link">FlashEffect(GameTime, long, Color, Color)</a> - Constructor for class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/FlashEffect.html" title="class in com.csse3200.game.components.statuseffects">FlashEffect</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossMovementComponent.Mode.html#FLEE_ALONG_EDGE" class="member-name-link">FLEE_ALONG_EDGE</a> - Enum constant in enum class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossMovementComponent.Mode.html" title="enum class in com.csse3200.game.components.boss">FinalBossMovementComponent.Mode</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/input/InputComponent.html#fling(float,float,int)" class="member-name-link">fling(float, float, int)</a> - Method in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></dt>
@@ -1821,6 +1884,20 @@ loadScripts(document, 'script');</script>
 <div class="block">FPS cap of the game.</div>
 </dd>
 <dt><a href="com/csse3200/game/entities/configs/FinalBossStageThreeConfig.html#freezeDuration" class="member-name-link">freezeDuration</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/FinalBossStageThreeConfig.html" title="class in com.csse3200.game.entities.configs">FinalBossStageThreeConfig</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/FreezeSpellComponent.html" class="type-name-link" title="class in com.csse3200.game.components.spells">FreezeSpellComponent</a> - Class in <a href="com/csse3200/game/components/spells/package-summary.html">com.csse3200.game.components.spells</a></dt>
+<dd>
+<div class="block">Freeze spell: on cast, freezes every enemy its targeting strategy selects, leaving each one
+ tinted light blue and unable to move or attack until it thaws.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/spells/FreezeSpellComponent.html#%3Cinit%3E(float,long,com.csse3200.game.components.spells.targeting.EnemyTargetingStrategy)" class="member-name-link">FreezeSpellComponent(float, long, EnemyTargetingStrategy)</a> - Constructor for class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/FreezeSpellComponent.html" title="class in com.csse3200.game.components.spells">FreezeSpellComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/FrozenEffect.html" class="type-name-link" title="class in com.csse3200.game.components.statuseffects">FrozenEffect</a> - Class in <a href="com/csse3200/game/components/statuseffects/package-summary.html">com.csse3200.game.components.statuseffects</a></dt>
+<dd>
+<div class="block">Encases whoever it is on in ice: a lasting light blue tint, and neither a step nor a swing for
+ the duration.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/FrozenEffect.html#%3Cinit%3E(com.csse3200.game.services.GameTime,long)" class="member-name-link">FrozenEffect(GameTime, long)</a> - Constructor for class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/FrozenEffect.html" title="class in com.csse3200.game.components.statuseffects">FrozenEffect</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/UserSettings.Settings.html#fullscreen" class="member-name-link">fullscreen</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.Settings.html" title="class in com.csse3200.game.files">UserSettings.Settings</a></dt>
 <dd>&nbsp;</dd>
@@ -1985,6 +2062,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/ui/terminal/Terminal.html#getEnteredMessage()" class="member-name-link">getEnteredMessage()</a> - Method in class com.csse3200.game.ui.terminal.<a href="com/csse3200/game/ui/terminal/Terminal.html" title="class in com.csse3200.game.ui.terminal">Terminal</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/EntityService.html#getEntities()" class="member-name-link">getEntities()</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/EntityService.html" title="class in com.csse3200.game.entities">EntityService</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ai/tasks/TaskRunner.html#getEntity()" class="member-name-link">getEntity()</a> - Method in interface com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/TaskRunner.html" title="interface in com.csse3200.game.ai.tasks">TaskRunner</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/Component.html#getEntity()" class="member-name-link">getEntity()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/Component.html" title="class in com.csse3200.game.components">Component</a></dt>
@@ -2011,6 +2090,23 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/ComponentType.html#getFrom(java.lang.Class)" class="member-name-link">getFrom(Class&lt;? extends Component&gt;)</a> - Static method in class com.csse3200.game.components.<a href="com/csse3200/game/components/ComponentType.html" title="class in com.csse3200.game.components">ComponentType</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/FlashEffect.html#getGlow()" class="member-name-link">getGlow()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/FlashEffect.html" title="class in com.csse3200.game.components.statuseffects">FlashEffect</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/FrozenEffect.html#getGlow()" class="member-name-link">getGlow()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/FrozenEffect.html" title="class in com.csse3200.game.components.statuseffects">FrozenEffect</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/StatusEffect.html#getGlow()" class="member-name-link">getGlow()</a> - Method in interface com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></dt>
+<dd>
+<div class="block">Returns the colour this effect adds on top of the sprite of whatever it is on, or null to add
+ nothing.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/StatusEffectsControllerComponent.html#getGlow()" class="member-name-link">getGlow()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/StatusEffectsControllerComponent.html" title="class in com.csse3200.game.components">StatusEffectsControllerComponent</a></dt>
+<dd>
+<div class="block">Returns the combined glow of running effects, or null when none glows.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/StatusEffectsControllerComponent.html#getGlow(com.csse3200.game.entities.Entity)" class="member-name-link">getGlow(Entity)</a> - Static method in class com.csse3200.game.components.<a href="com/csse3200/game/components/StatusEffectsControllerComponent.html" title="class in com.csse3200.game.components">StatusEffectsControllerComponent</a></dt>
+<dd>
+<div class="block">Returns the combined glow of the entity's active effects, or null when nothing glows.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/player/InventoryComponent.html#getGold()" class="member-name-link">getGold()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
 <dd>
 <div class="block">Returns the player's gold.</div>
@@ -2187,6 +2283,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Not required for game, unimplemented</div>
 </dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/EnemyTargetingStrategy.html#getRadius()" class="member-name-link">getRadius()</a> - Method in interface com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/EnemyTargetingStrategy.html" title="interface in com.csse3200.game.components.spells.targeting">EnemyTargetingStrategy</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/StrategyWithinRadius.html#getRadius()" class="member-name-link">getRadius()</a> - Method in class com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/StrategyWithinRadius.html" title="class in com.csse3200.game.components.spells.targeting">StrategyWithinRadius</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/GameTime.html#getRawDeltaTime()" class="member-name-link">getRawDeltaTime()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/GameTime.html" title="class in com.csse3200.game.services">GameTime</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html#getRemainingCooldown()" class="member-name-link">getRemainingCooldown()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons">WeaponStatsComponent</a></dt>
@@ -2283,6 +2383,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistSlowEffect.html#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)" class="member-name-link">getStatMultiplier(Stat)</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistSlowEffect.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusMistSlowEffect</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/FrozenEffect.html#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)" class="member-name-link">getStatMultiplier(Stat)</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/FrozenEffect.html" title="class in com.csse3200.game.components.statuseffects">FrozenEffect</a></dt>
+<dd>
+<div class="block">Zeroes every stat, so contact damage from a frozen body lands for nothing as well.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/LastStandEffect.html#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)" class="member-name-link">getStatMultiplier(Stat)</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/LastStandEffect.html" title="class in com.csse3200.game.components.statuseffects">LastStandEffect</a></dt>
 <dd>
 <div class="block">Amplifies every stat equally; the enum parameter is what lets a future slow be selective.</div>
@@ -2330,11 +2434,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/ServiceLocator.html#getTimeSource()" class="member-name-link">getTimeSource()</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/FlashEffect.html#getTint()" class="member-name-link">getTint()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/FlashEffect.html" title="class in com.csse3200.game.components.statuseffects">FlashEffect</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/FrozenEffect.html#getTint()" class="member-name-link">getTint()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/FrozenEffect.html" title="class in com.csse3200.game.components.statuseffects">FrozenEffect</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/InvisibilityEffect.html#getTint()" class="member-name-link">getTint()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/InvisibilityEffect.html" title="class in com.csse3200.game.components.statuseffects">InvisibilityEffect</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/LastStandEffect.html#getTint()" class="member-name-link">getTint()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/LastStandEffect.html" title="class in com.csse3200.game.components.statuseffects">LastStandEffect</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/statuseffects/RedFlashEffect.html#getTint()" class="member-name-link">getTint()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/RedFlashEffect.html" title="class in com.csse3200.game.components.statuseffects">RedFlashEffect</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/StatusEffect.html#getTint()" class="member-name-link">getTint()</a> - Method in interface com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></dt>
 <dd>
@@ -2406,6 +2512,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusMistComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/SpellAoeVisualComponent.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellAoeVisualComponent.html" title="class in com.csse3200.game.components.spells">SpellAoeVisualComponent</a></dt>
+<dd>
+<div class="block">Behind every sprite in the layer, so the area reads as being painted on the floor.</div>
+</dd>
 <dt><a href="com/csse3200/game/rendering/Renderable.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in interface com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/Renderable.html" title="interface in com.csse3200.game.rendering">Renderable</a></dt>
 <dd>
 <div class="block">Z index controls rendering order within a layer.</div>
@@ -2554,6 +2664,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/RoomConfig.html#id" class="member-name-link">id</a> - Variable in class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/FrozenEffect.html#immobilisesOwner()" class="member-name-link">immobilisesOwner()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/FrozenEffect.html" title="class in com.csse3200.game.components.statuseffects">FrozenEffect</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/StatusEffect.html#immobilisesOwner()" class="member-name-link">immobilisesOwner()</a> - Method in interface com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></dt>
+<dd>
+<div class="block">Returns whether the entity should be unable to act at all while this runs: no movement, and no
+ attack the entity's own AI would otherwise decide to make.</div>
+</dd>
 <dt><a href="com/csse3200/game/ai/tasks/Task.Status.html#INACTIVE" class="member-name-link">INACTIVE</a> - Enum constant in enum class com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/Task.Status.html" title="enum class in com.csse3200.game.ai.tasks">Task.Status</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossStageThreeState.html#INACTIVE" class="member-name-link">INACTIVE</a> - Enum constant in enum class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossStageThreeState.html" title="enum class in com.csse3200.game.components.boss">FinalBossStageThreeState</a></dt>
@@ -2688,6 +2805,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/StatusEffectsControllerComponent.html#isDisposed()" class="member-name-link">isDisposed()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/StatusEffectsControllerComponent.html" title="class in com.csse3200.game.components">StatusEffectsControllerComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/EnemyUtils.html#isEnemy(com.csse3200.game.entities.Entity)" class="member-name-link">isEnemy(Entity)</a> - Static method in class com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/EnemyUtils.html" title="class in com.csse3200.game.components.spells.targeting">EnemyUtils</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/StatusEffect.html#isExpired()" class="member-name-link">isExpired()</a> - Method in interface com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></dt>
 <dd>
 <div class="block">Returns whether the effect has run its course.</div>
@@ -2701,6 +2820,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/CombatStatsComponent.html#isHostileAttacker(com.csse3200.game.entities.Entity)" class="member-name-link">isHostileAttacker(Entity)</a> - Static method in class com.csse3200.game.components.<a href="com/csse3200/game/components/CombatStatsComponent.html" title="class in com.csse3200.game.components">CombatStatsComponent</a></dt>
 <dd>
 <div class="block">Identifies enemy bodies and attack entities, preserving projectiles as the actual attacker.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/StatusEffectsControllerComponent.html#isImmobilised()" class="member-name-link">isImmobilised()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/StatusEffectsControllerComponent.html" title="class in com.csse3200.game.components">StatusEffectsControllerComponent</a></dt>
+<dd>
+<div class="block">Returns whether any running effect stops this entity moving and acting.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/StatusEffectsControllerComponent.html#isImmobilised(com.csse3200.game.entities.Entity)" class="member-name-link">isImmobilised(Entity)</a> - Static method in class com.csse3200.game.components.<a href="com/csse3200/game/components/StatusEffectsControllerComponent.html" title="class in com.csse3200.game.components">StatusEffectsControllerComponent</a></dt>
+<dd>
+<div class="block">Returns whether the entity currently cannot move or act under its own steam.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/player/InvisibilityPotionComponent.html#isInvisible()" class="member-name-link">isInvisible()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InvisibilityPotionComponent.html" title="class in com.csse3200.game.components.player">InvisibilityPotionComponent</a></dt>
 <dd>
@@ -2727,6 +2854,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/player/PlayerPetrificationComponent.html#isPetrified()" class="member-name-link">isPetrified()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerPetrificationComponent.html" title="class in com.csse3200.game.components.player">PlayerPetrificationComponent</a></dt>
 <dd>
 <div class="block">Returns whether the movement penalty is still active, including between controller ticks.</div>
+</dd>
+<dt><a href="com/csse3200/game/rendering/RenderComponent.html#isRepeatPass()" class="member-name-link">isRepeatPass()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></dt>
+<dd>
+<div class="block">Returns whether this is the glow pass redrawing the same frame rather than a new one.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/player/PlayerAbility.html#isRunning()" class="member-name-link">isRunning()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a></dt>
 <dd>
@@ -2948,6 +3079,13 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the value of the <a href="./com/csse3200/game/components/weapons/WeaponUpgradeStats.html#param-lightDamageMultiplier"><code>lightDamageMultiplier</code></a> record component.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/spells/LightningSpellComponent.html" class="type-name-link" title="class in com.csse3200.game.components.spells">LightningSpellComponent</a> - Class in <a href="com/csse3200/game/components/spells/package-summary.html">com.csse3200.game.components.spells</a></dt>
+<dd>
+<div class="block">Lightning spell: on cast, strikes every enemy its targeting strategy selects for a fixed amount
+ of damage, flashing each one purple to show it was caught.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/spells/LightningSpellComponent.html#%3Cinit%3E(float,int,long,com.csse3200.game.components.spells.targeting.EnemyTargetingStrategy)" class="member-name-link">LightningSpellComponent(float, int, long, EnemyTargetingStrategy)</a> - Constructor for class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/LightningSpellComponent.html" title="class in com.csse3200.game.components.spells">LightningSpellComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/ResourceService.html#loadAll()" class="member-name-link">loadAll()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ResourceService.html" title="class in com.csse3200.game.services">ResourceService</a></dt>
 <dd>
 <div class="block">Blocking call to load all assets.</div>
@@ -3490,6 +3628,15 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:R">R</h2>
 <dl class="index">
+<dt><a href="com/csse3200/game/rendering/RadialTextureFactory.html" class="type-name-link" title="class in com.csse3200.game.rendering">RadialTextureFactory</a> - Class in <a href="com/csse3200/game/rendering/package-summary.html">com.csse3200.game.rendering</a></dt>
+<dd>
+<div class="block">Builds the soft circular textures that area visuals draw: a square texture, clear outside the
+ circle, whose alpha inside it is whatever the caller's profile says.</div>
+</dd>
+<dt><a href="com/csse3200/game/rendering/RadialTextureFactory.AlphaProfile.html" class="type-name-link" title="interface in com.csse3200.game.rendering">RadialTextureFactory.AlphaProfile</a> - Interface in <a href="com/csse3200/game/rendering/package-summary.html">com.csse3200.game.rendering</a></dt>
+<dd>
+<div class="block">The alpha of a pixel at a distance from the centre, where 0 is the centre and 1 the edge.</div>
+</dd>
 <dt><a href="com/csse3200/game/utils/math/RandomUtils.html#random(com.badlogic.gdx.math.GridPoint2,com.badlogic.gdx.math.GridPoint2)" class="member-name-link">random(GridPoint2, GridPoint2)</a> - Static method in class com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/RandomUtils.html" title="class in com.csse3200.game.utils.math">RandomUtils</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/math/RandomUtils.html#random(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">random(Vector2, Vector2)</a> - Static method in class com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/RandomUtils.html" title="class in com.csse3200.game.utils.math">RandomUtils</a></dt>
@@ -3858,6 +4005,20 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Scrolling up will open the terminal and scrolling down will close the terminal.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/EnemyTargetingStrategy.html#selectTargets(com.csse3200.game.entities.Entity)" class="member-name-link">selectTargets(Entity)</a> - Method in interface com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/EnemyTargetingStrategy.html" title="interface in com.csse3200.game.components.spells.targeting">EnemyTargetingStrategy</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/StrategyAll.html#selectTargets(com.csse3200.game.entities.Entity)" class="member-name-link">selectTargets(Entity)</a> - Method in class com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/StrategyAll.html" title="class in com.csse3200.game.components.spells.targeting">StrategyAll</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/StrategyClosest.html#selectTargets(com.csse3200.game.entities.Entity)" class="member-name-link">selectTargets(Entity)</a> - Method in class com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/StrategyClosest.html" title="class in com.csse3200.game.components.spells.targeting">StrategyClosest</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/StrategyOnscreen.html#selectTargets(com.csse3200.game.entities.Entity)" class="member-name-link">selectTargets(Entity)</a> - Method in class com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/StrategyOnscreen.html" title="class in com.csse3200.game.components.spells.targeting">StrategyOnscreen</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/StrategyWithinRadius.html#selectTargets(com.csse3200.game.entities.Entity)" class="member-name-link">selectTargets(Entity)</a> - Method in class com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/StrategyWithinRadius.html" title="class in com.csse3200.game.components.spells.targeting">StrategyWithinRadius</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/StrategyWithinRadius.html#selectTargets(com.csse3200.game.entities.Entity,float)" class="member-name-link">selectTargets(Entity, float)</a> - Method in class com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/StrategyWithinRadius.html" title="class in com.csse3200.game.components.spells.targeting">StrategyWithinRadius</a></dt>
+<dd>
+<div class="block">Selects targets within a one-off radius, ignoring this strategy's own.</div>
+</dd>
 <dt><a href="com/csse3200/game/services/ServiceLocator.html" class="type-name-link" title="class in com.csse3200.game.services">ServiceLocator</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
 <dd>
 <div class="block">A simplified implementation of the Service Locator pattern:
@@ -4139,6 +4300,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/rooms/FollowingCameraComponent.html#setTarget(com.csse3200.game.entities.Entity)" class="member-name-link">setTarget(Entity)</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/FollowingCameraComponent.html" title="class in com.csse3200.game.components.rooms">FollowingCameraComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/SpellComponent.html#setTargetingStrategy(com.csse3200.game.components.spells.targeting.EnemyTargetingStrategy)" class="member-name-link">setTargetingStrategy(EnemyTargetingStrategy)</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellComponent.html" title="class in com.csse3200.game.components.spells">SpellComponent</a></dt>
+<dd>
+<div class="block">Swap targeting behaviour at runtime, e.g.</div>
+</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainTile.html#setTextureRegion(com.badlogic.gdx.graphics.g2d.TextureRegion)" class="member-name-link">setTextureRegion(TextureRegion)</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainTile.html" title="class in com.csse3200.game.areas.terrain">TerrainTile</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainConfig.html#setTextures(java.lang.String,java.lang.String,java.lang.String)" class="member-name-link">setTextures(String, String, String)</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainConfig.html" title="class in com.csse3200.game.areas.terrain">TerrainConfig</a></dt>
@@ -4216,6 +4381,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/FinalBossStageThreeConfig.html#shockwaveWidth" class="member-name-link">shockwaveWidth</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/FinalBossStageThreeConfig.html" title="class in com.csse3200.game.entities.configs">FinalBossStageThreeConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/SpellAoeVisualComponent.html#show(com.badlogic.gdx.graphics.Color,float)" class="member-name-link">show(Color, float)</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellAoeVisualComponent.html" title="class in com.csse3200.game.components.spells">SpellAoeVisualComponent</a></dt>
+<dd>
+<div class="block">Shows the area a cast just covered.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossPetrificationWarningRenderComponent.html#showAt(com.badlogic.gdx.math.Vector2,float)" class="member-name-link">showAt(Vector2, float)</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossPetrificationWarningRenderComponent.html" title="class in com.csse3200.game.components.boss">FinalBossPetrificationWarningRenderComponent</a></dt>
 <dd>
 <div class="block">Displays the warning circle at the supplied fixed world position.</div>
@@ -4302,6 +4471,25 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a new stack of speed.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/spells/SpellAoeVisualComponent.html" class="type-name-link" title="class in com.csse3200.game.components.spells">SpellAoeVisualComponent</a> - Class in <a href="com/csse3200/game/components/spells/package-summary.html">com.csse3200.game.components.spells</a></dt>
+<dd>
+<div class="block">Draws the disc a spell just covered, centred on the caster and fading out over a moment.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/spells/SpellAoeVisualComponent.html#%3Cinit%3E()" class="member-name-link">SpellAoeVisualComponent()</a> - Constructor for class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellAoeVisualComponent.html" title="class in com.csse3200.game.components.spells">SpellAoeVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/SpellCommand.html" class="type-name-link" title="class in com.csse3200.game.ui.terminal.commands">SpellCommand</a> - Class in <a href="com/csse3200/game/ui/terminal/commands/package-summary.html">com.csse3200.game.ui.terminal.commands</a></dt>
+<dd>
+<div class="block">Terminal command that casts one of the player's spells: <code>spell lightning|freeze</code>.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/SpellCommand.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">SpellCommand(Entity)</a> - Constructor for class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/SpellCommand.html" title="class in com.csse3200.game.ui.terminal.commands">SpellCommand</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/SpellComponent.html" class="type-name-link" title="class in com.csse3200.game.components.spells">SpellComponent</a> - Class in <a href="com/csse3200/game/components/spells/package-summary.html">com.csse3200.game.components.spells</a></dt>
+<dd>
+<div class="block">What every spell on the caster has in common: a cooldown, a targeting strategy deciding who is
+ caught, and the disc shown over the area it covered.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/spells/SpellComponent.html#%3Cinit%3E(float,java.lang.String,com.badlogic.gdx.graphics.Color,com.csse3200.game.components.spells.targeting.EnemyTargetingStrategy)" class="member-name-link">SpellComponent(float, String, Color, EnemyTargetingStrategy)</a> - Constructor for class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellComponent.html" title="class in com.csse3200.game.components.spells">SpellComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/SplitComponent.html" class="type-name-link" title="class in com.csse3200.game.components">SplitComponent</a> - Class in <a href="com/csse3200/game/components/package-summary.html">com.csse3200.game.components</a></dt>
 <dd>
 <div class="block">Component that splits an enemy into two weaker copies when attacked by the player.</div>
@@ -4472,6 +4660,35 @@ loadScripts(document, 'script');</script>
 <div class="block">Stop the currently running animation.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossMovementComponent.Mode.html#STOPPED" class="member-name-link">STOPPED</a> - Enum constant in enum class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossMovementComponent.Mode.html" title="enum class in com.csse3200.game.components.boss">FinalBossMovementComponent.Mode</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/StrategyAll.html" class="type-name-link" title="class in com.csse3200.game.components.spells.targeting">StrategyAll</a> - Class in <a href="com/csse3200/game/components/spells/targeting/package-summary.html">com.csse3200.game.components.spells.targeting</a></dt>
+<dd>
+<div class="block">Selects every enemy currently registered with the <code>EntityService</code>, regardless of position
+ or camera visibility.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/StrategyAll.html#%3Cinit%3E()" class="member-name-link">StrategyAll()</a> - Constructor for class com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/StrategyAll.html" title="class in com.csse3200.game.components.spells.targeting">StrategyAll</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/StrategyClosest.html" class="type-name-link" title="class in com.csse3200.game.components.spells.targeting">StrategyClosest</a> - Class in <a href="com/csse3200/game/components/spells/targeting/package-summary.html">com.csse3200.game.components.spells.targeting</a></dt>
+<dd>
+<div class="block">Selects the single enemy closest to the caster (by centre-to-centre distance).</div>
+</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/StrategyClosest.html#%3Cinit%3E()" class="member-name-link">StrategyClosest()</a> - Constructor for class com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/StrategyClosest.html" title="class in com.csse3200.game.components.spells.targeting">StrategyClosest</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/StrategyOnscreen.html" class="type-name-link" title="class in com.csse3200.game.components.spells.targeting">StrategyOnscreen</a> - Class in <a href="com/csse3200/game/components/spells/targeting/package-summary.html">com.csse3200.game.components.spells.targeting</a></dt>
+<dd>
+<div class="block">Selects enemies whose centre currently falls within the camera's viewport.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/StrategyOnscreen.html#%3Cinit%3E(com.csse3200.game.components.CameraComponent)" class="member-name-link">StrategyOnscreen(CameraComponent)</a> - Constructor for class com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/StrategyOnscreen.html" title="class in com.csse3200.game.components.spells.targeting">StrategyOnscreen</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/StrategyWithinRadius.html" class="type-name-link" title="class in com.csse3200.game.components.spells.targeting">StrategyWithinRadius</a> - Class in <a href="com/csse3200/game/components/spells/targeting/package-summary.html">com.csse3200.game.components.spells.targeting</a></dt>
+<dd>
+<div class="block">Selects every enemy within a radius of the caster.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/StrategyWithinRadius.html#%3Cinit%3E()" class="member-name-link">StrategyWithinRadius()</a> - Constructor for class com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/StrategyWithinRadius.html" title="class in com.csse3200.game.components.spells.targeting">StrategyWithinRadius</a></dt>
+<dd>
+<div class="block">Uses the default radius of 10.0f.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/spells/targeting/StrategyWithinRadius.html#%3Cinit%3E(float)" class="member-name-link">StrategyWithinRadius(float)</a> - Constructor for class com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/StrategyWithinRadius.html" title="class in com.csse3200.game.components.spells.targeting">StrategyWithinRadius</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/charms/StrengthCharm.html" class="type-name-link" title="class in com.csse3200.game.items.charms">StrengthCharm</a> - Class in <a href="com/csse3200/game/items/charms/package-summary.html">com.csse3200.game.items.charms</a></dt>
 <dd>&nbsp;</dd>
@@ -4959,6 +5176,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Applies a requested room switch after the current physics step has completed.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/settingsmenu/SettingsMenuDisplay.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.settingsmenu.<a href="com/csse3200/game/components/settingsmenu/SettingsMenuDisplay.html" title="class in com.csse3200.game.components.settingsmenu">SettingsMenuDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/SpellAoeVisualComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellAoeVisualComponent.html" title="class in com.csse3200.game.components.spells">SpellAoeVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/spells/SpellComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellComponent.html" title="class in com.csse3200.game.components.spells">SpellComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/Burning.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/Burning.html" title="class in com.csse3200.game.components.statuseffects">Burning</a></dt>
 <dd>
