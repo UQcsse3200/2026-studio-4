@@ -101,10 +101,10 @@ loadScripts(document, 'script');</script>
  travels in a straight line via <a href="ProjectileComponent.html" title="class in com.csse3200.game.components.weapons"><code>ProjectileComponent</code></a>. It despawns on its first enemy or
  obstacle hit, or when its lifetime runs out.
 
- <p>Once upgraded (see <a href="WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponUpgradeComponent</code></a>) the light shot deals 20% more damage, and
- the bow also has a heavy attack: three arrows at once - one along the aim direction, plus one to
- each side at <code>SPREAD_ANGLE_DEG</code> - each checking its own path independently, so a wall
- blocking the centre arrow does not stop the other two.</div>
+ <p>Once upgraded (see <a href="WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponUpgradeComponent</code></a>) the light shot deals 20% more damage, every
+ arrow is drawn with a fancier sprite, and the bow also has a heavy attack: three arrows at once -
+ one along the aim direction, plus one to each side at <code>SPREAD_ANGLE_DEG</code> - each checking
+ its own path independently, so a wall blocking the centre arrow does not stop the other two.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -121,6 +121,11 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><code><a href="#TEXTURE" class="member-name-link">TEXTURE</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">Sprite drawn for the thrown blade in flight.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#UPGRADED_TEXTURE" class="member-name-link">UPGRADED_TEXTURE</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Fancier sprite drawn for every arrow once the bow is upgraded.</div>
 </div>
 </div>
 <div class="inherited-list">
@@ -200,6 +205,22 @@ loadScripts(document, 'script');</script>
 <dd>
 <ul class="tag-list">
 <li><a href="../../../../../constant-values.html#com.csse3200.game.components.weapons.BowWeaponComponent.TEXTURE">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="UPGRADED_TEXTURE">
+<h3>UPGRADED_TEXTURE</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">UPGRADED_TEXTURE</span></div>
+<div class="block">Fancier sprite drawn for every arrow once the bow is upgraded. Cut from the same sheet and
+ drawn at the same angle as <a href="#TEXTURE"><code>TEXTURE</code></a>. Loaded by <a href="WeaponAssetsComponent.html" title="class in com.csse3200.game.components.weapons"><code>WeaponAssetsComponent</code></a>.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.components.weapons.BowWeaponComponent.UPGRADED_TEXTURE">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
