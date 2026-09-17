@@ -175,10 +175,7 @@ public class FinalBossStageOneComponent extends Component {
               : config.waveOneFormationRadius;
 
       summonMovement.setFormationRadius(formationRadius);
-      boolean waveOne = state == FinalBossStageOneState.WAVE_ONE;
-
-      summonMovement.setClosingSpeed(waveOne ? 0.55f : 0.75f);
-      summonMovement.setContinuousClosing(false);
+      summonMovement.setDirectChase(true);
 
       summonMovement.setCamera(movementController.getCamera());
       summon.addComponent(summonMovement);
@@ -246,7 +243,7 @@ public class FinalBossStageOneComponent extends Component {
 
     changeState(FinalBossStageOneState.WAVE_TWO);
 
-    spawnWave(config.waveTwoSummonCount, config.waveTwoSummonSpeed, 0f);
+    spawnWave(config.waveTwoSummonCount, config.waveTwoSummonSpeed, 0.7f);
   }
 
   private void completeStageOne() {

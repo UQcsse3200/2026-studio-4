@@ -69,6 +69,25 @@ class FinalBossSummonMovementComponentTest {
   }
 
   @Test
+  void directChaseShouldApproachPlayerInsteadOfFindingAnOppositeSlot() {
+    player.setPosition(0f, 0f);
+    position.set(3f, 0f);
+    FinalBossSummonMovementComponent controller = createController(180f);
+    controller.setDirectChase(true);
+    when(time.getDeltaTime()).thenReturn(1f);
+    controller.update();
+    Vector2 next = captureTarget();
+    assertTrue(next.x < position.x);
+    assertEquals(position.y, next.y, 0.001f);
+    // 玩家换位置以后，下一步也应该朝新的位置走。
+    position.set(next);
+    player.setPosition(position.x, 5f);
+    clearInvocations(movement);
+    controller.update();
+    assertTrue(captureTarget().y > position.y);
+  }
+
+  @Test
   void shouldRouteAroundPlayerInsteadOfCuttingAcrossCentre() {
     player.setPosition(0f, 0f);
     position.set(3f, 0f);

@@ -55,6 +55,7 @@ class FinalBossStageThreeSlamTest {
             .addComponent(actions);
     player.create();
     config = new FinalBossStageThreeConfig();
+    config.floatingDemonCount = 0; // Isolate statue/ice mechanics from rendered summons.
     phases = mock(FinalBossPhaseControllerComponent.class);
     when(phases.getCurrentPhase()).thenReturn(FinalBossPhase.STAGE_THREE);
     FinalBossMovementComponent movement = mock(FinalBossMovementComponent.class);

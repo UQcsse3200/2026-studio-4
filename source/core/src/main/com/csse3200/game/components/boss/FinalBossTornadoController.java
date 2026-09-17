@@ -12,9 +12,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 
-/** Wandering remnants of defeated statues. Owns movement and lifetime, not damage or textures. */
+/** Controls statue tornado movement, lifetime and contact damage. */
 final class FinalBossTornadoController {
   static final int MAX_TORNADOES = 4;
   static final float WIDTH = 2.6f;
@@ -41,6 +42,11 @@ final class FinalBossTornadoController {
   private final Consumer<Vector2> greyBurst;
   private boolean ending;
   private float spawnRetryRemaining;
+  private int contactDamage;
+  private float damageInterval = 1f;
+  private float damageCooldown;
+  private IntConsumer hurtPlayer = damage -> {};
+  private Vector2 previousPlayerPosition;
   private Supplier<List<StatuePath>> statuePaths = List::of;
 
   FinalBossTornadoController(
@@ -59,6 +65,12 @@ final class FinalBossTornadoController {
    */
   void setStatuePaths(Supplier<List<StatuePath>> statuePaths) {
     this.statuePaths = statuePaths;
+  }
+
+  void setContactDamage(int damage, float interval, IntConsumer hurtPlayer) {
+    contactDamage = damage;
+    damageInterval = interval;
+    this.hurtPlayer = hurtPlayer;
   }
 
   /**
@@ -116,7 +128,13 @@ final class FinalBossTornadoController {
       clear();
       return;
     }
+    damageCooldown = Math.max(0f, damageCooldown - delta);
+    Vector2 playerPosition = FinalBossStageThreeComponent.groundPosition(target);
+    if (previousPlayerPosition == null) previousPlayerPosition = playerPosition.cpy();
     for (Tornado tornado : items) {
+      Vector2 oldPosition = tornado.position.cpy();
+      boolean canHurt =
+          combatActive && !ending && !tornado.dissolving && tornado.elapsed >= SPAWN_DURATION;
       boolean cameraCorrected = recoverIntoCamera(tornado);
       if (tornado.destination != null
           && !clamp(tornado.destination).epsilonEquals(tornado.destination, EPSILON)) {
@@ -126,12 +144,30 @@ final class FinalBossTornadoController {
       if (tornado.dissolving) tornado.dissolveElapsed += delta;
       else if (!cameraCorrected && combatActive && tornado.elapsed >= SPAWN_DURATION)
         updateMovement(tornado, delta);
+      if (canHurt
+          && !cameraCorrected
+          && damageCooldown <= 0f
+          && contactDamage > 0
+          && !StatusEffectsControllerComponent.isConcealed(target)) {
+        // 只判定龙卷风底部附近，不把上面宽大的图片都算成碰撞。
+        Vector2 from = previousPlayerPosition.cpy().sub(oldPosition);
+        Vector2 to = playerPosition.cpy().sub(tornado.position);
+        float radius = 0.65f + Math.min(target.getScale().x, target.getScale().y) * 0.25f;
+        if (Intersector.distanceSegmentPoint(from, to, Vector2.Zero) <= radius) {
+          hurtPlayer.accept(contactDamage);
+          // 所有龙卷风共用间隔，重叠时也不会一帧扣好几次血。
+          damageCooldown = damageInterval;
+        }
+      }
     }
+    previousPlayerPosition.set(playerPosition);
     items.removeIf(tornado -> tornado.dissolving && tornado.dissolveElapsed >= DISSOLVE_DURATION);
     retryPendingSpawns(delta, combatActive);
   }
 
   void clear() {
+    previousPlayerPosition = null;
+    damageCooldown = 0f;
     items.clear();
     pendingSpawns.clear();
     spawnRetryRemaining = 0f;

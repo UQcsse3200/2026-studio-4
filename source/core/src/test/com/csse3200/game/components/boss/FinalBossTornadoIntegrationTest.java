@@ -44,6 +44,7 @@ class FinalBossTornadoIntegrationTest {
             .addComponent(new PlayerActions());
     player.create();
     config = new FinalBossStageThreeConfig();
+    config.floatingDemonCount = 0; // Isolate statue/ice mechanics from rendered summons.
     phases = mock(FinalBossPhaseControllerComponent.class);
     when(phases.getCurrentPhase()).thenReturn(FinalBossPhase.STAGE_ONE);
     FinalBossMovementComponent movement = mock(FinalBossMovementComponent.class);

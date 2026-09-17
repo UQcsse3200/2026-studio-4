@@ -52,6 +52,7 @@ public class FinalBossSummonMovementComponent extends Component {
   private float arrivalTolerance;
   private float closingSpeed = CLOSING_SPEED;
   private boolean continuousClosing;
+  private boolean directChase;
   private float formationElapsed;
 
   /** Sets the formation radius before the summon is registered. */
@@ -77,6 +78,10 @@ public class FinalBossSummonMovementComponent extends Component {
   public void setContinuousClosing(boolean enabled) {
     continuousClosing = enabled;
     formationElapsed = 0f;
+  }
+
+  public void setDirectChase(boolean enabled) {
+    directChase = enabled;
   }
 
   /**
@@ -127,11 +132,13 @@ public class FinalBossSummonMovementComponent extends Component {
       return;
     }
 
-    keepInsideVisibleArea();
-
     if (explosive.isWarningActive()) {
+      // 已经开始倒计时了，就留在原地，让玩家有时间跑开。
+      movement.setMoving(false);
       return;
     }
+
+    keepInsideVisibleArea();
 
     // The formation is built around the player, so a concealed player leaves nothing to close on.
     if (StatusEffectsControllerComponent.isConcealed(target)) {
@@ -169,6 +176,13 @@ public class FinalBossSummonMovementComponent extends Component {
       scattering = false;
     }
 
+    if (directChase) {
+      // 散开以后直接追玩家，不再找玩家旁边的固定位置。
+      formationRadius =
+          Math.min(
+              initialFormationRadius, entity.getCenterPosition().dst(target.getCenterPosition()));
+      return target.getCenterPosition();
+    }
     return chooseFormationDestination(deltaTime);
   }
 

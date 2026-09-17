@@ -54,6 +54,7 @@ class FinalBossStatueClusteringTest {
     player.create();
     player.getComponent(CombatStatsComponent.class).setInvulnerable(true);
     config = new FinalBossStageThreeConfig();
+    config.floatingDemonCount = 0; // Isolate statue/ice mechanics from rendered summons.
     FinalBossPhaseControllerComponent phases = mock(FinalBossPhaseControllerComponent.class);
     when(phases.getCurrentPhase()).thenReturn(FinalBossPhase.STAGE_THREE);
     FinalBossMovementComponent movement = mock(FinalBossMovementComponent.class);

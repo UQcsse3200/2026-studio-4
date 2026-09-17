@@ -52,9 +52,10 @@ itself abruptly moves or zooms, the controller explicitly restores in-view place
 its old destination before resuming movement. Separation is best-effort if a viewport is too small
 or completely obstructed to satisfy all clearances simultaneously.
 
-This version implements movement and visual pressure only. Tornadoes do not yet apply contact
-damage, knockback or extra status effects. The owner explicitly deferred damage design to a later
-sprint; this sprint focuses on movement, spacing and presentation.
+Tornadoes deal 6 contact damage with a shared one-second cooldown across all remnants.
+The narrow base and swept player movement determine contact. Spawn and dissolve animations
+are harmless. Concealment and normal damage protection apply; jumping does not avoid this
+damage. Damage and cooldown are configurable in FinalBossStageThreeConfig.
 
 When the last statue breaks, every tornado immediately stops roaming/chasing, plays the existing
 grey-white break/transformation effect at its own location and fades out over 0.6 seconds.

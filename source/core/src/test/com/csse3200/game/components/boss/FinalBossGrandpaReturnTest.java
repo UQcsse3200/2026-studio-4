@@ -62,6 +62,7 @@ class FinalBossGrandpaReturnTest {
     FinalBossPhaseControllerComponent phases = mock(FinalBossPhaseControllerComponent.class);
     when(phases.getCurrentPhase()).thenReturn(FinalBossPhase.STAGE_THREE);
     config = new FinalBossStageThreeConfig();
+    config.floatingDemonCount = 0; // Isolate statue/ice mechanics from rendered summons.
     stage = new FinalBossStageThreeComponent(player, Entity::create, config);
     boss =
         NPCFactory.createBaseNPC()

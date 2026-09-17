@@ -46,16 +46,16 @@ public class EnemyAnimationController extends Component {
       ServiceLocator.getEntityService().scheduleDisposal(entity);
     }
     if ("attack".equals(animator.getCurrentAnimation()) && animator.isFinished()) {
-      animator.startAnimation("move");
+      animateWander();
     }
   }
 
   private void animateWander() {
-    animator.startAnimation("move");
+    animator.startAnimation(animator.hasAnimation("float") ? "float" : "move");
   }
 
   private void animateChase() {
-    animator.startAnimation("chase");
+    animator.startAnimation(animator.hasAnimation("float") ? "float" : "chase");
   }
 
   private void animatePause() {
@@ -68,7 +68,7 @@ public class EnemyAnimationController extends Component {
 
   private void animatePatrol() {
     if (!dying) {
-      animator.startAnimation("move");
+      animateWander();
     }
   }
 

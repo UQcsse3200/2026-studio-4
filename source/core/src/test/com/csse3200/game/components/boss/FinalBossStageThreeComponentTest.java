@@ -32,18 +32,20 @@ class FinalBossStageThreeComponentTest {
 
   @BeforeEach
   void setup() {
-    ServiceLocator.registerPhysicsService(new PhysicsService());
     ServiceLocator.registerEntityService(mock(EntityService.class));
     time = mock(GameTime.class);
     ServiceLocator.registerTimeSource(time);
     when(time.getDeltaTime()).thenReturn(0.1f);
+    ServiceLocator.registerPhysicsService(new PhysicsService());
     player =
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(new CombatStatsComponent(100, 10, 3f, 1f))
+            .addComponent(new com.csse3200.game.components.StatusEffectsControllerComponent())
             .addComponent(new PlayerActions());
     player.create();
     config = new FinalBossStageThreeConfig();
+    config.floatingDemonCount = 0; // Isolate statue/ice mechanics from rendered summons.
     phases = mock(FinalBossPhaseControllerComponent.class);
     when(phases.getCurrentPhase()).thenReturn(FinalBossPhase.STAGE_THREE);
     stage = new FinalBossStageThreeComponent(player, Entity::create, config);
@@ -76,6 +78,126 @@ class FinalBossStageThreeComponentTest {
     assertEquals(FinalBossStageThreeState.WAVE_TWO, stage.getState());
     assertEquals(5, stage.getRemainingStatues());
     assertFalse(boss.getComponent(PhysicsComponent.class).getBody().isActive());
+  }
+
+  private void enableFloatingSummons() {
+    config.floatingDemonCount = 2;
+    var render = mock(com.csse3200.game.rendering.RenderService.class);
+    when(render.getDebug()).thenReturn(mock(com.csse3200.game.rendering.DebugRenderer.class));
+    ServiceLocator.registerRenderService(render);
+    var resources = mock(com.csse3200.game.services.ResourceService.class);
+    var atlas = mock(com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+    var region = mock(com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion.class);
+    when(region.getRegionWidth()).thenReturn(50);
+    when(region.getRegionHeight()).thenReturn(50);
+    when(atlas.findRegion("default")).thenReturn(region);
+    when(atlas.findRegions(anyString())).thenReturn(com.badlogic.gdx.utils.Array.with(region));
+    when(resources.getAsset(
+            "images/floatingDemon.atlas", com.badlogic.gdx.graphics.g2d.TextureAtlas.class))
+        .thenReturn(atlas);
+    ServiceLocator.registerResourceService(resources);
+  }
+
+  @Test
+  void waveTwoSpawnsTwoFloatingDemonsWithFlightAnimation() {
+    enableFloatingSummons();
+    assertTrue(stage.floatingSummons.isEmpty());
+    startStatues();
+    assertEquals(2, stage.floatingSummons.size());
+    for (Entity demon : stage.floatingSummons) {
+      assertEquals(
+          "float",
+          demon
+              .getComponent(com.csse3200.game.rendering.AnimationRenderComponent.class)
+              .getCurrentAnimation());
+      assertFalse(demon.getComponent(CombatStatsComponent.class).isDead());
+    }
+  }
+
+  @Test
+  void floatingDemonChasesNearbyPlayerStopsToShootAndGivesUpAtDistance() {
+    enableFloatingSummons();
+    startStatues();
+    Entity demon = stage.floatingSummons.getFirst();
+    var ai = demon.getComponent(com.csse3200.game.ai.tasks.AITaskComponent.class);
+    var movement = demon.getComponent(PhysicsMovementComponent.class);
+    var chaseStarts = new AtomicInteger();
+    var patrolStarts = new AtomicInteger();
+    demon.getEvents().addListener("chaseStart", chaseStarts::incrementAndGet);
+    demon.getEvents().addListener("patrolStart", patrolStarts::incrementAndGet);
+    player.setPosition(demon.getPosition().add(8f, 0f));
+    ai.update();
+    assertEquals(1, chaseStarts.get());
+    float before = demon.getPosition().dst(player.getPosition());
+    for (int i = 0; i < 15; i++) {
+      movement.update();
+      ServiceLocator.getPhysicsService().getPhysics().update();
+      demon.earlyUpdate();
+    }
+    assertTrue(demon.getPosition().dst(player.getPosition()) < before);
+    player.setPosition(demon.getPosition().add(5f, 0f));
+    when(time.getDeltaTime()).thenReturn(1f);
+    ai.update();
+    verify(ServiceLocator.getEntityService(), never()).runAfterUpdate(any(Runnable.class));
+    assertFalse(movement.getMoving());
+    when(time.getDeltaTime()).thenReturn(0.4f);
+    ai.update();
+    // 瞄准结束才发射。
+    verify(ServiceLocator.getEntityService(), atLeastOnce()).runAfterUpdate(any(Runnable.class));
+    player.setPosition(demon.getPosition().add(8f, 0f));
+    ai.update();
+    assertEquals(1, chaseStarts.get());
+    player.setPosition(demon.getPosition().add(13f, 0f));
+    ai.update();
+    assertEquals(1, patrolStarts.get());
+  }
+
+  @Test
+  void finalStatueClearsFloatingDemonsWithoutRequiringTheirDefeat() {
+    enableFloatingSummons();
+    startStatues();
+    var demons = java.util.List.copyOf(stage.floatingSummons);
+    for (var statue : stage.statues) {
+      for (int hit = 0; hit < config.statueHits; hit++) stage.hitStatue(statue);
+    }
+    assertEquals(FinalBossStageThreeState.ENDING, stage.getState());
+    assertTrue(stage.floatingSummons.isEmpty());
+    for (Entity demon : demons) verify(ServiceLocator.getEntityService()).scheduleDisposal(demon);
+  }
+
+  @Test
+  void playerDefeatClearsFloatingDemons() {
+    enableFloatingSummons();
+    startStatues();
+    var demons = java.util.List.copyOf(stage.floatingSummons);
+    player.getComponent(CombatStatsComponent.class).setHealth(0);
+    tick(0.1f);
+    assertTrue(stage.floatingSummons.isEmpty());
+    for (Entity demon : demons) verify(ServiceLocator.getEntityService()).scheduleDisposal(demon);
+  }
+
+  @Test
+  void endingClearsExistingProjectilesAndRejectsQueuedShots() {
+    enableFloatingSummons();
+    startStatues();
+    Entity demon = stage.floatingSummons.getFirst();
+    player.setPosition(demon.getPosition().add(5f, 0f));
+    when(time.getDeltaTime()).thenReturn(1f);
+    demon.getComponent(com.csse3200.game.ai.tasks.AITaskComponent.class).update();
+    when(time.getDeltaTime()).thenReturn(0.4f);
+    demon.getComponent(com.csse3200.game.ai.tasks.AITaskComponent.class).update();
+    var queued = org.mockito.ArgumentCaptor.forClass(Runnable.class);
+    verify(ServiceLocator.getEntityService(), times(3)).runAfterUpdate(queued.capture());
+    queued.getAllValues().getFirst().run();
+    assertEquals(1, stage.floatingProjectiles.size());
+    Entity projectile = stage.floatingProjectiles.getFirst();
+    for (var statue : stage.statues) {
+      for (int hit = 0; hit < config.statueHits; hit++) stage.hitStatue(statue);
+    }
+    verify(ServiceLocator.getEntityService()).scheduleDisposal(projectile);
+    queued.getAllValues().get(1).run();
+    queued.getAllValues().get(2).run();
+    assertTrue(stage.floatingProjectiles.isEmpty());
   }
 
   @Test
@@ -158,8 +280,9 @@ class FinalBossStageThreeComponentTest {
     assertEquals(0, hits.get());
     tick(0.20f);
     assertEquals(0, hits.get());
-    assertTrue(stage.isFrozen());
-    tick(0.06f);
+    assertFalse(stage.isFrozen());
+    assertFalse(actions.areControlsLocked());
+    tick(config.strikeDelay - 0.20f + 0.01f);
     assertEquals(1, hits.get());
     assertEquals(
         100 - config.strikeDamage, player.getComponent(CombatStatsComponent.class).getHealth());
@@ -222,10 +345,10 @@ class FinalBossStageThreeComponentTest {
     tick(config.strikeDelay);
     assertEquals(0, hits.get());
     assertEquals(100, player.getComponent(CombatStatsComponent.class).getHealth());
-    assertTrue(stage.isFrozen());
+    assertFalse(stage.isFrozen());
     assertTrue(boss.getCenterPosition().dst(player.getCenterPosition()) > 2f);
     tick(config.freezeDuration - stage.freezeElapsed - 0.01f);
-    assertTrue(stage.isFrozen());
+    assertFalse(stage.isFrozen());
     assertTrue(stage.bolts.isEmpty());
     assertEquals(0, hits.get());
     tick(0.02f);
@@ -324,6 +447,48 @@ class FinalBossStageThreeComponentTest {
     stage.bolts.add(
         new FinalBossStageThreeComponent.Bolt(player.getCenterPosition(), new Vector2()));
     tick(0.01f);
+  }
+
+  @Test
+  void shortFreezeRestoresControlsWithSlowAndAllowsDodgingTheStrike() {
+    freezePlayer();
+    var stats = player.getComponent(CombatStatsComponent.class);
+    var actions = player.getComponent(PlayerActions.class);
+    tick(config.hardFreezeDuration - 0.01f);
+    assertTrue(actions.areControlsLocked());
+    tick(0.02f);
+    assertFalse(actions.areControlsLocked());
+    assertFalse(stage.isFrozen());
+    assertEquals(3f * config.chilledSpeedMultiplier, stats.getEffectiveMovementSpeed(), 0.001f);
+    tick(config.teleportDelay);
+    player.setPosition(-5f, 0f);
+    tick(config.strikeDelay);
+    assertEquals(100, stats.getHealth());
+    tick(config.freezeDuration);
+    assertEquals(3f, stats.getEffectiveMovementSpeed(), 0.001f);
+  }
+
+  @Test
+  void removingChillPreservesSpeedChangesAndOtherControlLocks() {
+    freezePlayer();
+    Object dialogue = addOtherControlLock();
+    tick(config.hardFreezeDuration);
+    var stats = player.getComponent(CombatStatsComponent.class);
+    stats.setMovementSpeed(5f);
+    assertEquals(5f * config.chilledSpeedMultiplier, stats.getEffectiveMovementSpeed(), 0.001f);
+    boss.getComponent(CombatStatsComponent.class).takeDamage(10000, player);
+    assertEquals(5f, stats.getEffectiveMovementSpeed(), 0.001f);
+    assertFreezeReleasedButOtherLockRetained(dialogue);
+  }
+
+  @Test
+  void disposingBossRemovesChill() {
+    freezePlayer();
+    tick(config.hardFreezeDuration);
+    stage.dispose();
+    assertEquals(
+        3f, player.getComponent(CombatStatsComponent.class).getEffectiveMovementSpeed(), 0.001f);
+    assertFalse(player.getComponent(PlayerActions.class).areControlsLocked());
   }
 
   private Object addOtherControlLock() {

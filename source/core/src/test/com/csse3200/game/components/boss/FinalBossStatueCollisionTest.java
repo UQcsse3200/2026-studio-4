@@ -61,6 +61,7 @@ class FinalBossStatueCollisionTest {
     FinalBossPhaseControllerComponent phases = mock(FinalBossPhaseControllerComponent.class);
     when(phases.getCurrentPhase()).thenReturn(FinalBossPhase.STAGE_THREE);
     FinalBossStageThreeConfig config = new FinalBossStageThreeConfig();
+    config.floatingDemonCount = 0; // Isolate statue/ice mechanics from rendered summons.
     FinalBossStageThreeComponent stage =
         new FinalBossStageThreeComponent(player, entities::register, config);
     Entity boss =

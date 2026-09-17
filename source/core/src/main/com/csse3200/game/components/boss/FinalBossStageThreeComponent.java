@@ -9,7 +9,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.player.PlayerActions;
+import com.csse3200.game.components.statuseffects.ChilledEffect;
+import com.csse3200.game.components.tasks.FloatingDemonCombatTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageThreeConfig;
 import com.csse3200.game.entities.factories.NPCFactory;
@@ -33,6 +36,8 @@ public class FinalBossStageThreeComponent extends Component {
   final FinalBossStageThreeConfig config;
   final List<Bolt> bolts = new ArrayList<>();
   final List<Statue> statues = new ArrayList<>();
+  final List<Entity> floatingSummons = new ArrayList<>();
+  final List<Entity> floatingProjectiles = new ArrayList<>();
   final List<Shockwave> shockwaves = new ArrayList<>();
   final FinalBossTornadoController tornadoes;
   private final Vector2 previousPlayerPosition = new Vector2();
@@ -50,6 +55,8 @@ public class FinalBossStageThreeComponent extends Component {
   private int nextStatueIndex;
   private int orbitDirection = 1;
   private float freezeRemaining;
+  private ChilledEffect chilledEffect;
+  private boolean thawed;
   private float comboRemaining;
   private boolean besidePlayer;
   private boolean comboCompleted;
@@ -76,6 +83,8 @@ public class FinalBossStageThreeComponent extends Component {
         new FinalBossTornadoController(
             target, this::bounds, this::clearSpace, position -> burst(position, true));
     tornadoes.setStatuePaths(this::statueGroundPaths);
+    tornadoes.setContactDamage(
+        config.tornadoDamage, config.tornadoDamageInterval, this::damagePlayer);
   }
 
   @Override
@@ -103,7 +112,7 @@ public class FinalBossStageThreeComponent extends Component {
   }
 
   public boolean isFrozen() {
-    return freezeRemaining > 0f;
+    return freezeRemaining > 0f && !thawed;
   }
 
   public int getRemainingStatues() {
@@ -115,7 +124,11 @@ public class FinalBossStageThreeComponent extends Component {
     if (disposed) return;
     if (phases.getCurrentPhase() == FinalBossPhase.STAGE_ONE
         || phases.getCurrentPhase() == FinalBossPhase.STAGE_TWO) {
-      if (state != FinalBossStageThreeState.INACTIVE) tornadoes.clear();
+      if (state != FinalBossStageThreeState.INACTIVE) {
+        tornadoes.clear();
+        clearFloatingSummons();
+        clearFreeze();
+      }
       return;
     }
     if (ServiceLocator.getTimeSource() == null) return;
@@ -270,13 +283,13 @@ public class FinalBossStageThreeComponent extends Component {
   }
 
   private void updateWaveOne(float delta) {
-    if (isFrozen()) {
+    if (freezeRemaining > 0f) {
       updateCombo(delta);
       return;
     }
     // Resolve existing projectiles first: a freeze combo takes priority over repositioning.
     updateBolts(delta);
-    if (isFrozen()) return;
+    if (freezeRemaining > 0f) return;
 
     if (recoveryRemaining > 0f && updateVolleyRecovery(delta)) return;
 
@@ -376,6 +389,7 @@ public class FinalBossStageThreeComponent extends Component {
     actions.setControlsLocked(this, true);
     freezeRemaining = config.freezeDuration;
     freezeElapsed = 0f;
+    thawed = false;
     thawRemaining = 0f;
     comboRemaining = 0f;
     besidePlayer = false;
@@ -387,12 +401,28 @@ public class FinalBossStageThreeComponent extends Component {
   private void updateCombo(float delta) {
     freezeElapsed += delta;
     freezeRemaining = Math.max(0f, config.freezeDuration - freezeElapsed);
-    if (!isFrozen()) {
+    if (freezeRemaining <= 0f) {
       clearFreeze();
       resetVolleyCycle();
       return;
     }
-    // A missed strike cannot repeat; the remaining freeze expires at its maximum duration.
+    if (!thawed && freezeElapsed >= config.hardFreezeDuration) {
+      // 冻住一小会儿就恢复操作，接下来只是走得慢一点。
+      thawed = true;
+      target.getComponent(PlayerActions.class).setControlsLocked(this, false);
+      thawRemaining = 0.55f;
+      StatusEffectsControllerComponent effects =
+          target.getComponent(StatusEffectsControllerComponent.class);
+      if (effects != null && !effects.isDisposed()) {
+        chilledEffect =
+            new ChilledEffect(
+                ServiceLocator.getTimeSource(),
+                (long) (freezeRemaining * 1000),
+                config.chilledSpeedMultiplier);
+        effects.addStatusEffect(chilledEffect);
+      }
+    }
+    // 没打中就不再追打，剩下的减速时间结束后再开始下一轮。
     if (comboCompleted || freezeElapsed < config.teleportDelay) {
       keepDistance(delta);
       return;
@@ -423,6 +453,11 @@ public class FinalBossStageThreeComponent extends Component {
   }
 
   private void clearFreeze() {
+    StatusEffectsControllerComponent effects =
+        target.getComponent(StatusEffectsControllerComponent.class);
+    if (effects != null && chilledEffect != null) effects.removeStatusEffect(chilledEffect);
+    chilledEffect = null;
+    thawed = false;
     PlayerActions actions = target.getComponent(PlayerActions.class);
     if (actions != null) actions.setControlsLocked(this, false);
     if (freezeRemaining > 0f || freezeElapsed > 0f) thawRemaining = 0.55f;
@@ -534,6 +569,69 @@ public class FinalBossStageThreeComponent extends Component {
       statues.add(statue);
       spawner.accept(statueEntity);
     }
+    spawnFloatingSummons();
+  }
+
+  private void spawnFloatingSummons() {
+    Rectangle area = bounds();
+    for (int i = 0; i < config.floatingDemonCount; i++) {
+      Vector2 desired =
+          new Vector2(
+              area.x + area.width * (i + 1f) / (config.floatingDemonCount + 1f),
+              area.y + area.height * 0.7f);
+      Entity demon =
+          NPCFactory.createFloatingDemon(
+              target,
+              safePosition(desired.cpy().add(-2f, 0f), new Vector2(1f, 1f)),
+              safePosition(desired.cpy().add(0f, 1f), new Vector2(1f, 1f)),
+              safePosition(desired.cpy().add(2f, 0f), new Vector2(1f, 1f)),
+              "images/floatingDemon.atlas",
+              new FloatingDemonCombatTask(
+                  target,
+                  this::spawnFloatingProjectile,
+                  config.floatingDemonViewDistance,
+                  config.floatingDemonMaxChaseDistance,
+                  i));
+      demon
+          .getComponent(PhysicsMovementComponent.class)
+          .setMaxSpeed(new Vector2(config.floatingDemonSpeed, config.floatingDemonSpeed));
+      demon.setPosition(
+          statueSpawnPosition(desired, demon.getScale()).sub(demon.getScale().scl(0.5f)));
+      trackFloatingActor(demon, floatingSummons);
+      spawner.accept(demon);
+    }
+  }
+
+  private void spawnFloatingProjectile(Entity projectile) {
+    // Shots can have been queued before the final statue broke or the player died.
+    if (disposed || playerDefeated || state != FinalBossStageThreeState.WAVE_TWO) return;
+    trackFloatingActor(projectile, floatingProjectiles);
+    spawner.accept(projectile);
+  }
+
+  private void trackFloatingActor(Entity actor, List<Entity> owned) {
+    owned.add(actor);
+    actor.addComponent(
+        new Component() {
+          @Override
+          public void dispose() {
+            owned.remove(actor);
+          }
+        });
+  }
+
+  private void clearFloatingSummons() {
+    if (ServiceLocator.getEntityService() != null) {
+      for (Entity demon : floatingSummons) {
+        stop(demon);
+        ServiceLocator.getEntityService().scheduleDisposal(demon);
+      }
+      for (Entity projectile : floatingProjectiles) {
+        ServiceLocator.getEntityService().scheduleDisposal(projectile);
+      }
+    }
+    floatingSummons.clear();
+    floatingProjectiles.clear();
   }
 
   void hitStatue(Statue statue) {
@@ -1020,6 +1118,7 @@ public class FinalBossStageThreeComponent extends Component {
   }
 
   private void clearStatueCombat() {
+    clearFloatingSummons();
     shockwaves.clear();
     setJumpEnabled(false);
     if (ServiceLocator.getRenderService() != null)

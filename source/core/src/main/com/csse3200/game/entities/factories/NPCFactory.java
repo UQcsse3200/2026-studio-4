@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
+import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.components.*;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -197,21 +198,41 @@ public class NPCFactory {
       Vector2 rightPoint,
       Consumer<Entity> projectileSpawner,
       String skin) {
+    return createFloatingDemon(
+        target,
+        leftPoint,
+        topPoint,
+        rightPoint,
+        skin,
+        new RangedAttackTask(target, 5, configs.floatingDemon.baseAttack, projectileSpawner));
+  }
+
+  /** 可以给 Boss 房间的浮游怪换一种攻击方式。 */
+  public static Entity createFloatingDemon(
+      Entity target,
+      Vector2 leftPoint,
+      Vector2 topPoint,
+      Vector2 rightPoint,
+      String skin,
+      PriorityTask combatTask) {
 
     FloatingDemonConfig config = configs.floatingDemon;
 
     AITaskComponent aiComponent =
         new AITaskComponent(target)
             .addTask(new PatrolTask(leftPoint, topPoint, rightPoint, 1))
-            .addTask(new RangedAttackTask(target, 5, config.baseAttack, projectileSpawner));
+            .addTask(combatTask);
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
 
-    animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
+    String flightAnimation = "images/floatingDemon.atlas".equals(skin) ? "float" : MOVE;
+    animator.addAnimation(flightAnimation, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
-    animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
+    if (!"float".equals(flightAnimation)) {
+      animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
+    }
     animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
@@ -225,7 +246,7 @@ public class NPCFactory {
         .addComponent(new EnemyAnimationController());
 
     animator.scaleEntity();
-    animator.startAnimation("move");
+    animator.startAnimation(flightAnimation);
 
     demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
 

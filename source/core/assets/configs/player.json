@@ -1,6 +1,6 @@
 {
-  "health": 100,
-  "baseAttack": 10,
+  "health": 150,
+  "baseAttack": 20,
   "movementSpeed": 3.0,
   "attackSpeed": 1.0,
   "gold": 50,

@@ -62,6 +62,78 @@ class FinalBossTornadoControllerTest {
     assertTrue(bursts.isEmpty());
   }
 
+  private FinalBossTornadoController.Tornado damagingTornado() {
+    controller = newController((centre, size) -> false);
+    controller.setContactDamage(6, 1f, damage -> stats.takeDamage(damage));
+    var tornado = new FinalBossTornadoController.Tornado(new Vector2(5f, 5f), 0f);
+    tornado.elapsed = 1f;
+    controller.items.add(tornado);
+    return tornado;
+  }
+
+  @Test
+  void contactDamageHasOneSharedCooldownAcrossTornadoes() {
+    damagingTornado();
+    var second = new FinalBossTornadoController.Tornado(new Vector2(5f, 5f), 0f);
+    second.elapsed = 1f;
+    controller.items.add(second);
+    movePlayerGroundTo(5f, 5f);
+    controller.update(0.1f, true);
+    assertEquals(94, stats.getHealth());
+    controller.update(0.5f, true);
+    assertEquals(94, stats.getHealth());
+    controller.update(0.51f, true);
+    assertEquals(88, stats.getHealth());
+  }
+
+  @Test
+  void fastPlayerCrossingTheBaseStillTakesDamage() {
+    damagingTornado();
+    movePlayerGroundTo(3f, 5f);
+    controller.update(0.1f, true);
+    assertEquals(100, stats.getHealth());
+    movePlayerGroundTo(7f, 5f);
+    controller.update(0.1f, true);
+    assertEquals(94, stats.getHealth());
+  }
+
+  @Test
+  void spawnAndDissolveAreHarmless() {
+    var tornado = damagingTornado();
+    tornado.elapsed = 0f;
+    movePlayerGroundTo(5f, 5f);
+    controller.update(0.3f, true);
+    assertEquals(100, stats.getHealth());
+    controller.update(0.31f, true);
+    assertEquals(100, stats.getHealth());
+    controller.statueBroken(new Vector2(), 0);
+    controller.update(0.1f, true);
+    assertEquals(100, stats.getHealth());
+  }
+
+  @Test
+  void inactiveCombatAndInvulnerabilityPreventDamage() {
+    damagingTornado();
+    movePlayerGroundTo(5f, 5f);
+    controller.update(0.1f, false);
+    assertEquals(100, stats.getHealth());
+    stats.setInvulnerable(true);
+    controller.update(0.1f, true);
+    assertEquals(100, stats.getHealth());
+  }
+
+  @Test
+  void concealedPlayerAndWideTopOfSpriteDoNotTakeContactDamage() {
+    damagingTornado();
+    movePlayerGroundTo(6.2f, 5f);
+    controller.update(0.1f, true);
+    assertEquals(100, stats.getHealth());
+    effects.addStatusEffect(new InvisibilityEffect(time, 1000));
+    movePlayerGroundTo(5f, 5f);
+    controller.update(0.1f, true);
+    assertEquals(100, stats.getHealth());
+  }
+
   @Test
   void finalStatueShouldBurstAndDissolveAllFourWithoutMovingOrCreatingAFifth() {
     for (int remaining = 4; remaining > 0; remaining--) {

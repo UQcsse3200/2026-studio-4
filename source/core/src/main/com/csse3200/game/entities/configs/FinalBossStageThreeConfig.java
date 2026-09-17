@@ -16,13 +16,21 @@ public class FinalBossStageThreeConfig {
   public float volleyRecoveryDuration = 3f;
   public float repositionDistance = 6f;
   public float boltLifetime = 4f;
-  // Maximum freeze time; the teleport strike releases the player earlier on contact.
+  // 冰冻加减速最多持续三秒，实际不能操作的时间只有 0.35 秒。
   public float freezeDuration = 3f;
+  public float hardFreezeDuration = 0.35f;
+  public float chilledSpeedMultiplier = 0.65f;
+  public int tornadoDamage = 6;
+  public float tornadoDamageInterval = 1f;
   // Roam for one second after freezing the player before teleporting in to strike.
   public float teleportDelay = 1f;
-  public float strikeDelay = 0.25f;
+  public float strikeDelay = 0.45f;
   public int strikeDamage = 10;
   public int statueCount = 5;
+  public int floatingDemonCount = 2;
+  public float floatingDemonSpeed = 1.2f;
+  public float floatingDemonViewDistance = 9f;
+  public float floatingDemonMaxChaseDistance = 12f;
   public int statueHits = 10;
   public int statueEvadeHits = 3;
   public float statueEvadeDistance = 3.5f;
@@ -65,8 +73,13 @@ public class FinalBossStageThreeConfig {
         repositionDistance,
         boltLifetime,
         freezeDuration,
+        hardFreezeDuration,
+        tornadoDamageInterval,
         teleportDelay,
         strikeDelay,
+        floatingDemonSpeed,
+        floatingDemonViewDistance,
+        floatingDemonMaxChaseDistance,
         statueSpeed,
         statueMaxSpeed,
         statueMinSpacing,
@@ -94,9 +107,16 @@ public class FinalBossStageThreeConfig {
         || volleysBeforeTeleport <= 0
         || volleyRecoveryDuration < volleyTeleportDelay
         || statueCount <= 0
+        || floatingDemonCount < 0
+        || floatingDemonMaxChaseDistance < floatingDemonViewDistance
         || statueHits <= 0
         || statueEvadeHits <= 0
         || strikeDamage < 0
+        || tornadoDamage < 0
+        || hardFreezeDuration >= teleportDelay
+        || !Float.isFinite(chilledSpeedMultiplier)
+        || chilledSpeedMultiplier <= 0f
+        || chilledSpeedMultiplier > 1f
         || shockwaveDamage < 0
         || teleportDelay + strikeDelay >= freezeDuration) {
       throw new IllegalArgumentException("Invalid Stage 3 combat configuration");
