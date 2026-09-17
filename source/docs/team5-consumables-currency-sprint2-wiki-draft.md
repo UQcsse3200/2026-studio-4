@@ -4,7 +4,7 @@ Local publication draft, updated 2026-09-16. This file is not a claim that the W
 
 ## Player guide
 
-Defeated tracked enemies drop **5 Gold**, and independently have a **35% chance** to drop one consumable. Each of Health, Shield, Speed and Strength has equal probability within that 35%. The values are initial tuning defaults, not a claimed cross-team balance decision. Gold is picked up rather than immediately credited. Stand within pickup range and press **E**; each press collects one nearby entity. If Gold and a potion overlap, collect both with two presses.
+Defeated tracked enemies drop one item through Team 4's shared `ItemFactory.DropTypes` pool. The six entries are Strength Charm, Health, Shield, Speed, Strength and Gold, each equally likely under the existing uniform selection rule. A Gold entry contains 5 Gold; other entries contain one item. This replaces Team 5's separate guaranteed-Gold/35%-consumable policy, following Yuezhou's request to use the shared implementation. Stand within pickup range and press **E** to collect a nearby item.
 
 All four consumables stack in inventory. The compact top-right Team 5 panel shows Gold and one row per item, with its world-item icon, fixed key and current stock. Press **7** for Health, **8** for Shield, **9** for Speed, or **0** for Strength. There are no Change buttons or Last used label. Empty stock cannot be used. Keys **1–3** still select weapons, **K** still performs the weapon heavy attack, and **I** still opens the existing inventory.
 
@@ -28,17 +28,15 @@ The fixed four-key mapping follows Yuezhou's playtest request on 2026-09-16 and 
 - Keyboard input calls `useSlot(index)`. `ConsumableEffectComponent.tryUse(type)` or `useConsumable(ItemType)` requests use.
 - **Only ConsumableEffectComponent removes the item on a successful use.** Input and HUD never debit inventory. `itemUsed(ItemType)` is a notification after success, not another request.
 - Temporary modifiers use the existing `StatusEffectsControllerComponent`, `TimedStatusEffect`, `Stat`, and `Damageable` interfaces. No shared combat implementation was changed for these consumables.
-- `EnemyDropPolicy` selects immutable `ItemDropSpec` values. Constructor parameters configure Gold, probability and random generator; tests inject deterministic randomness.
-- `ItemFactory` creates item entities and remains independent of drop probability.
+- `ItemFactory.DropTypes` is the shared registration point for random drops; each supplier creates a fresh `Item`. Randomness is injectable for deterministic tests.
+- `ItemFactory.createRandomDrop` selects from that pool and delegates entity construction to the shared `createItem`.
 - `EnemyManagerComponent` accepts one defeat per active tracked enemy, captures the death position, queues generation safely after updates, and owns registration/disposal. Pending rewards are cancelled if their room manager has been disposed.
-- The main-branch `createRandomDrop` interface remains available for callers using its Charm pool. Normal enemy rewards use `EnemyDropPolicy` instead, to guarantee currency and allow consumables.
+- All normal enemy rewards now use the same `createRandomDrop` path. Charm remains in the pool alongside the four consumables and Gold.
 - Final Boss encounter completion and ordinary death share the same reward guard; receiving both events cannot pay twice.
 - Split parents replaced by children are no longer active tracked enemies; later parent death callbacks do not award duplicate rewards. Their tracked children follow the normal policy. No additional boss-phase reward or special mini-boss Gold bag has been invented.
 
 ```mermaid
 classDiagram
-  EnemyManagerComponent --> EnemyDropPolicy : selects rewards
-  EnemyDropPolicy --> ItemDropSpec : produces
   EnemyManagerComponent --> ItemFactory : creates and registers
   ItemFactory --> TypedItem : world item
   TypedItem --> InventoryComponent : pickup
@@ -53,7 +51,6 @@ classDiagram
 sequenceDiagram
   participant Enemy
   participant Room as EnemyManager
-  participant Policy as EnemyDropPolicy
   participant Factory as ItemFactory
   participant Player
   participant Inventory
@@ -61,9 +58,8 @@ sequenceDiagram
   participant HUD
   Enemy->>Room: entityDied
   Room->>Room: remove active enemy once, capture position
-  Room->>Policy: selectDrops()
-  Policy-->>Room: Gold + optional consumable
-  Room->>Factory: createDrop after update, if room still alive
+  Room->>Factory: createRandomDrop after update, if room still alive
+  Factory->>Factory: select one DropTypes entry and createItem
   Player->>Inventory: E pickup via TypedItem
   Inventory-->>HUD: quantity changed
   Player->>Effects: 7/8/9/0 → useSlot → tryUse
