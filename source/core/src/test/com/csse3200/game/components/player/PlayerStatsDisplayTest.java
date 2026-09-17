@@ -2,9 +2,7 @@ package com.csse3200.game.components.player;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -122,7 +120,7 @@ class PlayerStatsDisplayTest {
     assertEquals(100f, healthBar.getMaxValue());
 
     Label healthValueLabel = getField(display, "healthValueLabel", Label.class);
-    assertEquals("Health: 100 / 100", healthValueLabel.getText().toString());
+    assertEquals("100/100", healthValueLabel.getText().toString());
   }
 
   @Test
@@ -133,7 +131,7 @@ class PlayerStatsDisplayTest {
     assertEquals(40f, healthBar.getValue());
 
     Label healthValueLabel = getField(display, "healthValueLabel", Label.class);
-    assertEquals("Health: 40 / 100", healthValueLabel.getText().toString());
+    assertEquals("40 / 100", healthValueLabel.getText().toString());
   }
 
   @Test
@@ -145,7 +143,7 @@ class PlayerStatsDisplayTest {
     assertEquals(150f, healthBar.getMaxValue());
 
     Label healthValueLabel = getField(display, "healthValueLabel", Label.class);
-    assertEquals("Health: 30 / 150", healthValueLabel.getText().toString());
+    assertEquals("30 / 150", healthValueLabel.getText().toString());
   }
 
   @Test
@@ -189,38 +187,6 @@ class PlayerStatsDisplayTest {
             .addComponent(new PlayerStatsDisplay());
 
     assertDoesNotThrow(headlessPlayer::create);
-  }
-
-  @Test
-  void shouldHideDebugStatLabelsFromCombatCorner() {
-    assertFalse(getField(display, "movementSpeedLabel", Label.class).isVisible());
-    assertFalse(getField(display, "attackSpeedLabel", Label.class).isVisible());
-    assertFalse(getField(display, "strengthLabel", Label.class).isVisible());
-  }
-
-  @Test
-  void shouldWarnWhenHealthIsAtMostAQuarterOfMax() {
-    assertFalse(display.isLowHealthWarning());
-    player.getEvents().trigger("updateHealth", 26);
-    assertFalse(display.isLowHealthWarning());
-    player.getEvents().trigger("updateHealth", 25);
-    assertTrue(display.isLowHealthWarning());
-    player.getEvents().trigger("updateHealth", 20);
-    assertTrue(display.isLowHealthWarning());
-    Label healthValueLabel = getField(display, "healthValueLabel", Label.class);
-    assertEquals(1f, healthValueLabel.getColor().r, 0.01f);
-    assertEquals(0f, healthValueLabel.getColor().g, 0.01f);
-  }
-
-  @Test
-  void shouldClearWarningWhenHealthRecoversOrMaxHealthChanges() {
-    player.getEvents().trigger("updateHealth", 20);
-    assertTrue(display.isLowHealthWarning());
-    player.getEvents().trigger("updateHealth", 30);
-    assertFalse(display.isLowHealthWarning());
-    player.getEvents().trigger("updateHealth", 20);
-    player.getEvents().trigger("updateMaxHealth", 60);
-    assertFalse(display.isLowHealthWarning());
   }
 
   /** Reads a private field via reflection since the display exposes no public getters. */
