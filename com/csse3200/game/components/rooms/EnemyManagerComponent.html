@@ -160,8 +160,13 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns whether the room has any living enemies.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#spawnEnemies(com.csse3200.game.entities.Entity)" class="member-name-link">spawnEnemies</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#scale(int)" class="member-name-link">scale</a><wbr>(int&nbsp;mult)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Iterates through the active enemies and calls scale on their <a href="../CombatStatsComponent.html" title="class in com.csse3200.game.components"><code>CombatStatsComponent</code></a></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#spawnEnemies(com.csse3200.game.entities.Entity)" class="member-name-link">spawnEnemies</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Spawns each enemy declared by the room.</div>
 </div>
 </div>
@@ -247,6 +252,15 @@ loadScripts(document, 'script');</script>
 <h3>clear</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">clear</span>()</div>
 <div class="block">Defeats all living enemies for temporary transition testing.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="scale(int)">
+<h3>scale</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">scale</span><wbr><span class="parameters">(int&nbsp;mult)</span></div>
+<div class="block">Iterates through the active enemies and calls scale on their <a href="../CombatStatsComponent.html" title="class in com.csse3200.game.components"><code>CombatStatsComponent</code></a>
+
+ <p>This method should be called during the room creatation.</div>
 </section>
 </li>
 <li>
