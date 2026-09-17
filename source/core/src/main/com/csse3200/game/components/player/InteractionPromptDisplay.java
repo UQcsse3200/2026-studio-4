@@ -7,8 +7,8 @@ import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.ui.UIComponent;
 
 /**
- * Screen-space prompt for nearby interactions. Lives on the player so it survives room changes.
- * Pin to the bottom of the screen so it does not sit over the play area.
+ * Screen-space prompt for nearby interactions. Lives on the player so it survives room changes. Pin
+ * to the bottom of the screen so it does not sit over the play area.
  */
 public class InteractionPromptDisplay extends UIComponent {
   private Table table;
