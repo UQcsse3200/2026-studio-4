@@ -41,3 +41,7 @@ The screenshots use the same temporary fixture: 50 HP and consumable counts 2/3/
 ![Original items book](evidence/inventory-integration/items-original.png)
 
 ![Integrated four-slot book](evidence/inventory-integration/four-consumable-slots.png)
+
+## Integration refresh — 2026-09-17
+
+Synced locally with items `0c7f3b0`, including main `9182adb` and restoration of the shared random Charm drop pool. The other independent Team 5 feature branch is not included. Earlier screenshots show the feature before this baseline refresh.
