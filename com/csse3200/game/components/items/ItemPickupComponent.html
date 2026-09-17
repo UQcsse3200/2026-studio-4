@@ -93,17 +93,17 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">ItemPickupComponent</span>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">Lets an entity (the player) pick up charms dropped in the game world.
+<div class="block">Lets an entity (the player) pick up items dropped in the game world.
 
  <p>Follows the same touch-detection shape as <a href="../TouchAttackComponent.html" title="class in com.csse3200.game.components"><code>TouchAttackComponent</code></a>: it listens for <code>collisionStart</code> /
  <code>collisionEnd</code> on its own <a href="../../physics/components/HitboxComponent.html" title="class in com.csse3200.game.physics.components"><code>HitboxComponent</code></a> to track which item entities (on the
  <a href="../../physics/PhysicsLayer.html#ITEM"><code>PhysicsLayer.ITEM</code></a> layer) are currently in range. Nothing happens on contact alone &mdash;
- the charm is only picked up once an <code>"itemPickup"</code> event fires while at least one item is
- in range. The dedicated event keeps item pickup independent from the Room feature's <code>
+ an item is only picked up once an <code>"itemPickup"</code> event fires while at least one item is in
+ range. The dedicated event keeps item pickup independent from the Room feature's <code>
  "interact"</code> event while allowing both actions to share the E key binding.
 
  <p>Item entities are expected to carry an <a href="ItemComponent.html" title="class in com.csse3200.game.components.items"><code>ItemComponent</code></a> (see <a href="../../entities/factories/ItemFactory.html" title="class in com.csse3200.game.entities.factories"><code>ItemFactory</code></a>), which is where this component reads the
- <a href="../../items/charms/Charm.html" title="class in com.csse3200.game.items.charms"><code>Charm</code></a> from.
+ shared <a href="../../items/Item.html" title="class in com.csse3200.game.items"><code>Item</code></a> from.
 
  <p>Requires <a href="../../physics/components/HitboxComponent.html" title="class in com.csse3200.game.physics.components"><code>HitboxComponent</code></a> and <a href="../player/InventoryComponent.html" title="class in com.csse3200.game.components.player"><code>InventoryComponent</code></a> on this entity.</div>
 </section>

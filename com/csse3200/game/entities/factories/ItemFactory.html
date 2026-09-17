@@ -112,17 +112,36 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates the requested item at a world position.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createItem(com.csse3200.game.items.Item)" class="member-name-link">createItem</a><wbr>(<a href="../../items/Item.html" title="class in com.csse3200.game.items">Item</a>&nbsp;item)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createDrop(com.csse3200.game.items.ItemDropSpec,com.badlogic.gdx.math.Vector2)" class="member-name-link">createDrop</a><wbr>(<a href="../../items/ItemDropSpec.html" title="class in com.csse3200.game.items">ItemDropSpec</a>&nbsp;dropSpec,
+ com.badlogic.gdx.math.Vector2&nbsp;position)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates an item entity to be spawned into the game.</div>
+<div class="block">Creates a caller-selected item and quantity at a world position.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createRandomDrop(com.badlogic.gdx.math.Vector2)" class="member-name-link">createRandomDrop</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;position)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createStrengthCharm()" class="member-name-link">createStrengthCharm</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createDrop(com.csse3200.game.items.ItemType,com.badlogic.gdx.math.Vector2)" class="member-name-link">createDrop</a><wbr>(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;itemType,
+ com.badlogic.gdx.math.Vector2&nbsp;position)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a single caller-selected item at a world position.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createDrops(java.util.List,com.badlogic.gdx.math.Vector2)" class="member-name-link">createDrops</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../items/ItemDropSpec.html" title="class in com.csse3200.game.items">ItemDropSpec</a>&gt;&nbsp;dropSpecs,
+ com.badlogic.gdx.math.Vector2&nbsp;position)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates the Strength Charm used for Sprint 1 item drops.</div>
+<div class="block">Creates every caller-selected drop at the supplied origin.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createItem(com.csse3200.game.items.Item)" class="member-name-link">createItem</a><wbr>(<a href="../../items/Item.html" title="class in com.csse3200.game.items">Item</a>&nbsp;item)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates an item entity using the shared Item abstraction introduced on main.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createRandomDrop(com.badlogic.gdx.math.Vector2)" class="member-name-link">createRandomDrop</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;position)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createRandomDrop(com.badlogic.gdx.math.Vector2,java.util.random.RandomGenerator)" class="member-name-link">createRandomDrop</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;position,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/random/RandomGenerator.html" title="class or interface in java.util.random" class="external-link">RandomGenerator</a>&nbsp;random)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Uses the shared random pool with injectable randomness for repeatable integration tests.</div>
 </div>
 </div>
 </div>
@@ -148,6 +167,14 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="createRandomDrop(com.badlogic.gdx.math.Vector2,java.util.random.RandomGenerator)">
+<h3>createRandomDrop</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createRandomDrop</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;position,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/random/RandomGenerator.html" title="class or interface in java.util.random" class="external-link">RandomGenerator</a>&nbsp;random)</span></div>
+<div class="block">Uses the shared random pool with injectable randomness for repeatable integration tests.</div>
+</section>
+</li>
+<li>
 <section class="detail" id="createDrop(com.badlogic.gdx.math.Vector2)">
 <h3>createDrop</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createDrop</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;position)</span></div>
@@ -161,24 +188,34 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="createItem(com.csse3200.game.items.Item)">
-<h3>createItem</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createItem</span><wbr><span class="parameters">(<a href="../../items/Item.html" title="class in com.csse3200.game.items">Item</a>&nbsp;item)</span></div>
-<div class="block">Creates an item entity to be spawned into the game.</div>
+<section class="detail" id="createDrop(com.csse3200.game.items.ItemType,com.badlogic.gdx.math.Vector2)">
+<h3>createDrop</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createDrop</span><wbr><span class="parameters">(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;itemType,
+ com.badlogic.gdx.math.Vector2&nbsp;position)</span></div>
+<div class="block">Creates a single caller-selected item at a world position.</div>
 </section>
 </li>
 <li>
-<section class="detail" id="createStrengthCharm()">
-<h3>createStrengthCharm</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createStrengthCharm</span>()</div>
-<div class="block">Creates the Strength Charm used for Sprint 1 item drops.
-
- <p>The returned entity is not positioned or registered. The room that requests the item owns
- those responsibilities.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>an unregistered Strength Charm entity</dd>
-</dl>
+<section class="detail" id="createDrop(com.csse3200.game.items.ItemDropSpec,com.badlogic.gdx.math.Vector2)">
+<h3>createDrop</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createDrop</span><wbr><span class="parameters">(<a href="../../items/ItemDropSpec.html" title="class in com.csse3200.game.items">ItemDropSpec</a>&nbsp;dropSpec,
+ com.badlogic.gdx.math.Vector2&nbsp;position)</span></div>
+<div class="block">Creates a caller-selected item and quantity at a world position.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createDrops(java.util.List,com.badlogic.gdx.math.Vector2)">
+<h3>createDrops</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;</span>&nbsp;<span class="element-name">createDrops</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../items/ItemDropSpec.html" title="class in com.csse3200.game.items">ItemDropSpec</a>&gt;&nbsp;dropSpecs,
+ com.badlogic.gdx.math.Vector2&nbsp;position)</span></div>
+<div class="block">Creates every caller-selected drop at the supplied origin.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createItem(com.csse3200.game.items.Item)">
+<h3>createItem</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createItem</span><wbr><span class="parameters">(<a href="../../items/Item.html" title="class in com.csse3200.game.items">Item</a>&nbsp;item)</span></div>
+<div class="block">Creates an item entity using the shared Item abstraction introduced on main.</div>
 </section>
 </li>
 </ul>

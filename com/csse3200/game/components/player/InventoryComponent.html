@@ -93,10 +93,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">InventoryComponent</span>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">A component intended to be used by the player to track their inventory.
-
- <p>Currently only stores the gold amount but can be extended for more advanced functionality such
- as storing items. Can also be used as a more generic component for other entities.</div>
+<div class="block">A component used by the player to track Gold, charms, and consumable quantities.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -136,54 +133,68 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addCharm(com.csse3200.game.items.charms.Charm)" class="member-name-link">addCharm</a><wbr>(<a href="../../items/charms/Charm.html" title="class in com.csse3200.game.items.charms">Charm</a>&nbsp;charm)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Adds a charm to the player's inventory.</div>
+<div class="block">Adds a charm and publishes the existing inventory event when attached to an entity.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addConsumable(com.csse3200.game.items.ItemType)" class="member-name-link">addConsumable</a><wbr>(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;type)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Adds one consumable.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addConsumable(com.csse3200.game.items.ItemType,int)" class="member-name-link">addConsumable</a><wbr>(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;type,
+ int&nbsp;quantity)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Adds a positive quantity of one consumable type and emits one final-count event.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addGold(int)" class="member-name-link">addGold</a><wbr>(int&nbsp;gold)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Adds to the player's gold.</div>
+<div class="block">Adds to the player's Gold.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCharmCount()" class="member-name-link">getCharmCount</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the number of charms currently held by the player.</div>
-</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../items/charms/Charm.html" title="class in com.csse3200.game.items.charms">Charm</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCharms()" class="member-name-link">getCharms</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the charms currently stored in the inventory.</div>
-</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getGold()" class="member-name-link">getGold</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getConsumableCount(com.csse3200.game.items.ItemType)" class="member-name-link">getConsumableCount</a><wbr>(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;type)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the player's gold.</div>
+<div class="block">Returns the stored quantity for a consumable type.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getGold()" class="member-name-link">getGold</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasCharm(com.csse3200.game.items.charms.Charm)" class="member-name-link">hasCharm</a><wbr>(<a href="../../items/charms/Charm.html" title="class in com.csse3200.game.items.charms">Charm</a>&nbsp;charm)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasCharm(com.csse3200.game.items.charms.Charm)" class="member-name-link">hasCharm</a><wbr>(<a href="../../items/charms/Charm.html" title="class in com.csse3200.game.items.charms">Charm</a>&nbsp;charm)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Checks whether the player currently has a specific charm.</div>
-</div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasConsumable(com.csse3200.game.items.ItemType)" class="member-name-link">hasConsumable</a><wbr>(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;type)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasGold(int)" class="member-name-link">hasGold</a><wbr>(int&nbsp;gold)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns if the player has a certain amount of gold.</div>
-</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removeCharm(com.csse3200.game.items.charms.Charm)" class="member-name-link">removeCharm</a><wbr>(<a href="../../items/charms/Charm.html" title="class in com.csse3200.game.items.charms">Charm</a>&nbsp;charm)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Removes a charm from the player's inventory.</div>
+<div class="block">Removes a charm and publishes the existing inventory event when removal succeeds.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDisplay(com.csse3200.game.components.maingame.InventoryDisplay)" class="member-name-link">setDisplay</a><wbr>(<a href="../maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a>&nbsp;display)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removeConsumable(com.csse3200.game.items.ItemType)" class="member-name-link">removeConsumable</a><wbr>(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;type)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Removes one consumable if available.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setGold(int)" class="member-name-link">setGold</a><wbr>(int&nbsp;gold)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Sets the player's gold.</div>
-</div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDisplay(com.csse3200.game.components.maingame.InventoryDisplay)" class="member-name-link">setDisplay</a><wbr>(<a href="../maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a>&nbsp;display)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toggleDisplay()" class="member-name-link">toggleDisplay</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setGold(int)" class="member-name-link">setGold</a><wbr>(int&nbsp;gold)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the player's Gold, with a minimum value of zero.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toggleDisplay()" class="member-name-link">toggleDisplay</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -222,107 +233,93 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getGold()">
 <h3>getGold</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getGold</span>()</div>
-<div class="block">Returns the player's gold.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>entity's health</dd>
-</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="hasGold(int)">
 <h3>hasGold</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">hasGold</span><wbr><span class="parameters">(int&nbsp;gold)</span></div>
-<div class="block">Returns if the player has a certain amount of gold.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>gold</code> - required amount of gold</dd>
-<dt>Returns:</dt>
-<dd>player has greater than or equal to the required amount of gold</dd>
-</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setGold(int)">
 <h3>setGold</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setGold</span><wbr><span class="parameters">(int&nbsp;gold)</span></div>
-<div class="block">Sets the player's gold. Gold has a minimum bound of 0.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>gold</code> - gold</dd>
-</dl>
+<div class="block">Sets the player's Gold, with a minimum value of zero.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="addGold(int)">
 <h3>addGold</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addGold</span><wbr><span class="parameters">(int&nbsp;gold)</span></div>
-<div class="block">Adds to the player's gold. The amount added can be negative.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>gold</code> - gold to add</dd>
-</dl>
+<div class="block">Adds to the player's Gold. The amount may be negative.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="getCharms()">
 <h3>getCharms</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../items/charms/Charm.html" title="class in com.csse3200.game.items.charms">Charm</a>&gt;</span>&nbsp;<span class="element-name">getCharms</span>()</div>
-<div class="block">Returns the charms currently stored in the inventory.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>stored charms</dd>
-</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="addCharm(com.csse3200.game.items.charms.Charm)">
 <h3>addCharm</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addCharm</span><wbr><span class="parameters">(<a href="../../items/charms/Charm.html" title="class in com.csse3200.game.items.charms">Charm</a>&nbsp;charm)</span></div>
-<div class="block">Adds a charm to the player's inventory. Used when the player picks up a charm.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>charm</code> - charm to add</dd>
-</dl>
+<div class="block">Adds a charm and publishes the existing inventory event when attached to an entity.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="removeCharm(com.csse3200.game.items.charms.Charm)">
 <h3>removeCharm</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">removeCharm</span><wbr><span class="parameters">(<a href="../../items/charms/Charm.html" title="class in com.csse3200.game.items.charms">Charm</a>&nbsp;charm)</span></div>
-<div class="block">Removes a charm from the player's inventory. Used when a charm is dropped or removed.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>charm</code> - charm to remove</dd>
-<dt>Returns:</dt>
-<dd>true if the charm was successfully removed</dd>
-</dl>
+<div class="block">Removes a charm and publishes the existing inventory event when removal succeeds.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="hasCharm(com.csse3200.game.items.charms.Charm)">
 <h3>hasCharm</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasCharm</span><wbr><span class="parameters">(<a href="../../items/charms/Charm.html" title="class in com.csse3200.game.items.charms">Charm</a>&nbsp;charm)</span></div>
-<div class="block">Checks whether the player currently has a specific charm. This can be used later when checking
- charm effects or buffs.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>charm</code> - charm to check</dd>
-<dt>Returns:</dt>
-<dd>true if the charm is stored in the inventory</dd>
-</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getCharmCount()">
 <h3>getCharmCount</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getCharmCount</span>()</div>
-<div class="block">Returns the number of charms currently held by the player. Useful for checking and testing the
- inventory.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>number of stored charms</dd>
-</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getConsumableCount(com.csse3200.game.items.ItemType)">
+<h3>getConsumableCount</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getConsumableCount</span><wbr><span class="parameters">(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;type)</span></div>
+<div class="block">Returns the stored quantity for a consumable type.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="hasConsumable(com.csse3200.game.items.ItemType)">
+<h3>hasConsumable</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasConsumable</span><wbr><span class="parameters">(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;type)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="addConsumable(com.csse3200.game.items.ItemType)">
+<h3>addConsumable</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addConsumable</span><wbr><span class="parameters">(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;type)</span></div>
+<div class="block">Adds one consumable.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="addConsumable(com.csse3200.game.items.ItemType,int)">
+<h3>addConsumable</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addConsumable</span><wbr><span class="parameters">(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;type,
+ int&nbsp;quantity)</span></div>
+<div class="block">Adds a positive quantity of one consumable type and emits one final-count event.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="removeConsumable(com.csse3200.game.items.ItemType)">
+<h3>removeConsumable</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">removeConsumable</span><wbr><span class="parameters">(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;type)</span></div>
+<div class="block">Removes one consumable if available.</div>
 </section>
 </li>
 <li>

@@ -85,10 +85,20 @@ loadScripts(document, 'script');</script>
 </li>
 <li>
 <div id="class-summary">
-<div class="caption"><span>Classes</span></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="class-summary-tab0" role="tab" aria-selected="true" aria-controls="class-summary.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary', 2)" class="active-table-tab">All Classes and Interfaces</button><button id="class-summary-tab2" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab2', 2)" class="table-tab">Classes</button><button id="class-summary-tab3" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab3', 2)" class="table-tab">Enum Classes</button></div>
+<div id="class-summary.tabpanel" role="tabpanel" aria-labelledby="class-summary-tab0">
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="ConsumableEffectComponent.html" title="class in com.csse3200.game.components.player">ConsumableEffectComponent</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">Owns consumable use: validates, removes exactly one item, applies its effect, then emits
+ itemUsed.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="ConsumableLoadoutComponent.html" title="class in com.csse3200.game.components.player">ConsumableLoadoutComponent</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">Fixed quick-use slots.</div>
+</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="InteractionPrompt.html" title="class in com.csse3200.game.components.player">InteractionPrompt</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Copy for in-range interaction prompts.</div>
@@ -99,7 +109,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">A component intended to be used by the player to track their inventory.</div>
+<div class="block">A component used by the player to track Gold, charms, and consumable quantities.</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="InvisibilityPotionComponent.html" title="class in com.csse3200.game.components.player">InvisibilityPotionComponent</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
@@ -144,6 +154,14 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">A ui component for displaying player stats as an icon-driven HUD panel.</div>
 </div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="Team5CombatHudDisplay.html" title="class in com.csse3200.game.components.player">Team5CombatHudDisplay</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">Team 5's compact fixed-key consumable HUD, separate from the shared health HUD.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab3"><a href="Team5CombatHudDisplay.ConsumableSlot.html" title="enum class in com.csse3200.game.components.player">Team5CombatHudDisplay.ConsumableSlot</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab3">
+<div class="block">Fixed consumable presentation order, matching keyboard quick-use slots.</div>
+</div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="TimedPlayerAbility.html" title="class in com.csse3200.game.components.player">TimedPlayerAbility</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">An ability whose whole run is one timed condition on the player.</div>
@@ -151,6 +169,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="TouchPlayerInputComponent.html" title="class in com.csse3200.game.components.player">TouchPlayerInputComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Input handler for the player for keyboard and touch (mouse) input.</div>
+</div>
 </div>
 </div>
 </div>
