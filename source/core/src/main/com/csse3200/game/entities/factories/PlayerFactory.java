@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
+import com.csse3200.game.components.player.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.InvisibilityPotionComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
@@ -86,6 +87,7 @@ public class PlayerFactory {
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())
             .addComponent(new PlayerStatsDisplay())
+            .addComponent(new InteractionPromptDisplay())
             // Weapon damage = round(baseAttack * multiplier); charms that raise base attack
             // therefore scale weapon hits too.
             .addComponent(new WeaponAssetsComponent())
