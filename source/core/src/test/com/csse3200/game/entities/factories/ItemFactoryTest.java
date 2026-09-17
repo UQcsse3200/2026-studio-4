@@ -118,9 +118,8 @@ class ItemFactoryTest {
         NullPointerException.class,
         () -> ItemFactory.createDrop((ItemDropSpec) null, validPosition));
     assertThrows(NullPointerException.class, () -> ItemFactory.createDrops(null, validPosition));
-    assertThrows(
-        NullPointerException.class,
-        () -> ItemFactory.createDrops(List.of(ItemDropSpec.single(ItemType.GOLD_COIN)), null));
+    List<ItemDropSpec> validDrops = List.of(ItemDropSpec.single(ItemType.GOLD_COIN));
+    assertThrows(NullPointerException.class, () -> ItemFactory.createDrops(validDrops, null));
   }
 
   private static ItemType itemTypeOf(Entity entity) {
