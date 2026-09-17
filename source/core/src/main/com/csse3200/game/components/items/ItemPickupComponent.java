@@ -2,7 +2,7 @@ package com.csse3200.game.components.items;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.player.InteractionPrompt;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.items.Item;
 import com.csse3200.game.physics.BodyUserData;
@@ -26,7 +26,8 @@ import java.util.Set;
  * com.csse3200.game.entities.factories.ItemFactory}), which is where this component reads the
  * shared {@link Item} from.
  *
- * <p>Requires {@link HitboxComponent} and {@link InventoryComponent} on this entity.
+ * <p>Requires {@link HitboxComponent} and {@link
+ * com.csse3200.game.components.player.InventoryComponent} on this entity.
  */
 public class ItemPickupComponent extends Component {
   private HitboxComponent hitboxComponent;
@@ -83,5 +84,22 @@ public class ItemPickupComponent extends Component {
 
     nearbyItems.remove(itemEntity);
     itemEntity.dispose();
+  }
+
+  /**
+   * HUD copy while an item is in pickup range.
+   *
+   * @return prompt text, or null if nothing is nearby
+   */
+  public String getPickupPrompt() {
+    if (nearbyItems.isEmpty()) {
+      return null;
+    }
+    Entity itemEntity = nearbyItems.iterator().next();
+    ItemComponent itemComponent = itemEntity.getComponent(ItemComponent.class);
+    if (itemComponent == null || itemComponent.getItem() == null) {
+      return null;
+    }
+    return InteractionPrompt.forItem(itemComponent.getItem().getName());
   }
 }
