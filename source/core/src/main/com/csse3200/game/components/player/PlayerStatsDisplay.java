@@ -1,5 +1,6 @@
 package com.csse3200.game.components.player;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -9,8 +10,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.ui.UIComponent;
 
-/** A ui component for displaying player stats as an icon-driven HUD panel. */
+/** Player combat HUD: health in the top-left corner, other stats kept off that slot. */
 public class PlayerStatsDisplay extends UIComponent {
+  static final float LOW_HEALTH_FRACTION = 0.25f;
+  private static final Color HEALTH_OK = Color.WHITE;
+  private static final Color HEALTH_LOW = Color.RED;
+  private static final String LABEL_STYLE = "statDisplay";
+
   private Table table;
   private Label healthValueLabel;
   private Label strengthLabel;
@@ -24,8 +30,7 @@ public class PlayerStatsDisplay extends UIComponent {
   private Label shieldLabel;
   private ProgressBar shieldBar;
   private Table shieldTable;
-
-  private static final String LABEL_STYLE = "statDisplay";
+  private boolean lowHealthWarning;
 
   /**
    * Updates the shield value and maximum shown in the player's HUD.
@@ -39,7 +44,11 @@ public class PlayerStatsDisplay extends UIComponent {
     shieldBar.setValue(current);
   }
 
-  /** Creates reusable ui styles and adds actors to the stage. */
+  /** True when current health is at most 25% of max health. */
+  public boolean isLowHealthWarning() {
+    return lowHealthWarning;
+  }
+
   @Override
   public void create() {
     super.create();
@@ -68,18 +77,15 @@ public class PlayerStatsDisplay extends UIComponent {
     maxHealth = stats.getMaxHealth();
     health = stats.getHealth();
 
-    // Background
-    float panelWidth = 420f;
-    float panelHeight = panelWidth / (1683f / 794f); // ≈ 245f
+    float panelWidth = 280f;
+    float panelHeight = 90f;
 
     Table panel = new Table();
     panel.setBackground(hud.getDrawable("scroll-background"));
 
-    // Icon heart
-    Image heartIcon = new Image(hud.getDrawable("heart-icon")); // native 123x127, ~1:1
+    Image heartIcon = new Image(hud.getDrawable("heart-icon"));
     float iconSize = 20f;
 
-    // Health bar
     ProgressBar.ProgressBarStyle barStyle =
         hud.get("player-health-bar", ProgressBar.ProgressBarStyle.class);
     healthBar = new ProgressBar(0, maxHealth, 1, false, barStyle);
@@ -92,12 +98,11 @@ public class PlayerStatsDisplay extends UIComponent {
     shieldLabel = new Label("Shield: 20 / 20", skin, LABEL_STYLE);
 
     float barWidth = 100f;
-    float barHeight = barWidth / (32f / 5f); // ≈ 40.6f
+    float barHeight = barWidth / (32f / 5f);
 
-    healthValueLabel = new Label(health + "/" + maxHealth, skin, LABEL_STYLE);
+    healthValueLabel = new Label(healthText(), skin, LABEL_STYLE);
     healthValueLabel.setFontScale(0.4f);
 
-    // Bar with numbers
     Stack healthStack = new Stack();
     healthStack.add(healthBar);
     Table labelWrap = new Table();
@@ -110,15 +115,13 @@ public class PlayerStatsDisplay extends UIComponent {
     healthBarRow.setTransform(true);
     healthBarRow.setScale(2.5f);
 
-    // MS + AS
-    Image speedIcon = new Image(hud.getDrawable("ms-icon")); // placeholder
     movementSpeedLabel =
         new Label(String.format("%.1fx", stats.getMovementSpeed()), skin, LABEL_STYLE);
-    movementSpeedLabel.setFontScale(1f);
-
-    Image attackSpeedIcon = new Image(hud.getDrawable("as-icon")); // placeholder
     attackSpeedLabel = new Label(String.format("%.1f", stats.getAttackSpeed()), skin, LABEL_STYLE);
-    attackSpeedLabel.setFontScale(1f);
+    strengthLabel = new Label(String.valueOf(stats.getBaseAttack()), skin, LABEL_STYLE);
+    movementSpeedLabel.setVisible(false);
+    attackSpeedLabel.setVisible(false);
+    strengthLabel.setVisible(false);
 
     InvisibilityPotionComponent invisibility =
         entity.getComponent(InvisibilityPotionComponent.class);
@@ -133,43 +136,8 @@ public class PlayerStatsDisplay extends UIComponent {
             skin,
             LABEL_STYLE);
 
-    Table msBlock = new Table();
-    msBlock.add(new Label("MS:", skin, LABEL_STYLE));
-    msBlock.row().padTop(2f);
-    msBlock.add(speedIcon).size(28f, 28f);
-    msBlock.row().padTop(2f);
-    msBlock.add(movementSpeedLabel);
-
-    Table asBlock = new Table();
-    asBlock.add(new Label("AS:", skin, LABEL_STYLE));
-    asBlock.row().padTop(2f);
-    asBlock.add(attackSpeedIcon).size(28f, 28f);
-    asBlock.row().padTop(2f);
-    asBlock.add(attackSpeedLabel);
-
-    // Strength box
-    Image strengthIcon = new Image(hud.getDrawable("strength-icon")); // placeholder
-    strengthLabel = new Label(String.valueOf(stats.getBaseAttack()), skin, LABEL_STYLE);
-    strengthLabel.setFontScale(1f);
-
-    Table strengthBox = new Table();
-    strengthBox.add(new Label("STRENGTH", skin, LABEL_STYLE));
-    strengthBox.row().padTop(2f);
-    strengthBox.add(strengthIcon).size(28f, 28f);
-    strengthBox.row().padTop(2f);
-    strengthBox.add(strengthLabel);
-
-    // Row below health bar
-    Table subStatsRow = new Table();
-    subStatsRow.add(msBlock).padRight(50f);
-    subStatsRow.add(asBlock).padRight(50f);
-    subStatsRow.add(strengthBox);
-
-    // Assemble
     Table content = new Table();
     content.add(healthBarRow).left();
-    content.row();
-    content.add(subStatsRow);
 
     panel.add(content).expand().top().center();
     table.add(panel).size(panelWidth, panelHeight).top().left().padTop(20f);
@@ -186,6 +154,8 @@ public class PlayerStatsDisplay extends UIComponent {
     shieldTable.row();
     shieldTable.add(invisibilityCooldownLabel).left();
 
+    refreshLowHealthWarning();
+
     if (stage == null) {
       return;
     }
@@ -197,16 +167,14 @@ public class PlayerStatsDisplay extends UIComponent {
   public void update() {
     InvisibilityPotionComponent invisibility =
         entity.getComponent(InvisibilityPotionComponent.class);
-    if (invisibility == null) {
-      return;
+    if (invisibility != null) {
+      invisibilityLabel.setText(invisibility.getDurationHudText());
+      invisibilityCooldownLabel.setText(invisibility.getCooldownHudText());
     }
-    invisibilityLabel.setText(invisibility.getDurationHudText());
-    invisibilityCooldownLabel.setText(invisibility.getCooldownHudText());
-  }
-
-  @Override
-  public void draw(SpriteBatch batch) {
-    // draw is handled by the stage
+    if (lowHealthWarning && healthValueLabel != null) {
+      float pulse = 0.65f + 0.35f * (0.5f + 0.5f * (float) Math.sin(System.nanoTime() / 1.5e8));
+      healthValueLabel.getColor().a = pulse;
+    }
   }
 
   /**
@@ -215,9 +183,10 @@ public class PlayerStatsDisplay extends UIComponent {
    * @param health player health
    */
   public void updatePlayerHealthUI(int health) {
-    healthBar.setValue(health);
-    healthValueLabel.setText(health + " / " + this.maxHealth);
     this.health = health;
+    healthBar.setValue(health);
+    healthValueLabel.setText(healthText());
+    refreshLowHealthWarning();
   }
 
   /**
@@ -226,8 +195,7 @@ public class PlayerStatsDisplay extends UIComponent {
    * @param movementSpeed player movement speed
    */
   public void updatePlayerMovementSpeedUI(float movementSpeed) {
-    CharSequence text = String.format("%.1fx", movementSpeed);
-    movementSpeedLabel.setText(text);
+    movementSpeedLabel.setText(String.format("%.1fx", movementSpeed));
   }
 
   /**
@@ -236,19 +204,19 @@ public class PlayerStatsDisplay extends UIComponent {
    * @param attackSpeed player attack speed
    */
   public void updatePlayerAttackSpeedUI(float attackSpeed) {
-    CharSequence text = String.format("%.1f", attackSpeed);
-    attackSpeedLabel.setText(text);
+    attackSpeedLabel.setText(String.format("%.1f", attackSpeed));
   }
 
   /**
    * Updates the player's max Health on the ui.
    *
-   * @param maxHealth player attack speed
+   * @param maxHealth player max health
    */
   public void updatePlayerMaxHealthUI(int maxHealth) {
     this.maxHealth = maxHealth;
     healthBar.setRange(0, maxHealth);
-    healthValueLabel.setText(this.health + " / " + maxHealth);
+    healthValueLabel.setText(healthText());
+    refreshLowHealthWarning();
   }
 
   /**
@@ -257,8 +225,12 @@ public class PlayerStatsDisplay extends UIComponent {
    * @param strength player strength, represented by base attack damage
    */
   public void updatePlayerStrengthUI(int strength) {
-    CharSequence text = String.format("%d", strength);
-    strengthLabel.setText(text);
+    strengthLabel.setText(String.format("%d", strength));
+  }
+
+  @Override
+  public void draw(SpriteBatch batch) {
+    // draw is handled by the stage
   }
 
   @Override
@@ -266,5 +238,21 @@ public class PlayerStatsDisplay extends UIComponent {
     super.dispose();
     table.remove();
     shieldTable.remove();
+  }
+
+  private String healthText() {
+    return String.format("Health: %d / %d", health, maxHealth);
+  }
+
+  private void refreshLowHealthWarning() {
+    lowHealthWarning = maxHealth > 0 && health <= maxHealth * LOW_HEALTH_FRACTION;
+    Color colour = lowHealthWarning ? HEALTH_LOW : HEALTH_OK;
+    if (healthValueLabel != null) {
+      healthValueLabel.setColor(colour);
+      healthValueLabel.getColor().a = 1f;
+    }
+    if (healthBar != null) {
+      healthBar.setColor(colour);
+    }
   }
 }
