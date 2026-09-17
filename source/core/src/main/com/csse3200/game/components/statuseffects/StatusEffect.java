@@ -40,6 +40,17 @@ public interface StatusEffect {
   }
 
   /**
+   * Returns whether the entity should be unable to act at all while this runs: no movement, and no
+   * attack the entity's own AI would otherwise decide to make.
+   *
+   * <p>Separate from a zero movement-speed multiplier, which only says the entity is standing
+   * still. This says it is not choosing anything either.
+   */
+  default boolean immobilisesOwner() {
+    return false;
+  }
+
+  /**
    * Returns what this effect multiplies the given effective stat by while it runs. The raw stats
    * are never touched, so charms and other adjustments keep working underneath and removing the
    * effect cannot leave a rounding remainder behind.
@@ -55,6 +66,18 @@ public interface StatusEffect {
    * <p>Treat the returned colour as read only; the caller may be a renderer running every frame.
    */
   default Color getTint() {
+    return null;
+  }
+
+  /**
+   * Returns the colour this effect adds on top of the sprite of whatever it is on, or null to add
+   * nothing. Unlike {@link #getTint()}, which multiplies and so cannot lighten a dark sprite at all
+   * (black times any colour is still black), a glow shows on every sprite in the game.
+   *
+   * <p>Treat the returned colour as read only; the caller may be a renderer running every frame.
+   * Its alpha is the strength of the glow rather than a transparency.
+   */
+  default Color getGlow() {
     return null;
   }
 

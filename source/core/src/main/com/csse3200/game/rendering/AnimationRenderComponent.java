@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ public class AnimationRenderComponent extends RenderComponent {
   private Animation<TextureRegion> currentAnimation;
   private String currentAnimationName;
   private float animationPlayTime;
+  private float drawnPlayTime;
   private float verticalOffset;
 
   /**
@@ -189,10 +191,20 @@ public class AnimationRenderComponent extends RenderComponent {
     if (currentAnimation == null) {
       return;
     }
-    TextureRegion region = currentAnimation.getKeyFrame(animationPlayTime);
+    // The glow pass lays colour over the frame already drawn, so it replays that frame rather than
+    // reading the playhead again, which this pass has by then already moved on.
+    TextureRegion region =
+        currentAnimation.getKeyFrame(isRepeatPass() ? drawnPlayTime : animationPlayTime);
     Vector2 pos = entity.getPosition();
     Vector2 scale = entity.getScale();
     batch.draw(region, pos.x, pos.y + verticalOffset, scale.x, scale.y);
-    animationPlayTime += timeSource.getDeltaTime();
+    if (isRepeatPass()) {
+      return;
+    }
+    drawnPlayTime = animationPlayTime;
+    // A frozen entity holds the frame it was caught on instead of idling on the spot.
+    if (!StatusEffectsControllerComponent.isImmobilised(entity)) {
+      animationPlayTime += timeSource.getDeltaTime();
+    }
   }
 }
