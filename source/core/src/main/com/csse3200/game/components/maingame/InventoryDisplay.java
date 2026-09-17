@@ -446,6 +446,7 @@ public class InventoryDisplay extends UIComponent {
   /** Shows or hides the inventory book. */
   public void setVisible(boolean set) {
     table.setVisible(set);
+    changePage();
     if (set) {
       // Enemy health bars may have been added to the stage since the book was created.
       table.toFront();
