@@ -1,20 +1,12 @@
 package com.csse3200.game.components.maingame;
 
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.player.InventoryComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class InventoryActions extends Component {
   private static final Logger logger = LoggerFactory.getLogger(InventoryActions.class);
   private final InventoryDisplay inventoryDisplay;
-  private InventoryComponent inventoryComponent;
-
-  public InventoryActions(
-      InventoryDisplay inventoryDisplay, InventoryComponent inventoryComponent) {
-    this.inventoryDisplay = inventoryDisplay;
-    this.inventoryComponent = inventoryComponent;
-  }
 
   public InventoryActions(InventoryDisplay inventoryDisplay) {
     this.inventoryDisplay = inventoryDisplay;

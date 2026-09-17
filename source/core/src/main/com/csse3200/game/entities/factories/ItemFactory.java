@@ -85,8 +85,7 @@ public final class ItemFactory {
    * @return a non-null, positioned, unregistered item entity for the room to spawn
    */
   public static Entity createDrop(Vector2 position) {
-    Objects.requireNonNull(position, "position cannot be null");
-    Entity item = createItem(new StrengthCharm());
+    Objects.requireNonNull(position, NULL_POSITION_MESSAGE);
     return createDrop(ItemType.STRENGTH_CHARM, position);
   }
 
