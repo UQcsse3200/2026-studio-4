@@ -5,11 +5,20 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
+import com.csse3200.game.components.player.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.player.InvisibilityPotionComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
+import com.csse3200.game.components.player.PlayerCerberusMistDebuffComponent;
+import com.csse3200.game.components.player.PlayerDamageFlashComponent;
+import com.csse3200.game.components.player.PlayerPetrificationComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
+import com.csse3200.game.components.spells.FreezeSpellComponent;
+import com.csse3200.game.components.spells.LightningSpellComponent;
+import com.csse3200.game.components.spells.SpellAoeVisualComponent;
+import com.csse3200.game.components.spells.targeting.StrategyWithinRadius;
 import com.csse3200.game.components.weapons.BowWeaponComponent;
 import com.csse3200.game.components.weapons.KnifeWeaponComponent;
 import com.csse3200.game.components.weapons.SwordWeaponComponent;
@@ -36,6 +45,9 @@ import com.csse3200.game.services.ServiceLocator;
  * the properties stores in 'PlayerConfig'.
  */
 public class PlayerFactory {
+  /** How far a spell reaches from the player, in world units; the screen is 20 units wide. */
+  private static final float SPELL_RADIUS = 3f;
+
   private static final PlayerConfig stats =
       FileLoader.readClass(PlayerConfig.class, "configs/player.json");
 
@@ -77,10 +89,12 @@ public class PlayerFactory {
                     stats.health, stats.baseAttack, stats.movementSpeed, stats.attackSpeed))
             .addComponent(new PlayerAbilitiesComponent())
             .addComponent(new InventoryComponent(stats.gold))
+            .addComponent(new InvisibilityPotionComponent())
             .addComponent(new ItemPickupComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())
             .addComponent(new PlayerStatsDisplay())
+            .addComponent(new InteractionPromptDisplay())
             // Weapon damage = round(baseAttack * multiplier); charms that raise base attack
             // therefore scale weapon hits too.
             .addComponent(new WeaponAssetsComponent())
@@ -90,9 +104,18 @@ public class PlayerFactory {
             .addComponent(new SwordWeaponComponent())
             .addComponent(new KnifeWeaponComponent())
             .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(new PlayerCerberusMistDebuffComponent())
+            .addComponent(new PlayerDamageFlashComponent())
+            .addComponent(new PlayerPetrificationComponent())
             .addComponent(new BowWeaponComponent())
             // Owns the equipped weapon: equips the sword and disables the rest on create.
-            .addComponent(new WeaponSelectionComponent());
+            .addComponent(new WeaponSelectionComponent())
+            // Both spells share one area disc; each cast says what colour and how far it reached.
+            .addComponent(new SpellAoeVisualComponent())
+            .addComponent(
+                new LightningSpellComponent(5f, 25, 400L, new StrategyWithinRadius(SPELL_RADIUS)))
+            .addComponent(
+                new FreezeSpellComponent(5f, 5000L, new StrategyWithinRadius(SPELL_RADIUS)));
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);

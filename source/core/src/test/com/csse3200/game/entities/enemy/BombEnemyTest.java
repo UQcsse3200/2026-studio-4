@@ -47,19 +47,27 @@ class BombEnemyTest {
     ServiceLocator.registerEntityService(entityService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/bombEnemy.atlas"});
+    resourceService.loadTextureAtlases(
+        new String[] {"images/golem.atlas", "images/bombEnemy.atlas", "images/beetle.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
 
   @Test
   void shouldHaveBombEnemyAnimations() {
-    Entity bombEnemy = NPCFactory.createBombEnemy(new Entity(), "images/bombEnemy.atlas", 0.05f);
-    AnimationRenderComponent animator = bombEnemy.getComponent(AnimationRenderComponent.class);
+    Entity golem = NPCFactory.createBombEnemy(new Entity(), "images/golem.atlas", 0.05f);
+    Entity beetle = NPCFactory.createBombEnemy(new Entity(), "images/beetle.atlas", 0.05f);
+    AnimationRenderComponent golemAnimator = golem.getComponent(AnimationRenderComponent.class);
+    AnimationRenderComponent beetleAnimator = beetle.getComponent(AnimationRenderComponent.class);
 
-    assertTrue(animator.hasAnimation("move"));
-    assertTrue(animator.hasAnimation("chase"));
-    assertTrue(animator.hasAnimation("dieAnimation"));
+    assertTrue(golemAnimator.hasAnimation("move"));
+    assertTrue(golemAnimator.hasAnimation("chase"));
+    assertTrue(golemAnimator.hasAnimation("dieAnimation"));
+    assertTrue(golemAnimator.hasAnimation("default"));
+    assertTrue(beetleAnimator.hasAnimation("move"));
+    assertTrue(beetleAnimator.hasAnimation("chase"));
+    assertTrue(beetleAnimator.hasAnimation("dieAnimation"));
+    assertTrue(beetleAnimator.hasAnimation("default"));
   }
 
   @Test
@@ -78,6 +86,54 @@ class BombEnemyTest {
     EventListener0 fuseStarted = mock(EventListener0.class);
     bombEnemy.getEvents().addListener("fuseStarted", fuseStarted);
 
+    bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
+
+    verify(fuseStarted, times(1)).handle();
+  }
+
+  @Test
+  void testBombEnemyIgnoresCollisionFromDifferentFixture() {
+    Entity player =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent())
+            .addComponent(new CombatStatsComponent(100, 10));
+    player.create();
+
+    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas", 0.05f);
+    bombEnemy.create();
+
+    Fixture bombFixture = bombEnemy.getComponent(HitboxComponent.class).getFixture();
+    Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
+
+    EventListener0 fuseStarted = mock(EventListener0.class);
+    bombEnemy.getEvents().addListener("fuseStarted", fuseStarted);
+
+    bombEnemy.getEvents().trigger("collisionStart", playerFixture, bombFixture);
+
+    verify(fuseStarted, never()).handle();
+  }
+
+  @Test
+  void testBombEnemyLightsFuseOnlyOnce() {
+    Entity player =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent())
+            .addComponent(new CombatStatsComponent(100, 10));
+    player.create();
+
+    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas", 0.05f);
+    bombEnemy.create();
+
+    Fixture bombFixture = bombEnemy.getComponent(HitboxComponent.class).getFixture();
+    Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
+
+    EventListener0 fuseStarted = mock(EventListener0.class);
+    bombEnemy.getEvents().addListener("fuseStarted", fuseStarted);
+
+    bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
+    bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
     bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
 
     verify(fuseStarted, times(1)).handle();

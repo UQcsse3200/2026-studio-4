@@ -30,9 +30,33 @@ public class CerberusMistComponent extends RenderComponent {
   private boolean inside;
   private boolean stopped;
   private Texture mistTexture;
+  private CerberusAttackCoordinator attackCoordinator;
 
   public CerberusMistComponent(Entity target) {
     this.target = target;
+  }
+
+  /** Connects this skill after it has been added to its head entity. */
+  public void setAttackCoordinator(CerberusAttackCoordinator coordinator) {
+    attackCoordinator = coordinator;
+    coordinator.register(entity, this::canStartAttack);
+  }
+
+  private boolean canStartAttack() {
+    return !stopped
+        && !active
+        && stats != null
+        && !stats.isDead()
+        && targetStats != null
+        && !targetStats.isDead()
+        && cooldownReamining <= 0f
+        && entity.getCenterPosition().dst2(target.getCenterPosition()) <= CAST_RANGE * CAST_RANGE;
+  }
+
+  private void finishAttack() {
+    if (attackCoordinator != null) {
+      attackCoordinator.finish(entity);
+    }
   }
 
   @Override
@@ -71,8 +95,11 @@ public class CerberusMistComponent extends RenderComponent {
     }
 
     cooldownReamining = Math.max(0f, cooldownReamining - delta);
-    if (cooldownReamining > 0f
-        || entity.getCenterPosition().dst2(target.getCenterPosition()) > CAST_RANGE * CAST_RANGE) {
+    if (!canStartAttack()) {
+      return;
+    }
+
+    if (attackCoordinator != null && !attackCoordinator.tryStart(entity)) {
       return;
     }
 
@@ -96,6 +123,7 @@ public class CerberusMistComponent extends RenderComponent {
   private void clearMist() {
     active = false;
     remaining = 0f;
+    finishAttack();
 
     if (inside) {
       inside = false;

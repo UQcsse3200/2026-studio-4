@@ -10,6 +10,17 @@ test {
     workingDir = new File("../core/assets")
     finalizedBy jacocoTestReport
 
+    // Load Mockito's existing Byte Buddy agent at JVM startup instead of relying on self-attachment.
+    doFirst {
+        def agentJar = configurations.testRuntimeClasspath.find {
+            it.name.startsWith('byte-buddy-agent-') && it.name.endsWith('.jar')
+        }
+        if (agentJar == null) {
+            throw new GradleException("Byte Buddy agent is missing from the test runtime classpath")
+        }
+        jvmArgs "-javaagent:${agentJar.absolutePath}"
+    }
+
     jacoco {
         destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
     }

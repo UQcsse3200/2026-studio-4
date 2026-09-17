@@ -60,7 +60,7 @@ public class TerrainFactory {
     TerrainTile floor = new TerrainTile(DreamlandTile.FLOOR_STONE.region(tileSheet));
     TerrainTile firstVariant =
         new TerrainTile(DreamlandTile.PURPLE_STONE_FLOOR_VARIANT.region(tileSheet));
-    TerrainTile secondVariant = new TerrainTile(DreamlandTile.BLUE_STONE_FLOOR.region(tileSheet));
+    TerrainTile secondVariant = new TerrainTile(DreamlandTile.PURPLE_STONE_FLOOR.region(tileSheet));
     TiledMapTileLayer layer =
         new TiledMapTileLayer(mapSize.x, mapSize.y, DUNGEON_TILE_SIZE, DUNGEON_TILE_SIZE);
     fillTiles(layer, mapSize, floor);
