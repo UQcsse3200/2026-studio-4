@@ -167,6 +167,9 @@ public class PlayerStatsDisplay extends UIComponent {
     shieldTable.row();
     shieldTable.add(shieldBar).left();
 
+    if (stage == null) {
+      return;
+    }
     stage.addActor(table);
     stage.addActor(shieldTable);
   }

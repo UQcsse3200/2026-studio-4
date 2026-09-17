@@ -5,106 +5,107 @@ filter: Nearest,Nearest
 repeat: none
 default
   rotate: false
-  xy: 0, 0
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
+  xy: 8, 20
+  size: 20, 16
+  orig: 16, 16
+  offset: 8, 0
   index: 0
 move
   rotate: false
-  xy: 0, 0
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
+  xy: 8, 20
+  size: 20, 16
+  orig: 20, 16
+  offset: 8, 0
   index: 1
 move
   rotate: false
-  xy: 32, 0
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
+  xy: 40, 21
+  size: 20, 16
+  orig: 20, 16
+  offset: 8, 0
   index: 2
 move
   rotate: false
-  xy: 64, 0
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
+  xy: 72, 21
+  size: 20, 16
+  orig: 20, 16
+  offset: 8, 0
   index: 3
 move
   rotate: false
-  xy: 96, 0
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
+  xy: 104, 21
+  size: 20, 16
+  orig: 20, 16
+  offset: 8, 0
   index: 4
 move
   rotate: false
-  xy: 128, 0
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
+  xy: 136, 20
+  size: 20, 16
+  orig: 20, 16
+  offset: 8, 0
   index: 5
 chase
   rotate: false
-  xy: 0, 0
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
+  xy: 8, 20
+  size: 20, 16
+  orig: 20, 16
+  offset: 8, 0
   index: 1
 chase
   rotate: false
-  xy: 32, 0
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
+  xy: 40, 21
+  size: 20, 16
+  orig: 20, 16
+  offset: 8, 0
   index: 2
 chase
   rotate: false
-  xy: 64, 0
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
+  xy: 72, 21
+  size: 20, 16
+  orig: 20, 16
+  offset: 8, 0
   index: 3
 chase
   rotate: false
-  xy: 96, 0
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
+  xy: 104, 21
+  size: 20, 16
+  orig: 20, 16
+  offset: 8, 0
   index: 4
 chase
   rotate: false
-  xy: 128, 0
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
+  xy: 136, 20
+  size: 20, 16
+  orig: 20, 16
+  offset: 8, 0
   index: 5
 dieAnimation
   rotate: false
-  xy: 96, 128
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
+  xy: 72, 144
+  size: 20, 16
+  orig: 20, 16
+  offset: 8, 0
   index: 0
 dieAnimation
   rotate: false
-  xy: 128, 128
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
+  xy: 104, 144
+  size: 20, 16
+  orig: 20, 16
+  offset: 8, 0
   index: 1
 fuse
   rotate: false
-  xy: 0, 0
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
+  xy: 8, 20
+  size: 20, 16
+  orig: 20, 16
+  offset: 8, 0
   index: 0
 fuse
   rotate: false
-  xy: 200, 200
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
+  xy: 256, 160
+  size: 20, 16
+  orig: 20, 16
+  offset: 8, 0
   index: 1
+  index: 0
