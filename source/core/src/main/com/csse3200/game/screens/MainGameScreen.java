@@ -32,6 +32,7 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.ui.terminal.commands.AbilityCommand;
+import com.csse3200.game.ui.terminal.commands.SpellCommand;
 import com.csse3200.game.ui.terminal.commands.StatusEffectCommand;
 import com.csse3200.game.ui.terminal.commands.UpgradeCommand;
 import com.csse3200.game.ui.terminal.commands.WeaponCommand;
@@ -173,6 +174,7 @@ public class MainGameScreen extends ScreenAdapter {
     terminal.addCommand("ability", new AbilityCommand(player));
     terminal.addCommand("effect", new StatusEffectCommand(player));
     terminal.addCommand("upgrade", new UpgradeCommand(player));
+    terminal.addCommand("spell", new SpellCommand(player));
 
     InventoryDisplay inventoryDisplay = new InventoryDisplay();
     HotbarDisplay hotbarDisplay = new HotbarDisplay(player);
