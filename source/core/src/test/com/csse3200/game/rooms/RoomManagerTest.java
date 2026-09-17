@@ -36,9 +36,12 @@ class RoomManagerTest {
     world.startEntryPointId = "fromSelection";
     RoomConfig entrance = world.getRoom("dungeonOneEntrance");
     RoomConfig side = world.getRoom("dungeonOneSide");
-    Entity firstEntrance = room(true, new GridPoint2(48, 14));
-    Entity sideRoom = room(true, new GridPoint2(2, 14));
-    Entity revisitedEntrance = room(true, new GridPoint2(48, 14));
+
+    // Updated GridPoints to match the new sideDoor (32, 29) and returnDoor (10, 44) coordinates
+    Entity firstEntrance = room(true, new GridPoint2(32, 29));
+    Entity sideRoom = room(true, new GridPoint2(10, 44));
+    Entity revisitedEntrance = room(true, new GridPoint2(32, 29));
+
     Entity player = mock(Entity.class);
     CameraComponent camera = mock(CameraComponent.class);
     EntityService entities = mock(EntityService.class);
@@ -48,12 +51,12 @@ class RoomManagerTest {
 
     try (MockedStatic<RoomFactory> roomFactory = mockStatic(RoomFactory.class)) {
       roomFactory
-          .when(() -> RoomFactory.createRoom(entrance, camera, false))
-          .thenReturn(firstEntrance);
+              .when(() -> RoomFactory.createRoom(entrance, camera, false))
+              .thenReturn(firstEntrance);
       roomFactory.when(() -> RoomFactory.createRoom(side, camera, false)).thenReturn(sideRoom);
       roomFactory
-          .when(() -> RoomFactory.createRoom(entrance, camera, true))
-          .thenReturn(revisitedEntrance);
+              .when(() -> RoomFactory.createRoom(entrance, camera, true))
+              .thenReturn(revisitedEntrance);
 
       RoomManager manager = new RoomManager(world, player, camera);
       manager.create();
@@ -61,12 +64,14 @@ class RoomManagerTest {
       verify(firstEntrance, never()).dispose();
       manager.update();
 
-      verify(player).setPosition(new Vector2(5, 14));
+      verify(player).setPosition(new Vector2(4, 7));
       manager.interact();
       manager.update();
 
       roomFactory.verify(() -> RoomFactory.createRoom(entrance, camera, true));
-      verify(player).setPosition(new Vector2(45, 14));
+
+      // Since the sideDoor is at x=32 and side=RIGHT, the position -3 offset is 29.
+      verify(player).setPosition(new Vector2(29, 29));
       verify(firstEntrance).dispose();
       verify(sideRoom).dispose();
     }
@@ -79,11 +84,11 @@ class RoomManagerTest {
     FollowingCameraComponent followingCameraComponent = mock(FollowingCameraComponent.class);
     EventHandler events = mock(EventHandler.class);
     when(terrain.tileToWorldPosition(any(GridPoint2.class)))
-        .thenAnswer(
-            invocation -> {
-              GridPoint2 tile = invocation.getArgument(0);
-              return tile.equals(nearbyExit) ? new Vector2() : new Vector2(tile.x, tile.y);
-            });
+            .thenAnswer(
+                    invocation -> {
+                      GridPoint2 tile = invocation.getArgument(0);
+                      return tile.equals(nearbyExit) ? new Vector2() : new Vector2(tile.x, tile.y);
+                    });
     when(enemies.isCleared()).thenReturn(cleared);
     when(room.getComponent(TerrainComponent.class)).thenReturn(terrain);
     when(room.getComponent(EnemyManagerComponent.class)).thenReturn(enemies);
