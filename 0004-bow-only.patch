@@ -1,0 +1,340 @@
+From 79389ba2eb419ae520eaaf5f80ad91a1031b9c3a Mon Sep 17 00:00:00 2001
+From: Yogesh Sevda <yogesh@example.com>
+Date: Wed, 16 Sep 2026 21:01:13 +0000
+Subject: [PATCH] Add bow splitting-arrow upgrade
+
+Resolves #125.
+
+Once upgraded, an attack fires three arrows instead of one - one
+along the aim direction, plus one to each side at a 15 degree
+spread. Each arrow spawns and checks its own path independently, so
+a wall blocking the centre arrow does not stop the two side arrows.
+Every arrow deals full, unscaled damage - the upgrade adds arrow
+count, not damage.
+
+Wired into the existing WeaponUpgradeComponent/UpgradeCommand
+framework from #151 (upgrade bow / upgrade bow off).
+---
+ .../weapons/BowWeaponComponent.java           | 31 ++++++-
+ .../weapons/WeaponUpgradeComponent.java       | 10 ++-
+ .../ui/terminal/commands/UpgradeCommand.java  | 12 ++-
+ .../weapons/BowWeaponComponentTest.java       | 86 +++++++++++++++++++
+ .../weapons/WeaponUpgradeComponentTest.java   | 33 ++++++-
+ .../terminal/commands/UpgradeCommandTest.java | 10 ++-
+ 6 files changed, 171 insertions(+), 11 deletions(-)
+
+diff --git a/source/core/src/main/com/csse3200/game/components/weapons/BowWeaponComponent.java b/source/core/src/main/com/csse3200/game/components/weapons/BowWeaponComponent.java
+index c9de4f5..e584dbb 100644
+--- a/source/core/src/main/com/csse3200/game/components/weapons/BowWeaponComponent.java
++++ b/source/core/src/main/com/csse3200/game/components/weapons/BowWeaponComponent.java
+@@ -13,6 +13,12 @@ import com.csse3200.game.services.ServiceLocator;
+  * <p>The arrow is a small world-space hitbox (no owner, so it does not follow the wielder) that
+  * travels in a straight line via {@link ProjectileComponent}. It despawns on its first enemy or
+  * obstacle hit, or when its lifetime runs out.
++ *
++ * <p>Once upgraded (see {@link WeaponUpgradeComponent}), a single attack fires three arrows
++ * instead of one - one along the aim direction, plus one to each side at {@link
++ * #SPREAD_ANGLE_DEG}. Each arrow spawns and checks its own path, so a wall blocking one does not
++ * stop the other two. Every arrow deals full {@link #resolveHitboxDamage()} - the upgrade adds
++ * arrow count, not damage.
+  */
+ public class BowWeaponComponent extends WeaponComponent {
+   /** Sprite drawn for the thrown blade in flight. Loaded by {@link WeaponAssetsComponent}. */
+@@ -28,12 +34,35 @@ public class BowWeaponComponent extends WeaponComponent {
+   // tip at the top-left, a measured 135 degrees. Correcting it here keeps the pixel art crisp,
+   // where rotating the PNG off-axis would resample and soften it.
+   private static final float SPRITE_ANGLE_OFFSET = -135f;
++  // Angle each side arrow is rotated from the aim direction once upgraded.
++  private static final float SPREAD_ANGLE_DEG = 15f;
+ 
+   @Override
+   protected void createAttack(Vector2 origin, Vector2 direction) {
+-    WeaponStatsComponent stats = entity.getComponent(WeaponStatsComponent.class);
+     Vector2 dir = direction.cpy().nor();
+ 
++    if (!isUpgraded()) {
++      fireArrow(origin, dir);
++      return;
++    }
++
++    // Splitting-arrow upgrade: centre arrow plus one to each side. Independent spawn/path checks
++    // per arrow, so one blocked arrow (e.g. a wall on one side) does not stop the other two.
++    fireArrow(origin, dir);
++    fireArrow(origin, dir.cpy().rotateDeg(SPREAD_ANGLE_DEG));
++    fireArrow(origin, dir.cpy().rotateDeg(-SPREAD_ANGLE_DEG));
++  }
++
++  /**
++   * Spawn a single arrow travelling in {@code dir}. Does nothing if the spawn point is inside a
++   * wall the wielder is touching.
++   *
++   * @param origin world position of the attack (the wielder's centre)
++   * @param dir normalised travel direction for this arrow
++   */
++  private void fireArrow(Vector2 origin, Vector2 dir) {
++    WeaponStatsComponent stats = entity.getComponent(WeaponStatsComponent.class);
++
+     // Spawn just outside the wielder so the arrow visibly starts at their edge.
+     float reach = entity.getScale().len() / 2f + ARROW_SIZE / 2f + GAP;
+     Vector2 spawnCenter = origin.cpy().mulAdd(dir, reach);
+diff --git a/source/core/src/main/com/csse3200/game/components/weapons/WeaponUpgradeComponent.java b/source/core/src/main/com/csse3200/game/components/weapons/WeaponUpgradeComponent.java
+index f3d6c34..ce599de 100644
+--- a/source/core/src/main/com/csse3200/game/components/weapons/WeaponUpgradeComponent.java
++++ b/source/core/src/main/com/csse3200/game/components/weapons/WeaponUpgradeComponent.java
+@@ -30,6 +30,12 @@ public class WeaponUpgradeComponent extends Component {
+    */
+   static final WeaponUpgradeStats KNIFE_UPGRADE = new WeaponUpgradeStats(1.2f, 0.6f, 3f);
+ 
++  /**
++   * Bow: no stat change. The upgrade fires three arrows instead of one; see {@link
++   * BowWeaponComponent}.
++   */
++  static final WeaponUpgradeStats BOW_UPGRADE = new WeaponUpgradeStats(1f, 1f, 1f);
++
+   private final Map<Class<? extends WeaponComponent>, WeaponUpgradeStats> stats;
+   private final Set<Class<? extends WeaponComponent>> upgraded = new HashSet<>();
+ 
+@@ -37,7 +43,9 @@ public class WeaponUpgradeComponent extends Component {
+   public WeaponUpgradeComponent() {
+     this(
+         Map.of(
+-            SwordWeaponComponent.class, SWORD_UPGRADE, KnifeWeaponComponent.class, KNIFE_UPGRADE));
++            SwordWeaponComponent.class, SWORD_UPGRADE,
++            KnifeWeaponComponent.class, KNIFE_UPGRADE,
++            BowWeaponComponent.class, BOW_UPGRADE));
+   }
+ 
+   /**
+diff --git a/source/core/src/main/com/csse3200/game/ui/terminal/commands/UpgradeCommand.java b/source/core/src/main/com/csse3200/game/ui/terminal/commands/UpgradeCommand.java
+index 43308c4..2688b1b 100644
+--- a/source/core/src/main/com/csse3200/game/ui/terminal/commands/UpgradeCommand.java
++++ b/source/core/src/main/com/csse3200/game/ui/terminal/commands/UpgradeCommand.java
+@@ -1,5 +1,6 @@
+ package com.csse3200.game.ui.terminal.commands;
+ 
++import com.csse3200.game.components.weapons.BowWeaponComponent;
+ import com.csse3200.game.components.weapons.KnifeWeaponComponent;
+ import com.csse3200.game.components.weapons.SwordWeaponComponent;
+ import com.csse3200.game.components.weapons.WeaponComponent;
+@@ -12,7 +13,7 @@ import org.slf4j.LoggerFactory;
+ 
+ /**
+  * Terminal command that applies or reverts a weapon upgrade so QA does not need a pickup or shop:
+- * {@code upgrade sword|knife}, or {@code upgrade sword|knife off} to revert.
++ * {@code upgrade sword|knife|bow}, or {@code upgrade sword|knife|bow off} to revert.
+  *
+  * <p>Applying is idempotent: running {@code upgrade sword} again leaves the sword upgraded.
+  */
+@@ -20,7 +21,10 @@ public class UpgradeCommand implements Command {
+   private static final Logger logger = LoggerFactory.getLogger(UpgradeCommand.class);
+   private static final String OFF = "off";
+   private static final Map<String, Class<? extends WeaponComponent>> WEAPONS =
+-      Map.of("sword", SwordWeaponComponent.class, "knife", KnifeWeaponComponent.class);
++      Map.of(
++          "sword", SwordWeaponComponent.class,
++          "knife", KnifeWeaponComponent.class,
++          "bow", BowWeaponComponent.class);
+ 
+   private final Entity player;
+ 
+@@ -34,8 +38,8 @@ public class UpgradeCommand implements Command {
+   /**
+    * Upgrades the named weapon, or reverts it when followed by {@code off}.
+    *
+-   * @param args a weapon ({@code sword} or {@code knife}) to upgrade, optionally followed by {@code
+-   *     off} to revert
++   * @param args a weapon ({@code sword}, {@code knife}, or {@code bow}) to upgrade, optionally
++   *     followed by {@code off} to revert
+    * @return true if the upgrade state was set
+    */
+   @Override
+diff --git a/source/core/src/test/com/csse3200/game/components/weapons/BowWeaponComponentTest.java b/source/core/src/test/com/csse3200/game/components/weapons/BowWeaponComponentTest.java
+index 236b4f0..8193a09 100644
+--- a/source/core/src/test/com/csse3200/game/components/weapons/BowWeaponComponentTest.java
++++ b/source/core/src/test/com/csse3200/game/components/weapons/BowWeaponComponentTest.java
+@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doAnswer;
+ import static org.mockito.Mockito.mock;
+ import static org.mockito.Mockito.never;
+ import static org.mockito.Mockito.spy;
++import static org.mockito.Mockito.times;
+ import static org.mockito.Mockito.verify;
+ import static org.mockito.Mockito.when;
+ 
+@@ -188,4 +189,89 @@ class BowWeaponComponentTest {
+ 
+     verify(entityService, never()).register(any());
+   }
++
++  @Test
++  void shouldFireThreeArrowsWhenUpgraded() {
++    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
++    BowWeaponComponent bow = new BowWeaponComponent();
++    Entity wielder =
++        new Entity()
++            .addComponent(new CombatStatsComponent(100, 10))
++            .addComponent(new WeaponStatsComponent(0.5f, 0.8f, 0f))
++            .addComponent(upgrades)
++            .addComponent(bow);
++    wielder.create();
++    upgrades.setUpgraded(BowWeaponComponent.class, true);
++
++    assertTrue(bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
++
++    ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
++    verify(entityService, times(3)).register(captor.capture());
++    List<Entity> arrows = captor.getAllValues();
++    assertEquals(3, arrows.size());
++
++    // Every arrow deals full (unscaled) hitbox damage: round(10 * 0.8) = 8.
++    for (Entity arrow : arrows) {
++      assertEquals(8, arrow.getComponent(CombatStatsComponent.class).getBaseAttack());
++      assertNull(arrow.getComponent(FollowComponent.class));
++    }
++
++    // Centre arrow spawns on the aim line (y == 0); the two side arrows are offset above and
++    // below it by the spread angle. HitboxSpec positions by bottom-left corner, so compare centre
++    // positions rather than raw position.
++    List<Float> yPositions = arrows.stream().map(a -> a.getCenterPosition().y).toList();
++    long centreCount = yPositions.stream().filter(y -> Math.abs(y) < 0.01f).count();
++    assertEquals(1, centreCount);
++    assertTrue(yPositions.stream().anyMatch(y -> y > 0.01f));
++    assertTrue(yPositions.stream().anyMatch(y -> y < -0.01f));
++  }
++
++  @Test
++  void shouldFireOneArrowWhenUpgradeReverted() {
++    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
++    BowWeaponComponent bow = new BowWeaponComponent();
++    Entity wielder =
++        new Entity()
++            .addComponent(new CombatStatsComponent(100, 10))
++            .addComponent(new WeaponStatsComponent(0.5f, 0.8f, 0f))
++            .addComponent(upgrades)
++            .addComponent(bow);
++    wielder.create();
++    upgrades.setUpgraded(BowWeaponComponent.class, true);
++    upgrades.setUpgraded(BowWeaponComponent.class, false);
++
++    assertTrue(bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
++
++    // Reverted upgrade behaves exactly like the Sprint 1 bow: a single arrow.
++    verify(entityService, times(1)).register(any());
++  }
++
++  @Test
++  void shouldFireOnlySideArrowsWhenCentreSpawnBlocked() {
++    // Small wall centred on the straight-line spawn point only. The two side arrows, spread by
++    // the upgrade's +-15 degree angle, clear this wall's y-span well above and below it.
++    Entity wall =
++        new Entity()
++            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
++            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
++    wall.setScale(0.2f, 0.1f);
++    wall.setPosition(0.4f, -0.05f);
++    wall.create();
++
++    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
++    BowWeaponComponent bow = new BowWeaponComponent();
++    Entity wielder =
++        new Entity()
++            .addComponent(new CombatStatsComponent(100, 10))
++            .addComponent(new WeaponStatsComponent(0.5f, 1f, 0f))
++            .addComponent(upgrades)
++            .addComponent(bow);
++    wielder.create();
++    upgrades.setUpgraded(BowWeaponComponent.class, true);
++
++    bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f));
++
++    // Centre arrow is blocked; the two side arrows still fire independently.
++    verify(entityService, times(2)).register(any());
++  }
+ }
+diff --git a/source/core/src/test/com/csse3200/game/components/weapons/WeaponUpgradeComponentTest.java b/source/core/src/test/com/csse3200/game/components/weapons/WeaponUpgradeComponentTest.java
+index ab2d5a2..9a08e83 100644
+--- a/source/core/src/test/com/csse3200/game/components/weapons/WeaponUpgradeComponentTest.java
++++ b/source/core/src/test/com/csse3200/game/components/weapons/WeaponUpgradeComponentTest.java
+@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
+ 
+ import com.csse3200.game.entities.Entity;
+ import com.csse3200.game.extensions.GameExtension;
++import java.util.Map;
+ import org.junit.jupiter.api.Test;
+ import org.junit.jupiter.api.extension.ExtendWith;
+ 
+@@ -57,10 +58,13 @@ class WeaponUpgradeComponentTest {
+ 
+   @Test
+   void shouldRejectWeaponWithoutUpgradeStats() {
+-    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
++    // Explicit map with only the sword defined, so the knife has no upgrade stats here.
++    WeaponUpgradeComponent upgrades =
++        new WeaponUpgradeComponent(
++            Map.of(SwordWeaponComponent.class, WeaponUpgradeComponent.SWORD_UPGRADE));
+ 
+-    assertFalse(upgrades.setUpgraded(BowWeaponComponent.class, true));
+-    assertFalse(upgrades.isUpgraded(BowWeaponComponent.class));
++    assertFalse(upgrades.setUpgraded(KnifeWeaponComponent.class, true));
++    assertFalse(upgrades.isUpgraded(KnifeWeaponComponent.class));
+   }
+ 
+   @Test
+@@ -112,4 +116,27 @@ class WeaponUpgradeComponentTest {
+     assertThrows(IllegalArgumentException.class, () -> new WeaponUpgradeStats(1f, -1f, 1f));
+     assertThrows(IllegalArgumentException.class, () -> new WeaponUpgradeStats(1f, 1f, -1f));
+   }
++
++  @Test
++  void shouldApplyBowUpgradeStats() {
++    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
++
++    assertTrue(upgrades.setUpgraded(BowWeaponComponent.class, true));
++
++    assertTrue(upgrades.isUpgraded(BowWeaponComponent.class));
++    // Bow's upgrade is structural (arrow count), not a damage or cooldown scale.
++    assertEquals(1f, upgrades.getLightDamageMultiplier(BowWeaponComponent.class));
++    assertEquals(1f, upgrades.getHeavyDamageMultiplier(BowWeaponComponent.class));
++    assertEquals(1f, upgrades.getHeavyCooldownMultiplier(BowWeaponComponent.class));
++  }
++
++  @Test
++  void shouldRevertBowUpgrade() {
++    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
++    upgrades.setUpgraded(BowWeaponComponent.class, true);
++
++    assertTrue(upgrades.setUpgraded(BowWeaponComponent.class, false));
++
++    assertFalse(upgrades.isUpgraded(BowWeaponComponent.class));
++  }
+ }
+diff --git a/source/core/src/test/com/csse3200/game/ui/terminal/commands/UpgradeCommandTest.java b/source/core/src/test/com/csse3200/game/ui/terminal/commands/UpgradeCommandTest.java
+index 2e6bd63..c4fd193 100644
+--- a/source/core/src/test/com/csse3200/game/ui/terminal/commands/UpgradeCommandTest.java
++++ b/source/core/src/test/com/csse3200/game/ui/terminal/commands/UpgradeCommandTest.java
+@@ -3,6 +3,7 @@ package com.csse3200.game.ui.terminal.commands;
+ import static org.junit.jupiter.api.Assertions.assertFalse;
+ import static org.junit.jupiter.api.Assertions.assertTrue;
+ 
++import com.csse3200.game.components.weapons.BowWeaponComponent;
+ import com.csse3200.game.components.weapons.KnifeWeaponComponent;
+ import com.csse3200.game.components.weapons.SwordWeaponComponent;
+ import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
+@@ -62,8 +63,13 @@ class UpgradeCommandTest {
+   }
+ 
+   @Test
+-  void shouldRejectWeaponWithoutAnUpgrade() {
+-    assertFalse(command.action(args("bow")));
++  void shouldUpgradeAndRevertBow() {
++    assertTrue(command.action(args("bow")));
++    assertTrue(upgrades.isUpgraded(BowWeaponComponent.class));
++    assertFalse(upgrades.isUpgraded(SwordWeaponComponent.class));
++
++    assertTrue(command.action(args("bow", "off")));
++    assertFalse(upgrades.isUpgraded(BowWeaponComponent.class));
+   }
+ 
+   @Test
+-- 
+2.43.0
+
