@@ -59,11 +59,17 @@ public final class ItemTooltip {
 
     List<String> lines = lines(item);
     int descriptionIndex = lines.size() - 1;
+
     for (int i = 0; i < lines.size(); i++) {
       Label label = new Label(lines.get(i), skin);
+
+      if (i == 0) {
+        label.setFontScale(2f);
+      }
+
       if (i == descriptionIndex) {
         label.setWrap(true);
-        content.add(label).width(DESCRIPTION_WIDTH).left();
+        content.add(label).width(DESCRIPTION_WIDTH).left().row();
       } else {
         content.add(label).left().row();
       }
@@ -80,7 +86,10 @@ public final class ItemTooltip {
    * @return a tooltip listener for the item's actor
    */
   public static Tooltip<Table> forItem(Item item, Skin skin) {
-    return new Tooltip<>(buildContent(item, skin));
+    Tooltip<Table> tooltip = new Tooltip<>(buildContent(item, skin));
+    tooltip.getContainer().background(skin.getDrawable("tooltip"));
+    tooltip.getContainer().pad(4f);
+    return tooltip;
   }
 
   /**
