@@ -176,7 +176,7 @@ public class MainGameScreen extends ScreenAdapter {
     terminal.addCommand("upgrade", new UpgradeCommand(player));
     terminal.addCommand("spell", new SpellCommand(player));
 
-    InventoryDisplay inventoryDisplay = new InventoryDisplay();
+    InventoryDisplay inventoryDisplay = new InventoryDisplay(player);
     HotbarDisplay hotbarDisplay = new HotbarDisplay(player);
     InventoryActions inventoryActions = new InventoryActions(inventoryDisplay);
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
