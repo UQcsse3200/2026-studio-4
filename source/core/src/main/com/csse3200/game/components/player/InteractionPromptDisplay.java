@@ -1,5 +1,6 @@
 package com.csse3200.game.components.player;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -7,11 +8,12 @@ import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.ui.UIComponent;
 
 /**
- * Screen-space prompt for nearby interactions. Lives on the player so it survives room changes. Pin
- * to the bottom of the screen so it does not sit over the play area.
+ * Screen-space prompt for nearby interactions. Lives on the player so it survives room changes.
+ * Top-right, white text on a dark panel so it stays clear of the hotbar and health HUD.
  */
 public class InteractionPromptDisplay extends UIComponent {
   private Table table;
+  private Table bubble;
   private Label promptLabel;
   private String currentText = "";
 
@@ -20,11 +22,20 @@ public class InteractionPromptDisplay extends UIComponent {
     super.create();
     table = new Table();
     table.setFillParent(true);
-    table.align(Align.bottom | Align.center);
-    table.padBottom(80f);
+    table.align(Align.top | Align.right);
+    table.padTop(20f).padRight(20f);
+
     promptLabel = new Label("", skin, "statDisplay");
-    promptLabel.setVisible(false);
-    table.add(promptLabel);
+    promptLabel.setColor(Color.WHITE);
+    promptLabel.setFontScale(1.15f);
+
+    bubble = new Table();
+    bubble.setBackground(skin.getDrawable("window-c"));
+    bubble.pad(8f, 12f, 8f, 12f);
+    bubble.add(promptLabel);
+    bubble.setVisible(false);
+
+    table.add(bubble);
     stage.addActor(table);
   }
 
@@ -40,7 +51,9 @@ public class InteractionPromptDisplay extends UIComponent {
     }
     currentText = next;
     promptLabel.setText(next);
-    promptLabel.setVisible(!next.isEmpty());
+    boolean show = !next.isEmpty();
+    promptLabel.setVisible(show);
+    bubble.setVisible(show);
   }
 
   /** Hides the prompt. */
