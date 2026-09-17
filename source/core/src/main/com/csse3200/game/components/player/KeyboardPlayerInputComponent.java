@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.input.InputComponent;
+import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.utils.math.Vector2Utils;
 
 /**
@@ -11,6 +12,7 @@ import com.csse3200.game.utils.math.Vector2Utils;
  * keyboard input.
  */
 public class KeyboardPlayerInputComponent extends InputComponent {
+  private static final String EQUIP_WEAPON_EVENT = "equipWeapon";
   private final Vector2 walkDirection = Vector2.Zero.cpy();
 
   public KeyboardPlayerInputComponent() {
@@ -26,6 +28,15 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   @Override
   public boolean keyDown(int keycode) {
     switch (keycode) {
+      case Keys.NUM_1:
+        entity.getEvents().trigger(EQUIP_WEAPON_EVENT, WeaponType.SWORD);
+        return true;
+      case Keys.NUM_2:
+        entity.getEvents().trigger(EQUIP_WEAPON_EVENT, WeaponType.DAGGER);
+        return true;
+      case Keys.NUM_3:
+        entity.getEvents().trigger(EQUIP_WEAPON_EVENT, WeaponType.BOW);
+        return true;
       case Keys.W:
         walkDirection.add(Vector2Utils.UP);
         triggerWalkEvent();
@@ -49,12 +60,16 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("attack");
         return true;
       case Keys.K:
-        entity.getEvents().trigger("specialAttack");
+        // Heavy weapon attack; "specialAttack" is reserved for special abilities.
+        entity.getEvents().trigger("heavyAttack");
         return true;
       case Keys.E:
         // Keep Room navigation and Team 5 item pickup on separate event contracts.
         entity.getEvents().trigger("interact");
         entity.getEvents().trigger("itemPickup");
+        return true;
+      case Keys.I:
+        entity.getComponent(InventoryComponent.class).toggleDisplay();
         return true;
       default:
         return false;

@@ -37,8 +37,7 @@
       "title": "Dungeon One: Entrance",
       "entryPoints": [{ "id": "fromSelection", "x": 10, "y": 10 }],
       "enemySpawns": [
-        { "type": "CERBERUS", "x": 25, "y": 25 },
-        { "type": "BOMB", "x": 22, "y": 20 },
+        { "type": "GOLEM", "x": 22, "y": 20 },
         { "type": "MEDUSA", "x": 30, "y": 28 }
       ],
       "obstacles": [
@@ -59,10 +58,11 @@
       "title": "Dungeon One: Side Room",
       "entryPoints": [],
       "enemySpawns": [
-        { "type": "BOMB", "x": 19, "y": 18 },
+        { "type": "GOLEM", "x": 19, "y": 18 },
         { "type": "MEDUSA", "x": 27, "y": 25 },
-        { "type": "BOMB", "x": 34, "y": 20 },
-        { "type": "HARPY", "x": 31, "y": 32 }
+        { "type": "GOLEM", "x": 34, "y": 20 },
+        { "type": "HARPY", "x": 31, "y": 32 },
+        { "type": "CYCLOPS", "x": 25, "y": 26 }
       ],
       "obstacles": [
         { "type": "BARREL", "x": 13, "y": 12 }, { "type": "BARREL", "x": 15, "y": 12 },
@@ -80,11 +80,12 @@
       "title": "Dungeon One: End",
       "entryPoints": [],
       "enemySpawns": [
-        { "type": "BOMB", "x": 18, "y": 17 },
-        { "type": "BOMB", "x": 25, "y": 26 },
+        { "type": "GOLEM", "x": 18, "y": 17 },
+        { "type": "GOLEM", "x": 25, "y": 26 },
         { "type": "MEDUSA", "x": 32, "y": 18 },
         { "type": "MEDUSA", "x": 36, "y": 30 },
-        { "type": "HARPY", "x": 24, "y": 35 }
+        { "type": "HARPY", "x": 24, "y": 35 },
+        { "type": "CERBERUS", "x": 35, "y": 40 }
       ],
       "obstacles": [
         { "type": "BARREL", "x": 14, "y": 30 }, { "type": "BARREL", "x": 16, "y": 30 },

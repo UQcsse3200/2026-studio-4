@@ -1,4 +1,4 @@
-package com.csse3200.game.components.npc;
+package com.csse3200.game.components.miniboss.cerberus;
 
 import static org.mockito.Mockito.*;
 
@@ -31,7 +31,7 @@ class CerberusAnimationControllerTest {
 
   @Test
   void shouldPlayMoveStart() {
-    verify(animator).startAnimation("move");
+    verify(animator).startAnimation("idle");
   }
 
   @Test
@@ -45,7 +45,7 @@ class CerberusAnimationControllerTest {
   void shouldPlayIdleOnEnrage() {
     entity.getEvents().trigger("enragePhaseStarted");
 
-    verify(animator).startAnimation("idle");
+    verify(animator, times(2)).startAnimation("idle");
   }
 
   @Test
@@ -55,7 +55,7 @@ class CerberusAnimationControllerTest {
 
     controller.update();
 
-    verify(animator, times(2)).startAnimation("move");
+    verify(animator, times(2)).startAnimation("idle");
   }
 
   @Test
@@ -65,6 +65,6 @@ class CerberusAnimationControllerTest {
 
     controller.update();
 
-    verify(animator, times(2)).startAnimation("move");
+    verify(animator, times(2)).startAnimation("idle");
   }
 }

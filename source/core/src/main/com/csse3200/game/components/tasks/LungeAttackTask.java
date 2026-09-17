@@ -3,6 +3,7 @@ package com.csse3200.game.components.tasks;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.GameTime;
@@ -30,23 +31,25 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
   private final Entity target;
   private final float restoreSpeed;
   private final GameTime gameTime;
-
   private PhysicsMovementComponent movementComponent;
   private Phase phase;
   private long phaseStartTime;
   private long cooldownEndTime = 0;
   private Vector2 dashTargetPoint;
   private int priority = 0;
+  private Entity enemy;
 
   /**
    * @param target Entity to lunge toward (usually the player).
    * @param restoreSpeed Normal movement speed to return to after the dash ends.
    */
-  public LungeAttackTask(Entity target, int priority, float restoreSpeed) {
+  public LungeAttackTask(Entity target, int priority, float restoreSpeed, Entity enemy) {
     this.target = target;
     this.restoreSpeed = restoreSpeed;
     this.priority = priority;
+    this.enemy = enemy;
     this.gameTime = ServiceLocator.getTimeSource();
+    movementComponent = enemy.getComponent(PhysicsMovementComponent.class);
   }
 
   @Override
@@ -61,12 +64,17 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
     movementComponent.setMoving(false);
     phase = Phase.TELEGRAPH;
     phaseStartTime = gameTime.getTime();
+
     owner.getEntity().getEvents().trigger("lungeTelegraphStart");
   }
 
   @Override
   public void update() {
     long now = gameTime.getTime();
+    if (StatusEffectsControllerComponent.isConcealed(target)) {
+      loseTarget(now);
+      return;
+    }
     switch (phase) {
       case TELEGRAPH:
         if (now - phaseStartTime >= TELEGRAPH_DURATION * 1000) {
@@ -93,10 +101,18 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
     }
   }
 
+  /**
+   * A pure query: the scheduler calls this repeatedly, so it never changes state. While the lunge
+   * is in progress it keeps its priority even if the target has just vanished, so that {@link
+   * #update()} still runs and can wind the lunge down itself before this yields.
+   */
   @Override
   public int getPriority() {
     if (status == Status.ACTIVE) {
       return phase == Phase.DONE ? -1 : this.priority;
+    }
+    if (StatusEffectsControllerComponent.isConcealed(target)) {
+      return -1;
     }
 
     long now = gameTime.getTime();
@@ -107,6 +123,25 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
       return this.priority;
     }
     return -1;
+  }
+
+  /**
+   * Winds the lunge down because the target can no longer be seen. A dash already underway ends
+   * normally, with its end event and cooldown. A telegraph that never became a dash is simply
+   * abandoned: no dash ever started, so no dash end is announced and no cooldown is charged.
+   */
+  private void loseTarget(long now) {
+    switch (phase) {
+      case TELEGRAPH:
+        movementComponent.setMoving(false);
+        phase = Phase.DONE;
+        break;
+      case DASH:
+        endDash(now);
+        break;
+      case DONE:
+        break;
+    }
   }
 
   private void beginDash(long now) {
@@ -123,6 +158,7 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
   }
 
   private void endDash(long now) {
+    PhysicsMovementComponent movementComponent = enemy.getComponent(PhysicsMovementComponent.class);
     movementComponent.setMoving(false);
     movementComponent.setMaxSpeed(new Vector2(restoreSpeed, restoreSpeed));
 

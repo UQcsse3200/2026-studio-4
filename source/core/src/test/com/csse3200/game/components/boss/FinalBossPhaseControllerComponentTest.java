@@ -3,6 +3,8 @@ package com.csse3200.game.components.boss;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -21,6 +23,18 @@ class FinalBossPhaseControllerComponentTest {
     assertTrue(controller.completeStage(FinalBossPhase.STAGE_ONE));
     assertFalse(controller.completeStage(FinalBossPhase.STAGE_ONE));
     assertEquals(FinalBossPhase.STAGE_TWO, controller.getCurrentPhase());
+  }
+
+  @Test
+  void shouldFollowPlayerWhenStageTwoBegins() {
+    FinalBossMovementComponent movement = mock(FinalBossMovementComponent.class);
+    FinalBossPhaseControllerComponent controller = new FinalBossPhaseControllerComponent();
+    Entity boss = new Entity().addComponent(controller).addComponent(movement);
+    boss.create();
+
+    assertTrue(controller.completeStage(FinalBossPhase.STAGE_ONE));
+
+    verify(movement).setMode(FinalBossMovementComponent.Mode.STEP_TOWARDS_PLAYER);
   }
 
   @Test

@@ -13,10 +13,15 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.player.abilities.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.Vector2Utils;
@@ -127,6 +132,7 @@ class PlayerActionsTest {
   void shouldNotTriggerWeaponAttackOnSpecialAttack() {
     int[] weaponAttacks = {0};
     player.getEvents().addListener("weaponAttack", (Vector2 direction) -> weaponAttacks[0]++);
+    player.getEvents().addListener("weaponHeavyAttack", (Vector2 direction) -> weaponAttacks[0]++);
 
     player.getEvents().trigger("specialAttack");
 
@@ -135,6 +141,47 @@ class PlayerActionsTest {
     verify(animator, never()).startAnimation("attack_left");
     verify(animator, never()).startAnimation("attack_right");
     verify(animator, never()).startAnimation("attack_up");
+  }
+
+  @Test
+  void shouldTriggerHeavyWeaponAttackInFacingDirectionOnHeavyAttack() {
+    walk(Vector2Utils.LEFT);
+    player.getEvents().trigger("walkStop");
+    Vector2[] facing = {null};
+    player
+        .getEvents()
+        .addListener("weaponHeavyAttack", (Vector2 direction) -> facing[0] = direction);
+
+    player.getEvents().trigger("heavyAttack");
+
+    assertEquals(-1f, facing[0].x, 0.001f);
+    assertEquals(0f, facing[0].y, 0.001f);
+  }
+
+  @Test
+  void shouldBlockHeavyAttacksUntilEveryControlLockIsReleased() {
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    Sound sound = ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
+    Object freeze = new Object();
+    Object dialogue = new Object();
+    int[] heavyAttacks = {0};
+    player.getEvents().addListener("weaponHeavyAttack", (Vector2 direction) -> heavyAttacks[0]++);
+
+    actions.setControlsLocked(freeze, true);
+    actions.setControlsLocked(dialogue, true);
+    player.getEvents().trigger("heavyAttack");
+    assertEquals(0, heavyAttacks[0]);
+    verify(sound, never()).play();
+
+    actions.setControlsLocked(freeze, false);
+    player.getEvents().trigger("heavyAttack");
+    assertEquals(0, heavyAttacks[0]);
+    verify(sound, never()).play();
+
+    actions.setControlsLocked(dialogue, false);
+    player.getEvents().trigger("heavyAttack");
+    assertEquals(1, heavyAttacks[0]);
+    verify(sound).play();
   }
 
   @Test
@@ -192,6 +239,42 @@ class PlayerActionsTest {
     ArgumentCaptor<Vector2> impulse = ArgumentCaptor.forClass(Vector2.class);
     verify(body).applyLinearImpulse(impulse.capture(), any(Vector2.class), eq(true));
     assertEquals(15f, impulse.getValue().x, 0.001f);
+  }
+
+  @Test
+  void shouldWalkFasterWhileLastStandIsActive() {
+    GameTime time = mock(GameTime.class);
+    when(time.getTime()).thenReturn(1_000L);
+
+    PhysicsComponent physics = mock(PhysicsComponent.class);
+    Body buffedBody = mock(Body.class);
+    when(physics.getBody()).thenReturn(buffedBody);
+    when(buffedBody.getLinearVelocity()).thenReturn(new Vector2());
+    when(buffedBody.getMass()).thenReturn(1f);
+    when(buffedBody.getWorldCenter()).thenReturn(new Vector2());
+
+    CombatStatsComponent combat = new CombatStatsComponent(100, 10, 3f, 1f);
+    PlayerAbilitiesComponent abilities = new PlayerAbilitiesComponent(time);
+    Entity buffed =
+        new Entity()
+            .addComponent(physics)
+            .addComponent(combat)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(abilities)
+            .addComponent(new PlayerActions())
+            .addComponent(mock(AnimationRenderComponent.class))
+            .addComponent(new PlayerAnimationController());
+    buffed.create();
+
+    abilities.unlock(LastStand.class);
+    combat.takeDamage(81, new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
+
+    buffed.getEvents().trigger("walk", Vector2Utils.RIGHT.cpy());
+    buffed.update();
+
+    ArgumentCaptor<Vector2> impulse = ArgumentCaptor.forClass(Vector2.class);
+    verify(buffedBody).applyLinearImpulse(impulse.capture(), any(Vector2.class), eq(true));
+    assertEquals(4.5f, impulse.getValue().x, 0.001f);
   }
 
   private void walk(Vector2 direction) {

@@ -12,7 +12,8 @@ public class ExplodeComponent extends Component {
   private HitboxComponent hitboxComponent;
 
   private Timer.Task explosionTask;
-  private boolean playerTouchingBomb = false;
+  private boolean playerOverlapping = false;
+  private boolean fuseLit = false;
   float fuseTime;
 
   public ExplodeComponent(Entity player, float fuseTime) {
@@ -30,22 +31,64 @@ public class ExplodeComponent extends Component {
     hitboxComponent = entity.getComponent(HitboxComponent.class);
   }
 
+  /**
+   * Re-checks concealment every frame while the player is physically overlapping. A bomb that was
+   * touched by an invisible player did not notice it; once the invisibility wears off while they
+   * are still in contact, the fuse lights without requiring the fixtures to separate and re-touch.
+   */
+  @Override
+  public void update() {
+    if (playerOverlapping && !fuseLit && !StatusEffectsControllerComponent.isConcealed(player)) {
+      lightFuse();
+    }
+  }
+
+  /**
+   * Handles the start of a collision involving this entity.
+   *
+   * <p>Collisions involving a different fixture are ignored. The other fixture's body user data is
+   * then checked to determine whether it belongs to the configured player entity. An invisible
+   * player is undetectable, so brushing past one does not light the fuse.
+   *
+   * @param me the fixture belonging to this entity
+   * @param other the fixture belonging to the other colliding entity
+   */
   private void onCollisionStart(Fixture me, Fixture other) {
-    if (hitboxComponent.getFixture() != me) {
+    if (!isPlayerFixture(me, other)) {
       return;
+    }
+
+    playerOverlapping = true;
+
+    if (fuseLit || StatusEffectsControllerComponent.isConcealed(player)) {
+      return;
+    }
+
+    lightFuse();
+  }
+
+  private void onCollisionEnd(Fixture me, Fixture other) {
+    if (!isPlayerFixture(me, other)) {
+      return;
+    }
+
+    playerOverlapping = false;
+  }
+
+  private boolean isPlayerFixture(Fixture me, Fixture other) {
+    if (hitboxComponent.getFixture() != me) {
+      return false;
     }
 
     if (!(other.getBody().getUserData() instanceof BodyUserData)) {
-      return;
+      return false;
     }
 
-    Entity collidedEntity = ((BodyUserData) other.getBody().getUserData()).entity;
+    return ((BodyUserData) other.getBody().getUserData()).entity == player;
+  }
 
-    if (collidedEntity != player || playerTouchingBomb) {
-      return;
-    }
-
-    playerTouchingBomb = true;
+  private void lightFuse() {
+    fuseLit = true;
 
     entity.getEvents().trigger("fuseStarted");
 
@@ -54,7 +97,7 @@ public class ExplodeComponent extends Component {
             new Timer.Task() {
               @Override
               public void run() {
-                if (playerTouchingBomb) {
+                if (playerOverlapping && !StatusEffectsControllerComponent.isConcealed(player)) {
                   damagePlayer();
                 } else {
                   entity.getComponent(CombatStatsComponent.class).setHealth(0);
@@ -64,32 +107,16 @@ public class ExplodeComponent extends Component {
             fuseTime);
   }
 
-  private void onCollisionEnd(Fixture me, Fixture other) {
-    if (hitboxComponent.getFixture() != me) {
-      return;
-    }
-
-    if (!(other.getBody().getUserData() instanceof BodyUserData)) {
-      return;
-    }
-
-    Entity collidedEntity = ((BodyUserData) other.getBody().getUserData()).entity;
-
-    if (collidedEntity != player) {
-      return;
-    }
-
-    playerTouchingBomb = false;
-  }
-
   private void damagePlayer() {
-    CombatStatsComponent playerStats = player.getComponent(CombatStatsComponent.class);
+    if (!this.getEntity().getComponent(CombatStatsComponent.class).isDead()) {
+      CombatStatsComponent playerStats = player.getComponent(CombatStatsComponent.class);
 
-    if (playerStats != null) {
-      playerStats.takeDamage(entity.getComponent(CombatStatsComponent.class).getBaseAttack());
+      if (playerStats != null) {
+        playerStats.takeDamage(entity.getComponent(CombatStatsComponent.class).getBaseAttack());
+      }
+
+      entity.getComponent(CombatStatsComponent.class).setHealth(0);
     }
-
-    entity.getComponent(CombatStatsComponent.class).setHealth(0);
   }
 
   @Override

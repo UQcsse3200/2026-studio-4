@@ -1,0 +1,173 @@
+cyclops.png
+size: 960, 1280
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+default
+  rotate: false
+  xy: 19, 26
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: 0
+move
+  rotate: false
+  xy: 18, 90
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: 0
+move
+  rotate: false
+  xy: 83, 93
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: 1
+move
+  rotate: false
+  xy: 148, 91
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: 2
+move
+  rotate: false
+  xy: 212, 90
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: 3
+move
+  rotate: false
+  xy: 275, 93
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: 4
+move
+  rotate: false
+  xy: 338, 91
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: 5
+move
+  rotate: false
+  xy: 402, 90
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: 6
+move
+  rotate: false
+  xy: 467, 93
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: 7
+chase
+  rotate: false
+  xy: 19, 538
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: 0
+chase
+  rotate: false
+  xy: 82, 538
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: 1
+chase
+  rotate: false
+  xy: 144, 538
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: 2
+chase
+  rotate: false
+  xy: 206, 538
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: 3
+chase
+  rotate: false
+  xy: 272, 538
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: 4
+chase
+  rotate: false
+  xy: 335, 538
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: 5
+chase
+   rotate: false
+   xy: 21, 1178
+  size: 28, 40
+  orig: 28, 40
+   offset: 0, 0
+   index: 6
+chase
+   rotate: false
+   xy: 85, 1178
+  size: 28, 40
+  orig: 28, 40
+   offset: 0, 0
+   index: 7
+chase
+   rotate: false
+   xy: 149, 1178
+  size: 28, 40
+  orig: 28, 40
+   offset: 0, 0
+   index: 8
+chase
+   rotate: false
+   xy: 214, 1178
+  size: 28, 40
+  orig: 28, 40
+   offset: 0, 0
+   index: 9
+dieAnimation
+  rotate: false
+  xy: 19, 410
+  size: 28, 40
+          orig: 28, 40
+  offset: 0, 0
+  index: 0
+dieAnimation
+  rotate: false
+  xy: 84, 410
+  size: 28, 40
+          orig: 28, 40
+  offset: 0, 0
+  index: 1
+dieAnimation
+  rotate: false
+  xy: 151, 410
+  size: 28, 40
+          orig: 28, 40
+  offset: 0, 0
+  index: 2
+dieAnimation
+  rotate: false
+  xy: 215, 410
+  size: 28, 40
+          orig: 28, 40
+  offset: 0, 0
+  index: 3
+dieAnimation
+  rotate: false
+  xy: 278, 410
+  size: 28, 40
+          orig: 28, 40
+  offset: 0, 0
+  index: 4
