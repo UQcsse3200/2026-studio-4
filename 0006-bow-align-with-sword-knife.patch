@@ -1,0 +1,271 @@
+From a22d9430c6fb01b92386685609f14731991aac57 Mon Sep 17 00:00:00 2001
+From: Yogesh Sevda <yogesh@example.com>
+Date: Wed, 16 Sep 2026 22:19:37 +0000
+Subject: [PATCH] Align bow upgrade with sword/knife: heavy attack on K
+
+Reworks the bow's upgrade to match the pattern already used by sword
+and knife, per Ben and Faraj's request to keep upgrade mechanics
+consistent across weapons for quality of work.
+
+Light attack (J) now always fires a single arrow; once upgraded it
+deals 20% more damage, same as sword and knife (no behaviour change
+when not upgraded).
+
+The splitting-arrow effect moves to a new heavy attack on K, only
+available once upgraded: three arrows at once (centre + +/-15 degree
+spread), each dealing the same damage as an unupgraded shot, with the
+shared cooldown doubled afterwards -- mirroring the sword's heavy
+attack structure (same pattern, arrow count instead of arc).
+---
+ .../weapons/BowWeaponComponent.java           | 41 +++++++-----
+ .../weapons/WeaponUpgradeComponent.java       |  7 +-
+ .../weapons/BowWeaponComponentTest.java       | 64 ++++++++++++++++---
+ .../weapons/WeaponUpgradeComponentTest.java   |  7 +-
+ 4 files changed, 86 insertions(+), 33 deletions(-)
+
+diff --git a/source/core/src/main/com/csse3200/game/components/weapons/BowWeaponComponent.java b/source/core/src/main/com/csse3200/game/components/weapons/BowWeaponComponent.java
+index 0b3d76e..9563ec3 100644
+--- a/source/core/src/main/com/csse3200/game/components/weapons/BowWeaponComponent.java
++++ b/source/core/src/main/com/csse3200/game/components/weapons/BowWeaponComponent.java
+@@ -14,10 +14,10 @@ import com.csse3200.game.services.ServiceLocator;
+  * travels in a straight line via {@link ProjectileComponent}. It despawns on its first enemy or
+  * obstacle hit, or when its lifetime runs out.
+  *
+- * <p>Once upgraded (see {@link WeaponUpgradeComponent}), a single attack fires three arrows instead
+- * of one - one along the aim direction, plus one to each side at {@link #SPREAD_ANGLE_DEG}. Each
+- * arrow spawns and checks its own path, so a wall blocking one does not stop the other two. Every
+- * arrow deals full {@link #resolveHitboxDamage()} - the upgrade adds arrow count, not damage.
++ * <p>Once upgraded (see {@link WeaponUpgradeComponent}) the light shot deals 20% more damage, and
++ * the bow also has a heavy attack: three arrows at once - one along the aim direction, plus one to
++ * each side at {@link #SPREAD_ANGLE_DEG} - each checking its own path independently, so a wall
++ * blocking the centre arrow does not stop the other two.
+  */
+ public class BowWeaponComponent extends WeaponComponent {
+   /** Sprite drawn for the thrown blade in flight. Loaded by {@link WeaponAssetsComponent}. */
+@@ -33,23 +33,29 @@ public class BowWeaponComponent extends WeaponComponent {
+   // tip at the top-left, a measured 135 degrees. Correcting it here keeps the pixel art crisp,
+   // where rotating the PNG off-axis would resample and soften it.
+   private static final float SPRITE_ANGLE_OFFSET = -135f;
+-  // Angle each side arrow is rotated from the aim direction once upgraded.
++  // Angle each side arrow is rotated from the aim direction on the heavy attack.
+   private static final float SPREAD_ANGLE_DEG = 15f;
+ 
+   @Override
+   protected void createAttack(Vector2 origin, Vector2 direction) {
+-    Vector2 dir = direction.cpy().nor();
++    fireArrow(origin, direction.cpy().nor(), resolveHitboxDamage());
++  }
+ 
+-    if (!isUpgraded()) {
+-      fireArrow(origin, dir);
+-      return;
+-    }
++  @Override
++  protected boolean hasHeavyAttack() {
++    return true;
++  }
++
++  @Override
++  protected void createHeavyAttack(Vector2 origin, Vector2 direction) {
++    Vector2 dir = direction.cpy().nor();
++    int damage = resolveHeavyHitboxDamage();
+ 
+-    // Splitting-arrow upgrade: centre arrow plus one to each side. Independent spawn/path checks
+-    // per arrow, so one blocked arrow (e.g. a wall on one side) does not stop the other two.
+-    fireArrow(origin, dir);
+-    fireArrow(origin, dir.cpy().rotateDeg(SPREAD_ANGLE_DEG));
+-    fireArrow(origin, dir.cpy().rotateDeg(-SPREAD_ANGLE_DEG));
++    // Centre arrow plus one to each side. Independent spawn/path checks per arrow, so one blocked
++    // arrow (e.g. a wall on one side) does not stop the other two.
++    fireArrow(origin, dir, damage);
++    fireArrow(origin, dir.cpy().rotateDeg(SPREAD_ANGLE_DEG), damage);
++    fireArrow(origin, dir.cpy().rotateDeg(-SPREAD_ANGLE_DEG), damage);
+   }
+ 
+   /**
+@@ -58,8 +64,9 @@ public class BowWeaponComponent extends WeaponComponent {
+    *
+    * @param origin world position of the attack (the wielder's centre)
+    * @param dir normalised travel direction for this arrow
++   * @param damage damage dealt to the first enemy this arrow hits
+    */
+-  private void fireArrow(Vector2 origin, Vector2 dir) {
++  private void fireArrow(Vector2 origin, Vector2 dir, int damage) {
+     WeaponStatsComponent stats = entity.getComponent(WeaponStatsComponent.class);
+ 
+     // Spawn just outside the wielder so the arrow visibly starts at their edge.
+@@ -81,7 +88,7 @@ public class BowWeaponComponent extends WeaponComponent {
+             .lifetime(LIFETIME)
+             .layer(PhysicsLayer.WEAPON)
+             .targetLayer(PhysicsLayer.NPC)
+-            .damage(resolveHitboxDamage())
++            .damage(damage)
+             .knockback(stats.getKnockback())
+             .texture(TEXTURE)
+             .visualSource(entity)
+diff --git a/source/core/src/main/com/csse3200/game/components/weapons/WeaponUpgradeComponent.java b/source/core/src/main/com/csse3200/game/components/weapons/WeaponUpgradeComponent.java
+index ce599de..c8eecd9 100644
+--- a/source/core/src/main/com/csse3200/game/components/weapons/WeaponUpgradeComponent.java
++++ b/source/core/src/main/com/csse3200/game/components/weapons/WeaponUpgradeComponent.java
+@@ -31,10 +31,11 @@ public class WeaponUpgradeComponent extends Component {
+   static final WeaponUpgradeStats KNIFE_UPGRADE = new WeaponUpgradeStats(1.2f, 0.6f, 3f);
+ 
+   /**
+-   * Bow: no stat change. The upgrade fires three arrows instead of one; see {@link
+-   * BowWeaponComponent}.
++   * Bow: like sword and knife, +20% light damage once upgraded. The heavy attack fires three
++   * arrows at once instead of a single stronger one, so each arrow deals the same damage as an
++   * unupgraded shot rather than a bonus multiplier; see {@link BowWeaponComponent}.
+    */
+-  static final WeaponUpgradeStats BOW_UPGRADE = new WeaponUpgradeStats(1f, 1f, 1f);
++  static final WeaponUpgradeStats BOW_UPGRADE = new WeaponUpgradeStats(1.2f, 1f, 2f);
+ 
+   private final Map<Class<? extends WeaponComponent>, WeaponUpgradeStats> stats;
+   private final Set<Class<? extends WeaponComponent>> upgraded = new HashSet<>();
+diff --git a/source/core/src/test/com/csse3200/game/components/weapons/BowWeaponComponentTest.java b/source/core/src/test/com/csse3200/game/components/weapons/BowWeaponComponentTest.java
+index 8193a09..1252331 100644
+--- a/source/core/src/test/com/csse3200/game/components/weapons/BowWeaponComponentTest.java
++++ b/source/core/src/test/com/csse3200/game/components/weapons/BowWeaponComponentTest.java
+@@ -1,6 +1,7 @@
+ package com.csse3200.game.components.weapons;
+ 
+ import static org.junit.jupiter.api.Assertions.assertEquals;
++import static org.junit.jupiter.api.Assertions.assertFalse;
+ import static org.junit.jupiter.api.Assertions.assertNotNull;
+ import static org.junit.jupiter.api.Assertions.assertNull;
+ import static org.junit.jupiter.api.Assertions.assertTrue;
+@@ -191,13 +192,13 @@ class BowWeaponComponentTest {
+   }
+ 
+   @Test
+-  void shouldFireThreeArrowsWhenUpgraded() {
++  void shouldBoostLightDamageWhenUpgraded() {
+     WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+     BowWeaponComponent bow = new BowWeaponComponent();
+     Entity wielder =
+         new Entity()
+             .addComponent(new CombatStatsComponent(100, 10))
+-            .addComponent(new WeaponStatsComponent(0.5f, 0.8f, 0f))
++            .addComponent(new WeaponStatsComponent(0.5f, 1f, 0f))
+             .addComponent(upgrades)
+             .addComponent(bow);
+     wielder.create();
+@@ -205,12 +206,51 @@ class BowWeaponComponentTest {
+ 
+     assertTrue(bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+ 
++    // Light attack still fires exactly one arrow; only its damage changes: round(10 * 1 * 1.2).
++    ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
++    verify(entityService, times(1)).register(captor.capture());
++    assertEquals(12, captor.getValue().getComponent(CombatStatsComponent.class).getBaseAttack());
++  }
++
++  @Test
++  void shouldNotHeavyAttackWhenNotUpgraded() {
++    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
++    BowWeaponComponent bow = new BowWeaponComponent();
++    Entity wielder =
++        new Entity()
++            .addComponent(new CombatStatsComponent(100, 10))
++            .addComponent(new WeaponStatsComponent(0.5f, 1f, 0f))
++            .addComponent(upgrades)
++            .addComponent(bow);
++    wielder.create();
++
++    assertFalse(bow.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
++
++    verify(entityService, never()).register(any());
++  }
++
++  @Test
++  void shouldFireThreeArrowsOnHeavyAttackWhenUpgraded() {
++    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
++    BowWeaponComponent bow = new BowWeaponComponent();
++    Entity wielder =
++        new Entity()
++            .addComponent(new CombatStatsComponent(100, 10))
++            .addComponent(new WeaponStatsComponent(0.5f, 0.8f, 0f))
++            .addComponent(upgrades)
++            .addComponent(bow);
++    wielder.create();
++    upgrades.setUpgraded(BowWeaponComponent.class, true);
++
++    assertTrue(bow.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
++
+     ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
+     verify(entityService, times(3)).register(captor.capture());
+     List<Entity> arrows = captor.getAllValues();
+     assertEquals(3, arrows.size());
+ 
+-    // Every arrow deals full (unscaled) hitbox damage: round(10 * 0.8) = 8.
++    // Each arrow of the burst deals the same damage as an unupgraded shot: round(10 * 0.8 * 1) =
++    // 8 -- the heavy attack's power comes from firing three at once, not a per-arrow bonus.
+     for (Entity arrow : arrows) {
+       assertEquals(8, arrow.getComponent(CombatStatsComponent.class).getBaseAttack());
+       assertNull(arrow.getComponent(FollowComponent.class));
+@@ -227,7 +267,7 @@ class BowWeaponComponentTest {
+   }
+ 
+   @Test
+-  void shouldFireOneArrowWhenUpgradeReverted() {
++  void shouldRevertToSprintOneBowWhenUpgradeRemoved() {
+     WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+     BowWeaponComponent bow = new BowWeaponComponent();
+     Entity wielder =
+@@ -240,16 +280,20 @@ class BowWeaponComponentTest {
+     upgrades.setUpgraded(BowWeaponComponent.class, true);
+     upgrades.setUpgraded(BowWeaponComponent.class, false);
+ 
+-    assertTrue(bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
++    // No heavy attack once reverted.
++    assertFalse(bow.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
+ 
+-    // Reverted upgrade behaves exactly like the Sprint 1 bow: a single arrow.
+-    verify(entityService, times(1)).register(any());
++    // Light attack behaves exactly like the Sprint 1 bow: one arrow, base damage.
++    assertTrue(bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f)));
++    ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
++    verify(entityService, times(1)).register(captor.capture());
++    assertEquals(8, captor.getValue().getComponent(CombatStatsComponent.class).getBaseAttack());
+   }
+ 
+   @Test
+-  void shouldFireOnlySideArrowsWhenCentreSpawnBlocked() {
++  void shouldFireOnlySideArrowsWhenCentreSpawnBlockedOnHeavyAttack() {
+     // Small wall centred on the straight-line spawn point only. The two side arrows, spread by
+-    // the upgrade's +-15 degree angle, clear this wall's y-span well above and below it.
++    // the heavy attack's +-15 degree angle, clear this wall's y-span well above and below it.
+     Entity wall =
+         new Entity()
+             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+@@ -269,7 +313,7 @@ class BowWeaponComponentTest {
+     wielder.create();
+     upgrades.setUpgraded(BowWeaponComponent.class, true);
+ 
+-    bow.attack(new Vector2(0f, 0f), new Vector2(1f, 0f));
++    bow.heavyAttack(new Vector2(0f, 0f), new Vector2(1f, 0f));
+ 
+     // Centre arrow is blocked; the two side arrows still fire independently.
+     verify(entityService, times(2)).register(any());
+diff --git a/source/core/src/test/com/csse3200/game/components/weapons/WeaponUpgradeComponentTest.java b/source/core/src/test/com/csse3200/game/components/weapons/WeaponUpgradeComponentTest.java
+index 9a08e83..e86b949 100644
+--- a/source/core/src/test/com/csse3200/game/components/weapons/WeaponUpgradeComponentTest.java
++++ b/source/core/src/test/com/csse3200/game/components/weapons/WeaponUpgradeComponentTest.java
+@@ -124,10 +124,11 @@ class WeaponUpgradeComponentTest {
+     assertTrue(upgrades.setUpgraded(BowWeaponComponent.class, true));
+ 
+     assertTrue(upgrades.isUpgraded(BowWeaponComponent.class));
+-    // Bow's upgrade is structural (arrow count), not a damage or cooldown scale.
+-    assertEquals(1f, upgrades.getLightDamageMultiplier(BowWeaponComponent.class));
++    // Bow follows the same pattern as sword and knife: +20% light damage, and the heavy attack
++    // (three arrows) deals unscaled per-arrow damage but doubles the cooldown afterwards.
++    assertEquals(1.2f, upgrades.getLightDamageMultiplier(BowWeaponComponent.class));
+     assertEquals(1f, upgrades.getHeavyDamageMultiplier(BowWeaponComponent.class));
+-    assertEquals(1f, upgrades.getHeavyCooldownMultiplier(BowWeaponComponent.class));
++    assertEquals(2f, upgrades.getHeavyCooldownMultiplier(BowWeaponComponent.class));
+   }
+ 
+   @Test
+-- 
+2.43.0
+
