@@ -7,6 +7,7 @@ import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.*;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
+import com.csse3200.game.components.npc.WitchAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.CoilAttackTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
@@ -14,6 +15,7 @@ import com.csse3200.game.components.tasks.PatrolTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
 import com.csse3200.game.components.tasks.VenomSpitAttackTask;
 import com.csse3200.game.components.tasks.WanderTask;
+import com.csse3200.game.components.tasks.WitchPullAttackTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.files.FileLoader;
@@ -286,6 +288,53 @@ public class NPCFactory {
     demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
 
     return demon;
+  }
+
+  /** Make witch with normal projectile register. */
+  public static Entity createWitch(Entity target) {
+    return createWitch(
+        target, projectile -> ServiceLocator.getEntityService().register(projectile));
+  }
+
+  /** Make witch enemy. It shoots normally and sometimes pull player for close attack. */
+  public static Entity createWitch(Entity target, Consumer<Entity> projectileSpawner) {
+    WitchConfig config = configs.witch;
+    Entity witch = createBaseNPC();
+
+    AITaskComponent aiComponent =
+        new AITaskComponent(target)
+            .addTask(new WanderTask(config.movement, 1f))
+            .addTask(
+                new RangedAttackTask(
+                    target,
+                    5,
+                    config.baseAttack,
+                    projectileSpawner,
+                    FloatingDemonProjectileFactory::createWitchProjectile))
+            .addTask(new WitchPullAttackTask(target, config.baseAttack * 2));
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset("images/witch.atlas", TextureAtlas.class));
+    animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(DEFAULT_ANIMATION, 0.12f, Animation.PlayMode.LOOP);
+    animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation("pull", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+
+    witch
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(aiComponent)
+        .addComponent(animator)
+        .addComponent(new EnemyDeathComponent(true, true))
+        .addComponent(new WitchAnimationController())
+        .addComponent(new EnemyStatDisplay(1.8f));
+
+    animator.scaleEntity();
+    animator.startAnimation(MOVE);
+    witch.setScale(1.2f, 1.5f);
+    witch.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
+    return witch;
   }
 
   /**

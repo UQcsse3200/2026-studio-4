@@ -38,7 +38,8 @@ class NPCFactoryTest {
           "images/golem.atlas",
           "images/medusa.atlas",
           "images/mummy.atlas",
-          "images/snake.atlas"
+          "images/snake.atlas",
+          "images/witch.atlas"
         });
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
@@ -77,6 +78,12 @@ class NPCFactoryTest {
             new Vector2(1f, 1f),
             new Vector2(2f, 0f),
             "images/floatingDemon.atlas");
+    assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
+  }
+
+  @Test
+  void witchHasHealthBar() {
+    Entity enemy = NPCFactory.createWitch(new Entity(), projectile -> {});
     assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
   }
 

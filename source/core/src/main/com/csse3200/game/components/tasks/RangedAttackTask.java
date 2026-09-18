@@ -12,6 +12,11 @@ import java.util.function.Consumer;
 
 /** Makes the floating demon fire three projectiles when the player is close. */
 public class RangedAttackTask extends DefaultTask implements PriorityTask {
+  @FunctionalInterface
+  public interface ProjectileCreator {
+    Entity create(Vector2 position, Vector2 direction, int damage);
+  }
+
   private static final float ATTACK_RANGE = 6f;
   private static final float EXIT_RANGE = 7f;
   private static final float ATTACK_COOLDOWN = 1.8f;
@@ -20,6 +25,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   private final Entity target;
   private final int damage;
   private final Consumer<Entity> projectileSpawner;
+  private final ProjectileCreator projectileCreator;
   private float cooldownLeft;
 
   public RangedAttackTask(Entity target, int priority, int damage) {
@@ -33,10 +39,26 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   /** Creates a ranged attack whose projectiles are registered by the supplied owner. */
   public RangedAttackTask(
       Entity target, int priority, int damage, Consumer<Entity> projectileSpawner) {
+    this(
+        target,
+        priority,
+        damage,
+        projectileSpawner,
+        FloatingDemonProjectileFactory::createProjectile);
+  }
+
+  /** Use this one when enemy need same shooting but a different bullet. */
+  public RangedAttackTask(
+      Entity target,
+      int priority,
+      int damage,
+      Consumer<Entity> projectileSpawner,
+      ProjectileCreator projectileCreator) {
     this.target = target;
     this.damage = damage;
     this.priority = priority;
     this.projectileSpawner = projectileSpawner;
+    this.projectileCreator = projectileCreator;
   }
 
   @Override
@@ -100,8 +122,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
               if (StatusEffectsControllerComponent.isConcealed(target)) {
                 return;
               }
-              Entity projectile =
-                  FloatingDemonProjectileFactory.createProjectile(position, direction, damage);
+              Entity projectile = projectileCreator.create(position, direction, damage);
               projectileSpawner.accept(projectile);
             });
   }

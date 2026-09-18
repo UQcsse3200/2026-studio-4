@@ -188,7 +188,8 @@
         { "type": "HARPY", "x": 38, "y": 6 },
         { "type": "HARPY", "x": 7, "y": 16 },
         { "type": "HARPY", "x": 21, "y": 16 },
-        { "type": "HARPY", "x": 34, "y": 36 }
+        { "type": "HARPY", "x": 34, "y": 36 },
+        { "type": "WITCH", "x": 24, "y": 24 }
       ],
       "obstacles": {
         "spawns": [

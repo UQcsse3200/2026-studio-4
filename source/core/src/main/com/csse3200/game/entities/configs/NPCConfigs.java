@@ -6,6 +6,7 @@ public class NPCConfigs {
   public BombEnemyConfig bombEnemy = new BombEnemyConfig();
   public ChaseEnemyConfig chaseEnemy = new ChaseEnemyConfig();
   public FloatingDemonConfig floatingDemon = new FloatingDemonConfig();
+  public WitchConfig witch = new WitchConfig();
   public BaseEntityConfig cerberus = new BaseEntityConfig();
   public SnakeMiniBossConfig snakeMiniBoss = new SnakeMiniBossConfig();
 }

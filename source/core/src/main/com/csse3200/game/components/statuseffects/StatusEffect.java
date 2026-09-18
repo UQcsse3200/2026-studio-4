@@ -50,6 +50,11 @@ public interface StatusEffect {
     return false;
   }
 
+  /** Returns true when this effect not allow the player use dash. */
+  default boolean disablesDash() {
+    return false;
+  }
+
   /**
    * Returns what this effect multiplies the given effective stat by while it runs. The raw stats
    * are never touched, so charms and other adjustments keep working underneath and removing the

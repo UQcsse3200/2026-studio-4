@@ -68,6 +68,12 @@ public class StatusEffectsControllerComponent extends Component {
     return effects != null && effects.isImmobilised();
   }
 
+  /** Check if one effect is stopping dash now. */
+  public static boolean isDashDisabled(Entity entity) {
+    StatusEffectsControllerComponent effects = findOn(entity);
+    return effects != null && effects.isDashDisabled();
+  }
+
   /**
    * Returns the combined glow of the entity's active effects, or null when nothing glows.
    *
@@ -96,6 +102,16 @@ public class StatusEffectsControllerComponent extends Component {
   public boolean isImmobilised() {
     for (StatusEffect effect : statusEffects) {
       if (!effect.isExpired() && effect.immobilisesOwner()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** Returns true if any current effect blocks dash. */
+  public boolean isDashDisabled() {
+    for (StatusEffect effect : statusEffects) {
+      if (!effect.isExpired() && effect.disablesDash()) {
         return true;
       }
     }

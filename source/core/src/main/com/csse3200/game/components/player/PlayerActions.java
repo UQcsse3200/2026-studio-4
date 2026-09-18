@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.GameTime;
@@ -132,6 +133,10 @@ public class PlayerActions extends Component {
   @Override
   public void update() {
     updateDashState();
+    if (StatusEffectsControllerComponent.isDashDisabled(entity) && dashOn) {
+      dashOn = false;
+      entity.getEvents().trigger(DASH_STOP);
+    }
     updateJumpState();
     if (areControlsLocked()) {
       physicsComponent.getBody().setLinearVelocity(0f, 0f);
@@ -331,6 +336,7 @@ public class PlayerActions extends Component {
    */
   void dash(Vector2 direction) {
     if (areControlsLocked()) return;
+    if (StatusEffectsControllerComponent.isDashDisabled(entity)) return;
     if (isJumpEnabled()) {
       jump();
       return;

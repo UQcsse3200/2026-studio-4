@@ -22,6 +22,14 @@
       "y": 3
     }
   },
+  "witch" : {
+    "health": 45,
+    "baseAttack": 3,
+    "movement": {
+      "x": 1.5,
+      "y": 1.5
+    }
+  },
   "cerberus" : {
     "health": 250,
     "baseAttack": 20
