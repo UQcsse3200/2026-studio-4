@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.miniboss.cerberus.HomingProjectileMovementComponent;
 import com.csse3200.game.components.npc.ProjectileMovementComponent;
-import com.csse3200.game.components.npc.WitchProjectileEffectComponent;
+import com.csse3200.game.components.npc.WizardProjectileEffectComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.rendering.AnimationRenderComponent;
@@ -25,10 +25,10 @@ public class FloatingDemonProjectileFactory {
         new ProjectileMovementComponent(direction, PROJECTILE_SPEED, PROJECTILE_RANGE));
   }
 
-  /** Same old demon bullet but witch put a curse on it. */
-  public static Entity createWitchProjectile(Vector2 position, Vector2 direction, int damage) {
+  /** Same old demon bullet but wizard put a curse on it. */
+  public static Entity createWizardProjectile(Vector2 position, Vector2 direction, int damage) {
     Entity projectile = createProjectile(position, direction, damage);
-    projectile.addComponent(new WitchProjectileEffectComponent());
+    projectile.addComponent(new WizardProjectileEffectComponent());
     return projectile;
   }
 

@@ -6,8 +6,8 @@ import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
-/** Control some witch animation. It needs own controller because pull animation is different. */
-public class WitchAnimationController extends Component {
+/** Control some wizard animation. It needs own controller because pull animation is different. */
+public class WizardAnimationController extends Component {
   private AnimationRenderComponent animator;
   private boolean dying;
 
@@ -16,8 +16,8 @@ public class WitchAnimationController extends Component {
     animator = entity.getComponent(AnimationRenderComponent.class);
     entity.getEvents().addListener("wanderStart", () -> playIfAlive("move"));
     entity.getEvents().addListener("rangedAttack", () -> playIfAlive("attack"));
-    entity.getEvents().addListener("witchPullStart", () -> playIfAlive("pull"));
-    entity.getEvents().addListener("witchPullStop", () -> playIfAlive("move"));
+    entity.getEvents().addListener("wizardPullStart", () -> playIfAlive("pull"));
+    entity.getEvents().addListener("wizardPullStop", () -> playIfAlive("move"));
     entity.getEvents().addListener("enemyDeathAnimation", this::playDeath);
   }
 

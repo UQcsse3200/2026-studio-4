@@ -2,19 +2,19 @@ package com.csse3200.game.components.statuseffects;
 
 import com.csse3200.game.services.GameTime;
 
-/** The small curse from witch bullet. It make walk slow and dash cannot work. */
-public class WitchCurseEffect implements StatusEffect {
+/** The small curse from wizard bullet. It make walk slow and dash cannot work. */
+public class WizardCurseEffect implements StatusEffect {
   public static final long DURATION = 3000L;
   private static final float MOVE_MULTIPLIER = 0.45f;
 
   private final GameTime time;
   private final long startTime;
 
-  public WitchCurseEffect() {
+  public WizardCurseEffect() {
     this(new GameTime());
   }
 
-  WitchCurseEffect(GameTime time) {
+  WizardCurseEffect(GameTime time) {
     this.time = time;
     startTime = time.getTime();
   }

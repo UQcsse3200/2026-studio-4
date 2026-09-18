@@ -22,7 +22,7 @@
       "y": 3
     }
   },
-  "witch" : {
+  "wizard" : {
     "health": 45,
     "baseAttack": 3,
     "movement": {

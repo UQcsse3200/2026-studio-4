@@ -86,7 +86,7 @@
           "kind": "BOOKSHELF",
           "x": 20,
           "y": 11,
-          "destinationRoomId": "dungeonThreeWitchRoom",
+          "destinationRoomId": "dungeonThreeWizardRoom",
           "destinationEntryPointId": "fromSelection"
         },
         {
@@ -200,7 +200,7 @@
         { "type": "HARPY", "x": 7, "y": 16 },
         { "type": "HARPY", "x": 21, "y": 16 },
         { "type": "HARPY", "x": 34, "y": 36 },
-        { "type": "WITCH", "x": 24, "y": 24 }
+        { "type": "WIZARD", "x": 24, "y": 24 }
       ],
       "obstacles": {
         "spawns": [
@@ -860,9 +860,9 @@
       }
     },
     {
-      "id": "dungeonThreeWitchRoom",
+      "id": "dungeonThreeWizardRoom",
       "dungeonId": "dungeonThree",
-      "title": "Dungeon Three: Witch Room",
+      "title": "Dungeon Three: Wizard Room",
       "mapWidth": 28,
       "mapHeight": 28,
       "entryPoints": [
@@ -873,7 +873,7 @@
         }
       ],
       "enemySpawns": [
-        { "type": "WITCH", "x": 14, "y": 18 }
+        { "type": "WIZARD", "x": 14, "y": 18 }
       ],
       "obstacles": {
         "spawns": [

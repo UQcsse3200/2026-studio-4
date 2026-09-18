@@ -14,8 +14,8 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.ServiceLocator;
 
-/** Witch pull player to itself and spin attack if player become close. */
-public class WitchPullAttackTask extends DefaultTask implements PriorityTask {
+/** Wizard pull player to itself and spin attack if player become close. */
+public class WizardPullAttackTask extends DefaultTask implements PriorityTask {
   static final float PULL_RANGE = 8f;
   static final float MELEE_RANGE = 1.8f;
   static final float PULL_SPEED = 2.4f;
@@ -30,7 +30,7 @@ public class WitchPullAttackTask extends DefaultTask implements PriorityTask {
   private long nextPullTime;
   private long lastMeleeTime = -MELEE_COOLDOWN;
 
-  public WitchPullAttackTask(Entity target, int damage) {
+  public WizardPullAttackTask(Entity target, int damage) {
     this.target = target;
     this.damage = damage;
   }
@@ -61,7 +61,7 @@ public class WitchPullAttackTask extends DefaultTask implements PriorityTask {
     if (movement != null) {
       movement.setMoving(false);
     }
-    owner.getEntity().getEvents().trigger("witchPullStart");
+    owner.getEntity().getEvents().trigger("wizardPullStart");
   }
 
   @Override
@@ -70,7 +70,7 @@ public class WitchPullAttackTask extends DefaultTask implements PriorityTask {
     if (currentTime - pullStarted >= PULL_TIME) {
       nextPullTime = currentTime + PULL_COOLDOWN;
       status = Status.FINISHED;
-      owner.getEntity().getEvents().trigger("witchPullStop");
+      owner.getEntity().getEvents().trigger("wizardPullStop");
       return;
     }
 
@@ -86,7 +86,7 @@ public class WitchPullAttackTask extends DefaultTask implements PriorityTask {
   public void stop() {
     if (status == Status.ACTIVE) {
       nextPullTime = now() + PULL_COOLDOWN;
-      owner.getEntity().getEvents().trigger("witchPullStop");
+      owner.getEntity().getEvents().trigger("wizardPullStop");
     }
     super.stop();
   }
@@ -97,13 +97,13 @@ public class WitchPullAttackTask extends DefaultTask implements PriorityTask {
       return;
     }
 
-    Vector2 toWitch = owner.getEntity().getCenterPosition().sub(target.getCenterPosition());
-    if (toWitch.isZero(0.05f)) {
+    Vector2 toWizard = owner.getEntity().getCenterPosition().sub(target.getCenterPosition());
+    if (toWizard.isZero(0.05f)) {
       return;
     }
 
     Body body = physics.getBody();
-    Vector2 velocity = body.getLinearVelocity().cpy().add(toWitch.setLength(PULL_SPEED));
+    Vector2 velocity = body.getLinearVelocity().cpy().add(toWizard.setLength(PULL_SPEED));
     // Limit it so moving opposite still can escape, just very slow.
     if (velocity.len() > 3.5f) {
       velocity.setLength(3.5f);
@@ -112,27 +112,27 @@ public class WitchPullAttackTask extends DefaultTask implements PriorityTask {
   }
 
   private void spinAttack() {
-    Entity witch = owner.getEntity();
+    Entity wizard = owner.getEntity();
     float startAngle = -180f;
     float radius = 1.05f;
     Vector2 size = new Vector2(1f, 0.45f);
 
     HitboxSpec spec =
         new HitboxSpec()
-            .position(witch.getCenterPosition())
+            .position(wizard.getCenterPosition())
             .size(size)
             .lifetime(MELEE_LIFETIME)
             .layer(PhysicsLayer.WEAPON)
             .targetLayer(PhysicsLayer.PLAYER)
             .damage(damage)
-            .owner(witch)
+            .owner(wizard)
             .localOffset(new Vector2(radius, 0f).setAngleDeg(startAngle));
 
     Entity hitbox = HitboxFactory.createHitbox(spec);
-    // Reuse sword sweep, only no sword picture because witch uses magic.
+    // Reuse sword sweep, only no sword picture because wizard uses magic.
     hitbox.addComponent(new SweepComponent(MELEE_LIFETIME, startAngle, 180f, radius));
     ServiceLocator.getEntityService().register(hitbox);
-    witch.getEvents().trigger("witchMeleeAttack");
+    wizard.getEvents().trigger("wizardMeleeAttack");
   }
 
   private long now() {

@@ -1,11 +1,14 @@
 package com.csse3200.game.entities.factories;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
+import com.csse3200.game.components.npc.WizardPullEffectComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
@@ -39,7 +42,7 @@ class NPCFactoryTest {
           "images/medusa.atlas",
           "images/mummy.atlas",
           "images/snake.atlas",
-          "images/witch.atlas"
+          "images/wizard.atlas"
         });
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
@@ -82,9 +85,13 @@ class NPCFactoryTest {
   }
 
   @Test
-  void witchHasHealthBar() {
-    Entity enemy = NPCFactory.createWitch(new Entity(), projectile -> {});
+  void wizardHasHealthBar() {
+    Entity enemy = NPCFactory.createWizard(new Entity(), projectile -> {});
     assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
+    assertNotNull(enemy.getComponent(WizardPullEffectComponent.class));
+    TextureAtlas atlas =
+        ServiceLocator.getResourceService().getAsset("images/wizard.atlas", TextureAtlas.class);
+    assertEquals(5, atlas.findRegions("vortex").size);
   }
 
   @Test

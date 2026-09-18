@@ -9,12 +9,12 @@ import static org.mockito.Mockito.when;
 import com.csse3200.game.services.GameTime;
 import org.junit.jupiter.api.Test;
 
-class WitchCurseEffectTest {
+class WizardCurseEffectTest {
   @Test
   void shouldSlowMovementAndBlockDashForThreeSeconds() {
     GameTime time = mock(GameTime.class);
     when(time.getTime()).thenReturn(20L);
-    WitchCurseEffect effect = new WitchCurseEffect(time);
+    WizardCurseEffect effect = new WizardCurseEffect(time);
 
     when(time.getTimeSince(20L)).thenReturn(2999L);
     assertEquals(0.45f, effect.getStatMultiplier(Stat.MOVEMENT_SPEED));
