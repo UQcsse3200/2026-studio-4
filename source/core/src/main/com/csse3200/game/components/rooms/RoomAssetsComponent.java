@@ -1,14 +1,13 @@
 package com.csse3200.game.components.rooms;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.components.boss.FinalBossStageThreeAssets;
 import com.csse3200.game.components.boss.FinalBossVisualAssets;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 /** Loads the terrain, fixtures, audio, and enemy assets used by a room. */
 public class RoomAssetsComponent implements Disposable {
@@ -32,7 +31,7 @@ public class RoomAssetsComponent implements Disposable {
     "images/cerberus.atlas",
   };
 
-  private static final String[] PLAYER_ATLASES = { "images/idle_down.atlas" };
+  private static final String[] PLAYER_ATLASES = {"images/idle_down.atlas"};
 
   private static final String[] DUNGEON_TEXTURES = {
     "images/dungeons/fantasy_dreamland_16.png", // tile set texture
@@ -40,8 +39,7 @@ public class RoomAssetsComponent implements Disposable {
   };
 
   private static final String[] OBSTACLE_TEXTURES = {
-    "images/hole.png",
-    "images/rock.png",
+    "images/hole.png", "images/rock.png",
   };
 
   private static final String[] ITEM_TEXTURES = {
@@ -56,13 +54,20 @@ public class RoomAssetsComponent implements Disposable {
     "images/gold_coin_pixel.png"
   };
 
-  private static final String[] ALL_TEXTURES = Stream.of(
-    DUNGEON_TEXTURES, OBSTACLE_TEXTURES, ITEM_TEXTURES, FinalBossVisualAssets.paths(), FinalBossStageThreeAssets.paths()
-  ).flatMap(Arrays::stream).toArray(String[]::new);
+  private static final String[] ALL_TEXTURES =
+      Stream.of(
+              DUNGEON_TEXTURES,
+              OBSTACLE_TEXTURES,
+              ITEM_TEXTURES,
+              FinalBossVisualAssets.paths(),
+              FinalBossStageThreeAssets.paths())
+          .flatMap(Arrays::stream)
+          .toArray(String[]::new);
 
-  private static final String[] ALL_ATLASES = Stream.of(
-    ENEMY_TEXTURE_ATLASES, PLAYER_ATLASES
-  ).flatMap(Arrays::stream).toArray(String[]::new);
+  private static final String[] ALL_ATLASES =
+      Stream.of(ENEMY_TEXTURE_ATLASES, PLAYER_ATLASES)
+          .flatMap(Arrays::stream)
+          .toArray(String[]::new);
 
   public void loadAll() {
     ResourceService resourceService = ServiceLocator.getResourceService();

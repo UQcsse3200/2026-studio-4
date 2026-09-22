@@ -53,39 +53,38 @@ public class MainGameScreen extends ScreenAdapter {
   private final PhysicsEngine physicsEngine;
   private RoomManager roomManager;
   private Entity player;
-  private boolean deathScreenTriggered = false; // prevents screen-setting every frame
   private final Terminal terminal;
+  private boolean deathScreenTriggered = false;
   private final RoomAssetsComponent roomAssets = new RoomAssetsComponent();
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
 
-    logger.debug("Initialising main game screen services");
     terminal = new Terminal();
-    ServiceLocator.registerTimeSource(new GameTime());
 
+    // load all game services
+    logger.debug("Initialising main game screen services");
+    ServiceLocator.registerTimeSource(new GameTime());
     PhysicsService physicsService = new PhysicsService();
     ServiceLocator.registerPhysicsService(physicsService);
     physicsEngine = physicsService.getPhysics();
-
     ServiceLocator.registerInputService(new InputService());
     ServiceLocator.registerResourceService(new ResourceService());
-
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
     renderer = RenderFactory.createRenderer();
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
+
     loadAssets();
-    logger.debug("Initialising main game screen entities");
+
     player = PlayerFactory.createPlayer();
+
     WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     if (world == null) {
       throw new IllegalStateException("Unable to load configs/rooms.json");
     }
     roomManager = new RoomManager(world, player, renderer.getCamera());
     roomManager.create();
-    RoomCommand roomCommand = new RoomCommand(roomManager);
-    terminal.addCommand("room", roomCommand);
 
     createUI();
   }
@@ -95,7 +94,7 @@ public class MainGameScreen extends ScreenAdapter {
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     roomManager.update();
-    renderer.render();
+
     if (!deathScreenTriggered && player != null) {
       CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
       if (stats != null && stats.getHealth() <= 0) {
@@ -103,6 +102,7 @@ public class MainGameScreen extends ScreenAdapter {
         game.setScreen(GdxGame.ScreenType.DEATH_SCREEN);
       }
     }
+    renderer.render();
   }
 
   @Override
@@ -162,6 +162,7 @@ public class MainGameScreen extends ScreenAdapter {
     terminal.addCommand("effect", new StatusEffectCommand(player));
     terminal.addCommand("upgrade", new UpgradeCommand(player));
     terminal.addCommand("spell", new SpellCommand(player));
+    terminal.addCommand("room", new RoomCommand(roomManager));
 
     InventoryDisplay inventoryDisplay =
         new InventoryDisplay(player.getComponent(InventoryComponent.class));
