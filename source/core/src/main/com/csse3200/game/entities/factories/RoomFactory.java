@@ -24,7 +24,7 @@ public class RoomFactory {
   public static Entity createRoom(RoomConfig room, CameraComponent camera, boolean cleared) {
     TerrainFactory terrainFactory = new TerrainFactory(camera);
     return new Entity()
-        .addComponent(new RoomAssetsComponent())
+        // .addComponent(new RoomAssetsComponent())
         .addComponent(new GameAreaDisplay(room.title))
         .addComponent(
             terrainFactory.createDungeonTerrain(new GridPoint2(room.mapWidth, room.mapHeight)))

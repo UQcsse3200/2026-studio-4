@@ -11,6 +11,7 @@ import com.csse3200.game.components.maingame.InventoryDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.rooms.RoomAssetsComponent;
 import com.csse3200.game.components.rooms.RoomCommand;
 import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.components.rooms.configs.WorldConfig;
@@ -46,19 +47,6 @@ import org.slf4j.LoggerFactory;
  */
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
-  private static final String[] mainGameTextures = {
-    "images/heart.png",
-    "images/strength_charm_pixel.png",
-    //          Temp
-    "images/attack_speed_charm.png",
-    "images/speed_charm.png",
-    "images/health_potion_pixel.png",
-    "images/shield_consumable_pixel.png",
-    "images/speed_potion_pixel.png",
-    "images/strength_potion_pixel.png",
-    "images/gold_coin_pixel.png"
-  };
-  private static final String[] mainGameTextureAtlases = {"images/idle_down.atlas"};
 
   private final GdxGame game;
   private final Renderer renderer;
@@ -67,6 +55,7 @@ public class MainGameScreen extends ScreenAdapter {
   private Entity player;
   private boolean deathScreenTriggered = false; // prevents screen-setting every frame
   private final Terminal terminal;
+  private final RoomAssetsComponent roomAssets = new RoomAssetsComponent();
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
@@ -148,17 +137,12 @@ public class MainGameScreen extends ScreenAdapter {
 
   private void loadAssets() {
     logger.debug("Loading assets");
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.loadTextures(mainGameTextures);
-    resourceService.loadTextureAtlases(mainGameTextureAtlases);
-    resourceService.loadAll();
+    roomAssets.loadAll();
   }
 
   private void unloadAssets() {
     logger.debug("Unloading assets");
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.unloadAssets(mainGameTextures);
-    resourceService.unloadAssets(mainGameTextureAtlases);
+    roomAssets.dispose();
   }
 
   /**
