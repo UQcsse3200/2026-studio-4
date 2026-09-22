@@ -3,7 +3,7 @@ package com.csse3200.game.screens;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
-import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.HotbarDisplay;
 import com.csse3200.game.components.maingame.InventoryActions;
@@ -54,7 +54,6 @@ public class MainGameScreen extends ScreenAdapter {
   private RoomManager roomManager;
   private Entity player;
   private final Terminal terminal;
-  private boolean deathScreenTriggered = false;
   private final RoomAssetsComponent roomAssets = new RoomAssetsComponent();
 
   public MainGameScreen(GdxGame game) {
@@ -78,6 +77,8 @@ public class MainGameScreen extends ScreenAdapter {
     loadAssets();
 
     player = PlayerFactory.createPlayer();
+    // trigger death screen via entity died event
+    player.getEvents().addListener("entityDied", this::scheduleDeathScreen);
 
     WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     if (world == null) {
@@ -94,14 +95,6 @@ public class MainGameScreen extends ScreenAdapter {
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     roomManager.update();
-
-    if (!deathScreenTriggered && player != null) {
-      CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
-      if (stats != null && stats.getHealth() <= 0) {
-        deathScreenTriggered = true;
-        game.setScreen(GdxGame.ScreenType.DEATH_SCREEN);
-      }
-    }
     renderer.render();
   }
 
@@ -183,5 +176,10 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(inventoryActions);
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     ServiceLocator.getEntityService().register(ui);
+  }
+
+  /* Schedule the death screen to be shown */
+  private void scheduleDeathScreen() {
+    ServiceLocator.getEntityService().schedule(() -> game.setScreen(ScreenType.DEATH_SCREEN));
   }
 }
