@@ -13,6 +13,8 @@ import com.csse3200.game.components.rooms.WallComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.items.LootTable;
 
 /** Factory for creating rooms with their terrain and gameplay components. */
 public class RoomFactory {
@@ -22,6 +24,10 @@ public class RoomFactory {
 
   /** Creates a room entity from its declarative definition. */
   public static Entity createRoom(RoomConfig room, CameraComponent camera, boolean cleared) {
+    LootTable lootTable = FileLoader.readClass(LootTable.class, room.lootTable);
+    if (lootTable == null) {
+      throw new IllegalStateException("Unable to load loot table: " + room.lootTable);
+    }
     TerrainFactory terrainFactory = new TerrainFactory(camera);
     return new Entity()
         .addComponent(new RoomAssetsComponent())
@@ -34,6 +40,6 @@ public class RoomFactory {
         .addComponent(new ExitComponent(room.exits))
         .addComponent(
             new EnemyManagerComponent(
-                cleared ? new EnemySpawnConfig[0] : room.enemySpawns, camera));
+                cleared ? new EnemySpawnConfig[0] : room.enemySpawns, camera, lootTable));
   }
 }

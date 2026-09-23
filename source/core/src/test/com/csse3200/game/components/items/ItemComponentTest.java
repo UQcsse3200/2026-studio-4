@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.ItemType;
 import com.csse3200.game.items.charms.Charm;
+import com.csse3200.game.items.charms.SpeedCharm;
 import com.csse3200.game.items.charms.StrengthCharm;
 import org.junit.jupiter.api.Test;
 
@@ -34,6 +35,13 @@ class ItemComponentTest {
   }
 
   @Test
+  void shouldRecogniseEveryCharmThroughTheSharedItemId() {
+    ItemComponent component = new ItemComponent(new SpeedCharm());
+    assertEquals(ItemType.SPEED_CHARM, component.getItemType());
+    assertSame(component.getItem(), component.getCharm());
+  }
+
+  @Test
   void shouldStoreCallerSelectedQuantity() {
     ItemComponent component = new ItemComponent(new ItemDropSpec(ItemType.GOLD_COIN, 25));
 
@@ -46,6 +54,6 @@ class ItemComponentTest {
     assertThrows(NullPointerException.class, () -> new ItemComponent((Charm) null));
     assertThrows(NullPointerException.class, () -> new ItemComponent((ItemType) null));
     assertThrows(NullPointerException.class, () -> new ItemComponent((ItemDropSpec) null));
-    assertThrows(IllegalArgumentException.class, () -> new ItemComponent(ItemType.STRENGTH_CHARM));
+    assertEquals(ItemType.STRENGTH_CHARM, new ItemComponent(ItemType.STRENGTH_CHARM).getItemType());
   }
 }

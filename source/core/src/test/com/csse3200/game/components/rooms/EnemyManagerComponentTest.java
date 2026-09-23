@@ -2,6 +2,7 @@ package com.csse3200.game.components.rooms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
@@ -16,16 +17,19 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.LootTable;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.List;
 import java.util.random.RandomGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -123,6 +127,46 @@ class EnemyManagerComponentTest {
     entityService.update();
     enemy.getEvents().trigger("entityDied");
     entityService.update();
+    verify(entityService, never()).register(Mockito.any(Entity.class));
+  }
+
+  @Test
+  void shouldSpawnRegisteredItemAtEnemyDeathPositionAfterUpdate() {
+    Entity enemy = new Entity();
+    Vector2 deathPosition = new Vector2(3f, 4f);
+    enemy.setPosition(deathPosition);
+    enemyManager.track(enemy);
+
+    enemy.getEvents().trigger("entityDied");
+    verify(entityService, never()).register(Mockito.any(Entity.class));
+
+    entityService.update();
+
+    assertEquals(1, entityService.getEntities().size);
+    Entity drop = entityService.getEntities().first();
+    assertNotNull(drop.getComponent(ItemComponent.class));
+    assertEquals(deathPosition, drop.getPosition());
+    verify(entityService).register(drop);
+  }
+
+  @Test
+  void shouldSpawnSpecifiedCharmsAsSeparateRoomOwnedEntities() {
+    List<Entity> drops = enemyManager.spawnDrop(ItemType.SPEED_CHARM, 2, new Vector2(3f, 4f));
+
+    assertEquals(2, drops.size());
+    for (Entity drop : drops) {
+      assertEquals(ItemType.SPEED_CHARM, drop.getComponent(ItemComponent.class).getItemType());
+      verify(entityService).register(drop);
+    }
+    enemyManager.dispose();
+    drops.forEach(drop -> verify(entityService).unregister(drop));
+  }
+
+  @Test
+  void shouldAllowARestrictedTableToProduceNoDrop() {
+    LootTable table = new LootTable();
+    table.noDropWeight = 1;
+    assertTrue(enemyManager.spawnDrops(table, new Vector2()).isEmpty());
     verify(entityService, never()).register(Mockito.any(Entity.class));
   }
 

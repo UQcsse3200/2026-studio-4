@@ -2,13 +2,14 @@ package com.csse3200.game.items.charms;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.items.ItemType;
 
 public class AttackSpeedCharm extends Charm {
   private static final float VALUE = 1f;
   public static final String TEXTURE = "images/attack_speed_charm.png";
 
   public AttackSpeedCharm() {
-    super("Attack Speed Charm", "You feel yourself getting faster hands I guess?", TEXTURE);
+    super(ItemType.ATTACK_SPEED_CHARM);
   }
 
   @Override

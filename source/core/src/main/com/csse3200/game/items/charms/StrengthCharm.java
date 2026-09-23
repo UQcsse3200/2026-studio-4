@@ -2,13 +2,14 @@ package com.csse3200.game.items.charms;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.items.ItemType;
 
 public class StrengthCharm extends Charm {
   private static final int VALUE = 10;
   public static final String TEXTURE = "images/strength_charm_pixel.png";
 
   public StrengthCharm() {
-    super("Strength Charm", "You feel yourself getting stronger.", TEXTURE);
+    super(ItemType.STRENGTH_CHARM);
   }
 
   @Override

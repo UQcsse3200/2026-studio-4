@@ -3,6 +3,7 @@ package com.csse3200.game.items.charms;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.items.Item;
+import com.csse3200.game.items.ItemType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,9 +11,16 @@ import org.slf4j.LoggerFactory;
 public abstract class Charm extends Item {
   private static final Logger logger = LoggerFactory.getLogger(Charm.class);
   private boolean applied = false;
+  private final ItemType itemType;
 
-  Charm(String name, String description, String texture) {
-    super(name, description, texture);
+  Charm(ItemType itemType) {
+    super(itemType.getDisplayName(), itemType.getDescription(), itemType.getTexturePath());
+    this.itemType = itemType;
+  }
+
+  @Override
+  public ItemType getItemType() {
+    return itemType;
   }
 
   protected abstract void applyEffect(Entity player);

@@ -42,6 +42,18 @@ public abstract class Item {
   }
 
   /**
+   * Stable identity shared by drops, inventory and UI. Unregistered legacy items may return null.
+   */
+  public ItemType getItemType() {
+    return null;
+  }
+
+  /** Number of units represented by this item instance. */
+  public int getQuantity() {
+    return 1;
+  }
+
+  /**
    * A short summary of this item's mechanical effect, for example "Attack +10". Used by the
    * inventory tooltip so the player can see what an item actually does, rather than only its
    * flavour text.
