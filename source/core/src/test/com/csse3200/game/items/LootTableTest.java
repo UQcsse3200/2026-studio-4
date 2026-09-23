@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.utils.Json;
 import com.csse3200.game.extensions.GameExtension;
 import java.util.List;
 import java.util.random.RandomGenerator;
@@ -43,5 +44,35 @@ class LootTableTest {
     table.entries = new LootTable.Entry[0];
     table.noDropWeight = 1;
     assertTrue(table.roll(mock(RandomGenerator.class)).isEmpty());
+  }
+
+  @Test
+  void shouldReadEnemyRulesFromJsonAndFallBackToGeneralRules() {
+    String json =
+        "{\"entries\":[{\"itemId\":\"HEALTH_POTION\"}],"
+            + "\"enemyRules\":[{\"enemyType\":\"GOLEM\",\"table\":{"
+            + "\"entries\":[{\"itemId\":\"GOLD_COIN\",\"minQuantity\":3,\"maxQuantity\":3}]}}]}";
+    LootTable table = new Json().fromJson(LootTable.class, json);
+    table.validate();
+    RandomGenerator random = mock(RandomGenerator.class);
+
+    assertEquals(
+        List.of(new ItemDropSpec(ItemType.GOLD_COIN, 3)), table.forEnemy("GOLEM").roll(random));
+    assertEquals(
+        List.of(new ItemDropSpec(ItemType.HEALTH_POTION, 1)),
+        table.forEnemy("MEDUSA").roll(random));
+  }
+
+  @Test
+  void shouldRejectDuplicateEnemyRules() {
+    LootTable table = new LootTable();
+    table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemType.HEALTH_POTION, 1, 1, 1)};
+    table.enemyRules =
+        new LootTable.EnemyRule[] {
+          new LootTable.EnemyRule("GOLEM", new LootTable()),
+          new LootTable.EnemyRule("GOLEM", new LootTable())
+        };
+
+    assertThrows(IllegalArgumentException.class, table::validate);
   }
 }

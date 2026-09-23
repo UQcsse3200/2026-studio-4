@@ -150,6 +150,63 @@ class EnemyManagerComponentTest {
   }
 
   @Test
+  void shouldUseEnemyTypeRulesAtDeathWithoutChangingSpawnDrops() {
+    LootTable table = singleItemTable(ItemType.HEALTH_POTION);
+    table.enemyRules =
+        new LootTable.EnemyRule[] {
+          new LootTable.EnemyRule("GOLEM", singleItemTable(ItemType.GOLD_COIN))
+        };
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(0), table);
+    enemyManager.setEntity(room);
+    Entity golem = new Entity();
+    Entity medusa = new Entity();
+    enemyManager.track(golem, "GOLEM");
+    enemyManager.track(medusa, "MEDUSA");
+
+    golem.getEvents().trigger("entityDied");
+    medusa.getEvents().trigger("entityDied");
+    entityService.update();
+
+    assertEquals(2, entityService.getEntities().size);
+    assertEquals(
+        ItemType.GOLD_COIN,
+        entityService.getEntities().get(0).getComponent(ItemComponent.class).getItemType());
+    assertEquals(
+        ItemType.HEALTH_POTION,
+        entityService.getEntities().get(1).getComponent(ItemComponent.class).getItemType());
+  }
+
+  @Test
+  void shouldKeepEnemyTypeForEverySplitChild() {
+    LootTable table = singleItemTable(ItemType.HEALTH_POTION);
+    table.enemyRules =
+        new LootTable.EnemyRule[] {
+          new LootTable.EnemyRule("GOLEM", singleItemTable(ItemType.GOLD_COIN))
+        };
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(0), table);
+    enemyManager.setEntity(room);
+    Entity parent = enemyMock();
+    Entity firstChild = enemyMock();
+    Entity secondChild = enemyMock();
+    enemyManager.track(parent, "GOLEM");
+
+    parent.getEvents().trigger("spawnChildren", firstChild);
+    parent.getEvents().trigger("spawnChildren", secondChild);
+    firstChild.getEvents().trigger("entityDied");
+    secondChild.getEvents().trigger("entityDied");
+    entityService.update();
+
+    int goldDrops = 0;
+    for (Entity spawned : entityService.getEntities()) {
+      ItemComponent item = spawned.getComponent(ItemComponent.class);
+      if (item != null && item.getItemType() == ItemType.GOLD_COIN) {
+        goldDrops++;
+      }
+    }
+    assertEquals(2, goldDrops);
+  }
+
+  @Test
   void shouldSpawnSpecifiedCharmsAsSeparateRoomOwnedEntities() {
     List<Entity> drops = enemyManager.spawnDrop(ItemType.SPEED_CHARM, 2, new Vector2(3f, 4f));
 
@@ -223,6 +280,12 @@ class EnemyManagerComponentTest {
     RandomGenerator random = mock(RandomGenerator.class);
     when(random.nextInt(6)).thenReturn(index);
     return random;
+  }
+
+  private static LootTable singleItemTable(ItemType itemType) {
+    LootTable table = new LootTable();
+    table.entries = new LootTable.Entry[] {new LootTable.Entry(itemType, 1, 1, 1)};
+    return table;
   }
 
   private Entity combatEnemy() {

@@ -2,8 +2,10 @@ package com.csse3200.game.items;
 
 import com.csse3200.game.files.FileLoader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.random.RandomGenerator;
 
 /** Room-owned drop rules. JSON can supply the public fields through FileLoader. */
@@ -11,6 +13,20 @@ public class LootTable {
   public int rolls = 1;
   public int noDropWeight;
   public Entry[] entries = new Entry[0];
+  public EnemyRule[] enemyRules = new EnemyRule[0];
+
+  /** Optional rules for one enemy type; other types use the enclosing table. */
+  public static class EnemyRule {
+    public String enemyType;
+    public LootTable table;
+
+    public EnemyRule() {}
+
+    public EnemyRule(String enemyType, LootTable table) {
+      this.enemyType = enemyType;
+      this.table = table;
+    }
+  }
 
   public static class Entry {
     public ItemType itemId;
@@ -39,7 +55,7 @@ public class LootTable {
 
   /** Validates a table once when it is loaded, before any entity is created. */
   public void validate() {
-    if (rolls < 0 || noDropWeight < 0 || entries == null) {
+    if (rolls < 0 || noDropWeight < 0 || entries == null || enemyRules == null) {
       throw new IllegalArgumentException("Invalid loot table rolls, no-drop weight or entries");
     }
     long total = noDropWeight;
@@ -57,6 +73,29 @@ public class LootTable {
       throw new IllegalArgumentException(
           "Loot table weight must be between 1 and Integer.MAX_VALUE");
     }
+    Set<String> enemyTypes = new HashSet<>();
+    for (EnemyRule rule : enemyRules) {
+      if (rule == null
+          || rule.enemyType == null
+          || rule.enemyType.isBlank()
+          || rule.table == null
+          || !enemyTypes.add(rule.enemyType)) {
+        throw new IllegalArgumentException("Invalid or duplicate enemy loot rule");
+      }
+      rule.table.validate();
+    }
+  }
+
+  /** Uses an enemy-specific table when configured, otherwise the room's general table. */
+  public LootTable forEnemy(String enemyType) {
+    if (enemyType != null) {
+      for (EnemyRule rule : enemyRules) {
+        if (rule.enemyType.equals(enemyType)) {
+          return rule.table;
+        }
+      }
+    }
+    return this;
   }
 
   /** Each roll yields zero or one specification, so a table may yield zero or many drops. */
