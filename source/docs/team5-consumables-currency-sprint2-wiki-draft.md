@@ -1,5 +1,7 @@
 # Consumable Items, Currency and Combat HUD — Sprint 2
 
+> Historical draft. The four-item Team 5 combat HUD described below has been removed locally pending a redesign. Its screenshots, layout checks and HUD-specific tests no longer describe the current implementation.
+
 Local publication draft, updated 2026-09-16. This file is not a claim that the Wiki or remote items/main has been updated.
 
 ## Player guide
