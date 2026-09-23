@@ -28,98 +28,97 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class DragonTest {
-    private ResourceService resources;
+  private ResourceService resources;
 
-    @BeforeEach
-    void setUp() {
-        ServiceLocator.registerPhysicsService(new PhysicsService());
-        ServiceLocator.registerTimeSource(new GameTime());
+  @BeforeEach
+  void setUp() {
+    ServiceLocator.registerPhysicsService(new PhysicsService());
+    ServiceLocator.registerTimeSource(new GameTime());
 
-        resources = new ResourceService();
-        ServiceLocator.registerResourceService(resources);
-        resources.loadTextureAtlases(new String[] {DragonFactory.ATLAS_PATH});
-        resources.loadAll();
-    }
+    resources = new ResourceService();
+    ServiceLocator.registerResourceService(resources);
+    resources.loadTextureAtlases(new String[] {DragonFactory.ATLAS_PATH});
+    resources.loadAll();
+  }
 
-    @AfterEach
-    void tearDown() {
-        resources.unloadAssets(new String[] {DragonFactory.ATLAS_PATH});
-    }
+  @AfterEach
+  void tearDown() {
+    resources.unloadAssets(new String[] {DragonFactory.ATLAS_PATH});
+  }
 
-    @Test
-    void shouldCreateDragonWithDefaultCombatStats() {
-        Entity dragon = DragonFactory.createDragon();
-        CombatStatsComponent stats = dragon.getComponent(CombatStatsComponent.class);
+  @Test
+  void shouldCreateDragonWithDefaultCombatStats() {
+    Entity dragon = DragonFactory.createDragon();
+    CombatStatsComponent stats = dragon.getComponent(CombatStatsComponent.class);
 
-        assertEquals(500, stats.getHealth());
-        assertEquals(500, stats.getMaxHealth());
-        assertEquals(20, stats.getBaseAttack());
-    }
+    assertEquals(500, stats.getHealth());
+    assertEquals(500, stats.getMaxHealth());
+    assertEquals(20, stats.getBaseAttack());
+  }
 
-    @Test
-    void shouldApplyCustomSettings() {
-        DragonConfig config = new DragonConfig();
-        config.health = 600;
-        config.baseAttack = 25;
-        config.width = 3f;
-        config.height = 2f;
+  @Test
+  void shouldApplyCustomSettings() {
+    DragonConfig config = new DragonConfig();
+    config.health = 600;
+    config.baseAttack = 25;
+    config.width = 3f;
+    config.height = 2f;
 
-        Entity dragon = DragonFactory.createDragon(config);
-        CombatStatsComponent stats = dragon.getComponent(CombatStatsComponent.class);
+    Entity dragon = DragonFactory.createDragon(config);
+    CombatStatsComponent stats = dragon.getComponent(CombatStatsComponent.class);
 
-        assertEquals(600, stats.getHealth());
-        assertEquals(600, stats.getMaxHealth());
-        assertEquals(25, stats.getBaseAttack());
-        assertEquals(3f, dragon.getScale().x, 0.001f);
-        assertEquals(2f, dragon.getScale().y, 0.001f);
-    }
+    assertEquals(600, stats.getHealth());
+    assertEquals(600, stats.getMaxHealth());
+    assertEquals(25, stats.getBaseAttack());
+    assertEquals(3f, dragon.getScale().x, 0.001f);
+    assertEquals(2f, dragon.getScale().y, 0.001f);
+  }
 
-    @Test
-    void shouldAttachHealthBarPhaseAndDeathHandling() {
-        Entity dragon = DragonFactory.createDragon();
+  @Test
+  void shouldAttachHealthBarPhaseAndDeathHandling() {
+    Entity dragon = DragonFactory.createDragon();
 
-        assertNotNull(dragon.getComponent(EnemyStatDisplay.class));
-        assertNotNull(dragon.getComponent(DragonPhaseComponent.class));
-        assertNotNull(dragon.getComponent(EnemyDeathComponent.class));
-    }
+    assertNotNull(dragon.getComponent(EnemyStatDisplay.class));
+    assertNotNull(dragon.getComponent(DragonPhaseComponent.class));
+    assertNotNull(dragon.getComponent(EnemyDeathComponent.class));
+  }
 
-    @Test
-    void shouldSupportEnemyTargetingMovementAndStatusEffects() {
-        Entity dragon = DragonFactory.createDragon();
-        HitboxComponent hitbox = dragon.getComponent(HitboxComponent.class);
+  @Test
+  void shouldSupportEnemyTargetingMovementAndStatusEffects() {
+    Entity dragon = DragonFactory.createDragon();
+    HitboxComponent hitbox = dragon.getComponent(HitboxComponent.class);
 
-        assertNotNull(hitbox);
-        assertTrue(PhysicsLayer.contains(hitbox.getLayer(), PhysicsLayer.NPC));
-        assertNotNull(dragon.getComponent(PhysicsMovementComponent.class));
-        assertNotNull(dragon.getComponent(StatusEffectsControllerComponent.class));
-    }
+    assertNotNull(hitbox);
+    assertTrue(PhysicsLayer.contains(hitbox.getLayer(), PhysicsLayer.NPC));
+    assertNotNull(dragon.getComponent(PhysicsMovementComponent.class));
+    assertNotNull(dragon.getComponent(StatusEffectsControllerComponent.class));
+  }
 
-    @Test
-    void shouldLoadAnimationsAndStartIdle() {
-        Entity dragon = DragonFactory.createDragon();
-        AnimationRenderComponent animator =
-                dragon.getComponent(AnimationRenderComponent.class);
+  @Test
+  void shouldLoadAnimationsAndStartIdle() {
+    Entity dragon = DragonFactory.createDragon();
+    AnimationRenderComponent animator = dragon.getComponent(AnimationRenderComponent.class);
 
-        assertNotNull(animator);
-        assertTrue(animator.hasAnimation("idle"));
-        assertTrue(animator.hasAnimation("moveRight"));
-        assertTrue(animator.hasAnimation("moveLeft"));
-        assertTrue(animator.hasAnimation("wave"));
-        assertTrue(animator.hasAnimation("jump"));
-        assertTrue(animator.hasAnimation("collapse"));
-        assertEquals("idle", animator.getCurrentAnimation());
-    }
+    assertNotNull(animator);
+    assertTrue(animator.hasAnimation("idle"));
+    assertTrue(animator.hasAnimation("moveRight"));
+    assertTrue(animator.hasAnimation("moveLeft"));
+    assertTrue(animator.hasAnimation("wave"));
+    assertTrue(animator.hasAnimation("jump"));
+    assertTrue(animator.hasAnimation("collapse"));
+    assertEquals("idle", animator.getCurrentAnimation());
+  }
 
-    @Test
-    void shouldConnectPhaseToTheDragonsHealthPool() {
-        Entity dragon = DragonFactory.createDragon();
-        DragonPhaseComponent phase = dragon.getComponent(DragonPhaseComponent.class);
+  @Test
+  void shouldConnectPhaseToTheDragonsHealthPool() {
+    Entity dragon = DragonFactory.createDragon();
+    DragonPhaseComponent phase = dragon.getComponent(DragonPhaseComponent.class);
 
-        // Initialise only phase logic; UI rendering is outside this test.
-        phase.create();
+    // Initialise only phase logic; UI rendering is outside this test.
+    phase.create();
 
-        dragon.getComponent(CombatStatsComponent.class).setHealth(250);
+    dragon.getComponent(CombatStatsComponent.class).setHealth(250);
 
-        assertEquals(2, phase.getCurrentPhase());
-    }
+    assertEquals(2, phase.getCurrentPhase());
+  }
 }
