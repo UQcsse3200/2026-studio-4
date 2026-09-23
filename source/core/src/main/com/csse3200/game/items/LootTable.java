@@ -28,13 +28,19 @@ public class LootTable {
     }
   }
 
+  /** Loads and validates a table before the room uses it. */
+  public static LootTable load(String path) {
+    LootTable table = FileLoader.readClass(LootTable.class, Objects.requireNonNull(path));
+    if (table == null) {
+      throw new IllegalStateException("Unable to load loot table: " + path);
+    }
+    table.validate();
+    return table;
+  }
+
   /** Loads the same JSON default used by rooms; drop weights have one source of truth. */
   public static LootTable defaultTable() {
-    LootTable table = FileLoader.readClass(LootTable.class, "configs/default-item-drops.json");
-    if (table == null) {
-      throw new IllegalStateException("Unable to load default item drops");
-    }
-    return table;
+    return load("configs/default-item-drops.json");
   }
 
   /** Validates a table once when it is loaded, before any entity is created. */

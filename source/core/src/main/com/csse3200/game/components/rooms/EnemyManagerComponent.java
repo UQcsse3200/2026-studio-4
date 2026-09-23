@@ -75,13 +75,15 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   /** Spawns each enemy declared by the room. */
   public void spawnEnemies(Entity target) {
     for (EnemySpawnConfig spawn : spawnConfigs) {
-      Entity enemy = createEnemy(spawn, target);
-      track(enemy);
+      LootTable enemyLootTable =
+          spawn.lootTable == null ? lootTable : LootTable.load(spawn.lootTable);
+      Entity enemy = createEnemy(spawn, target, enemyLootTable);
+      track(enemy, enemyLootTable);
       spawnEntityAt(enemy, new GridPoint2(spawn.x, spawn.y), true, true);
     }
   }
 
-  private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
+  private Entity createEnemy(EnemySpawnConfig spawn, Entity target, LootTable enemyLootTable) {
 
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
     Vector2 leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);
@@ -147,7 +149,10 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
         return CerberusFactory.createCerberus(
-            target, anchorPoint, this::spawnAndTrackCerberusHead, "images/cerberus.atlas");
+            target,
+            anchorPoint,
+            head -> spawnAndTrackCerberusHead(head, enemyLootTable),
+            "images/cerberus.atlas");
       case FINAL_BOSS:
         Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnEntity);
         if (camera != null) {
@@ -160,38 +165,45 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   /** Tracks an enemy and any children it spawns. Package-private for testing. */
-  private void spawnAndTrackCerberusHead(Entity head) {
-    track(head);
+  private void spawnAndTrackCerberusHead(Entity head, LootTable enemyLootTable) {
+    track(head, enemyLootTable);
     spawnEntity(head);
   }
 
   /** Tracks an enemy and any children it spawns. Package-private for testing. */
   void track(Entity enemy) {
+    track(enemy, lootTable);
+  }
+
+  void track(Entity enemy, LootTable enemyLootTable) {
     if (disposed || !activeEnemies.add(enemy)) {
       return;
     }
     enemy.getEvents().<Entity>addListener("cerberusProjectileSpawned", this::spawnEntity);
-    enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy));
-    enemy.getEvents().addListener("finalBossEncounterCompleted", () -> onEnemyDefeated(enemy));
+    enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy, enemyLootTable));
     enemy
         .getEvents()
-        .addListener("spawnChildren", (Entity child) -> replaceWithChild(enemy, child));
+        .addListener("finalBossEncounterCompleted", () -> onEnemyDefeated(enemy, enemyLootTable));
+    enemy
+        .getEvents()
+        .addListener(
+            "spawnChildren", (Entity child) -> replaceWithChild(enemy, child, enemyLootTable));
   }
 
-  private void onEnemyDefeated(Entity enemy) {
+  private void onEnemyDefeated(Entity enemy, LootTable enemyLootTable) {
     if (disposed || !activeEnemies.remove(enemy)) {
       return;
     }
     // Capture before deferred disposal or room changes can move/remove the enemy.
     Vector2 position = enemy.getPosition().cpy();
-    ServiceLocator.getEntityService().schedule(() -> spawnDrops(lootTable, position));
+    ServiceLocator.getEntityService().schedule(() -> spawnDrops(enemyLootTable, position));
     if (activeEnemies.isEmpty()) {
       entity.getEvents().trigger("roomCleared");
     }
   }
 
-  private void replaceWithChild(Entity parent, Entity child) {
-    track(child);
+  private void replaceWithChild(Entity parent, Entity child, LootTable enemyLootTable) {
+    track(child, enemyLootTable);
     activeEnemies.remove(parent);
     spawnEntity(child);
   }
