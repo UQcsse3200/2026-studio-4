@@ -3,7 +3,6 @@ package com.csse3200.game.components.player;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
@@ -38,7 +37,7 @@ class ItemPickupUseIntegrationTest {
   }
 
   @Test
-  void pickedUpPotionIsStoredAndUsedOnceByKeyboard() {
+  void pickedUpPotionIsStoredUntilExplicitUse() {
     Entity player = createPlayer();
     player.getComponent(CombatStatsComponent.class).setHealth(50);
 
@@ -46,7 +45,7 @@ class ItemPickupUseIntegrationTest {
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     assertEquals(2, inventory.getConsumableCount(ItemType.HEALTH_POTION));
 
-    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.NUM_7);
+    player.getEvents().trigger(ConsumableEffectComponent.USE_REQUEST, ItemType.HEALTH_POTION);
     assertEquals(75, player.getComponent(CombatStatsComponent.class).getHealth());
     assertEquals(1, inventory.getConsumableCount(ItemType.HEALTH_POTION));
   }
@@ -76,8 +75,6 @@ class ItemPickupUseIntegrationTest {
             .addComponent(new InventoryComponent(0))
             .addComponent(new StatusEffectsControllerComponent())
             .addComponent(new ConsumableEffectComponent())
-            .addComponent(new ConsumableLoadoutComponent())
-            .addComponent(new KeyboardPlayerInputComponent())
             .addComponent(new ItemPickupComponent());
     player.create();
     return player;

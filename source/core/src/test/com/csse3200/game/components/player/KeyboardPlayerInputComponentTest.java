@@ -72,6 +72,14 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
+  void formerConsumableKeysAreUnbound() {
+    for (int key : new int[] {Keys.NUM_7, Keys.NUM_8, Keys.NUM_9, Keys.NUM_0}) {
+      assertFalse(input.keyDown(key));
+      assertFalse(input.keyUp(key));
+    }
+  }
+
+  @Test
   void openTerminalConsumesNumberKeysBeforePlayerInput() {
     List<WeaponType> selected = new ArrayList<>();
     player.getEvents().addListener("equipWeapon", (EventListener1<WeaponType>) selected::add);

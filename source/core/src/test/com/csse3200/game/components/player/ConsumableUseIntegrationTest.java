@@ -3,7 +3,6 @@ package com.csse3200.game.components.player;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.badlogic.gdx.Input.Keys;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusMistComponent;
@@ -28,9 +27,7 @@ class ConsumableUseIntegrationTest {
   private InventoryComponent inventory;
   private CombatStatsComponent stats;
   private ConsumableEffectComponent consumables;
-  private ConsumableLoadoutComponent loadout;
   private StatusEffectsControllerComponent effects;
-  private KeyboardPlayerInputComponent input;
   private GameTime time;
 
   @BeforeEach
@@ -42,33 +39,28 @@ class ConsumableUseIntegrationTest {
     inventory = new InventoryComponent(0);
     effects = new StatusEffectsControllerComponent();
     consumables = new ConsumableEffectComponent();
-    loadout = new ConsumableLoadoutComponent();
-    input = new KeyboardPlayerInputComponent();
     player =
         new Entity()
             .addComponent(stats)
             .addComponent(inventory)
             .addComponent(effects)
-            .addComponent(consumables)
-            .addComponent(loadout)
-            .addComponent(input);
-    // Input registers with the input service in create; these tests invoke the real input directly.
+            .addComponent(consumables);
     effects.create();
     consumables.create();
   }
 
   @Test
-  void onePotionViaKeyboardHealsAndIsConsumedExactlyOnce() {
+  void oneUseRequestHealsAndConsumesExactlyOnce() {
     stats.setHealth(50);
     inventory.addConsumable(ItemType.HEALTH_POTION);
     AtomicInteger used = new AtomicInteger();
     player
         .getEvents()
         .addListener(ConsumableEffectComponent.USED, (ItemType type) -> used.incrementAndGet());
-    assertTrue(input.keyDown(Keys.NUM_7));
+    assertTrue(consumables.tryUse(ItemType.HEALTH_POTION));
     assertEquals(75, stats.getHealth());
     assertEquals(0, inventory.getConsumableCount(ItemType.HEALTH_POTION));
-    input.keyDown(Keys.NUM_7);
+    assertFalse(consumables.tryUse(ItemType.HEALTH_POTION));
     assertEquals(75, stats.getHealth());
     assertEquals(1, used.get());
   }
@@ -87,7 +79,7 @@ class ConsumableUseIntegrationTest {
   @Test
   void shieldBlocksActualDamageAndExpiresBeforeControllerTick() {
     inventory.addConsumable(ItemType.SHIELD);
-    input.keyDown(Keys.NUM_8);
+    assertTrue(consumables.tryUse(ItemType.SHIELD));
     assertTrue(consumables.isShielded());
     stats.takeDamage(30, new Entity());
     assertEquals(100, stats.getHealth());
@@ -100,13 +92,13 @@ class ConsumableUseIntegrationTest {
   @Test
   void strengthRefreshDoesNotCompoundOrRemoveNewCharm() {
     inventory.addConsumable(ItemType.STRENGTH_POTION, 2);
-    input.keyDown(Keys.NUM_0);
+    assertTrue(consumables.tryUse(ItemType.STRENGTH_POTION));
     assertEquals(15, stats.getEffectiveBaseAttack());
     new StrengthCharm().pickUp(player);
     assertEquals(20, stats.getBaseAttack());
     assertEquals(30, stats.getEffectiveBaseAttack());
     now.set(4000);
-    input.keyDown(Keys.NUM_0);
+    assertTrue(consumables.tryUse(ItemType.STRENGTH_POTION));
     assertEquals(30, stats.getEffectiveBaseAttack());
     now.set(8000);
     effects.update();
@@ -127,7 +119,7 @@ class ConsumableUseIntegrationTest {
           }
         });
     inventory.addConsumable(ItemType.SPEED_POTION);
-    input.keyDown(Keys.NUM_9);
+    assertTrue(consumables.tryUse(ItemType.SPEED_POTION));
     assertEquals(3f, stats.getEffectiveMovementSpeed());
     stats.setMovementSpeed(6);
     assertEquals(4.5f, stats.getEffectiveMovementSpeed());
@@ -144,7 +136,7 @@ class ConsumableUseIntegrationTest {
     mist.create();
     Entity source = new Entity();
     inventory.addConsumable(ItemType.SPEED_POTION, 2);
-    input.keyDown(Keys.NUM_9);
+    assertTrue(consumables.tryUse(ItemType.SPEED_POTION));
     assertEquals(6f, stats.getEffectiveMovementSpeed());
     player.getEvents().trigger(CerberusMistComponent.ENTERED, source);
     assertEquals(3f, stats.getEffectiveMovementSpeed());
@@ -155,7 +147,7 @@ class ConsumableUseIntegrationTest {
     effects.update();
     assertEquals(2f, stats.getEffectiveMovementSpeed());
     assertTrue(mist.isMistDebuffed());
-    input.keyDown(Keys.NUM_9);
+    assertTrue(consumables.tryUse(ItemType.SPEED_POTION));
     assertEquals(3f, stats.getEffectiveMovementSpeed());
     player.getEvents().trigger(CerberusMistComponent.EXITED, source);
     assertEquals(6f, stats.getEffectiveMovementSpeed());
@@ -198,18 +190,5 @@ class ConsumableUseIntegrationTest {
     player.getEvents().trigger(ConsumableEffectComponent.USED, ItemType.SHIELD);
     assertEquals(2, inventory.getConsumableCount(ItemType.SHIELD));
     assertFalse(consumables.isShielded());
-  }
-
-  @Test
-  void fixedSlotsMatchAllFourTypesAndRejectInvalidIndices() {
-    ItemType[] expected = {
-      ItemType.HEALTH_POTION, ItemType.SHIELD, ItemType.SPEED_POTION, ItemType.STRENGTH_POTION
-    };
-    for (int i = 0; i < expected.length; i++) {
-      assertEquals(expected[i], loadout.getSlot(i));
-      assertFalse(loadout.useSlot(i));
-    }
-    assertThrows(IllegalArgumentException.class, () -> loadout.getSlot(-1));
-    assertThrows(IllegalArgumentException.class, () -> loadout.getSlot(4));
   }
 }
