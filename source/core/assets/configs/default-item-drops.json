@@ -2,13 +2,6 @@
   "rolls": 1,
   "noDropWeight": 0,
   "entries": [
-    { "itemId": "STRENGTH_CHARM", "weight": 1 },
-    { "itemId": "SPEED_CHARM", "weight": 1 },
-    { "itemId": "ATTACK_SPEED_CHARM", "weight": 1 },
-    { "itemId": "HEALTH_POTION", "weight": 1 },
-    { "itemId": "SHIELD", "weight": 1 },
-    { "itemId": "SPEED_POTION", "weight": 1 },
-    { "itemId": "STRENGTH_POTION", "weight": 1 },
-    { "itemId": "GOLD_COIN", "weight": 1, "minQuantity": 5, "maxQuantity": 5 }
+    { "itemId": "GOLD_COIN", "weight": 1 }
   ]
 }

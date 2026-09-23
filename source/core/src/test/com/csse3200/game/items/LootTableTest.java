@@ -16,10 +16,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class LootTableTest {
   @Test
-  void shouldLoadDefaultJsonAndResolveAllItemIds() {
+  void shouldLoadDefaultJsonAndDropOneCoin() {
     LootTable table = LootTable.defaultTable();
     table.validate();
-    assertEquals(ItemType.values().length, table.entries.length);
+    assertEquals(
+        List.of(new ItemDropSpec(ItemType.GOLD_COIN, 1)), table.roll(mock(RandomGenerator.class)));
   }
 
   @Test
