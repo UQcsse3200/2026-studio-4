@@ -1,15 +1,14 @@
 # Item drops: Room and Item boundary
 
-Room code chooses **what** can drop and **where**. The item registry owns **how** each item is constructed. A room never switches on charm, consumable, or currency classes.
+Room code supplies the defeated enemy type and **where** the drop appears. The item table chooses **what** and **how many**; the item registry constructs them. A room never switches on charm, consumable, or currency classes.
 
-`EnemyManagerComponent` exposes two room-owned entry points:
+`EnemyManagerComponent` exposes one room-owned enemy death entry point:
 
 ```java
-spawnDrop(ItemType.HEALTH_POTION, 2, position);  // fixed item and quantity
-spawnDrops(lootTable, position);                  // zero or more weighted results
+spawnDropsForDefeatedEnemy(enemyType, position);
 ```
 
-Both methods register the created entities and track them for room cleanup. Enemy death schedules its drop after the physics update. Room passes the enemy's existing `EnemyType` ID to the item-owned table selector, then calls the same `spawnDrops(table, position)` path. Call these entry points from a safe update point rather than from a collision callback.
+This method selects the enemy's table, creates zero or more items, registers them, and tracks them for room cleanup. Enemy death schedules the call after the physics update and passes the existing `EnemyType` ID. Call it from a safe update point rather than from a collision callback.
 
 `ItemType` is the single item-ID registry. It contains the constructors for charms, consumables and currency. `ItemDropSpec` is only a selected `(itemId, quantity)` result. A stackable consumable or currency quantity is one world entity; a quantity of non-stackable charms becomes separate entities.
 

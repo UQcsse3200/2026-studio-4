@@ -207,8 +207,13 @@ class EnemyManagerComponentTest {
   }
 
   @Test
-  void shouldSpawnSpecifiedCharmsAsSeparateRoomOwnedEntities() {
-    List<Entity> drops = enemyManager.spawnDrop(ItemType.SPEED_CHARM, 2, new Vector2(3f, 4f));
+  void shouldSpawnSelectedCharmsAsSeparateRoomOwnedEntities() {
+    LootTable table = new LootTable();
+    table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemType.SPEED_CHARM, 1, 2, 2)};
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(0), table);
+    enemyManager.setEntity(room);
+
+    List<Entity> drops = enemyManager.spawnDropsForDefeatedEnemy("GOLEM", new Vector2(3f, 4f));
 
     assertEquals(2, drops.size());
     for (Entity drop : drops) {
@@ -223,7 +228,10 @@ class EnemyManagerComponentTest {
   void shouldAllowARestrictedTableToProduceNoDrop() {
     LootTable table = new LootTable();
     table.noDropWeight = 1;
-    assertTrue(enemyManager.spawnDrops(table, new Vector2()).isEmpty());
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(0), table);
+    enemyManager.setEntity(room);
+
+    assertTrue(enemyManager.spawnDropsForDefeatedEnemy("GOLEM", new Vector2()).isEmpty());
     verify(entityService, never()).register(Mockito.any(Entity.class));
   }
 

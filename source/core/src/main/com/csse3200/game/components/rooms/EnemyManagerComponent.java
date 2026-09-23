@@ -13,7 +13,6 @@ import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.items.ItemDropSpec;
-import com.csse3200.game.items.ItemType;
 import com.csse3200.game.items.LootTable;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -194,7 +193,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     // Capture before deferred disposal or room changes can move/remove the enemy.
     Vector2 position = enemy.getPosition().cpy();
     ServiceLocator.getEntityService()
-        .schedule(() -> spawnDrops(lootTable.forEnemy(enemyType), position));
+        .schedule(() -> spawnDropsForDefeatedEnemy(enemyType, position));
     if (activeEnemies.isEmpty()) {
       entity.getEvents().trigger("roomCleared");
     }
@@ -206,26 +205,17 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     spawnEntity(child);
   }
 
-  /** Room-owned fixed drop: creation, registration and cleanup use the same path for every item. */
-  public List<Entity> spawnDrop(ItemType itemId, int quantity, Vector2 position) {
-    if (disposed) {
-      return List.of();
-    }
-    List<Entity> drops = ItemFactory.createDrops(itemId, quantity, position);
-    for (Entity item : drops) {
-      spawnEntity(item);
-    }
-    return drops;
-  }
-
-  /** Room-owned random drop. Room may supply a different table for bosses or special enemies. */
-  public List<Entity> spawnDrops(LootTable table, Vector2 position) {
+  /** Chooses the defeated enemy's loot, creates its items, and registers them with this room. */
+  public List<Entity> spawnDropsForDefeatedEnemy(String enemyType, Vector2 position) {
     if (disposed) {
       return List.of();
     }
     List<Entity> drops = new ArrayList<>();
-    for (ItemDropSpec spec : Objects.requireNonNull(table).roll(random)) {
-      drops.addAll(spawnDrop(spec.itemType(), spec.quantity(), position));
+    for (ItemDropSpec spec : lootTable.forEnemy(enemyType).roll(random)) {
+      drops.addAll(ItemFactory.createDrops(spec.itemType(), spec.quantity(), position));
+    }
+    for (Entity drop : drops) {
+      spawnEntity(drop);
     }
     return drops;
   }
