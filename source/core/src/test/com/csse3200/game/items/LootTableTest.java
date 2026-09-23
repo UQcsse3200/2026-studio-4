@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import com.badlogic.gdx.utils.Json;
 import com.csse3200.game.extensions.GameExtension;
 import java.util.List;
+import java.util.Set;
 import java.util.random.RandomGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,32 @@ class LootTableTest {
     table.validate();
     assertEquals(
         List.of(new ItemDropSpec(ItemType.GOLD_COIN, 1)), table.roll(mock(RandomGenerator.class)));
+  }
+
+  @Test
+  void shouldGiveEveryNormalEnemyAWeightedNonFixedDrop() {
+    LootTable table = LootTable.defaultTable();
+    table.validate();
+    Set<String> normalEnemies =
+        Set.of("CRAB", "WASP", "BEETLE", "MUMMY", "MEDUSA", "HARPY", "GOLEM", "CYCLOPS");
+    assertEquals(
+        normalEnemies,
+        java.util.Arrays.stream(table.enemyRules)
+            .map(rule -> rule.enemyType)
+            .collect(java.util.stream.Collectors.toSet()));
+    for (String enemyType : normalEnemies) {
+      LootTable enemyTable = table.forEnemy(enemyType);
+      assertEquals(1, enemyTable.rolls);
+      assertEquals(0, enemyTable.noDropWeight);
+      assertTrue(enemyTable.entries.length > 1);
+      assertEquals(
+          100, java.util.Arrays.stream(enemyTable.entries).mapToInt(entry -> entry.weight).sum());
+    }
+
+    RandomGenerator random = mock(RandomGenerator.class);
+    when(random.nextInt(100)).thenReturn(0, 99);
+    assertEquals(ItemType.GOLD_COIN, table.forEnemy("MEDUSA").roll(random).get(0).itemType());
+    assertEquals(ItemType.SPEED_CHARM, table.forEnemy("MEDUSA").roll(random).get(0).itemType());
   }
 
   @Test
