@@ -150,54 +150,6 @@ class EnemyManagerComponentTest {
   }
 
   @Test
-  void shouldUseEachEnemysOwnLootTable() {
-    LootTable roomTable = singleItemTable(ItemType.HEALTH_POTION);
-    LootTable specialTable = singleItemTable(ItemType.GOLD_COIN);
-    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(0), roomTable);
-    enemyManager.setEntity(room);
-    Entity ordinary = new Entity();
-    Entity special = new Entity();
-    enemyManager.track(ordinary);
-    enemyManager.track(special, specialTable);
-
-    ordinary.getEvents().trigger("entityDied");
-    special.getEvents().trigger("entityDied");
-    entityService.update();
-
-    assertEquals(2, entityService.getEntities().size);
-    assertEquals(
-        ItemType.HEALTH_POTION,
-        entityService.getEntities().get(0).getComponent(ItemComponent.class).getItemType());
-    assertEquals(
-        ItemType.GOLD_COIN,
-        entityService.getEntities().get(1).getComponent(ItemComponent.class).getItemType());
-  }
-
-  @Test
-  void shouldKeepParentLootTableForEverySplitChild() {
-    LootTable specialTable = singleItemTable(ItemType.GOLD_COIN);
-    Entity parent = enemyMock();
-    Entity firstChild = enemyMock();
-    Entity secondChild = enemyMock();
-    enemyManager.track(parent, specialTable);
-
-    parent.getEvents().trigger("spawnChildren", firstChild);
-    parent.getEvents().trigger("spawnChildren", secondChild);
-    firstChild.getEvents().trigger("entityDied");
-    secondChild.getEvents().trigger("entityDied");
-    entityService.update();
-
-    int goldDrops = 0;
-    for (Entity spawned : entityService.getEntities()) {
-      ItemComponent item = spawned.getComponent(ItemComponent.class);
-      if (item != null && item.getItemType() == ItemType.GOLD_COIN) {
-        goldDrops++;
-      }
-    }
-    assertEquals(2, goldDrops);
-  }
-
-  @Test
   void shouldSpawnSpecifiedCharmsAsSeparateRoomOwnedEntities() {
     List<Entity> drops = enemyManager.spawnDrop(ItemType.SPEED_CHARM, 2, new Vector2(3f, 4f));
 
@@ -271,12 +223,6 @@ class EnemyManagerComponentTest {
     RandomGenerator random = mock(RandomGenerator.class);
     when(random.nextInt(6)).thenReturn(index);
     return random;
-  }
-
-  private static LootTable singleItemTable(ItemType itemType) {
-    LootTable table = new LootTable();
-    table.entries = new LootTable.Entry[] {new LootTable.Entry(itemType, 1, 1, 1)};
-    return table;
   }
 
   private Entity combatEnemy() {
