@@ -71,6 +71,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.I:
         entity.getComponent(InventoryComponent.class).toggleDisplay();
         return true;
+      case Keys.TAB:
+        entity.getEvents().trigger(ConsumableSelectionComponent.CYCLE_REQUEST);
+        return true;
+      case Keys.Q:
+        entity.getEvents().trigger(ConsumableSelectionComponent.USE_SELECTED_REQUEST);
+        return true;
       default:
         return false;
     }

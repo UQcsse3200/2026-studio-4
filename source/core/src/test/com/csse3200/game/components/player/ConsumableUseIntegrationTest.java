@@ -3,6 +3,7 @@ package com.csse3200.game.components.player;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.badlogic.gdx.Input.Keys;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusMistComponent;
@@ -190,5 +191,21 @@ class ConsumableUseIntegrationTest {
     player.getEvents().trigger(ConsumableEffectComponent.USED, ItemType.SHIELD);
     assertEquals(2, inventory.getConsumableCount(ItemType.SHIELD));
     assertFalse(consumables.isShielded());
+  }
+
+  @Test
+  void selectedSlotUsesItsInventoryItemOnce() {
+    ConsumableSelectionComponent selection = new ConsumableSelectionComponent();
+    KeyboardPlayerInputComponent input = new KeyboardPlayerInputComponent();
+    player.addComponent(selection).addComponent(input);
+    selection.create();
+    inventory.addConsumable(ItemType.SHIELD);
+
+    input.keyDown(Keys.Q);
+    assertEquals(1, inventory.getConsumableCount(ItemType.SHIELD));
+    input.keyDown(Keys.TAB);
+    input.keyDown(Keys.Q);
+    assertEquals(0, inventory.getConsumableCount(ItemType.SHIELD));
+    assertTrue(consumables.isShielded());
   }
 }
