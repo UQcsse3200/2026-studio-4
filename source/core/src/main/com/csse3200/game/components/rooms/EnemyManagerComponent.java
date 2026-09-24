@@ -12,6 +12,7 @@ import com.csse3200.game.entities.factories.CerberusFactory;
 import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemType;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -194,19 +195,14 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     }
     Objects.requireNonNull(itemType, "itemType cannot be null");
     Vector2 spawnPosition = Objects.requireNonNull(position, "position cannot be null").cpy();
-    if (quantity <= 0) {
-      throw new IllegalArgumentException("quantity must be positive");
-    }
+    Item item = itemType.createItem(quantity);
     ServiceLocator.getEntityService()
         .schedule(
             () -> {
               if (disposed) {
                 return;
               }
-              for (Entity item :
-                  ItemFactory.createDrops(itemType.createItem(1), quantity, spawnPosition)) {
-                spawnEntity(item);
-              }
+              spawnEntity(ItemFactory.createItem(item, spawnPosition));
             });
   }
 

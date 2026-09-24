@@ -2,7 +2,6 @@ package com.csse3200.game.items;
 
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
-import java.util.List;
 import java.util.Objects;
 
 /** Stackable currency represented by the same world-item and pickup contract. */
@@ -31,11 +30,6 @@ public final class CurrencyItem extends Item {
   @Override
   public int getQuantity() {
     return quantity;
-  }
-
-  @Override
-  public List<Item> itemsForDrop(int quantity) {
-    return List.of(itemType.createItem(quantity));
   }
 
   @Override

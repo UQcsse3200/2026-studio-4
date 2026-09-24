@@ -33,32 +33,20 @@ public final class ItemFactory {
     this.lootTable.validate();
   }
 
-  /** Creates world entities from the instances chosen by the item for this quantity. */
-  public static List<Entity> createDrops(Item item, int quantity, Vector2 position) {
-    Objects.requireNonNull(item, "item cannot be null");
-    Objects.requireNonNull(position, "position cannot be null");
-    if (quantity <= 0) {
-      throw new IllegalArgumentException("quantity must be positive");
-    }
-    List<Item> dropItems = item.itemsForDrop(quantity);
-    List<Entity> entities = new ArrayList<>(dropItems.size());
-    for (Item dropItem : dropItems) {
-      entities.add(createEntity(dropItem, position));
-    }
-    return entities;
-  }
-
   /** Creates the items selected by an enemy's loot rules without registering them. */
   public List<Entity> createEnemyDrops(String enemyType, Vector2 position) {
     Objects.requireNonNull(position, "position cannot be null");
     List<Entity> drops = new ArrayList<>();
     for (ItemDropSpec spec : lootTable.forEnemy(enemyType).roll(random)) {
-      drops.addAll(createDrops(spec.itemType().createItem(1), spec.quantity(), position));
+      drops.add(createItem(spec.itemType().createItem(spec.quantity()), position));
     }
     return drops;
   }
 
-  private static Entity createEntity(Item item, Vector2 position) {
+  /** Creates one world entity for an already constructed item. */
+  public static Entity createItem(Item item, Vector2 position) {
+    Objects.requireNonNull(item, "item cannot be null");
+    Objects.requireNonNull(position, "position cannot be null");
     Entity itemEntity =
         new Entity()
             .addComponent(new RotatingTextureRenderComponent(item.getTexture()))

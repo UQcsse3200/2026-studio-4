@@ -232,7 +232,8 @@ class EnemyManagerComponentTest {
   @Test
   void shouldSpawnSelectedCharmsAsSeparateRoomOwnedEntities() {
     LootTable table = new LootTable();
-    table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemType.SPEED_CHARM, 1, 2, 2)};
+    table.rolls = 2;
+    table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemType.SPEED_CHARM, 1, 1, 1)};
     enemyManager =
         new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
     enemyManager.setEntity(room);

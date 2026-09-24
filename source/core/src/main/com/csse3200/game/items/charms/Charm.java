@@ -4,8 +4,6 @@ import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemType;
-import java.util.ArrayList;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,18 +18,6 @@ public abstract class Charm extends Item {
 
   @Override
   public abstract ItemType getItemType();
-
-  @Override
-  public List<Item> itemsForDrop(int quantity) {
-    if (quantity <= 0) {
-      throw new IllegalArgumentException("quantity must be positive");
-    }
-    List<Item> charms = new ArrayList<>(quantity);
-    for (int i = 0; i < quantity; i++) {
-      charms.add(getItemType().createItem(1));
-    }
-    return charms;
-  }
 
   protected abstract void applyEffect(Entity player);
 

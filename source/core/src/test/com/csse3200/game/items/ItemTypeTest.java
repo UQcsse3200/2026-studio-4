@@ -2,6 +2,7 @@ package com.csse3200.game.items;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -27,5 +28,11 @@ class ItemTypeTest {
 
     assertTrue(ItemType.GOLD_COIN.isCurrency());
     assertFalse(ItemType.HEALTH_POTION.isCurrency());
+  }
+
+  @Test
+  void shouldRejectInvalidItemQuantities() {
+    assertThrows(IllegalArgumentException.class, () -> ItemType.GOLD_COIN.createItem(0));
+    assertThrows(IllegalArgumentException.class, () -> ItemType.SPEED_CHARM.createItem(2));
   }
 }
