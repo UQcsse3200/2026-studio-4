@@ -16,6 +16,7 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.CurrencyItem;
 import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.WeaponItem;
 import com.csse3200.game.items.consumables.InstantHealingPotion;
 import com.csse3200.game.items.consumables.ShieldPotion;
 import com.csse3200.game.items.consumables.SpeedPotion;
@@ -55,7 +56,8 @@ class ItemFactoryTest {
 
   @Test
   void shouldCreateSharedItemWithCorrectComponents() {
-    Entity itemEntity = ItemFactory.createDrops(ItemType.STRENGTH_CHARM, 1, new Vector2()).get(0);
+    Entity itemEntity =
+        ItemFactory.createDrops(ItemType.STRENGTH_CHARM.createItem(1), 1, new Vector2()).get(0);
 
     assertNotNull(itemEntity.getComponent(ItemComponent.class));
     assertNotNull(itemEntity.getComponent(RotatingTextureRenderComponent.class));
@@ -68,7 +70,7 @@ class ItemFactoryTest {
   @Test
   void shouldCreateEverySupportedItemType() {
     for (ItemType expectedType : ItemType.values()) {
-      Entity created = ItemFactory.createDrops(expectedType, 1, Vector2.Zero).get(0);
+      Entity created = ItemFactory.createDrops(expectedType.createItem(1), 1, Vector2.Zero).get(0);
 
       assertEquals(expectedType, created.getComponent(ItemComponent.class).getItemType());
       assertEquals(PhysicsLayer.ITEM, created.getComponent(HitboxComponent.class).getLayer());
@@ -76,8 +78,25 @@ class ItemFactoryTest {
   }
 
   @Test
+  void shouldCreateAnUnregisteredItemWithoutInspectingItsSubtype() {
+    WeaponItem weapon = WeaponItem.createWeaponItem(WeaponItem.WeaponType.SWORD);
+    Texture texture = mock(Texture.class);
+    when(texture.getWidth()).thenReturn(1);
+    when(texture.getHeight()).thenReturn(1);
+    when(ServiceLocator.getResourceService().getAsset(weapon.getTexture(), Texture.class))
+        .thenReturn(texture);
+
+    Entity created = ItemFactory.createDrops(weapon, 1, new Vector2()).get(0);
+
+    assertEquals(weapon, created.getComponent(ItemComponent.class).getItem());
+    assertThrows(
+        IllegalArgumentException.class, () -> ItemFactory.createDrops(weapon, 2, new Vector2()));
+  }
+
+  @Test
   void shouldPreserveCallerSelectedGoldQuantity() {
-    Entity gold = ItemFactory.createDrops(ItemType.GOLD_COIN, 25, new Vector2(2f, 4f)).get(0);
+    Entity gold =
+        ItemFactory.createDrops(ItemType.GOLD_COIN.createItem(1), 25, new Vector2(2f, 4f)).get(0);
 
     assertEquals(ItemType.GOLD_COIN, gold.getComponent(ItemComponent.class).getItemType());
     assertEquals(25, gold.getComponent(ItemComponent.class).getQuantity());
@@ -86,7 +105,8 @@ class ItemFactoryTest {
 
   @Test
   void shouldCreateConsumableThroughTheSameRegistry() {
-    Entity potion = ItemFactory.createDrops(ItemType.HEALTH_POTION, 1, new Vector2()).get(0);
+    Entity potion =
+        ItemFactory.createDrops(ItemType.HEALTH_POTION.createItem(1), 1, new Vector2()).get(0);
     assertEquals(
         InstantHealingPotion.class, potion.getComponent(ItemComponent.class).getItem().getClass());
     assertEquals(ShieldPotion.class, ItemType.SHIELD.createItem(1).getClass());
@@ -96,7 +116,8 @@ class ItemFactoryTest {
 
   @Test
   void shouldCreateIndependentCharmEntitiesForQuantity() {
-    List<Entity> charms = ItemFactory.createDrops(ItemType.SPEED_CHARM, 2, new Vector2(2f, 4f));
+    List<Entity> charms =
+        ItemFactory.createDrops(ItemType.SPEED_CHARM.createItem(1), 2, new Vector2(2f, 4f));
 
     assertEquals(2, charms.size());
     assertNotSame(charms.get(0), charms.get(1));
@@ -119,7 +140,9 @@ class ItemFactoryTest {
         selectedDrops.stream()
             .flatMap(
                 spec ->
-                    ItemFactory.createDrops(spec.itemType(), spec.quantity(), position).stream())
+                    ItemFactory.createDrops(
+                        spec.itemType().createItem(1), spec.quantity(), position)
+                        .stream())
             .toList();
 
     assertEquals(3, drops.size());
@@ -136,10 +159,11 @@ class ItemFactoryTest {
     Vector2 validPosition = new Vector2(1f, 2f);
     assertThrows(NullPointerException.class, () -> ItemFactory.createDrops(null, 1, validPosition));
     assertThrows(
-        NullPointerException.class, () -> ItemFactory.createDrops(ItemType.GOLD_COIN, 1, null));
+        NullPointerException.class,
+        () -> ItemFactory.createDrops(ItemType.GOLD_COIN.createItem(1), 1, null));
     assertThrows(
         IllegalArgumentException.class,
-        () -> ItemFactory.createDrops(ItemType.GOLD_COIN, 0, validPosition));
+        () -> ItemFactory.createDrops(ItemType.GOLD_COIN.createItem(1), 0, validPosition));
   }
 
   private static ItemType itemTypeOf(Entity entity) {
@@ -149,7 +173,7 @@ class ItemFactoryTest {
   @Test
   void shouldCreateAtCorrectPostion() {
     Entity itemEntity =
-        ItemFactory.createDrops(ItemType.STRENGTH_CHARM, 1, new Vector2(2, 2)).get(0);
+        ItemFactory.createDrops(ItemType.STRENGTH_CHARM.createItem(1), 1, new Vector2(2, 2)).get(0);
     assertEquals(new Vector2(2, 2), itemEntity.getPosition());
   }
 }

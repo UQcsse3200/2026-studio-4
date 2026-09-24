@@ -6,9 +6,7 @@ import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.items.ItemSpinComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.items.Item;
-import com.csse3200.game.items.ItemCategory;
 import com.csse3200.game.items.ItemDropSpec;
-import com.csse3200.game.items.ItemType;
 import com.csse3200.game.items.LootTable;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -35,19 +33,17 @@ public final class ItemFactory {
     this.lootTable.validate();
   }
 
-  /** Charms become separate entities; stackable items keep their requested quantity. */
-  public static List<Entity> createDrops(ItemType itemId, int quantity, Vector2 position) {
-    Objects.requireNonNull(itemId, "itemId cannot be null");
+  /** Creates world entities from the instances chosen by the item for this quantity. */
+  public static List<Entity> createDrops(Item item, int quantity, Vector2 position) {
+    Objects.requireNonNull(item, "item cannot be null");
     Objects.requireNonNull(position, "position cannot be null");
     if (quantity <= 0) {
       throw new IllegalArgumentException("quantity must be positive");
     }
-    if (itemId.getCategory() != ItemCategory.CHARM) {
-      return List.of(createEntity(itemId.createItem(quantity), position));
-    }
-    List<Entity> entities = new ArrayList<>(quantity);
-    for (int i = 0; i < quantity; i++) {
-      entities.add(createEntity(itemId.createItem(1), position));
+    List<Item> dropItems = item.itemsForDrop(quantity);
+    List<Entity> entities = new ArrayList<>(dropItems.size());
+    for (Item dropItem : dropItems) {
+      entities.add(createEntity(dropItem, position));
     }
     return entities;
   }
@@ -57,7 +53,7 @@ public final class ItemFactory {
     Objects.requireNonNull(position, "position cannot be null");
     List<Entity> drops = new ArrayList<>();
     for (ItemDropSpec spec : lootTable.forEnemy(enemyType).roll(random)) {
-      drops.addAll(createDrops(spec.itemType(), spec.quantity(), position));
+      drops.addAll(createDrops(spec.itemType().createItem(1), spec.quantity(), position));
     }
     return drops;
   }

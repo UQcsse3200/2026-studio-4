@@ -1,6 +1,7 @@
 package com.csse3200.game.items;
 
 import com.csse3200.game.entities.Entity;
+import java.util.List;
 
 /** An object that can be stored in the players inventory. */
 public abstract class Item {
@@ -51,6 +52,14 @@ public abstract class Item {
   /** Number of units represented by this item instance. */
   public int getQuantity() {
     return 1;
+  }
+
+  /** Expands a requested world-drop quantity into independent item instances. */
+  public List<Item> itemsForDrop(int quantity) {
+    if (quantity != 1) {
+      throw new IllegalArgumentException("This item cannot represent multiple drops");
+    }
+    return List.of(this);
   }
 
   /**

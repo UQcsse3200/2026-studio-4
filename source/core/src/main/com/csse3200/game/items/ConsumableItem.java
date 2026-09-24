@@ -6,6 +6,7 @@ import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.statuseffects.TimedStatusEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.GameTime;
+import java.util.List;
 import java.util.Objects;
 
 /** Shared pickup and inventory behaviour for consumables with subtype-specific use effects. */
@@ -34,6 +35,11 @@ public abstract class ConsumableItem extends Item {
   @Override
   public int getQuantity() {
     return quantity;
+  }
+
+  @Override
+  public List<Item> itemsForDrop(int quantity) {
+    return List.of(itemType.createItem(quantity));
   }
 
   /** Whether this item can be consumed with the player's current state. */

@@ -203,7 +203,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
               if (disposed) {
                 return;
               }
-              for (Entity item : ItemFactory.createDrops(itemType, quantity, spawnPosition)) {
+              for (Entity item :
+                  ItemFactory.createDrops(itemType.createItem(1), quantity, spawnPosition)) {
                 spawnEntity(item);
               }
             });
