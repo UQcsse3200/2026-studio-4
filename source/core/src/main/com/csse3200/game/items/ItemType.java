@@ -3,6 +3,7 @@ package com.csse3200.game.items;
 import com.csse3200.game.items.charms.AttackSpeedCharm;
 import com.csse3200.game.items.charms.SpeedCharm;
 import com.csse3200.game.items.charms.StrengthCharm;
+import com.csse3200.game.items.consumables.FreezeBomb;
 import com.csse3200.game.items.consumables.InstantHealingPotion;
 import com.csse3200.game.items.consumables.ShieldPotion;
 import com.csse3200.game.items.consumables.SpeedPotion;
@@ -72,6 +73,12 @@ public enum ItemType {
       "images/strength_potion_pixel.png",
       ItemCategory.CONSUMABLE,
       (type, quantity) -> new StrengthPotion(type, quantity, 8000)),
+  FREEZE_BOMB(
+      "Freeze Bomb",
+      "Freezes all enemies currently on screen for 3 seconds.",
+      "images/freeze_bomb_pixel.png",
+      ItemCategory.CONSUMABLE,
+      (type, quantity) -> new FreezeBomb(type, quantity, 3000)),
   GOLD_COIN(
       "Gold Coin",
       "Currency dropped by defeated enemies.",

@@ -3,14 +3,18 @@ package com.csse3200.game.components.player;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.items.ItemType;
 
-/** Owns the four fixed consumable slots and the currently selected slot. */
+/** Owns the fixed consumable slots and the currently selected slot. */
 public class ConsumableSelectionComponent extends Component {
   public static final String CYCLE_REQUEST = "cycleConsumable";
   public static final String USE_SELECTED_REQUEST = "useSelectedConsumable";
   public static final String SELECTION_CHANGED = "selectedConsumableChanged";
 
   public static final ItemType[] SLOTS = {
-    ItemType.HEALTH_POTION, ItemType.SHIELD, ItemType.SPEED_POTION, ItemType.STRENGTH_POTION
+    ItemType.HEALTH_POTION,
+    ItemType.SHIELD,
+    ItemType.SPEED_POTION,
+    ItemType.STRENGTH_POTION,
+    ItemType.FREEZE_BOMB
   };
 
   private int selectedIndex;
@@ -29,7 +33,7 @@ public class ConsumableSelectionComponent extends Component {
     return selectedIndex;
   }
 
-  /** Advances one slot and wraps after the fourth. */
+  /** Advances one slot and wraps after the last. */
   public void cycle() {
     selectedIndex = (selectedIndex + 1) % SLOTS.length;
     entity.getEvents().trigger(SELECTION_CHANGED, getSelectedType());

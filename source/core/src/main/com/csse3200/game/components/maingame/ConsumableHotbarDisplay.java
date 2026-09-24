@@ -22,7 +22,7 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import java.util.Objects;
 
-/** A compact four-slot consumable bar on the lower half of the right side of the game UI. */
+/** A compact consumable bar on the lower half of the right side of the game UI. */
 public class ConsumableHotbarDisplay extends UIComponent {
   private static final float SLOT_SIZE = 72f;
   private static final float SLOT_GAP = 6f;
@@ -134,6 +134,7 @@ public class ConsumableHotbarDisplay extends UIComponent {
       case SHIELD -> new TextureRegion(texture, 310, 322, 633, 653);
       case SPEED_POTION -> new TextureRegion(texture, 393, 220, 481, 784);
       case STRENGTH_POTION -> new TextureRegion(texture, 310, 173, 635, 928);
+      case FREEZE_BOMB -> new TextureRegion(texture);
       default -> throw new IllegalArgumentException("Not a consumable: " + type);
     };
   }

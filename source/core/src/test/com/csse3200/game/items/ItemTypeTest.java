@@ -27,6 +27,7 @@ class ItemTypeTest {
     assertTrue(ItemType.SHIELD.isConsumable());
     assertTrue(ItemType.SPEED_POTION.isConsumable());
     assertTrue(ItemType.STRENGTH_POTION.isConsumable());
+    assertTrue(ItemType.FREEZE_BOMB.isConsumable());
     assertFalse(ItemType.STRENGTH_CHARM.isConsumable());
 
     assertTrue(ItemType.GOLD_COIN.isCurrency());
