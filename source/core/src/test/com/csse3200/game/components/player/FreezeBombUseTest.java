@@ -26,6 +26,7 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.ItemType;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.concurrent.atomic.AtomicLong;
@@ -45,6 +46,7 @@ class FreezeBombUseTest {
   void setUp() {
     GameTime time = mock(GameTime.class);
     when(time.getTime()).thenAnswer(invocation -> now.get());
+    when(time.getDeltaTime()).thenReturn(0.05f);
     ServiceLocator.registerTimeSource(time);
     inventory = new InventoryComponent(0);
     consumables = new ConsumableEffectComponent();
@@ -75,6 +77,8 @@ class FreezeBombUseTest {
     world.addAll(player, visible, edge, offscreen);
     when(service.getEntities()).thenReturn(world);
     ServiceLocator.registerEntityService(service);
+    RenderService renderService = new RenderService();
+    ServiceLocator.registerRenderService(renderService);
 
     ConsumableSelectionComponent selection = new ConsumableSelectionComponent();
     KeyboardPlayerInputComponent input = new KeyboardPlayerInputComponent();
@@ -88,6 +92,7 @@ class FreezeBombUseTest {
     input.keyDown(Keys.Q);
 
     assertEquals(1, inventory.getConsumableCount(ItemType.FREEZE_BOMB));
+    assertTrue(renderService.getWhiteFlashAlpha() > 0f);
     assertFrozenForThreeSeconds(visible);
     assertFrozenForThreeSeconds(edge);
     verify(offscreen.getComponent(StatusEffectsControllerComponent.class), never())

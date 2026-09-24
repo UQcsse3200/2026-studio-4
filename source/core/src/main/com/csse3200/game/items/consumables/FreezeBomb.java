@@ -42,6 +42,9 @@ public final class FreezeBomb extends ConsumableItem {
         effects.addStatusEffect(new FrozenEffect(time, durationMs));
       }
     }
+    if (ServiceLocator.getRenderService() != null) {
+      ServiceLocator.getRenderService().startWhiteFlash();
+    }
     return null;
   }
 }
