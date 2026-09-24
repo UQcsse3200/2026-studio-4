@@ -25,7 +25,7 @@ class LootTableTest {
   }
 
   @Test
-  void shouldGiveEveryNormalEnemyAWeightedNonFixedDrop() {
+  void shouldGiveEveryNormalEnemyAQuarterChanceOfFreezeBomb() {
     LootTable table = LootTable.defaultTable();
     table.validate();
     Set<String> normalEnemies =
@@ -42,12 +42,30 @@ class LootTableTest {
       assertTrue(enemyTable.entries.length > 1);
       assertEquals(
           100, java.util.Arrays.stream(enemyTable.entries).mapToInt(entry -> entry.weight).sum());
+      assertEquals(
+          25,
+          java.util.Arrays.stream(enemyTable.entries)
+              .filter(entry -> entry.itemId == ItemType.FREEZE_BOMB)
+              .mapToInt(entry -> entry.weight)
+              .sum());
     }
 
     RandomGenerator random = mock(RandomGenerator.class);
-    when(random.nextInt(100)).thenReturn(0, 99);
+    when(random.nextInt(100)).thenReturn(0, 74, 99);
     assertEquals(ItemType.GOLD_COIN, table.forEnemy("MEDUSA").roll(random).get(0).itemType());
     assertEquals(ItemType.SPEED_CHARM, table.forEnemy("MEDUSA").roll(random).get(0).itemType());
+    assertEquals(ItemType.FREEZE_BOMB, table.forEnemy("MEDUSA").roll(random).get(0).itemType());
+
+    RandomGenerator bombRoll = mock(RandomGenerator.class);
+    when(bombRoll.nextInt(100)).thenReturn(99);
+    for (String enemyType : normalEnemies) {
+      assertEquals(
+          List.of(new ItemDropSpec(ItemType.FREEZE_BOMB, 1)),
+          table.forEnemy(enemyType).roll(bombRoll));
+    }
+    for (String bossType : Set.of("CERBERUS", "FINAL_BOSS", "SNAKE_MINI_BOSS")) {
+      assertEquals(table, table.forEnemy(bossType));
+    }
   }
 
   @Test

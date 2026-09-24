@@ -9,9 +9,10 @@
       "enemyType": "CRAB",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 70, "minQuantity": 1, "maxQuantity": 2 },
+          { "itemId": "GOLD_COIN", "weight": 45, "minQuantity": 1, "maxQuantity": 2 },
           { "itemId": "SHIELD", "weight": 20 },
-          { "itemId": "HEALTH_POTION", "weight": 10 }
+          { "itemId": "HEALTH_POTION", "weight": 10 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 }
         ]
       }
     },
@@ -19,9 +20,10 @@
       "enemyType": "WASP",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 70, "minQuantity": 1, "maxQuantity": 2 },
+          { "itemId": "GOLD_COIN", "weight": 45, "minQuantity": 1, "maxQuantity": 2 },
           { "itemId": "SPEED_POTION", "weight": 25 },
-          { "itemId": "ATTACK_SPEED_CHARM", "weight": 5 }
+          { "itemId": "ATTACK_SPEED_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 }
         ]
       }
     },
@@ -29,9 +31,10 @@
       "enemyType": "BEETLE",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 75, "minQuantity": 1, "maxQuantity": 2 },
+          { "itemId": "GOLD_COIN", "weight": 50, "minQuantity": 1, "maxQuantity": 2 },
           { "itemId": "SHIELD", "weight": 15 },
-          { "itemId": "STRENGTH_POTION", "weight": 10 }
+          { "itemId": "STRENGTH_POTION", "weight": 10 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 }
         ]
       }
     },
@@ -39,10 +42,11 @@
       "enemyType": "MUMMY",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 65, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "GOLD_COIN", "weight": 40, "minQuantity": 1, "maxQuantity": 3 },
           { "itemId": "HEALTH_POTION", "weight": 25 },
           { "itemId": "STRENGTH_POTION", "weight": 5 },
-          { "itemId": "STRENGTH_CHARM", "weight": 5 }
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 }
         ]
       }
     },
@@ -50,10 +54,11 @@
       "enemyType": "MEDUSA",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 65, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "GOLD_COIN", "weight": 40, "minQuantity": 1, "maxQuantity": 3 },
           { "itemId": "HEALTH_POTION", "weight": 20 },
           { "itemId": "SPEED_POTION", "weight": 10 },
-          { "itemId": "SPEED_CHARM", "weight": 5 }
+          { "itemId": "SPEED_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 }
         ]
       }
     },
@@ -61,10 +66,11 @@
       "enemyType": "HARPY",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 65, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "GOLD_COIN", "weight": 40, "minQuantity": 1, "maxQuantity": 3 },
           { "itemId": "SPEED_POTION", "weight": 20 },
           { "itemId": "SHIELD", "weight": 10 },
-          { "itemId": "ATTACK_SPEED_CHARM", "weight": 5 }
+          { "itemId": "ATTACK_SPEED_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 }
         ]
       }
     },
@@ -72,10 +78,11 @@
       "enemyType": "GOLEM",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 60, "minQuantity": 2, "maxQuantity": 4 },
+          { "itemId": "GOLD_COIN", "weight": 35, "minQuantity": 2, "maxQuantity": 4 },
           { "itemId": "SHIELD", "weight": 20 },
           { "itemId": "STRENGTH_POTION", "weight": 15 },
-          { "itemId": "STRENGTH_CHARM", "weight": 5 }
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 }
         ]
       }
     },
@@ -83,10 +90,11 @@
       "enemyType": "CYCLOPS",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 55, "minQuantity": 2, "maxQuantity": 5 },
+          { "itemId": "GOLD_COIN", "weight": 30, "minQuantity": 2, "maxQuantity": 5 },
           { "itemId": "HEALTH_POTION", "weight": 20 },
           { "itemId": "STRENGTH_POTION", "weight": 20 },
-          { "itemId": "STRENGTH_CHARM", "weight": 5 }
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 }
         ]
       }
     }
