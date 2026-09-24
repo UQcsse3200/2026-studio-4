@@ -4,17 +4,23 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
+import com.csse3200.game.components.miniboss.dragon.DragonCloudDashComponent;
+import com.csse3200.game.components.miniboss.dragon.DragonCloudDashDamageComponent;
+import com.csse3200.game.components.miniboss.dragon.DragonCloudDashMovementComponent;
+import com.csse3200.game.components.miniboss.dragon.DragonCloudDashVisualComponent;
 import com.csse3200.game.components.miniboss.dragon.DragonPhaseComponent;
+import com.csse3200.game.components.miniboss.dragon.DragonThunderOrbComponent;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DragonConfig;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.function.Consumer;
 
 /** Creates the Chinese Dragon mini-boss with health, phase logic, and animations. */
 public final class DragonFactory {
-  public static final String ATLAS_PATH = "images/dragon.atlas";
+  public static final String ATLAS_PATH = "images/dragon/dragon.atlas";
 
   private static final String IDLE = "idle";
 
@@ -63,6 +69,28 @@ public final class DragonFactory {
     PhysicsUtils.setScaledCollider(dragon, 0.9f, 0.4f);
     animator.startAnimation(IDLE);
 
+    return dragon;
+  }
+
+  /**
+   * Creates a dragon with its thunder orb skill.
+   *
+   * @param target player targeted by the dragon
+   * @param projectileSpawner callback that registers projectiles with the room
+   * @return an unregistered dragon with its thunder orb component attached
+   */
+  public static Entity createDragon(Entity target, Consumer<Entity> projectileSpawner) {
+    if (target == null || projectileSpawner == null) {
+      throw new IllegalArgumentException("Target and projectile spawner are required");
+    }
+
+    Entity dragon = createDragon();
+    dragon
+        .addComponent(new DragonThunderOrbComponent(target, projectileSpawner))
+        .addComponent(new DragonCloudDashComponent(target))
+        .addComponent(new DragonCloudDashMovementComponent())
+        .addComponent(new DragonCloudDashDamageComponent(target))
+        .addComponent(new DragonCloudDashVisualComponent());
     return dragon;
   }
 }

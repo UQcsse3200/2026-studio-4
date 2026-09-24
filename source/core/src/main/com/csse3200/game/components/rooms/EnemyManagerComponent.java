@@ -130,7 +130,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         return CerberusFactory.createCerberus(
             target, anchorPoint, this::spawnAndTrackCerberusHead, "images/cerberus.atlas");
       case DRAGON:
-        return DragonFactory.createDragon();
+        return DragonFactory.createDragon(target, this::spawnEntity);
       case FINAL_BOSS:
         Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnEntity);
         if (camera != null) {

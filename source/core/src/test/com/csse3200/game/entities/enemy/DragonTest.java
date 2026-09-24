@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
-import com.csse3200.game.components.miniboss.dragon.DragonPhaseComponent;
+import com.csse3200.game.components.miniboss.dragon.*;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DragonConfig;
@@ -21,6 +21,8 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -120,5 +122,30 @@ class DragonTest {
     dragon.getComponent(CombatStatsComponent.class).setHealth(250);
 
     assertEquals(2, phase.getCurrentPhase());
+  }
+
+  @Test
+  void shouldAttachThunderOrbSkillWithoutFiringDuringConstruction() {
+    Entity target = new Entity().addComponent(new CombatStatsComponent(100, 10));
+    List<Entity> spawnedProjectiles = new ArrayList<>();
+
+    Entity dragon = DragonFactory.createDragon(target, spawnedProjectiles::add);
+
+    assertNotNull(dragon.getComponent(DragonThunderOrbComponent.class));
+    assertTrue(spawnedProjectiles.isEmpty());
+  }
+
+  @Test
+  void shouldAttachAllCloudDashComponents() {
+    Entity target = new Entity().addComponent(new CombatStatsComponent(100, 10));
+    List<Entity> spawnedProjectiles = new ArrayList<>();
+
+    Entity dragon = DragonFactory.createDragon(target, spawnedProjectiles::add);
+
+    assertNotNull(dragon.getComponent(DragonCloudDashComponent.class));
+    assertNotNull(dragon.getComponent(DragonCloudDashMovementComponent.class));
+    assertNotNull(dragon.getComponent(DragonCloudDashDamageComponent.class));
+    assertNotNull(dragon.getComponent(DragonCloudDashVisualComponent.class));
+    assertTrue(spawnedProjectiles.isEmpty());
   }
 }
