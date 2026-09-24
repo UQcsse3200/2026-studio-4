@@ -7,7 +7,7 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.player.InteractionPrompt;
-import com.csse3200.game.components.player.InteractionPromptDisplay;
+import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.components.rooms.configs.PositionConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
@@ -52,7 +52,7 @@ public class RoomManager {
     cameraFollowingComponent.setTarget(player);
   }
 
-  /** Package private constructer to create empty room manager for testing */
+  /** Package private constructor to create empty room manager for testing */
   RoomManager(Entity player) {
     this.player = player;
 

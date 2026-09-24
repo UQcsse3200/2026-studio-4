@@ -78,7 +78,7 @@ public class Team5CombatHudDisplay extends UIComponent {
 
   private void addActors() {
     table = new Table();
-    table.top().right();
+    table.center().right();
     table.setFillParent(true);
     table.padTop(70f).padRight(20f);
     table.setName("team5-consumables");
