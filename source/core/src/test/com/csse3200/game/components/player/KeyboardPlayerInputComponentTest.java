@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.statuseffects.ConfusionEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
@@ -159,6 +161,26 @@ class KeyboardPlayerInputComponentTest {
     assertTrue(input.keyDown(Keys.SPACE));
     assertEquals(1, dashCount);
     assertEquals(-1f, lastDashDirection.x, 0.001f);
+  }
+
+  @Test
+  void confusionShouldReverseMovementAndSwapSpaceWithJ() {
+    StatusEffectsControllerComponent effects = new StatusEffectsControllerComponent();
+    player.addComponent(effects);
+    effects.addStatusEffect(new ConfusionEffect());
+
+    input.keyDown(Keys.W);
+    assertEquals(0f, lastWalkDirection.x, 0.001f);
+    assertEquals(-1f, lastWalkDirection.y, 0.001f);
+
+    input.keyDown(Keys.SPACE);
+    assertEquals(1, attackCount);
+    assertEquals(0, dashCount);
+
+    input.keyDown(Keys.J);
+    assertEquals(1, attackCount);
+    assertEquals(1, dashCount);
+    assertEquals(-1f, lastDashDirection.y, 0.001f);
   }
 
   @Test

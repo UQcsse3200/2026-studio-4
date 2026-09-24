@@ -100,6 +100,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         return NPCFactory.createSnakeMiniBoss(target);
       case WIZARD:
         return NPCFactory.createWizard(target, this::spawnEntity);
+      case CONFUSION_WIZARD:
+        return NPCFactory.createConfusionWizard(target, this::spawnEntity);
       // Greek
       case GOLEM:
         Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);

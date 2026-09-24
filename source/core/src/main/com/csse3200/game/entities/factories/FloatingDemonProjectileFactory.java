@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.miniboss.cerberus.HomingProjectileMovementComponent;
+import com.csse3200.game.components.npc.ConfusionProjectileEffectComponent;
 import com.csse3200.game.components.npc.ProjectileMovementComponent;
 import com.csse3200.game.components.npc.WizardProjectileEffectComponent;
 import com.csse3200.game.entities.Entity;
@@ -29,6 +30,13 @@ public class FloatingDemonProjectileFactory {
   public static Entity createWizardProjectile(Vector2 position, Vector2 direction, int damage) {
     Entity projectile = createProjectile(position, direction, damage);
     projectile.addComponent(new WizardProjectileEffectComponent());
+    return projectile;
+  }
+
+  /** Creates a low-damage projectile that confuses the player on hit. */
+  public static Entity createConfusionProjectile(Vector2 position, Vector2 direction, int damage) {
+    Entity projectile = createProjectile(position, direction, damage);
+    projectile.addComponent(new ConfusionProjectileEffectComponent());
     return projectile;
   }
 

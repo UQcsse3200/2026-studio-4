@@ -74,6 +74,12 @@ public class StatusEffectsControllerComponent extends Component {
     return effects != null && effects.isDashDisabled();
   }
 
+  /** Returns whether the entity currently has reversed movement and swapped primary controls. */
+  public static boolean isControlsConfused(Entity entity) {
+    StatusEffectsControllerComponent effects = findOn(entity);
+    return effects != null && effects.isControlsConfused();
+  }
+
   /**
    * Returns the combined glow of the entity's active effects, or null when nothing glows.
    *
@@ -112,6 +118,16 @@ public class StatusEffectsControllerComponent extends Component {
   public boolean isDashDisabled() {
     for (StatusEffect effect : statusEffects) {
       if (!effect.isExpired() && effect.disablesDash()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** Returns true if any active effect reverses the player's controls. */
+  public boolean isControlsConfused() {
+    for (StatusEffect effect : statusEffects) {
+      if (!effect.isExpired() && effect.confusesControls()) {
         return true;
       }
     }

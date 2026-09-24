@@ -3,6 +3,7 @@ package com.csse3200.game.components.player;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.utils.math.Vector2Utils;
@@ -14,6 +15,11 @@ import com.csse3200.game.utils.math.Vector2Utils;
 public class KeyboardPlayerInputComponent extends InputComponent {
   private static final String EQUIP_WEAPON_EVENT = "equipWeapon";
   private final Vector2 walkDirection = Vector2.Zero.cpy();
+  private boolean upPressed;
+  private boolean downPressed;
+  private boolean leftPressed;
+  private boolean rightPressed;
+  private boolean controlsConfused;
 
   public KeyboardPlayerInputComponent() {
     super(5);
@@ -51,26 +57,34 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         }
         return true;
       case Keys.W:
-        walkDirection.add(Vector2Utils.UP);
-        triggerWalkEvent();
+        upPressed = true;
+        rebuildWalkDirection();
         return true;
       case Keys.A:
-        walkDirection.add(Vector2Utils.LEFT);
-        triggerWalkEvent();
+        leftPressed = true;
+        rebuildWalkDirection();
         return true;
       case Keys.S:
-        walkDirection.add(Vector2Utils.DOWN);
-        triggerWalkEvent();
+        downPressed = true;
+        rebuildWalkDirection();
         return true;
       case Keys.D:
-        walkDirection.add(Vector2Utils.RIGHT);
-        triggerWalkEvent();
+        rightPressed = true;
+        rebuildWalkDirection();
         return true;
       case Keys.SPACE:
-        entity.getEvents().trigger("dash", walkDirection);
+        if (controlsAreConfused()) {
+          entity.getEvents().trigger("attack");
+        } else {
+          entity.getEvents().trigger("dash", walkDirection);
+        }
         return true;
       case Keys.J:
-        entity.getEvents().trigger("attack");
+        if (controlsAreConfused()) {
+          entity.getEvents().trigger("dash", walkDirection);
+        } else {
+          entity.getEvents().trigger("attack");
+        }
         return true;
       case Keys.K:
         // Heavy weapon attack; "specialAttack" is reserved for special abilities.
@@ -99,24 +113,47 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   public boolean keyUp(int keycode) {
     switch (keycode) {
       case Keys.W:
-        walkDirection.sub(Vector2Utils.UP);
-        triggerWalkEvent();
+        upPressed = false;
+        rebuildWalkDirection();
         return true;
       case Keys.A:
-        walkDirection.sub(Vector2Utils.LEFT);
-        triggerWalkEvent();
+        leftPressed = false;
+        rebuildWalkDirection();
         return true;
       case Keys.S:
-        walkDirection.sub(Vector2Utils.DOWN);
-        triggerWalkEvent();
+        downPressed = false;
+        rebuildWalkDirection();
         return true;
       case Keys.D:
-        walkDirection.sub(Vector2Utils.RIGHT);
-        triggerWalkEvent();
+        rightPressed = false;
+        rebuildWalkDirection();
         return true;
       default:
         return false;
     }
+  }
+
+  @Override
+  public void update() {
+    boolean confusedNow = controlsAreConfused();
+    if (confusedNow != controlsConfused) {
+      rebuildWalkDirection();
+    }
+  }
+
+  private boolean controlsAreConfused() {
+    return StatusEffectsControllerComponent.isControlsConfused(entity);
+  }
+
+  private void rebuildWalkDirection() {
+    controlsConfused = controlsAreConfused();
+    walkDirection.setZero();
+    if (upPressed) walkDirection.add(Vector2Utils.UP);
+    if (downPressed) walkDirection.add(Vector2Utils.DOWN);
+    if (leftPressed) walkDirection.add(Vector2Utils.LEFT);
+    if (rightPressed) walkDirection.add(Vector2Utils.RIGHT);
+    if (controlsConfused) walkDirection.scl(-1f);
+    triggerWalkEvent();
   }
 
   private void triggerWalkEvent() {

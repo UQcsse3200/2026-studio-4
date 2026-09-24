@@ -42,7 +42,8 @@ class NPCFactoryTest {
           "images/medusa.atlas",
           "images/mummy.atlas",
           "images/snake.atlas",
-          "images/wizard.atlas"
+          "images/wizard.atlas",
+          "images/confusion-wizard/confusion-wizard.atlas"
         });
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
@@ -92,6 +93,17 @@ class NPCFactoryTest {
     TextureAtlas atlas =
         ServiceLocator.getResourceService().getAsset("images/wizard.atlas", TextureAtlas.class);
     assertEquals(5, atlas.findRegions("vortex").size);
+  }
+
+  @Test
+  void confusionWizardHasHealthBarAndAnimations() {
+    Entity enemy = NPCFactory.createConfusionWizard(new Entity(), projectile -> {});
+    assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
+    TextureAtlas atlas =
+        ServiceLocator.getResourceService()
+            .getAsset("images/confusion-wizard/confusion-wizard.atlas", TextureAtlas.class);
+    assertEquals(10, atlas.findRegions("default").size);
+    assertEquals(6, atlas.findRegions("attack").size);
   }
 
   @Test

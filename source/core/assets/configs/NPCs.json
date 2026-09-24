@@ -30,6 +30,14 @@
       "y": 1.5
     }
   },
+  "confusionWizard" : {
+    "health": 35,
+    "baseAttack": 1,
+    "movement": {
+      "x": 1.5,
+      "y": 1.5
+    }
+  },
   "cerberus" : {
     "health": 250,
     "baseAttack": 20

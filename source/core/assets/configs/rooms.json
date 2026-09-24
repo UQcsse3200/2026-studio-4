@@ -873,7 +873,8 @@
         }
       ],
       "enemySpawns": [
-        { "type": "WIZARD", "x": 14, "y": 18 }
+        { "type": "WIZARD", "x": 10, "y": 18 },
+        { "type": "CONFUSION_WIZARD", "x": 18, "y": 18 }
       ],
       "obstacles": {
         "spawns": [

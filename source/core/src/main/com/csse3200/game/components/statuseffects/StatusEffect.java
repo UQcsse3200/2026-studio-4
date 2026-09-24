@@ -55,6 +55,11 @@ public interface StatusEffect {
     return false;
   }
 
+  /** Returns true when the player's movement and primary action controls should be reversed. */
+  default boolean confusesControls() {
+    return false;
+  }
+
   /**
    * Returns what this effect multiplies the given effective stat by while it runs. The raw stats
    * are never touched, so charms and other adjustments keep working underneath and removing the

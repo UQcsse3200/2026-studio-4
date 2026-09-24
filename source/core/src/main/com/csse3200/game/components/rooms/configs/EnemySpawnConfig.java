@@ -16,6 +16,7 @@ public class EnemySpawnConfig extends PositionConfig {
     CERBERUS,
     FINAL_BOSS,
     SNAKE_MINI_BOSS,
-    WIZARD
+    WIZARD,
+    CONFUSION_WIZARD
   }
 }

@@ -1,0 +1,241 @@
+wizard-idle.png
+size: 800, 80
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+default
+  rotate: false
+  xy: 0, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 0
+default
+  rotate: false
+  xy: 80, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 1
+default
+  rotate: false
+  xy: 160, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 2
+default
+  rotate: false
+  xy: 240, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 3
+default
+  rotate: false
+  xy: 320, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 4
+default
+  rotate: false
+  xy: 400, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 5
+default
+  rotate: false
+  xy: 480, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 6
+default
+  rotate: false
+  xy: 560, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 7
+default
+  rotate: false
+  xy: 640, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 8
+default
+  rotate: false
+  xy: 720, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 9
+
+wizard-fly-forward.png
+size: 480, 80
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+  rotate: false
+  xy: 0, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 0
+move
+  rotate: false
+  xy: 80, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 1
+move
+  rotate: false
+  xy: 160, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 2
+move
+  rotate: false
+  xy: 240, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 3
+move
+  rotate: false
+  xy: 320, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 4
+move
+  rotate: false
+  xy: 400, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 5
+attack
+  rotate: false
+  xy: 0, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 0
+attack
+  rotate: false
+  xy: 80, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 1
+attack
+  rotate: false
+  xy: 160, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 2
+attack
+  rotate: false
+  xy: 240, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 3
+attack
+  rotate: false
+  xy: 320, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 4
+attack
+  rotate: false
+  xy: 400, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 5
+
+wizard-death.png
+size: 800, 80
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dieAnimation
+  rotate: false
+  xy: 0, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 0
+dieAnimation
+  rotate: false
+  xy: 80, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 1
+dieAnimation
+  rotate: false
+  xy: 160, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 2
+dieAnimation
+  rotate: false
+  xy: 240, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 3
+dieAnimation
+  rotate: false
+  xy: 320, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 4
+dieAnimation
+  rotate: false
+  xy: 400, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 5
+dieAnimation
+  rotate: false
+  xy: 480, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 6
+dieAnimation
+  rotate: false
+  xy: 560, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 7
+dieAnimation
+  rotate: false
+  xy: 640, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 8
+dieAnimation
+  rotate: false
+  xy: 720, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 9

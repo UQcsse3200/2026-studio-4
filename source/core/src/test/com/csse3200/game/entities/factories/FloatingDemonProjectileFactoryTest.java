@@ -1,11 +1,13 @@
 package com.csse3200.game.entities.factories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -55,5 +57,28 @@ class FloatingDemonProjectileFactoryTest {
     projectile.getEvents().trigger("collisionStart", projectileFixture, playerFixture);
 
     assertEquals(13, player.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void confusionProjectileShouldApplyConfusionOnCollision() {
+    Entity projectile =
+        FloatingDemonProjectileFactory.createConfusionProjectile(
+            new Vector2(0f, 0f), new Vector2(1f, 0f), 1);
+    projectile.create();
+
+    Entity player =
+        new Entity()
+            .addComponent(new CombatStatsComponent(20, 0))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+            .addComponent(new StatusEffectsControllerComponent());
+    player.create();
+
+    Fixture projectileFixture = projectile.getComponent(HitboxComponent.class).getFixture();
+    Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
+    projectile.getEvents().trigger("collisionStart", projectileFixture, playerFixture);
+
+    assertEquals(19, player.getComponent(CombatStatsComponent.class).getHealth());
+    assertTrue(StatusEffectsControllerComponent.isControlsConfused(player));
   }
 }

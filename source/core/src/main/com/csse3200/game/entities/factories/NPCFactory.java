@@ -339,6 +339,51 @@ public class NPCFactory {
     return wizard;
   }
 
+  /** Creates a ranged enemy whose projectiles briefly reverse the player's controls. */
+  public static Entity createConfusionWizard(Entity target) {
+    return createConfusionWizard(
+        target, projectile -> ServiceLocator.getEntityService().register(projectile));
+  }
+
+  /** Creates a confusion wizard with a caller-owned projectile registration strategy. */
+  public static Entity createConfusionWizard(Entity target, Consumer<Entity> projectileSpawner) {
+    WizardConfig config = configs.confusionWizard;
+    AITaskComponent aiComponent =
+        new AITaskComponent(target)
+            .addTask(new WanderTask(config.movement, 1f))
+            .addTask(
+                new RangedAttackTask(
+                    target,
+                    5,
+                    config.baseAttack,
+                    projectileSpawner,
+                    FloatingDemonProjectileFactory::createConfusionProjectile));
+
+    TextureAtlas atlas =
+        ServiceLocator.getResourceService()
+            .getAsset("images/confusion-wizard/confusion-wizard.atlas", TextureAtlas.class);
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    animator.addAnimation(DEFAULT_ANIMATION, 0.12f, Animation.PlayMode.LOOP);
+    animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DIE_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+
+    Entity wizard = createBaseNPC();
+    wizard
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(aiComponent)
+        .addComponent(animator)
+        .addComponent(new EnemyDeathComponent(true, true))
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.8f));
+
+    animator.scaleEntity();
+    animator.startAnimation(MOVE);
+    wizard.setScale(1.2f, 1.2f);
+    wizard.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
+    return wizard;
+  }
+
   /**
    * Creates a generic NPC to be used as a base entity by more specific NPC creation methods.
    *
