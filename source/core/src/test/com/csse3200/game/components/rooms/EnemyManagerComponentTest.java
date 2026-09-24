@@ -154,7 +154,7 @@ class EnemyManagerComponentTest {
   void shouldSpawnChosenRoomItemWithoutEnemyDeath() {
     Vector2 position = new Vector2(3f, 4f);
 
-    enemyManager.spawnItem(ItemType.HEALTH_POTION, position);
+    enemyManager.spawnItem(ItemType.HEALTH_POTION, 1, position);
     verify(entityService, never()).register(Mockito.any(Entity.class));
     position.set(9f, 9f);
     entityService.update();

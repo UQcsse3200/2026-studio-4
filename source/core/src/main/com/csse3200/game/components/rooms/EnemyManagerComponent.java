@@ -12,7 +12,6 @@ import com.csse3200.game.entities.factories.CerberusFactory;
 import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
-import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.ItemType;
 import com.csse3200.game.items.LootTable;
 import com.csse3200.game.physics.PhysicsUtils;
@@ -204,11 +203,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     spawnEntity(child);
   }
 
-  /** Spawns one caller-selected item at a world position. */
-  public void spawnItem(ItemType itemType, Vector2 position) {
-    spawnItem(itemType, 1, position);
-  }
-
   /** Creates and registers room-owned items after the current update is safe for spawning. */
   public void spawnItem(ItemType itemType, int quantity, Vector2 position) {
     if (disposed) {
@@ -231,11 +225,19 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             });
   }
 
-  /** Selects enemy-specific loot and sends each item through the shared room spawn path. */
+  /** Requests enemy-specific items from the factory and registers them with this room. */
   private void spawnEnemyDrops(String enemyType, Vector2 position) {
-    for (ItemDropSpec spec : lootTable.forEnemy(enemyType).roll(random)) {
-      spawnItem(spec.itemType(), spec.quantity(), position);
-    }
+    ServiceLocator.getEntityService()
+        .schedule(
+            () -> {
+              if (disposed) {
+                return;
+              }
+              for (Entity item :
+                  ItemFactory.createEnemyDrops(enemyType, position, lootTable, random)) {
+                spawnEntity(item);
+              }
+            });
   }
 
   /** Returns whether the room has any living enemies. */
