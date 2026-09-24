@@ -17,6 +17,7 @@ import com.csse3200.game.components.player.PlayerCerberusMistDebuffComponent;
 import com.csse3200.game.components.player.PlayerDamageFlashComponent;
 import com.csse3200.game.components.player.PlayerPetrificationComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
+import com.csse3200.game.components.player.SpeedPotionAfterimageComponent;
 import com.csse3200.game.components.spells.FreezeSpellComponent;
 import com.csse3200.game.components.spells.LightningSpellComponent;
 import com.csse3200.game.components.spells.SpellAoeVisualComponent;
@@ -93,6 +94,7 @@ public class PlayerFactory {
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(new ConsumableSelectionComponent())
             .addComponent(new ConsumableEffectComponent())
+            .addComponent(new SpeedPotionAfterimageComponent())
             .addComponent(new InvisibilityPotionComponent())
             .addComponent(new ItemPickupComponent())
             .addComponent(inputComponent)
