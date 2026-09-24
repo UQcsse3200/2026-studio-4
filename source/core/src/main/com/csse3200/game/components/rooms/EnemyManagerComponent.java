@@ -13,7 +13,6 @@ import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.items.ItemType;
-import com.csse3200.game.items.LootTable;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -21,14 +20,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.random.RandomGenerator;
 
 /** Spawns configured enemies and tracks when the room has been cleared. */
 public class EnemyManagerComponent extends EntityManagerComponent {
   private final EnemySpawnConfig[] spawnConfigs;
   private final Set<Entity> activeEnemies = new HashSet<>();
-  private final RandomGenerator random;
-  private final LootTable lootTable;
+  private final ItemFactory itemFactory;
   private boolean disposed;
   private CameraComponent camera;
 
@@ -43,26 +40,13 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs) {
-    this(spawnConfigs, RandomGenerator.getDefault());
+    this(spawnConfigs, new ItemFactory());
   }
 
-  /** Uses injectable randomness; this manager alone owns spawning and disposal. */
-  public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs, RandomGenerator random) {
-    this(spawnConfigs, random, LootTable.defaultTable());
-  }
-
-  public EnemyManagerComponent(
-      EnemySpawnConfig[] spawnConfigs, RandomGenerator random, LootTable lootTable) {
+  /** Uses an injectable item factory for enemy drops. */
+  EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs, ItemFactory itemFactory) {
     this.spawnConfigs = spawnConfigs;
-    this.random = Objects.requireNonNull(random);
-    this.lootTable = Objects.requireNonNull(lootTable);
-    this.lootTable.validate();
-  }
-
-  public EnemyManagerComponent(
-      EnemySpawnConfig[] spawnConfigs, CameraComponent camera, LootTable lootTable) {
-    this(spawnConfigs, RandomGenerator.getDefault(), lootTable);
-    this.camera = camera;
+    this.itemFactory = Objects.requireNonNull(itemFactory);
   }
 
   @Override
@@ -233,8 +217,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
               if (disposed) {
                 return;
               }
-              for (Entity item :
-                  ItemFactory.createEnemyDrops(enemyType, position, lootTable, random)) {
+              for (Entity item : itemFactory.createEnemyDrops(enemyType, position)) {
                 spawnEntity(item);
               }
             });

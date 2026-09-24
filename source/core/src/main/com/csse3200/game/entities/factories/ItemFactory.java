@@ -22,6 +22,19 @@ import java.util.random.RandomGenerator;
 
 /** Creates world item entities from explicit item IDs or enemy loot rules. */
 public final class ItemFactory {
+  private final LootTable lootTable;
+  private final RandomGenerator random;
+
+  public ItemFactory() {
+    this(LootTable.defaultTable(), RandomGenerator.getDefault());
+  }
+
+  public ItemFactory(LootTable lootTable, RandomGenerator random) {
+    this.lootTable = Objects.requireNonNull(lootTable, "lootTable cannot be null");
+    this.random = Objects.requireNonNull(random, "random cannot be null");
+    this.lootTable.validate();
+  }
+
   /** Charms become separate entities; stackable items keep their requested quantity. */
   public static List<Entity> createDrops(ItemType itemId, int quantity, Vector2 position) {
     Objects.requireNonNull(itemId, "itemId cannot be null");
@@ -40,10 +53,7 @@ public final class ItemFactory {
   }
 
   /** Creates the items selected by an enemy's loot rules without registering them. */
-  public static List<Entity> createEnemyDrops(
-      String enemyType, Vector2 position, LootTable lootTable, RandomGenerator random) {
-    Objects.requireNonNull(lootTable, "lootTable cannot be null");
-    Objects.requireNonNull(random, "random cannot be null");
+  public List<Entity> createEnemyDrops(String enemyType, Vector2 position) {
     Objects.requireNonNull(position, "position cannot be null");
     List<Entity> drops = new ArrayList<>();
     for (ItemDropSpec spec : lootTable.forEnemy(enemyType).roll(random)) {
@@ -66,9 +76,5 @@ public final class ItemFactory {
     itemEntity.setScale(1f, (float) texture.getHeight() / texture.getWidth());
     itemEntity.setPosition(position);
     return itemEntity;
-  }
-
-  private ItemFactory() {
-    throw new IllegalStateException("Instantiating static util class");
   }
 }

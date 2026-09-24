@@ -21,6 +21,7 @@ import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.ItemType;
@@ -74,7 +75,9 @@ class EnemyManagerComponentTest {
     ServiceLocator.registerResourceService(resourceService);
 
     room = createMockRoom();
-    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(5));
+    enemyManager =
+        new EnemyManagerComponent(
+            new EnemySpawnConfig[0], new ItemFactory(LootTable.defaultTable(), fixedDrop(5)));
     enemyManager.setEntity(room);
     enemyManager.create();
   }
@@ -174,7 +177,8 @@ class EnemyManagerComponentTest {
         new LootTable.EnemyRule[] {
           new LootTable.EnemyRule("GOLEM", singleItemTable(ItemType.GOLD_COIN))
         };
-    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(0), table);
+    enemyManager =
+        new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
     enemyManager.setEntity(room);
     Entity golem = new Entity();
     Entity medusa = new Entity();
@@ -201,7 +205,8 @@ class EnemyManagerComponentTest {
         new LootTable.EnemyRule[] {
           new LootTable.EnemyRule("GOLEM", singleItemTable(ItemType.GOLD_COIN))
         };
-    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(0), table);
+    enemyManager =
+        new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
     enemyManager.setEntity(room);
     Entity parent = enemyMock();
     Entity firstChild = enemyMock();
@@ -228,7 +233,8 @@ class EnemyManagerComponentTest {
   void shouldSpawnSelectedCharmsAsSeparateRoomOwnedEntities() {
     LootTable table = new LootTable();
     table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemType.SPEED_CHARM, 1, 2, 2)};
-    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(0), table);
+    enemyManager =
+        new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
     enemyManager.setEntity(room);
     Entity enemy = new Entity();
     enemyManager.track(enemy, "GOLEM");
@@ -254,7 +260,8 @@ class EnemyManagerComponentTest {
   void shouldAllowARestrictedTableToProduceNoDrop() {
     LootTable table = new LootTable();
     table.noDropWeight = 1;
-    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(0), table);
+    enemyManager =
+        new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
     enemyManager.setEntity(room);
     Entity enemy = new Entity();
     enemyManager.track(enemy, "GOLEM");
