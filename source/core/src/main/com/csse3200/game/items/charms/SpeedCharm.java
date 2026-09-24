@@ -13,6 +13,11 @@ public class SpeedCharm extends Charm {
   }
 
   @Override
+  public ItemType getItemType() {
+    return ItemType.SPEED_CHARM;
+  }
+
+  @Override
   public void applyEffect(Entity player) {
     player.getComponent(CombatStatsComponent.class).addMovementSpeed(VALUE);
   }

@@ -13,6 +13,11 @@ public class StrengthCharm extends Charm {
   }
 
   @Override
+  public ItemType getItemType() {
+    return ItemType.STRENGTH_CHARM;
+  }
+
+  @Override
   public void applyEffect(Entity player) {
     player.getComponent(CombatStatsComponent.class).addBaseAttack(VALUE);
   }

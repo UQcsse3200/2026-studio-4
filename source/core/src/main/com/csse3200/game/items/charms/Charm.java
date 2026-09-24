@@ -11,17 +11,13 @@ import org.slf4j.LoggerFactory;
 public abstract class Charm extends Item {
   private static final Logger logger = LoggerFactory.getLogger(Charm.class);
   private boolean applied = false;
-  private final ItemType itemType;
 
   Charm(ItemType itemType) {
     super(itemType.getDisplayName(), itemType.getDescription(), itemType.getTexturePath());
-    this.itemType = itemType;
   }
 
   @Override
-  public ItemType getItemType() {
-    return itemType;
-  }
+  public abstract ItemType getItemType();
 
   protected abstract void applyEffect(Entity player);
 
