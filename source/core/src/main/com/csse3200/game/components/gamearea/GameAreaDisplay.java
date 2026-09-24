@@ -3,7 +3,6 @@ package com.csse3200.game.components.gamearea;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.csse3200.game.ui.UIComponent;
 
@@ -39,27 +38,25 @@ public class GameAreaDisplay extends UIComponent {
     statusTable.setFillParent(true);
     statusTable.center().top();
 
-
     stage.addActor(titleTable);
     stage.addActor(statusTable);
-//    stage.addActor(status);
+    //    stage.addActor(status);
   }
 
   /** Shows a brief interaction message below the room title. */
   public void showStatus(String message) {
     status.setText(message);
     statusExpiryMillis = TimeUtils.millis() + 2500;
-
   }
 
   @Override
   public void draw(SpriteBatch batch) {
-//    int screenHeight = Gdx.graphics.getHeight();
-//    float offsetX = 10f;
-//    float offsetY = 30f;
-//
-////    title.setPosition(offsetX, screenHeight - offsetY);
-////    status.setPosition(offsetX + 900f, screenHeight - offsetY - 28f);
+    //    int screenHeight = Gdx.graphics.getHeight();
+    //    float offsetX = 10f;
+    //    float offsetY = 30f;
+    //
+    ////    title.setPosition(offsetX, screenHeight - offsetY);
+    ////    status.setPosition(offsetX + 900f, screenHeight - offsetY - 28f);
     if (statusExpiryMillis > 0 && TimeUtils.millis() >= statusExpiryMillis) {
       status.setText("");
       statusExpiryMillis = 0;
@@ -71,7 +68,7 @@ public class GameAreaDisplay extends UIComponent {
     super.dispose();
     titleTable.remove();
     statusTable.remove();
-//    status.remove();
+    //    status.remove();
 
   }
 }
