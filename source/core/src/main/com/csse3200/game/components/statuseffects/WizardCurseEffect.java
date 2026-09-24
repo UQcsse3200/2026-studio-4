@@ -2,10 +2,10 @@ package com.csse3200.game.components.statuseffects;
 
 import com.csse3200.game.services.GameTime;
 
-/** The small curse from wizard bullet. It make walk slow and dash cannot work. */
+/** The small curse from a wizard projectile. It moderately slows movement. */
 public class WizardCurseEffect implements StatusEffect {
   public static final long DURATION = 3000L;
-  private static final float MOVE_MULTIPLIER = 0.45f;
+  private static final float MOVE_MULTIPLIER = 0.725f;
 
   private final GameTime time;
   private final long startTime;
@@ -35,10 +35,5 @@ public class WizardCurseEffect implements StatusEffect {
       return MOVE_MULTIPLIER;
     }
     return 1f;
-  }
-
-  @Override
-  public boolean disablesDash() {
-    return true;
   }
 }
