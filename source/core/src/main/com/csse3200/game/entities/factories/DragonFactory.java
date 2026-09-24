@@ -4,11 +4,16 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
+import com.csse3200.game.components.miniboss.dragon.DragonAnimationController;
+import com.csse3200.game.components.miniboss.dragon.DragonAttackCoordinatorComponent;
 import com.csse3200.game.components.miniboss.dragon.DragonCloudDashComponent;
 import com.csse3200.game.components.miniboss.dragon.DragonCloudDashDamageComponent;
 import com.csse3200.game.components.miniboss.dragon.DragonCloudDashMovementComponent;
 import com.csse3200.game.components.miniboss.dragon.DragonCloudDashVisualComponent;
+import com.csse3200.game.components.miniboss.dragon.DragonEnrageVisualComponent;
 import com.csse3200.game.components.miniboss.dragon.DragonPhaseComponent;
+import com.csse3200.game.components.miniboss.dragon.DragonStormZoneComponent;
+import com.csse3200.game.components.miniboss.dragon.DragonStormZoneVisualComponent;
 import com.csse3200.game.components.miniboss.dragon.DragonThunderOrbComponent;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.entities.Entity;
@@ -90,7 +95,12 @@ public final class DragonFactory {
         .addComponent(new DragonCloudDashComponent(target))
         .addComponent(new DragonCloudDashMovementComponent())
         .addComponent(new DragonCloudDashDamageComponent(target))
-        .addComponent(new DragonCloudDashVisualComponent());
+        .addComponent(new DragonCloudDashVisualComponent())
+        .addComponent(new DragonStormZoneComponent(target))
+        .addComponent(new DragonStormZoneVisualComponent())
+        .addComponent(new DragonAttackCoordinatorComponent(target))
+        .addComponent(new DragonAnimationController())
+        .addComponent(new DragonEnrageVisualComponent());
     return dragon;
   }
 }

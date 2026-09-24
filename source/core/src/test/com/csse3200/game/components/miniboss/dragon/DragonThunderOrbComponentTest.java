@@ -1,5 +1,6 @@
 package com.csse3200.game.components.miniboss.dragon;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -63,6 +64,13 @@ class DragonThunderOrbComponentTest {
     List<Runnable> tasks = new ArrayList<>(queuedTasks);
     queuedTasks.clear();
     tasks.forEach(Runnable::run);
+  }
+
+  private void enterPhaseTwo() {
+    DragonPhaseComponent phase = new DragonPhaseComponent();
+    dragon.addComponent(phase);
+    phase.create();
+    dragonStats.setHealth(250);
   }
 
   @Test
@@ -195,5 +203,102 @@ class DragonThunderOrbComponentTest {
 
     assertTrue(queuedTasks.isEmpty());
     assertTrue(spawnedOrbs.isEmpty());
+  }
+
+  @Test
+  void shouldFireTwoSeparatedShotsInPhaseTwo() {
+    enterPhaseTwo();
+
+    try (MockedStatic<ThunderOrbFactory> factory = mockStatic(ThunderOrbFactory.class)) {
+      factory
+          .when(() -> ThunderOrbFactory.createThunderOrb(any(Vector2.class), eq(target)))
+          .thenAnswer(invocation -> new Entity());
+
+      assertTrue(attack.tryAttack());
+      runQueuedTasks();
+      assertEquals(1, spawnedOrbs.size());
+
+      attack.update(0.2f);
+      runQueuedTasks();
+      assertEquals(1, spawnedOrbs.size());
+
+      attack.update(0.16f);
+      runQueuedTasks();
+      assertEquals(2, spawnedOrbs.size());
+
+      attack.update(5f);
+      runQueuedTasks();
+      assertEquals(2, spawnedOrbs.size());
+    }
+  }
+
+  @Test
+  void shouldNotAddSecondShotWhenPhaseChangesDuringAttack() {
+    DragonPhaseComponent phase = new DragonPhaseComponent();
+    dragon.addComponent(phase);
+    phase.create();
+
+    try (MockedStatic<ThunderOrbFactory> factory = mockStatic(ThunderOrbFactory.class)) {
+      factory
+          .when(() -> ThunderOrbFactory.createThunderOrb(any(Vector2.class), eq(target)))
+          .thenAnswer(invocation -> new Entity());
+
+      assertTrue(attack.tryAttack());
+      runQueuedTasks();
+
+      dragonStats.setHealth(250);
+      attack.update(1f);
+      runQueuedTasks();
+
+      assertEquals(1, spawnedOrbs.size());
+    }
+  }
+
+  @Test
+  void shouldCancelQueuedSecondShotWhenDragonDies() {
+    enterPhaseTwo();
+    ThunderOrbHitComponent hit = mock(ThunderOrbHitComponent.class);
+    Entity orb = new Entity().addComponent(hit);
+
+    try (MockedStatic<ThunderOrbFactory> factory = mockStatic(ThunderOrbFactory.class)) {
+      factory
+          .when(() -> ThunderOrbFactory.createThunderOrb(any(Vector2.class), eq(target)))
+          .thenReturn(orb);
+
+      assertTrue(attack.tryAttack());
+      runQueuedTasks();
+      assertEquals(1, spawnedOrbs.size());
+
+      attack.update(0.35f); // Second shot is queued but not created.
+      dragonStats.setHealth(0);
+      runQueuedTasks();
+
+      assertEquals(1, spawnedOrbs.size());
+      verify(hit, times(1)).cancel();
+      assertFalse(attack.isBusy());
+    }
+  }
+
+  @Test
+  void shouldRemainBusyUntilTheProjectileIsDisposed() {
+    Entity orb = new Entity();
+
+    try (MockedStatic<ThunderOrbFactory> factory = mockStatic(ThunderOrbFactory.class)) {
+      factory
+          .when(() -> ThunderOrbFactory.createThunderOrb(any(Vector2.class), eq(target)))
+          .thenReturn(orb);
+
+      assertTrue(attack.tryAttack());
+      assertTrue(attack.isBusy());
+
+      runQueuedTasks();
+      orb.create();
+
+      attack.update(3f);
+      assertTrue(attack.isBusy());
+
+      orb.dispose();
+      assertFalse(attack.isBusy());
+    }
   }
 }

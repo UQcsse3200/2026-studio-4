@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -57,6 +58,11 @@ public class DragonCloudDashMovementComponent extends Component {
 
     if (combatStats.isDead()) {
       dragonCloudDash.stop();
+      stopMovement();
+      return;
+    }
+
+    if (StatusEffectsControllerComponent.isImmobilised(entity)) {
       stopMovement();
       return;
     }

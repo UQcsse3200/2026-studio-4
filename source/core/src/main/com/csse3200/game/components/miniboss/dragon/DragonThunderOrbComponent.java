@@ -11,8 +11,12 @@ import java.util.function.Consumer;
 
 /** Controls thunder orb firing, cooldown, and owner cleanup. */
 public class DragonThunderOrbComponent extends Component {
+  public static final String ATTACK_STARTED = "dragonThunderOrbStarted";
   private static final float COOLDOWN = 2.5f;
+  private static final float BURST_INTERVAL = 0.35f;
 
+  private int shotsRemaining;
+  private float burstRemaining;
   private final Entity target;
   private final Consumer<Entity> projectileSpawner;
   private final List<Entity> activeOrbs = new ArrayList<>();
@@ -49,14 +53,26 @@ public class DragonThunderOrbComponent extends Component {
    * @return whether the attack request was accepted
    */
   public boolean tryAttack() {
-    if (!canFire() || pendingShot || cooldownRemaining > 0f) {
+    if (!canFire() || pendingShot || shotsRemaining > 0 || cooldownRemaining > 0f) {
       return false;
     }
 
-    pendingShot = true;
+    DragonPhaseComponent phase = entity.getComponent(DragonPhaseComponent.class);
+    shotsRemaining = phase != null && phase.isEnraged() ? 2 : 1;
     cooldownRemaining = COOLDOWN;
-    ServiceLocator.getEntityService().schedule(this::fireQueuedShot);
+    queueShot();
+    entity.getEvents().trigger(ATTACK_STARTED);
     return true;
+  }
+
+  private void queueShot() {
+    pendingShot = true;
+    ServiceLocator.getEntityService().schedule(this::fireQueuedShot);
+  }
+
+  /** Includes queued shots, the second-shot delay, and surviving projectiles. */
+  public boolean isBusy() {
+    return pendingShot || shotsRemaining > 0 || !activeOrbs.isEmpty();
   }
 
   private boolean canFire() {
@@ -70,10 +86,12 @@ public class DragonThunderOrbComponent extends Component {
   private void fireQueuedShot() {
     try {
       if (!canFire()) {
+        shotsRemaining = 0;
         return;
       }
 
       Entity orb = ThunderOrbFactory.createThunderOrb(entity.getCenterPosition(), target);
+
       orb.addComponent(
           new Component() {
             @Override
@@ -85,6 +103,11 @@ public class DragonThunderOrbComponent extends Component {
 
       activeOrbs.add(orb);
       projectileSpawner.accept(orb);
+
+      if (!stopped) {
+        shotsRemaining--;
+        burstRemaining = BURST_INTERVAL;
+      }
     } finally {
       pendingShot = false;
     }
@@ -97,11 +120,29 @@ public class DragonThunderOrbComponent extends Component {
 
   /** Advances the cooldown without automatically starting another attack. */
   public void update(float delta) {
-    if (stopped || !Float.isFinite(delta) || delta <= 0f) {
+    if (stopped) {
+      return;
+    }
+
+    if (!canFire()) {
+      stop();
+      return;
+    }
+
+    if (!Float.isFinite(delta) || delta <= 0f) {
       return;
     }
 
     cooldownRemaining = Math.max(0f, cooldownRemaining - delta);
+
+    if (pendingShot || shotsRemaining == 0) {
+      return;
+    }
+
+    burstRemaining = Math.max(0f, burstRemaining - delta);
+    if (burstRemaining == 0f) {
+      queueShot();
+    }
   }
 
   /** Permanently stops firing and cancels all owned thunder orbs. */
@@ -111,6 +152,8 @@ public class DragonThunderOrbComponent extends Component {
     }
 
     stopped = true;
+    shotsRemaining = 0;
+    burstRemaining = 0f;
     for (Entity orb : new ArrayList<>(activeOrbs)) {
       orb.getComponent(ThunderOrbHitComponent.class).cancel();
     }

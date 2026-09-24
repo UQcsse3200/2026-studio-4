@@ -12,6 +12,7 @@ import java.util.List;
 
 /** Fixed storm warnings followed by one damage attempt per zone. */
 public class DragonStormZoneComponent extends Component {
+  public static final String ATTACK_STARTED = "dragonStormZoneStarted";
   public static final float RADIUS = 1f;
   private static final float WARNING_TIME = 1f;
   private static final float SECOND_ZONE_DELAY = 0.35f;
@@ -69,6 +70,7 @@ public class DragonStormZoneComponent extends Component {
     secondPending = phase.isEnraged();
     secondRemaining = SECOND_ZONE_DELAY;
     cooldown = COOLDOWN;
+    entity.getEvents().trigger(ATTACK_STARTED);
     return true;
   }
 

@@ -2,6 +2,8 @@ package com.csse3200.game.components.miniboss.dragon;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -9,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -257,5 +260,28 @@ class DragonCloudDashMovementComponentTest {
     movement.update(1f);
 
     assertEquals(60, targetStats.getHealth());
+  }
+
+  @Test
+  void shouldPauseDashWhileImmobilisedWithoutResettingDistance() {
+    StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
+    dragon.addComponent(effects);
+
+    startDash();
+    movement.update(0.1f);
+    assertEquals(0.6f, dragon.getPosition().x, 0.001f);
+
+    when(effects.isImmobilised()).thenReturn(true);
+    movement.update(1f);
+
+    assertEquals(0.6f, dragon.getPosition().x, 0.001f);
+    assertEquals(new Vector2(), body.getLinearVelocity());
+    assertEquals(DragonCloudDashComponent.State.DASHING, dash.getState());
+
+    when(effects.isImmobilised()).thenReturn(false);
+    movement.update(1f);
+
+    assertEquals(3f, dragon.getPosition().x, 0.001f);
+    assertEquals(DragonCloudDashComponent.State.RECOVERING, dash.getState());
   }
 }

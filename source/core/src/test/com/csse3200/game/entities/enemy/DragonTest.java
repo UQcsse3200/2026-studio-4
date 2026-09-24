@@ -8,6 +8,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.miniboss.dragon.*;
+import com.csse3200.game.components.miniboss.dragon.DragonEnrageVisualComponent;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DragonConfig;
@@ -147,5 +148,49 @@ class DragonTest {
     assertNotNull(dragon.getComponent(DragonCloudDashDamageComponent.class));
     assertNotNull(dragon.getComponent(DragonCloudDashVisualComponent.class));
     assertTrue(spawnedProjectiles.isEmpty());
+  }
+
+  @Test
+  void shouldAttachStormWithoutStartingAnAttack() {
+    Entity target = new Entity().addComponent(new CombatStatsComponent(100, 10));
+    List<Entity> spawnedProjectiles = new ArrayList<>();
+
+    Entity dragon = DragonFactory.createDragon(target, spawnedProjectiles::add);
+
+    DragonStormZoneComponent storm = dragon.getComponent(DragonStormZoneComponent.class);
+
+    assertNotNull(storm);
+    assertNotNull(dragon.getComponent(DragonStormZoneVisualComponent.class));
+    assertTrue(storm.getZones().isEmpty());
+    assertTrue(spawnedProjectiles.isEmpty());
+  }
+
+  @Test
+  void shouldAttachAttackCoordinatorWithoutFiringDuringConstruction() {
+    Entity target = new Entity().addComponent(new CombatStatsComponent(100, 10));
+    List<Entity> spawnedProjectiles = new ArrayList<>();
+
+    Entity dragon = DragonFactory.createDragon(target, spawnedProjectiles::add);
+
+    assertNotNull(dragon.getComponent(DragonAttackCoordinatorComponent.class));
+    assertTrue(spawnedProjectiles.isEmpty());
+  }
+
+  @Test
+  void shouldAttachAnimationController() {
+    Entity target = new Entity().addComponent(new CombatStatsComponent(100, 10));
+
+    Entity dragon = DragonFactory.createDragon(target, projectile -> {});
+
+    assertNotNull(dragon.getComponent(DragonAnimationController.class));
+  }
+
+  @Test
+  void shouldAttachEnrageVisual() {
+    Entity target = new Entity().addComponent(new CombatStatsComponent(100, 10));
+
+    Entity dragon = DragonFactory.createDragon(target, projectile -> {});
+
+    assertNotNull(dragon.getComponent(DragonEnrageVisualComponent.class));
   }
 }
