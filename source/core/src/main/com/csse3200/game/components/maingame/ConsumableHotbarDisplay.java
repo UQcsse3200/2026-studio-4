@@ -1,6 +1,7 @@
 package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
+import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.ConsumableSelectionComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
@@ -32,6 +34,7 @@ public class ConsumableHotbarDisplay extends UIComponent {
   private final Entity player;
   private final InventoryComponent inventoryComponent;
   private final ConsumableSelectionComponent selection;
+  private final ConsumableEffectComponent effects;
   private final Image[] frames = new Image[ConsumableSelectionComponent.SLOTS.length];
   private final Image[] icons = new Image[ConsumableSelectionComponent.SLOTS.length];
   private final Label[] counts = new Label[ConsumableSelectionComponent.SLOTS.length];
@@ -41,12 +44,14 @@ public class ConsumableHotbarDisplay extends UIComponent {
   private Table root;
   private Texture regularFrame;
   private Texture selectedFrame;
+  private Texture ringPixel;
   private boolean disposed;
 
   public ConsumableHotbarDisplay(Entity player) {
     this.player = Objects.requireNonNull(player);
     inventoryComponent = Objects.requireNonNull(player.getComponent(InventoryComponent.class));
     selection = Objects.requireNonNull(player.getComponent(ConsumableSelectionComponent.class));
+    effects = Objects.requireNonNull(player.getComponent(ConsumableEffectComponent.class));
   }
 
   @Override
@@ -57,6 +62,11 @@ public class ConsumableHotbarDisplay extends UIComponent {
         ServiceLocator.getResourceService().getAsset(SELECTED_FRAME_TEXTURE, Texture.class);
     regularFrame.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
     selectedFrame.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+    Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+    pixmap.setColor(Color.WHITE);
+    pixmap.fill();
+    ringPixel = new Texture(pixmap);
+    pixmap.dispose();
     buildActors();
     refreshSelection(selection.getSelectedType());
     for (int i = 0; i < ConsumableSelectionComponent.SLOTS.length; i++) {
@@ -91,6 +101,9 @@ public class ConsumableHotbarDisplay extends UIComponent {
       slot.setName("consumable-slot-" + type.name().toLowerCase());
       frames[i] = new Image(regularFrame);
       slot.add(frames[i]);
+      if (type == ItemType.SPEED_POTION) {
+        slot.add(new SpeedPotionTimerRing(effects, ringPixel));
+      }
 
       Texture texture =
           ServiceLocator.getResourceService().getAsset(type.getTexturePath(), Texture.class);
@@ -186,6 +199,9 @@ public class ConsumableHotbarDisplay extends UIComponent {
     disposed = true;
     if (root != null) {
       root.remove();
+    }
+    if (ringPixel != null) {
+      ringPixel.dispose();
     }
     super.dispose();
   }
