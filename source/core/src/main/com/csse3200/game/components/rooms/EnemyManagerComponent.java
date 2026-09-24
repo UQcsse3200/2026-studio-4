@@ -13,13 +13,13 @@ import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.items.ItemDropSpec;
+import com.csse3200.game.items.ItemType;
 import com.csse3200.game.items.LootTable;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.random.RandomGenerator;
@@ -192,8 +192,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     }
     // Capture before deferred disposal or room changes can move/remove the enemy.
     Vector2 position = enemy.getPosition().cpy();
-    ServiceLocator.getEntityService()
-        .schedule(() -> spawnDropsForDefeatedEnemy(enemyType, position));
+    spawnEnemyDrops(enemyType, position);
     if (activeEnemies.isEmpty()) {
       entity.getEvents().trigger("roomCleared");
     }
@@ -205,19 +204,38 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     spawnEntity(child);
   }
 
-  /** Chooses the defeated enemy's loot, creates its items, and registers them with this room. */
-  public List<Entity> spawnDropsForDefeatedEnemy(String enemyType, Vector2 position) {
+  /** Spawns one caller-selected item at a world position. */
+  public void spawnItem(ItemType itemType, Vector2 position) {
+    spawnItem(itemType, 1, position);
+  }
+
+  /** Creates and registers room-owned items after the current update is safe for spawning. */
+  public void spawnItem(ItemType itemType, int quantity, Vector2 position) {
     if (disposed) {
-      return List.of();
+      return;
     }
-    List<Entity> drops = new ArrayList<>();
+    Objects.requireNonNull(itemType, "itemType cannot be null");
+    Vector2 spawnPosition = Objects.requireNonNull(position, "position cannot be null").cpy();
+    if (quantity <= 0) {
+      throw new IllegalArgumentException("quantity must be positive");
+    }
+    ServiceLocator.getEntityService()
+        .schedule(
+            () -> {
+              if (disposed) {
+                return;
+              }
+              for (Entity item : ItemFactory.createDrops(itemType, quantity, spawnPosition)) {
+                spawnEntity(item);
+              }
+            });
+  }
+
+  /** Selects enemy-specific loot and sends each item through the shared room spawn path. */
+  private void spawnEnemyDrops(String enemyType, Vector2 position) {
     for (ItemDropSpec spec : lootTable.forEnemy(enemyType).roll(random)) {
-      drops.addAll(ItemFactory.createDrops(spec.itemType(), spec.quantity(), position));
+      spawnItem(spec.itemType(), spec.quantity(), position);
     }
-    for (Entity drop : drops) {
-      spawnEntity(drop);
-    }
-    return drops;
   }
 
   /** Returns whether the room has any living enemies. */

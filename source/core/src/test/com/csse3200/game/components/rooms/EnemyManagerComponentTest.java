@@ -29,6 +29,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.random.RandomGenerator;
 import org.junit.jupiter.api.BeforeEach;
@@ -150,6 +151,23 @@ class EnemyManagerComponentTest {
   }
 
   @Test
+  void shouldSpawnChosenRoomItemWithoutEnemyDeath() {
+    Vector2 position = new Vector2(3f, 4f);
+
+    enemyManager.spawnItem(ItemType.HEALTH_POTION, position);
+    verify(entityService, never()).register(Mockito.any(Entity.class));
+    position.set(9f, 9f);
+    entityService.update();
+
+    assertEquals(1, entityService.getEntities().size);
+    Entity item = entityService.getEntities().first();
+    assertEquals(ItemType.HEALTH_POTION, item.getComponent(ItemComponent.class).getItemType());
+    assertEquals(new Vector2(3f, 4f), item.getPosition());
+    enemyManager.dispose();
+    verify(entityService).unregister(item);
+  }
+
+  @Test
   void shouldUseEnemyTypeRulesAtDeathWithoutChangingSpawnDrops() {
     LootTable table = singleItemTable(ItemType.HEALTH_POTION);
     table.enemyRules =
@@ -212,9 +230,17 @@ class EnemyManagerComponentTest {
     table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemType.SPEED_CHARM, 1, 2, 2)};
     enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(0), table);
     enemyManager.setEntity(room);
+    Entity enemy = new Entity();
+    enemyManager.track(enemy, "GOLEM");
 
-    List<Entity> drops = enemyManager.spawnDropsForDefeatedEnemy("GOLEM", new Vector2(3f, 4f));
+    enemy.setPosition(3f, 4f);
+    enemy.getEvents().trigger("entityDied");
+    entityService.update();
 
+    List<Entity> drops = new ArrayList<>();
+    for (Entity drop : entityService.getEntities()) {
+      drops.add(drop);
+    }
     assertEquals(2, drops.size());
     for (Entity drop : drops) {
       assertEquals(ItemType.SPEED_CHARM, drop.getComponent(ItemComponent.class).getItemType());
@@ -230,8 +256,12 @@ class EnemyManagerComponentTest {
     table.noDropWeight = 1;
     enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(0), table);
     enemyManager.setEntity(room);
+    Entity enemy = new Entity();
+    enemyManager.track(enemy, "GOLEM");
 
-    assertTrue(enemyManager.spawnDropsForDefeatedEnemy("GOLEM", new Vector2()).isEmpty());
+    enemy.getEvents().trigger("entityDied");
+    entityService.update();
+    assertTrue(entityService.getEntities().isEmpty());
     verify(entityService, never()).register(Mockito.any(Entity.class));
   }
 
