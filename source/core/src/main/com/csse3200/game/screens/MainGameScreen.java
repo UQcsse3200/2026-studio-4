@@ -58,6 +58,8 @@ public class MainGameScreen extends ScreenAdapter {
     "images/speed_potion_pixel.png",
     "images/strength_potion_pixel.png",
     "images/freeze_bomb_pixel.png",
+    ConsumableHotbarDisplay.IDLE_FRAME_TEXTURE,
+    ConsumableHotbarDisplay.SELECTED_FRAME_TEXTURE,
     "images/gold_coin_pixel.png"
   };
   private static final String[] mainGameTextureAtlases = {"images/idle_down.atlas"};

@@ -1,7 +1,6 @@
 package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -24,12 +23,12 @@ import java.util.Objects;
 
 /** A compact consumable bar on the lower half of the right side of the game UI. */
 public class ConsumableHotbarDisplay extends UIComponent {
+  public static final String IDLE_FRAME_TEXTURE = "images/consumable-slot-idle.png";
+  public static final String SELECTED_FRAME_TEXTURE = "images/consumable-slot-selected.png";
   private static final float SLOT_SIZE = 72f;
   private static final float SLOT_GAP = 6f;
   private static final float RIGHT_INSET = 24f;
   private static final float BOTTOM_FRACTION = 0.16f;
-  private static final Color EMPTY_ICON = new Color(0.65f, 0.65f, 0.65f, 0.8f);
-
   private final Entity player;
   private final InventoryComponent inventoryComponent;
   private final ConsumableSelectionComponent selection;
@@ -38,6 +37,7 @@ public class ConsumableHotbarDisplay extends UIComponent {
   private final Label[] counts = new Label[ConsumableSelectionComponent.SLOTS.length];
   private final Label[] pointers = new Label[ConsumableSelectionComponent.SLOTS.length];
   private final Label[] useHints = new Label[ConsumableSelectionComponent.SLOTS.length];
+  private final int[] slotCounts = new int[ConsumableSelectionComponent.SLOTS.length];
   private Table root;
   private Texture regularFrame;
   private Texture selectedFrame;
@@ -52,8 +52,11 @@ public class ConsumableHotbarDisplay extends UIComponent {
   @Override
   public void create() {
     super.create();
-    regularFrame = createFrame(false);
-    selectedFrame = createFrame(true);
+    regularFrame = ServiceLocator.getResourceService().getAsset(IDLE_FRAME_TEXTURE, Texture.class);
+    selectedFrame =
+        ServiceLocator.getResourceService().getAsset(SELECTED_FRAME_TEXTURE, Texture.class);
+    regularFrame.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+    selectedFrame.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
     buildActors();
     refreshSelection(selection.getSelectedType());
     for (int i = 0; i < ConsumableSelectionComponent.SLOTS.length; i++) {
@@ -101,7 +104,7 @@ public class ConsumableHotbarDisplay extends UIComponent {
       counts[i] = label("0", 0.55f);
       counts[i].setName("consumable-count-" + type.name().toLowerCase());
       Table countLayer = new Table();
-      countLayer.bottom().right().add(counts[i]).padRight(7f).padBottom(4f);
+      countLayer.bottom().right().add(counts[i]).padRight(13f).padBottom(11f);
       slot.add(countLayer);
 
       pointers[i] = label(">", 0.8f);
@@ -147,7 +150,7 @@ public class ConsumableHotbarDisplay extends UIComponent {
       boolean active = ConsumableSelectionComponent.SLOTS[i] == selected;
       frames[i].setDrawable(new TextureRegionDrawable(active ? selectedFrame : regularFrame));
       pointers[i].setVisible(active);
-      useHints[i].setVisible(active);
+      useHints[i].setVisible(active && slotCounts[i] > 0);
     }
   }
 
@@ -157,34 +160,15 @@ public class ConsumableHotbarDisplay extends UIComponent {
     }
     for (int i = 0; i < ConsumableSelectionComponent.SLOTS.length; i++) {
       if (ConsumableSelectionComponent.SLOTS[i] == type) {
+        slotCounts[i] = count;
         counts[i].setText(Integer.toString(count));
-        icons[i].setColor(count > 0 ? Color.WHITE : EMPTY_ICON);
+        boolean occupied = count > 0;
+        counts[i].setVisible(occupied);
+        icons[i].setVisible(occupied);
+        useHints[i].setVisible(occupied && selection.getSelectedType() == type);
         return;
       }
     }
-  }
-
-  private static Texture createFrame(boolean selected) {
-    Pixmap pixmap = new Pixmap(64, 64, Pixmap.Format.RGBA8888);
-    pixmap.setColor(0f, 0f, 0f, 0f);
-    pixmap.fill();
-    pixmap.setColor(
-        selected ? new Color(0.99f, 0.75f, 0.22f, 1f) : new Color(0.48f, 0.28f, 0.13f, 1f));
-    pixmap.fillRectangle(2, 2, 60, 60);
-    pixmap.setColor(selected ? new Color(1f, 0.91f, 0.48f, 1f) : new Color(0.7f, 0.43f, 0.2f, 1f));
-    pixmap.drawRectangle(4, 4, 56, 56);
-    pixmap.setColor(0.12f, 0.1f, 0.11f, 0.96f);
-    pixmap.fillRectangle(8, 8, 48, 48);
-    pixmap.setColor(selected ? Color.GOLD : new Color(0.63f, 0.42f, 0.24f, 1f));
-    for (int x : new int[] {6, 57}) {
-      for (int y : new int[] {6, 57}) {
-        pixmap.fillCircle(x, y, 3);
-      }
-    }
-    Texture texture = new Texture(pixmap);
-    texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-    pixmap.dispose();
-    return texture;
   }
 
   @Override
@@ -202,12 +186,6 @@ public class ConsumableHotbarDisplay extends UIComponent {
     disposed = true;
     if (root != null) {
       root.remove();
-    }
-    if (regularFrame != null) {
-      regularFrame.dispose();
-    }
-    if (selectedFrame != null) {
-      selectedFrame.dispose();
     }
     super.dispose();
   }
