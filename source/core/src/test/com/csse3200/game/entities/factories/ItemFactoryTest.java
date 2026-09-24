@@ -13,10 +13,13 @@ import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.items.ItemSpinComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.CurrencyItem;
 import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.consumables.InstantHealingPotion;
+import com.csse3200.game.items.consumables.ShieldPotion;
+import com.csse3200.game.items.consumables.SpeedPotion;
+import com.csse3200.game.items.consumables.StrengthPotion;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -85,7 +88,10 @@ class ItemFactoryTest {
   void shouldCreateConsumableThroughTheSameRegistry() {
     Entity potion = ItemFactory.createDrops(ItemType.HEALTH_POTION, 1, new Vector2()).get(0);
     assertEquals(
-        ConsumableItem.class, potion.getComponent(ItemComponent.class).getItem().getClass());
+        InstantHealingPotion.class, potion.getComponent(ItemComponent.class).getItem().getClass());
+    assertEquals(ShieldPotion.class, ItemType.SHIELD.createItem(1).getClass());
+    assertEquals(SpeedPotion.class, ItemType.SPEED_POTION.createItem(1).getClass());
+    assertEquals(StrengthPotion.class, ItemType.STRENGTH_POTION.createItem(1).getClass());
   }
 
   @Test

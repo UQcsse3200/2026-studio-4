@@ -78,6 +78,32 @@ class ConsumableUseIntegrationTest {
   }
 
   @Test
+  void mediumAndLargeInstantPotionsHealTheirOwnAmounts() {
+    stats.setHealth(10);
+    inventory.addConsumable(ItemType.MEDIUM_HEALTH_POTION);
+    inventory.addConsumable(ItemType.LARGE_HEALTH_POTION);
+
+    assertTrue(consumables.tryUse(ItemType.MEDIUM_HEALTH_POTION));
+    assertEquals(60, stats.getHealth());
+    assertEquals(0, inventory.getConsumableCount(ItemType.MEDIUM_HEALTH_POTION));
+    assertTrue(consumables.tryUse(ItemType.LARGE_HEALTH_POTION));
+    assertEquals(100, stats.getHealth());
+    assertEquals(0, inventory.getConsumableCount(ItemType.LARGE_HEALTH_POTION));
+  }
+
+  @Test
+  void fullHealthDoesNotConsumeAnyInstantPotionSize() {
+    for (ItemType type :
+        new ItemType[] {
+          ItemType.HEALTH_POTION, ItemType.MEDIUM_HEALTH_POTION, ItemType.LARGE_HEALTH_POTION
+        }) {
+      inventory.addConsumable(type);
+      assertFalse(consumables.tryUse(type));
+      assertEquals(1, inventory.getConsumableCount(type));
+    }
+  }
+
+  @Test
   void shieldBlocksActualDamageAndExpiresBeforeControllerTick() {
     inventory.addConsumable(ItemType.SHIELD);
     assertTrue(consumables.tryUse(ItemType.SHIELD));

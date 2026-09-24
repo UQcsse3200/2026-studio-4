@@ -3,6 +3,10 @@ package com.csse3200.game.items;
 import com.csse3200.game.items.charms.AttackSpeedCharm;
 import com.csse3200.game.items.charms.SpeedCharm;
 import com.csse3200.game.items.charms.StrengthCharm;
+import com.csse3200.game.items.consumables.InstantHealingPotion;
+import com.csse3200.game.items.consumables.ShieldPotion;
+import com.csse3200.game.items.consumables.SpeedPotion;
+import com.csse3200.game.items.consumables.StrengthPotion;
 import java.util.function.BiFunction;
 
 /**
@@ -31,29 +35,41 @@ public enum ItemType {
       ItemCategory.CHARM,
       (type, quantity) -> new AttackSpeedCharm()),
   HEALTH_POTION(
-      "Health Potion",
-      "Restores health when consumed.",
+      "Small Health Potion",
+      "Restores 25 health when consumed.",
       "images/health_potion_pixel.png",
       ItemCategory.CONSUMABLE,
-      ConsumableItem::new),
+      (type, quantity) -> new InstantHealingPotion(type, quantity, 25)),
+  MEDIUM_HEALTH_POTION(
+      "Medium Health Potion",
+      "Restores 50 health when consumed.",
+      "images/health_potion_pixel.png",
+      ItemCategory.CONSUMABLE,
+      (type, quantity) -> new InstantHealingPotion(type, quantity, 50)),
+  LARGE_HEALTH_POTION(
+      "Large Health Potion",
+      "Restores 100 health when consumed.",
+      "images/health_potion_pixel.png",
+      ItemCategory.CONSUMABLE,
+      (type, quantity) -> new InstantHealingPotion(type, quantity, 100)),
   SHIELD(
       "Shield",
       "Provides temporary protection when consumed.",
       "images/shield_consumable_pixel.png",
       ItemCategory.CONSUMABLE,
-      ConsumableItem::new),
+      (type, quantity) -> new ShieldPotion(type, quantity, 8000)),
   SPEED_POTION(
       "Speed Potion",
       "Temporarily increases movement speed.",
       "images/speed_potion_pixel.png",
       ItemCategory.CONSUMABLE,
-      ConsumableItem::new),
+      (type, quantity) -> new SpeedPotion(type, quantity, 8000)),
   STRENGTH_POTION(
       "Strength Potion",
       "Temporarily increases attack strength.",
       "images/strength_potion_pixel.png",
       ItemCategory.CONSUMABLE,
-      ConsumableItem::new),
+      (type, quantity) -> new StrengthPotion(type, quantity, 8000)),
   GOLD_COIN(
       "Gold Coin",
       "Currency dropped by defeated enemies.",

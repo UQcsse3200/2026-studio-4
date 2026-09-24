@@ -1,11 +1,15 @@
 package com.csse3200.game.items;
 
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.statuseffects.TimedStatusEffect;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.services.GameTime;
 import java.util.Objects;
 
-/** Stackable consumable in the world; using it is handled by the player's effect component. */
-public final class ConsumableItem extends Item {
+/** Shared pickup and inventory behaviour for consumables with subtype-specific use effects. */
+public abstract class ConsumableItem extends Item {
   private final ItemType itemType;
   private final int quantity;
 
@@ -31,6 +35,15 @@ public final class ConsumableItem extends Item {
   public int getQuantity() {
     return quantity;
   }
+
+  /** Whether this item can be consumed with the player's current state. */
+  public boolean canUse(
+      CombatStatsComponent stats, StatusEffectsControllerComponent effects, GameTime time) {
+    return effects != null && !effects.isDisposed() && time != null;
+  }
+
+  /** Applies the item's effect; timed effects are registered by the use component. */
+  public abstract TimedStatusEffect use(CombatStatsComponent stats, GameTime time);
 
   @Override
   public void pickUp(Entity player) {

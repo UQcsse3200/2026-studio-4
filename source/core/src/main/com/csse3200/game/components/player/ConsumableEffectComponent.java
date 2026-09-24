@@ -2,11 +2,9 @@ package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.Damage;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
-import com.csse3200.game.components.statuseffects.Damageable;
-import com.csse3200.game.components.statuseffects.Stat;
 import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.ItemType;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
@@ -21,7 +19,6 @@ import java.util.Map;
 public class ConsumableEffectComponent extends Component {
   public static final String USE_REQUEST = "useConsumable";
   public static final String USED = "itemUsed";
-  public static final long DURATION_MS = 8000;
   private final Map<ItemType, TimedStatusEffect> active = new EnumMap<>(ItemType.class);
   private CombatStatsComponent stats;
   private InventoryComponent inventory;
@@ -56,28 +53,23 @@ public class ConsumableEffectComponent extends Component {
         || !inventory.hasConsumable(type)) {
       return false;
     }
-    if (type == ItemType.HEALTH_POTION) {
-      if (stats.getHealth() >= stats.getMaxHealth()) {
-        return false;
-      }
-    } else if (effects == null || effects.isDisposed() || time == null) {
+    ConsumableItem item = (ConsumableItem) type.createItem(1);
+    if (!item.canUse(stats, effects, time)) {
       return false;
     }
     if (!inventory.removeConsumable(type)) {
       return false;
     }
-    if (type == ItemType.HEALTH_POTION) {
-      stats.addHealth(25);
-    } else {
-      refresh(type);
+    TimedStatusEffect effect = item.use(stats, time);
+    if (effect != null) {
+      refresh(type, effect);
     }
     entity.getEvents().trigger(USED, type);
     return true;
   }
 
-  private void refresh(ItemType type) {
+  private void refresh(ItemType type, TimedStatusEffect effect) {
     effects.removeStatusEffect(active.remove(type));
-    TimedStatusEffect effect = new ConsumableBuff(time, type);
     active.put(type, effect);
     effect.setOnEnded(
         () -> {
@@ -115,31 +107,5 @@ public class ConsumableEffectComponent extends Component {
       }
     }
     active.clear();
-  }
-
-  /** Refreshable consumable modifiers use the shared status and damage interfaces. */
-  private static final class ConsumableBuff extends TimedStatusEffect implements Damageable {
-    private final ItemType type;
-
-    ConsumableBuff(GameTime time, ItemType type) {
-      super(time, DURATION_MS);
-      this.type = type;
-    }
-
-    @Override
-    public float getStatMultiplier(Stat stat) {
-      return (type == ItemType.STRENGTH_POTION && stat == Stat.ATTACK)
-              || (type == ItemType.SPEED_POTION && stat == Stat.MOVEMENT_SPEED)
-          ? 1.5f
-          : 1f;
-    }
-
-    @Override
-    public boolean damage(Damage damage) {
-      if (type == ItemType.SHIELD && !isExpired()) {
-        damage.setDamage(0);
-      }
-      return false;
-    }
   }
 }
