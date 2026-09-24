@@ -11,7 +11,7 @@ import java.util.Objects;
  * assistance from OpenAI Codex and reviewed by Yuezhou Wang.
  *
  * @param itemType item selected by the caller
- * @param quantity positive quantity represented by the world entity
+ * @param quantity positive unit count; Charms become separate world entities
  */
 public record ItemDropSpec(ItemType itemType, int quantity) {
   public ItemDropSpec {

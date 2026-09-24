@@ -7,6 +7,8 @@ import com.csse3200.game.items.consumables.InstantHealingPotion;
 import com.csse3200.game.items.consumables.ShieldPotion;
 import com.csse3200.game.items.consumables.SpeedPotion;
 import com.csse3200.game.items.consumables.StrengthPotion;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
 
 /**
@@ -102,6 +104,21 @@ public enum ItemType {
       throw new IllegalArgumentException("Invalid quantity for " + this + ": " + quantity);
     }
     return creator.apply(this, quantity);
+  }
+
+  /** Creates distinct Charms, or one stackable item containing the requested quantity. */
+  public List<Item> createItems(int quantity) {
+    if (quantity <= 0) {
+      throw new IllegalArgumentException("Invalid quantity for " + this + ": " + quantity);
+    }
+    if (category != ItemCategory.CHARM) {
+      return List.of(createItem(quantity));
+    }
+    List<Item> items = new ArrayList<>(quantity);
+    for (int i = 0; i < quantity; i++) {
+      items.add(createItem(1));
+    }
+    return items;
   }
 
   public String getDisplayName() {

@@ -1,10 +1,13 @@
 package com.csse3200.game.items;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class ItemTypeTest {
@@ -34,5 +37,19 @@ class ItemTypeTest {
   void shouldRejectInvalidItemQuantities() {
     assertThrows(IllegalArgumentException.class, () -> ItemType.GOLD_COIN.createItem(0));
     assertThrows(IllegalArgumentException.class, () -> ItemType.SPEED_CHARM.createItem(2));
+    assertThrows(IllegalArgumentException.class, () -> ItemType.SPEED_CHARM.createItems(0));
+  }
+
+  @Test
+  void shouldExpandCharmsButKeepConsumablesAsOneStack() {
+    List<Item> charms = ItemType.SPEED_CHARM.createItems(2);
+    assertEquals(2, charms.size());
+    assertNotSame(charms.get(0), charms.get(1));
+    assertEquals(1, charms.get(0).getQuantity());
+    assertEquals(1, charms.get(1).getQuantity());
+
+    List<Item> potions = ItemType.HEALTH_POTION.createItems(2);
+    assertEquals(1, potions.size());
+    assertEquals(2, potions.get(0).getQuantity());
   }
 }

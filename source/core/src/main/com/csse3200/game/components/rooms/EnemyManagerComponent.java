@@ -195,14 +195,16 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     }
     Objects.requireNonNull(itemType, "itemType cannot be null");
     Vector2 spawnPosition = Objects.requireNonNull(position, "position cannot be null").cpy();
-    Item item = itemType.createItem(quantity);
+    var items = itemType.createItems(quantity);
     ServiceLocator.getEntityService()
         .schedule(
             () -> {
               if (disposed) {
                 return;
               }
-              spawnEntity(ItemFactory.createItem(item, spawnPosition));
+              for (Item item : items) {
+                spawnEntity(ItemFactory.createItem(item, spawnPosition));
+              }
             });
   }
 

@@ -38,7 +38,9 @@ public final class ItemFactory {
     Objects.requireNonNull(position, "position cannot be null");
     List<Entity> drops = new ArrayList<>();
     for (ItemDropSpec spec : lootTable.forEnemy(enemyType).roll(random)) {
-      drops.add(createItem(spec.itemType().createItem(spec.quantity()), position));
+      for (Item item : spec.itemType().createItems(spec.quantity())) {
+        drops.add(createItem(item, position));
+      }
     }
     return drops;
   }

@@ -157,7 +157,7 @@ class EnemyManagerComponentTest {
   void shouldSpawnChosenRoomItemWithoutEnemyDeath() {
     Vector2 position = new Vector2(3f, 4f);
 
-    enemyManager.spawnItem(ItemType.HEALTH_POTION, 1, position);
+    enemyManager.spawnItem(ItemType.HEALTH_POTION, 2, position);
     verify(entityService, never()).register(Mockito.any(Entity.class));
     position.set(9f, 9f);
     entityService.update();
@@ -165,9 +165,32 @@ class EnemyManagerComponentTest {
     assertEquals(1, entityService.getEntities().size);
     Entity item = entityService.getEntities().first();
     assertEquals(ItemType.HEALTH_POTION, item.getComponent(ItemComponent.class).getItemType());
+    assertEquals(2, item.getComponent(ItemComponent.class).getQuantity());
     assertEquals(new Vector2(3f, 4f), item.getPosition());
     enemyManager.dispose();
     verify(entityService).unregister(item);
+  }
+
+  @Test
+  void shouldSpawnMultipleSelectedCharmsAsIndependentRoomItems() {
+    Vector2 position = new Vector2(3f, 4f);
+    enemyManager.spawnItem(ItemType.SPEED_CHARM, 2, position);
+    verify(entityService, never()).register(Mockito.any(Entity.class));
+
+    entityService.update();
+
+    assertEquals(2, entityService.getEntities().size);
+    Entity first = entityService.getEntities().get(0);
+    Entity second = entityService.getEntities().get(1);
+    assertNotNull(first.getComponent(ItemComponent.class));
+    assertNotNull(second.getComponent(ItemComponent.class));
+    assertEquals(ItemType.SPEED_CHARM, first.getComponent(ItemComponent.class).getItemType());
+    assertEquals(ItemType.SPEED_CHARM, second.getComponent(ItemComponent.class).getItemType());
+    assertEquals(position, first.getPosition());
+    assertEquals(position, second.getPosition());
+    enemyManager.dispose();
+    verify(entityService).unregister(first);
+    verify(entityService).unregister(second);
   }
 
   @Test
@@ -232,8 +255,7 @@ class EnemyManagerComponentTest {
   @Test
   void shouldSpawnSelectedCharmsAsSeparateRoomOwnedEntities() {
     LootTable table = new LootTable();
-    table.rolls = 2;
-    table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemType.SPEED_CHARM, 1, 1, 1)};
+    table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemType.SPEED_CHARM, 1, 2, 2)};
     enemyManager =
         new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
     enemyManager.setEntity(room);
