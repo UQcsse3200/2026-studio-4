@@ -9,7 +9,6 @@ import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.ConsumableLoadoutComponent;
 import com.csse3200.game.components.player.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InventoryComponent;
-import com.csse3200.game.components.player.InvisibilityPotionComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
@@ -94,7 +93,6 @@ public class PlayerFactory {
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(new ConsumableEffectComponent())
             .addComponent(new ConsumableLoadoutComponent())
-            .addComponent(new InvisibilityPotionComponent())
             .addComponent(new ItemPickupComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())
@@ -122,6 +120,7 @@ public class PlayerFactory {
                 new LightningSpellComponent(5f, 25, 400L, new StrategyWithinRadius(SPELL_RADIUS)))
             .addComponent(
                 new FreezeSpellComponent(5f, 5000L, new StrategyWithinRadius(SPELL_RADIUS)));
+    player.setScale(15f, 15f);
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);

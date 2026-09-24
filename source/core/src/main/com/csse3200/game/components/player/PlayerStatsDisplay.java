@@ -14,30 +14,13 @@ public class PlayerStatsDisplay extends UIComponent {
   private Table table;
   private Label healthValueLabel;
   private Label strengthLabel;
-  private Label invisibilityLabel;
-  private Label invisibilityCooldownLabel;
   private Label movementSpeedLabel;
   private Label attackSpeedLabel;
   private ProgressBar healthBar;
   private int maxHealth;
   private int health;
-  private Label shieldLabel;
-  private ProgressBar shieldBar;
-  private Table shieldTable;
 
   private static final String LABEL_STYLE = "statDisplay";
-
-  /**
-   * Updates the shield value and maximum shown in the player's HUD.
-   *
-   * @param current the shield's current number of points
-   * @param max the shield's maximum number of points
-   */
-  public void updatePlayerShieldUI(int current, int max) {
-    shieldLabel.setText(String.format("Shield: %d / %d", current, max));
-    shieldBar.setRange(0, max);
-    shieldBar.setValue(current);
-  }
 
   /** Creates reusable ui styles and adds actors to the stage. */
   @Override
@@ -50,7 +33,6 @@ public class PlayerStatsDisplay extends UIComponent {
     entity.getEvents().addListener("updateMovementSpeed", this::updatePlayerMovementSpeedUI);
     entity.getEvents().addListener("updateAttackSpeed", this::updatePlayerAttackSpeedUI);
     entity.getEvents().addListener("updateMaxHealth", this::updatePlayerMaxHealthUI);
-    entity.getEvents().addListener("updateShield", this::updatePlayerShieldUI);
   }
 
   /**
@@ -85,11 +67,6 @@ public class PlayerStatsDisplay extends UIComponent {
     healthBar = new ProgressBar(0, maxHealth, 1, false, barStyle);
     healthBar.setValue(health);
     healthBar.setAnimateDuration(0.3f);
-    shieldBar = new ProgressBar(0, 20, 1, false, barStyle);
-    shieldBar.setValue(20);
-    shieldBar.setAnimateDuration(0.2f);
-
-    shieldLabel = new Label("Shield: 20 / 20", skin, LABEL_STYLE);
 
     float barWidth = 100f;
     float barHeight = barWidth / (32f / 5f); // ≈ 40.6f
@@ -119,19 +96,6 @@ public class PlayerStatsDisplay extends UIComponent {
     Image attackSpeedIcon = new Image(hud.getDrawable("as-icon")); // placeholder
     attackSpeedLabel = new Label(String.format("%.1f", stats.getAttackSpeed()), skin, LABEL_STYLE);
     attackSpeedLabel.setFontScale(1f);
-
-    InvisibilityPotionComponent invisibility =
-        entity.getComponent(InvisibilityPotionComponent.class);
-    invisibilityLabel =
-        new Label(
-            invisibility == null ? "Invisibility: Ready" : invisibility.getDurationHudText(),
-            skin,
-            LABEL_STYLE);
-    invisibilityCooldownLabel =
-        new Label(
-            invisibility == null ? "Invis CD: Ready" : invisibility.getCooldownHudText(),
-            skin,
-            LABEL_STYLE);
 
     Table msBlock = new Table();
     msBlock.add(new Label("MS:", skin, LABEL_STYLE));
@@ -174,34 +138,10 @@ public class PlayerStatsDisplay extends UIComponent {
     panel.add(content).expand().top().center();
     table.add(panel).size(panelWidth, panelHeight).top().left().padTop(20f);
 
-    shieldTable = new Table();
-    shieldTable.bottom().left();
-    shieldTable.setFillParent(true);
-    shieldTable.padBottom(25f).padLeft(5f);
-    shieldTable.add(shieldLabel).left();
-    shieldTable.row();
-    shieldTable.add(shieldBar).left();
-    shieldTable.row();
-    shieldTable.add(invisibilityLabel).left();
-    shieldTable.row();
-    shieldTable.add(invisibilityCooldownLabel).left();
-
     if (stage == null) {
       return;
     }
     stage.addActor(table);
-    stage.addActor(shieldTable);
-  }
-
-  @Override
-  public void update() {
-    InvisibilityPotionComponent invisibility =
-        entity.getComponent(InvisibilityPotionComponent.class);
-    if (invisibility == null) {
-      return;
-    }
-    invisibilityLabel.setText(invisibility.getDurationHudText());
-    invisibilityCooldownLabel.setText(invisibility.getCooldownHudText());
   }
 
   @Override
@@ -265,6 +205,5 @@ public class PlayerStatsDisplay extends UIComponent {
   public void dispose() {
     super.dispose();
     table.remove();
-    shieldTable.remove();
   }
 }
