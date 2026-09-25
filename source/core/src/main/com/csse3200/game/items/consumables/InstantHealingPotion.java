@@ -55,7 +55,9 @@ public final class InstantHealingPotion extends ConsumableItem {
     };
   }
 
-  /** Reconstructs custom potion amounts from JSON and inventory IDs; rejects alternate spellings. */
+  /**
+   * Reconstructs custom potion amounts from JSON and inventory IDs; rejects alternate spellings.
+   */
   public static int healingForCustomId(String id) {
     String prefix = "HEALTH_POTION_";
     if (id == null || !id.startsWith(prefix)) {
