@@ -157,6 +157,22 @@ class ConsumableUseIntegrationTest {
   }
 
   @Test
+  void speedPotionProgressTracksActualEffectAndRefreshes() {
+    assertEquals(0f, consumables.getRemainingFraction(ItemType.SPEED_POTION));
+    inventory.addConsumable(ItemType.SPEED_POTION, 2);
+    assertTrue(consumables.tryUse(ItemType.SPEED_POTION));
+    assertEquals(1f, consumables.getRemainingFraction(ItemType.SPEED_POTION));
+
+    now.set(4000);
+    assertEquals(0.5f, consumables.getRemainingFraction(ItemType.SPEED_POTION));
+    assertTrue(consumables.tryUse(ItemType.SPEED_POTION));
+    assertEquals(1f, consumables.getRemainingFraction(ItemType.SPEED_POTION));
+
+    now.set(12000);
+    assertEquals(0f, consumables.getRemainingFraction(ItemType.SPEED_POTION));
+  }
+
+  @Test
   void speedPotionAndCerberusMistHaveIndependentLifetimes() {
     PlayerCerberusMistDebuffComponent mist = new PlayerCerberusMistDebuffComponent();
     player.addComponent(mist);

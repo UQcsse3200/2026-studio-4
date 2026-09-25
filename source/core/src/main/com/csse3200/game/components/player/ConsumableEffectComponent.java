@@ -98,6 +98,15 @@ public class ConsumableEffectComponent extends Component {
         : 0;
   }
 
+  /** Portion of an active timed consumable still remaining, from zero to one. */
+  public float getRemainingFraction(ItemType type) {
+    TimedStatusEffect effect = type == null ? null : active.get(type);
+    long remaining = getRemainingMs(type);
+    return effect == null || effect.getDuration() <= 0
+        ? 0f
+        : Math.min(1f, (float) remaining / effect.getDuration());
+  }
+
   @Override
   public void dispose() {
     disposed = true;
