@@ -8,10 +8,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.CerberusFactory;
-import com.csse3200.game.entities.factories.FinalBossFactory;
-import com.csse3200.game.entities.factories.ItemFactory;
-import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.entities.factories.*;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -132,6 +129,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
         return CerberusFactory.createCerberus(
             target, anchorPoint, this::spawnAndTrackCerberusHead, "images/cerberus.atlas");
+      case DRAGON:
+        return DragonFactory.createDragon(target, this::spawnEntity);
       case FINAL_BOSS:
         Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnEntity);
         if (camera != null) {

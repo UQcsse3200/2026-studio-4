@@ -16,7 +16,11 @@ public class RoomAssetsComponent extends Component {
   private static final String FANTASY_DUNGEON_DOOR = "images/dungeons/fantasy_dreamland_door.png";
 
   private static final String[] TEXTURES = {
-    ROCK_TEXTURE, FANTASY_DUNGEON_TILESET, FANTASY_DUNGEON_DOOR, "images/hole.png"
+    ROCK_TEXTURE,
+    FANTASY_DUNGEON_TILESET,
+    FANTASY_DUNGEON_DOOR,
+    "images/hole.png",
+    "images/dragon/smoke_sheet.png"
   };
   private static final String[] MUSIC = {BACKGROUND_MUSIC};
   private static final String[] SOUNDS = {IMPACT_SOUND};
@@ -33,6 +37,8 @@ public class RoomAssetsComponent extends Component {
     "images/floatingDemon.atlas",
     "images/harpy.atlas",
     "images/cerberus.atlas",
+    "images/dragon/dragon.atlas",
+    "images/dragon/thunder-orb.atlas",
   };
 
   public RoomAssetsComponent() {

@@ -1,0 +1,101 @@
+lightning_orb_loop_B_sheet.png
+size: 700, 100
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+fly
+  rotate: false
+  xy: 0, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: 0
+fly
+  rotate: false
+  xy: 100, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: 1
+fly
+  rotate: false
+  xy: 200, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: 2
+fly
+  rotate: false
+  xy: 300, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: 3
+fly
+  rotate: false
+  xy: 400, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: 4
+fly
+  rotate: false
+  xy: 500, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: 5
+fly
+  rotate: false
+  xy: 600, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: 6
+impact_lightning 1 _B_sheet.png
+size: 600, 100
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+impact
+  rotate: false
+  xy: 0, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: 0
+impact
+  rotate: false
+  xy: 100, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: 1
+impact
+  rotate: false
+  xy: 200, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: 2
+impact
+  rotate: false
+  xy: 300, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: 3
+impact
+  rotate: false
+  xy: 400, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: 4
+impact
+  rotate: false
+  xy: 500, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: 5
