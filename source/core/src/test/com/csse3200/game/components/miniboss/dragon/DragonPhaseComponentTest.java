@@ -35,33 +35,31 @@ class DragonPhaseComponentTest {
 
   @Test
   void shouldStayInPhaseOneAboveHalfHealth() {
-    dragon.create();
-
-    combatStatsComponent.setHealth(251);
-
-    assertEquals(1, dragonPhaseComponent.getCurrentPhase());
-    assertEquals(0, enrageEvents);
+    assertPhaseAfterHealthChanges(251, 1, 0);
   }
 
   @Test
   void shouldEnterPhaseTwoAtExactlyHalfHealth() {
-    dragon.create();
-
-    combatStatsComponent.setHealth(250);
-
-    assertEquals(2, dragonPhaseComponent.getCurrentPhase());
-    assertTrue(dragonPhaseComponent.isEnraged());
-    assertEquals(1, enrageEvents);
+    assertPhaseAfterHealthChanges(250, 2, 1);
   }
 
   @Test
   void shouldEnterPhaseTwoWhenDamageSkipsPastHalfHealth() {
+    assertPhaseAfterHealthChanges(100, 2, 1);
+  }
+
+  @Test
+  void shouldNotEnrageWhenKilledDirectly() {
+    assertPhaseAfterHealthChanges(0, 1, 0);
+  }
+
+  private void assertPhaseAfterHealthChanges(int health, int expectedPhase, int expectedEvents) {
     dragon.create();
+    combatStatsComponent.setHealth(health);
 
-    combatStatsComponent.setHealth(100);
-
-    assertEquals(2, dragonPhaseComponent.getCurrentPhase());
-    assertEquals(1, enrageEvents);
+    assertEquals(expectedPhase, dragonPhaseComponent.getCurrentPhase());
+    assertEquals(expectedPhase == 2, dragonPhaseComponent.isEnraged());
+    assertEquals(expectedEvents, enrageEvents);
   }
 
   @Test
@@ -77,16 +75,6 @@ class DragonPhaseComponentTest {
 
     assertEquals(2, dragonPhaseComponent.getCurrentPhase());
     assertEquals(1, enrageEvents);
-  }
-
-  @Test
-  void shouldNotEnrageWhenKilledDirectly() {
-    dragon.create();
-
-    combatStatsComponent.setHealth(0);
-
-    assertEquals(1, dragonPhaseComponent.getCurrentPhase());
-    assertEquals(0, enrageEvents);
   }
 
   @Test

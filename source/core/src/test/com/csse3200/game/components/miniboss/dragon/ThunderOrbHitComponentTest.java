@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 class ThunderOrbHitComponentTest {
   private Entity orb;
+  private Entity player;
   private CombatStatsComponent playerStats;
   private ThunderOrbMovementComponent movement;
   private ThunderOrbHitComponent hit;
@@ -35,7 +36,7 @@ class ThunderOrbHitComponentTest {
     ServiceLocator.registerEntityService(entities);
 
     playerStats = new CombatStatsComponent(100, 0);
-    Entity player = new Entity().addComponent(playerStats);
+    player = new Entity().addComponent(playerStats);
     player.setPosition(10f, 0f);
 
     orbFixture = mock(Fixture.class);
@@ -175,6 +176,20 @@ class ThunderOrbHitComponentTest {
     verify(entities, never()).scheduleDisposal(orb);
 
     hit.update(0.6f);
+    verify(entities, times(1)).scheduleDisposal(orb);
+  }
+
+  @Test
+  void shouldNotPlayImpactWhenCancelledDuringDamageCallback() {
+    player.getEvents().addListener("updateHealth", (Integer health) -> hit.cancel());
+
+    collide();
+    collide();
+    hit.update(1f);
+
+    assertEquals(90, playerStats.getHealth());
+    assertTrue(movement.isStopped());
+    verify(animator, never()).startAnimation(anyString());
     verify(entities, times(1)).scheduleDisposal(orb);
   }
 }

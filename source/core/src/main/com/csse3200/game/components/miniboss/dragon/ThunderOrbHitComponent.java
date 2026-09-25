@@ -69,7 +69,10 @@ public class ThunderOrbHitComponent extends Component {
     impacted = true;
     movement.stop();
     stats.takeDamage(damage, entity);
+    playImpactIfActive();
+  }
 
+  private void playImpactIfActive() {
     if (removalQueued) {
       return;
     }

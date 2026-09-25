@@ -41,7 +41,7 @@ public class DragonStormZoneComponent extends Component {
   private boolean secondPending;
   private boolean stopped;
   private float secondRemaining;
-  private float cooldown;
+  private float cooldownReamining;
 
   public DragonStormZoneComponent(Entity target) {
     if (target == null) {
@@ -63,13 +63,13 @@ public class DragonStormZoneComponent extends Component {
 
   /** Phase one creates one zone; phase two schedules a second separately warned zone. */
   public boolean tryAttack() {
-    if (!canAct() || isBusy() || cooldown > 0f) {
+    if (!canAct() || isBusy() || cooldownReamining > 0f) {
       return false;
     }
     zones.add(new Zone(target.getCenterPosition().cpy()));
     secondPending = phase.isEnraged();
     secondRemaining = SECOND_ZONE_DELAY;
-    cooldown = COOLDOWN;
+    cooldownReamining = COOLDOWN;
     entity.getEvents().trigger(ATTACK_STARTED);
     return true;
   }
@@ -108,7 +108,7 @@ public class DragonStormZoneComponent extends Component {
     if (!Float.isFinite(delta) || delta <= 0f) {
       return;
     }
-    cooldown = Math.max(0f, cooldown - delta);
+    cooldownReamining = Math.max(0f, cooldownReamining - delta);
     for (Zone zone : new ArrayList<>(zones)) {
       if (!canAct()) {
         stop();

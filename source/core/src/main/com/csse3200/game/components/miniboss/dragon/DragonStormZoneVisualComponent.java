@@ -66,7 +66,7 @@ public class DragonStormZoneVisualComponent extends RenderComponent {
     batch.setColor(0.3f, 0.7f, 1f, 0.75f);
     drawCircle(batch, zone.x(), zone.y(), radius);
 
-    float progress = Math.max(0f, Math.min(1f, zone.progress()));
+    float progress = Math.clamp(zone.progress(), 0f, 1f);
     if (progress > 0f) {
       batch.setColor(0.65f, 0.9f, 1f, 0.85f);
       drawCircle(batch, zone.x(), zone.y(), radius * progress);

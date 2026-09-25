@@ -178,8 +178,13 @@ public class DragonAttackCoordinatorComponent extends Component {
           };
     }
 
-    remaining =
-        finished == Attack.DASH ? 0f : (phase.isEnraged() ? ENRAGED_RECOVERY : NORMAL_RECOVERY);
+    if (finished == Attack.DASH) {
+      remaining = 0f;
+    } else if (phase.isEnraged()) {
+      remaining = ENRAGED_RECOVERY;
+    } else {
+      remaining = NORMAL_RECOVERY;
+    }
   }
 
   /** Cancels the encounter's attacks and prevents further scheduling. */

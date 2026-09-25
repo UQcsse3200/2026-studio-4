@@ -119,14 +119,18 @@ class ThunderOrbFactoryTest {
   @Test
   void shouldRejectInvalidSpawnArguments() {
     Entity target = new Entity();
+    Vector2 validCentre = new Vector2();
+    Vector2 invalidCentre = new Vector2(Float.NaN, 0f);
 
     assertThrows(
         IllegalArgumentException.class, () -> ThunderOrbFactory.createThunderOrb(null, target));
+
     assertThrows(
         IllegalArgumentException.class,
-        () -> ThunderOrbFactory.createThunderOrb(new Vector2(), null));
+        () -> ThunderOrbFactory.createThunderOrb(validCentre, null));
+
     assertThrows(
         IllegalArgumentException.class,
-        () -> ThunderOrbFactory.createThunderOrb(new Vector2(Float.NaN, 0f), target));
+        () -> ThunderOrbFactory.createThunderOrb(invalidCentre, target));
   }
 }
