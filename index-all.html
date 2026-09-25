@@ -287,6 +287,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerActions.html#areControlsLocked()" class="member-name-link">areControlsLocked()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerActions.html" title="class in com.csse3200.game.components.player">PlayerActions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/factories/DragonFactory.html#ATLAS_PATH" class="member-name-link">ATLAS_PATH</a> - Static variable in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/DragonFactory.html" title="class in com.csse3200.game.entities.factories">DragonFactory</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/factories/ThunderOrbFactory.html#ATLAS_PATH" class="member-name-link">ATLAS_PATH</a> - Static variable in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ThunderOrbFactory.html" title="class in com.csse3200.game.entities.factories">ThunderOrbFactory</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerAbility.html#attach(com.csse3200.game.components.StatusEffectsControllerComponent,java.lang.Runnable)" class="member-name-link">attach(StatusEffectsControllerComponent, Runnable)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a></dt>
 <dd>
 <div class="block">Hands over the player's status effects controller, along with the callback to run when this
@@ -303,6 +307,12 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/boss/FinalBossVisualAssets.html#ATTACK_ALERT" class="member-name-link">ATTACK_ALERT</a> - Enum constant in enum class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossVisualAssets.html" title="enum class in com.csse3200.game.components.boss">FinalBossVisualAssets</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/Stat.html#ATTACK_SPEED" class="member-name-link">ATTACK_SPEED</a> - Enum constant in enum class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/Stat.html" title="enum class in com.csse3200.game.components.statuseffects">Stat</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html#ATTACK_STARTED" class="member-name-link">ATTACK_STARTED</a> - Static variable in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html#ATTACK_STARTED" class="member-name-link">ATTACK_STARTED</a> - Static variable in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html#ATTACK_STARTED" class="member-name-link">ATTACK_STARTED</a> - Static variable in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonThunderOrbComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/FinalBossStageTwoConfig.html#attackDuration" class="member-name-link">attackDuration</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/FinalBossStageTwoConfig.html" title="class in com.csse3200.game.entities.configs">FinalBossStageTwoConfig</a></dt>
 <dd>&nbsp;</dd>
@@ -447,6 +457,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/spells/SpellComponent.html#canCast()" class="member-name-link">canCast()</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellComponent.html" title="class in com.csse3200.game.components.spells">SpellComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbHitComponent.html#cancel()" class="member-name-link">cancel()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbHitComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">ThunderOrbHitComponent</a></dt>
+<dd>
+<div class="block">Stops and queues removal, including when the owning dragon dies.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossMovementComponent.html#cancelChargeAttack()" class="member-name-link">cancelChargeAttack()</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossMovementComponent.html" title="class in com.csse3200.game.components.boss">FinalBossMovementComponent</a></dt>
 <dd>
 <div class="block">Cancels any active charge attack (warning, charging, or delay).</div>
@@ -634,6 +648,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/mainmenu/package-summary.html">com.csse3200.game.components.mainmenu</a> - package com.csse3200.game.components.mainmenu</dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/package-summary.html">com.csse3200.game.components.miniboss.cerberus</a> - package com.csse3200.game.components.miniboss.cerberus</dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a> - package com.csse3200.game.components.miniboss.dragon</dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/npc/package-summary.html">com.csse3200.game.components.npc</a> - package com.csse3200.game.components.npc</dt>
 <dd>&nbsp;</dd>
@@ -875,6 +891,32 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusProjectileComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusProjectileComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusProjectileComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonAnimationController.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonAnimationController.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonAnimationController</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonAttackCoordinatorComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonAttackCoordinatorComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonAttackCoordinatorComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashDamageComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashDamageComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashDamageComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashMovementComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashMovementComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashMovementComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonEnrageVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonPhaseComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonPhaseComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonPhaseComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneVisualComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonThunderOrbComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbHitComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbHitComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">ThunderOrbHitComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbMovementComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbMovementComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">ThunderOrbMovementComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/npc/EnemyAnimationController.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/EnemyAnimationController.html" title="class in com.csse3200.game.components.npc">EnemyAnimationController</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/npc/EnemyStatDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/EnemyStatDisplay.html" title="class in com.csse3200.game.components.npc">EnemyStatDisplay</a></dt>
@@ -1018,6 +1060,18 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/factories/NPCFactory.html#createChaseEnemy(com.csse3200.game.entities.Entity,boolean,java.lang.String)" class="member-name-link">createChaseEnemy(Entity, boolean, String)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/NPCFactory.html" title="class in com.csse3200.game.entities.factories">NPCFactory</a></dt>
 <dd>
 <div class="block">Creates a chase enemy entity.</div>
+</dd>
+<dt><a href="com/csse3200/game/entities/factories/DragonFactory.html#createDragon()" class="member-name-link">createDragon()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/DragonFactory.html" title="class in com.csse3200.game.entities.factories">DragonFactory</a></dt>
+<dd>
+<div class="block">Creates an unregistered dragon with default settings.</div>
+</dd>
+<dt><a href="com/csse3200/game/entities/factories/DragonFactory.html#createDragon(com.csse3200.game.entities.configs.DragonConfig)" class="member-name-link">createDragon(DragonConfig)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/DragonFactory.html" title="class in com.csse3200.game.entities.factories">DragonFactory</a></dt>
+<dd>
+<div class="block">Creates an unregistered dragon with the supplied settings.</div>
+</dd>
+<dt><a href="com/csse3200/game/entities/factories/DragonFactory.html#createDragon(com.csse3200.game.entities.Entity,java.util.function.Consumer)" class="member-name-link">createDragon(Entity, Consumer&lt;Entity&gt;)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/DragonFactory.html" title="class in com.csse3200.game.entities.factories">DragonFactory</a></dt>
+<dd>
+<div class="block">Creates a dragon with its thunder orb skill.</div>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/ItemFactory.html#createDrop(com.badlogic.gdx.math.Vector2)" class="member-name-link">createDrop(Vector2)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ItemFactory.html" title="class in com.csse3200.game.entities.factories">ItemFactory</a></dt>
 <dd>
@@ -1169,6 +1223,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a terrain of the given type, using the orientation of the factory.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/factories/ThunderOrbFactory.html#createThunderOrb(com.badlogic.gdx.math.Vector2,com.csse3200.game.entities.Entity)" class="member-name-link">createThunderOrb(Vector2, Entity)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ThunderOrbFactory.html" title="class in com.csse3200.game.entities.factories">ThunderOrbFactory</a></dt>
+<dd>
+<div class="block">Creates an unregistered thunder orb.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/factories/ObstacleFactory.html#createTile()" class="member-name-link">createTile()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ObstacleFactory.html" title="class in com.csse3200.game.entities.factories">ObstacleFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/ObstacleFactory.html#createTree()" class="member-name-link">createTree()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ObstacleFactory.html" title="class in com.csse3200.game.entities.factories">ObstacleFactory</a></dt>
@@ -1216,6 +1274,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Indicator interface saying that the object does something when damaged.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashMovementComponent.html#DASH_STEP" class="member-name-link">DASH_STEP</a> - Static variable in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashMovementComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashMovementComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.State.html#DASHING" class="member-name-link">DASHING</a> - Enum constant in enum class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.State.html" title="enum class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent.State</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/GdxGame.ScreenType.html#DEATH_SCREEN" class="member-name-link">DEATH_SCREEN</a> - Enum constant in enum class com.csse3200.game.<a href="com/csse3200/game/GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/screens/DeathScreen.html" class="type-name-link" title="class in com.csse3200.game.screens">DeathScreen</a> - Class in <a href="com/csse3200/game/screens/package-summary.html">com.csse3200.game.screens</a></dt>
@@ -1337,6 +1399,24 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusProjectileComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusProjectileComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusProjectileComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonAnimationController.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonAnimationController.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonAnimationController</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonAttackCoordinatorComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonAttackCoordinatorComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonAttackCoordinatorComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashDamageComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashDamageComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashDamageComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonEnrageVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneVisualComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonThunderOrbComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/npc/EnemyStatDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/EnemyStatDisplay.html" title="class in com.csse3200.game.components.npc">EnemyStatDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/ConsumableEffectComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumableEffectComponent.html" title="class in com.csse3200.game.components.player">ConsumableEffectComponent</a></dt>
@@ -1411,6 +1491,90 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/math/Vector2Utils.html#DOWN" class="member-name-link">DOWN</a> - Static variable in class com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/Vector2Utils.html" title="class in com.csse3200.game.utils.math">Vector2Utils</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html#DRAGON" class="member-name-link">DRAGON</a> - Enum constant in enum class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html" title="enum class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig.EnemyType</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonAnimationController.html" class="type-name-link" title="class in com.csse3200.game.components.miniboss.dragon">DragonAnimationController</a> - Class in <a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a></dt>
+<dd>
+<div class="block">Selects dragon animations without controlling combat or movement.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonAnimationController.html#%3Cinit%3E()" class="member-name-link">DragonAnimationController()</a> - Constructor for class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonAnimationController.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonAnimationController</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonAttackCoordinatorComponent.html" class="type-name-link" title="class in com.csse3200.game.components.miniboss.dragon">DragonAttackCoordinatorComponent</a> - Class in <a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a></dt>
+<dd>
+<div class="block">Coordinates sequential attacks and enraged combinations.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonAttackCoordinatorComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">DragonAttackCoordinatorComponent(Entity)</a> - Constructor for class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonAttackCoordinatorComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonAttackCoordinatorComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html" class="type-name-link" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent</a> - Class in <a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a></dt>
+<dd>
+<div class="block">Controls cloud dash telegraph, direction locking, and recovery.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">DragonCloudDashComponent(Entity)</a> - Constructor for class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.State.html" class="type-name-link" title="enum class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent.State</a> - Enum Class in <a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashDamageComponent.html" class="type-name-link" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashDamageComponent</a> - Class in <a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a></dt>
+<dd>
+<div class="block">Applies at most one damage attempt to the target per cloud dash.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashDamageComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">DragonCloudDashDamageComponent(Entity)</a> - Constructor for class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashDamageComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashDamageComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashMovementComponent.html" class="type-name-link" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashMovementComponent</a> - Class in <a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a></dt>
+<dd>
+<div class="block">Moves a cloud dash along its locked direction while respecting obstacles.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashMovementComponent.html#%3Cinit%3E()" class="member-name-link">DragonCloudDashMovementComponent()</a> - Constructor for class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashMovementComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashMovementComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html" class="type-name-link" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashVisualComponent</a> - Class in <a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a></dt>
+<dd>
+<div class="block">Draws a locked dash warning and short-lived smoke at travelled positions.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html#%3Cinit%3E()" class="member-name-link">DragonCloudDashVisualComponent()</a> - Constructor for class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/configs/DragonConfig.html" class="type-name-link" title="class in com.csse3200.game.entities.configs">DragonConfig</a> - Class in <a href="com/csse3200/game/entities/configs/package-summary.html">com.csse3200.game.entities.configs</a></dt>
+<dd>
+<div class="block">Combat and display settings for the Chinese Dragon mini-boss.</div>
+</dd>
+<dt><a href="com/csse3200/game/entities/configs/DragonConfig.html#%3Cinit%3E()" class="member-name-link">DragonConfig()</a> - Constructor for class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/DragonConfig.html" title="class in com.csse3200.game.entities.configs">DragonConfig</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html" class="type-name-link" title="class in com.csse3200.game.components.miniboss.dragon">DragonEnrageVisualComponent</a> - Class in <a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a></dt>
+<dd>
+<div class="block">Draws a pulsing blue-purple aura during the dragon's second phase.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html#%3Cinit%3E()" class="member-name-link">DragonEnrageVisualComponent()</a> - Constructor for class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonEnrageVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/factories/DragonFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">DragonFactory</a> - Class in <a href="com/csse3200/game/entities/factories/package-summary.html">com.csse3200.game.entities.factories</a></dt>
+<dd>
+<div class="block">Creates the Chinese Dragon mini-boss with health, phase logic, and animations.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonPhaseComponent.html" class="type-name-link" title="class in com.csse3200.game.components.miniboss.dragon">DragonPhaseComponent</a> - Class in <a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a></dt>
+<dd>
+<div class="block">Controls the dragon's permanent transition to phase two at 50% health.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonPhaseComponent.html#%3Cinit%3E()" class="member-name-link">DragonPhaseComponent()</a> - Constructor for class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonPhaseComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonPhaseComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html" class="type-name-link" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent</a> - Class in <a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a></dt>
+<dd>
+<div class="block">Fixed storm warnings followed by one damage attempt per zone.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">DragonStormZoneComponent(Entity)</a> - Constructor for class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html" class="type-name-link" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent.ZoneView</a> - Record Class in <a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a></dt>
+<dd>
+<div class="block">Immutable data for a renderer; progress is warning completion from zero to one.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneVisualComponent.html" class="type-name-link" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneVisualComponent</a> - Class in <a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a></dt>
+<dd>
+<div class="block">Draws storm warnings and a brief flash when each zone strikes.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneVisualComponent.html#%3Cinit%3E()" class="member-name-link">DragonStormZoneVisualComponent()</a> - Constructor for class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html" class="type-name-link" title="class in com.csse3200.game.components.miniboss.dragon">DragonThunderOrbComponent</a> - Class in <a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a></dt>
+<dd>
+<div class="block">Controls thunder orb firing, cooldown, and owner cleanup.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity,java.util.function.Consumer)" class="member-name-link">DragonThunderOrbComponent(Entity, Consumer&lt;Entity&gt;)</a> - Constructor for class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonThunderOrbComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossEndingDialogueComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossEndingDialogueComponent.html" title="class in com.csse3200.game.components.boss">FinalBossEndingDialogueComponent</a></dt>
@@ -1442,6 +1606,12 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusEnrageVisualComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusEnrageVisualComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusEnrageVisualComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusMistComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonEnrageVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneVisualComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneVisualComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/npc/EnemyStatDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/EnemyStatDisplay.html" title="class in com.csse3200.game.components.npc">EnemyStatDisplay</a></dt>
 <dd>&nbsp;</dd>
@@ -1613,6 +1783,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Shared logic for identifying enemy entities, used across targeting strategies.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonPhaseComponent.html#ENRAGE_STARTED" class="member-name-link">ENRAGE_STARTED</a> - Static variable in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonPhaseComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonPhaseComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/InteractionPrompt.html#ENTER_DUNGEON" class="member-name-link">ENTER_DUNGEON</a> - Static variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InteractionPrompt.html" title="class in com.csse3200.game.components.player">InteractionPrompt</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html#ENTERED" class="member-name-link">ENTERED</a> - Static variable in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusMistComponent</a></dt>
@@ -1649,6 +1821,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/RoomConfig.html#entryPoints" class="member-name-link">entryPoints</a> - Variable in class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent.ZoneView</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeStats</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
@@ -1708,6 +1884,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html#EXITED" class="member-name-link">EXITED</a> - Static variable in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusMistComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/RoomConfig.html#exits" class="member-name-link">exits</a> - Variable in class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbMovementComponent.html#EXPIRED" class="member-name-link">EXPIRED</a> - Static variable in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbMovementComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">ThunderOrbMovementComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/ExplodeComponent.html" class="type-name-link" title="class in com.csse3200.game.components">ExplodeComponent</a> - Class in <a href="com/csse3200/game/components/package-summary.html">com.csse3200.game.components</a></dt>
 <dd>&nbsp;</dd>
@@ -1895,6 +2073,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusAttackCoordinator.html#finish(com.csse3200.game.entities.Entity)" class="member-name-link">finish(Entity)</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusAttackCoordinator.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusAttackCoordinator</a></dt>
 <dd>
 <div class="block">Releases an attack when it ends or is cancelled.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html#finishDash()" class="member-name-link">finishDash()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent</a></dt>
+<dd>
+<div class="block">Called by movement when the dash reaches its limit or hits an obstacle.</div>
 </dd>
 <dt><a href="com/csse3200/game/ai/tasks/Task.Status.html#FINISHED" class="member-name-link">FINISHED</a> - Enum constant in enum class com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/Task.Status.html" title="enum class in com.csse3200.game.ai.tasks">Task.Status</a></dt>
 <dd>&nbsp;</dd>
@@ -2124,6 +2306,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusPhaseComponent.html#getCurrentPhase()" class="member-name-link">getCurrentPhase()</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusPhaseComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusPhaseComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonPhaseComponent.html#getCurrentPhase()" class="member-name-link">getCurrentPhase()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonPhaseComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonPhaseComponent</a></dt>
+<dd>
+<div class="block">Returns the current combat phase, either 1 or 2.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/Damage.html#getDamage()" class="member-name-link">getDamage()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/Damage.html" title="class in com.csse3200.game.components">Damage</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/HitboxSpec.html#getDamage()" class="member-name-link">getDamage()</a> - Method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HitboxSpec.html" title="class in com.csse3200.game.entities.factories">HitboxSpec</a></dt>
@@ -2299,6 +2485,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/HitboxSpec.html#getLocalOffset()" class="member-name-link">getLocalOffset()</a> - Method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HitboxSpec.html" title="class in com.csse3200.game.entities.factories">HitboxSpec</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html#getLockedDirection()" class="member-name-link">getLockedDirection()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent</a></dt>
+<dd>
+<div class="block">Returns a copy so callers cannot change the locked direction.</div>
+</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainComponent.html#getMap()" class="member-name-link">getMap()</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainComponent.html#getMapBounds(int)" class="member-name-link">getMapBounds(int)</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></dt>
@@ -2401,6 +2591,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Not required for game, unimplemented</div>
 </dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html#getPuffCount()" class="member-name-link">getPuffCount()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashVisualComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/items/ItemComponent.html#getQuantity()" class="member-name-link">getQuantity()</a> - Method in class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/ItemComponent.html" title="class in com.csse3200.game.components.items">ItemComponent</a></dt>
 <dd>
 <div class="block">Returns the positive quantity represented by this world entity.</div>
@@ -2510,6 +2702,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns the current internal Stage 1 state.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossStageThreeComponent.html#getState()" class="member-name-link">getState()</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossStageThreeComponent.html" title="class in com.csse3200.game.components.boss">FinalBossStageThreeComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html#getState()" class="member-name-link">getState()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossStageOneComponent.html#getStateElapsed()" class="member-name-link">getStateElapsed()</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossStageOneComponent.html" title="class in com.csse3200.game.components.boss">FinalBossStageOneComponent</a></dt>
 <dd>
@@ -2650,6 +2844,12 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusMistComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonEnrageVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneVisualComponent.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneVisualComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/spells/SpellAoeVisualComponent.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellAoeVisualComponent.html" title="class in com.csse3200.game.components.spells">SpellAoeVisualComponent</a></dt>
 <dd>
 <div class="block">Behind every sprite in the layer, so the area reads as being painted on the floor.</div>
@@ -2663,6 +2863,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/ui/terminal/TerminalDisplay.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.ui.terminal.<a href="com/csse3200/game/ui/terminal/TerminalDisplay.html" title="class in com.csse3200.game.ui.terminal">TerminalDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/UIComponent.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html#getZones()" class="member-name-link">getZones()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/NPCConfigs.html#giantEnemy" class="member-name-link">giantEnemy</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/NPCConfigs.html" title="class in com.csse3200.game.entities.configs">NPCConfigs</a></dt>
 <dd>&nbsp;</dd>
@@ -2713,6 +2915,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/InventoryComponent.html#hasGold(int)" class="member-name-link">hasGold(int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent.ZoneView</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeStats</a></dt>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
@@ -2745,6 +2951,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/ItemType.html#HEALTH_POTION" class="member-name-link">HEALTH_POTION</a> - Enum constant in enum class com.csse3200.game.items.<a href="com/csse3200/game/items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/configs/DragonConfig.html#healthBarScale" class="member-name-link">healthBarScale</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/DragonConfig.html" title="class in com.csse3200.game.entities.configs">DragonConfig</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponComponent.html#heavyAttack(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">heavyAttack(Vector2, Vector2)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></dt>
 <dd>
 <div class="block">Attempt a heavy attack.</div>
@@ -2757,6 +2965,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the value of the <a href="./com/csse3200/game/components/weapons/WeaponUpgradeStats.html#param-heavyDamageMultiplier"><code>heavyDamageMultiplier</code></a> record component.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/configs/DragonConfig.html#height" class="member-name-link">height</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/DragonConfig.html" title="class in com.csse3200.game.entities.configs">DragonConfig</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/UserSettings.DisplaySettings.html#height" class="member-name-link">height</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.DisplaySettings.html" title="class in com.csse3200.game.files">UserSettings.DisplaySettings</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainComponent.TerrainOrientation.html#HEXAGONAL" class="member-name-link">HEXAGONAL</a> - Enum constant in enum class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainComponent.TerrainOrientation.html" title="enum class in com.csse3200.game.areas.terrain">TerrainComponent.TerrainOrientation</a></dt>
@@ -2819,6 +3029,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns whether the entity should be unable to act at all while this runs: no movement, and no
  attack the entity's own AI would otherwise decide to make.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbHitComponent.html#IMPACT_ANIMATION" class="member-name-link">IMPACT_ANIMATION</a> - Static variable in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbHitComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">ThunderOrbHitComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ai/tasks/Task.Status.html#INACTIVE" class="member-name-link">INACTIVE</a> - Enum constant in enum class com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/Task.Status.html" title="enum class in com.csse3200.game.ai.tasks">Task.Status</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossStageThreeState.html#INACTIVE" class="member-name-link">INACTIVE</a> - Enum constant in enum class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossStageThreeState.html" title="enum class in com.csse3200.game.components.boss">FinalBossStageThreeState</a></dt>
@@ -2925,6 +3137,14 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusEnrageVisualComponent.html#isAuraActive()" class="member-name-link">isAuraActive()</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusEnrageVisualComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusEnrageVisualComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html#isAuraActive()" class="member-name-link">isAuraActive()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonEnrageVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html#isBusy()" class="member-name-link">isBusy()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html#isBusy()" class="member-name-link">isBusy()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonThunderOrbComponent</a></dt>
+<dd>
+<div class="block">Includes queued shots, the second-shot delay, and surviving projectiles.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/player/abilities/Invisibility.html#isCastable()" class="member-name-link">isCastable()</a> - Method in class com.csse3200.game.components.player.abilities.<a href="com/csse3200/game/components/player/abilities/Invisibility.html" title="class in com.csse3200.game.components.player.abilities">Invisibility</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerAbility.html#isCastable()" class="member-name-link">isCastable()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a></dt>
@@ -2957,8 +3177,16 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/StatusEffectsControllerComponent.html#isDisposed()" class="member-name-link">isDisposed()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/StatusEffectsControllerComponent.html" title="class in com.csse3200.game.components">StatusEffectsControllerComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneVisualComponent.html#isEffectVisible()" class="member-name-link">isEffectVisible()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneVisualComponent</a></dt>
+<dd>
+<div class="block">Whether there are living storm zones to display.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/spells/targeting/EnemyUtils.html#isEnemy(com.csse3200.game.entities.Entity)" class="member-name-link">isEnemy(Entity)</a> - Static method in class com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/EnemyUtils.html" title="class in com.csse3200.game.components.spells.targeting">EnemyUtils</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonPhaseComponent.html#isEnraged()" class="member-name-link">isEnraged()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonPhaseComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonPhaseComponent</a></dt>
+<dd>
+<div class="block">Returns whether the dragon has entered phase two.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/StatusEffect.html#isExpired()" class="member-name-link">isExpired()</a> - Method in interface com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></dt>
 <dd>
 <div class="block">Returns whether the effect has run its course.</div>
@@ -3025,6 +3253,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns whether this consumable's protection is still active at the current game time.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbMovementComponent.html#isStopped()" class="member-name-link">isStopped()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbMovementComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">ThunderOrbMovementComponent</a></dt>
+<dd>
+<div class="block">Returns whether movement has stopped through impact or expiry.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossPhaseControllerComponent.html#isTransitioning()" class="member-name-link">isTransitioning()</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossPhaseControllerComponent.html" title="class in com.csse3200.game.components.boss">FinalBossPhaseControllerComponent</a></dt>
 <dd>
 <div class="block">Returns whether the boss is in the brief invulnerable window right after a stage change.</div>
@@ -3045,6 +3277,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns whether a petrification warning is currently active.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html#isWarningVisible()" class="member-name-link">isWarningVisible()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashVisualComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/Item.html" class="type-name-link" title="class in com.csse3200.game.items">Item</a> - Class in <a href="com/csse3200/game/items/package-summary.html">com.csse3200.game.items</a></dt>
 <dd>
 <div class="block">An object that can be stored in the players inventory.</div>
@@ -3804,6 +4038,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Processes the completed message entered by the user.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html#progress()" class="member-name-link">progress()</a> - Method in record class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent.ZoneView</a></dt>
+<dd>
+<div class="block">Returns the value of the <code>progress</code> record component.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/weapons/ProjectileComponent.html" class="type-name-link" title="class in com.csse3200.game.components.weapons">ProjectileComponent</a> - Class in <a href="com/csse3200/game/components/weapons/package-summary.html">com.csse3200.game.components.weapons</a></dt>
 <dd>
 <div class="block">Moves a weapon hitbox in a straight line and removes it on its first hit.</div>
@@ -3851,6 +4089,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The alpha of a pixel at a distance from the centre, where 0 is the centre and 1 the edge.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html#RADIUS" class="member-name-link">RADIUS</a> - Static variable in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/math/RandomUtils.html#random(com.badlogic.gdx.math.GridPoint2,com.badlogic.gdx.math.GridPoint2)" class="member-name-link">random(GridPoint2, GridPoint2)</a> - Static method in class com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/RandomUtils.html" title="class in com.csse3200.game.utils.math">RandomUtils</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/math/RandomUtils.html#random(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">random(Vector2, Vector2)</a> - Static method in class com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/RandomUtils.html" title="class in com.csse3200.game.utils.math">RandomUtils</a></dt>
@@ -3901,6 +4141,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Read generic Java classes from a JSON file.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.State.html#READY" class="member-name-link">READY</a> - Enum constant in enum class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.State.html" title="enum class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent.State</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.State.html#RECOVERING" class="member-name-link">RECOVERING</a> - Enum constant in enum class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.State.html" title="enum class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent.State</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/RedFlashEffect.html" class="type-name-link" title="class in com.csse3200.game.components.statuseffects">RedFlashEffect</a> - Class in <a href="com/csse3200/game/components/statuseffects/package-summary.html">com.csse3200.game.components.statuseffects</a></dt>
 <dd>
 <div class="block">A timed red blink that leaves transparency and the owner's gameplay stats unchanged.</div>
@@ -4645,6 +4889,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a new stack of slow.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html#SMOKE_PATH" class="member-name-link">SMOKE_PATH</a> - Static variable in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashVisualComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html#SNAKE_MINI_BOSS" class="member-name-link">SNAKE_MINI_BOSS</a> - Enum constant in enum class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html" title="enum class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig.EnemyType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/NPCConfigs.html#snakeMiniBoss" class="member-name-link">snakeMiniBoss</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/NPCConfigs.html" title="class in com.csse3200.game.entities.configs">NPCConfigs</a></dt>
@@ -4871,6 +5117,24 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Stop the task immediately.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonAttackCoordinatorComponent.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonAttackCoordinatorComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonAttackCoordinatorComponent</a></dt>
+<dd>
+<div class="block">Cancels the encounter's attacks and prevents further scheduling.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent</a></dt>
+<dd>
+<div class="block">Permanently cancels the skill.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonThunderOrbComponent</a></dt>
+<dd>
+<div class="block">Permanently stops firing and cancels all owned thunder orbs.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbMovementComponent.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbMovementComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">ThunderOrbMovementComponent</a></dt>
+<dd>
+<div class="block">Permanently stops movement and lifetime updates, for example after a hit.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerAbility.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a></dt>
 <dd>
 <div class="block">Ends the ability early.</div>
@@ -4898,6 +5162,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Stop the currently running animation.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossMovementComponent.Mode.html#STOPPED" class="member-name-link">STOPPED</a> - Enum constant in enum class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossMovementComponent.Mode.html" title="enum class in com.csse3200.game.components.boss">FinalBossMovementComponent.Mode</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.State.html#STOPPED" class="member-name-link">STOPPED</a> - Enum constant in enum class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.State.html" title="enum class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent.State</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/spells/targeting/StrategyAll.html" class="type-name-link" title="class in com.csse3200.game.components.spells.targeting">StrategyAll</a> - Class in <a href="com/csse3200/game/components/spells/targeting/package-summary.html">com.csse3200.game.components.spells.targeting</a></dt>
 <dd>
@@ -4949,6 +5215,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/utils/StringDecorator.html#%3Cinit%3E(T,java.util.function.Function)" class="member-name-link">StringDecorator(T, Function&lt;T, String&gt;)</a> - Constructor for class com.csse3200.game.utils.<a href="com/csse3200/game/utils/StringDecorator.html" title="class in com.csse3200.game.utils">StringDecorator</a></dt>
 <dd>
 <div class="block">Create a string-decorated object.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html#struck()" class="member-name-link">struck()</a> - Method in record class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent.ZoneView</a></dt>
+<dd>
+<div class="block">Returns the value of the <code>struck</code> record component.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossEvents.html#SUMMON_EXPLODED" class="member-name-link">SUMMON_EXPLODED</a> - Static variable in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossEvents.html" title="class in com.csse3200.game.components.boss">FinalBossEvents</a></dt>
 <dd>&nbsp;</dd>
@@ -5115,6 +5385,24 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/TextureRenderComponent.html#%3Cinit%3E(java.lang.String)" class="member-name-link">TextureRenderComponent(String)</a> - Constructor for class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/TextureRenderComponent.html" title="class in com.csse3200.game.rendering">TextureRenderComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/factories/ThunderOrbFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">ThunderOrbFactory</a> - Class in <a href="com/csse3200/game/entities/factories/package-summary.html">com.csse3200.game.entities.factories</a></dt>
+<dd>
+<div class="block">Creates thunder orbs with tracking movement and single-hit damage.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbHitComponent.html" class="type-name-link" title="class in com.csse3200.game.components.miniboss.dragon">ThunderOrbHitComponent</a> - Class in <a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a></dt>
+<dd>
+<div class="block">Handles single-hit damage, impact playback, and safe removal of a thunder orb.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbHitComponent.html#%3Cinit%3E(int)" class="member-name-link">ThunderOrbHitComponent(int)</a> - Constructor for class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbHitComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">ThunderOrbHitComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbMovementComponent.html" class="type-name-link" title="class in com.csse3200.game.components.miniboss.dragon">ThunderOrbMovementComponent</a> - Class in <a href="com/csse3200/game/components/miniboss/dragon/package-summary.html">com.csse3200.game.components.miniboss.dragon</a></dt>
+<dd>
+<div class="block">Moves a homing orb with limited turning speed and a finite lifetime.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbMovementComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity,float,float,float)" class="member-name-link">ThunderOrbMovementComponent(Entity, float, float, float)</a> - Constructor for class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbMovementComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">ThunderOrbMovementComponent</a></dt>
+<dd>
+<div class="block">Creates homing movement.</div>
+</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TileSheet.html#tile(int,int)" class="member-name-link">tile(int, int)</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TileSheet.html" title="class in com.csse3200.game.areas.terrain">TileSheet</a></dt>
 <dd>
 <div class="block">Gets one tile, using zero-indexed coordinates from the sheet's top-left corner.</div>
@@ -5158,6 +5446,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/Component.html#toString()" class="member-name-link">toString()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/Component.html" title="class in com.csse3200.game.components">Component</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html#toString()" class="member-name-link">toString()</a> - Method in record class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent.ZoneView</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html#toString()" class="member-name-link">toString()</a> - Method in record class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeStats.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeStats</a></dt>
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
@@ -5294,6 +5586,18 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Starts a cast ability only when alive, unlocked and ready; a rejected cast changes nothing.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html#tryAttack()" class="member-name-link">tryAttack()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent</a></dt>
+<dd>
+<div class="block">Starts a warning and locks the direction towards the target.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html#tryAttack()" class="member-name-link">tryAttack()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent</a></dt>
+<dd>
+<div class="block">Phase one creates one zone; phase two schedules a second separately warned zone.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html#tryAttack()" class="member-name-link">tryAttack()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonThunderOrbComponent</a></dt>
+<dd>
+<div class="block">Requests one shot.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusAttackCoordinator.html#tryStart(com.csse3200.game.entities.Entity)" class="member-name-link">tryStart(Entity)</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusAttackCoordinator.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusAttackCoordinator</a></dt>
 <dd>
 <div class="block">Returns true when this head is allowed to begin an attack.</div>
@@ -5427,6 +5731,26 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/HomingProjectileMovementComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/HomingProjectileMovementComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">HomingProjectileMovementComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonAnimationController.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonAnimationController.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonAnimationController</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonAttackCoordinatorComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonAttackCoordinatorComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonAttackCoordinatorComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashMovementComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashMovementComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashMovementComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonEnrageVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonThunderOrbComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbHitComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbHitComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">ThunderOrbHitComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbMovementComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbMovementComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">ThunderOrbMovementComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/npc/EnemyAnimationController.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/EnemyAnimationController.html" title="class in com.csse3200.game.components.npc">EnemyAnimationController</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/npc/EnemyStatDisplay.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/EnemyStatDisplay.html" title="class in com.csse3200.game.components.npc">EnemyStatDisplay</a></dt>
@@ -5548,6 +5872,38 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/HomingProjectileMovementComponent.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/HomingProjectileMovementComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">HomingProjectileMovementComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonAnimationController.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonAnimationController.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonAnimationController</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonAttackCoordinatorComponent.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonAttackCoordinatorComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonAttackCoordinatorComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent</a></dt>
+<dd>
+<div class="block">Advances warning and recovery timers.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashMovementComponent.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashMovementComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashMovementComponent</a></dt>
+<dd>
+<div class="block">Advances dash movement without exceeding the remaining distance.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashVisualComponent</a></dt>
+<dd>
+<div class="block">Ages existing smoke; rendering itself never advances time.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonEnrageVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonEnrageVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonThunderOrbComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonThunderOrbComponent</a></dt>
+<dd>
+<div class="block">Advances the cooldown without automatically starting another attack.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbHitComponent.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbHitComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">ThunderOrbHitComponent</a></dt>
+<dd>
+<div class="block">Advances the impact effect without allowing further damage.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbMovementComponent.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/ThunderOrbMovementComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">ThunderOrbMovementComponent</a></dt>
+<dd>
+<div class="block">Advances movement and lifetime by the supplied elapsed time.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/npc/ProjectileMovementComponent.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/ProjectileMovementComponent.html" title="class in com.csse3200.game.components.npc">ProjectileMovementComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/weapons/LifetimeComponent.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/LifetimeComponent.html" title="class in com.csse3200.game.components.weapons">LifetimeComponent</a></dt>
@@ -5692,6 +6048,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.State.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.State.html" title="enum class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent.State</a></dt>
+<dd>
+<div class="block">Returns the enum constant of this class with the specified name.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/player/Team5CombatHudDisplay.ConsumableSlot.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/Team5CombatHudDisplay.ConsumableSlot.html" title="enum class in com.csse3200.game.components.player">Team5CombatHudDisplay.ConsumableSlot</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
@@ -5777,6 +6137,11 @@ the order they are declared.</div>
 the order they are declared.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossVisualAssets.html#values()" class="member-name-link">values()</a> - Static method in enum class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossVisualAssets.html" title="enum class in com.csse3200.game.components.boss">FinalBossVisualAssets</a></dt>
+<dd>
+<div class="block">Returns an array containing the constants of this enum class, in
+the order they are declared.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.State.html#values()" class="member-name-link">values()</a> - Static method in enum class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.State.html" title="enum class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent.State</a></dt>
 <dd>
 <div class="block">Returns an array containing the constants of this enum class, in
 the order they are declared.</div>
@@ -5893,6 +6258,8 @@ the order they are declared.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/tasks/WanderTask.html#%3Cinit%3E(com.badlogic.gdx.math.Vector2,float)" class="member-name-link">WanderTask(Vector2, float)</a> - Constructor for class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/WanderTask.html" title="class in com.csse3200.game.components.tasks">WanderTask</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.State.html#WARNING" class="member-name-link">WARNING</a> - Enum constant in enum class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashComponent.State.html" title="enum class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashComponent.State</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html#WASP" class="member-name-link">WASP</a> - Enum constant in enum class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html" title="enum class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig.EnemyType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossStageOneState.html#WAVE_ONE" class="member-name-link">WAVE_ONE</a> - Enum constant in enum class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossStageOneState.html" title="enum class in com.csse3200.game.components.boss">FinalBossStageOneState</a></dt>
@@ -5981,6 +6348,8 @@ the order they are declared.</div>
 <dd>
 <div class="block">Creates an instance of a <code>WeaponUpgradeStats</code> record class.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/configs/DragonConfig.html#width" class="member-name-link">width</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/DragonConfig.html" title="class in com.csse3200.game.entities.configs">DragonConfig</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/UserSettings.DisplaySettings.html#width" class="member-name-link">width</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.DisplaySettings.html" title="class in com.csse3200.game.files">UserSettings.DisplaySettings</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossVisualAssets.html#WIZARD" class="member-name-link">WIZARD</a> - Enum constant in enum class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossVisualAssets.html" title="enum class in com.csse3200.game.components.boss">FinalBossVisualAssets</a></dt>
@@ -6008,16 +6377,28 @@ the order they are declared.</div>
 <dl class="index">
 <dt><a href="com/csse3200/game/components/rooms/configs/PositionConfig.html#x" class="member-name-link">x</a> - Variable in class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/PositionConfig.html" title="class in com.csse3200.game.components.rooms.configs">PositionConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html#x()" class="member-name-link">x()</a> - Method in record class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent.ZoneView</a></dt>
+<dd>
+<div class="block">Returns the value of the <code>x</code> record component.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:Y">Y</h2>
 <dl class="index">
 <dt><a href="com/csse3200/game/components/rooms/configs/PositionConfig.html#y" class="member-name-link">y</a> - Variable in class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/PositionConfig.html" title="class in com.csse3200.game.components.rooms.configs">PositionConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html#y()" class="member-name-link">y()</a> - Method in record class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent.ZoneView</a></dt>
+<dd>
+<div class="block">Returns the value of the <code>y</code> record component.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:Z">Z</h2>
 <dl class="index">
 <dt><a href="com/csse3200/game/utils/math/GridPoint2Utils.html#ZERO" class="member-name-link">ZERO</a> - Static variable in class com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/GridPoint2Utils.html" title="class in com.csse3200.game.utils.math">GridPoint2Utils</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html#%3Cinit%3E(float,float,float,boolean)" class="member-name-link">ZoneView(float, float, float, boolean)</a> - Constructor for record class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent.ZoneView</a></dt>
+<dd>
+<div class="block">Creates an instance of a <code>ZoneView</code> record class.</div>
+</dd>
 <dt><a href="com/csse3200/game/input/InputComponent.html#zoom(float,float)" class="member-name-link">zoom(float, float)</a> - Method in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/input/InputService.html#zoom(float,float)" class="member-name-link">zoom(float, float)</a> - Method in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputService.html" title="class in com.csse3200.game.input">InputService</a></dt>
