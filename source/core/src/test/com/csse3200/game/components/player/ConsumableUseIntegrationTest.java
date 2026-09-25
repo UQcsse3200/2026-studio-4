@@ -92,6 +92,30 @@ class ConsumableUseIntegrationTest {
   }
 
   @Test
+  void customPotionCanBePickedByIdAndUsedWithoutChangingLegacyPotions() {
+    String customId = "HEALTH_POTION_75";
+    stats.setHealth(10);
+    inventory.addConsumable(customId);
+    inventory.addConsumable(ItemIds.HEALTH_POTION);
+
+    assertTrue(consumables.tryUse(customId));
+    assertEquals(85, stats.getHealth());
+    assertEquals(0, inventory.getConsumableCount(customId));
+    assertEquals(1, inventory.getConsumableCount(ItemIds.HEALTH_POTION));
+  }
+
+  @Test
+  void veryLargePositiveHealingAmountClampsToMaxHealth() {
+    String id = "HEALTH_POTION_2147483647";
+    stats.setHealth(10);
+    inventory.addConsumable(id);
+
+    assertTrue(consumables.tryUse(id));
+    assertEquals(100, stats.getHealth());
+    assertEquals(0, inventory.getConsumableCount(id));
+  }
+
+  @Test
   void fullHealthDoesNotConsumeAnyInstantPotionSize() {
     for (String type :
         new String[] {

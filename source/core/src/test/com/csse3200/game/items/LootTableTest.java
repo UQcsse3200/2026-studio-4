@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.utils.Json;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.items.consumables.InstantHealingPotion;
 import java.util.List;
 import java.util.Set;
 import java.util.random.RandomGenerator;
@@ -108,6 +109,23 @@ class LootTableTest {
         List.of(new ItemDropSpec(ItemIds.GOLD_COIN, 3)), table.forEnemy("GOLEM").roll(random));
     assertEquals(
         List.of(new ItemDropSpec(ItemIds.HEALTH_POTION, 1)), table.forEnemy("MEDUSA").roll(random));
+  }
+
+  @Test
+  void shouldReadCustomHealingAmountFromJsonAndCreateDrop() {
+    LootTable table =
+        new Json()
+            .fromJson(
+                LootTable.class,
+                "{\"entries\":[{\"itemId\":\"HEALTH_POTION_75\",\"minQuantity\":2,\"maxQuantity\":2}]}");
+    table.validate();
+
+    ItemDropSpec drop = table.roll(mock(RandomGenerator.class)).get(0);
+    assertEquals("HEALTH_POTION_75", drop.itemId());
+    assertEquals(2, drop.quantity());
+    InstantHealingPotion potion =
+        (InstantHealingPotion) ItemCatalog.create(drop.itemId(), drop.quantity());
+    assertEquals(75, potion.getHealing());
   }
 
   @Test

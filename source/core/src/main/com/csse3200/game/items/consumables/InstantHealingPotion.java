@@ -33,12 +33,16 @@ public final class InstantHealingPotion extends ConsumableItem {
     this.healing = healing;
   }
 
+  /** The three shipped sizes keep their IDs; other positive amounts receive a stable derived ID. */
   private static String idFor(int healing) {
+    if (healing <= 0) {
+      throw new IllegalArgumentException("healing must be positive");
+    }
     return switch (healing) {
       case 25 -> ItemIds.HEALTH_POTION;
       case 50 -> ItemIds.MEDIUM_HEALTH_POTION;
       case 100 -> ItemIds.LARGE_HEALTH_POTION;
-      default -> throw new IllegalArgumentException("Unsupported healing amount: " + healing);
+      default -> "HEALTH_POTION_" + healing;
     };
   }
 
@@ -47,8 +51,33 @@ public final class InstantHealingPotion extends ConsumableItem {
       case 25 -> "Small Health Potion";
       case 50 -> "Medium Health Potion";
       case 100 -> "Large Health Potion";
-      default -> throw new IllegalArgumentException("Unsupported healing amount: " + healing);
+      default -> healing + " Health Potion";
     };
+  }
+
+  /** Reconstructs custom potion amounts from JSON and inventory IDs; rejects alternate spellings. */
+  public static int healingForCustomId(String id) {
+    String prefix = "HEALTH_POTION_";
+    if (id == null || !id.startsWith(prefix)) {
+      return 0;
+    }
+    try {
+      int amount = Integer.parseInt(id.substring(prefix.length()));
+      return amount > 0 && idFor(amount).equals(id) ? amount : 0;
+    } catch (NumberFormatException ignored) {
+      return 0;
+    }
+  }
+
+  public static boolean isHealingPotionId(String id) {
+    return ItemIds.HEALTH_POTION.equals(id)
+        || ItemIds.MEDIUM_HEALTH_POTION.equals(id)
+        || ItemIds.LARGE_HEALTH_POTION.equals(id)
+        || healingForCustomId(id) > 0;
+  }
+
+  public int getHealing() {
+    return healing;
   }
 
   @Override
@@ -59,7 +88,7 @@ public final class InstantHealingPotion extends ConsumableItem {
 
   @Override
   public TimedStatusEffect use(CombatStatsComponent stats, GameTime time) {
-    stats.addHealth(healing);
+    stats.addHealth(Math.min(healing, stats.getMaxHealth() - stats.getHealth()));
     return null;
   }
 }

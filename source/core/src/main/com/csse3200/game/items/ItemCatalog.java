@@ -36,9 +36,11 @@ public final class ItemCatalog {
   }
 
   public static boolean contains(String id) {
-    return id != null && CREATORS.containsKey(id);
+    return id != null
+        && (CREATORS.containsKey(id) || InstantHealingPotion.healingForCustomId(id) > 0);
   }
 
+  /** Built-in IDs; custom healing amounts have derived IDs and are not enumerated. */
   public static Set<String> ids() {
     return CREATORS.keySet();
   }
@@ -50,7 +52,11 @@ public final class ItemCatalog {
     }
     IntFunction<? extends Item> creator = CREATORS.get(id);
     if (creator == null) {
-      throw new IllegalArgumentException("Unknown item ID: " + id);
+      int healing = InstantHealingPotion.healingForCustomId(id);
+      if (healing == 0) {
+        throw new IllegalArgumentException("Unknown item ID: " + id);
+      }
+      creator = count -> new InstantHealingPotion(count, healing);
     }
     Item item = creator.apply(quantity);
     if (!item.isStackable() && quantity != 1) {

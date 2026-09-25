@@ -39,6 +39,37 @@ class ItemCatalogTest {
   }
 
   @Test
+  void arbitraryPositiveHealingAmountRoundTripsThroughStableId() {
+    InstantHealingPotion custom = new InstantHealingPotion(2, 75);
+    assertEquals("HEALTH_POTION_75", custom.getId());
+    assertEquals(75, custom.getHealing());
+    assertEquals(2, custom.getQuantity());
+    assertTrue(ItemCatalog.contains(custom.getId()));
+    assertEquals(75, ((InstantHealingPotion) ItemCatalog.create(custom.getId(), 1)).getHealing());
+    assertEquals(custom.getId(), ItemCatalog.createItems(custom.getId(), 3).get(0).getId());
+    assertEquals(3, ItemCatalog.createItems(custom.getId(), 3).get(0).getQuantity());
+    assertEquals(custom.getId(), new ItemDropSpec(custom.getId(), 2).itemId());
+  }
+
+  @Test
+  void legacyHealingIdsKeepTheirNamesAndCustomIdMustBeCanonical() {
+    assertEquals(ItemIds.HEALTH_POTION, new InstantHealingPotion(1, 25).getId());
+    assertEquals(ItemIds.MEDIUM_HEALTH_POTION, new InstantHealingPotion(1, 50).getId());
+    assertEquals(ItemIds.LARGE_HEALTH_POTION, new InstantHealingPotion(1, 100).getId());
+    for (String invalid :
+        List.of(
+            "HEALTH_POTION_0",
+            "HEALTH_POTION_-75",
+            "HEALTH_POTION_075",
+            "HEALTH_POTION_25",
+            "HEALTH_POTION_2147483648")) {
+      assertFalse(ItemCatalog.contains(invalid));
+      assertThrows(IllegalArgumentException.class, () -> ItemCatalog.create(invalid, 1));
+    }
+    assertThrows(IllegalArgumentException.class, () -> new InstantHealingPotion(1, 0));
+  }
+
+  @Test
   void rejectsUnknownIdsAndInvalidQuantities() {
     assertThrows(IllegalArgumentException.class, () -> ItemCatalog.create("UNKNOWN", 1));
     assertThrows(IllegalArgumentException.class, () -> ItemCatalog.create(ItemIds.GOLD_COIN, 0));

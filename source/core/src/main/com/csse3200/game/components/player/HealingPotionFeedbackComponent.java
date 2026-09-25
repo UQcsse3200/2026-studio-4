@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.items.ItemIds;
+import com.csse3200.game.items.consumables.InstantHealingPotion;
 import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -24,9 +24,7 @@ public class HealingPotionFeedbackComponent extends RenderComponent {
   }
 
   private void onItemUsed(String id) {
-    if (ItemIds.HEALTH_POTION.equals(id)
-        || ItemIds.MEDIUM_HEALTH_POTION.equals(id)
-        || ItemIds.LARGE_HEALTH_POTION.equals(id)) {
+    if (InstantHealingPotion.isHealingPotionId(id)) {
       remaining = DURATION;
     }
   }

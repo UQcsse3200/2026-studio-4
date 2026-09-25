@@ -116,4 +116,19 @@ class HealingPotionFeedbackComponentTest {
       verify(batch, times(4)).draw(eq(pixel), anyFloat(), anyFloat(), anyFloat(), anyFloat());
     }
   }
+
+  @Test
+  void customHealingPotionShowsTheSameFeedback() {
+    SpriteBatch batch = mock(SpriteBatch.class);
+    stats.setHealth(10);
+    inventory.addConsumable("HEALTH_POTION_75");
+
+    try (MockedConstruction<Pixmap> pixels = mockConstruction(Pixmap.class);
+        MockedConstruction<Texture> textures = mockConstruction(Texture.class)) {
+      assertTrue(consumables.tryUse("HEALTH_POTION_75"));
+      feedback.render(batch);
+      verify(batch, times(2))
+          .draw(eq(textures.constructed().get(0)), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+    }
+  }
 }
