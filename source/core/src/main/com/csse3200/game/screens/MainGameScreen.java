@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.components.gamearea.TimerDisplay;
 import com.csse3200.game.components.maingame.HotbarDisplay;
 import com.csse3200.game.components.maingame.InventoryActions;
 import com.csse3200.game.components.maingame.InventoryDisplay;
@@ -29,6 +30,7 @@ import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.Timer;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.ui.terminal.commands.AbilityCommand;
@@ -67,9 +69,11 @@ public class MainGameScreen extends ScreenAdapter {
   private Entity player;
   private boolean deathScreenTriggered = false; // prevents screen-setting every frame
   private final Terminal terminal;
+  private final Timer timer = new Timer();
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
+    timer.startRun();
 
     logger.debug("Initialising main game screen services");
     terminal = new Terminal();
@@ -93,7 +97,7 @@ public class MainGameScreen extends ScreenAdapter {
     if (world == null) {
       throw new IllegalStateException("Unable to load configs/rooms.json");
     }
-    roomManager = new RoomManager(world, player, renderer.getCamera());
+    roomManager = new RoomManager(world, player, renderer.getCamera(), timer);
     roomManager.create();
     RoomCommand roomCommand = new RoomCommand(roomManager);
     terminal.addCommand("room", roomCommand);
@@ -106,11 +110,13 @@ public class MainGameScreen extends ScreenAdapter {
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     roomManager.update();
+    timer.update(delta);
     renderer.render();
     if (!deathScreenTriggered && player != null) {
       CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
       if (stats != null && stats.getHealth() <= 0) {
         deathScreenTriggered = true;
+        timer.stopRun();
         game.setScreen(GdxGame.ScreenType.DEATH_SCREEN);
       }
     }
@@ -184,7 +190,7 @@ public class MainGameScreen extends ScreenAdapter {
     HotbarDisplay hotbarDisplay = new HotbarDisplay(player);
     InventoryActions inventoryActions = new InventoryActions(inventoryDisplay);
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
-
+    TimerDisplay timerDisplay = new TimerDisplay(timer);
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
@@ -193,6 +199,8 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay())
+        .addComponent(timerDisplay)
+        .addComponent(new TimerDisplay.ToggleInput(timerDisplay))
         .addComponent(inventoryDisplay)
         .addComponent(hotbarDisplay)
         .addComponent(inventoryActions);

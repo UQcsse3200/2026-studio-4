@@ -60,7 +60,7 @@ class RoomManagerTest {
           .when(() -> RoomFactory.createRoom(entrance, camera, true))
           .thenReturn(revisitedEntrance);
 
-      RoomManager manager = new RoomManager(world, player, camera);
+      RoomManager manager = new RoomManager(world, player, camera, null);
       manager.create();
       manager.interact();
       verify(firstEntrance, never()).dispose();
@@ -113,7 +113,7 @@ class RoomManagerTest {
     when(room.getEvents()).thenReturn(events);
     when(room.getComponent(EnemyManagerComponent.class)).thenReturn(enemies);
 
-    RoomManager roomManager = new RoomManager(player);
+    RoomManager roomManager = new RoomManager(player, null);
     RoomManager spyRoomManager = spy(roomManager);
     spyRoomManager.setCurrentRoom(room);
     spyRoomManager.start(new PositionConfig());

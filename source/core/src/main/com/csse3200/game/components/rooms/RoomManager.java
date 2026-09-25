@@ -16,7 +16,9 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.Timer;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /** Owns the active room and applies the room graph specified by {@link WorldConfig}. */
@@ -35,13 +37,15 @@ public class RoomManager {
   private RoomConfig pendingDestination;
   private PositionConfig pendingArrivalPosition;
   private boolean clearRequested;
+  private final Timer timer;
 
   /** Creates the JSON-driven room manager. Call {@link #create()} to register the initial room. */
-  public RoomManager(WorldConfig world, Entity player, CameraComponent camera) {
+  public RoomManager(WorldConfig world, Entity player, CameraComponent camera, Timer timer) {
     world.validate();
     this.world = world;
     this.player = player;
     this.camera = camera;
+    this.timer = timer;
     currentConfig = world.getRoom(world.startRoomId);
     initialEntryPoint = currentConfig.getEntryPoint(world.startEntryPointId);
     currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
@@ -53,9 +57,9 @@ public class RoomManager {
   }
 
   /** Package private constructer to create empty room manager for testing */
-  RoomManager(Entity player) {
+  RoomManager(Entity player, Timer timer) {
     this.player = player;
-
+    this.timer = timer;
     this.world = null;
     this.camera = null;
     this.initialEntryPoint = null;
@@ -67,6 +71,9 @@ public class RoomManager {
     entityService.register(currentRoom);
     entityService.register(player);
     start(initialEntryPoint);
+    if (timer != null && currentConfig.dungeonId != null) {
+      timer.startDungeon(currentConfig.dungeonId);
+    }
   }
 
   /** Package private for testing */
@@ -173,11 +180,18 @@ public class RoomManager {
   }
 
   private void switchToRoom(RoomConfig destination, PositionConfig arrivalPosition) {
+    String previousDungeonId = currentConfig.dungeonId;
     Entity nextRoom =
         RoomFactory.createRoom(destination, camera, clearedRoomIds.contains(destination.id));
     currentRoom.dispose();
     currentConfig = destination;
     currentRoom = nextRoom;
+    if (timer != null && !Objects.equals(previousDungeonId, destination.dungeonId)) {
+      timer.stopDungeon();
+      if (destination.dungeonId != null) {
+        timer.startDungeon(destination.dungeonId);
+      }
+    }
     ServiceLocator.getEntityService().register(currentRoom);
     start(arrivalPosition);
     FollowingCameraComponent cameraFollowingComponent =
