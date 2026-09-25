@@ -7,16 +7,28 @@ import com.csse3200.game.components.statuseffects.FrozenEffect;
 import com.csse3200.game.components.statuseffects.TimedStatusEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.items.ConsumableItem;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Freezes enemies visible through the current world camera when consumed. */
 public final class FreezeBomb extends ConsumableItem {
+  private static final long DEFAULT_DURATION_MS = 3000;
   private final long durationMs;
 
-  public FreezeBomb(ItemType type, int quantity, long durationMs) {
-    super(type, quantity);
+  public FreezeBomb(int quantity) {
+    this(quantity, DEFAULT_DURATION_MS);
+  }
+
+  public FreezeBomb(int quantity, long durationMs) {
+    super(
+        ItemIds.FREEZE_BOMB,
+        "Freeze Bomb",
+        "Freezes all enemies currently on screen for "
+            + formatAmount(durationMs / 1000f)
+            + " seconds.",
+        "images/freeze_bomb_pixel.png",
+        quantity);
     if (durationMs <= 0) {
       throw new IllegalArgumentException("durationMs must be positive");
     }

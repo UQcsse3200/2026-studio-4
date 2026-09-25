@@ -4,7 +4,6 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.statuseffects.Stat;
 import com.csse3200.game.components.statuseffects.TimedStatusEffect;
 import com.csse3200.game.items.ConsumableItem;
-import com.csse3200.game.items.ItemType;
 import com.csse3200.game.services.GameTime;
 
 /** Shared timed multiplier behaviour for potions that boost one stat. */
@@ -14,8 +13,15 @@ abstract class StatBoostPotion extends ConsumableItem {
   private final long durationMs;
 
   StatBoostPotion(
-      ItemType type, int quantity, Stat boostedStat, float multiplier, long durationMs) {
-    super(type, quantity);
+      String id,
+      String name,
+      String description,
+      String texture,
+      int quantity,
+      Stat boostedStat,
+      float multiplier,
+      long durationMs) {
+    super(id, name, description, texture, quantity);
     this.boostedStat = boostedStat;
     this.multiplier = multiplier;
     this.durationMs = durationMs;

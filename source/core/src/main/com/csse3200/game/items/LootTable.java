@@ -29,14 +29,14 @@ public class LootTable {
   }
 
   public static class Entry {
-    public ItemType itemId;
+    public String itemId;
     public int weight = 1;
     public int minQuantity = 1;
     public int maxQuantity = 1;
 
     public Entry() {}
 
-    public Entry(ItemType itemId, int weight, int minQuantity, int maxQuantity) {
+    public Entry(String itemId, int weight, int minQuantity, int maxQuantity) {
       this.itemId = itemId;
       this.weight = weight;
       this.minQuantity = minQuantity;
@@ -62,6 +62,7 @@ public class LootTable {
     for (Entry entry : entries) {
       if (entry == null
           || entry.itemId == null
+          || !ItemCatalog.contains(entry.itemId)
           || entry.weight <= 0
           || entry.minQuantity <= 0
           || entry.maxQuantity < entry.minQuantity) {

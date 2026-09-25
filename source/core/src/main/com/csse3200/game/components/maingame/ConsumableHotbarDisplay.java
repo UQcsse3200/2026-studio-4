@@ -18,7 +18,8 @@ import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.ConsumableSelectionComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemCatalog;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import java.util.Objects;
@@ -96,26 +97,27 @@ public class ConsumableHotbarDisplay extends UIComponent {
 
     Table slots = new Table();
     for (int i = 0; i < ConsumableSelectionComponent.SLOTS.length; i++) {
-      ItemType type = ConsumableSelectionComponent.SLOTS[i];
+      String type = ConsumableSelectionComponent.SLOTS[i];
       Stack slot = new Stack();
-      slot.setName("consumable-slot-" + type.name().toLowerCase());
+      slot.setName("consumable-slot-" + type.toLowerCase());
       frames[i] = new Image(regularFrame);
       slot.add(frames[i]);
-      if (type == ItemType.SPEED_POTION) {
+      if (ItemIds.SPEED_POTION.equals(type)) {
         slot.add(new SpeedPotionTimerRing(effects, ringPixel));
       }
 
       Texture texture =
-          ServiceLocator.getResourceService().getAsset(type.getTexturePath(), Texture.class);
+          ServiceLocator.getResourceService()
+              .getAsset(ItemCatalog.create(type, 1).getTexture(), Texture.class);
       icons[i] = new Image(new TextureRegionDrawable(iconRegion(type, texture)));
       icons[i].setScaling(Scaling.fit);
-      icons[i].setName("consumable-icon-" + type.name().toLowerCase());
+      icons[i].setName("consumable-icon-" + type.toLowerCase());
       Table iconLayer = new Table();
       iconLayer.add(icons[i]).size(54f);
       slot.add(iconLayer);
 
       counts[i] = label("0", 0.55f);
-      counts[i].setName("consumable-count-" + type.name().toLowerCase());
+      counts[i].setName("consumable-count-" + type.toLowerCase());
       Table countLayer = new Table();
       countLayer.bottom().right().add(counts[i]).padRight(13f).padBottom(11f);
       slot.add(countLayer);
@@ -144,41 +146,41 @@ public class ConsumableHotbarDisplay extends UIComponent {
   }
 
   /** Trim transparent padding from the source art without copying or altering its pixels. */
-  private static TextureRegion iconRegion(ItemType type, Texture texture) {
+  private static TextureRegion iconRegion(String type, Texture texture) {
     return switch (type) {
-      case HEALTH_POTION -> new TextureRegion(texture, 377, 325, 519, 634);
-      case SHIELD -> new TextureRegion(texture, 310, 322, 633, 653);
-      case SPEED_POTION -> new TextureRegion(texture, 393, 220, 481, 784);
-      case STRENGTH_POTION -> new TextureRegion(texture, 310, 173, 635, 928);
-      case FREEZE_BOMB -> new TextureRegion(texture);
+      case ItemIds.HEALTH_POTION -> new TextureRegion(texture, 377, 325, 519, 634);
+      case ItemIds.SHIELD -> new TextureRegion(texture, 310, 322, 633, 653);
+      case ItemIds.SPEED_POTION -> new TextureRegion(texture, 393, 220, 481, 784);
+      case ItemIds.STRENGTH_POTION -> new TextureRegion(texture, 310, 173, 635, 928);
+      case ItemIds.FREEZE_BOMB -> new TextureRegion(texture);
       default -> throw new IllegalArgumentException("Not a consumable: " + type);
     };
   }
 
-  private void refreshSelection(ItemType selected) {
+  private void refreshSelection(String selected) {
     if (disposed) {
       return;
     }
     for (int i = 0; i < frames.length; i++) {
-      boolean active = ConsumableSelectionComponent.SLOTS[i] == selected;
+      boolean active = ConsumableSelectionComponent.SLOTS[i].equals(selected);
       frames[i].setDrawable(new TextureRegionDrawable(active ? selectedFrame : regularFrame));
       pointers[i].setVisible(active);
       useHints[i].setVisible(active && slotCounts[i] > 0);
     }
   }
 
-  private void refreshCount(ItemType type, Integer count) {
+  private void refreshCount(String type, Integer count) {
     if (disposed) {
       return;
     }
     for (int i = 0; i < ConsumableSelectionComponent.SLOTS.length; i++) {
-      if (ConsumableSelectionComponent.SLOTS[i] == type) {
+      if (ConsumableSelectionComponent.SLOTS[i].equals(type)) {
         slotCounts[i] = count;
         counts[i].setText(Integer.toString(count));
         boolean occupied = count > 0;
         counts[i].setVisible(occupied);
         icons[i].setVisible(occupied);
-        useHints[i].setVisible(occupied && selection.getSelectedType() == type);
+        useHints[i].setVisible(occupied && selection.getSelectedType().equals(type));
         return;
       }
     }

@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.csse3200.game.items.ItemDropSpec;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.items.charms.Charm;
 import com.csse3200.game.items.charms.SpeedCharm;
 import com.csse3200.game.items.charms.StrengthCharm;
@@ -21,15 +21,15 @@ class ItemComponentTest {
 
     assertSame(charm, component.getItem());
     assertSame(charm, component.getCharm());
-    assertEquals(ItemType.STRENGTH_CHARM, component.getItemType());
+    assertEquals(ItemIds.STRENGTH_CHARM, component.getItemId());
     assertEquals(1, component.getQuantity());
   }
 
   @Test
-  void shouldStoreNonCharmItemType() {
-    ItemComponent component = new ItemComponent(ItemType.HEALTH_POTION);
+  void shouldStoreNonCharmItemId() {
+    ItemComponent component = new ItemComponent(ItemIds.HEALTH_POTION);
 
-    assertEquals(ItemType.HEALTH_POTION, component.getItemType());
+    assertEquals(ItemIds.HEALTH_POTION, component.getItemId());
     assertNull(component.getCharm());
     assertEquals(1, component.getQuantity());
   }
@@ -37,23 +37,23 @@ class ItemComponentTest {
   @Test
   void shouldRecogniseEveryCharmThroughTheSharedItemId() {
     ItemComponent component = new ItemComponent(new SpeedCharm());
-    assertEquals(ItemType.SPEED_CHARM, component.getItemType());
+    assertEquals(ItemIds.SPEED_CHARM, component.getItemId());
     assertSame(component.getItem(), component.getCharm());
   }
 
   @Test
   void shouldStoreCallerSelectedQuantity() {
-    ItemComponent component = new ItemComponent(new ItemDropSpec(ItemType.GOLD_COIN, 25));
+    ItemComponent component = new ItemComponent(new ItemDropSpec(ItemIds.GOLD_COIN, 25));
 
-    assertEquals(ItemType.GOLD_COIN, component.getItemType());
+    assertEquals(ItemIds.GOLD_COIN, component.getItemId());
     assertEquals(25, component.getQuantity());
   }
 
   @Test
   void shouldRejectInvalidConstruction() {
     assertThrows(NullPointerException.class, () -> new ItemComponent((Charm) null));
-    assertThrows(NullPointerException.class, () -> new ItemComponent((ItemType) null));
+    assertThrows(NullPointerException.class, () -> new ItemComponent((String) null));
     assertThrows(NullPointerException.class, () -> new ItemComponent((ItemDropSpec) null));
-    assertEquals(ItemType.STRENGTH_CHARM, new ItemComponent(ItemType.STRENGTH_CHARM).getItemType());
+    assertEquals(ItemIds.STRENGTH_CHARM, new ItemComponent(ItemIds.STRENGTH_CHARM).getItemId());
   }
 }

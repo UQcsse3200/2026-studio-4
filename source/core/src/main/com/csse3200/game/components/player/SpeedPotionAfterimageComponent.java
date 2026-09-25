@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -42,7 +42,7 @@ public class SpeedPotionAfterimageComponent extends RenderComponent {
 
     Vector2 position = entity.getPosition();
     boolean moving = !position.epsilonEquals(lastPosition, 0.001f);
-    if (moving && consumables.getRemainingMs(ItemType.SPEED_POTION) > 0) {
+    if (moving && consumables.getRemainingMs(ItemIds.SPEED_POTION) > 0) {
       sampleElapsed += delta;
       TextureRegion frame = animator.getCurrentFrame();
       if (sampleElapsed >= SAMPLE_INTERVAL && frame != null) {

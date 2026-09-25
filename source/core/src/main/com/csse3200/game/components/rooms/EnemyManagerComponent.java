@@ -13,7 +13,7 @@ import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.items.Item;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -189,13 +189,13 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   /** Creates and registers room-owned items after the current update is safe for spawning. */
-  public void spawnItem(ItemType itemType, int quantity, Vector2 position) {
+  public void spawnItem(String itemId, int quantity, Vector2 position) {
     if (disposed) {
       return;
     }
-    Objects.requireNonNull(itemType, "itemType cannot be null");
+    Objects.requireNonNull(itemId, "itemId cannot be null");
     Vector2 spawnPosition = Objects.requireNonNull(position, "position cannot be null").cpy();
-    var items = itemType.createItems(quantity);
+    var items = ItemCatalog.createItems(itemId, quantity);
     ServiceLocator.getEntityService()
         .schedule(
             () -> {

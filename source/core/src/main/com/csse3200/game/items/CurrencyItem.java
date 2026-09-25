@@ -2,29 +2,22 @@ package com.csse3200.game.items;
 
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
-import java.util.Objects;
 
 /** Stackable currency represented by the same world-item and pickup contract. */
 public final class CurrencyItem extends Item {
-  private final ItemType itemType;
   private final int quantity;
 
-  public CurrencyItem(ItemType itemType, int quantity) {
+  public CurrencyItem(int quantity) {
     super(
-        Objects.requireNonNull(itemType, "itemType cannot be null").getDisplayName(),
-        itemType.getDescription(),
-        itemType.getTexturePath());
-    if (!itemType.isCurrency() || quantity <= 0) {
-      throw new IllegalArgumentException(
-          "CurrencyItem requires a currency ID and positive quantity");
+        ItemIds.GOLD_COIN,
+        "Gold Coin",
+        "Currency dropped by defeated enemies.",
+        "images/gold_coin_pixel.png",
+        ItemCategory.CURRENCY);
+    if (quantity <= 0) {
+      throw new IllegalArgumentException("CurrencyItem requires positive quantity");
     }
-    this.itemType = itemType;
     this.quantity = quantity;
-  }
-
-  @Override
-  public ItemType getItemType() {
-    return itemType;
   }
 
   @Override

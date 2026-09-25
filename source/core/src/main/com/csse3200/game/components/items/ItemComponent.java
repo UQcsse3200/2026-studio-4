@@ -2,8 +2,8 @@ package com.csse3200.game.components.items;
 
 import com.csse3200.game.components.Component;
 import com.csse3200.game.items.Item;
+import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.ItemDropSpec;
-import com.csse3200.game.items.ItemType;
 import com.csse3200.game.items.charms.Charm;
 import java.util.Objects;
 
@@ -17,17 +17,17 @@ public class ItemComponent extends Component {
     requirePositiveQuantity(item.getQuantity());
   }
 
-  /** Creates an item component for a single registered item type. */
-  public ItemComponent(ItemType itemType) {
-    this(ItemDropSpec.single(itemType));
+  /** Creates an item component for a single registered item ID. */
+  public ItemComponent(String itemId) {
+    this(ItemDropSpec.single(itemId));
   }
 
   /** Creates an item component from a caller-selected drop specification. */
   public ItemComponent(ItemDropSpec dropSpec) {
     this(
-        Objects.requireNonNull(dropSpec, "dropSpec cannot be null")
-            .itemType()
-            .createItem(dropSpec.quantity()));
+        ItemCatalog.create(
+            Objects.requireNonNull(dropSpec, "dropSpec cannot be null").itemId(),
+            dropSpec.quantity()));
   }
 
   /** Returns the item represented by the entity. */
@@ -36,8 +36,8 @@ public class ItemComponent extends Component {
   }
 
   /** Returns the stable item ID, or {@code null} for unrelated item implementations. */
-  public ItemType getItemType() {
-    return item.getItemType();
+  public String getItemId() {
+    return item.getId();
   }
 
   /** Returns the charm represented by the entity, or {@code null} for non-charm items. */

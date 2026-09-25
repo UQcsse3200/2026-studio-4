@@ -3,21 +3,23 @@ package com.csse3200.game.items.charms;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.items.Item;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemCategory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** A charm item type applies a effect on the player upon pickup and removes upon being dropped. */
+/** A charm applies an effect on pickup and removes it when dropped. */
 public abstract class Charm extends Item {
   private static final Logger logger = LoggerFactory.getLogger(Charm.class);
   private boolean applied = false;
 
-  Charm(ItemType itemType) {
-    super(itemType.getDisplayName(), itemType.getDescription(), itemType.getTexturePath());
+  Charm(String id, String name, String description, String texture) {
+    super(id, name, description, texture, ItemCategory.CHARM);
   }
 
   @Override
-  public abstract ItemType getItemType();
+  public boolean isStackable() {
+    return false;
+  }
 
   protected abstract void applyEffect(Entity player);
 

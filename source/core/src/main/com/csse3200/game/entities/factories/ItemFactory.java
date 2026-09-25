@@ -6,6 +6,7 @@ import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.items.ItemSpinComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.items.Item;
+import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.LootTable;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -38,7 +39,7 @@ public final class ItemFactory {
     Objects.requireNonNull(position, "position cannot be null");
     List<Entity> drops = new ArrayList<>();
     for (ItemDropSpec spec : lootTable.forEnemy(enemyType).roll(random)) {
-      for (Item item : spec.itemType().createItems(spec.quantity())) {
+      for (Item item : ItemCatalog.createItems(spec.itemId(), spec.quantity())) {
         drops.add(createItem(item, position));
       }
     }

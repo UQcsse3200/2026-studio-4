@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.statuseffects.TimedStatusEffect;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.services.GameTime;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,15 @@ class RegenerationPotionTest {
     when(time.getTime()).thenAnswer(invocation -> now.get());
     CombatStatsComponent stats = new CombatStatsComponent(100, 10);
     stats.setHealth(40);
-    RegenerationPotion potion = new RegenerationPotion(ItemType.HEALTH_POTION, 1, 5, 3000) {};
+    RegenerationPotion potion =
+        new RegenerationPotion(
+            ItemIds.HEALTH_POTION,
+            "Regeneration Potion",
+            "Restores health over time.",
+            "images/health_potion_pixel.png",
+            1,
+            5,
+            3000) {};
 
     TimedStatusEffect effect = potion.use(stats, time);
     assertFalse(effect.update());

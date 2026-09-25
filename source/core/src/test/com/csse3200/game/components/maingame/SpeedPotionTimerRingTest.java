@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemIds;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -25,7 +25,7 @@ class SpeedPotionTimerRingTest {
     SpeedPotionTimerRing ring = new SpeedPotionTimerRing(effects, pixel);
     ring.setSize(72f, 72f);
 
-    when(effects.getRemainingFraction(ItemType.SPEED_POTION)).thenReturn(1f, 0.5f, 0f);
+    when(effects.getRemainingFraction(ItemIds.SPEED_POTION)).thenReturn(1f, 0.5f, 0f);
     ring.draw(batch, 1f);
     long full = drawCalls(batch);
     clearInvocations(batch);

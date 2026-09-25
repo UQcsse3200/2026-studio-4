@@ -18,7 +18,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
@@ -72,8 +72,8 @@ class SpeedPotionAfterimageComponentTest {
   @Test
   void movingWithSpeedPotionLeavesAFrameBehindThenFades() {
     SpriteBatch batch = mock(SpriteBatch.class);
-    inventory.addConsumable(ItemType.SPEED_POTION);
-    assertTrue(consumables.tryUse(ItemType.SPEED_POTION));
+    inventory.addConsumable(ItemIds.SPEED_POTION);
+    assertTrue(consumables.tryUse(ItemIds.SPEED_POTION));
 
     player.setPosition(1f, 0f);
     afterimages.update();
@@ -92,8 +92,8 @@ class SpeedPotionAfterimageComponentTest {
   @Test
   void standingStillOrMovingWithoutPotionLeavesNoTrail() {
     SpriteBatch batch = mock(SpriteBatch.class);
-    inventory.addConsumable(ItemType.SPEED_POTION);
-    assertTrue(consumables.tryUse(ItemType.SPEED_POTION));
+    inventory.addConsumable(ItemIds.SPEED_POTION);
+    assertTrue(consumables.tryUse(ItemIds.SPEED_POTION));
     afterimages.update();
     afterimages.render(batch);
     verify(batch, never()).draw(frame, 0f, 0f, 1f, 1f);
@@ -108,8 +108,8 @@ class SpeedPotionAfterimageComponentTest {
   @Test
   void trailKeepsAtMostThreeRecentFrames() {
     SpriteBatch batch = mock(SpriteBatch.class);
-    inventory.addConsumable(ItemType.SPEED_POTION);
-    assertTrue(consumables.tryUse(ItemType.SPEED_POTION));
+    inventory.addConsumable(ItemIds.SPEED_POTION);
+    assertTrue(consumables.tryUse(ItemIds.SPEED_POTION));
     for (int i = 1; i <= 4; i++) {
       player.setPosition(i, 0f);
       afterimages.update();

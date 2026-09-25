@@ -24,7 +24,8 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemCatalog;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.items.LootTable;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
@@ -67,8 +68,9 @@ class EnemyManagerComponentTest {
 
     ResourceService resourceService = mock(ResourceService.class);
     Texture texture = mock(Texture.class);
-    for (ItemType itemType : ItemType.values()) {
-      when(resourceService.getAsset(itemType.getTexturePath(), Texture.class)).thenReturn(texture);
+    for (String itemId : ItemCatalog.ids()) {
+      when(resourceService.getAsset(ItemCatalog.create(itemId, 1).getTexture(), Texture.class))
+          .thenReturn(texture);
     }
     when(texture.getWidth()).thenReturn(1270);
     when(texture.getHeight()).thenReturn(1239);
@@ -157,14 +159,14 @@ class EnemyManagerComponentTest {
   void shouldSpawnChosenRoomItemWithoutEnemyDeath() {
     Vector2 position = new Vector2(3f, 4f);
 
-    enemyManager.spawnItem(ItemType.HEALTH_POTION, 2, position);
+    enemyManager.spawnItem(ItemIds.HEALTH_POTION, 2, position);
     verify(entityService, never()).register(Mockito.any(Entity.class));
     position.set(9f, 9f);
     entityService.update();
 
     assertEquals(1, entityService.getEntities().size);
     Entity item = entityService.getEntities().first();
-    assertEquals(ItemType.HEALTH_POTION, item.getComponent(ItemComponent.class).getItemType());
+    assertEquals(ItemIds.HEALTH_POTION, item.getComponent(ItemComponent.class).getItemId());
     assertEquals(2, item.getComponent(ItemComponent.class).getQuantity());
     assertEquals(new Vector2(3f, 4f), item.getPosition());
     enemyManager.dispose();
@@ -174,7 +176,7 @@ class EnemyManagerComponentTest {
   @Test
   void shouldSpawnMultipleSelectedCharmsAsIndependentRoomItems() {
     Vector2 position = new Vector2(3f, 4f);
-    enemyManager.spawnItem(ItemType.SPEED_CHARM, 2, position);
+    enemyManager.spawnItem(ItemIds.SPEED_CHARM, 2, position);
     verify(entityService, never()).register(Mockito.any(Entity.class));
 
     entityService.update();
@@ -184,8 +186,8 @@ class EnemyManagerComponentTest {
     Entity second = entityService.getEntities().get(1);
     assertNotNull(first.getComponent(ItemComponent.class));
     assertNotNull(second.getComponent(ItemComponent.class));
-    assertEquals(ItemType.SPEED_CHARM, first.getComponent(ItemComponent.class).getItemType());
-    assertEquals(ItemType.SPEED_CHARM, second.getComponent(ItemComponent.class).getItemType());
+    assertEquals(ItemIds.SPEED_CHARM, first.getComponent(ItemComponent.class).getItemId());
+    assertEquals(ItemIds.SPEED_CHARM, second.getComponent(ItemComponent.class).getItemId());
     assertEquals(position, first.getPosition());
     assertEquals(position, second.getPosition());
     enemyManager.dispose();
@@ -195,10 +197,10 @@ class EnemyManagerComponentTest {
 
   @Test
   void shouldUseEnemyTypeRulesAtDeathWithoutChangingSpawnDrops() {
-    LootTable table = singleItemTable(ItemType.HEALTH_POTION);
+    LootTable table = singleItemTable(ItemIds.HEALTH_POTION);
     table.enemyRules =
         new LootTable.EnemyRule[] {
-          new LootTable.EnemyRule("GOLEM", singleItemTable(ItemType.GOLD_COIN))
+          new LootTable.EnemyRule("GOLEM", singleItemTable(ItemIds.GOLD_COIN))
         };
     enemyManager =
         new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
@@ -214,19 +216,19 @@ class EnemyManagerComponentTest {
 
     assertEquals(2, entityService.getEntities().size);
     assertEquals(
-        ItemType.GOLD_COIN,
-        entityService.getEntities().get(0).getComponent(ItemComponent.class).getItemType());
+        ItemIds.GOLD_COIN,
+        entityService.getEntities().get(0).getComponent(ItemComponent.class).getItemId());
     assertEquals(
-        ItemType.HEALTH_POTION,
-        entityService.getEntities().get(1).getComponent(ItemComponent.class).getItemType());
+        ItemIds.HEALTH_POTION,
+        entityService.getEntities().get(1).getComponent(ItemComponent.class).getItemId());
   }
 
   @Test
   void shouldKeepEnemyTypeForEverySplitChild() {
-    LootTable table = singleItemTable(ItemType.HEALTH_POTION);
+    LootTable table = singleItemTable(ItemIds.HEALTH_POTION);
     table.enemyRules =
         new LootTable.EnemyRule[] {
-          new LootTable.EnemyRule("GOLEM", singleItemTable(ItemType.GOLD_COIN))
+          new LootTable.EnemyRule("GOLEM", singleItemTable(ItemIds.GOLD_COIN))
         };
     enemyManager =
         new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
@@ -245,7 +247,7 @@ class EnemyManagerComponentTest {
     int goldDrops = 0;
     for (Entity spawned : entityService.getEntities()) {
       ItemComponent item = spawned.getComponent(ItemComponent.class);
-      if (item != null && item.getItemType() == ItemType.GOLD_COIN) {
+      if (item != null && ItemIds.GOLD_COIN.equals(item.getItemId())) {
         goldDrops++;
       }
     }
@@ -255,7 +257,7 @@ class EnemyManagerComponentTest {
   @Test
   void shouldSpawnSelectedCharmsAsSeparateRoomOwnedEntities() {
     LootTable table = new LootTable();
-    table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemType.SPEED_CHARM, 1, 2, 2)};
+    table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemIds.SPEED_CHARM, 1, 2, 2)};
     enemyManager =
         new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
     enemyManager.setEntity(room);
@@ -272,7 +274,7 @@ class EnemyManagerComponentTest {
     }
     assertEquals(2, drops.size());
     for (Entity drop : drops) {
-      assertEquals(ItemType.SPEED_CHARM, drop.getComponent(ItemComponent.class).getItemType());
+      assertEquals(ItemIds.SPEED_CHARM, drop.getComponent(ItemComponent.class).getItemId());
       verify(entityService).register(drop);
     }
     enemyManager.dispose();
@@ -350,7 +352,7 @@ class EnemyManagerComponentTest {
     return random;
   }
 
-  private static LootTable singleItemTable(ItemType itemType) {
+  private static LootTable singleItemTable(String itemType) {
     LootTable table = new LootTable();
     table.entries = new LootTable.Entry[] {new LootTable.Entry(itemType, 1, 1, 1)};
     return table;

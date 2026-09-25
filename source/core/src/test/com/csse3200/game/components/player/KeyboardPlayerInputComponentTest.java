@@ -10,7 +10,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.ui.terminal.KeyboardTerminalInputComponent;
 import com.csse3200.game.ui.terminal.Terminal;
@@ -183,21 +183,21 @@ class KeyboardPlayerInputComponentTest {
     ConsumableSelectionComponent selection = new ConsumableSelectionComponent();
     player.addComponent(selection);
     selection.create();
-    List<ItemType> requested = new ArrayList<>();
+    List<String> requested = new ArrayList<>();
     player
         .getEvents()
         .addListener(
-            ConsumableEffectComponent.USE_REQUEST, (EventListener1<ItemType>) requested::add);
+            ConsumableEffectComponent.USE_REQUEST, (EventListener1<String>) requested::add);
 
     assertTrue(input.keyDown(Keys.Q));
     assertTrue(input.keyDown(Keys.TAB));
     assertTrue(input.keyDown(Keys.Q));
-    assertEquals(List.of(ItemType.HEALTH_POTION, ItemType.SHIELD), requested);
+    assertEquals(List.of(ItemIds.HEALTH_POTION, ItemIds.SHIELD), requested);
     assertEquals(1, selection.getSelectedIndex());
     for (int i = 0; i < 3; i++) {
       assertTrue(input.keyDown(Keys.TAB));
     }
-    assertEquals(ItemType.FREEZE_BOMB, selection.getSelectedType());
+    assertEquals(ItemIds.FREEZE_BOMB, selection.getSelectedType());
     assertTrue(input.keyDown(Keys.TAB));
     assertEquals(0, selection.getSelectedIndex());
   }

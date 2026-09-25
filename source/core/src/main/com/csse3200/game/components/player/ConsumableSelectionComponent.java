@@ -1,7 +1,7 @@
 package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemIds;
 
 /** Owns the fixed consumable slots and the currently selected slot. */
 public class ConsumableSelectionComponent extends Component {
@@ -9,12 +9,12 @@ public class ConsumableSelectionComponent extends Component {
   public static final String USE_SELECTED_REQUEST = "useSelectedConsumable";
   public static final String SELECTION_CHANGED = "selectedConsumableChanged";
 
-  public static final ItemType[] SLOTS = {
-    ItemType.HEALTH_POTION,
-    ItemType.SHIELD,
-    ItemType.SPEED_POTION,
-    ItemType.STRENGTH_POTION,
-    ItemType.FREEZE_BOMB
+  public static final String[] SLOTS = {
+    ItemIds.HEALTH_POTION,
+    ItemIds.SHIELD,
+    ItemIds.SPEED_POTION,
+    ItemIds.STRENGTH_POTION,
+    ItemIds.FREEZE_BOMB
   };
 
   private int selectedIndex;
@@ -25,7 +25,7 @@ public class ConsumableSelectionComponent extends Component {
     entity.getEvents().addListener(USE_SELECTED_REQUEST, this::useSelected);
   }
 
-  public ItemType getSelectedType() {
+  public String getSelectedType() {
     return SLOTS[selectedIndex];
   }
 

@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.csse3200.game.components.player.ConsumableEffectComponent;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemIds;
 
 /** Blue arc inside the speed potion slot, showing the actual remaining effect time. */
 class SpeedPotionTimerRing extends Actor {
@@ -25,7 +25,7 @@ class SpeedPotionTimerRing extends Actor {
 
   @Override
   public void draw(Batch batch, float parentAlpha) {
-    int visible = (int) Math.ceil(SEGMENTS * effects.getRemainingFraction(ItemType.SPEED_POTION));
+    int visible = (int) Math.ceil(SEGMENTS * effects.getRemainingFraction(ItemIds.SPEED_POTION));
     if (visible == 0) return;
 
     float originalColour = batch.getPackedColor();

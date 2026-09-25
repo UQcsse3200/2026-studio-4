@@ -23,7 +23,7 @@ import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.rendering.RenderService;
@@ -84,14 +84,14 @@ class FreezeBombUseTest {
     KeyboardPlayerInputComponent input = new KeyboardPlayerInputComponent();
     player.addComponent(selection).addComponent(input);
     selection.create();
-    inventory.addConsumable(ItemType.FREEZE_BOMB, 2);
+    inventory.addConsumable(ItemIds.FREEZE_BOMB, 2);
     for (int i = 0; i < 4; i++) {
       input.keyDown(Keys.TAB);
     }
-    assertEquals(ItemType.FREEZE_BOMB, selection.getSelectedType());
+    assertEquals(ItemIds.FREEZE_BOMB, selection.getSelectedType());
     input.keyDown(Keys.Q);
 
-    assertEquals(1, inventory.getConsumableCount(ItemType.FREEZE_BOMB));
+    assertEquals(1, inventory.getConsumableCount(ItemIds.FREEZE_BOMB));
     assertTrue(renderService.getWhiteFlashAlpha() > 0f);
     assertFrozenForThreeSeconds(visible);
     assertFrozenForThreeSeconds(edge);
@@ -101,10 +101,10 @@ class FreezeBombUseTest {
 
   @Test
   void missingCameraDoesNotConsumeBomb() {
-    inventory.addConsumable(ItemType.FREEZE_BOMB);
+    inventory.addConsumable(ItemIds.FREEZE_BOMB);
 
-    assertFalse(consumables.tryUse(ItemType.FREEZE_BOMB));
-    assertEquals(1, inventory.getConsumableCount(ItemType.FREEZE_BOMB));
+    assertFalse(consumables.tryUse(ItemIds.FREEZE_BOMB));
+    assertEquals(1, inventory.getConsumableCount(ItemIds.FREEZE_BOMB));
   }
 
   private void assertFrozenForThreeSeconds(Entity enemy) {

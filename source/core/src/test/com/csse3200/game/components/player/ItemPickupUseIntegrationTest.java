@@ -13,7 +13,7 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.items.ItemDropSpec;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.items.charms.StrengthCharm;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
@@ -41,13 +41,13 @@ class ItemPickupUseIntegrationTest {
     Entity player = createPlayer();
     player.getComponent(CombatStatsComponent.class).setHealth(50);
 
-    pickUp(player, createItem(new ItemComponent(new ItemDropSpec(ItemType.HEALTH_POTION, 2))));
+    pickUp(player, createItem(new ItemComponent(new ItemDropSpec(ItemIds.HEALTH_POTION, 2))));
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    assertEquals(2, inventory.getConsumableCount(ItemType.HEALTH_POTION));
+    assertEquals(2, inventory.getConsumableCount(ItemIds.HEALTH_POTION));
 
-    player.getEvents().trigger(ConsumableEffectComponent.USE_REQUEST, ItemType.HEALTH_POTION);
+    player.getEvents().trigger(ConsumableEffectComponent.USE_REQUEST, ItemIds.HEALTH_POTION);
     assertEquals(75, player.getComponent(CombatStatsComponent.class).getHealth());
-    assertEquals(1, inventory.getConsumableCount(ItemType.HEALTH_POTION));
+    assertEquals(1, inventory.getConsumableCount(ItemIds.HEALTH_POTION));
   }
 
   @Test

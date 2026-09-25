@@ -5,24 +5,27 @@ import java.util.Objects;
 /**
  * A caller-selected item drop and its quantity.
  *
- * <p>Enemy and Room features own the decision about which specifications to create. Item code only
- * validates and represents that decision. Multiple specifications may contain the same item type,
- * allowing multiple consumables to be dropped at once. This implementation was developed with
- * assistance from OpenAI Codex and reviewed by Yuezhou Wang.
+ * <p>LootTable selects these specifications. This record validates and represents that decision.
+ * Multiple specifications may contain the same item ID, allowing multiple consumables to be dropped
+ * at once. This implementation was developed with assistance from OpenAI Codex and reviewed by
+ * Yuezhou Wang.
  *
- * @param itemType item selected by the caller
+ * @param itemId stable item ID selected by the caller
  * @param quantity positive unit count; Charms become separate world entities
  */
-public record ItemDropSpec(ItemType itemType, int quantity) {
+public record ItemDropSpec(String itemId, int quantity) {
   public ItemDropSpec {
-    Objects.requireNonNull(itemType, "itemType cannot be null");
+    Objects.requireNonNull(itemId, "itemId cannot be null");
+    if (!ItemCatalog.contains(itemId)) {
+      throw new IllegalArgumentException("Unknown item ID: " + itemId);
+    }
     if (quantity <= 0) {
       throw new IllegalArgumentException("quantity must be positive");
     }
   }
 
   /** Creates a single-unit drop. */
-  public static ItemDropSpec single(ItemType itemType) {
-    return new ItemDropSpec(itemType, 1);
+  public static ItemDropSpec single(String itemId) {
+    return new ItemDropSpec(itemId, 1);
   }
 }

@@ -21,7 +21,7 @@ class LootTableTest {
     LootTable table = LootTable.defaultTable();
     table.validate();
     assertEquals(
-        List.of(new ItemDropSpec(ItemType.GOLD_COIN, 1)), table.roll(mock(RandomGenerator.class)));
+        List.of(new ItemDropSpec(ItemIds.GOLD_COIN, 1)), table.roll(mock(RandomGenerator.class)));
   }
 
   @Test
@@ -45,22 +45,22 @@ class LootTableTest {
       assertEquals(
           25,
           java.util.Arrays.stream(enemyTable.entries)
-              .filter(entry -> entry.itemId == ItemType.FREEZE_BOMB)
+              .filter(entry -> ItemIds.FREEZE_BOMB.equals(entry.itemId))
               .mapToInt(entry -> entry.weight)
               .sum());
     }
 
     RandomGenerator random = mock(RandomGenerator.class);
     when(random.nextInt(100)).thenReturn(0, 74, 99);
-    assertEquals(ItemType.GOLD_COIN, table.forEnemy("MEDUSA").roll(random).get(0).itemType());
-    assertEquals(ItemType.SPEED_CHARM, table.forEnemy("MEDUSA").roll(random).get(0).itemType());
-    assertEquals(ItemType.FREEZE_BOMB, table.forEnemy("MEDUSA").roll(random).get(0).itemType());
+    assertEquals(ItemIds.GOLD_COIN, table.forEnemy("MEDUSA").roll(random).get(0).itemId());
+    assertEquals(ItemIds.SPEED_CHARM, table.forEnemy("MEDUSA").roll(random).get(0).itemId());
+    assertEquals(ItemIds.FREEZE_BOMB, table.forEnemy("MEDUSA").roll(random).get(0).itemId());
 
     RandomGenerator bombRoll = mock(RandomGenerator.class);
     when(bombRoll.nextInt(100)).thenReturn(99);
     for (String enemyType : normalEnemies) {
       assertEquals(
-          List.of(new ItemDropSpec(ItemType.FREEZE_BOMB, 1)),
+          List.of(new ItemDropSpec(ItemIds.FREEZE_BOMB, 1)),
           table.forEnemy(enemyType).roll(bombRoll));
     }
     for (String bossType : Set.of("CERBERUS", "FINAL_BOSS", "SNAKE_MINI_BOSS")) {
@@ -73,19 +73,21 @@ class LootTableTest {
     LootTable table = new LootTable();
     table.rolls = 2;
     table.noDropWeight = 1;
-    table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemType.GOLD_COIN, 3, 4, 4)};
+    table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemIds.GOLD_COIN, 3, 4, 4)};
     RandomGenerator random = mock(RandomGenerator.class);
     when(random.nextInt(4)).thenReturn(0, 3);
 
     List<ItemDropSpec> results = table.roll(random);
 
-    assertEquals(List.of(new ItemDropSpec(ItemType.GOLD_COIN, 4)), results);
+    assertEquals(List.of(new ItemDropSpec(ItemIds.GOLD_COIN, 4)), results);
   }
 
   @Test
   void shouldRejectUnknownOrInvalidRulesBeforeSpawning() {
     LootTable table = new LootTable();
     table.entries = new LootTable.Entry[] {new LootTable.Entry(null, 1, 1, 1)};
+    assertThrows(IllegalArgumentException.class, table::validate);
+    table.entries = new LootTable.Entry[] {new LootTable.Entry("Small Health Potion", 1, 1, 1)};
     assertThrows(IllegalArgumentException.class, table::validate);
     table.entries = new LootTable.Entry[0];
     table.noDropWeight = 1;
@@ -103,16 +105,15 @@ class LootTableTest {
     RandomGenerator random = mock(RandomGenerator.class);
 
     assertEquals(
-        List.of(new ItemDropSpec(ItemType.GOLD_COIN, 3)), table.forEnemy("GOLEM").roll(random));
+        List.of(new ItemDropSpec(ItemIds.GOLD_COIN, 3)), table.forEnemy("GOLEM").roll(random));
     assertEquals(
-        List.of(new ItemDropSpec(ItemType.HEALTH_POTION, 1)),
-        table.forEnemy("MEDUSA").roll(random));
+        List.of(new ItemDropSpec(ItemIds.HEALTH_POTION, 1)), table.forEnemy("MEDUSA").roll(random));
   }
 
   @Test
   void shouldRejectDuplicateEnemyRules() {
     LootTable table = new LootTable();
-    table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemType.HEALTH_POTION, 1, 1, 1)};
+    table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemIds.HEALTH_POTION, 1, 1, 1)};
     table.enemyRules =
         new LootTable.EnemyRule[] {
           new LootTable.EnemyRule("GOLEM", new LootTable()),

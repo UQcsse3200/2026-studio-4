@@ -4,7 +4,6 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.statuseffects.TimedStatusEffect;
 import com.csse3200.game.items.ConsumableItem;
-import com.csse3200.game.items.ItemType;
 import com.csse3200.game.services.GameTime;
 
 /** Restores health in regular ticks during a timed effect. */
@@ -13,8 +12,15 @@ public abstract class RegenerationPotion extends ConsumableItem {
   private final int healingPerTick;
   private final long durationMs;
 
-  protected RegenerationPotion(ItemType type, int quantity, int healingPerTick, long durationMs) {
-    super(type, quantity);
+  protected RegenerationPotion(
+      String id,
+      String name,
+      String description,
+      String texture,
+      int quantity,
+      int healingPerTick,
+      long durationMs) {
+    super(id, name, description, texture, quantity);
     if (healingPerTick <= 0 || durationMs < TICK_MS) {
       throw new IllegalArgumentException(
           "regeneration needs positive healing and at least one tick");

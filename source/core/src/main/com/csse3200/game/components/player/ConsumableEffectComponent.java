@@ -5,10 +5,11 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.statuseffects.TimedStatusEffect;
 import com.csse3200.game.items.ConsumableItem;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemCatalog;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -19,7 +20,7 @@ import java.util.Map;
 public class ConsumableEffectComponent extends Component {
   public static final String USE_REQUEST = "useConsumable";
   public static final String USED = "itemUsed";
-  private final Map<ItemType, TimedStatusEffect> active = new EnumMap<>(ItemType.class);
+  private final Map<String, TimedStatusEffect> active = new HashMap<>();
   private CombatStatsComponent stats;
   private InventoryComponent inventory;
   private StatusEffectsControllerComponent effects;
@@ -36,44 +37,46 @@ public class ConsumableEffectComponent extends Component {
   }
 
   /** Event-compatible use request. This method never assumes the caller already removed an item. */
-  public void applyEffect(ItemType type) {
-    tryUse(type);
+  public void applyEffect(String id) {
+    tryUse(id);
   }
 
   /**
    * Applies one available item. Invalid, dead, disposed or full-health requests consume nothing.
    */
-  public boolean tryUse(ItemType type) {
+  public boolean tryUse(String id) {
     if (disposed
-        || type == null
-        || !type.isConsumable()
+        || id == null
+        || !ItemCatalog.contains(id)
         || stats == null
         || stats.isDead()
         || inventory == null
-        || !inventory.hasConsumable(type)) {
+        || !inventory.hasConsumable(id)) {
       return false;
     }
-    ConsumableItem item = (ConsumableItem) type.createItem(1);
+    if (!(ItemCatalog.create(id, 1) instanceof ConsumableItem item)) {
+      return false;
+    }
     if (!item.canUse(stats, effects, time)) {
       return false;
     }
-    if (!inventory.removeConsumable(type)) {
+    if (!inventory.removeConsumable(id)) {
       return false;
     }
     TimedStatusEffect effect = item.use(stats, time);
     if (effect != null) {
-      refresh(type, effect);
+      refresh(id, effect);
     }
-    entity.getEvents().trigger(USED, type);
+    entity.getEvents().trigger(USED, id);
     return true;
   }
 
-  private void refresh(ItemType type, TimedStatusEffect effect) {
-    effects.removeStatusEffect(active.remove(type));
-    active.put(type, effect);
+  private void refresh(String id, TimedStatusEffect effect) {
+    effects.removeStatusEffect(active.remove(id));
+    active.put(id, effect);
     effect.setOnEnded(
         () -> {
-          active.remove(type, effect);
+          active.remove(id, effect);
           stats.notifyEffectiveStatsChanged();
         });
     effects.addStatusEffect(effect);
@@ -82,26 +85,26 @@ public class ConsumableEffectComponent extends Component {
 
   /** Returns whether this consumable's protection is still active at the current game time. */
   public boolean isShielded() {
-    return effects != null && effects.hasStatusEffect(active.get(ItemType.SHIELD));
+    return effects != null && effects.hasStatusEffect(active.get(ItemIds.SHIELD));
   }
 
   /** Remaining duration of the actual active consumable shield, in milliseconds. */
   public long getShieldRemainingMs() {
-    return getRemainingMs(ItemType.SHIELD);
+    return getRemainingMs(ItemIds.SHIELD);
   }
 
   /** Remaining duration of a real active consumable effect; zero when absent or removed. */
-  public long getRemainingMs(ItemType type) {
-    TimedStatusEffect effect = type == null ? null : active.get(type);
+  public long getRemainingMs(String id) {
+    TimedStatusEffect effect = id == null ? null : active.get(id);
     return effects != null && effect != null && effects.hasStatusEffect(effect)
         ? effect.getRemainingDuration()
         : 0;
   }
 
   /** Portion of an active timed consumable still remaining, from zero to one. */
-  public float getRemainingFraction(ItemType type) {
-    TimedStatusEffect effect = type == null ? null : active.get(type);
-    long remaining = getRemainingMs(type);
+  public float getRemainingFraction(String id) {
+    TimedStatusEffect effect = id == null ? null : active.get(id);
+    long remaining = getRemainingMs(id);
     return effect == null || effect.getDuration() <= 0
         ? 0f
         : Math.min(1f, (float) remaining / effect.getDuration());

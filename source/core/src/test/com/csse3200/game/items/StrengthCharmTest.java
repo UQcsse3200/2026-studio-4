@@ -2,6 +2,7 @@ package com.csse3200.game.items;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
@@ -13,6 +14,7 @@ import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.charms.StrengthCharm;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,5 +69,20 @@ public class StrengthCharmTest {
     assertEquals(0, inventory.getCharmCount());
 
     verify(stats, times(2)).addBaseAttack(anyInt());
+  }
+
+  @Test
+  void separateDropsKeepIndependentPickupStateAndEffects() {
+    List<Item> drops = ItemCatalog.createItems(ItemIds.STRENGTH_CHARM, 2);
+    assertNotSame(drops.get(0), drops.get(1));
+
+    drops.forEach(item -> item.pickUp(player));
+    assertEquals(2, inventory.getCharmCount());
+    verify(stats, times(2)).addBaseAttack(10);
+
+    drops.get(0).drop(player);
+    assertEquals(1, inventory.getCharmCount());
+    assertTrue(inventory.hasCharm((StrengthCharm) drops.get(1)));
+    verify(stats).addBaseAttack(-10);
   }
 }

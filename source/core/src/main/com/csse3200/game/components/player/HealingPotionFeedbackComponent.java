@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -23,10 +23,10 @@ public class HealingPotionFeedbackComponent extends RenderComponent {
     entity.getEvents().addListener(ConsumableEffectComponent.USED, this::onItemUsed);
   }
 
-  private void onItemUsed(ItemType type) {
-    if (type == ItemType.HEALTH_POTION
-        || type == ItemType.MEDIUM_HEALTH_POTION
-        || type == ItemType.LARGE_HEALTH_POTION) {
+  private void onItemUsed(String id) {
+    if (ItemIds.HEALTH_POTION.equals(id)
+        || ItemIds.MEDIUM_HEALTH_POTION.equals(id)
+        || ItemIds.LARGE_HEALTH_POTION.equals(id)) {
       remaining = DURATION;
     }
   }
