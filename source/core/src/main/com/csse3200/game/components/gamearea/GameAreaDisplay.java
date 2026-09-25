@@ -9,8 +9,7 @@ import com.csse3200.game.ui.UIComponent;
 /** Displays the name of the current game area. */
 public class GameAreaDisplay extends UIComponent {
   private String gameAreaName = "";
-  private Label title;
-  private Label status;
+    private Label status;
   private Table statusTable;
   private Table titleTable;
   private long statusExpiryMillis;
@@ -26,7 +25,7 @@ public class GameAreaDisplay extends UIComponent {
   }
 
   private void addActors() {
-    title = new Label(this.gameAreaName, skin, "large");
+    Label title = new Label(this.gameAreaName, skin, "large");
     titleTable = new Table();
     titleTable.add(title);
     titleTable.setFillParent(true);
@@ -40,7 +39,6 @@ public class GameAreaDisplay extends UIComponent {
 
     stage.addActor(titleTable);
     stage.addActor(statusTable);
-    //    stage.addActor(status);
   }
 
   /** Shows a brief interaction message below the room title. */
@@ -51,12 +49,6 @@ public class GameAreaDisplay extends UIComponent {
 
   @Override
   public void draw(SpriteBatch batch) {
-    //    int screenHeight = Gdx.graphics.getHeight();
-    //    float offsetX = 10f;
-    //    float offsetY = 30f;
-    //
-    ////    title.setPosition(offsetX, screenHeight - offsetY);
-    ////    status.setPosition(offsetX + 900f, screenHeight - offsetY - 28f);
     if (statusExpiryMillis > 0 && TimeUtils.millis() >= statusExpiryMillis) {
       status.setText("");
       statusExpiryMillis = 0;
@@ -68,7 +60,5 @@ public class GameAreaDisplay extends UIComponent {
     super.dispose();
     titleTable.remove();
     statusTable.remove();
-    //    status.remove();
-
   }
 }
