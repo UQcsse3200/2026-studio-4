@@ -4,14 +4,23 @@ import com.csse3200.game.entities.Entity;
 
 /** An object that can be stored in the players inventory. */
 public abstract class Item {
+  private final String id;
   private final String name;
   private final String description;
   private final String texture; // used when inventory ui
+  private final ItemCategory category;
 
   protected Item(String name, String description, String texture) {
+    this(null, name, description, texture, null);
+  }
+
+  protected Item(
+      String id, String name, String description, String texture, ItemCategory category) {
+    this.id = id;
     this.name = name;
     this.description = description;
     this.texture = texture;
+    this.category = category;
   }
 
   /**
@@ -39,6 +48,25 @@ public abstract class Item {
 
   public String getTexture() {
     return texture;
+  }
+
+  /** Stable identity shared by drops, inventory and UI. Legacy items may return null. */
+  public String getId() {
+    return id;
+  }
+
+  public ItemCategory getCategory() {
+    return category;
+  }
+
+  /** Whether a single world item may represent multiple units. */
+  public boolean isStackable() {
+    return true;
+  }
+
+  /** Number of units represented by this item instance. */
+  public int getQuantity() {
+    return 1;
   }
 
   /**

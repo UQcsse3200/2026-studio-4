@@ -10,6 +10,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -29,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -130,6 +133,37 @@ class RendererTest {
             > 0f);
     assertArrayEquals(originalProjection.val, camera.combined.val);
     assertEquals(originalPosition, camera.position);
+  }
+
+  @Test
+  void whiteFlashCoversUiAfterStageDraw() {
+    when(graphics.getWidth()).thenReturn(100);
+    when(graphics.getHeight()).thenReturn(60);
+    when(stage.getCamera()).thenReturn(new OrthographicCamera());
+    when(stage.getWidth()).thenReturn(100f);
+    when(stage.getHeight()).thenReturn(60f);
+    GameTime time = mock(GameTime.class);
+    when(time.getDeltaTime()).thenReturn(0.1f);
+    ServiceLocator.registerTimeSource(time);
+    RenderService service = new RenderService();
+    Renderer renderer =
+        new Renderer(makeCameraEntity(camera), 10, spriteBatch, stage, service, debugRenderer);
+    service.startWhiteFlash();
+
+    try (MockedConstruction<Pixmap> pixmaps = mockConstruction(Pixmap.class);
+        MockedConstruction<Texture> textures = mockConstruction(Texture.class)) {
+      renderer.render();
+
+      Texture white = textures.constructed().get(0);
+      InOrder order = inOrder(stage, spriteBatch);
+      order.verify(stage).draw();
+      order.verify(spriteBatch).begin();
+      order.verify(spriteBatch).setColor(1f, 1f, 1f, 1f);
+      order.verify(spriteBatch).draw(white, 0f, 0f, 100f, 60f);
+      order.verify(spriteBatch).end();
+      renderer.dispose();
+      verify(white).dispose();
+    }
   }
 
   private static CameraComponent makeCameraEntity(Camera camera) {

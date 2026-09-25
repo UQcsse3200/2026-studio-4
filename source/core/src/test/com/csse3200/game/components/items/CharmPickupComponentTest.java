@@ -11,7 +11,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.ItemDropSpec;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.items.charms.Charm;
 import com.csse3200.game.items.charms.StrengthCharm;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -120,7 +120,7 @@ class CharmPickupComponentTest {
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ITEM))
-            .addComponent(new ItemComponent(ItemType.HEALTH_POTION));
+            .addComponent(new ItemComponent(ItemIds.HEALTH_POTION));
     consumable.create();
 
     Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
@@ -131,8 +131,7 @@ class CharmPickupComponentTest {
 
     assertEquals(0, player.getComponent(InventoryComponent.class).getCharmCount());
     assertEquals(
-        1,
-        player.getComponent(InventoryComponent.class).getConsumableCount(ItemType.HEALTH_POTION));
+        1, player.getComponent(InventoryComponent.class).getConsumableCount(ItemIds.HEALTH_POTION));
   }
 
   @Test
@@ -142,7 +141,7 @@ class CharmPickupComponentTest {
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ITEM))
-            .addComponent(new ItemComponent(new ItemDropSpec(ItemType.GOLD_COIN, 25)));
+            .addComponent(new ItemComponent(new ItemDropSpec(ItemIds.GOLD_COIN, 25)));
     gold.create();
 
     Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();

@@ -7,10 +7,11 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
 
 /**
- * Selects enemies whose centre currently falls within the camera's viewport. Uses StrategyTargetAll
- * to get the room's enemy pool, then filters by an axis-aligned bounds check against the camera.
+ * Selects enemies whose centre currently falls within the camera's viewport. Uses StrategyAll to
+ * get the room's enemy pool, then filters by an axis-aligned bounds check against the camera.
  */
 public class StrategyOnscreen implements EnemyTargetingStrategy {
+  private final Camera camera;
   private final CameraComponent cameraComponent;
   private final EnemyTargetingStrategy candidateSource = new StrategyAll();
 
@@ -23,13 +24,26 @@ public class StrategyOnscreen implements EnemyTargetingStrategy {
       throw new IllegalArgumentException("cameraComponent must not be null");
     }
     this.cameraComponent = cameraComponent;
+    this.camera = cameraComponent.getCamera();
+  }
+
+  /** Selects using the registered world camera, which has no CameraComponent at the call site. */
+  public StrategyOnscreen(Camera camera) {
+    if (camera == null) {
+      throw new IllegalArgumentException("camera must not be null");
+    }
+    this.cameraComponent = null;
+    this.camera = camera;
   }
 
   @Override
   public Array<Entity> selectTargets(Entity caster) {
-    Camera camera = cameraComponent.getCamera();
     Vector2 cameraCenter = new Vector2(camera.position.x, camera.position.y);
-    Vector2 halfViewport = cameraComponent.getCameraSize().scl(0.5f);
+    Vector2 halfViewport =
+        (cameraComponent == null
+                ? new Vector2(camera.viewportWidth, camera.viewportHeight)
+                : cameraComponent.getCameraSize())
+            .scl(0.5f);
 
     Array<Entity> onScreen = new Array<>();
     for (Entity candidate : candidateSource.selectTargets(caster)) {

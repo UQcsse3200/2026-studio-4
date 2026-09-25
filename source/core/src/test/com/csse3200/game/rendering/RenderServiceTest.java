@@ -198,6 +198,28 @@ class RenderServiceTest {
     assertArrayEquals(base.val, service.getWorldProjection(base).val);
   }
 
+  @Test
+  void whiteFlashBrightensThenFadesAndCanRestart() {
+    GameTime time = mock(GameTime.class);
+    when(time.getDeltaTime()).thenReturn(0.05f);
+    ServiceLocator.registerTimeSource(time);
+    RenderService service = new RenderService();
+
+    assertEquals(0f, service.getWhiteFlashAlpha());
+    service.startWhiteFlash();
+    assertEquals(0.5f, service.getWhiteFlashAlpha(), 0.001f);
+    assertEquals(1f, service.getWhiteFlashAlpha(), 0.001f);
+    assertEquals(0.8f, service.getWhiteFlashAlpha(), 0.001f);
+    service.startWhiteFlash();
+    assertEquals(0.5f, service.getWhiteFlashAlpha(), 0.001f);
+    for (int i = 0; i < 6; i++) service.getWhiteFlashAlpha();
+    assertEquals(0f, service.getWhiteFlashAlpha());
+
+    service.startWhiteFlash();
+    service.dispose();
+    assertEquals(0f, service.getWhiteFlashAlpha());
+  }
+
   private static float displacement(Matrix4 projection) {
     return (float) Math.hypot(projection.val[Matrix4.M03], projection.val[Matrix4.M13]);
   }

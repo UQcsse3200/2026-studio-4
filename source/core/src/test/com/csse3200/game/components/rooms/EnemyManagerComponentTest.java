@@ -2,6 +2,7 @@ package com.csse3200.game.components.rooms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
@@ -16,16 +17,22 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemCatalog;
+import com.csse3200.game.items.ItemIds;
+import com.csse3200.game.items.LootTable;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.random.RandomGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,15 +68,18 @@ class EnemyManagerComponentTest {
 
     ResourceService resourceService = mock(ResourceService.class);
     Texture texture = mock(Texture.class);
-    for (ItemType itemType : ItemType.values()) {
-      when(resourceService.getAsset(itemType.getTexturePath(), Texture.class)).thenReturn(texture);
+    for (String itemId : ItemCatalog.ids()) {
+      when(resourceService.getAsset(ItemCatalog.create(itemId, 1).getTexture(), Texture.class))
+          .thenReturn(texture);
     }
     when(texture.getWidth()).thenReturn(1270);
     when(texture.getHeight()).thenReturn(1239);
     ServiceLocator.registerResourceService(resourceService);
 
     room = createMockRoom();
-    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], fixedDrop(5));
+    enemyManager =
+        new EnemyManagerComponent(
+            new EnemySpawnConfig[0], new ItemFactory(LootTable.defaultTable(), fixedDrop(5)));
     enemyManager.setEntity(room);
     enemyManager.create();
   }
@@ -127,6 +137,167 @@ class EnemyManagerComponentTest {
   }
 
   @Test
+  void shouldSpawnRegisteredItemAtEnemyDeathPositionAfterUpdate() {
+    Entity enemy = new Entity();
+    Vector2 deathPosition = new Vector2(3f, 4f);
+    enemy.setPosition(deathPosition);
+    enemyManager.track(enemy);
+
+    enemy.getEvents().trigger("entityDied");
+    verify(entityService, never()).register(Mockito.any(Entity.class));
+
+    entityService.update();
+
+    assertEquals(1, entityService.getEntities().size);
+    Entity drop = entityService.getEntities().first();
+    assertNotNull(drop.getComponent(ItemComponent.class));
+    assertEquals(deathPosition, drop.getPosition());
+    verify(entityService).register(drop);
+  }
+
+  @Test
+  void shouldSpawnChosenRoomItemWithoutEnemyDeath() {
+    Vector2 position = new Vector2(3f, 4f);
+
+    enemyManager.spawnItem(ItemIds.HEALTH_POTION, 2, position);
+    verify(entityService, never()).register(Mockito.any(Entity.class));
+    position.set(9f, 9f);
+    entityService.update();
+
+    assertEquals(1, entityService.getEntities().size);
+    Entity item = entityService.getEntities().first();
+    assertEquals(ItemIds.HEALTH_POTION, item.getComponent(ItemComponent.class).getItemId());
+    assertEquals(2, item.getComponent(ItemComponent.class).getQuantity());
+    assertEquals(new Vector2(3f, 4f), item.getPosition());
+    enemyManager.dispose();
+    verify(entityService).unregister(item);
+  }
+
+  @Test
+  void shouldSpawnMultipleSelectedCharmsAsIndependentRoomItems() {
+    Vector2 position = new Vector2(3f, 4f);
+    enemyManager.spawnItem(ItemIds.SPEED_CHARM, 2, position);
+    verify(entityService, never()).register(Mockito.any(Entity.class));
+
+    entityService.update();
+
+    assertEquals(2, entityService.getEntities().size);
+    Entity first = entityService.getEntities().get(0);
+    Entity second = entityService.getEntities().get(1);
+    assertNotNull(first.getComponent(ItemComponent.class));
+    assertNotNull(second.getComponent(ItemComponent.class));
+    assertEquals(ItemIds.SPEED_CHARM, first.getComponent(ItemComponent.class).getItemId());
+    assertEquals(ItemIds.SPEED_CHARM, second.getComponent(ItemComponent.class).getItemId());
+    assertEquals(position, first.getPosition());
+    assertEquals(position, second.getPosition());
+    enemyManager.dispose();
+    verify(entityService).unregister(first);
+    verify(entityService).unregister(second);
+  }
+
+  @Test
+  void shouldUseEnemyTypeRulesAtDeathWithoutChangingSpawnDrops() {
+    LootTable table = singleItemTable(ItemIds.HEALTH_POTION);
+    table.enemyRules =
+        new LootTable.EnemyRule[] {
+          new LootTable.EnemyRule("GOLEM", singleItemTable(ItemIds.GOLD_COIN))
+        };
+    enemyManager =
+        new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
+    enemyManager.setEntity(room);
+    Entity golem = new Entity();
+    Entity medusa = new Entity();
+    enemyManager.track(golem, "GOLEM");
+    enemyManager.track(medusa, "MEDUSA");
+
+    golem.getEvents().trigger("entityDied");
+    medusa.getEvents().trigger("entityDied");
+    entityService.update();
+
+    assertEquals(2, entityService.getEntities().size);
+    assertEquals(
+        ItemIds.GOLD_COIN,
+        entityService.getEntities().get(0).getComponent(ItemComponent.class).getItemId());
+    assertEquals(
+        ItemIds.HEALTH_POTION,
+        entityService.getEntities().get(1).getComponent(ItemComponent.class).getItemId());
+  }
+
+  @Test
+  void shouldKeepEnemyTypeForEverySplitChild() {
+    LootTable table = singleItemTable(ItemIds.HEALTH_POTION);
+    table.enemyRules =
+        new LootTable.EnemyRule[] {
+          new LootTable.EnemyRule("GOLEM", singleItemTable(ItemIds.GOLD_COIN))
+        };
+    enemyManager =
+        new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
+    enemyManager.setEntity(room);
+    Entity parent = enemyMock();
+    Entity firstChild = enemyMock();
+    Entity secondChild = enemyMock();
+    enemyManager.track(parent, "GOLEM");
+
+    parent.getEvents().trigger("spawnChildren", firstChild);
+    parent.getEvents().trigger("spawnChildren", secondChild);
+    firstChild.getEvents().trigger("entityDied");
+    secondChild.getEvents().trigger("entityDied");
+    entityService.update();
+
+    int goldDrops = 0;
+    for (Entity spawned : entityService.getEntities()) {
+      ItemComponent item = spawned.getComponent(ItemComponent.class);
+      if (item != null && ItemIds.GOLD_COIN.equals(item.getItemId())) {
+        goldDrops++;
+      }
+    }
+    assertEquals(2, goldDrops);
+  }
+
+  @Test
+  void shouldSpawnSelectedCharmsAsSeparateRoomOwnedEntities() {
+    LootTable table = new LootTable();
+    table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemIds.SPEED_CHARM, 1, 2, 2)};
+    enemyManager =
+        new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
+    enemyManager.setEntity(room);
+    Entity enemy = new Entity();
+    enemyManager.track(enemy, "GOLEM");
+
+    enemy.setPosition(3f, 4f);
+    enemy.getEvents().trigger("entityDied");
+    entityService.update();
+
+    List<Entity> drops = new ArrayList<>();
+    for (Entity drop : entityService.getEntities()) {
+      drops.add(drop);
+    }
+    assertEquals(2, drops.size());
+    for (Entity drop : drops) {
+      assertEquals(ItemIds.SPEED_CHARM, drop.getComponent(ItemComponent.class).getItemId());
+      verify(entityService).register(drop);
+    }
+    enemyManager.dispose();
+    drops.forEach(drop -> verify(entityService).unregister(drop));
+  }
+
+  @Test
+  void shouldAllowARestrictedTableToProduceNoDrop() {
+    LootTable table = new LootTable();
+    table.noDropWeight = 1;
+    enemyManager =
+        new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
+    enemyManager.setEntity(room);
+    Entity enemy = new Entity();
+    enemyManager.track(enemy, "GOLEM");
+
+    enemy.getEvents().trigger("entityDied");
+    entityService.update();
+    assertTrue(entityService.getEntities().isEmpty());
+    verify(entityService, never()).register(Mockito.any(Entity.class));
+  }
+
+  @Test
   void shouldReplaceSplitParentWithTrackedChildren() {
     Entity parent = enemyMock();
     Entity firstChild = enemyMock();
@@ -179,6 +350,12 @@ class EnemyManagerComponentTest {
     RandomGenerator random = mock(RandomGenerator.class);
     when(random.nextInt(6)).thenReturn(index);
     return random;
+  }
+
+  private static LootTable singleItemTable(String itemType) {
+    LootTable table = new LootTable();
+    table.entries = new LootTable.Entry[] {new LootTable.Entry(itemType, 1, 1, 1)};
+    return table;
   }
 
   private Entity combatEnemy() {

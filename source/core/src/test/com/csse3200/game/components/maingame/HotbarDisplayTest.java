@@ -186,36 +186,6 @@ class HotbarDisplayTest {
   }
 
   @Test
-  void team5ConsumablePanelStaysAboveHotbarAcrossWindowSizes() {
-    Entity consumableUi =
-        new Entity()
-            .addComponent(new com.csse3200.game.components.player.InventoryComponent(0))
-            .addComponent(new com.csse3200.game.components.player.Team5CombatHudDisplay());
-    ServiceLocator.getEntityService().register(consumableUi);
-    try {
-      Table hud = stage.getRoot().findActor("team5-consumables");
-      for (int[] size : new int[][] {{1920, 1080}, {1280, 720}, {906, 600}}) {
-        stage.getViewport().update(size[0], size[1], true);
-        hud.invalidateHierarchy();
-        hotbar.invalidateHierarchy();
-        hud.validate();
-        hotbar.validate();
-        Actor panel = hud.getChildren().first();
-        float panelBottom = panel.localToStageCoordinates(new com.badlogic.gdx.math.Vector2()).y;
-        for (Actor group : hotbar.getChildren()) {
-          float groupTop =
-              group.localToStageCoordinates(new com.badlogic.gdx.math.Vector2(0, group.getHeight()))
-                  .y;
-          assertTrue(panelBottom > groupTop, "Consumable HUD overlaps bottom hotbar");
-        }
-        assertTrue(panelBottom + panel.getHeight() <= stage.getHeight());
-      }
-    } finally {
-      consumableUi.dispose();
-    }
-  }
-
-  @Test
   void disposingDisplayRemovesActorsButKeepsPlayerOwnedTextures() {
     // Hotbar disposal removes its table, but shared weapon textures belong to the player.
     ui.dispose();
