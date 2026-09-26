@@ -16,6 +16,10 @@ public class RoomAssetsComponent implements Disposable {
   private static final String[] MUSIC = {BACKGROUND_MUSIC};
   private static final String[] SOUNDS = {IMPACT_SOUND};
 
+  private static final String[] ENEMY_TEXTURES = {
+    "images/hole.png", "images/dragon/smoke_sheet.png"
+  };
+
   private static final String[] ENEMY_TEXTURE_ATLASES = {
     "images/bombEnemy.atlas",
     "images/beetle.atlas",
@@ -29,6 +33,8 @@ public class RoomAssetsComponent implements Disposable {
     "images/floatingDemon.atlas",
     "images/harpy.atlas",
     "images/cerberus.atlas",
+    "images/dragon/dragon.atlas",
+    "images/dragon/thunder-orb.atlas",
   };
 
   private static final String[] PLAYER_ATLASES = {"images/idle_down.atlas"};
@@ -59,6 +65,7 @@ public class RoomAssetsComponent implements Disposable {
               DUNGEON_TEXTURES,
               OBSTACLE_TEXTURES,
               ITEM_TEXTURES,
+              ENEMY_TEXTURES,
               FinalBossVisualAssets.paths(),
               FinalBossStageThreeAssets.paths())
           .flatMap(Arrays::stream)

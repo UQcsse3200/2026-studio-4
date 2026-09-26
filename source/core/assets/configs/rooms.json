@@ -344,7 +344,7 @@
       "entryPoints": [],
       "enemySpawns": [
         {
-          "type": "CERBERUS",
+            "type": "DRAGON",
           "x": 28,
           "y": 27
         }
