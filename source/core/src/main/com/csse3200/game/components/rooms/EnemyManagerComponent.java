@@ -30,6 +30,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   private final RandomGenerator random;
   private boolean disposed;
   private CameraComponent camera;
+  private Entity finalBoss;
 
   /** Creates an empty manager for tests and rooms with no enemies. */
   public EnemyManagerComponent() {
@@ -137,6 +138,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         if (camera != null) {
           boss.getComponent(FinalBossMovementComponent.class).setCamera(camera.getCamera());
         }
+        finalBoss = boss;
         return boss;
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
@@ -166,6 +168,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     if (disposed || !activeEnemies.remove(enemy)) {
       return;
     }
+
+    // Tell the room (where achievements listen), not the enemy.
+    if (enemy == finalBoss) {
+      entity.getEvents().trigger("FinalBossDefeated");
+    }
+
     // Capture before deferred disposal or room changes can move/remove the enemy.
     Vector2 position = enemy.getPosition().cpy();
     ServiceLocator.getEntityService().schedule(() -> spawnItemDrop(position));

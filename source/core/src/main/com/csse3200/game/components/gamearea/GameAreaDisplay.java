@@ -9,10 +9,16 @@ import com.csse3200.game.ui.UIComponent;
 /** Displays the name of the current game area. */
 public class GameAreaDisplay extends UIComponent {
   private String gameAreaName = "";
-    private Label status;
+
+  private Label status;
   private Table statusTable;
-  private Table titleTable;
   private long statusExpiryMillis;
+
+  private Label achievement;
+  private Table achievementTable;
+  private long achievementExpiryMillis;
+
+  private Table titleTable;
 
   public GameAreaDisplay(String gameAreaName) {
     this.gameAreaName = gameAreaName;
@@ -37,6 +43,13 @@ public class GameAreaDisplay extends UIComponent {
     statusTable.setFillParent(true);
     statusTable.center().top();
 
+    achievement = new Label("", skin);
+    achievementTable = new Table();
+    achievementTable.add(achievement);
+    achievementTable.setFillParent(true);
+    achievementTable.center().top().padTop(40f); // just below the status label
+
+    stage.addActor(achievementTable);
     stage.addActor(titleTable);
     stage.addActor(statusTable);
   }
@@ -47,11 +60,21 @@ public class GameAreaDisplay extends UIComponent {
     statusExpiryMillis = TimeUtils.millis() + 2500;
   }
 
+  /** Shows an achievement-unlocked toast below the status message. */
+  public void showAchievement(String name) {
+    achievement.setText("Achievement Unlocked: " + name);
+    achievementExpiryMillis = TimeUtils.millis() + 4000;
+  }
+
   @Override
   public void draw(SpriteBatch batch) {
     if (statusExpiryMillis > 0 && TimeUtils.millis() >= statusExpiryMillis) {
       status.setText("");
       statusExpiryMillis = 0;
+    }
+    if (achievementExpiryMillis > 0 && TimeUtils.millis() >= achievementExpiryMillis) {
+      achievement.setText("");
+      achievementExpiryMillis = 0;
     }
   }
 
@@ -60,5 +83,6 @@ public class GameAreaDisplay extends UIComponent {
     super.dispose();
     titleTable.remove();
     statusTable.remove();
+    achievementTable.remove();
   }
 }

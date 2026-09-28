@@ -83,6 +83,7 @@ public class RoomManager {
   /** Package private for testing */
   void start(PositionConfig entryPoint) {
     currentRoom.getEvents().addListener("roomCleared", this::onRoomCleared);
+    currentRoom.getEvents().addListener("achievementUnlocked", this::onAchievementUnlocked);
     currentRoom.getEvents().trigger("RoomCreated", player);
     scaleRoom(currentRoom);
     Vector2 position =
@@ -190,6 +191,7 @@ public class RoomManager {
     currentRoom.dispose();
     currentConfig = destination;
     currentRoom = nextRoom;
+    achievements.newRoom(currentRoom); // move here, before start()
     if (timer != null && !Objects.equals(previousDungeonId, destination.dungeonId)) {
       timer.stopDungeon();
       if (destination.dungeonId != null) {
@@ -202,8 +204,6 @@ public class RoomManager {
         currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
-
-    achievements.newRoom(currentRoom);
   }
 
   private PositionConfig arrivalInsideDoor(ExitConfig door) {
@@ -262,6 +262,13 @@ public class RoomManager {
     GameAreaDisplay display = currentRoom.getComponent(GameAreaDisplay.class);
     if (display != null) {
       display.showStatus(message);
+    }
+  }
+
+  private void onAchievementUnlocked(String name) {
+    GameAreaDisplay display = currentRoom.getComponent(GameAreaDisplay.class);
+    if (display != null) {
+      display.showAchievement(name);
     }
   }
 

@@ -11,6 +11,7 @@ import java.util.List;
  */
 public class AchievementsManager extends Component {
   private List<Achievement> achievements = new ArrayList<>();
+  private Entity room;
 
   /**
    * Initializes the achievements' manager.
@@ -18,7 +19,8 @@ public class AchievementsManager extends Component {
    * @param room The room entity in which to start the achievements manager
    */
   public AchievementsManager(Entity room) {
-    achievements.add(new Achievement(room, "FinalBossDefeated", 1, "Grandpa Fighter"));
+    achievements.add(
+        new Achievement(room, "FinalBossDefeated", 1, "Grandpa Fighter", this::onUnlocked));
   }
 
   /**
@@ -27,8 +29,13 @@ public class AchievementsManager extends Component {
    * @param room The new room in which to move to.
    */
   public void newRoom(Entity room) {
+    this.room = room;
     for (Achievement achievement : achievements) {
       achievement.newRoom(room);
     }
+  }
+
+  private void onUnlocked(Achievement a) {
+    room.getEvents().trigger("achievementUnlocked", a.getName());
   }
 }

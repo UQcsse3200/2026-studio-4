@@ -1,6 +1,7 @@
 package com.csse3200.game.components.achievements;
 
 import com.csse3200.game.entities.Entity;
+import java.util.function.Consumer;
 
 /** A single instance of achievement. */
 public class Achievement {
@@ -8,6 +9,8 @@ public class Achievement {
   private int currentProgression;
   private String progression;
   private String name;
+  private final Consumer<Achievement> onUnlock;
+  private boolean unlocked = false;
 
   /**
    * Constructs the new achievement.
@@ -18,11 +21,17 @@ public class Achievement {
    *     achievement is doing 1 thing, the maxProgression should be 1.
    * @param name The name to display of this achievement.
    */
-  public Achievement(Entity room, String progression, int maxProgression, String name) {
+  public Achievement(
+      Entity room,
+      String progression,
+      int maxProgression,
+      String name,
+      Consumer<Achievement> onUnlock) {
     this.progression = progression;
     this.name = name;
     this.maxProgression = maxProgression;
     currentProgression = 0;
+    this.onUnlock = onUnlock;
     room.getEvents().addListener(progression, this::progress);
   }
 
@@ -44,7 +53,14 @@ public class Achievement {
 
   /** Progresses the achievement by 1. */
   private void progress() {
-    currentProgression += 1;
+    if (unlocked) {
+      return;
+    }
+    currentProgression++;
+    if (currentProgression >= maxProgression) {
+      unlocked = true;
+      onUnlock.accept(this);
+    }
   }
 
   /**
@@ -59,5 +75,9 @@ public class Achievement {
    */
   public int getCurrentProgression() {
     return currentProgression;
+  }
+
+  public boolean isUnlocked() {
+    return unlocked;
   }
 }
