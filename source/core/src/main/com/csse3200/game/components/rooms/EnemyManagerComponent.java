@@ -70,6 +70,28 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
 
     switch (spawn.type) {
+      // Norse
+      case WOLF:
+        return NPCFactory.createChaseEnemy(target, false, "images/crab.atlas");
+      case CROW:
+        TerrainComponent crowTerrain = entity.getComponent(TerrainComponent.class);
+        Vector2 crowLeftPoint = crowTerrain.tileToWorldPosition(spawn.x - 4, spawn.y);
+        Vector2 crowTopPoint = crowTerrain.tileToWorldPosition(spawn.x, spawn.y + 3);
+        Vector2 crowRightPoint = crowTerrain.tileToWorldPosition(spawn.x + 4, spawn.y);
+        return NPCFactory.createFloatingDemon(
+            target,
+            crowLeftPoint,
+            crowTopPoint,
+            crowRightPoint,
+            this::spawnEntity,
+            "images/harpy.atlas");
+      case THOR:
+        return NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
+      case DARK_ELVES:
+        return NPCFactory.createChaseEnemy(target, true, "images/medusa.atlas");
+      case JOTUNN:
+        return NPCFactory.createGiantEnemy(target, "images/cyclops.atlas");
+
       // Egyptian
       case BEETLE:
         Entity beetle = NPCFactory.createBombEnemy(target, "images/beetle.atlas", 2f);
