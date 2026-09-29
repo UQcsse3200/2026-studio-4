@@ -44,6 +44,7 @@ public class AnimationRenderComponent extends RenderComponent {
   private float animationPlayTime;
   private float drawnPlayTime;
   private float verticalOffset;
+  private boolean flipX;
 
   /**
    * Create the component for a given texture atlas.
@@ -52,7 +53,7 @@ public class AnimationRenderComponent extends RenderComponent {
    */
   public AnimationRenderComponent(TextureAtlas atlas) {
     this.atlas = atlas;
-    this.animations = new HashMap<>(4);
+    this.animations = HashMap.newHashMap(4);
     timeSource = ServiceLocator.getTimeSource();
   }
 
@@ -186,6 +187,11 @@ public class AnimationRenderComponent extends RenderComponent {
     return verticalOffset;
   }
 
+  /** Sets whether the current animation should be rendered facing left. */
+  public void setFlipX(boolean flipX) {
+    this.flipX = flipX;
+  }
+
   @Override
   protected void draw(SpriteBatch batch) {
     if (currentAnimation == null) {
@@ -197,7 +203,9 @@ public class AnimationRenderComponent extends RenderComponent {
         currentAnimation.getKeyFrame(isRepeatPass() ? drawnPlayTime : animationPlayTime);
     Vector2 pos = entity.getPosition();
     Vector2 scale = entity.getScale();
-    batch.draw(region, pos.x, pos.y + verticalOffset, scale.x, scale.y);
+    float drawX = flipX ? pos.x + scale.x : pos.x;
+    float drawWidth = flipX ? -scale.x : scale.x;
+    batch.draw(region, drawX, pos.y + verticalOffset, drawWidth, scale.y);
     if (isRepeatPass()) {
       return;
     }
