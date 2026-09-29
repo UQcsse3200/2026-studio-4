@@ -72,7 +72,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     switch (spawn.type) {
       // Norse
       case WOLF:
-        return NPCFactory.createChaseEnemy(target, false, "images/crab.atlas");
+        return NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas");
       case CROW:
         TerrainComponent crowTerrain = entity.getComponent(TerrainComponent.class);
         Vector2 crowLeftPoint = crowTerrain.tileToWorldPosition(spawn.x - 4, spawn.y);
@@ -84,7 +84,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             crowTopPoint,
             crowRightPoint,
             this::spawnEntity,
-            "images/harpy.atlas");
+            "images/crow.atlas");
       case THOR:
         return NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
       case DARK_ELVES:
