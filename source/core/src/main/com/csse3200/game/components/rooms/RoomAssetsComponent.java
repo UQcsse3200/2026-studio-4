@@ -39,6 +39,7 @@ public class RoomAssetsComponent extends Component {
     "images/wolf.atlas",
     "images/crow.atlas",
     "images/cerberus.atlas",
+    "images/dark_elves.atlas",
     "images/dragon/dragon.atlas",
     "images/dragon/thunder-orb.atlas",
   };

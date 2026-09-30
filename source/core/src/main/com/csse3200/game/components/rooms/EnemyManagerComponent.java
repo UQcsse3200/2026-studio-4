@@ -88,7 +88,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case THOR:
         return NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
       case DARK_ELVES:
-        return NPCFactory.createChaseEnemy(target, true, "images/medusa.atlas");
+        return NPCFactory.createChaseEnemy(target, true, "images/dark_elves.atlas");
       case JOTUNN:
         return NPCFactory.createGiantEnemy(target, "images/cyclops.atlas");
 
