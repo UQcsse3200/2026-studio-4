@@ -14,18 +14,20 @@ public class GallopTask extends DefaultTask implements PriorityTask {
   private final Entity target;
   private int currentPoint;
   private PhysicsMovementComponent movementComponent;
-  private final Vector2 targetPos;
+  private Vector2 targetPos;
 
-  public GallopTask(Entity target, GridPoint2 mapBounds) {
-    targetPos = target.getCenterPosition();
-    patrolPoints = getPatrol(mapBounds);
+  public GallopTask(Entity target, GridPoint2 mapBounds, Entity entity) {
     this.target = target;
+    patrolPoints = getPatrol(mapBounds);
+    entity.getEvents().addListener("enragePhaseStarted", this::stop);
   }
 
   private Vector2[] getPatrol(GridPoint2 mapBounds) {
-    Vector2 leftTop = new Vector2(mapBounds.x - 2f, mapBounds.y - 2f);
-    Vector2 RightBottom = new Vector2(mapBounds.x, mapBounds.y);
-    Vector2[] grid = new Vector2[] {leftTop, targetPos, RightBottom};
+    Vector2 leftTop = new Vector2(0, mapBounds.y / 2f);
+    Vector2 rightTop = new Vector2(mapBounds.y / 2f, mapBounds.y / 2f);
+    Vector2 RightBottom = new Vector2(mapBounds.x / 2f, 0);
+    Vector2 leftBottom = new Vector2(0, 0);
+    Vector2[] grid = new Vector2[] {leftTop, RightBottom, leftBottom, rightTop};
     return grid;
   }
 
@@ -33,17 +35,16 @@ public class GallopTask extends DefaultTask implements PriorityTask {
   public void start() {
     super.start();
     movementComponent = owner.getEntity().getComponent(PhysicsMovementComponent.class);
-    movementComponent.setMaxSpeed(new Vector2(2f, 2f));
+    movementComponent.setMaxSpeed(new Vector2(5f, 5f));
     setTarget();
     movementComponent.setMoving(true);
-    owner.getEntity().getEvents().trigger("gallopStart");
   }
 
   @Override
   public void update() {
-    Vector2 position = owner.getEntity().getPosition(); // position of horse
-    if (position.dst(patrolPoints[currentPoint]) <= 0.2f) { // if horse almost at points
-      currentPoint = (currentPoint + 1) % patrolPoints.length;
+    Vector2 position = owner.getEntity().getPosition(); // current position of horse
+    if (position.dst(patrolPoints[currentPoint]) <= 2.5f) { // if horse almost at points
+      currentPoint = (currentPoint + 1) % 4;
       setTarget();
     }
   }

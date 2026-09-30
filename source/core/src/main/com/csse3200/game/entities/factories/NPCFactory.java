@@ -285,7 +285,10 @@ public class NPCFactory {
     BaseEntityConfig config = configs.sleipnir;
 
     AITaskComponent aiComponent =
-        new AITaskComponent(target).addTask(new GallopTask(target, mapBounds));
+        new AITaskComponent(target)
+            .addTask(new GallopTask(target, mapBounds, sleipnir))
+            .addTask(new StampedeTask(target, sleipnir))
+            .addTask(new OneAttackTask(target, 3f, sleipnir));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
