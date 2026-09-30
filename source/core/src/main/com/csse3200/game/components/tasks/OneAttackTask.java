@@ -14,10 +14,12 @@ public class OneAttackTask extends DefaultTask implements PriorityTask {
   private MovementTask movementTask;
   private final float attackDist;
   private boolean hit = false;
+  private float coolDown;
 
-  public OneAttackTask(Entity target, float attackDist, Entity entity) {
+  public OneAttackTask(Entity target, float attackDist, Entity entity, float coolDown) {
     this.target = target;
     this.attackDist = attackDist;
+    this.coolDown = coolDown;
     entity.getEvents().addListener("enragePhaseStarted", this::stop);
   }
 
@@ -79,7 +81,7 @@ public class OneAttackTask extends DefaultTask implements PriorityTask {
     }
     if (!hit && (position.dst(target.getPosition()) <= attackDist)) {
       return priority;
-    } else if ((position.dst(target.getPosition()) > 7f)) {
+    } else if ((position.dst(target.getPosition()) > coolDown)) {
       this.hit = false;
       return -1;
     } else {

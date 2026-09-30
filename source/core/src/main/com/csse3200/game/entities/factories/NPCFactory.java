@@ -2,7 +2,6 @@ package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.*;
@@ -280,7 +279,7 @@ public class NPCFactory {
     return demon;
   }
 
-  public static Entity createSleipnir(Entity target, GridPoint2 mapBounds) {
+  public static Entity createSleipnir(Entity target, Vector2[] mapBounds) {
     Entity sleipnir = createBaseNPC();
     BaseEntityConfig config = configs.sleipnir;
 
@@ -288,7 +287,7 @@ public class NPCFactory {
         new AITaskComponent(target)
             .addTask(new GallopTask(target, mapBounds, sleipnir))
             .addTask(new StampedeTask(target, sleipnir))
-            .addTask(new OneAttackTask(target, 2f, sleipnir));
+            .addTask(new OneAttackTask(target, 2f, sleipnir, mapBounds[1].x / 2f));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
