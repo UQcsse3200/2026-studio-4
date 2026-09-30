@@ -69,9 +69,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
     Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
 
-    System.out.println("this is out");
-    System.out.println(terrain.getMapBounds(0));
-
     switch (spawn.type) {
       // Egyptian
       case BEETLE:

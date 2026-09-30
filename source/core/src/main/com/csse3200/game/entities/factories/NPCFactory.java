@@ -288,7 +288,7 @@ public class NPCFactory {
         new AITaskComponent(target)
             .addTask(new GallopTask(target, mapBounds, sleipnir))
             .addTask(new StampedeTask(target, sleipnir))
-            .addTask(new OneAttackTask(target, 3f, sleipnir));
+            .addTask(new OneAttackTask(target, 2f, sleipnir));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -308,9 +308,9 @@ public class NPCFactory {
         .addComponent(new EnemyStatDisplay(1.5f))
         .addComponent(new BossPhaseComponent());
     sleipnir.getComponent(AnimationRenderComponent.class).scaleEntity();
-
     animator.startAnimation(MOVE);
 
+    sleipnir.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(8f, 8f));
     return sleipnir;
   }
 

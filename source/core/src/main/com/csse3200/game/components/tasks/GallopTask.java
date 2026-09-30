@@ -14,7 +14,6 @@ public class GallopTask extends DefaultTask implements PriorityTask {
   private final Entity target;
   private int currentPoint;
   private PhysicsMovementComponent movementComponent;
-  private Vector2 targetPos;
 
   public GallopTask(Entity target, GridPoint2 mapBounds, Entity entity) {
     this.target = target;
@@ -24,18 +23,16 @@ public class GallopTask extends DefaultTask implements PriorityTask {
 
   private Vector2[] getPatrol(GridPoint2 mapBounds) {
     Vector2 leftTop = new Vector2(0, mapBounds.y / 2f);
-    Vector2 rightTop = new Vector2(mapBounds.y / 2f, mapBounds.y / 2f);
+    Vector2 rightTop = new Vector2(mapBounds.x / 2f, mapBounds.y / 2f);
     Vector2 RightBottom = new Vector2(mapBounds.x / 2f, 0);
     Vector2 leftBottom = new Vector2(0, 0);
-    Vector2[] grid = new Vector2[] {leftTop, RightBottom, leftBottom, rightTop};
-    return grid;
+    return (new Vector2[] {leftTop, RightBottom, leftBottom, rightTop});
   }
 
   @Override
   public void start() {
     super.start();
     movementComponent = owner.getEntity().getComponent(PhysicsMovementComponent.class);
-    movementComponent.setMaxSpeed(new Vector2(5f, 5f));
     setTarget();
     movementComponent.setMoving(true);
   }
@@ -43,8 +40,8 @@ public class GallopTask extends DefaultTask implements PriorityTask {
   @Override
   public void update() {
     Vector2 position = owner.getEntity().getPosition(); // current position of horse
-    if (position.dst(patrolPoints[currentPoint]) <= 2.5f) { // if horse almost at points
-      currentPoint = (currentPoint + 1) % 4;
+    if (position.dst(patrolPoints[currentPoint]) <= 2f) { // if horse almost at points
+      currentPoint = (currentPoint + 1) % patrolPoints.length;
       setTarget();
     }
   }
