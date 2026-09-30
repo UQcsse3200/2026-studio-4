@@ -2,18 +2,13 @@ package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.*;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
-import com.csse3200.game.components.tasks.ChaseTask;
-import com.csse3200.game.components.tasks.CoilAttackTask;
-import com.csse3200.game.components.tasks.LungeAttackTask;
-import com.csse3200.game.components.tasks.PatrolTask;
-import com.csse3200.game.components.tasks.RangedAttackTask;
-import com.csse3200.game.components.tasks.VenomSpitAttackTask;
-import com.csse3200.game.components.tasks.WanderTask;
+import com.csse3200.game.components.tasks.*;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.files.FileLoader;
@@ -264,10 +259,7 @@ public class NPCFactory {
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
-    // Longer frame duration so the (currently single-frame) death pose is actually
-    // visible before the entity is removed, instead of disappearing in one-tenth of a
-    // second.
-    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     Entity demon = createBaseNPC();
@@ -286,6 +278,37 @@ public class NPCFactory {
     demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
 
     return demon;
+  }
+
+  public static Entity createSleipnir(Entity target, GridPoint2 mapBounds) {
+    Entity sleipnir = createBaseNPC();
+    BaseEntityConfig config = configs.sleipnir;
+
+    AITaskComponent aiComponent =
+        new AITaskComponent(target).addTask(new GallopTask(target, mapBounds));
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/beetle.atlas", TextureAtlas.class));
+    animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
+    animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+
+    sleipnir
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(aiComponent)
+        .addComponent(new EnemyDeathComponent(true, true))
+        .addComponent(animator)
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f))
+        .addComponent(new BossPhaseComponent());
+    sleipnir.getComponent(AnimationRenderComponent.class).scaleEntity();
+
+    animator.startAnimation(MOVE);
+
+    return sleipnir;
   }
 
   /**
