@@ -1,30 +1,121 @@
 package com.csse3200.game.components.tasks;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.services.ServiceLocator;
 
-/** in phase two * */
+/**
+ * Used by Sleipnir in phase two, miniboss runs around player dealing constant damage, with cool
+ * downs
+ */
 public class StampedeTask extends DefaultTask implements PriorityTask {
 
-  private Entity target;
+  private static final float RADIUS = 3f;
+  private static final float SPEED = 2.5f;
+  private static final float DAMAGE = 0.25f;
+  private static final float RESTART = 5f;
+  private final Entity target;
+  private PhysicsComponent physicsComponent;
+  private boolean phaseTwoActivated;
+  private boolean resetFlag = true;
+  private float angle;
+  private int rotations = 0;
+  private float damageTimer;
+  private float restartTimer;
 
   public StampedeTask(Entity target, Entity entity) {
     this.target = target;
-    entity.getEvents().addListener("enragePhaseStarted", this::stampede);
+    entity.getEvents().addListener("enragePhaseStarted", this::activateStampede);
   }
 
-  private void stampede() {
-    // run around player in a circle causing small damage attacks
-    target.getComponent(CombatStatsComponent.class).takeDamage(1);
+  @Override
+  public void start() {
+    super.start();
+    physicsComponent = owner.getEntity().getComponent(PhysicsComponent.class);
+    Body body = physicsComponent.getBody();
+    Vector2 horsePosition = body.getPosition();
+    Vector2 targetPosition = target.getPosition();
+    angle =
+        (float) Math.atan2(horsePosition.y - targetPosition.y, horsePosition.x - targetPosition.x);
+    phaseTwoActivated = true;
+  }
+
+  private void activateStampede() {
+    phaseTwoActivated = true;
+  }
+
+  @Override
+  public void update() {
+    float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
+    if (!resetFlag) {
+      restartTimer += deltaTime;
+    }
+    if (phaseTwoActivated && restartTimer >= RESTART && !resetFlag) {
+      resetFlag = true;
+      rotations = 0;
+      restartTimer = 0;
+    }
+    if (!phaseTwoActivated || !resetFlag) {
+      return;
+    }
+    Body body = physicsComponent.getBody();
+    angle += SPEED * deltaTime; // increase angle to continue moving
+    Vector2 targetPosition = target.getPosition();
+    Vector2 desiredPosition =
+        new Vector2(
+            targetPosition.x + RADIUS * (float) Math.cos(angle),
+            targetPosition.y + RADIUS * (float) Math.sin(angle));
+
+    Vector2 currentPosition = body.getPosition();
+    Vector2 movementDirection = desiredPosition.sub(currentPosition);
+    body.setLinearVelocity(movementDirection.scl(1f / deltaTime));
+    applyDamage(deltaTime);
+
+    if (rotations != 0 && (rotations % 20 == 0)) { // after 2/3 rotations stop
+      resetFlag = false;
+    }
+  }
+
+  /**
+   * attack player with damage of 1
+   *
+   * @param deltaTime
+   */
+  private void applyDamage(float deltaTime) {
+    damageTimer -= deltaTime;
+    if (damageTimer > 0f) {
+      return;
+    }
+    float distance = owner.getEntity().getPosition().dst(target.getPosition());
+
+    if (distance <= RADIUS + 0.5f) { // if within range deal damage to player
+      target.getComponent(CombatStatsComponent.class).takeDamage(1, owner.getEntity());
+      damageTimer = DAMAGE;
+      rotations += 1;
+    }
+  }
+
+  @Override
+  public void stop() {
+    super.stop();
+    physicsComponent.getBody().setLinearVelocity(0f, 0f);
+    phaseTwoActivated = false;
   }
 
   @Override
   public int getPriority() {
-    return 0;
+    if (phaseTwoActivated && resetFlag) {
+      return 20;
+    } else {
+      return -10;
+    }
   }
 
   @Override
-  public void setPriority(int status) {}
+  public void setPriority(int priority) {}
 }

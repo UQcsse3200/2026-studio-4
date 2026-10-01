@@ -6,21 +6,27 @@ import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
-import java.awt.*;
+import com.csse3200.game.physics.components.PhysicsMovementComponent;
 
+/**
+ * Task used by Sleipnir to attack player once by running past, mostly in phase one, after damaging
+ * player speed increases
+ */
 public class OneAttackTask extends DefaultTask implements PriorityTask {
 
   private final Entity target;
   private MovementTask movementTask;
   private final float attackDist;
+  private Vector2 maxSpeed;
   private boolean hit = false;
   private float coolDown;
+  private float MAXSPEED = 10f;
 
-  public OneAttackTask(Entity target, float attackDist, Entity entity, float coolDown) {
+  public OneAttackTask(Entity target, float attackDist, float coolDown, Vector2 maxSpeed) {
     this.target = target;
     this.attackDist = attackDist;
+    this.maxSpeed = maxSpeed;
     this.coolDown = coolDown;
-    entity.getEvents().addListener("enragePhaseStarted", this::stop);
   }
 
   @Override
@@ -38,6 +44,9 @@ public class OneAttackTask extends DefaultTask implements PriorityTask {
   public void update() {
     CombatStatsComponent combatStatsComponent =
         owner.getEntity().getComponent(CombatStatsComponent.class);
+    PhysicsMovementComponent physicsMovementComponent =
+        owner.getEntity().getComponent(PhysicsMovementComponent.class);
+    Vector2 increasedSpeed = (new Vector2(maxSpeed.x + 0.5f, maxSpeed.y + 0.5f));
     if (StatusEffectsControllerComponent.isConcealed(target)) {
       movementTask.stop();
       return;
@@ -48,10 +57,14 @@ public class OneAttackTask extends DefaultTask implements PriorityTask {
       if (movementTask.getStatus() != Status.ACTIVE) {
         movementTask.start();
       }
+      if (maxSpeed.x < MAXSPEED) {
+        this.maxSpeed = increasedSpeed;
+        physicsMovementComponent.setMaxSpeed(increasedSpeed);
+      }
       movementTask.update();
       target
           .getComponent(CombatStatsComponent.class)
-          .takeDamage(combatStatsComponent.getBaseAttack());
+          .takeDamage(combatStatsComponent.getBaseAttack(), owner.getEntity());
       // trigger attack animation
       updateHit();
     }

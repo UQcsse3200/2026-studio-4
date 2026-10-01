@@ -1,13 +1,12 @@
 package com.csse3200.game.components.tasks;
 
-import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 
-/** Task used by Sleipnir to gallop past the player in phase one * */
+/** Task used by Sleipnir to run in a square pattern, used alongside OneAttackTask in phase one * */
 public class GallopTask extends DefaultTask implements PriorityTask {
 
   private final Vector2[] patrolPoints;
@@ -15,18 +14,19 @@ public class GallopTask extends DefaultTask implements PriorityTask {
   private int currentPoint;
   private PhysicsMovementComponent movementComponent;
 
-  public GallopTask(Entity target, GridPoint2 mapBounds, Entity entity) {
+  public GallopTask(Entity target, Vector2[] mapBounds) {
     this.target = target;
-    patrolPoints = getPatrol(mapBounds);
-    entity.getEvents().addListener("enragePhaseStarted", this::stop);
+    patrolPoints = createBounds(mapBounds);
   }
 
-  private Vector2[] getPatrol(GridPoint2 mapBounds) {
-    Vector2 leftTop = new Vector2(0, mapBounds.y / 2f);
-    Vector2 rightTop = new Vector2(mapBounds.x / 2f, mapBounds.y / 2f);
-    Vector2 RightBottom = new Vector2(mapBounds.x / 2f, 0);
-    Vector2 leftBottom = new Vector2(0, 0);
-    return (new Vector2[] {leftTop, RightBottom, leftBottom, rightTop});
+  private Vector2[] createBounds(Vector2[] grid) {
+    float Xsize = grid[1].x;
+    float Ysize = grid[1].y;
+    Vector2 bottomLeft = grid[0];
+    Vector2 bottomRight = new Vector2(grid[0].x + Xsize, grid[0].y);
+    Vector2 topLeft = new Vector2(grid[0].x, grid[0].y + Ysize);
+    Vector2 topRight = new Vector2(grid[0].x + Xsize, grid[0].y + Ysize);
+    return (new Vector2[] {bottomLeft, topRight, topLeft, bottomRight});
   }
 
   @Override
