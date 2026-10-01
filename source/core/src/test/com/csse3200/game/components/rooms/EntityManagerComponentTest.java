@@ -1,6 +1,6 @@
 package com.csse3200.game.components.rooms;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.math.GridPoint2;
@@ -67,7 +67,7 @@ public class EntityManagerComponentTest {
     }
 
     verify(entityService, never()).register(any());
-    assertTrue(manager.entities.size() == 0);
+    assertEquals(0, manager.entities.size());
   }
 
   @Test
@@ -77,6 +77,6 @@ public class EntityManagerComponentTest {
     manager.spawnEntity(entity);
 
     verify(entityService, times(2)).register(any());
-    assertTrue(manager.entities.size() == 2);
+    assertEquals(2, manager.entities.size());
   }
 }
