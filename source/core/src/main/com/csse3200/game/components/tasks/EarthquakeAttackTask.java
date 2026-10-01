@@ -13,8 +13,7 @@ public class EarthquakeAttackTask extends DefaultTask implements PriorityTask {
   private Entity target;
   private float range;
   private float coolDownTimer = 0f;
-  private Entity entity;
-  private boolean PhaseTwoActivated = false;
+  private boolean phaseTwoActivated = false;
   private boolean cooldown = true;
 
   public EarthquakeAttackTask(Entity target, float range, Entity entity) {
@@ -27,8 +26,8 @@ public class EarthquakeAttackTask extends DefaultTask implements PriorityTask {
     super.start();
   }
 
-  public void activate() {
-    PhaseTwoActivated = true;
+  protected void activate() {
+    phaseTwoActivated = true;
   }
 
   public void update() {
@@ -38,7 +37,7 @@ public class EarthquakeAttackTask extends DefaultTask implements PriorityTask {
       coolDownTimer = 0;
       cooldown = true; // cooldown over
     }
-    if (!PhaseTwoActivated || !cooldown) {
+    if (!phaseTwoActivated || !cooldown) {
       return;
     }
     CombatStatsComponent playerStats = target.getComponent(CombatStatsComponent.class);
@@ -54,7 +53,7 @@ public class EarthquakeAttackTask extends DefaultTask implements PriorityTask {
 
   @Override
   public int getPriority() {
-    if (!PhaseTwoActivated || !cooldown) {
+    if (!phaseTwoActivated || !cooldown) {
       return -1;
     } else {
       return 15;
