@@ -49,8 +49,12 @@ public class SplitComponent extends Component {
     ServiceLocator.getEntityService()
         .schedule(
             () -> {
-              spawnChild(-0.5f, halfHealth, halfAttack);
-              spawnChild(0.5f, halfHealth, halfAttack);
+              // Spawn both children at the parent's exact death position (no offset).
+              // That position is guaranteed to already be inside the reachable map,
+              // since the parent walked there itself. This avoids the bug where a
+              // fixed offset could push a child outside the map near room edges.
+              spawnChild(0f, halfHealth, halfAttack);
+              spawnChild(0f, halfHealth, halfAttack);
             });
     ServiceLocator.getEntityService().scheduleDisposal(entity);
     hasSplit = true;
