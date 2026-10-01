@@ -955,8 +955,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/ObstacleComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/ObstacleComponent.html" title="class in com.csse3200.game.components.rooms">ObstacleComponent</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/rooms/RoomAssetsComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomAssetsComponent.html" title="class in com.csse3200.game.components.rooms">RoomAssetsComponent</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/RoomManager.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomManager.html" title="class in com.csse3200.game.components.rooms">RoomManager</a></dt>
 <dd>
 <div class="block">Registers the active room and player, then positions the player at its entry point.</div>
@@ -1441,7 +1439,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/EntityManagerComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/EntityManagerComponent.html" title="class in com.csse3200.game.components.rooms">EntityManagerComponent</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/rooms/RoomAssetsComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomAssetsComponent.html" title="class in com.csse3200.game.components.rooms">RoomAssetsComponent</a></dt>
+<dt><a href="com/csse3200/game/components/rooms/RoomAssets.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomAssets.html" title="class in com.csse3200.game.components.rooms">RoomAssets</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/settingsmenu/SettingsMenuDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.settingsmenu.<a href="com/csse3200/game/components/settingsmenu/SettingsMenuDisplay.html" title="class in com.csse3200.game.components.settingsmenu">SettingsMenuDisplay</a></dt>
 <dd>&nbsp;</dd>
@@ -1788,6 +1786,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/player/InteractionPrompt.html#ENTER_DUNGEON" class="member-name-link">ENTER_DUNGEON</a> - Static variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InteractionPrompt.html" title="class in com.csse3200.game.components.player">InteractionPrompt</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html#ENTERED" class="member-name-link">ENTERED</a> - Static variable in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusMistComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/rooms/EntityManagerComponent.html#entities" class="member-name-link">entities</a> - Variable in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/EntityManagerComponent.html" title="class in com.csse3200.game.components.rooms">EntityManagerComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/Component.html#entity" class="member-name-link">entity</a> - Variable in class com.csse3200.game.components.<a href="com/csse3200/game/components/Component.html" title="class in com.csse3200.game.components">Component</a></dt>
 <dd>&nbsp;</dd>
@@ -3525,6 +3525,8 @@ loadScripts(document, 'script');</script>
 <div class="block">The lines of text shown in an item's tooltip, top to bottom: its name, its effect summary when
  it has one, then its description.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/rooms/RoomAssets.html#loadAll()" class="member-name-link">loadAll()</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomAssets.html" title="class in com.csse3200.game.components.rooms">RoomAssets</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/ResourceService.html#loadAll()" class="member-name-link">loadAll()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ResourceService.html" title="class in com.csse3200.game.services">ResourceService</a></dt>
 <dd>
 <div class="block">Blocking call to load all assets.</div>
@@ -4363,11 +4365,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/math/Vector2Utils.html#RIGHT" class="member-name-link">RIGHT</a> - Static variable in class com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/Vector2Utils.html" title="class in com.csse3200.game.utils.math">Vector2Utils</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/rooms/RoomAssetsComponent.html" class="type-name-link" title="class in com.csse3200.game.components.rooms">RoomAssetsComponent</a> - Class in <a href="com/csse3200/game/components/rooms/package-summary.html">com.csse3200.game.components.rooms</a></dt>
+<dt><a href="com/csse3200/game/components/rooms/RoomAssets.html" class="type-name-link" title="class in com.csse3200.game.components.rooms">RoomAssets</a> - Class in <a href="com/csse3200/game/components/rooms/package-summary.html">com.csse3200.game.components.rooms</a></dt>
 <dd>
 <div class="block">Loads the terrain, fixtures, audio, and enemy assets used by a room.</div>
 </dd>
-<dt><a href="com/csse3200/game/components/rooms/RoomAssetsComponent.html#%3Cinit%3E()" class="member-name-link">RoomAssetsComponent()</a> - Constructor for class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomAssetsComponent.html" title="class in com.csse3200.game.components.rooms">RoomAssetsComponent</a></dt>
+<dt><a href="com/csse3200/game/components/rooms/RoomAssets.html#%3Cinit%3E()" class="member-name-link">RoomAssets()</a> - Constructor for class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomAssets.html" title="class in com.csse3200.game.components.rooms">RoomAssets</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/RoomCommand.html" class="type-name-link" title="class in com.csse3200.game.components.rooms">RoomCommand</a> - Class in <a href="com/csse3200/game/components/rooms/package-summary.html">com.csse3200.game.components.rooms</a></dt>
 <dd>&nbsp;</dd>
