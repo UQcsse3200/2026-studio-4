@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 /** Loads the terrain, fixtures, audio, and enemy assets used by a room. */
-public class RoomAssetsComponent implements Disposable {
+public class RoomAssets implements Disposable {
   private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
   private static final String IMPACT_SOUND = "sounds/Impact4.ogg";
   private static final String[] MUSIC = {BACKGROUND_MUSIC};

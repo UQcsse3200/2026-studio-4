@@ -11,7 +11,7 @@ import com.csse3200.game.components.maingame.InventoryDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.player.InventoryComponent;
-import com.csse3200.game.components.rooms.RoomAssetsComponent;
+import com.csse3200.game.components.rooms.RoomAssets;
 import com.csse3200.game.components.rooms.RoomCommand;
 import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.components.rooms.configs.WorldConfig;
@@ -54,7 +54,7 @@ public class MainGameScreen extends ScreenAdapter {
   private RoomManager roomManager;
   private Entity player;
   private final Terminal terminal;
-  private final RoomAssetsComponent roomAssets = new RoomAssetsComponent();
+  private final RoomAssets roomAssets = new RoomAssets();
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
