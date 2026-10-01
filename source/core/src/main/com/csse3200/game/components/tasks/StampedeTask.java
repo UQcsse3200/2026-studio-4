@@ -84,7 +84,7 @@ public class StampedeTask extends DefaultTask implements PriorityTask {
   /**
    * attack player with damage of 1
    *
-   * @param deltaTime
+   * @param deltaTime the time at update since last update
    */
   private void applyDamage(float deltaTime) {
     damageTimer -= deltaTime;
