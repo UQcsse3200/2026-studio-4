@@ -12,11 +12,28 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
   private final Vector2[] patrolPoints;
   private PhysicsMovementComponent movementComponent;
   private int currentPoint;
-  private int priority;
+  private int priority = 2;
 
-  public PatrolTask(Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint, int priority) {
-    patrolPoints = new Vector2[] {leftPoint.cpy(), topPoint.cpy(), rightPoint.cpy()};
-    this.priority = priority;
+  public PatrolTask(Vector2[] layout) {
+    patrolPoints = setPatrolPoints(layout);
+  }
+
+  private Vector2[] setPatrolPoints(Vector2[] grid) {
+    if (grid.length == 3) { // used by flying enemy
+      return grid;
+    } else { // used only by norse miniboss
+      return createBounds(grid);
+    }
+  }
+
+  private Vector2[] createBounds(Vector2[] grid) {
+    float Xsize = grid[1].x;
+    float Ysize = grid[1].y;
+    Vector2 bottomLeft = grid[0];
+    Vector2 bottomRight = new Vector2(grid[0].x + Xsize, grid[0].y);
+    Vector2 topLeft = new Vector2(grid[0].x, grid[0].y + Ysize);
+    Vector2 topRight = new Vector2(grid[0].x + Xsize, grid[0].y + Ysize);
+    return (new Vector2[] {bottomLeft, topRight, topLeft, bottomRight});
   }
 
   @Override
