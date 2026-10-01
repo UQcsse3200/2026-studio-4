@@ -2,7 +2,7 @@ package com.csse3200.game.components.spells;
 
 import com.badlogic.gdx.graphics.Color;
 import com.csse3200.game.components.spells.targeting.EnemyTargetingStrategy;
-import com.csse3200.game.components.statuseffects.FrozenEffect;
+import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -36,6 +36,7 @@ public class FreezeSpellComponent extends SpellComponent {
 
   @Override
   protected void applyTo(Entity target) {
-    addEffect(target, new FrozenEffect(ServiceLocator.getTimeSource(), freezeDuration));
+    addEffect(
+        target, StatusEffectsFactory.createFrozen(ServiceLocator.getTimeSource(), freezeDuration));
   }
 }
