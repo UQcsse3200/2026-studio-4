@@ -1,7 +1,8 @@
 # Final Boss Stage 2 art sources
 
 Selected artwork supplied by Eden, reorganized without changing source image bytes.
-Frame selection and game integration will be implemented separately.
+Step 2 integrates the fire transformation, shield, fireballs and impact effects
+through runtime regions; other selections remain reserved for later steps.
 Third-party artwork retains its own license; this document does not relicense it.
 
 | Folder | Source / author | License |
@@ -40,12 +41,15 @@ permission as an explicit grant to publish standalone source assets.
 ## Import notes
 
 - pickup: blue GEM 1 is the current selection. Spark is a separate feedback effect.
-- fireball: the Foozle fireball selection is retained.
-- shield: 50x50 cells in a 400x400 source sheet. Loop suitability needs testing.
+- fireball: 001-005 are the flying loop; 006-010 are retained but not used in the
+  loop. All are 64x64. The bright head at (50,32) is the rotation/collision anchor.
+- impact: 001-007 are 64x64 frames played once when a fireball hits.
+- shield: 50x50 cells in a 400x400 source sheet, eight columns. The 61 nonempty
+  frames loop; the last three blank cells are excluded.
 - obstacle: crystal-icy.png is a static 160x128 tileset; choose a region later.
 - ice-projectile: six 64x32 frames, retained in their original names.
-- transform: 01.png contains multiple effects; the sixth row is a candidate
-  orange/yellow burst. It has not been extracted or integrated.
+- transform: 01.png is a 704x576 sheet with 64x64 cells and 11 columns. The first
+  nine cells of the sixth row (start index 55) form the orange/yellow burst.
 - ice-aura: the source sheet is 240x64 with five 48x64 cells.
 - shatter: the supplied copy is 2048x341. This is suitable for visual review,
   but not a verified original 256x256-cell sprite sheet. Obtain the originally

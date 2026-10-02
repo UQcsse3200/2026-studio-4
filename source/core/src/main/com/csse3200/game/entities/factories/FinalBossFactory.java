@@ -15,6 +15,7 @@ import com.csse3200.game.components.boss.FinalBossStageThreeComponent;
 import com.csse3200.game.components.boss.FinalBossStageThreeVisualComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoArenaComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoComponent;
+import com.csse3200.game.components.boss.FinalBossStageTwoVisualComponent;
 import com.csse3200.game.components.boss.FinalBossSummonVisualComponent;
 import com.csse3200.game.components.boss.FinalBossVisualComponent;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
@@ -57,7 +58,8 @@ public final class FinalBossFactory {
             .addComponent(new FinalBossMovementComponent(target, config, stageTwoConfig))
             .addComponent(new FinalBossStageOneComponent(target, summonSpawner, config))
             .addComponent(new FinalBossStageTwoArenaComponent(target, stageTwoConfig))
-            .addComponent(new FinalBossStageTwoComponent(stageTwoConfig))
+            .addComponent(new FinalBossStageTwoComponent(target, stageTwoConfig))
+            .addComponent(new FinalBossStageTwoVisualComponent(target))
             .addComponent(new FinalBossStageThreeComponent(target, summonSpawner, stageThreeConfig))
             .addComponent(new FinalBossStageThreeVisualComponent())
             .addComponent(new FinalBossEndingDialogueComponent(target, stageThreeConfig))

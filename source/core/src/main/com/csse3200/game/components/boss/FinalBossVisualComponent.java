@@ -151,6 +151,8 @@ public class FinalBossVisualComponent extends RenderComponent {
 
   @Override
   protected void draw(SpriteBatch batch) {
+    if (phaseController.getCurrentPhase() == FinalBossPhase.STAGE_TWO
+        && entity.getComponent(FinalBossStageTwoVisualComponent.class) != null) return;
     if (entity.getComponent(FinalBossStageThreeComponent.class) != null
         && (phaseController.getCurrentPhase() == FinalBossPhase.STAGE_THREE
             || phaseController.getCurrentPhase() == FinalBossPhase.DEFEATED)) return;

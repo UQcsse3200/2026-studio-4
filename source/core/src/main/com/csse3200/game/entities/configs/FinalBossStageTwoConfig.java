@@ -6,6 +6,16 @@ public class FinalBossStageTwoConfig {
   public float bossMoveSpeed = 1.2f;
   public float bossRoamRetargetInterval = 3f;
 
+  // Outward fire volleys. The pause stops new shots, not existing projectiles.
+  public float fireballSpeed = 2.4f;
+  public int fireballDamage = 8;
+  public float fireVolleyInterval = 0.3f;
+  public float fireballLifetime = 6f;
+  public float fireballRadius = 0.16f;
+  public float fireballInitialDelay = 0.6f;
+  public int maxFireballs = 128;
+  public float fireImpactDuration = 0.35f;
+
   // Stage 2 charge attacks
   public float bossChargeAttackDelay = 0.5f;
   public float bossChargeDistance = 6f;
@@ -22,10 +32,31 @@ public class FinalBossStageTwoConfig {
 
   public void validate() {
     validateArenaMovement();
+    validateFireballs();
     validateChargeAttack();
     validateStageThreeThreshold();
     validateStageTwoContactDamage();
     validateAttackCycle();
+  }
+
+  private void validateFireballs() {
+    if (!Float.isFinite(fireballSpeed)
+        || fireballSpeed <= 0f
+        || fireballDamage <= 0
+        || !Float.isFinite(fireVolleyInterval)
+        || fireVolleyInterval <= 0f
+        || !Float.isFinite(fireballLifetime)
+        || fireballLifetime <= 0f
+        || !Float.isFinite(fireballRadius)
+        || fireballRadius <= 0f
+        || !Float.isFinite(fireballInitialDelay)
+        || fireballInitialDelay < 0f
+        || maxFireballs < 8
+        || maxFireballs > 256
+        || !Float.isFinite(fireImpactDuration)
+        || fireImpactDuration <= 0f) {
+      throw new IllegalArgumentException("Stage 2 fireball values are invalid");
+    }
   }
 
   private void validateArenaMovement() {

@@ -69,6 +69,11 @@ public class FinalBossPhaseControllerComponent extends Component {
     return transitionRemaining > 0f;
   }
 
+  /** Progress of the shared transformation, from zero on entry to one when complete. */
+  public float getTransitionProgress() {
+    return 1f - transitionRemaining / STAGE_TRANSITION_DURATION;
+  }
+
   public boolean completeStage(FinalBossPhase completedPhase) {
     if (completedPhase != currentPhase || currentPhase == FinalBossPhase.DEFEATED) {
       return false;
