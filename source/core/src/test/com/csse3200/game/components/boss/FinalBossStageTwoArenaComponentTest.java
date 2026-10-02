@@ -35,15 +35,21 @@ class FinalBossStageTwoArenaComponentTest {
   @BeforeEach
   void setUp() {
     ServiceLocator.registerPhysicsService(new PhysicsService());
-    player = new Entity().addComponent(new PhysicsComponent())
-        .addComponent(new CombatStatsComponent(100, 10));
+    player =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new CombatStatsComponent(100, 10));
     player.setPosition(4f, 7f);
     player.create();
     phases = mock(FinalBossPhaseControllerComponent.class);
     when(phases.getCurrentPhase()).thenReturn(FinalBossPhase.STAGE_ONE);
     arena = new FinalBossStageTwoArenaComponent(player, new FinalBossStageTwoConfig());
-    boss = new Entity().addComponent(new PhysicsComponent())
-        .addComponent(new CombatStatsComponent(100, 0)).addComponent(phases).addComponent(arena);
+    boss =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new CombatStatsComponent(100, 0))
+            .addComponent(phases)
+            .addComponent(arena);
     boss.setScale(2f, 2f);
     boss.setPosition(8f, 8f);
     boss.create();

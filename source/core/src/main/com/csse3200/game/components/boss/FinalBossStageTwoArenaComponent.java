@@ -78,9 +78,12 @@ public class FinalBossStageTwoArenaComponent extends Component {
   }
 
   private void constrainAfterUpdates() {
-    if (disposed || defeated || bounds == null
+    if (disposed
+        || defeated
+        || bounds == null
         || phases.getCurrentPhase() != FinalBossPhase.STAGE_TWO
-        || isDead(entity) || isDead(target)) return;
+        || isDead(entity)
+        || isDead(target)) return;
     // PlayerActions may update after the boss and set an outward walk or dash velocity again.
     // Finish containment once all actors have updated, before the next physics step.
     clampActor(entity);
@@ -108,12 +111,18 @@ public class FinalBossStageTwoArenaComponent extends Component {
   private Rectangle visibleBounds() {
     if (camera == null) return null;
     float zoom = camera instanceof OrthographicCamera ortho ? ortho.zoom : 1f;
-    if (!Float.isFinite(zoom) || zoom <= 0f
-        || camera.viewportWidth <= 0f || camera.viewportHeight <= 0f) return null;
+    if (!Float.isFinite(zoom)
+        || zoom <= 0f
+        || camera.viewportWidth <= 0f
+        || camera.viewportHeight <= 0f) return null;
     float width = camera.viewportWidth * zoom;
     float height = camera.viewportHeight * zoom;
-    if (!Float.isFinite(width) || !Float.isFinite(height) || width <= 0f || height <= 0f
-        || !Float.isFinite(camera.position.x) || !Float.isFinite(camera.position.y)) return null;
+    if (!Float.isFinite(width)
+        || !Float.isFinite(height)
+        || width <= 0f
+        || height <= 0f
+        || !Float.isFinite(camera.position.x)
+        || !Float.isFinite(camera.position.y)) return null;
     return new Rectangle(
         camera.position.x - width * 0.5f, camera.position.y - height * 0.5f, width, height);
   }
@@ -124,7 +133,8 @@ public class FinalBossStageTwoArenaComponent extends Component {
     float right = Math.min(originalBounds.x + originalBounds.width, visible.x + visible.width);
     float top = Math.min(originalBounds.y + originalBounds.height, visible.y + visible.height);
     // A smaller window shrinks the usable area, but widening it never expands the original arena.
-    if (right > left && top > bottom) return new Rectangle(left, bottom, right - left, top - bottom);
+    if (right > left && top > bottom)
+      return new Rectangle(left, bottom, right - left, top - bottom);
     return new Rectangle(originalBounds);
   }
 

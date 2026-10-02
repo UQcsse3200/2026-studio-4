@@ -163,7 +163,8 @@ public class FinalBossStageTwoComponent extends Component {
   /** Prevents a powerful hit from skipping the Stage 3 encounter entirely. */
   public void applyStageThreeHealthFloor() {
     bossStats.setMinimumHealth(
-        Math.max(1, Math.round(bossStats.getMaxHealth() * stageTwoConfig.stageThreeHealthThreshold)));
+        Math.max(
+            1, Math.round(bossStats.getMaxHealth() * stageTwoConfig.stageThreeHealthThreshold)));
   }
 
   /** Returns whether the active encounter is in its firing interval rather than its pause. */
