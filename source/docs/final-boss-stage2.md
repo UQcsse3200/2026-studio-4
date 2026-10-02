@@ -77,14 +77,13 @@ Ring/fan/spread volleys drop from 8/5/6 to 6/4/5 projectiles, averaging about 21
 fewer shots. The ring remains evenly spaced, and the fan retains its 72-degree
 total arc with wider gaps. Slow flight and the 0.3-second cadence remain.
 
-Fireballs appear close to the fire circle in their outgoing direction while
-leaving the Boss body unobscured. Their head/collision centre is offset by half
-the larger Boss entity dimension, plus the fireball's full visual tail length
-and a 0.08-unit gap. The wizard itself is drawn at 80% of the entity dimensions.
-With the normal 2-by-2 Boss scale the emission distance is approximately 1.98
-world units, reduced from the previous 2.27 after playtesting. Flame tails may
-overlap the decorative circle. Each volley still uses the current Boss position
-and scale, and shared fireball dimensions keep body clearance consistent.
+Fireball heads now appear just beyond the visible fire circle in their outgoing
+direction. Their head/collision centre is offset by half the larger shield
+dimension plus 0.3 world units. With the normal 2-by-2 Boss scale this is 1.55
+world units from the Boss centre, reduced from 2.27 (and the interim 1.98)
+after playtesting. Flame tails may overlap the decorative circle and part of
+the wizard, as requested for a more compact firing effect. Each volley still
+uses the current Boss position and scale and the shared shield dimensions.
 A spawn outside the arena, or with a solid wall/ice cover between the Boss and
 the spawn point, is omitted rather than jumping past that obstacle. Omitted
 shots do not damage cover. The invisible centre-to-spawn segment does not deal
@@ -439,9 +438,10 @@ expiry overshoot, uncollectible disappearing gems, full reserves, fifth-row
 frame selection and phase/death/disposal cleanup. The source PNGs are unchanged.
 Graphical placement and animation feel still require local playtesting.
 
-The subsequent emission-distance adjustment passed 58 fire-controller,
+The compact 1.55-unit emission adjustment passed 58 focused fire-controller,
 fire-integration and ice-cover integration tests plus the formatting check.
-The spawn radius is now based on Boss body clearance rather than shield clearance.
+The close-cover test uses an explicit 2-by-2 Boss and a matching narrow arena
+so every legal emission direction still crosses the blocking crystal.
 
 With the local zero-damage multiplier retained, the relevant checks can be run
 without the normal-damage PlayerFactory test:
@@ -535,8 +535,8 @@ rule and its effect are intentionally the next small increment.
 
 Outer-ring/expiry follow-up playtest:
 
-1. Watch several volleys while the Boss moves. Flames should appear close to
-   the fire circle; tails may overlap the ring but must leave the wizard clear.
+1. Watch several volleys while the Boss moves. Heads should appear just beyond
+   the fire circle, with tails allowed to overlap the circle and part of the wizard.
 2. Check fire emission near walls and ice cover: bullets should not appear on
    the far side of a blocking obstacle or outside the arena.
 3. Leave a ground gem uncollected for seven seconds. It should disappear into

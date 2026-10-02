@@ -2,7 +2,7 @@ package com.csse3200.game.components.boss;
 
 import com.badlogic.gdx.math.Vector2;
 
-/** Shared visual dimensions keep fireball tails clear of the boss while close to its body. */
+/** Shared visual dimensions keep fireball heads close to the boss's fire circle. */
 final class FinalBossStageTwoFireGeometry {
   static final float SHIELD_SCALE = 1.25f;
   static final float FIREBALL_SIZE = 1.15f;
@@ -11,8 +11,7 @@ final class FinalBossStageTwoFireGeometry {
   private FinalBossStageTwoFireGeometry() {}
 
   static float spawnRadius(Vector2 bossSize) {
-    // The wizard is drawn at 80% of the entity size; half the entity size leaves body clearance.
-    // Tails may overlap the decorative shield so emission stays visually connected to the boss.
-    return Math.max(bossSize.x, bossSize.y) / 2f + FIREBALL_SIZE * FIREBALL_HEAD_X + 0.08f;
+    // Keep the head just outside the circle; the tail may overlap the ring and wizard.
+    return Math.max(bossSize.x, bossSize.y) * SHIELD_SCALE / 2f + 0.3f;
   }
 }

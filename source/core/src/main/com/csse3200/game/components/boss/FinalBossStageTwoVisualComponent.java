@@ -136,7 +136,7 @@ public class FinalBossStageTwoVisualComponent extends RenderComponent {
           left ? -width : width,
           height);
 
-      // Fireball tails may overlap this decoration while keeping the wizard itself clear.
+      // Fireball heads begin just beyond the circle; their tails may overlap it and the wizard.
       batch.setColor(1f, 1f, 1f, 0.78f + 0.12f * MathUtils.sin(elapsed * 5f));
       centred(
           batch,

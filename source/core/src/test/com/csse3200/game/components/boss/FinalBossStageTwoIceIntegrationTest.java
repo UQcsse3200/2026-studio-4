@@ -161,16 +161,23 @@ class FinalBossStageTwoIceIntegrationTest {
   void coverBetweenTheBossAndItsEmissionRingBlocksSpawnWithoutTakingFireballDamage() {
     config.fireballInitialDelay = 0.6f;
     config.iceCoverGap = 0f;
+    config.iceCoverHeight = 2.2f;
+    boss.setScale(2f, 2f);
     startEncounter();
     FinalBossStageTwoIceController.Cover cover = ice.covers.getFirst();
     float y = centreY(cover);
-    boss.setPosition(cover.bounds.x - 1.1f, y - 0.5f);
+    boss.setPosition(cover.bounds.x - 2.01f, y - 1f);
     player.setPosition(cover.bounds.x + cover.bounds.width + 0.25f, y - 0.5f);
-    // Only the cone crossing the ice fits this arena; every other emission direction is outside.
+    // The 1.55-radius ring exceeds the arena's 1.12 half-height. Its allowed rightward rays
+    // cross the ice 1.01 units from the origin; leftward rays exceed the 1.015 left clearance.
+    // Both actors still fit inside the arena, and the boss stops 0.01 units before the cover.
     when(arena.getBounds())
         .thenReturn(
             new Rectangle(
-                cover.bounds.x - 1.15f, cover.bounds.y - 0.05f, 4.15f, cover.bounds.height + 0.1f));
+                cover.bounds.x - 2.025f,
+                cover.bounds.y - 0.02f,
+                5.025f,
+                cover.bounds.height + 0.04f));
     advance(0.001f);
 
     advance(config.fireballInitialDelay);
