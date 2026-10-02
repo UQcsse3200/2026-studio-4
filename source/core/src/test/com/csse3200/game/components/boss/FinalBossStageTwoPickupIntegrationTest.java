@@ -225,7 +225,8 @@ class FinalBossStageTwoPickupIntegrationTest {
   void stageThreeHandoverClearsChargesGroundGemsAndCollectionEffects() {
     prepareHeldChargeGroundGemAndBurst();
 
-    bossStats.takeDamage(10000, player);
+    boss.getComponent(FinalBossDamageControllerComponent.class)
+        .takeStageTwoIceDamage(10000, player);
 
     assertEquals(FinalBossPhase.STAGE_THREE, phases.getCurrentPhase());
     assertPickupResourcesCleared();

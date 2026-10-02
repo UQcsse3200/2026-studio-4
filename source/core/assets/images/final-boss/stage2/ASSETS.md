@@ -1,9 +1,9 @@
 # Final Boss Stage 2 art sources
 
 Selected artwork supplied by Eden, reorganized without changing source image bytes.
-Steps 2 through 4 integrate the fire transformation, shield, fireballs, impact
-effects, ice cover, cover debris, ice-magic pickups and player charge indicators
-through runtime regions; ice projectiles remain reserved for a later step.
+Steps 2 through 5 integrate the fire transformation, shield, fireballs, impact
+effects, ice cover, cover debris, ice-magic pickups, player charge indicators,
+homing ice projectiles and the final-charge ending effect through runtime regions.
 Third-party artwork retains its own license; this document does not relicense it.
 
 | Folder | Source / author | License |
@@ -58,13 +58,25 @@ permission as an explicit grant to publish standalone source assets.
   units). Damage cracks use a 1x1 bright pixel from the same texture, with tint
   and geometry applied only while drawing. A brief additive pass brightens the
   crystal on a hit; source PNG bytes are unchanged.
-- ice-projectile: six 64x32 frames, retained in their original names.
+- ice-projectile: six transparent 64x32 frames, explicitly ordered Icespear.png,
+  Icespear2.png through Icespear6.png. They face right and loop over 0.3 seconds.
+  The visible sprite is 1.05x0.525 world units, independent of its damage radius.
+  Source head (50,15) is measured from the top left, so its SpriteBatch rotation
+  anchor is (width*50/64,height*17/32). It follows the shot's velocity without
+  rotating the tail around the image centre. Impacts reuse the ten visible Spark
+  frames with a blue tint and the controller's impact lifetime; this is not yet
+  an ice/fire projectile cancellation effect.
 - transform: 01.png is a 704x576 sheet with 64x64 cells and 11 columns. The first
   nine cells of the sixth row (start index 55) form the orange/yellow burst.
   Ice-cover spawning uses the nine nonempty cyan-swirl cells of the seventh row
   (start index 66, y=384, x=0 through 512). The final two empty cells are excluded.
   Both effects reuse the same loaded texture; no additional image or resource
   path is introduced, and the original PNG is unchanged.
+  When the final ice reserve is consumed, the nine blue contracting-ring frames
+  in the fifth row (start index 44, y=256, x=0 through 512) play above the player.
+  This one-shot effect lasts the stage's ending duration (default 0.5 seconds),
+  fades near its endpoint and stays inside the camera bounds. It reuses the same
+  transform texture; the sixth and seventh rows retain their previous uses.
 - ice-aura: the source sheet is 240x64 with five 48x64 cells. Its sparse blue-white
   sparkles loop above the player while at least one charge remains, drawn at
   0.60x0.80 world units and kept inside the camera bounds.

@@ -21,6 +21,10 @@ public final class FinalBossStageTwoAssets {
   private static final String ICE_AURA = ROOT + "ice-aura/ice_sparkles.png";
   private static final int FIREBALL_FRAMES = 5;
   private static final int IMPACT_FRAMES = 7;
+  private static final String[] ICE_PROJECTILE_NAMES = {
+    "Icespear.png", "Icespear2.png", "Icespear3.png",
+    "Icespear4.png", "Icespear5.png", "Icespear6.png"
+  };
 
   private FinalBossStageTwoAssets() {}
 
@@ -34,6 +38,9 @@ public final class FinalBossStageTwoAssets {
     paths.add(PICKUP);
     paths.add(PICKUP_SPARK);
     paths.add(ICE_AURA);
+    for (String name : ICE_PROJECTILE_NAMES) {
+      paths.add(ROOT + "ice-projectile/" + name);
+    }
     for (int i = 1; i <= FIREBALL_FRAMES; i++) {
       paths.add(numberedPath("fireball", i));
     }
@@ -78,6 +85,20 @@ public final class FinalBossStageTwoAssets {
 
   static TextureRegion[] iceAuraFrames() {
     return sheet(ICE_AURA, 48, 64, 5, 0, 5);
+  }
+
+  /** Source filenames start with Icespear.png, not Icespear1.png. Each frame faces right. */
+  static TextureRegion[] playerIceFrames() {
+    TextureRegion[] frames = new TextureRegion[ICE_PROJECTILE_NAMES.length];
+    for (int i = 0; i < frames.length; i++) {
+      frames[i] = new TextureRegion(texture(ROOT + "ice-projectile/" + ICE_PROJECTILE_NAMES[i]));
+    }
+    return frames;
+  }
+
+  /** The first nine cells of the fifth row show blue rings contracting as the buff ends. */
+  static TextureRegion[] iceBuffEndFrames() {
+    return sheet(TRANSFORM, 64, 11, 44, 9);
   }
 
   /** The lower-right small crystal, preserving its original 1:2 aspect ratio. */

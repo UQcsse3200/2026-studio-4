@@ -246,7 +246,8 @@ class FinalBossStageTwoIceIntegrationTest {
   void phaseExitRemovesCoverBodiesAndOutstandingShatterEffects() {
     prepareCoverAndShatter();
 
-    bossStats.takeDamage(10000, player);
+    boss.getComponent(FinalBossDamageControllerComponent.class)
+        .takeStageTwoIceDamage(10000, player);
 
     assertEquals(FinalBossPhase.STAGE_THREE, phases.getCurrentPhase());
     assertEncounterResourcesCleared();

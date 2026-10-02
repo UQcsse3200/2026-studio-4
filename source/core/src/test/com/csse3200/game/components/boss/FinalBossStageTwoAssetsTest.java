@@ -23,7 +23,7 @@ class FinalBossStageTwoAssetsTest {
     ResourceService resources = new ResourceService();
     ServiceLocator.registerResourceService(resources);
     String[] paths = FinalBossStageTwoAssets.paths();
-    assertEquals(19, paths.length);
+    assertEquals(25, paths.length);
     assertEquals(paths.length, new HashSet<>(Arrays.asList(paths)).size());
     resources.loadTextures(paths);
     resources.loadAll();
@@ -42,6 +42,34 @@ class FinalBossStageTwoAssetsTest {
       assertVisibleRegions(resources, ROOT + "transform/01.png", iceSpawn);
       assertSharedTextures(iceSpawn, FinalBossStageTwoAssets.iceSpawnFrames());
       assertSame(transform[0].getTexture(), iceSpawn[0].getTexture());
+
+      TextureRegion[] buffEnd = FinalBossStageTwoAssets.iceBuffEndFrames();
+      assertEquals(9, buffEnd.length);
+      assertRegion(buffEnd[0], 0, 256, 64);
+      assertRegion(buffEnd[8], 512, 256, 64);
+      assertVisibleRegions(resources, ROOT + "transform/01.png", buffEnd);
+      assertSharedTextures(buffEnd, FinalBossStageTwoAssets.iceBuffEndFrames());
+      assertSame(transform[0].getTexture(), buffEnd[0].getTexture());
+
+      TextureRegion[] playerIce = FinalBossStageTwoAssets.playerIceFrames();
+      String[] iceNames = {
+        "Icespear.png",
+        "Icespear2.png",
+        "Icespear3.png",
+        "Icespear4.png",
+        "Icespear5.png",
+        "Icespear6.png"
+      };
+      assertEquals(iceNames.length, playerIce.length);
+      for (int i = 0; i < playerIce.length; i++) {
+        assertEquals(0, playerIce[i].getRegionX());
+        assertEquals(0, playerIce[i].getRegionY());
+        assertEquals(64, playerIce[i].getRegionWidth());
+        assertEquals(32, playerIce[i].getRegionHeight());
+        assertVisibleRegions(
+            resources, ROOT + "ice-projectile/" + iceNames[i], new TextureRegion[] {playerIce[i]});
+      }
+      assertSharedTextures(playerIce, FinalBossStageTwoAssets.playerIceFrames());
 
       TextureRegion[] shield = FinalBossStageTwoAssets.shieldFrames();
       assertEquals(61, shield.length);

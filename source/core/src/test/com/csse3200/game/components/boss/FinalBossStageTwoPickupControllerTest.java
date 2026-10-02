@@ -184,6 +184,16 @@ class FinalBossStageTwoPickupControllerTest {
   }
 
   @Test
+  void fractionalShotCostsDoNotLeaveAGhostOccupiedSlot() {
+    collectOne();
+    for (int shot = 0; shot < 3; shot++) controller.consumeEnergy(1f / 3f);
+    assertEquals(0, controller.getChargeCount());
+    assertEquals(0f, controller.getChargeFraction(0));
+    collectOne();
+    assertEquals(1f, controller.getChargeFraction(0));
+  }
+
+  @Test
   void invalidEnergyAmountsCannotAddOrEraseEnergy() {
     collectOne();
     for (float amount : new float[] {0f, -1f, Float.NaN, Float.POSITIVE_INFINITY}) {

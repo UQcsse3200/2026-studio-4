@@ -10,6 +10,54 @@ import org.junit.jupiter.api.Test;
 
 class FinalBossStageTwoConfigTest {
   @Test
+  void playerIceFlightCadenceAndEffectTimingsMustBePositiveAndFinite() {
+    List<BiConsumer<FinalBossStageTwoConfig, Float>> setters =
+        List.of(
+            (config, value) -> config.iceProjectileSpeed = value,
+            (config, value) -> config.iceFireInterval = value,
+            (config, value) -> config.iceProjectileLifetime = value,
+            (config, value) -> config.iceProjectileRadius = value,
+            (config, value) -> config.iceHomingTurnRate = value,
+            (config, value) -> config.iceImpactDuration = value,
+            (config, value) -> config.iceBuffEndDuration = value);
+    for (BiConsumer<FinalBossStageTwoConfig, Float> setter : setters) {
+      for (float invalid :
+          new float[] {0f, -1f, Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY}) {
+        FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
+        setter.accept(config, invalid);
+        assertThrows(IllegalArgumentException.class, config::validate);
+      }
+    }
+  }
+
+  @Test
+  void playerIceDamageAndCapacitiesArePositiveAndBounded() {
+    FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
+    for (int value : new int[] {1, 3, 128}) {
+      config.iceShotsPerCharge = value;
+      assertDoesNotThrow(config::validate);
+    }
+    for (int value : new int[] {-1, 0, 129}) {
+      config.iceShotsPerCharge = value;
+      assertThrows(IllegalArgumentException.class, config::validate);
+    }
+    config.iceShotsPerCharge = 16;
+    for (int value : new int[] {1, 256}) {
+      config.maxIceProjectiles = value;
+      assertDoesNotThrow(config::validate);
+    }
+    for (int value : new int[] {-1, 0, 257}) {
+      config.maxIceProjectiles = value;
+      assertThrows(IllegalArgumentException.class, config::validate);
+    }
+    config.maxIceProjectiles = 64;
+    for (int value : new int[] {-1, 0}) {
+      config.iceProjectileDamage = value;
+      assertThrows(IllegalArgumentException.class, config::validate);
+    }
+  }
+
+  @Test
   void icePickupCapacityIsBoundedAndCanBeDisabled() {
     for (int accepted : new int[] {0, 1, 8}) {
       FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();

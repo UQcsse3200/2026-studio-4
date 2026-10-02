@@ -124,16 +124,18 @@ class FinalBossStageTwoFireIntegrationTest {
   }
 
   @Test
-  void normalAttacksStillWorkAndTheSixtyPercentHandoverClearsAllFire() {
+  void normalAttacksAreBlockedAndAnIceHitAtSixtyPercentClearsAllFire() {
     startEncounter();
     advance(config.fireballInitialDelay);
     fire.impacts.add(new FinalBossStageTwoFireController.Impact(new Vector2(10f, 10f)));
     assertFalse(fire.fireballs.isEmpty());
 
     bossStats.hit(playerStats);
-    assertEquals(790, bossStats.getHealth());
-    assertEquals(FinalBossPhase.STAGE_TWO, phases.getCurrentPhase());
     bossStats.takeDamage(10000, player);
+    assertEquals(800, bossStats.getHealth());
+    assertEquals(FinalBossPhase.STAGE_TWO, phases.getCurrentPhase());
+    boss.getComponent(FinalBossDamageControllerComponent.class)
+        .takeStageTwoIceDamage(10000, player);
 
     assertEquals(600, bossStats.getHealth());
     assertEquals(FinalBossPhase.STAGE_THREE, phases.getCurrentPhase());

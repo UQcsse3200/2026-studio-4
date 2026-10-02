@@ -5,6 +5,9 @@ Step 2 builds on `9c3d2f2`, including the separate Step 1 format fix.
 Step 3 builds on `63ff13c`, including the tuned fireball size, speed and spacing.
 Step 4 builds on `dd6883c`, including blue cover arrival, two-second replenishment
 and the seven-second cover lifetime.
+Step 5 builds on `90a3810`, including pickups and hiding empty energy bars.
+The current version includes held-J homing ice fire and ice-only Boss damage.
+Earlier steps below describe their intermediate playable versions.
 
 ## Step 1: fixed arena and slow movement
 
@@ -184,13 +187,75 @@ effects and stored energy. Re-entering the encounter starts empty. The Boss
 owns this temporary state and its visuals; no persistent player listeners,
 player-factory changes or changes to the shared player HUD are required.
 
+## Step 5: held-J homing ice fire and the ice-only shield
+
+While at least one reserve remains, holding J replaces the normal J attack
+with repeated ice shots aimed at the Boss. Each shot continues to turn towards
+the moving Boss rather than only aiming once on release. Releasing J stops new
+shots without consuming energy; existing shots keep flying. Holding J before
+walking over a pickup also starts ice fire when energy becomes available.
+Moving, dashing and other keys retain their existing controls.
+
+Initial playtest values in `FinalBossStageTwoConfig` are:
+
+| Setting | Value |
+| --- | --- |
+| Shots per full reserve / held reserves | 16 / 2 |
+| Shot interval | 0.18 seconds |
+| Ice shot speed | 6 world units/second |
+| Maximum homing turn rate | 240 degrees/second |
+| Damage per ice hit | 1 |
+| Ice shot hit radius | 0.12 world units |
+| Maximum lifetime / simultaneous ice shots | 4 seconds / 64 |
+| Impact / energy-ending effect duration | 0.35 / 0.5 seconds |
+
+Only an emitted shot spends energy. Capacity limits or an origin inside a
+solid wall cannot silently drain the bars. Cooldown keeps advancing while J
+is released, so tapping faster cannot bypass the firing interval. A long frame
+emits at most one new shot instead of catching up a backlog.
+
+Energy uses the oldest reserve first. At the first reserve's end, its bar hides,
+the next reserve continues without interrupting a held key, and the player aura
+remains. New pickup generation resumes with a free reserve slot. A later pickup
+fills the empty slot without changing the older reserve's remaining energy.
+Only exhausting both reserves removes the aura and plays a short blue shrinking
+ring above the player; subsequent J presses use the ordinary attack again.
+Collecting a new reserve cancels any still-visible ending ring. Unspent energy
+has no timer, and using a non-binary shot cost cannot leave a rounding-only slot.
+
+Ice shots stop at the first solid static wall or ice cover, arena edge or expiry.
+Hitting cover consumes the shot without taking away any of its four fire-hit
+durability points. Swept collision compares the moving Boss with the shot's
+travel path. A wall/arena/expiry tie takes priority over a Boss hit. Ice shots
+already in flight keep moving during both the Boss's three-second firing pause
+and a player action lock; new shots require the player to be alive, unlocked
+and free of immobilising status effects.
+
+Once the transition into Stage 2 finishes, its persistent fire shield blocks
+ordinary melee, arrows, other damage sources and unattributed damage. Only
+landed player ice shots pass through the Boss's normal damage pipeline. The
+60% health floor still causes Stage 3 rather than allowing an oversized hit to
+skip it. A synchronous phase change from an ice hit immediately clears the
+remaining ice shots and preserves Stage 3's newly installed shield or damage
+window. The private ice damage source is not a room entity or a physics body.
+
+The J override belongs to the encounter: it runs after UI input and before
+ordinary player keyboard input, passes J through when there is no energy, and
+unregisters on disposal. Key release, a missed physical release, terminal/text
+entry and encounter cleanup clear its held state. No player-factory debug
+changes or persistent player listeners are added. The local zero-damage testing
+multiplier still protects the player without changing Boss ice damage.
+
+The six original 64x32 ice-spear textures loop during flight. Their bright head
+at source (50,15), rather than their whole-image centre, is aligned to the
+collision position. The energy-ending effect reuses nine blue/purple frames
+from row five of `transform/01.png`; no PNG bytes are changed.
+
 ## Subsequent increments
 
-1. Held-J homing ice fire, sequential charge consumption, and buff-end effects;
-   enable ice-only Boss damage when this attack is functional.
-2. One-to-one ice/fire cancellation, remaining effects, cleanup and balance.
+1. One-to-one ice/fire cancellation, its effects, and final balance.
 
-The confirmed follow-on rules are: while any ice energy remains, holding J
+The confirmed full design is: while any ice energy remains, holding J
 temporarily replaces the normal attack and continuously fires ice projectiles
 that turn to track the Boss. Energy decreases with shots, not with time held.
 When the first reserve empties, firing continues from the second without
@@ -200,12 +265,12 @@ energy. A player ice shot hitting solid cover disappears without damaging the
 cover; only Boss fire consumes its four-hit durability. Ice/fire collisions
 consume one projectile from each side and play a cancellation effect. Ordinary
 attacks become ineffective against the Stage 2 Boss when this ice weapon is
-enabled, making pickups necessary for progression. Shot cost, speed, cadence
-and per-reserve capacity remain playtest parameters for those later increments.
+enabled, making pickups necessary for progression. Step 5 implements this except
+ice/fire cancellation, which remains the next increment. Shot cost, speed,
+cadence and per-reserve capacity remain tunable playtest parameters.
 
 Each increment gets its own local test, commit and push before work proceeds.
-The firing-pattern timings and pickup/charge balance will be tuned in those
-increments rather than treated as final values here.
+The firing-pattern timings and pickup/charge balance remain provisional.
 
 ## Validation
 
@@ -281,6 +346,24 @@ The follow-up bar-visibility adjustment passed all 12 pickup/Stage 2 visual
 tests and an independent full `formatCheck`. Empty reserve slots now draw
 neither a bar nor its background/outline; occupied slots keep their own position.
 
+Step 5 validation: JDK 21/Gradle 8.5 compiled the main and test sources and ran
+1,530 core cases. All 1,518 cases outside the new player-ice integration class
+passed; after correcting that class's assertion to retain the second reserve
+in its fixed bar slot, a focused rerun passed all 12 of its cases. An independent
+full `formatCheck` passed. Coverage includes held/released J and UI capture,
+16/32-shot reserves, non-binary shot-cost rounding, oldest-first consumption,
+homing limits, moving-target sweeps, wall/cover/expiry ordering, ordinary-hit
+rejection, private-source authorisation, synchronous Stage 3 protection, ending
+effects, texture anchors and cleanup. No local player invincibility edit is
+included. Graphical feel and balance still require the playtest below.
+
+With the local zero-damage multiplier retained, the relevant checks can be run
+without the normal-damage PlayerFactory test:
+
+```bash
+./gradlew :core:test --tests 'com.csse3200.game.components.boss.FinalBoss*' --tests 'com.csse3200.game.entities.configs.FinalBossStageTwoConfigTest' formatCheck
+```
+
 For the local graphical playtest:
 
 1. Enter the Final Boss encounter and finish Stage 1. At 80% health, check that
@@ -338,3 +421,27 @@ Step 4 playtest, retaining the local player damage multiplier at zero:
 5. Use ordinary attacks to enter Stage 3, or restart/leave the encounter. Gems,
    bars and player sparkles should all disappear. The next encounter must begin
    with no stored energy. Held-J firing and energy drain are not enabled yet.
+
+Step 5 playtest (supersedes the ordinary-attack Stage 3 handover in earlier checks):
+
+1. Enter Stage 2 and try ordinary attacks after its transition. The fire shield
+   should remain visible and Boss health should not fall.
+2. Pick up one gem and hold J. Ice spears should turn towards the moving Boss,
+   consume the single visible blue bar with each shot, and lower Boss health
+   when they hit. Release J; the bar must stop draining immediately.
+3. Collect two reserves and keep J held. The first bar should disappear when
+   empty, the second should then drain, and head sparkles should remain without
+   an ending burst between them. A new pickup must not refill the older bar.
+4. Fire from behind solid cover. Ice shots must disappear at the cover without
+   cracking it; move out to find a firing angle. Boss fire still damages cover.
+5. Exhaust both reserves. Both bars and the looping aura should disappear with
+   a single brief blue transformation. Collecting another gem restores ice fire.
+6. Use ice hits to reach 60% Boss health. Stage 3 should begin with its transition
+   protection intact, and ice shots/energy/effects should all clear. Also check
+   restart/leave and player death. The local invincibility edit can remain for
+   the other checks, but prevents a genuine player-death playtest.
+7. While holding J, open the F1 terminal. Ice fire should stop, and typing should
+   not spend energy. Close it and make a fresh J press to resume.
+
+Ice/fire projectiles do not cancel each other in this version; that collision
+rule and its effect are intentionally the next small increment.

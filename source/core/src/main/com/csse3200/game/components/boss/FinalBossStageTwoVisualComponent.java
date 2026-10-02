@@ -23,6 +23,7 @@ public class FinalBossStageTwoVisualComponent extends RenderComponent {
   private TextureRegion[] impact;
   private FinalBossStageTwoIceVisuals iceVisuals;
   private FinalBossStageTwoPickupVisuals pickupVisuals;
+  private FinalBossStageTwoPlayerIceVisuals playerIceVisuals;
   private RenderComponent overlay;
   private float elapsed;
   private float hitRemaining;
@@ -47,6 +48,7 @@ public class FinalBossStageTwoVisualComponent extends RenderComponent {
     impact = FinalBossStageTwoAssets.impactFrames();
     iceVisuals = new FinalBossStageTwoIceVisuals();
     pickupVisuals = new FinalBossStageTwoPickupVisuals();
+    playerIceVisuals = new FinalBossStageTwoPlayerIceVisuals();
     entity.getEvents().addListener("updateHealth", this::healthChanged);
     entity.getEvents().addListener(FinalBossEvents.PHASE_CHANGED, this::phaseChanged);
     super.create();
@@ -61,7 +63,15 @@ public class FinalBossStageTwoVisualComponent extends RenderComponent {
           protected void draw(SpriteBatch batch) {
             drawProjectiles(batch);
             if (isVisible()) {
+              playerIceVisuals.drawShots(batch, stage.getPlayerIceController());
               pickupVisuals.drawPlayerBuff(batch, stage.getPickupController(), target, elapsed);
+              FinalBossStageTwoPickupController pickups = stage.getPickupController();
+              playerIceVisuals.drawEnding(
+                  batch,
+                  target,
+                  pickups == null ? null : pickups.getArenaBounds(),
+                  stage.getIceBuffEndRemaining(),
+                  stage.getIceBuffEndDuration());
             }
           }
         };

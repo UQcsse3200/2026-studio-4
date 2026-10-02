@@ -36,6 +36,18 @@ public class FinalBossStageTwoConfig {
   public float icePickupGap = 0.75f;
   public float icePickupEffectDuration = 0.5f;
 
+  // Player ice magic: one reserve powers a stream of shots, spent only when a shot is emitted.
+  public float iceProjectileSpeed = 6f;
+  public int iceProjectileDamage = 1;
+  public float iceFireInterval = 0.18f;
+  public float iceProjectileLifetime = 4f;
+  public float iceProjectileRadius = 0.12f;
+  public float iceHomingTurnRate = 240f;
+  public int iceShotsPerCharge = 16;
+  public int maxIceProjectiles = 64;
+  public float iceImpactDuration = 0.35f;
+  public float iceBuffEndDuration = 0.5f;
+
   // Stage 2 charge attacks
   public float bossChargeAttackDelay = 0.5f;
   public float bossChargeDistance = 6f;
@@ -55,10 +67,28 @@ public class FinalBossStageTwoConfig {
     validateFireballs();
     validateIceCover();
     validateIcePickups();
+    validatePlayerIce();
     validateChargeAttack();
     validateStageThreeThreshold();
     validateStageTwoContactDamage();
     validateAttackCycle();
+  }
+
+  private void validatePlayerIce() {
+    if (!positiveFinite(iceProjectileSpeed)
+        || iceProjectileDamage <= 0
+        || !positiveFinite(iceFireInterval)
+        || !positiveFinite(iceProjectileLifetime)
+        || !positiveFinite(iceProjectileRadius)
+        || !positiveFinite(iceHomingTurnRate)
+        || iceShotsPerCharge < 1
+        || iceShotsPerCharge > 128
+        || maxIceProjectiles < 1
+        || maxIceProjectiles > 256
+        || !positiveFinite(iceImpactDuration)
+        || !positiveFinite(iceBuffEndDuration)) {
+      throw new IllegalArgumentException("Stage 2 player ice values are invalid");
+    }
   }
 
   private void validateIcePickups() {

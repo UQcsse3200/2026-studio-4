@@ -13,6 +13,7 @@ import java.util.Random;
 final class FinalBossStageTwoPickupController {
   private static final int MAX_CHARGES = 2;
   private static final int PLACEMENT_ATTEMPTS = 48;
+  private static final float ENERGY_EPSILON = 0.000001f;
 
   @FunctionalInterface
   interface PlacementQuery {
@@ -105,7 +106,9 @@ final class FinalBossStageTwoPickupController {
       charges[slot] -= spent;
       amount -= spent;
       consumed += spent;
-      if (charges[slot] <= 0f) {
+      // Fractions such as one third must not leave an occupied slot with rounding-only energy.
+      if (charges[slot] <= ENERGY_EPSILON) {
+        charges[slot] = 0f;
         chargeOrder[0] = chargeOrder[1];
         chargeOrder[1] = 0;
         chargeCount--;
