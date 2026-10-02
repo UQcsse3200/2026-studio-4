@@ -31,18 +31,6 @@ public class FinalBossPhaseControllerComponent extends Component {
     transitionRemaining = Math.max(0f, transitionRemaining - deltaTime);
 
     if (transitionRemaining <= 0f) {
-      FinalBossDamageControllerComponent protection =
-          entity.getComponent(FinalBossDamageControllerComponent.class);
-      if (protection != null) {
-        protection.disableStageOneProtection();
-      }
-
-      if (currentPhase == FinalBossPhase.STAGE_TWO) {
-        FinalBossMovementComponent movement = entity.getComponent(FinalBossMovementComponent.class);
-        if (movement != null) {
-          movement.enableChargeAttacks();
-        }
-      }
       finishTransition();
     }
   }
@@ -68,11 +56,7 @@ public class FinalBossPhaseControllerComponent extends Component {
   private void startStageTwo() {
     FinalBossStageTwoComponent stageTwo = entity.getComponent(FinalBossStageTwoComponent.class);
     if (stageTwo != null) {
-      stageTwo.applyStageThreeHealthFloor();
-    }
-    FinalBossMovementComponent movement = entity.getComponent(FinalBossMovementComponent.class);
-    if (movement != null) {
-      movement.enableChargeAttacks();
+      stageTwo.startEncounter();
     }
   }
 
@@ -93,10 +77,11 @@ public class FinalBossPhaseControllerComponent extends Component {
     currentPhase = nextPhase(currentPhase);
     if (currentPhase == FinalBossPhase.DEFEATED) transitionRemaining = 0f;
     if (currentPhase == FinalBossPhase.STAGE_TWO) {
-      // Charge attacks are enabled once the transition invulnerability window ends.
+      // Stage 2 owns slow movement after the transition; never restart the old charges.
       FinalBossMovementComponent movement = entity.getComponent(FinalBossMovementComponent.class);
       if (movement != null) {
-        movement.setMode(FinalBossMovementComponent.Mode.STEP_TOWARDS_PLAYER);
+        movement.disableChargeAttacks();
+        movement.setMode(FinalBossMovementComponent.Mode.STOPPED);
       }
     } else if (currentPhase == FinalBossPhase.STAGE_THREE) {
       FinalBossMovementComponent movement = entity.getComponent(FinalBossMovementComponent.class);

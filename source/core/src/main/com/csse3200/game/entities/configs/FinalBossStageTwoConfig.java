@@ -1,6 +1,11 @@
 package com.csse3200.game.entities.configs;
 
 public class FinalBossStageTwoConfig {
+  // Fixed Stage 2 arena and continuous slow movement.
+  public float arenaMargin = 0.25f;
+  public float bossMoveSpeed = 1.2f;
+  public float bossRoamRetargetInterval = 3f;
+
   // Stage 2 charge attacks
   public float bossChargeAttackDelay = 0.5f;
   public float bossChargeDistance = 6f;
@@ -13,13 +18,25 @@ public class FinalBossStageTwoConfig {
 
   // Stage 2 attack/pause cycle
   public float attackDuration = 20f; // Boss attacks for 20 seconds
-  public float pauseDuration = 7f; // Boss stands still for 7 seconds
+  public float pauseDuration = 3f; // Firing pauses; slow movement continues
 
   public void validate() {
+    validateArenaMovement();
     validateChargeAttack();
     validateStageThreeThreshold();
     validateStageTwoContactDamage();
     validateAttackCycle();
+  }
+
+  private void validateArenaMovement() {
+    if (!Float.isFinite(arenaMargin)
+        || arenaMargin < 0f
+        || !Float.isFinite(bossMoveSpeed)
+        || bossMoveSpeed <= 0f
+        || !Float.isFinite(bossRoamRetargetInterval)
+        || bossRoamRetargetInterval <= 0f) {
+      throw new IllegalArgumentException("Stage 2 arena and movement values are invalid");
+    }
   }
 
   private void validateChargeAttack() {
