@@ -18,6 +18,7 @@ import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
 
 /** Owns stationary ice cover, its physical lifetime, and the short shatter effect. */
 class FinalBossStageTwoIceController {
@@ -31,6 +32,7 @@ class FinalBossStageTwoIceController {
   private final Entity player;
   private final FinalBossStageTwoConfig config;
   private final Random random;
+  private final Predicate<Rectangle> placementFilter;
   private Rectangle currentArena;
   private float respawnElapsed;
   private boolean initialized;
@@ -40,10 +42,20 @@ class FinalBossStageTwoIceController {
 
   FinalBossStageTwoIceController(
       Entity boss, Entity player, FinalBossStageTwoConfig config, Random random) {
+    this(boss, player, config, random, area -> true);
+  }
+
+  FinalBossStageTwoIceController(
+      Entity boss,
+      Entity player,
+      FinalBossStageTwoConfig config,
+      Random random,
+      Predicate<Rectangle> placementFilter) {
     this.boss = boss;
     this.player = player;
     this.config = config;
     this.random = random;
+    this.placementFilter = placementFilter;
   }
 
   void update(float delta, Rectangle arenaBounds) {
@@ -192,6 +204,7 @@ class FinalBossStageTwoIceController {
 
   private boolean isClear(Rectangle candidate, World world) {
     Rectangle clearance = inset(candidate, -config.iceCoverGap);
+    if (!placementFilter.test(clearance)) return false;
     if (overlapsActor(clearance, boss) || overlapsActor(clearance, player)) return false;
     for (Cover cover : covers) {
       if (clearance.overlaps(cover.bounds)) return false;

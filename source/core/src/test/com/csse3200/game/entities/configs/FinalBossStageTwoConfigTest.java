@@ -10,6 +10,50 @@ import org.junit.jupiter.api.Test;
 
 class FinalBossStageTwoConfigTest {
   @Test
+  void icePickupCapacityIsBoundedAndCanBeDisabled() {
+    for (int accepted : new int[] {0, 1, 8}) {
+      FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
+      config.icePickupCount = accepted;
+      assertDoesNotThrow(config::validate);
+    }
+    for (int invalid : new int[] {-1, 9, Integer.MAX_VALUE}) {
+      FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
+      config.icePickupCount = invalid;
+      assertThrows(IllegalArgumentException.class, config::validate);
+    }
+  }
+
+  @Test
+  void icePickupRadiusAndTimingsMustBePositiveAndFinite() {
+    List<BiConsumer<FinalBossStageTwoConfig, Float>> setters =
+        List.of(
+            (config, value) -> config.icePickupRadius = value,
+            (config, value) -> config.icePickupSpawnInterval = value,
+            (config, value) -> config.icePickupLifetime = value,
+            (config, value) -> config.icePickupEffectDuration = value);
+    for (BiConsumer<FinalBossStageTwoConfig, Float> setter : setters) {
+      for (float invalid :
+          new float[] {0f, -1f, Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY}) {
+        FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
+        setter.accept(config, invalid);
+        assertThrows(IllegalArgumentException.class, config::validate);
+      }
+    }
+  }
+
+  @Test
+  void icePickupGapAllowsZeroButRejectsNegativeOrNonfiniteValues() {
+    FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
+    config.icePickupGap = 0f;
+    assertDoesNotThrow(config::validate);
+    for (float invalid :
+        new float[] {-0.01f, Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY}) {
+      config.icePickupGap = invalid;
+      assertThrows(IllegalArgumentException.class, config::validate);
+    }
+  }
+
+  @Test
   void defaultsGiveASlowBossAndThreeSecondPause() {
     FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
 

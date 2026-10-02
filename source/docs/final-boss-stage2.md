@@ -3,6 +3,8 @@
 Branch: `Final-boss`. Step 1 starts from the art-assets commit `34bf7dc3`.
 Step 2 builds on `9c3d2f2`, including the separate Step 1 format fix.
 Step 3 builds on `63ff13c`, including the tuned fireball size, speed and spacing.
+Step 4 builds on `dd6883c`, including blue cover arrival, two-second replenishment
+and the seven-second cover lifetime.
 
 ## Step 1: fixed arena and slow movement
 
@@ -140,12 +142,66 @@ supplied 2048x341 shatter image is sliced using its actual 18-column/3-row layou
 starting with six breaking frames in row three; it is not treated as an original
 256-pixel-cell sheet. No source PNG bytes are changed.
 
+## Step 4: ice pickups and two energy reserves
+
+After the Stage 2 transition, one small animated blue gem can appear at a safe
+random position. Thereafter, every four seconds the encounter attempts to add
+one gem, up to two on the ground. Holding two energy reserves pauses new spawns;
+after a reserve is exhausted, spawning resumes on the next scheduled attempt.
+A long frame makes at most one attempt. Ground
+gems are separate from solid ice cover; destroying or expiring cover does not
+drop them. These provisional availability values are exposed in
+`FinalBossStageTwoConfig` for playtesting.
+
+Each uncollected gem expires seven seconds after it appears. Walking or dashing
+within pickup range automatically collects it without an interaction key. The
+swept player path catches a gem crossed between frames, but cannot collect it
+at or after its expiry time. Gems and cover avoid each other when spawning;
+new gems also leave clearance around both actors, walls and the arena edges.
+They have no collider, enemy stats, room enemy count or inventory entry.
+
+Each gem adds one complete ice-energy reserve, up to two. Picking up a new gem
+does not refill a partially used reserve. The two bars retain their own slots;
+spending one reserve does not move or refill the other bar. New energy fills an
+empty slot and is consumed after any older remaining reserve. With both reserve slots occupied,
+the gem stays on the ground until it expires or a slot becomes available. Stored
+energy has no time-based expiry; the seven-second timeout belongs to the ground
+gem. Only occupied reserves draw blue bars beside the player: one bar after
+collecting one gem, and two after collecting the second. Empty slots draw no
+outline or background. The bars move to the other side or
+clamp within the arena near an edge. Blue-white sparkles loop above the player
+while at least one reserve remains; collecting a gem plays a short spark burst.
+
+This increment supplies the pickup and energy state. Held-J ice firing is the
+next increment, so playing this version can fill the bars but does not drain
+them yet. The controller's sequential-consumption API is tested for that next
+step. Normal player attacks still damage the Boss, allowing Stage 3 progression
+without the unimplemented ice weapon.
+
+Spawn and expiry continue during firing pauses. Leaving Stage 2, either
+combatant dying, loss of the arena or Boss disposal clears all gems, pickup
+effects and stored energy. Re-entering the encounter starts empty. The Boss
+owns this temporary state and its visuals; no persistent player listeners,
+player-factory changes or changes to the shared player HUD are required.
+
 ## Subsequent increments
 
-1. Ice pickups, seven-second expiry, two charges, and two separate blue bars.
-2. Held-J homing ice fire, sequential charge consumption, and buff-end effects;
+1. Held-J homing ice fire, sequential charge consumption, and buff-end effects;
    enable ice-only Boss damage when this attack is functional.
-3. One-to-one ice/fire cancellation, remaining effects, cleanup and balance.
+2. One-to-one ice/fire cancellation, remaining effects, cleanup and balance.
+
+The confirmed follow-on rules are: while any ice energy remains, holding J
+temporarily replaces the normal attack and continuously fires ice projectiles
+that turn to track the Boss. Energy decreases with shots, not with time held.
+When the first reserve empties, firing continues from the second without
+interrupting held J or removing the player aura. Only exhausting both reserves
+plays the ending effect and restores normal attacks. Releasing J does not spend
+energy. A player ice shot hitting solid cover disappears without damaging the
+cover; only Boss fire consumes its four-hit durability. Ice/fire collisions
+consume one projectile from each side and play a cancellation effect. Ordinary
+attacks become ineffective against the Stage 2 Boss when this ice weapon is
+enabled, making pickups necessary for progression. Shot cost, speed, cadence
+and per-reserve capacity remain playtest parameters for those later increments.
 
 Each increment gets its own local test, commit and push before work proceeds.
 The firing-pattern timings and pickup/charge balance will be tuned in those
@@ -211,6 +267,20 @@ seconds including arrival, fire hits
 not extending lifetime, independent timers for replenished crystals, and expiry
 removing collision during a firing pause.
 
+Step 4 validation: Gradle 8.5/JDK 21 passed all 1,463 core tests across 206
+classes, including 147 Stage 2/configuration tests, with zero failures, errors
+or skips. An independent full `formatCheck` passed. Added coverage includes
+swept pickup before expiry, exact-expiry precedence, full-capacity spawn pause
+and resumption, fixed energy slots with oldest-first consumption, actual wall
+and cover exclusion in both directions, transition/death/disposal cleanup,
+asset frame bounds and visible pixels, and two independently filled vertical
+bars staying inside the arena. Original PNGs and PlayerFactory are unchanged;
+final visual scale and gameplay feel still require the local graphical playtest.
+
+The follow-up bar-visibility adjustment passed all 12 pickup/Stage 2 visual
+tests and an independent full `formatCheck`. Empty reserve slots now draw
+neither a bar nor its background/outline; occupied slots keep their own position.
+
 For the local graphical playtest:
 
 1. Enter the Final Boss encounter and finish Stage 1. At 80% health, check that
@@ -252,3 +322,19 @@ Step 3 playtest, with the local player damage multiplier still at zero:
 6. Reach 60% Boss health, or restart/leave the encounter. All ice collision and
    fragments should disappear with the fire effects. Normal player attacks are
    still usable against the Boss until the later player-ice step is implemented.
+
+Step 4 playtest, retaining the local player damage multiplier at zero:
+
+1. Finish the Stage 2 transformation and find a small floating blue gem. It
+   should be visibly different from the larger solid cover. Leave it alone and
+   check that it disappears after seven seconds.
+2. Walk or dash across another gem. It should disappear with a spark effect,
+   and exactly one blue energy bar plus the player sparkles should appear;
+   there should be no empty second bar or outline.
+3. Collect a second gem. Both bars should be full. Try a third gem: it should
+   remain on the ground without resetting or adding more bars.
+4. Move against every arena edge. The bars should stay visible and follow the
+   player. Check that gems are not hidden inside ice cover or walls.
+5. Use ordinary attacks to enter Stage 3, or restart/leave the encounter. Gems,
+   bars and player sparkles should all disappear. The next encounter must begin
+   with no stored energy. Held-J firing and energy drain are not enabled yet.

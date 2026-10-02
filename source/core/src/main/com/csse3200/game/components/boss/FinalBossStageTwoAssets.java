@@ -16,6 +16,9 @@ public final class FinalBossStageTwoAssets {
   private static final String SHIELD = ROOT + "shield/fire_circles_50x50px.png";
   private static final String OBSTACLE = ROOT + "obstacle/crystal-icy.png";
   private static final String SHATTER = ROOT + "shatter/PixelTraps-IceShards_spritesheet.png";
+  private static final String PICKUP = ROOT + "pickup/GEM 1 - BLUE - Spritesheet.png";
+  private static final String PICKUP_SPARK = ROOT + "pickup/Spark - Spritesheet.png";
+  private static final String ICE_AURA = ROOT + "ice-aura/ice_sparkles.png";
   private static final int FIREBALL_FRAMES = 5;
   private static final int IMPACT_FRAMES = 7;
 
@@ -28,6 +31,9 @@ public final class FinalBossStageTwoAssets {
     paths.add(SHIELD);
     paths.add(OBSTACLE);
     paths.add(SHATTER);
+    paths.add(PICKUP);
+    paths.add(PICKUP_SPARK);
+    paths.add(ICE_AURA);
     for (int i = 1; i <= FIREBALL_FRAMES; i++) {
       paths.add(numberedPath("fireball", i));
     }
@@ -61,6 +67,19 @@ public final class FinalBossStageTwoAssets {
     return individualFrames("impact", IMPACT_FRAMES);
   }
 
+  static TextureRegion[] pickupFrames() {
+    return sheet(PICKUP, 18, 30, 10, 0, 10);
+  }
+
+  /** The eleventh slot is empty; use the ten visible sparkle frames. */
+  static TextureRegion[] pickupSparkFrames() {
+    return sheet(PICKUP_SPARK, 20, 19, 11, 0, 10);
+  }
+
+  static TextureRegion[] iceAuraFrames() {
+    return sheet(ICE_AURA, 48, 64, 5, 0, 5);
+  }
+
   /** The lower-right small crystal, preserving its original 1:2 aspect ratio. */
   static TextureRegion obstacleRegion() {
     return new TextureRegion(texture(OBSTACLE), 128, 64, 32, 64);
@@ -88,13 +107,18 @@ public final class FinalBossStageTwoAssets {
 
   private static TextureRegion[] sheet(
       String path, int cellSize, int columns, int start, int count) {
+    return sheet(path, cellSize, cellSize, columns, start, count);
+  }
+
+  private static TextureRegion[] sheet(
+      String path, int width, int height, int columns, int start, int count) {
     Texture texture = texture(path);
     TextureRegion[] frames = new TextureRegion[count];
     for (int i = 0; i < count; i++) {
       int cell = start + i;
       frames[i] =
           new TextureRegion(
-              texture, cell % columns * cellSize, cell / columns * cellSize, cellSize, cellSize);
+              texture, cell % columns * width, cell / columns * height, width, height);
     }
     return frames;
   }

@@ -28,6 +28,14 @@ public class FinalBossStageTwoConfig {
   public float iceShatterDuration = 0.55f;
   public float iceSpawnDuration = 0.6f;
 
+  // Ground pickups are separate from solid cover and supply up to two ice-energy reserves.
+  public int icePickupCount = 2;
+  public float icePickupSpawnInterval = 4f;
+  public float icePickupLifetime = 7f;
+  public float icePickupRadius = 0.4f;
+  public float icePickupGap = 0.75f;
+  public float icePickupEffectDuration = 0.5f;
+
   // Stage 2 charge attacks
   public float bossChargeAttackDelay = 0.5f;
   public float bossChargeDistance = 6f;
@@ -46,10 +54,24 @@ public class FinalBossStageTwoConfig {
     validateArenaMovement();
     validateFireballs();
     validateIceCover();
+    validateIcePickups();
     validateChargeAttack();
     validateStageThreeThreshold();
     validateStageTwoContactDamage();
     validateAttackCycle();
+  }
+
+  private void validateIcePickups() {
+    if (icePickupCount < 0
+        || icePickupCount > 8
+        || !positiveFinite(icePickupSpawnInterval)
+        || !positiveFinite(icePickupLifetime)
+        || !positiveFinite(icePickupRadius)
+        || !positiveFinite(icePickupEffectDuration)
+        || !Float.isFinite(icePickupGap)
+        || icePickupGap < 0f) {
+      throw new IllegalArgumentException("Stage 2 ice pickup values are invalid");
+    }
   }
 
   private void validateIceCover() {

@@ -1,9 +1,9 @@
 # Final Boss Stage 2 art sources
 
 Selected artwork supplied by Eden, reorganized without changing source image bytes.
-Steps 2 and 3 integrate the fire transformation, shield, fireballs, impact effects,
-ice cover and cover debris through runtime regions; other selections remain
-reserved for later steps.
+Steps 2 through 4 integrate the fire transformation, shield, fireballs, impact
+effects, ice cover, cover debris, ice-magic pickups and player charge indicators
+through runtime regions; ice projectiles remain reserved for a later step.
 Third-party artwork retains its own license; this document does not relicense it.
 
 | Folder | Source / author | License |
@@ -41,7 +41,12 @@ permission as an explicit grant to publish standalone source assets.
 
 ## Import notes
 
-- pickup: blue GEM 1 is the current selection. Spark is a separate feedback effect.
+- pickup: blue GEM 1 uses ten 18x30 frames in its 180x30 sheet, drawn at 0.36x0.60
+  world units with a small visual hover. Its fixed pickup position does not move
+  while drawing. The final 1.5 seconds use a visibility pulse. Spark feedback
+  uses the first ten 20x19 cells of its 220x19 sheet; the last blank cell is
+  excluded. Both effects retain their source aspect ratio and are clamped to
+  the encounter's camera bounds.
 - fireball: 001-005 are the flying loop; 006-010 are retained but not used in the
   loop. All are 64x64. The bright head at (50,32) is the rotation/collision anchor.
 - impact: 001-007 are 64x64 frames played once when a fireball hits.
@@ -60,7 +65,17 @@ permission as an explicit grant to publish standalone source assets.
   (start index 66, y=384, x=0 through 512). The final two empty cells are excluded.
   Both effects reuse the same loaded texture; no additional image or resource
   path is introduced, and the original PNG is unchanged.
-- ice-aura: the source sheet is 240x64 with five 48x64 cells.
+- ice-aura: the source sheet is 240x64 with five 48x64 cells. Its sparse blue-white
+  sparkles loop above the player while at least one charge remains, drawn at
+  0.60x0.80 world units and kept inside the camera bounds.
+- charge indicators: two separate vertical bars read the two stored charge
+  fractions. Only occupied slots are drawn, including their outline and background:
+  one held reserve shows one bar, and two show two bars. Empty slots are hidden.
+  Bars switch to the player's left at the right arena
+  edge and are clamped to the camera bounds. Their geometry reuses the opaque
+  pale-blue source pixel at (155,94) in crystal-icy.png (RGB 193,232,248); blue
+  tints account for this colour instead of assuming a pure-white pixel. No new
+  texture is created, and rendering never consumes energy or advances timers.
 - shatter: the supplied copy is 2048x341 and has been resampled; it is not an
   original 256x256-cell sheet. Runtime regions select six visibly separated
   debris cells from its third row, skipping the preceding intact trap images.
@@ -70,4 +85,4 @@ permission as an explicit grant to publish standalone source assets.
   measured regions without claiming to recover original pixels or modifying it.
 - Damage cracks are drawn progressively after the first three fireball hits;
   they are not additional image files. Destroyed cover no longer draws a body.
-- The wizard body already exists in the project. Mana bars will be drawn in code.
+- The wizard body already exists in the project. Mana bars are drawn in code.

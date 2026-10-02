@@ -23,7 +23,7 @@ class FinalBossStageTwoAssetsTest {
     ResourceService resources = new ResourceService();
     ServiceLocator.registerResourceService(resources);
     String[] paths = FinalBossStageTwoAssets.paths();
-    assertEquals(16, paths.length);
+    assertEquals(19, paths.length);
     assertEquals(paths.length, new HashSet<>(Arrays.asList(paths)).size());
     resources.loadTextures(paths);
     resources.loadAll();
@@ -82,6 +82,18 @@ class FinalBossStageTwoAssetsTest {
       assertVisibleRegions(
           resources, ROOT + "shatter/PixelTraps-IceShards_spritesheet.png", shatter);
       assertSharedTextures(shatter, FinalBossStageTwoAssets.shatterFrames());
+
+      TextureRegion[] pickup = FinalBossStageTwoAssets.pickupFrames();
+      assertHorizontalFrames(
+          resources, ROOT + "pickup/GEM 1 - BLUE - Spritesheet.png", pickup, 18, 30, 10);
+      assertSharedTextures(pickup, FinalBossStageTwoAssets.pickupFrames());
+      TextureRegion[] spark = FinalBossStageTwoAssets.pickupSparkFrames();
+      assertHorizontalFrames(resources, ROOT + "pickup/Spark - Spritesheet.png", spark, 20, 19, 10);
+      assertEquals(200, spark[9].getRegionX() + spark[9].getRegionWidth());
+      assertSharedTextures(spark, FinalBossStageTwoAssets.pickupSparkFrames());
+      TextureRegion[] aura = FinalBossStageTwoAssets.iceAuraFrames();
+      assertHorizontalFrames(resources, ROOT + "ice-aura/ice_sparkles.png", aura, 48, 64, 5);
+      assertSharedTextures(aura, FinalBossStageTwoAssets.iceAuraFrames());
     } finally {
       resources.unloadAssets(paths);
     }
@@ -126,6 +138,23 @@ class FinalBossStageTwoAssetsTest {
     assertEquals(y, frame.getRegionY());
     assertEquals(size, frame.getRegionWidth());
     assertEquals(size, frame.getRegionHeight());
+  }
+
+  private static void assertHorizontalFrames(
+      ResourceService resources,
+      String path,
+      TextureRegion[] frames,
+      int width,
+      int height,
+      int count) {
+    assertEquals(count, frames.length);
+    for (int i = 0; i < frames.length; i++) {
+      assertEquals(i * width, frames[i].getRegionX());
+      assertEquals(0, frames[i].getRegionY());
+      assertEquals(width, frames[i].getRegionWidth());
+      assertEquals(height, frames[i].getRegionHeight());
+    }
+    assertVisibleRegions(resources, path, frames);
   }
 
   private static void assertSharedTextures(TextureRegion[] first, TextureRegion[] second) {

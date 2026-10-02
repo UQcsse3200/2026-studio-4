@@ -10,13 +10,14 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageTwoConfig;
+import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Random;
 
-/** Controls Stage 2's slow roaming, fire volleys, ice cover and Stage 3 health floor. */
+/** Controls Stage 2's roaming, fire volleys, ice cover/pickups and Stage 3 health floor. */
 public class FinalBossStageTwoComponent extends Component {
   private static final float ARRIVAL_DISTANCE = 0.15f;
   private static final int DESTINATION_ATTEMPTS = 4;
@@ -38,6 +39,7 @@ public class FinalBossStageTwoComponent extends Component {
   private Vector2 previousPlayerCentre;
   private FinalBossStageTwoFireController fire;
   private FinalBossStageTwoIceController ice;
+  private FinalBossStageTwoPickupController pickups;
   private final FinalBossStageTwoFireController.WallQuery walls =
       new FinalBossStageTwoFireController.WallQuery() {
         @Override
@@ -82,7 +84,10 @@ public class FinalBossStageTwoComponent extends Component {
     entity.getEvents().addListener("entityDied", this::clearEffects);
     if (target != null) {
       fire = new FinalBossStageTwoFireController(stageTwoConfig, new Random());
-      ice = new FinalBossStageTwoIceController(entity, target, stageTwoConfig, new Random());
+      pickups = new FinalBossStageTwoPickupController(stageTwoConfig, new Random());
+      ice =
+          new FinalBossStageTwoIceController(
+              entity, target, stageTwoConfig, new Random(), pickups::isClearOfPickups);
     }
   }
 
@@ -189,7 +194,46 @@ public class FinalBossStageTwoComponent extends Component {
           this::hitPlayer);
       if (!canContinueFire()) clearEffects();
     }
+    if (pickups != null && canContinueFire()) {
+      pickups.update(
+          delta,
+          bounds,
+          actorBounds(entity),
+          actorBounds(target),
+          playerBefore,
+          this::isPickupSpaceClear);
+    }
     previousPlayerCentre = playerNow;
+  }
+
+  private static Rectangle actorBounds(Entity actor) {
+    Vector2 position = actor.getPosition();
+    Vector2 scale = actor.getScale();
+    return new Rectangle(position.x, position.y, scale.x, scale.y);
+  }
+
+  /** Pickups have no physics bodies, but leave enough space around solid static geometry. */
+  private boolean isPickupSpaceClear(Rectangle clearance) {
+    PhysicsService physics = ServiceLocator.getPhysicsService();
+    if (physics == null || physics.getPhysics() == null) return false;
+    World world = physics.getPhysics().getWorld();
+    if (world == null) return false;
+    boolean[] blocked = {false};
+    world.QueryAABB(
+        fixture -> {
+          if (fixture.getBody().isActive()
+              && fixture.getBody().getType() == BodyType.StaticBody
+              && !fixture.isSensor()) {
+            blocked[0] = true;
+            return false;
+          }
+          return true;
+        },
+        clearance.x,
+        clearance.y,
+        clearance.x + clearance.width,
+        clearance.y + clearance.height);
+    return !blocked[0];
   }
 
   private boolean canContinueFire() {
@@ -253,9 +297,14 @@ public class FinalBossStageTwoComponent extends Component {
     return fire;
   }
 
+  FinalBossStageTwoPickupController getPickupController() {
+    return pickups;
+  }
+
   private void clearEffects() {
     if (fire != null) fire.clear();
     if (ice != null) ice.clear();
+    if (pickups != null) pickups.clear();
     previousPlayerCentre = null;
   }
 
@@ -365,6 +414,7 @@ public class FinalBossStageTwoComponent extends Component {
     disposed = true;
     clearEffects();
     if (ice != null) ice.dispose();
+    if (pickups != null) pickups.dispose();
     encounterStarted = false;
     roamDestination = null;
     // Entity disposal may already have destroyed its physics body; do not steer it here.

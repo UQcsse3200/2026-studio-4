@@ -22,6 +22,7 @@ public class FinalBossStageTwoVisualComponent extends RenderComponent {
   private TextureRegion[] fireball;
   private TextureRegion[] impact;
   private FinalBossStageTwoIceVisuals iceVisuals;
+  private FinalBossStageTwoPickupVisuals pickupVisuals;
   private RenderComponent overlay;
   private float elapsed;
   private float hitRemaining;
@@ -45,6 +46,7 @@ public class FinalBossStageTwoVisualComponent extends RenderComponent {
     fireball = FinalBossStageTwoAssets.fireballFrames();
     impact = FinalBossStageTwoAssets.impactFrames();
     iceVisuals = new FinalBossStageTwoIceVisuals();
+    pickupVisuals = new FinalBossStageTwoPickupVisuals();
     entity.getEvents().addListener("updateHealth", this::healthChanged);
     entity.getEvents().addListener(FinalBossEvents.PHASE_CHANGED, this::phaseChanged);
     super.create();
@@ -58,6 +60,9 @@ public class FinalBossStageTwoVisualComponent extends RenderComponent {
           @Override
           protected void draw(SpriteBatch batch) {
             drawProjectiles(batch);
+            if (isVisible()) {
+              pickupVisuals.drawPlayerBuff(batch, stage.getPickupController(), target, elapsed);
+            }
           }
         };
     overlay.setEntity(entity);
@@ -98,6 +103,7 @@ public class FinalBossStageTwoVisualComponent extends RenderComponent {
     float colour = batch.getPackedColor();
     try {
       iceVisuals.draw(batch, stage.getIceController());
+      pickupVisuals.drawGround(batch, stage.getPickupController());
       Vector2 centre = entity.getCenterPosition();
       Vector2 size = entity.getScale();
       boolean transforming = phases.isTransitioning();
