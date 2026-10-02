@@ -136,7 +136,7 @@ public class FinalBossStageTwoVisualComponent extends RenderComponent {
           left ? -width : width,
           height);
 
-      // The shared geometry also keeps newly emitted fireball tails beyond this shield.
+      // Fireball tails may overlap this decoration while keeping the wizard itself clear.
       batch.setColor(1f, 1f, 1f, 0.78f + 0.12f * MathUtils.sin(elapsed * 5f));
       centred(
           batch,

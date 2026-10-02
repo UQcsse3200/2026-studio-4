@@ -337,19 +337,18 @@ class FinalBossStageTwoFireControllerTest {
   }
 
   @Test
-  void sharedGeometryKeepsTheWholeTailOutsideTheShieldAtDifferentBossSizes() {
+  void sharedGeometryKeepsTheTailClearOfTheBodyAtDifferentBossSizes() {
     assertEquals(
-        2.2684375f, FinalBossStageTwoFireGeometry.spawnRadius(new Vector2(2f, 2f)), EPSILON);
+        1.9784375f, FinalBossStageTwoFireGeometry.spawnRadius(new Vector2(2f, 2f)), EPSILON);
     for (Vector2 size : List.of(new Vector2(1f, 1f), new Vector2(2f, 4f), new Vector2(4f, 2f))) {
       Vector2 originalSize = size.cpy();
-      float shieldRadius =
-          Math.max(size.x, size.y) * FinalBossStageTwoFireGeometry.SHIELD_SCALE / 2f;
+      float bodyClearanceRadius = Math.max(size.x, size.y) / 2f;
       float trailingLength =
           FinalBossStageTwoFireGeometry.FIREBALL_SIZE
               * FinalBossStageTwoFireGeometry.FIREBALL_HEAD_X;
       assertEquals(
-          0.12f,
-          FinalBossStageTwoFireGeometry.spawnRadius(size) - trailingLength - shieldRadius,
+          0.08f,
+          FinalBossStageTwoFireGeometry.spawnRadius(size) - trailingLength - bodyClearanceRadius,
           EPSILON);
       assertEquals(originalSize, size);
     }
