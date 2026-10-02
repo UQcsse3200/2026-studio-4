@@ -68,7 +68,6 @@ public class NpcInteractorComponent extends Component {
     activeNpcId = config.id;
     activeNpc = npc;
     entity.getEvents().trigger(NpcInteractionEvents.INTERACTION_STARTED, config.id, npc);
-    // May finish synchronously, which clears the active fields again.
     sequence.start();
     return true;
   }
