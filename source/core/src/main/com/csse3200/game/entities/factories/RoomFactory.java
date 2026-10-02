@@ -5,17 +5,16 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.rooms.*;
-import com.csse3200.game.components.rooms.EnemyManagerComponent;
-import com.csse3200.game.components.rooms.ExitComponent;
-import com.csse3200.game.components.rooms.ObstacleComponent;
-import com.csse3200.game.components.rooms.RoomAssetsComponent;
-import com.csse3200.game.components.rooms.WallComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.configs.InteractableNpcConfigs;
+import com.csse3200.game.files.FileLoader;
 
 /** Factory for creating rooms with their terrain and gameplay components. */
 public class RoomFactory {
+  private static InteractableNpcConfigs friendlyNpcs;
+  
   private RoomFactory() {
     throw new IllegalStateException("Instantiating static utility class");
   }
@@ -34,6 +33,19 @@ public class RoomFactory {
         .addComponent(new ExitComponent(room.exits))
         .addComponent(
             new EnemyManagerComponent(
-                cleared ? new EnemySpawnConfig[0] : room.enemySpawns, camera));
+                cleared ? new EnemySpawnConfig[0] : room.enemySpawns, camera))
+        .addComponent(new FriendlyNpcManagerComponent(room.npcSpawns, getFriendlyNpcs()));
+  }
+
+  private static InteractableNpcConfigs getFriendlyNpcs() {
+    if (friendlyNpcs == null) {
+      InteractableNpcConfigs loaded = FileLoader.readClass(InteractableNpcConfigs.class, InteractableNpcConfigs.CONFIG_PATH);
+      if (loaded == null) {
+        throw new IllegalStateException("Unable to load " + InteractableNpcConfigs.CONFIG_PATH);
+      }
+      loaded.validate();
+      friendlyNpcs = loaded;
+    }
+    return friendlyNpcs;
   }
 }
