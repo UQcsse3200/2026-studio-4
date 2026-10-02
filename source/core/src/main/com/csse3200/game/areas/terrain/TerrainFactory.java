@@ -17,6 +17,9 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.RandomUtils;
 
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
 /** Factory for creating game terrains. */
 public class TerrainFactory {
   private static final String FANTASY_DUNGEON_TILESET = "images/dungeons/fantasy_dreamland_16.png";
@@ -26,17 +29,22 @@ public class TerrainFactory {
   private static final GridPoint2 MAP_SIZE = new GridPoint2(30, 30);
   private static final int TUFT_TILE_COUNT = 30;
   private static final int ROCK_TILE_COUNT = 30;
-
   private final OrthographicCamera camera;
   private final TerrainOrientation orientation;
+
+  private final TiledMapTileLayer layer;
+
+  private final TileSheet tileSheet;
+
+  private TerrainTile defaultTile;
 
   /**
    * Create a terrain factory with Orthogonal orientation
    *
    * @param cameraComponent Camera to render terrains to. Must be ortographic.
    */
-  public TerrainFactory(CameraComponent cameraComponent) {
-    this(cameraComponent, TerrainOrientation.ORTHOGONAL);
+  public TerrainFactory(CameraComponent cameraComponent, GridPoint2 mapSize) {
+    this(cameraComponent, TerrainOrientation.ORTHOGONAL, mapSize);
   }
 
   /**
@@ -45,28 +53,45 @@ public class TerrainFactory {
    * @param cameraComponent Camera to render terrains to. Must be orthographic.
    * @param orientation orientation to render terrain at
    */
-  public TerrainFactory(CameraComponent cameraComponent, TerrainOrientation orientation) {
+  public TerrainFactory(CameraComponent cameraComponent, TerrainOrientation orientation, GridPoint2 mapSize) {
     this.camera = (OrthographicCamera) cameraComponent.getCamera();
     this.orientation = orientation;
-  }
-
-  /** Creates dungeon terrain using the Fantasy Dreamland tileset at the supplied tile bounds. */
-  public TerrainComponent createDungeonTerrain(GridPoint2 mapSize) {
+    this.layer =
+            new TiledMapTileLayer(mapSize.x, mapSize.y, DUNGEON_TILE_SIZE, DUNGEON_TILE_SIZE);
     ResourceService resourceService = ServiceLocator.getResourceService();
     Texture texture = resourceService.getAsset(FANTASY_DUNGEON_TILESET, Texture.class);
     texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-    TileSheet tileSheet = new TileSheet(texture, DUNGEON_TILE_SIZE);
-    TerrainTile floor = new TerrainTile(DreamlandTile.FLOOR_STONE.region(tileSheet));
-    TerrainTile firstVariant =
-        new TerrainTile(DreamlandTile.PURPLE_STONE_FLOOR_VARIANT.region(tileSheet));
-    TerrainTile secondVariant = new TerrainTile(DreamlandTile.PURPLE_STONE_FLOOR.region(tileSheet));
-    TiledMapTileLayer layer =
-        new TiledMapTileLayer(mapSize.x, mapSize.y, DUNGEON_TILE_SIZE, DUNGEON_TILE_SIZE);
-    fillTiles(layer, mapSize, floor);
-    fillTilesAtRandom(layer, mapSize, firstVariant, FLOOR_VARIANT_ONE_COUNT);
-    fillTilesAtRandom(layer, mapSize, secondVariant, FLOOR_VARIANT_TWO_COUNT);
+    this.tileSheet = new TileSheet(texture, DUNGEON_TILE_SIZE);
+    this.defaultTile = new TerrainTile(DreamlandTile.VOID.region(this.tileSheet));
+  }
 
+  public void tile(int x, int y, Character c) {
+    Cell cell = new Cell();
+    randomOfId(c);
+    cell.setTile(this.defaultTile);
+    this.layer.setCell(x, y, cell);
+  }
+
+  public void randomOfId(Character c) {
+    List<DreamlandTile> tiles = DreamlandTile.allWithId(c);
+    if (!tiles.isEmpty() && (!Character.isSpaceChar(c) || !Character.isDigit(c))) {
+      // found at least one return a random one.
+      ThreadLocalRandom rng = ThreadLocalRandom.current();
+
+      // 70% chance of the first entry, otherwise a random one from the rest
+      int index = (tiles.size() == 1 || rng.nextDouble() < 0.7)
+              ? 0
+              : 1 + rng.nextInt(tiles.size() - 1);
+
+      setTile(new TerrainTile(tiles.get(index).region(this.tileSheet)));
+    }
+  }
+
+  public void setTile(TerrainTile tile) {
+    this.defaultTile = tile;
+  }
+  public TerrainComponent getTerrain() {
     TiledMap tiledMap = new TiledMap();
     tiledMap.getLayers().add(layer);
     TiledMapRenderer renderer = new OrthogonalTiledMapRenderer(tiledMap, 0.5f / DUNGEON_TILE_SIZE);
@@ -198,6 +223,8 @@ public class TerrainFactory {
       }
     }
   }
+
+
 
   /**
    * This enum should contain the different terrains in your game, e.g. forest, cave, home, all with

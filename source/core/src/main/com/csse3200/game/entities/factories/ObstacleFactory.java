@@ -50,14 +50,14 @@ public class ObstacleFactory {
   public static Entity createTile() {
     Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
     return createRenderedObstacle(
-        DreamlandTile.BLUE_STONE_WALL.region(new TileSheet(texture, 16)), 0.5f, 0.5f);
+        DreamlandTile.BLUE_STONE_WALL.region(new TileSheet(texture, 16)), 0.6f, 0.6f);
   }
 
   /** Creates a barrel obstacle. */
   public static Entity createBarrel() {
     Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
     return createRenderedObstacle(
-        DreamlandTile.OPEN_BARREL.region(new TileSheet(texture, 16)), 0.7f, 0.9f);
+        DreamlandTile.CHAIN.region(new TileSheet(texture, 16)), 0.7f, 0.9f);
   }
 
   private static Entity createRenderedObstacle(

@@ -46,10 +46,8 @@ public class ObstacleComponent extends EntityManagerComponent {
             // otherwise dont create an obstacle
             case '.':
               continue;
-
-            default:
-              throw new IllegalArgumentException(
-                  "Unsupported obstacle type '" + spawnType + "' at (" + x + ", " + y + ")");
+              default:
+              continue;
           }
         }
         // Spawn the entity at this location.
@@ -57,4 +55,20 @@ public class ObstacleComponent extends EntityManagerComponent {
       }
     }
   }
+
+  public void spawn(int x, int y, Character c) {
+      // Otherwise check for the obstacle that is wanted.
+      switch (c) {
+        case '#':
+          entity = ObstacleFactory.createTile();
+          spawnEntityAt(entity, new GridPoint2(x, y), true, true);
+          break;
+
+        case 'B':
+          entity = ObstacleFactory.createBarrel();
+          spawnEntityAt(entity, new GridPoint2(x, y), true, true);
+          break;
+      }
+  }
 }
+
