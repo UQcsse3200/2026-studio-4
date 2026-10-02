@@ -7,7 +7,7 @@ import com.csse3200.game.physics.components.PhysicsMovementComponent;
 
 /** Makes an enemy patrol around three points. */
 public class PatrolTask extends DefaultTask implements PriorityTask {
-  private static final float POINT_DISTANCE = 0.2f;
+  private static float POINT_DISTANCE;
 
   private final Vector2[] patrolPoints;
   private PhysicsMovementComponent movementComponent;
@@ -20,8 +20,10 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
 
   private Vector2[] setPatrolPoints(Vector2[] grid) {
     if (grid.length == 3) { // used by flying enemy
+      POINT_DISTANCE = 0.2f;
       return grid;
     } else { // used only by norse miniboss
+      POINT_DISTANCE = 2f;
       return createBounds(grid);
     }
   }
