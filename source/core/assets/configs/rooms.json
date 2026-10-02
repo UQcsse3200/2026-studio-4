@@ -131,18 +131,7 @@
         { "type": "MEDUSA", "x": 19, "y": 31 },
         { "type": "MEDUSA", "x": 23, "y": 33 }
       ],
-      "npcSpawns": [
-        {
-          "npcId": "wanderingSpirit",
-          "x": 8,
-          "y": 14
-        },
-        {
-          "npcId": "sealedGuardian",
-          "x": 8,
-          "y": 18
-        }
-      ],
+      "npcSpawns": [],
       "obstacles": {
         "spawns": [
           "####################################",
