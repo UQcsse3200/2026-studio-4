@@ -3,7 +3,7 @@ package com.csse3200.game.screens;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
-import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.HotbarDisplay;
 import com.csse3200.game.components.maingame.InventoryActions;
@@ -11,6 +11,7 @@ import com.csse3200.game.components.maingame.InventoryDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.rooms.RoomAssets;
 import com.csse3200.game.components.rooms.RoomCommand;
 import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.components.rooms.configs.WorldConfig;
@@ -46,57 +47,45 @@ import org.slf4j.LoggerFactory;
  */
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
-  private static final String[] mainGameTextures = {
-    "images/heart.png",
-    "images/strength_charm_pixel.png",
-    //          Temp
-    "images/attack_speed_charm.png",
-    "images/speed_charm.png",
-    "images/health_potion_pixel.png",
-    "images/shield_consumable_pixel.png",
-    "images/speed_potion_pixel.png",
-    "images/strength_potion_pixel.png",
-    "images/gold_coin_pixel.png"
-  };
-  private static final String[] mainGameTextureAtlases = {"images/idle_down.atlas"};
 
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private RoomManager roomManager;
   private Entity player;
-  private boolean deathScreenTriggered = false; // prevents screen-setting every frame
   private final Terminal terminal;
+  private final RoomAssets roomAssets = new RoomAssets();
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
 
-    logger.debug("Initialising main game screen services");
     terminal = new Terminal();
-    ServiceLocator.registerTimeSource(new GameTime());
 
+    // load all game services
+    logger.debug("Initialising main game screen services");
+    ServiceLocator.registerTimeSource(new GameTime());
     PhysicsService physicsService = new PhysicsService();
     ServiceLocator.registerPhysicsService(physicsService);
     physicsEngine = physicsService.getPhysics();
-
     ServiceLocator.registerInputService(new InputService());
     ServiceLocator.registerResourceService(new ResourceService());
-
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
     renderer = RenderFactory.createRenderer();
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
+
     loadAssets();
-    logger.debug("Initialising main game screen entities");
+
     player = PlayerFactory.createPlayer();
+    // trigger death screen via entity died event
+    player.getEvents().addListener("entityDied", this::scheduleDeathScreen);
+
     WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     if (world == null) {
       throw new IllegalStateException("Unable to load configs/rooms.json");
     }
     roomManager = new RoomManager(world, player, renderer.getCamera());
     roomManager.create();
-    RoomCommand roomCommand = new RoomCommand(roomManager);
-    terminal.addCommand("room", roomCommand);
 
     createUI();
   }
@@ -107,13 +96,6 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.getEntityService().update();
     roomManager.update();
     renderer.render();
-    if (!deathScreenTriggered && player != null) {
-      CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
-      if (stats != null && stats.getHealth() <= 0) {
-        deathScreenTriggered = true;
-        game.setScreen(GdxGame.ScreenType.DEATH_SCREEN);
-      }
-    }
   }
 
   @Override
@@ -148,17 +130,12 @@ public class MainGameScreen extends ScreenAdapter {
 
   private void loadAssets() {
     logger.debug("Loading assets");
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.loadTextures(mainGameTextures);
-    resourceService.loadTextureAtlases(mainGameTextureAtlases);
-    resourceService.loadAll();
+    roomAssets.loadAll();
   }
 
   private void unloadAssets() {
     logger.debug("Unloading assets");
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.unloadAssets(mainGameTextures);
-    resourceService.unloadAssets(mainGameTextureAtlases);
+    roomAssets.dispose();
   }
 
   /**
@@ -178,6 +155,7 @@ public class MainGameScreen extends ScreenAdapter {
     terminal.addCommand("effect", new StatusEffectCommand(player));
     terminal.addCommand("upgrade", new UpgradeCommand(player));
     terminal.addCommand("spell", new SpellCommand(player));
+    terminal.addCommand("room", new RoomCommand(roomManager));
 
     InventoryDisplay inventoryDisplay =
         new InventoryDisplay(player.getComponent(InventoryComponent.class));
@@ -198,5 +176,10 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(inventoryActions);
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     ServiceLocator.getEntityService().register(ui);
+  }
+
+  /* Schedule the death screen to be shown */
+  private void scheduleDeathScreen() {
+    ServiceLocator.getEntityService().schedule(() -> game.setScreen(ScreenType.DEATH_SCREEN));
   }
 }
