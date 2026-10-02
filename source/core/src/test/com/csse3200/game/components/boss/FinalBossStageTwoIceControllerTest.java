@@ -98,6 +98,106 @@ class FinalBossStageTwoIceControllerTest {
   }
 
   @Test
+  void prefersNearbyCoverOnTheBossSideOfThePlayer() {
+    config.iceCoverCount = 1;
+    player.setPosition(8f, 9.5f);
+    boss.setPosition(18f, 9.5f);
+    ice = new FinalBossStageTwoIceController(boss, player, config, midpointRandom());
+
+    ice.update(0f, arena);
+
+    assertEquals(1, ice.covers.size());
+    Rectangle cover = ice.covers.getFirst().bounds;
+    assertNearbyOnBossSide(cover);
+    assertTrue(expanded(arena, -config.iceCoverGap).contains(cover));
+    assertFalse(expanded(cover, config.iceCoverGap).overlaps(new Rectangle(8f, 9.5f, 1f, 1f)));
+  }
+
+  @Test
+  void replenishmentUsesThePlayersNewPositionAndCurrentBossDirection() {
+    config.iceCoverCount = 1;
+    player.setPosition(4f, 5f);
+    boss.setPosition(19f, 5f);
+    ice = new FinalBossStageTwoIceController(boss, player, config, midpointRandom());
+    ice.update(0f, arena);
+    assertEquals(1, ice.covers.size());
+    assertNearbyOnBossSide(ice.covers.getFirst().bounds);
+    Vector2 oldPlayerCentre = player.getCenterPosition();
+    breakAllCovers();
+
+    player.setPosition(14f, 13f);
+    boss.setPosition(3f, 13f);
+    ice.update(config.iceCoverRespawnInterval, arena);
+
+    assertEquals(1, ice.covers.size());
+    Rectangle cover = ice.covers.getFirst().bounds;
+    assertNearbyOnBossSide(cover);
+    assertTrue(
+        cover.getCenter(new Vector2()).dst(oldPlayerCentre) > config.iceCoverNearMaxDistance);
+  }
+
+  @Test
+  void blockedBossSideFallsBackToNearbyCoverOnTheOtherSide() {
+    config.iceCoverCount = 1;
+    player.setPosition(10f, 9.5f);
+    boss.setPosition(2f, 9.5f);
+    Rectangle wall = new Rectangle(5.5f, 7f, 3f, 6f);
+    physicalEntity(wall, BodyType.StaticBody, false, PhysicsLayer.OBSTACLE);
+    ice = new FinalBossStageTwoIceController(boss, player, config, midpointRandom());
+
+    ice.update(0f, arena);
+
+    assertEquals(1, ice.covers.size());
+    Rectangle cover = ice.covers.getFirst().bounds;
+    Vector2 centre = cover.getCenter(new Vector2());
+    assertTrue(centre.x > player.getCenterPosition().x);
+    assertTrue(centre.dst(player.getCenterPosition()) <= config.iceCoverNearMaxDistance);
+    assertTrue(centre.dst(player.getCenterPosition()) >= config.iceCoverNearMinDistance);
+    assertFalse(expanded(cover, config.iceCoverGap).overlaps(wall));
+    assertTrue(expanded(arena, -config.iceCoverGap).contains(cover));
+  }
+
+  @Test
+  void boundaryRejectsEntireNearbyCoverAndFallsBackInsideTheArena() {
+    config.iceCoverCount = 1;
+    // The sampled nearby centre fits, but its full width would cross the inset arena edge.
+    player.setPosition(18.5f, 9.5f);
+    boss.setPosition(30f, 9.5f);
+    ice = new FinalBossStageTwoIceController(boss, player, config, midpointRandom());
+
+    ice.update(0f, arena);
+
+    assertEquals(1, ice.covers.size());
+    Rectangle cover = ice.covers.getFirst().bounds;
+    assertTrue(expanded(arena, -config.iceCoverGap).contains(cover));
+    assertTrue(
+        cover.getCenter(new Vector2()).dst(player.getCenterPosition())
+            > config.iceCoverNearMaxDistance);
+    assertFalse(expanded(cover, config.iceCoverGap).overlaps(new Rectangle(18.5f, 9.5f, 1f, 1f)));
+  }
+
+  @Test
+  void pickupClearanceFilterStillRejectsNearbyCoverBeforeArenaFallback() {
+    config.iceCoverCount = 1;
+    player.setPosition(18f, 9.5f);
+    boss.setPosition(30f, 9.5f);
+    Rectangle pickupArea = new Rectangle(17f, 7f, 7f, 6f);
+    ice =
+        new FinalBossStageTwoIceController(
+            boss, player, config, midpointRandom(), area -> !area.overlaps(pickupArea));
+
+    ice.update(0f, arena);
+
+    assertEquals(1, ice.covers.size());
+    Rectangle cover = ice.covers.getFirst().bounds;
+    assertFalse(expanded(cover, config.iceCoverGap).overlaps(pickupArea));
+    assertTrue(expanded(arena, -config.iceCoverGap).contains(cover));
+    assertTrue(
+        cover.getCenter(new Vector2()).dst(player.getCenterPosition())
+            > config.iceCoverNearMaxDistance);
+  }
+
+  @Test
   void onlyExactOwnedFixtureLosesHealthAndFourthHitShattersOnce() {
     ice.update(0f, arena);
     var first = ice.covers.getFirst();
@@ -139,6 +239,9 @@ class FinalBossStageTwoIceControllerTest {
   @Test
   void replenishesTwoPerIntervalWithoutCatchUpOrExceedingCapacity() {
     // Keep existing cover alive to isolate the replenishment cap during the long frame.
+    config.iceCoverCount = 6;
+    config.iceCoverRespawnBatch = 2;
+    config.iceCoverRespawnInterval = 2f;
     config.iceCoverLifetime = 1000f;
     ice.update(0.1f, arena);
     breakAllCovers();
@@ -179,6 +282,7 @@ class FinalBossStageTwoIceControllerTest {
   void replenishedCoverGetsItsOwnFullLifetime() {
     config.iceCoverCount = 2;
     config.iceCoverRespawnBatch = 1;
+    config.iceCoverRespawnInterval = 2f;
     ice.update(0f, arena);
     var original = ice.covers.getFirst();
     breakCover(ice.covers.get(1));
@@ -448,5 +552,19 @@ class FinalBossStageTwoIceControllerTest {
         rectangle.y - gap,
         rectangle.width + gap * 2f,
         rectangle.height + gap * 2f);
+  }
+
+  private static Random midpointRandom() {
+    Random random = mock(Random.class);
+    when(random.nextFloat()).thenReturn(0.5f);
+    return random;
+  }
+
+  private void assertNearbyOnBossSide(Rectangle cover) {
+    Vector2 fromPlayer = cover.getCenter(new Vector2()).sub(player.getCenterPosition());
+    assertTrue(fromPlayer.len() >= config.iceCoverNearMinDistance - 0.001f);
+    assertTrue(fromPlayer.len() <= config.iceCoverNearMaxDistance + 0.001f);
+    Vector2 towardBoss = boss.getCenterPosition().sub(player.getCenterPosition()).nor();
+    assertTrue(fromPlayer.nor().dot(towardBoss) >= Math.cos(Math.toRadians(50f)) - 0.001f);
   }
 }

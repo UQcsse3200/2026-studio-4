@@ -12,6 +12,7 @@ public class FinalBossDamageControllerComponent extends Component {
   private boolean stageTwoIceProtection;
   private boolean iceDamageInProgress;
   private boolean iceDamagePending;
+  private double iceDamageRemainder;
 
   @Override
   public void create() {
@@ -23,8 +24,7 @@ public class FinalBossDamageControllerComponent extends Component {
 
   /** Enables the shield and blocks all incoming damage. */
   public void enableShield() {
-    stageTwoIceProtection = false;
-    iceDamagePending = false;
+    clearStageTwoIceProtection();
     CombatStatsComponent combatStats = requireStats();
     combatStats.setMinimumHealth(0);
     combatStats.setIncomingDamageMultiplier(1f);
@@ -43,8 +43,7 @@ public class FinalBossDamageControllerComponent extends Component {
    * @param minimumHealth lowest health reachable through incoming attacks
    */
   public void openVulnerabilityWindow(float damageMultiplier, int minimumHealth) {
-    stageTwoIceProtection = false;
-    iceDamagePending = false;
+    clearStageTwoIceProtection();
     CombatStatsComponent combatStats = requireStats();
     combatStats.setInvulnerable(false);
     combatStats.setIncomingDamageMultiplier(damageMultiplier);
@@ -58,8 +57,7 @@ public class FinalBossDamageControllerComponent extends Component {
 
   /** Removes all Stage 1 damage restrictions before Stage 2 begins. */
   public void disableStageOneProtection() {
-    stageTwoIceProtection = false;
-    iceDamagePending = false;
+    clearStageTwoIceProtection();
     CombatStatsComponent combatStats = requireStats();
     combatStats.setInvulnerable(false);
     combatStats.setIncomingDamageMultiplier(1f);
@@ -82,6 +80,9 @@ public class FinalBossDamageControllerComponent extends Component {
     combatStats.setMinimumHealth(minimumHealth);
     combatStats.setIncomingDamageMultiplier(1f);
     combatStats.setInvulnerable(true);
+    if (!stageTwoIceProtection) {
+      iceDamageRemainder = 0d;
+    }
     stageTwoIceProtection = true;
     iceDamagePending = false;
     if (!shielded) {
@@ -91,29 +92,42 @@ public class FinalBossDamageControllerComponent extends Component {
   }
 
   /**
-   * Applies one authorised ice impact through the normal damage and health-floor pipeline.
+   * Accumulates authorised ice impacts and applies whole damage through the normal health pipeline.
    *
    * <p>The private source is neither registered nor given a physical body. Its position preserves
    * the normal hit reaction, while a one-use authorisation prevents another attack from sharing the
    * brief damage window, including attacks made by damage callbacks.
    *
-   * @param damage raw ice impact damage
+   * <p>Fractional damage belongs to this Stage 2 encounter, independent of energy pickups or
+   * volleys. Four impacts of {@code 0.25f} therefore remove one health point. Replacing the
+   * protection for another stage clears any remainder.
+   *
+   * @param damage positive, finite raw ice impact damage
    * @param player player whose ice projectile landed
    */
-  public void takeStageTwoIceDamage(int damage, Entity player) {
-    if (damage <= 0
+  public void takeStageTwoIceDamage(float damage, Entity player) {
+    if (!Float.isFinite(damage)
+        || damage <= 0f
         || player == null
         || iceDamageInProgress
         || !stageTwoIceProtection
         || !isActiveStageTwo()) {
       return;
     }
+    double accumulatedDamage = iceDamageRemainder + damage;
+    double wholeDamage = Math.floor(accumulatedDamage);
+    // Consume before dispatch: an observer may throw after health has already changed.
+    iceDamageRemainder = accumulatedDamage - wholeDamage;
+    if (wholeDamage < 1d) {
+      return;
+    }
+    int appliedDamage = (int) Math.min(wholeDamage, Integer.MAX_VALUE);
     iceDamageSource.setPosition(player.getPosition());
     iceDamageSource.setScale(player.getScale());
     iceDamageInProgress = true;
     iceDamagePending = true;
     try {
-      requireStats().takeDamage(damage, iceDamageSource);
+      requireStats().takeDamage(appliedDamage, iceDamageSource);
     } finally {
       iceDamagePending = false;
       iceDamageInProgress = false;
@@ -143,6 +157,12 @@ public class FinalBossDamageControllerComponent extends Component {
         damage > 0 && iceDamagePending && source == iceDamageSource && isActiveStageTwo();
     iceDamagePending = false;
     requireStats().setInvulnerable(!authorised);
+  }
+
+  private void clearStageTwoIceProtection() {
+    stageTwoIceProtection = false;
+    iceDamagePending = false;
+    iceDamageRemainder = 0d;
   }
 
   private boolean isActiveStageTwo() {

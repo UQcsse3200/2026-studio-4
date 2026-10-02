@@ -25,6 +25,8 @@ class FinalBossStageTwoPlayerIceControllerTest {
   void setup() {
     config = new FinalBossStageTwoConfig();
     config.icePickupCount = 0;
+    // Keep the fractional-slot and overdraw fixtures independent of gameplay balance defaults.
+    config.iceShotsPerCharge = 16;
     controller = new FinalBossStageTwoPlayerIceController(config);
     energy = new FinalBossStageTwoPickupController(config, new Random(1));
   }

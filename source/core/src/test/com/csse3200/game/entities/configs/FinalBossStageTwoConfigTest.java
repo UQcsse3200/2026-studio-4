@@ -10,10 +10,11 @@ import org.junit.jupiter.api.Test;
 
 class FinalBossStageTwoConfigTest {
   @Test
-  void playerIceFlightCadenceAndEffectTimingsMustBePositiveAndFinite() {
+  void playerIceDamageFlightCadenceAndEffectTimingsMustBePositiveAndFinite() {
     List<BiConsumer<FinalBossStageTwoConfig, Float>> setters =
         List.of(
             (config, value) -> config.iceProjectileSpeed = value,
+            (config, value) -> config.iceProjectileDamage = value,
             (config, value) -> config.iceFireInterval = value,
             (config, value) -> config.iceProjectileLifetime = value,
             (config, value) -> config.iceProjectileRadius = value,
@@ -31,7 +32,7 @@ class FinalBossStageTwoConfigTest {
   }
 
   @Test
-  void playerIceDamageAndCapacitiesArePositiveAndBounded() {
+  void playerIceCapacitiesArePositiveAndBounded() {
     FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
     for (int value : new int[] {1, 3, 128}) {
       config.iceShotsPerCharge = value;
@@ -50,11 +51,13 @@ class FinalBossStageTwoConfigTest {
       config.maxIceProjectiles = value;
       assertThrows(IllegalArgumentException.class, config::validate);
     }
-    config.maxIceProjectiles = 64;
-    for (int value : new int[] {-1, 0}) {
-      config.iceProjectileDamage = value;
-      assertThrows(IllegalArgumentException.class, config::validate);
-    }
+  }
+
+  @Test
+  void fractionalPlayerIceDamageIsValid() {
+    FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
+    config.iceProjectileDamage = 0.25f;
+    assertDoesNotThrow(config::validate);
   }
 
   @Test
@@ -216,6 +219,8 @@ class FinalBossStageTwoConfigTest {
             (config, value) -> config.iceCoverHeight = value,
             (config, value) -> config.iceCoverRespawnInterval = value,
             (config, value) -> config.iceCoverLifetime = value,
+            (config, value) -> config.iceCoverNearMinDistance = value,
+            (config, value) -> config.iceCoverNearMaxDistance = value,
             (config, value) -> config.iceShatterDuration = value,
             (config, value) -> config.iceSpawnDuration = value);
     for (BiConsumer<FinalBossStageTwoConfig, Float> setter : setters) {
@@ -225,6 +230,16 @@ class FinalBossStageTwoConfigTest {
         assertThrows(IllegalArgumentException.class, config::validate);
       }
     }
+  }
+
+  @Test
+  void nearbyCoverDistanceRangeAllowsEqualBoundsButCannotBeReversed() {
+    FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
+    config.iceCoverNearMinDistance = 3f;
+    config.iceCoverNearMaxDistance = 3f;
+    assertDoesNotThrow(config::validate);
+    config.iceCoverNearMaxDistance = 2.9f;
+    assertThrows(IllegalArgumentException.class, config::validate);
   }
 
   @Test

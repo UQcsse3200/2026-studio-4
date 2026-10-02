@@ -6,7 +6,8 @@ Step 3 builds on `63ff13c`, including the tuned fireball size, speed and spacing
 Step 4 builds on `dd6883c`, including blue cover arrival, two-second replenishment
 and the seven-second cover lifetime.
 Step 5 builds on `90a3810`, including pickups and hiding empty energy bars.
-The current version includes held-J homing ice fire and ice-only Boss damage.
+The current version includes held-J homing ice fire, ice-only Boss damage,
+near-player cover and the longer-encounter balance adjustment described below.
 Earlier steps below describe their intermediate playable versions.
 
 ## Step 1: fixed arena and slow movement
@@ -196,15 +197,15 @@ shots without consuming energy; existing shots keep flying. Holding J before
 walking over a pickup also starts ice fire when energy becomes available.
 Moving, dashing and other keys retain their existing controls.
 
-Initial playtest values in `FinalBossStageTwoConfig` are:
+Current playtest values in `FinalBossStageTwoConfig` are:
 
 | Setting | Value |
 | --- | --- |
-| Shots per full reserve / held reserves | 16 / 2 |
+| Shots per full reserve / held reserves | 8 / 2 |
 | Shot interval | 0.18 seconds |
 | Ice shot speed | 6 world units/second |
 | Maximum homing turn rate | 240 degrees/second |
-| Damage per ice hit | 1 |
+| Damage per ice hit | 0.25, accumulated into whole health points |
 | Ice shot hit radius | 0.12 world units |
 | Maximum lifetime / simultaneous ice shots | 4 seconds / 64 |
 | Impact / energy-ending effect duration | 0.35 / 0.5 seconds |
@@ -250,6 +251,43 @@ The six original 64x32 ice-spear textures loop during flight. Their bright head
 at source (50,15), rather than their whole-image centre, is aligned to the
 collision position. The energy-ending effect reuses nine blue/purple frames
 from row five of `transform/01.png`; no PNG bytes are changed.
+
+### Follow-up: longer encounters and nearby cover
+
+Playtesting showed that two pickups could end Stage 2 too quickly. Each reserve
+now supplies eight shots instead of sixteen, and each landed ice shot contributes
+0.25 damage instead of one. Boss health remains integer-valued: four successful
+hits remove one health point through the existing protected damage pipeline.
+Fractional damage carries across pickups and firing pauses, but clears when
+leaving the Stage 2 protection state. Misses, wall/cover impacts and blocked
+ordinary attacks do not contribute. No shared enemy/player health API is changed.
+
+For the default 100 maximum health, Stage 2 still spans 80 to 60 health. All
+shots landing now requires 80 ice hits and ten fully used pickups, compared
+with 20 hits and two pickups before this adjustment. This is an ideal lower
+bound, not a promised fight duration: travel to pickups, aiming around cover,
+and missed or expired shots increase the time and number of pickups required.
+The 0.18-second shot cadence, two persistent reserve slots and ground pickup
+timings remain the same.
+
+Cover initially attempts up to four crystals, and replenishes at most one every
+3.5 seconds, replacing the six-crystal cap and two-per-two-seconds replenishment.
+Its seven-second lifetime and four-fire-hit durability are unchanged. For each
+new crystal, placement first tries centres 2.5 to 4.5 world units from the
+player towards the Boss (a 100-degree cone, 24 attempts), then anywhere in that
+nearby ring (16 attempts), then elsewhere in the arena (8 attempts). These are
+preferences, not guarantees: every candidate still needs the existing wall,
+actor, cover, pickup and arena-edge clearance. If no safe candidate is found,
+that crystal is skipped. Replenishment uses the player's current position;
+existing crystals remain stationary.
+
+Playtest this adjustment by moving between opposite sides of the arena and
+checking that new cover favours the new position, including near walls and
+corners. Confirm that one pickup emits eight shots, four landed shots remove
+one health point, and a successful full eight-shot reserve removes two. Check
+that cover does not spawn on the player or pickups, and that leaving cover to
+find a firing angle still matters. The separate local invincibility and
+skip-Stage-1 edits are not part of this change and must remain unstaged.
 
 ## Subsequent increments
 
@@ -357,6 +395,14 @@ rejection, private-source authorisation, synchronous Stage 3 protection, ending
 effects, texture anchors and cleanup. No local player invincibility edit is
 included. Graphical feel and balance still require the playtest below.
 
+The nearby-cover/longer-encounter adjustment passed 405 focused Final Boss and
+Stage 2 configuration tests across 39 classes with no failures, errors or
+skips, plus `formatCheck` under JDK 21/Gradle 8.5. Added coverage includes
+near-player/Boss-side preference, following a moved player on replenishment,
+wall/edge/pickup fallback, fractional damage across volleys, protection reset,
+invalid/recursive damage, exception recovery, eight-shot energy exhaustion,
+and the actual eightieth-hit Stage 3 handover.
+
 With the local zero-damage multiplier retained, the relevant checks can be run
 without the normal-damage PlayerFactory test:
 
@@ -427,8 +473,9 @@ Step 5 playtest (supersedes the ordinary-attack Stage 3 handover in earlier chec
 1. Enter Stage 2 and try ordinary attacks after its transition. The fire shield
    should remain visible and Boss health should not fall.
 2. Pick up one gem and hold J. Ice spears should turn towards the moving Boss,
-   consume the single visible blue bar with each shot, and lower Boss health
-   when they hit. Release J; the bar must stop draining immediately.
+   consume the single visible blue bar over eight shots, and remove one Boss
+   health point for every four landed shots. Release J; the bar must stop
+   draining immediately.
 3. Collect two reserves and keep J held. The first bar should disappear when
    empty, the second should then drain, and head sparkles should remain without
    an ending burst between them. A new pickup must not refill the older bar.

@@ -16,15 +16,17 @@ public class FinalBossStageTwoConfig {
   public int maxFireballs = 128;
   public float fireImpactDuration = 0.35f;
 
-  // Random ice cover. Zero count disables cover for isolated encounter tests.
-  public int iceCoverCount = 6;
+  // Nearby protective ice cover. Zero count disables cover for isolated encounter tests.
+  public int iceCoverCount = 4;
   public float iceCoverWidth = 0.9f;
   public float iceCoverHeight = 1.8f;
-  public float iceCoverRespawnInterval = 2f;
-  public int iceCoverRespawnBatch = 2;
+  public float iceCoverRespawnInterval = 3.5f;
+  public int iceCoverRespawnBatch = 1;
   public float iceCoverLifetime = 7f;
   public int iceCoverHits = 4;
   public float iceCoverGap = 1.25f;
+  public float iceCoverNearMinDistance = 2.5f;
+  public float iceCoverNearMaxDistance = 4.5f;
   public float iceShatterDuration = 0.55f;
   public float iceSpawnDuration = 0.6f;
 
@@ -38,12 +40,12 @@ public class FinalBossStageTwoConfig {
 
   // Player ice magic: one reserve powers a stream of shots, spent only when a shot is emitted.
   public float iceProjectileSpeed = 6f;
-  public int iceProjectileDamage = 1;
+  public float iceProjectileDamage = 0.25f;
   public float iceFireInterval = 0.18f;
   public float iceProjectileLifetime = 4f;
   public float iceProjectileRadius = 0.12f;
   public float iceHomingTurnRate = 240f;
-  public int iceShotsPerCharge = 16;
+  public int iceShotsPerCharge = 8;
   public int maxIceProjectiles = 64;
   public float iceImpactDuration = 0.35f;
   public float iceBuffEndDuration = 0.5f;
@@ -76,7 +78,7 @@ public class FinalBossStageTwoConfig {
 
   private void validatePlayerIce() {
     if (!positiveFinite(iceProjectileSpeed)
-        || iceProjectileDamage <= 0
+        || !positiveFinite(iceProjectileDamage)
         || !positiveFinite(iceFireInterval)
         || !positiveFinite(iceProjectileLifetime)
         || !positiveFinite(iceProjectileRadius)
@@ -114,6 +116,9 @@ public class FinalBossStageTwoConfig {
         || !positiveFinite(iceCoverHeight)
         || !positiveFinite(iceCoverRespawnInterval)
         || !positiveFinite(iceCoverLifetime)
+        || !positiveFinite(iceCoverNearMinDistance)
+        || !positiveFinite(iceCoverNearMaxDistance)
+        || iceCoverNearMaxDistance < iceCoverNearMinDistance
         || !positiveFinite(iceShatterDuration)
         || !positiveFinite(iceSpawnDuration)
         || !Float.isFinite(iceCoverGap)

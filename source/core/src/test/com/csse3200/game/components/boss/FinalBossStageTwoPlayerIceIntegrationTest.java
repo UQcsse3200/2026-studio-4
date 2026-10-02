@@ -27,6 +27,8 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -116,6 +118,7 @@ class FinalBossStageTwoPlayerIceIntegrationTest {
 
   @Test
   void homingIceDamagesTheBossWhileOrdinaryMeleeProjectileAndNullSourcesStayBlocked() {
+    config.iceProjectileDamage = 1f; // Isolate homing and source protection from fractional damage.
     startEncounter();
     grantCharge();
     bossStats.hit(playerStats);
@@ -289,6 +292,7 @@ class FinalBossStageTwoPlayerIceIntegrationTest {
 
   @Test
   void reachingTheHealthFloorFromAnIceShotClearsTheEncounterInsideTheHitCallback() {
+    config.iceProjectileDamage = 1f; // One hit must trigger this synchronous-cleanup fixture.
     config.iceCoverCount = 1;
     startEncounter();
     grantCharge();
@@ -326,6 +330,7 @@ class FinalBossStageTwoPlayerIceIntegrationTest {
 
   @Test
   void localPlayerInvulnerabilityStillBlocksFireDamageAndAllowsIceDamageToTheBoss() {
+    config.iceProjectileDamage = 1f;
     playerStats.setIncomingDamageMultiplier(0f);
     startEncounter();
     grantCharge();
@@ -345,6 +350,72 @@ class FinalBossStageTwoPlayerIceIntegrationTest {
     assertEquals(100, playerStats.getHealth());
     assertEquals(0f, playerStats.getIncomingDamageMultiplier());
     assertEquals(800 - config.iceProjectileDamage, bossStats.getHealth());
+  }
+
+  @Test
+  void oneReserveFiresEightQuarterDamageShotsAndRemovesTwoBossHealth() {
+    bossStats.setMaxHealth(100);
+    bossStats.setHealth(80);
+    startEncounter();
+    grantCharge();
+    holdJ();
+    Set<Long> emitted = new HashSet<>();
+
+    for (int shot = 0; shot < 8; shot++) {
+      advance(config.iceFireInterval + 0.001f);
+      weapon.shots.forEach(projectile -> emitted.add(projectile.id));
+    }
+    assertEquals(8, emitted.size());
+    assertEquals(0, energy.getChargeCount());
+    // Every emitted shot can reach the stationary boss before its four-second lifetime ends.
+    advance(2f);
+
+    assertEquals(78, bossStats.getHealth());
+    assertEquals(FinalBossPhase.STAGE_TWO, phases.getCurrentPhase());
+    assertTrue(weapon.shots.isEmpty());
+    assertTrue(protection.isShielded());
+    assertTrue(bossStats.isInvulnerable());
+  }
+
+  @Test
+  void eightiethQuarterDamageImpactReachesSixtyPercentAndStartsTheShieldedStageThreeTransition() {
+    bossStats.setMaxHealth(100);
+    bossStats.setHealth(80);
+    startEncounter();
+    for (int reserve = 0; reserve < 9; reserve++) {
+      grantCharge();
+      holdJ();
+      for (int shot = 0; shot < 8; shot++) advance(config.iceFireInterval + 0.001f);
+      releaseJ();
+      assertEquals(0, energy.getChargeCount());
+    }
+    grantCharge();
+    holdJ();
+    for (int shot = 0; shot < 7; shot++) advance(config.iceFireInterval + 0.001f);
+    releaseJ();
+    advance(2f);
+    assertTrue(weapon.shots.isEmpty());
+    assertEquals(61, bossStats.getHealth());
+    assertEquals(FinalBossPhase.STAGE_TWO, phases.getCurrentPhase());
+    assertEquals(1f / 8f, energy.getChargeFraction(0), 0.0001f);
+    bossStats.takeDamage(10000, player);
+    assertEquals(61, bossStats.getHealth());
+
+    holdJ();
+    advance(config.iceFireInterval + 0.001f);
+    releaseJ();
+    for (int frame = 0;
+        frame < 50 && phases.getCurrentPhase() == FinalBossPhase.STAGE_TWO;
+        frame++) {
+      advance(0.05f);
+    }
+
+    assertEquals(60, bossStats.getHealth());
+    assertEquals(FinalBossPhase.STAGE_THREE, phases.getCurrentPhase());
+    assertTrue(phases.isTransitioning());
+    assertTrue(protection.isShielded());
+    assertTrue(bossStats.isInvulnerable());
+    assertWeaponResourcesCleared();
   }
 
   @Test

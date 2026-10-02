@@ -1,5 +1,6 @@
 package com.csse3200.game.components.boss;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -22,7 +23,10 @@ import java.util.function.Predicate;
 
 /** Owns stationary ice cover, its physical lifetime, and the short shatter effect. */
 class FinalBossStageTwoIceController {
-  private static final int PLACEMENT_ATTEMPTS = 48;
+  private static final int BOSS_SIDE_ATTEMPTS = 24;
+  private static final int NEARBY_ATTEMPTS = 16;
+  private static final int ARENA_ATTEMPTS = 8;
+  private static final float BOSS_SIDE_HALF_ANGLE = 50f * MathUtils.degreesToRadians;
   private static final float HIT_FLASH_DURATION = 0.16f;
 
   final List<Cover> covers = new ArrayList<>();
@@ -184,22 +188,62 @@ class FinalBossStageTwoIceController {
     float availableY = interior.height - config.iceCoverHeight;
     if (availableX < 0f || availableY < 0f) return;
     for (int index = 0; index < count && covers.size() < config.iceCoverCount; index++) {
-      Rectangle placement = null;
-      for (int attempt = 0; attempt < PLACEMENT_ATTEMPTS; attempt++) {
-        Rectangle candidate =
-            new Rectangle(
-                interior.x + random.nextFloat() * availableX,
-                interior.y + random.nextFloat() * availableY,
-                config.iceCoverWidth,
-                config.iceCoverHeight);
-        if (isClear(candidate, physics.getWorld())) {
-          placement = candidate;
-          break;
-        }
-      }
+      Rectangle placement = findPlacement(interior, physics.getWorld());
       if (placement == null) continue;
       covers.add(createCover(placement, physics, entities));
     }
+  }
+
+  private Rectangle findPlacement(Rectangle interior, World world) {
+    if (player != null) {
+      // Read current positions on every replenishment, including deferred spawns after movement.
+      Vector2 playerCentre = player.getCenterPosition();
+      float bossAngle = boss == null ? 0f : boss.getCenterPosition().sub(playerCentre).angleRad();
+      Rectangle nearby =
+          findNearbyPlacement(
+              interior, world, playerCentre, bossAngle, BOSS_SIDE_HALF_ANGLE, BOSS_SIDE_ATTEMPTS);
+      if (nearby != null) return nearby;
+      nearby =
+          findNearbyPlacement(interior, world, playerCentre, 0f, MathUtils.PI, NEARBY_ATTEMPTS);
+      if (nearby != null) return nearby;
+    }
+
+    float availableX = interior.width - config.iceCoverWidth;
+    float availableY = interior.height - config.iceCoverHeight;
+    for (int attempt = 0; attempt < ARENA_ATTEMPTS; attempt++) {
+      Rectangle candidate =
+          new Rectangle(
+              interior.x + random.nextFloat() * availableX,
+              interior.y + random.nextFloat() * availableY,
+              config.iceCoverWidth,
+              config.iceCoverHeight);
+      if (contains(interior, candidate) && isClear(candidate, world)) return candidate;
+    }
+    return null;
+  }
+
+  private Rectangle findNearbyPlacement(
+      Rectangle interior,
+      World world,
+      Vector2 playerCentre,
+      float centreAngle,
+      float halfAngle,
+      int attempts) {
+    for (int attempt = 0; attempt < attempts; attempt++) {
+      float angle = centreAngle + (random.nextFloat() * 2f - 1f) * halfAngle;
+      float distance =
+          config.iceCoverNearMinDistance
+              + random.nextFloat()
+                  * (config.iceCoverNearMaxDistance - config.iceCoverNearMinDistance);
+      Rectangle candidate =
+          new Rectangle(
+              playerCentre.x + MathUtils.cos(angle) * distance - config.iceCoverWidth / 2f,
+              playerCentre.y + MathUtils.sin(angle) * distance - config.iceCoverHeight / 2f,
+              config.iceCoverWidth,
+              config.iceCoverHeight);
+      if (contains(interior, candidate) && isClear(candidate, world)) return candidate;
+    }
+    return null;
   }
 
   private boolean isClear(Rectangle candidate, World world) {
