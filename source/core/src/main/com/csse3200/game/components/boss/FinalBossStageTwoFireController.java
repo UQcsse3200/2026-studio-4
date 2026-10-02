@@ -48,6 +48,7 @@ final class FinalBossStageTwoFireController {
       float delta,
       boolean canFire,
       Vector2 origin,
+      float spawnRadius,
       Vector2 playerBefore,
       Vector2 playerNow,
       float playerRadius,
@@ -81,8 +82,12 @@ final class FinalBossStageTwoFireController {
     shotRemaining -= delta;
     if (shotRemaining > 0f) return;
     shotRemaining = config.fireVolleyInterval;
-    if (validPoint(origin) && bounds.contains(origin) && wallFraction(walls, origin, origin) > 1f) {
-      fireVolley(origin);
+    if (Float.isFinite(spawnRadius)
+        && spawnRadius >= 0f
+        && validPoint(origin)
+        && bounds.contains(origin)
+        && wallFraction(walls, origin, origin) > 1f) {
+      fireVolley(origin, spawnRadius, bounds, walls);
     }
   }
 
@@ -142,13 +147,13 @@ final class FinalBossStageTwoFireController {
     }
   }
 
-  private void fireVolley(Vector2 origin) {
-    int available = config.maxFireballs - fireballs.size();
-    if (available <= 0) return;
+  private void fireVolley(Vector2 origin, float spawnRadius, Rectangle bounds, WallQuery walls) {
+    if (fireballs.size() >= config.maxFireballs) return;
     int pattern = random.nextInt(3);
     int count = pattern == 0 ? 6 : pattern == 1 ? 4 : 5;
     float baseAngle = random.nextFloat() * 360f;
-    for (int i = 0; i < count && i < available; i++) {
+    boolean emitted = false;
+    for (int i = 0; i < count && fireballs.size() < config.maxFireballs; i++) {
       float angle =
           switch (pattern) {
             case 0 -> baseAngle + i * 60f;
@@ -156,9 +161,14 @@ final class FinalBossStageTwoFireController {
             default -> baseAngle + i * 72f + (random.nextFloat() - 0.5f) * 24f;
           };
       Vector2 velocity = new Vector2(config.fireballSpeed, 0f).rotateDeg(angle);
-      fireballs.add(new Fireball(nextId++, origin, velocity));
+      Vector2 spawn = velocity.cpy().nor().scl(spawnRadius).add(origin);
+      if (!bounds.contains(spawn) || wallFraction(walls, origin, spawn) <= 1f) continue;
+      // This placement segment is not projectile flight. Blocked directions emit nothing and
+      // cannot damage cover or a player standing between the boss and the visible spawn point.
+      fireballs.add(new Fireball(nextId++, spawn, velocity));
+      emitted = true;
     }
-    castRemaining = CAST_DURATION;
+    if (emitted) castRemaining = CAST_DURATION;
   }
 
   /** Consumes one projectile by stable ID; callers can add the appropriate cancellation effect. */

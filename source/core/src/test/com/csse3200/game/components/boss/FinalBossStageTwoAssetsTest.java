@@ -51,6 +51,14 @@ class FinalBossStageTwoAssetsTest {
       assertSharedTextures(buffEnd, FinalBossStageTwoAssets.iceBuffEndFrames());
       assertSame(transform[0].getTexture(), buffEnd[0].getTexture());
 
+      TextureRegion[] disappear = FinalBossStageTwoAssets.icePickupDisappearFrames();
+      assertEquals(9, disappear.length);
+      assertRegion(disappear[0], 0, 256, 64);
+      assertRegion(disappear[8], 512, 256, 64);
+      assertVisibleRegions(resources, ROOT + "transform/01.png", disappear);
+      assertSharedTextures(disappear, FinalBossStageTwoAssets.icePickupDisappearFrames());
+      assertSame(buffEnd[0].getTexture(), disappear[0].getTexture());
+
       TextureRegion[] playerIce = FinalBossStageTwoAssets.playerIceFrames();
       String[] iceNames = {
         "Icespear.png",

@@ -81,7 +81,8 @@ class FinalBossStageTwoConfigTest {
             (config, value) -> config.icePickupRadius = value,
             (config, value) -> config.icePickupSpawnInterval = value,
             (config, value) -> config.icePickupLifetime = value,
-            (config, value) -> config.icePickupEffectDuration = value);
+            (config, value) -> config.icePickupEffectDuration = value,
+            (config, value) -> config.icePickupDisappearDuration = value);
     for (BiConsumer<FinalBossStageTwoConfig, Float> setter : setters) {
       for (float invalid :
           new float[] {0f, -1f, Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY}) {

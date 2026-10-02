@@ -23,6 +23,7 @@ final class FinalBossStageTwoPickupController {
 
   final List<Pickup> pickups = new ArrayList<>();
   final List<Burst> bursts = new ArrayList<>();
+  final List<Burst> disappearances = new ArrayList<>();
 
   private final FinalBossStageTwoConfig config;
   private final Random random;
@@ -55,6 +56,11 @@ final class FinalBossStageTwoPickupController {
     arenaBounds = new Rectangle(arena);
     for (Burst burst : bursts) burst.elapsed += delta;
     bursts.removeIf(burst -> burst.elapsed >= config.icePickupEffectDuration);
+    for (Burst disappearance : disappearances) disappearance.elapsed += delta;
+    disappearances.removeIf(
+        disappearance ->
+            disappearance.elapsed >= config.icePickupDisappearDuration
+                || !insideArena(disappearance.position));
     pickups.removeIf(pickup -> !insideArena(pickup.position));
 
     Vector2 current = validBounds(playerBounds) ? playerBounds.getCenter(new Vector2()) : null;
@@ -78,7 +84,16 @@ final class FinalBossStageTwoPickupController {
         bursts.add(new Burst(pickup.position));
       } else {
         pickup.elapsed += delta;
-        if (pickup.elapsed >= config.icePickupLifetime) pickups.remove(pickup);
+        if (pickup.elapsed >= config.icePickupLifetime) {
+          pickups.remove(pickup);
+          double sinceExpiry = pickup.elapsed - config.icePickupLifetime;
+          // Expiry occurs within the frame. Do not replay an animation already over after a stall.
+          if (sinceExpiry < config.icePickupDisappearDuration) {
+            Burst disappearance = new Burst(pickup.position);
+            disappearance.elapsed = (float) sinceExpiry;
+            disappearances.add(disappearance);
+          }
+        }
       }
     }
 
@@ -133,6 +148,10 @@ final class FinalBossStageTwoPickupController {
     return config.icePickupEffectDuration;
   }
 
+  float getDisappearDuration() {
+    return config.icePickupDisappearDuration;
+  }
+
   Rectangle getArenaBounds() {
     return arenaBounds == null ? null : new Rectangle(arenaBounds);
   }
@@ -148,6 +167,7 @@ final class FinalBossStageTwoPickupController {
   void clear() {
     pickups.clear();
     bursts.clear();
+    disappearances.clear();
     charges[0] = 0f;
     charges[1] = 0f;
     chargeOrder[0] = 0;

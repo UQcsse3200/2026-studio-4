@@ -17,6 +17,7 @@ final class FinalBossStageTwoPickupVisuals {
   private final TextureRegion[] gems = FinalBossStageTwoAssets.pickupFrames();
   private final TextureRegion[] sparks = FinalBossStageTwoAssets.pickupSparkFrames();
   private final TextureRegion[] aura = FinalBossStageTwoAssets.iceAuraFrames();
+  private final TextureRegion[] disappear = FinalBossStageTwoAssets.icePickupDisappearFrames();
   // This source pixel is opaque pale blue (193,232,248), so blue tints keep fills readable.
   private final TextureRegion pixel =
       new TextureRegion(FinalBossStageTwoAssets.obstacleRegion(), 27, 30, 1, 1);
@@ -46,6 +47,17 @@ final class FinalBossStageTwoPickupVisuals {
         Rectangle box =
             fit(arena, burst.position.x - 0.35f, burst.position.y - 0.3325f, 0.70f, 0.665f);
         draw(batch, FinalBossStageTwoAssets.frame(sparks, burst.elapsed, duration, false), box);
+      }
+      float disappearDuration = pickups.getDisappearDuration();
+      for (FinalBossStageTwoPickupController.Burst burst : pickups.disappearances) {
+        if (disappearDuration <= 0f || burst.elapsed >= disappearDuration) continue;
+        float progress = MathUtils.clamp(burst.elapsed / disappearDuration, 0f, 1f);
+        batch.setColor(1f, 1f, 1f, 1f - MathUtils.clamp((progress - 0.6f) / 0.4f, 0f, 1f));
+        Rectangle box = fit(arena, burst.position.x - 0.45f, burst.position.y - 0.45f, 0.9f, 0.9f);
+        draw(
+            batch,
+            FinalBossStageTwoAssets.frame(disappear, burst.elapsed, disappearDuration, false),
+            box);
       }
     } finally {
       batch.setPackedColor(colour);

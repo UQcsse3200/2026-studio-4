@@ -180,6 +180,7 @@ public class FinalBossStageTwoComponent extends Component {
     Vector2 playerNow = target.getCenterPosition();
     Vector2 playerBefore = previousPlayerCentre == null ? playerNow : previousPlayerCentre;
     Vector2 origin = entity.getCenterPosition();
+    float spawnRadius = FinalBossStageTwoFireGeometry.spawnRadius(entity.getScale());
     float radius = Math.max(0.2f, Math.min(target.getScale().x, target.getScale().y) * 0.3f);
     double duration = (double) stageTwoConfig.attackDuration + stageTwoConfig.pauseDuration;
     double cursor = cycleTimer;
@@ -191,7 +192,17 @@ public class FinalBossStageTwoComponent extends Component {
       if (chunk <= 0) break;
       Vector2 from = playerBefore.cpy().lerp(playerNow, (float) (consumed / delta));
       Vector2 to = playerBefore.cpy().lerp(playerNow, (float) ((consumed + chunk) / delta));
-      fire.update((float) chunk, firing, origin, from, to, radius, bounds, walls, this::hitPlayer);
+      fire.update(
+          (float) chunk,
+          firing,
+          origin,
+          spawnRadius,
+          from,
+          to,
+          radius,
+          bounds,
+          walls,
+          this::hitPlayer);
       if (!canContinueFire()) {
         clearEffects();
         stopRoaming();
@@ -207,6 +218,7 @@ public class FinalBossStageTwoComponent extends Component {
           (float) (delta - consumed),
           false,
           origin,
+          spawnRadius,
           playerBefore.cpy().lerp(playerNow, (float) (consumed / delta)),
           playerNow,
           radius,

@@ -271,6 +271,58 @@ class FinalBossStageTwoFireIntegrationTest {
   }
 
   @Test
+  void changingBossScaleChangesTheRadiusOfItsNextVolley() {
+    boss.setScale(2f, 2f);
+    boss.setPosition(49f, 49f);
+    startEncounter();
+    advance(config.fireballInitialDelay);
+    assertFalse(fire.fireballs.isEmpty());
+    float firstRadius = FinalBossStageTwoFireGeometry.spawnRadius(boss.getScale());
+    for (FinalBossStageTwoFireController.Fireball ball : fire.fireballs) {
+      assertEquals(firstRadius, boss.getCenterPosition().dst(ball.position), 0.0001f);
+    }
+
+    List<Long> originalIds = fire.fireballs.stream().map(ball -> ball.id).toList();
+    boss.setScale(4f, 2f);
+    boss.setPosition(48f, 49f);
+    advance(config.fireVolleyInterval);
+
+    float resizedRadius = FinalBossStageTwoFireGeometry.spawnRadius(boss.getScale());
+    assertTrue(resizedRadius > firstRadius);
+    List<FinalBossStageTwoFireController.Fireball> newVolley =
+        fire.fireballs.stream().filter(ball -> !originalIds.contains(ball.id)).toList();
+    assertFalse(newVolley.isEmpty());
+    for (FinalBossStageTwoFireController.Fireball ball : newVolley) {
+      assertEquals(resizedRadius, boss.getCenterPosition().dst(ball.position), 0.0001f);
+      assertEquals(0f, ball.elapsed);
+    }
+  }
+
+  @Test
+  void wallsBetweenTheBossAndItsEmissionRingCannotBeSkippedDuringSpawn() {
+    boss.setScale(2f, 2f);
+    boss.setPosition(49f, 49f);
+    player.setPosition(52.5f, 49.5f);
+    List<Body> walls =
+        List.of(
+            addWallBox(49f, 50f, 0.05f, 1.1f),
+            addWallBox(51f, 50f, 0.05f, 1.1f),
+            addWallBox(50f, 49f, 1.1f, 0.05f),
+            addWallBox(50f, 51f, 1.1f, 0.05f));
+    startEncounter();
+
+    advance(config.fireballInitialDelay);
+
+    assertTrue(fire.fireballs.isEmpty());
+    assertTrue(fire.impacts.isEmpty());
+    assertEquals(100, playerStats.getHealth());
+    assertEquals(5, world.getBodyCount());
+    for (Body wall : walls) world.destroyBody(wall);
+    advance(config.fireVolleyInterval);
+    assertFalse(fire.fireballs.isEmpty());
+  }
+
+  @Test
   void playerPhysicsPositionIsRefreshedBeforeSweepingThePlayersMovement() {
     player.setPosition(7.5f, 9.5f);
     startEncounter();
@@ -306,6 +358,18 @@ class FinalBossStageTwoFireIntegrationTest {
     PolygonShape shape = new PolygonShape();
     shape.setAsBox(0.2f, 2f);
     body.createFixture(shape, 0f).setSensor(sensor);
+    shape.dispose();
+    return body;
+  }
+
+  private Body addWallBox(float x, float y, float halfWidth, float halfHeight) {
+    BodyDef definition = new BodyDef();
+    definition.type = BodyDef.BodyType.StaticBody;
+    definition.position.set(x, y);
+    Body body = world.createBody(definition);
+    PolygonShape shape = new PolygonShape();
+    shape.setAsBox(halfWidth, halfHeight);
+    body.createFixture(shape, 0f);
     shape.dispose();
     return body;
   }

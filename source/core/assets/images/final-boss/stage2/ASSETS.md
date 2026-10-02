@@ -47,6 +47,11 @@ permission as an explicit grant to publish standalone source assets.
   uses the first ten 20x19 cells of its 220x19 sheet; the last blank cell is
   excluded. Both effects retain their source aspect ratio and are clamped to
   the encounter's camera bounds.
+  An uncollected gem that reaches its seven-second lifetime instead plays the
+  original blue contracting rings from transform/01.png's fifth row once at its
+  fixed ground position. This disappearance uses a 0.9x0.9 world-unit region,
+  clamped at camera edges, over the configured 0.6-second duration and fades near
+  its endpoint. Successful pickups retain the separate Spark feedback.
 - fireball: 001-005 are the flying loop; 006-010 are retained but not used in the
   loop. All are 64x64. The bright head at (50,32) is the rotation/collision anchor.
 - impact: 001-007 are 64x64 frames played once when a fireball hits.
@@ -77,6 +82,8 @@ permission as an explicit grant to publish standalone source assets.
   This one-shot effect lasts the stage's ending duration (default 0.5 seconds),
   fades near its endpoint and stays inside the camera bounds. It reuses the same
   transform texture; the sixth and seventh rows retain their previous uses.
+  Ground-gem disappearance also reuses this fifth-row sequence and the same
+  loaded texture, with its own 0.6-second timer. No image or texture path is added.
 - ice-aura: the source sheet is 240x64 with five 48x64 cells. Its sparse blue-white
   sparkles loop above the player while at least one charge remains, drawn at
   0.60x0.80 world units and kept inside the camera bounds.

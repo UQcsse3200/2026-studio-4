@@ -101,6 +101,11 @@ public final class FinalBossStageTwoAssets {
     return sheet(TRANSFORM, 64, 11, 44, 9);
   }
 
+  /** Ground-gem expiry shares the fifth-row blue rings without loading another texture. */
+  static TextureRegion[] icePickupDisappearFrames() {
+    return iceBuffEndFrames();
+  }
+
   /** The lower-right small crystal, preserving its original 1:2 aspect ratio. */
   static TextureRegion obstacleRegion() {
     return new TextureRegion(texture(OBSTACLE), 128, 64, 32, 64);

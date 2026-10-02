@@ -59,9 +59,12 @@ class FinalBossStageTwoPickupControllerTest {
     assertEquals(1, controller.bursts.size());
     assertEquals(pickup.position, controller.bursts.getFirst().position);
     assertNotSame(pickup.position, controller.bursts.getFirst().position);
+    assertTrue(controller.disappearances.isEmpty());
     collectUpdate(config.icePickupEffectDuration, DISTANT_PLAYER, null);
     assertTrue(controller.bursts.isEmpty());
     assertEquals(1, controller.getChargeCount());
+    collectUpdate(config.icePickupLifetime, DISTANT_PLAYER, null);
+    assertTrue(controller.disappearances.isEmpty(), "A collected gem cannot expire later");
   }
 
   @Test
@@ -80,6 +83,7 @@ class FinalBossStageTwoPickupControllerTest {
     collectUpdate(2f, boundsAt(10f, 6f, 5f), new Vector2(0f, 6f));
     assertTrue(controller.pickups.isEmpty());
     assertEquals(1, controller.getChargeCount(), "Entry at one second precedes expiry");
+    assertTrue(controller.disappearances.isEmpty());
   }
 
   @Test
@@ -106,6 +110,108 @@ class FinalBossStageTwoPickupControllerTest {
     assertTrue(controller.pickups.isEmpty());
     assertTrue(controller.bursts.isEmpty());
     assertEquals(0, controller.getChargeCount());
+  }
+
+  @Test
+  void expiryCreatesOneStationaryDisappearanceThatCannotStillBeCollected() {
+    var pickup = addPickup(10f, 6f);
+
+    collectUpdate(config.icePickupLifetime, DISTANT_PLAYER, null);
+
+    assertTrue(controller.pickups.isEmpty());
+    assertTrue(controller.bursts.isEmpty());
+    assertEquals(1, controller.disappearances.size());
+    var disappearance = controller.disappearances.getFirst();
+    assertEquals(pickup.position, disappearance.position);
+    assertNotSame(pickup.position, disappearance.position);
+    assertEquals(0f, disappearance.elapsed);
+    assertEquals(config.icePickupDisappearDuration, controller.getDisappearDuration());
+    assertTrue(controller.isClearOfPickups(gemBounds(pickup.position, config.icePickupRadius)));
+
+    collectUpdate(0f, boundsAt(10f, 6f, 1f), null);
+    assertEquals(0, controller.getChargeCount());
+    assertTrue(controller.bursts.isEmpty());
+    assertEquals(1, controller.disappearances.size());
+    assertSame(disappearance, controller.disappearances.getFirst());
+
+    collectUpdate(controller.getDisappearDuration(), DISTANT_PLAYER, null);
+    assertTrue(controller.disappearances.isEmpty());
+    collectUpdate(0f, DISTANT_PLAYER, null);
+    assertTrue(controller.disappearances.isEmpty(), "Expiration is not replayed on later frames");
+  }
+
+  @Test
+  void existingDisappearancesAgeByDeltaAndNewOnesStartAtTheExpiryOvershoot() {
+    var earlier = addPickup(4f, 6f);
+    earlier.elapsed = config.icePickupLifetime - 0.25d;
+    collectUpdate(0.25f, DISTANT_PLAYER, null);
+    var existingEffect = controller.disappearances.getFirst();
+    var later = addPickup(10f, 6f);
+    later.elapsed = config.icePickupLifetime - 0.25d;
+
+    collectUpdate(0.5f, DISTANT_PLAYER, null);
+
+    assertTrue(controller.pickups.isEmpty());
+    assertEquals(2, controller.disappearances.size());
+    assertSame(existingEffect, controller.disappearances.getFirst());
+    assertEquals(0.5f, existingEffect.elapsed, EPSILON);
+    assertEquals(later.position, controller.disappearances.get(1).position);
+    assertEquals(0.25f, controller.disappearances.get(1).elapsed, EPSILON);
+  }
+
+  @Test
+  void stallsAtOrBeyondTheWholeDisappearanceDurationDoNotReplayOldExpiryEffects() {
+    config.icePickupDisappearDuration = 0.5f;
+    for (float delta : new float[] {0.75f, 50f}) {
+      controller.clear();
+      collectUpdate(0f, DISTANT_PLAYER, null);
+      var pickup = addPickup(10f, 6f);
+      pickup.elapsed = config.icePickupLifetime - 0.25d;
+
+      collectUpdate(delta, DISTANT_PLAYER, null);
+
+      assertTrue(controller.pickups.isEmpty());
+      assertTrue(controller.disappearances.isEmpty());
+      collectUpdate(0.1f, DISTANT_PLAYER, null);
+      assertTrue(controller.disappearances.isEmpty());
+      assertEquals(0, controller.getChargeCount());
+    }
+  }
+
+  @Test
+  void expiryAtTheExactTouchTimeStartsDisappearanceInsteadOfCollecting() {
+    config.icePickupRadius = 0.5f;
+    var pickup = addPickup(7f, 6f);
+    pickup.elapsed = config.icePickupLifetime - 0.25d;
+
+    // With a combined radius of two, this dash reaches the gem at exactly 0.25 seconds.
+    collectUpdate(0.5f, boundsAt(10f, 6f, 5f), new Vector2(0f, 6f));
+
+    assertTrue(controller.pickups.isEmpty());
+    assertEquals(0, controller.getChargeCount());
+    assertTrue(controller.bursts.isEmpty());
+    assertEquals(1, controller.disappearances.size());
+    assertEquals(pickup.position, controller.disappearances.getFirst().position);
+    assertEquals(0.25f, controller.disappearances.getFirst().elapsed, EPSILON);
+  }
+
+  @Test
+  void fullEnergyStillLetsAnUncollectedGemExpireWithItsDisappearance() {
+    collectOne();
+    collectOne();
+    var pickup = addPickup(12f, 6f);
+    pickup.elapsed = config.icePickupLifetime - 0.25d;
+
+    collectUpdate(0.25f, boundsAt(12f, 6f, 1f), null);
+
+    assertTrue(controller.pickups.isEmpty());
+    assertEquals(2, controller.getChargeCount());
+    assertEquals(1f, controller.getChargeFraction(0));
+    assertEquals(1f, controller.getChargeFraction(1));
+    assertEquals(2, controller.bursts.size(), "The uncollected gem creates no collection burst");
+    assertEquals(1, controller.disappearances.size());
+    assertEquals(pickup.position, controller.disappearances.getFirst().position);
+    assertEquals(0f, controller.disappearances.getFirst().elapsed);
   }
 
   @Test
@@ -285,10 +391,17 @@ class FinalBossStageTwoPickupControllerTest {
   void resizeDropsOutsideGemsAndArenaGetterCannotMutateControllerState() {
     var inside = addPickup(3f, 3f);
     var outside = addPickup(15f, 6f);
+    addPickup(4f, 4f).elapsed = config.icePickupLifetime;
+    addPickup(16f, 8f).elapsed = config.icePickupLifetime;
+    collectUpdate(0f, DISTANT_PLAYER, null);
+    assertEquals(2, controller.disappearances.size());
     Rectangle smaller = new Rectangle(0f, 0f, 8f, 8f);
     controller.update(0f, smaller, DISTANT_BOSS, DISTANT_PLAYER, null, area -> false);
     assertTrue(controller.pickups.contains(inside));
     assertFalse(controller.pickups.contains(outside));
+    assertEquals(
+        1, controller.disappearances.size(), "Resize removes effects without creating new ones");
+    assertEquals(new Vector2(4f, 4f), controller.disappearances.getFirst().position);
     Rectangle copy = controller.getArenaBounds();
     copy.set(100f, 100f, 1f, 1f);
     assertEquals(smaller, controller.getArenaBounds());
@@ -310,15 +423,20 @@ class FinalBossStageTwoPickupControllerTest {
   void invalidDeltaDoesNothingAndInvalidArenaClearsTheEncounterState() {
     collectOne();
     var pickup = addPickup(12f, 6f);
+    addPickup(15f, 6f).elapsed = config.icePickupLifetime;
+    collectUpdate(0f, DISTANT_PLAYER, null);
     for (float delta : new float[] {-1f, Float.NaN, Float.POSITIVE_INFINITY}) {
       collectUpdate(delta, DISTANT_PLAYER, null);
       assertTrue(controller.pickups.contains(pickup));
       assertEquals(0d, pickup.elapsed);
       assertEquals(1, controller.getChargeCount());
+      assertEquals(1, controller.disappearances.size());
+      assertEquals(0f, controller.disappearances.getFirst().elapsed);
     }
     controller.update(0.1f, null, DISTANT_BOSS, DISTANT_PLAYER, null, area -> true);
     assertTrue(controller.pickups.isEmpty());
     assertTrue(controller.bursts.isEmpty());
+    assertTrue(controller.disappearances.isEmpty());
     assertEquals(0, controller.getChargeCount());
     assertNull(controller.getArenaBounds());
     spawnUpdate(0f);
@@ -329,18 +447,26 @@ class FinalBossStageTwoPickupControllerTest {
   void clearCanRestartButDisposePermanentlyStopsSpawningAndClearsEnergyAndEffects() {
     collectOne();
     addPickup(12f, 6f);
+    addPickup(15f, 6f).elapsed = config.icePickupLifetime;
+    collectUpdate(0f, DISTANT_PLAYER, null);
+    assertEquals(1, controller.disappearances.size());
     controller.clear();
     controller.clear();
     assertTrue(controller.pickups.isEmpty());
     assertTrue(controller.bursts.isEmpty());
+    assertTrue(controller.disappearances.isEmpty());
     assertEquals(0, controller.getChargeCount());
     spawnUpdate(0f);
     assertEquals(1, controller.pickups.size());
+    controller.pickups.getFirst().elapsed = config.icePickupLifetime;
+    collectUpdate(0f, DISTANT_PLAYER, null);
+    assertEquals(1, controller.disappearances.size());
     controller.dispose();
     controller.dispose();
     spawnUpdate(100f);
     assertTrue(controller.pickups.isEmpty());
     assertTrue(controller.bursts.isEmpty());
+    assertTrue(controller.disappearances.isEmpty());
     assertEquals(0, controller.getChargeCount());
     assertNull(controller.getArenaBounds());
   }

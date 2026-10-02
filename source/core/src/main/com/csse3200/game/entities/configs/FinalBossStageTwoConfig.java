@@ -37,6 +37,7 @@ public class FinalBossStageTwoConfig {
   public float icePickupRadius = 0.4f;
   public float icePickupGap = 0.75f;
   public float icePickupEffectDuration = 0.5f;
+  public float icePickupDisappearDuration = 0.6f;
 
   // Player ice magic: one reserve powers a stream of shots, spent only when a shot is emitted.
   public float iceProjectileSpeed = 6f;
@@ -100,6 +101,7 @@ public class FinalBossStageTwoConfig {
         || !positiveFinite(icePickupLifetime)
         || !positiveFinite(icePickupRadius)
         || !positiveFinite(icePickupEffectDuration)
+        || !positiveFinite(icePickupDisappearDuration)
         || !Float.isFinite(icePickupGap)
         || icePickupGap < 0f) {
       throw new IllegalArgumentException("Stage 2 ice pickup values are invalid");

@@ -8,6 +8,8 @@ and the seven-second cover lifetime.
 Step 5 builds on `90a3810`, including pickups and hiding empty energy bars.
 The current version includes held-J homing ice fire, ice-only Boss damage,
 near-player cover and the longer-encounter balance adjustment described below.
+The outer-ring fire emission and pickup-expiry animation follow-up builds on
+`c9e9d9e`, keeping those balance values.
 Earlier steps below describe their intermediate playable versions.
 
 ## Step 1: fixed arena and slow movement
@@ -74,6 +76,17 @@ flame is easier to follow without making its collision core harder to dodge.
 Ring/fan/spread volleys drop from 8/5/6 to 6/4/5 projectiles, averaging about 21%
 fewer shots. The ring remains evenly spaced, and the fan retains its 72-degree
 total arc with wider gaps. Slow flight and the 0.3-second cadence remain.
+
+Fireballs now appear beyond the visible fire circle in their outgoing direction.
+Their head/collision centre is offset by half the larger shield dimension,
+plus the fireball's full visual tail length and a 0.12-unit gap. With the normal
+2-by-2 Boss scale this is approximately 2.27 world units from the Boss centre.
+Shared drawing/emission constants keep the entire flame outside the ring when
+the Boss scale changes. Each volley uses the current Boss position and scale.
+A spawn outside the arena, or with a solid wall/ice cover between the Boss and
+the spawn point, is omitted rather than jumping past that obstacle. Omitted
+shots do not damage cover. The invisible centre-to-spawn segment does not deal
+player damage; actual spawned projectiles retain normal swept collisions.
 
 Pausing stops only new volleys; fireballs already in flight continue moving and
 can hit the player. Swept relative-motion collision checks catch fast bullets
@@ -163,6 +176,18 @@ swept player path catches a gem crossed between frames, but cannot collect it
 at or after its expiry time. Gems and cover avoid each other when spawning;
 new gems also leave clearance around both actors, walls and the arena edges.
 They have no collider, enemy stats, room enemy count or inventory entry.
+
+On expiry the gem immediately stops being collectible and plays a 0.6-second
+blue disappearing ring at its last ground position. This uses the first nine
+64-by-64 cells of row five (counting from the top, start index 44) in the existing
+`transform/01.png`; the supplied `01(1).png` is byte-identical. The ring plays
+once at 0.9-by-0.9 world units, fades near the end and fits inside the arena.
+Collection before expiry retains the existing spark burst. Holding two full
+reserves does not prevent an uncollected gem from expiring with the blue ring.
+Long-frame overshoot ages a new ring by the time since the gem expired rather
+than replaying a finished disappearance. Phase/death/disposal cleanup removes
+these rings together with other pickup effects. The player's separate final
+energy-depletion effect already uses this same fifth row.
 
 Each gem adds one complete ice-energy reserve, up to two. Picking up a new gem
 does not refill a partially used reserve. The two bars retain their own slots;
@@ -403,6 +428,15 @@ wall/edge/pickup fallback, fractional damage across volleys, protection reset,
 invalid/recursive damage, exception recovery, eight-shot energy exhaustion,
 and the actual eightieth-hit Stage 3 handover.
 
+The outer-ring fire/pickup-expiry follow-up passed 424 focused Final Boss
+and Stage 2 configuration tests across 39 classes, with no failures, errors
+or skips, plus `formatCheck` under JDK 21/Gradle 8.5. Coverage includes all three
+volley patterns outside the shield, scale/position changes, real wall and cover
+occlusion, unchanged post-spawn flight, no damage along the placement segment,
+expiry overshoot, uncollectible disappearing gems, full reserves, fifth-row
+frame selection and phase/death/disposal cleanup. The source PNGs are unchanged.
+Graphical placement and animation feel still require local playtesting.
+
 With the local zero-damage multiplier retained, the relevant checks can be run
 without the normal-damage PlayerFactory test:
 
@@ -492,3 +526,18 @@ Step 5 playtest (supersedes the ordinary-attack Stage 3 handover in earlier chec
 
 Ice/fire projectiles do not cancel each other in this version; that collision
 rule and its effect are intentionally the next small increment.
+
+Outer-ring/expiry follow-up playtest:
+
+1. Watch several volleys while the Boss moves. Flames, including their tails,
+   should appear outside the fire circle rather than overlapping its centre.
+2. Check fire emission near walls and ice cover: bullets should not appear on
+   the far side of a blocking obstacle or outside the arena.
+3. Leave a ground gem uncollected for seven seconds. It should disappear into
+   the fifth-row blue ring, then leave no remaining effect after 0.6 seconds.
+   Touching the ring must not collect energy. Also check this while holding
+   two full reserves.
+4. Collect a gem before expiry and then use all its energy. Collection still
+   produces sparks, and final energy depletion retains its separate head effect.
+5. Leave/restart the encounter or enter Stage 3 while a disappearance is playing;
+   the old blue ring must not survive the encounter cleanup.

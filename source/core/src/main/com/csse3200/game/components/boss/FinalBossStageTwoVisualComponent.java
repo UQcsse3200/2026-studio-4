@@ -136,14 +136,14 @@ public class FinalBossStageTwoVisualComponent extends RenderComponent {
           left ? -width : width,
           height);
 
-      // This visual persists during firing pauses. Ice-only damage is a later gameplay step.
+      // The shared geometry also keeps newly emitted fireball tails beyond this shield.
       batch.setColor(1f, 1f, 1f, 0.78f + 0.12f * MathUtils.sin(elapsed * 5f));
       centred(
           batch,
           FinalBossStageTwoAssets.frame(shield, elapsed, 2.4f, true),
           centre,
-          size.x * 1.25f,
-          size.y * 1.25f);
+          size.x * FinalBossStageTwoFireGeometry.SHIELD_SCALE,
+          size.y * FinalBossStageTwoFireGeometry.SHIELD_SCALE);
       if (transforming) {
         batch.setColor(1f, 1f, 1f, 1f);
         centred(
@@ -168,9 +168,9 @@ public class FinalBossStageTwoVisualComponent extends RenderComponent {
       for (FinalBossStageTwoFireController.Fireball shot : fire.fireballs) {
         TextureRegion frame = FinalBossStageTwoAssets.frame(fireball, shot.elapsed, 0.35f, true);
         // A larger visible flame keeps the smaller damage core easy to read while dodging.
-        float size = 1.15f;
+        float size = FinalBossStageTwoFireGeometry.FIREBALL_SIZE;
         // The source faces right; its bright head is at (50,32), not the centre of the 64px cell.
-        float anchorX = size * 50f / 64f;
+        float anchorX = size * FinalBossStageTwoFireGeometry.FIREBALL_HEAD_X;
         float anchorY = size * 0.5f;
         batch.draw(
             frame,

@@ -311,6 +311,7 @@ class FinalBossStageTwoPlayerIceIntegrationTest {
             new FinalBossStageTwoFireController.Fireball(
                 902L, new Vector2(-80f, -80f), new Vector2(1f, 0f)));
     energy.pickups.add(new FinalBossStageTwoPickupController.Pickup(new Vector2(80f, 80f)));
+    energy.disappearances.add(new FinalBossStageTwoPickupController.Burst(new Vector2(0f, 0f)));
     holdJ();
 
     advance(0.2f);
@@ -479,6 +480,7 @@ class FinalBossStageTwoPlayerIceIntegrationTest {
     assertTrue(weapon.impacts.isEmpty());
     assertEquals(0, energy.getChargeCount());
     assertTrue(energy.pickups.isEmpty());
+    assertTrue(energy.disappearances.isEmpty());
     assertEquals(0f, stageTwo.getIceBuffEndRemaining());
     assertFalse(stageTwo.getIceInput().isHeld());
   }

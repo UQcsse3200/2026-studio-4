@@ -59,6 +59,7 @@ class FinalBossStageTwoFireControllerTest {
           0.61f,
           true,
           ORIGIN,
+          0f,
           DISTANT_PLAYER,
           DISTANT_PLAYER,
           0.25f,
@@ -87,6 +88,7 @@ class FinalBossStageTwoFireControllerTest {
         config.fireVolleyInterval + 0.01f,
         true,
         movedOrigin,
+        0f,
         DISTANT_PLAYER,
         DISTANT_PLAYER,
         0.25f,
@@ -238,6 +240,7 @@ class FinalBossStageTwoFireControllerTest {
         1f,
         true,
         ORIGIN,
+        0f,
         DISTANT_PLAYER,
         DISTANT_PLAYER,
         0.25f,
@@ -274,6 +277,7 @@ class FinalBossStageTwoFireControllerTest {
         1f,
         true,
         ORIGIN,
+        0f,
         ORIGIN,
         ORIGIN,
         0.25f,
@@ -314,7 +318,7 @@ class FinalBossStageTwoFireControllerTest {
     controller.impacts.add(new FinalBossStageTwoFireController.Impact(ORIGIN));
 
     controller.update(
-        0.1f, true, ORIGIN, DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, null, NO_WALL, () -> {});
+        0.1f, true, ORIGIN, 0f, DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, null, NO_WALL, () -> {});
 
     assertTrue(controller.fireballs.isEmpty());
     assertTrue(controller.impacts.isEmpty());
@@ -332,11 +336,265 @@ class FinalBossStageTwoFireControllerTest {
     assertEquals(0f, ball.elapsed);
   }
 
+  @Test
+  void sharedGeometryKeepsTheWholeTailOutsideTheShieldAtDifferentBossSizes() {
+    assertEquals(
+        2.2684375f, FinalBossStageTwoFireGeometry.spawnRadius(new Vector2(2f, 2f)), EPSILON);
+    for (Vector2 size : List.of(new Vector2(1f, 1f), new Vector2(2f, 4f), new Vector2(4f, 2f))) {
+      Vector2 originalSize = size.cpy();
+      float shieldRadius =
+          Math.max(size.x, size.y) * FinalBossStageTwoFireGeometry.SHIELD_SCALE / 2f;
+      float trailingLength =
+          FinalBossStageTwoFireGeometry.FIREBALL_SIZE
+              * FinalBossStageTwoFireGeometry.FIREBALL_HEAD_X;
+      assertEquals(
+          0.12f,
+          FinalBossStageTwoFireGeometry.spawnRadius(size) - trailingLength - shieldRadius,
+          EPSILON);
+      assertEquals(originalSize, size);
+    }
+    assertEquals(
+        FinalBossStageTwoFireGeometry.spawnRadius(new Vector2(4f, 2f)),
+        FinalBossStageTwoFireGeometry.spawnRadius(new Vector2(2f, 4f)));
+  }
+
+  @Test
+  void allPatternsStartOnTheOuterRingOfTheCurrentBossSizeAndPosition() {
+    int[] expectedCounts = {6, 4, 5};
+    for (int pattern = 0; pattern < expectedCounts.length; pattern++) {
+      var patterned = new FinalBossStageTwoFireController(config, new PatternRandom(pattern));
+      Vector2 origin = new Vector2(12f * pattern - 8f, 3f * pattern + 2f);
+      float radius = FinalBossStageTwoFireGeometry.spawnRadius(new Vector2(2f, pattern + 1f));
+      patterned.update(
+          0.61f,
+          true,
+          origin,
+          radius,
+          DISTANT_PLAYER,
+          DISTANT_PLAYER,
+          0.25f,
+          LARGE_ARENA,
+          NO_WALL,
+          () -> {});
+
+      assertEquals(expectedCounts[pattern], patterned.fireballs.size());
+      for (var ball : patterned.fireballs) {
+        assertEquals(radius, origin.dst(ball.position), EPSILON);
+        assertTrue(
+            ball.position
+                .cpy()
+                .sub(origin)
+                .nor()
+                .epsilonEquals(ball.velocity.cpy().nor(), EPSILON));
+        assertEquals(config.fireballSpeed, ball.velocity.len(), EPSILON);
+        assertEquals(0f, ball.elapsed);
+        assertNotSame(origin, ball.position);
+      }
+      assertNotSame(patterned.fireballs.get(0).position, patterned.fireballs.get(1).position);
+      assertNotSame(patterned.fireballs.get(0).velocity, patterned.fireballs.get(1).velocity);
+    }
+  }
+
+  @Test
+  void emittedBallsContinueFromTheirRingPositionsWithoutFollowingTheBoss() {
+    controller = new FinalBossStageTwoFireController(config, new PatternRandom(0));
+    Vector2 origin = new Vector2(8f, 7f);
+    controller.update(
+        0.61f,
+        true,
+        origin,
+        2f,
+        DISTANT_PLAYER,
+        DISTANT_PLAYER,
+        0.25f,
+        LARGE_ARENA,
+        NO_WALL,
+        () -> {});
+    List<Vector2> initial = controller.fireballs.stream().map(ball -> ball.position.cpy()).toList();
+    origin.set(100f, 100f);
+
+    controller.update(
+        0.5f,
+        false,
+        origin,
+        9f,
+        DISTANT_PLAYER,
+        DISTANT_PLAYER,
+        0.25f,
+        LARGE_ARENA,
+        NO_WALL,
+        () -> {});
+
+    for (int index = 0; index < initial.size(); index++) {
+      var ball = controller.fireballs.get(index);
+      assertTrue(
+          initial
+              .get(index)
+              .cpy()
+              .mulAdd(ball.velocity, 0.5f)
+              .epsilonEquals(ball.position, EPSILON));
+      assertEquals(0.5f, ball.elapsed, EPSILON);
+    }
+    Vector2 second = controller.fireballs.get(1).position.cpy();
+    controller.fireballs.getFirst().position.set(-50f, -50f);
+    assertEquals(second, controller.fireballs.get(1).position);
+  }
+
+  @Test
+  void blockedSpawnDirectionsCannotTeleportPastWallsOrDamageTheBlockingCover() {
+    controller = new FinalBossStageTwoFireController(config, new PatternRandom(0));
+    AtomicInteger coverHits = new AtomicInteger();
+    FinalBossStageTwoFireController.WallQuery wall =
+        new FinalBossStageTwoFireController.WallQuery() {
+          @Override
+          public float firstHitFraction(Vector2 from, Vector2 to) {
+            return verticalWall(5.5f).firstHitFraction(from, to);
+          }
+
+          @Override
+          public void onHit(Vector2 from, Vector2 to) {
+            coverHits.incrementAndGet();
+          }
+        };
+    controller.update(
+        0.61f, true, ORIGIN, 2f, DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, ARENA, wall, () -> {});
+
+    assertEquals(3, controller.fireballs.size());
+    assertTrue(controller.fireballs.stream().allMatch(ball -> ball.position.x < 5.5f));
+    assertEquals(0, coverHits.get());
+    assertTrue(controller.impacts.isEmpty());
+  }
+
+  @Test
+  void fullyBlockedRingEmitsNeitherProjectilesNorImpactEffects() {
+    AtomicInteger coverHits = new AtomicInteger();
+    FinalBossStageTwoFireController.WallQuery enclosure =
+        new FinalBossStageTwoFireController.WallQuery() {
+          @Override
+          public float firstHitFraction(Vector2 from, Vector2 to) {
+            return from.equals(to) ? Float.POSITIVE_INFINITY : 0.5f;
+          }
+
+          @Override
+          public void onHit(Vector2 from, Vector2 to) {
+            coverHits.incrementAndGet();
+          }
+        };
+    controller.update(
+        0.61f, true, ORIGIN, 2f, DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, ARENA, enclosure, () -> {});
+
+    assertTrue(controller.fireballs.isEmpty());
+    assertTrue(controller.impacts.isEmpty());
+    assertEquals(0, coverHits.get());
+    assertEquals(0f, controller.getCastRemaining());
+  }
+
+  @Test
+  void theOuterRingSkipsDirectionsWhoseSpawnWouldBeOutsideTheArena() {
+    controller = new FinalBossStageTwoFireController(config, new PatternRandom(0));
+    Vector2 nearEdge = new Vector2(9.5f, 5f);
+    controller.update(
+        0.61f, true, nearEdge, 2f, DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, ARENA, NO_WALL, () -> {});
+
+    assertEquals(3, controller.fireballs.size());
+    for (var ball : controller.fireballs) {
+      assertTrue(ARENA.contains(ball.position));
+      assertTrue(ball.velocity.x < 0f);
+    }
+    controller.clear();
+    controller.update(
+        0.61f, true, ORIGIN, 100f, DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, ARENA, NO_WALL, () -> {});
+    assertTrue(controller.fireballs.isEmpty());
+  }
+
+  @Test
+  void invisiblePlacementPathDoesNotHitPlayerButVisibleFlightStillDoes() {
+    controller = new FinalBossStageTwoFireController(config, new PatternRandom(0));
+    AtomicInteger hits = new AtomicInteger();
+    Vector2 insideRing = new Vector2(4f, 5f);
+    controller.update(
+        0.61f,
+        true,
+        ORIGIN,
+        2f,
+        insideRing,
+        insideRing,
+        0.25f,
+        ARENA,
+        NO_WALL,
+        hits::incrementAndGet);
+    assertEquals(0, hits.get(), "The left spawn skips over x=4 without being a damaging sweep");
+    assertEquals(6, controller.fireballs.size());
+
+    Vector2 outsideRing = new Vector2(2f, 5f);
+    controller.update(
+        0.5f,
+        false,
+        ORIGIN,
+        2f,
+        outsideRing,
+        outsideRing,
+        0.25f,
+        ARENA,
+        NO_WALL,
+        hits::incrementAndGet);
+    assertEquals(1, hits.get());
+    assertEquals(5, controller.fireballs.size());
+    assertEquals(1, controller.impacts.size());
+  }
+
+  @Test
+  void invalidSpawnRadiusSuppressesNewShotsWhileExistingShotsKeepFlying() {
+    var ball = addBall(900, 1f, 5f, 1f, 0f);
+    for (float radius :
+        new float[] {-1f, Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY}) {
+      float previousX = ball.position.x;
+      controller.update(
+          0.61f,
+          true,
+          ORIGIN,
+          radius,
+          DISTANT_PLAYER,
+          DISTANT_PLAYER,
+          0.25f,
+          LARGE_ARENA,
+          NO_WALL,
+          () -> {});
+      assertEquals(List.of(ball), controller.fireballs);
+      assertTrue(ball.position.x > previousX);
+    }
+  }
+
+  @Test
+  void blockedDirectionsDoNotWasteTheRemainingProjectileCapacity() {
+    config.maxFireballs = 8;
+    controller = new FinalBossStageTwoFireController(config, new PatternRandom(0));
+    for (int index = 0; index < 6; index++) addBall(100 + index, 30f + index, 30f, 0f, 0f);
+    controller.update(
+        0.61f,
+        true,
+        ORIGIN,
+        2f,
+        DISTANT_PLAYER,
+        DISTANT_PLAYER,
+        0.25f,
+        LARGE_ARENA,
+        verticalWall(4.5f),
+        () -> {});
+
+    assertEquals(8, controller.fireballs.size());
+    assertTrue(
+        controller.fireballs.stream()
+            .filter(ball -> ball.id < 100)
+            .allMatch(ball -> ball.position.x > ORIGIN.x));
+  }
+
   private void update(float delta, boolean canFire) {
     controller.update(
         delta,
         canFire,
         ORIGIN,
+        0f,
         DISTANT_PLAYER,
         DISTANT_PLAYER,
         0.25f,
@@ -351,7 +609,7 @@ class FinalBossStageTwoFireControllerTest {
       Vector2 now,
       FinalBossStageTwoFireController.WallQuery walls,
       Runnable hit) {
-    controller.update(delta, false, ORIGIN, before, now, 0.25f, ARENA, walls, hit);
+    controller.update(delta, false, ORIGIN, 0f, before, now, 0.25f, ARENA, walls, hit);
   }
 
   private FinalBossStageTwoFireController.Fireball addBall(

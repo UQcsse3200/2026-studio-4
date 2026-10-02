@@ -121,6 +121,7 @@ class FinalBossStageTwoPickupIntegrationTest {
     assertEquals(1f, pickups.getChargeFraction(0), 0.0001f);
     assertTrue(pickups.pickups.isEmpty());
     assertFalse(pickups.bursts.isEmpty());
+    assertTrue(pickups.disappearances.isEmpty());
   }
 
   @Test
@@ -130,6 +131,7 @@ class FinalBossStageTwoPickupIntegrationTest {
     config.icePickupSpawnInterval = 100f;
     startEncounter();
     assertEquals(1, pickups.pickups.size());
+    Vector2 gemPosition = pickups.pickups.getFirst().position.cpy();
 
     advance(6.9f);
     assertFalse(stageTwo.isAttacking());
@@ -140,6 +142,10 @@ class FinalBossStageTwoPickupIntegrationTest {
     assertTrue(pickups.pickups.isEmpty());
     assertEquals(0, pickups.getChargeCount());
     assertTrue(pickups.bursts.isEmpty());
+    assertEquals(1, pickups.disappearances.size());
+    assertEquals(gemPosition, pickups.disappearances.getFirst().position);
+    advance(0.61f);
+    assertTrue(pickups.disappearances.isEmpty());
   }
 
   @Test
@@ -278,9 +284,11 @@ class FinalBossStageTwoPickupIntegrationTest {
     startEncounter();
     collectFirstPickup();
     pickups.pickups.add(new FinalBossStageTwoPickupController.Pickup(new Vector2(10f, 10f)));
+    pickups.disappearances.add(new FinalBossStageTwoPickupController.Burst(new Vector2(12f, 12f)));
     assertEquals(1, pickups.getChargeCount());
     assertEquals(1, pickups.pickups.size());
     assertFalse(pickups.bursts.isEmpty());
+    assertFalse(pickups.disappearances.isEmpty());
   }
 
   private void collectFirstPickup() {
@@ -315,6 +323,7 @@ class FinalBossStageTwoPickupIntegrationTest {
     assertEquals(0, pickups.getChargeCount());
     assertTrue(pickups.pickups.isEmpty());
     assertTrue(pickups.bursts.isEmpty());
+    assertTrue(pickups.disappearances.isEmpty());
   }
 
   private Body addWall(Rectangle bounds) {

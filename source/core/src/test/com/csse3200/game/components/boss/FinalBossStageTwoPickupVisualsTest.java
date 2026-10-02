@@ -23,6 +23,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 
 @ExtendWith(GameExtension.class)
 class FinalBossStageTwoPickupVisualsTest {
@@ -31,7 +32,8 @@ class FinalBossStageTwoPickupVisualsTest {
     ROOT + "pickup/GEM 1 - BLUE - Spritesheet.png",
     ROOT + "pickup/Spark - Spritesheet.png",
     ROOT + "ice-aura/ice_sparkles.png",
-    ROOT + "obstacle/crystal-icy.png"
+    ROOT + "obstacle/crystal-icy.png",
+    ROOT + "transform/01.png"
   };
   private static final float COLOUR = Color.toFloatBits(0.2f, 0.4f, 0.6f, 0.8f);
   private ResourceService resources;
@@ -96,6 +98,80 @@ class FinalBossStageTwoPickupVisualsTest {
     visuals.drawGround(batch, pickups);
 
     assertTrue(draws().isEmpty());
+  }
+
+  @Test
+  void expiredGemPlaysTheFifthRowOnceAtItsGroundPositionThenStops() {
+    FinalBossStageTwoPickupController.Burst disappearance =
+        new FinalBossStageTwoPickupController.Burst(new Vector2(3f, 4f));
+    pickups.disappearances.add(disappearance);
+
+    visuals.drawGround(batch, pickups);
+
+    assertEquals(1, draws().size());
+    Draw first = draws().get(0);
+    assertSame(resources.getAsset(PATHS[4], Texture.class), first.frame().getTexture());
+    assertEquals(0, first.frame().getRegionX());
+    assertEquals(256, first.frame().getRegionY());
+    assertEquals(2.55f, first.x(), 0.0001f);
+    assertEquals(3.55f, first.y(), 0.0001f);
+    assertEquals(0.9f, first.width(), 0.0001f);
+    assertEquals(0.9f, first.height(), 0.0001f);
+    assertEquals(0f, disappearance.elapsed);
+    verify(batch).setPackedColor(COLOUR);
+    clearInvocations(batch);
+    float elapsed = pickups.getDisappearDuration() * 0.95f;
+    disappearance.elapsed = elapsed;
+
+    visuals.drawGround(batch, pickups);
+
+    assertEquals(1, draws().size());
+    Draw last = draws().get(0);
+    assertEquals(512, last.frame().getRegionX());
+    assertEquals(256, last.frame().getRegionY());
+    assertEquals(first.x(), last.x());
+    assertEquals(first.y(), last.y());
+    ArgumentCaptor<Float> alpha = ArgumentCaptor.forClass(Float.class);
+    verify(batch).setColor(eq(1f), eq(1f), eq(1f), alpha.capture());
+    assertTrue(alpha.getValue() > 0f && alpha.getValue() < 1f);
+    assertEquals(elapsed, disappearance.elapsed);
+    assertEquals(new Vector2(3f, 4f), disappearance.position);
+    verify(batch).setPackedColor(COLOUR);
+    clearInvocations(batch);
+    disappearance.elapsed = pickups.getDisappearDuration();
+
+    visuals.drawGround(batch, pickups);
+
+    assertTrue(draws().isEmpty());
+    verify(batch).setPackedColor(COLOUR);
+  }
+
+  @Test
+  void disappearanceStaysInsideArenaAndRestoresColourEvenOnDrawingFailure() {
+    FinalBossStageTwoPickupController.Burst disappearance =
+        new FinalBossStageTwoPickupController.Burst(new Vector2(9.9f, 7.9f));
+    pickups.disappearances.add(disappearance);
+
+    visuals.drawGround(batch, pickups);
+
+    assertEquals(1, draws().size());
+    Draw effect = draws().get(0);
+    assertTrue(effect.x() >= arena.x && effect.y() >= arena.y);
+    assertTrue(effect.x() + effect.width() <= arena.x + arena.width + 0.0001f);
+    assertTrue(effect.y() + effect.height() <= arena.y + arena.height + 0.0001f);
+    assertEquals(new Vector2(9.9f, 7.9f), disappearance.position);
+    assertEquals(1f, effect.r());
+    assertEquals(1f, effect.g());
+    assertEquals(1f, effect.b());
+    verify(batch).setPackedColor(COLOUR);
+    clearInvocations(batch);
+    doThrow(new IllegalStateException("simulated disappearance draw failure"))
+        .when(batch)
+        .draw(any(TextureRegion.class), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+
+    assertThrows(IllegalStateException.class, () -> visuals.drawGround(batch, pickups));
+
+    verify(batch).setPackedColor(COLOUR);
   }
 
   @Test

@@ -158,6 +158,33 @@ class FinalBossStageTwoIceIntegrationTest {
   }
 
   @Test
+  void coverBetweenTheBossAndItsEmissionRingBlocksSpawnWithoutTakingFireballDamage() {
+    config.fireballInitialDelay = 0.6f;
+    config.iceCoverGap = 0f;
+    startEncounter();
+    FinalBossStageTwoIceController.Cover cover = ice.covers.getFirst();
+    float y = centreY(cover);
+    boss.setPosition(cover.bounds.x - 1.1f, y - 0.5f);
+    player.setPosition(cover.bounds.x + cover.bounds.width + 0.25f, y - 0.5f);
+    // Only the cone crossing the ice fits this arena; every other emission direction is outside.
+    when(arena.getBounds())
+        .thenReturn(
+            new Rectangle(
+                cover.bounds.x - 1.15f, cover.bounds.y - 0.05f, 4.15f, cover.bounds.height + 0.1f));
+    advance(0.001f);
+
+    advance(config.fireballInitialDelay);
+
+    assertTrue(fire.fireballs.isEmpty());
+    assertTrue(fire.impacts.isEmpty());
+    assertEquals(config.iceCoverHits, cover.hitsRemaining);
+    assertEquals(1, ice.covers.size());
+    assertTrue(ice.shatters.isEmpty());
+    assertEquals(100, playerStats.getHealth());
+    assertEquals(2, world.getBodyCount());
+  }
+
+  @Test
   void fourthShotShattersTheCoverAndFifthShotInTheSameFrameHitsThePlayer() {
     FinalBossStageTwoIceController.Cover cover = prepareCoverAndPlayerBehind();
     addShotsThrough(cover, 5);
