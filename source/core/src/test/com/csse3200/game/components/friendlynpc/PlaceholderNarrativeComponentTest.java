@@ -11,7 +11,6 @@ import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 
 @ExtendWith(GameExtension.class)
 class PlaceholderNarrativeComponentTest {

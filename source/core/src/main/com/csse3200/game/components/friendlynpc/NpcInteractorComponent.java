@@ -11,12 +11,12 @@ import java.util.Set;
 /**
  * Player-side half of the friendly NPC system.
  *
- * Lives on the player so it survives room changes and runs at most one NpcInteractionSequence at
+ * <p>Lives on the player so it survives room changes and runs at most one NpcInteractionSequence at
  * a time, remembers which NPC interactions have been completed (for once-only NPCs and
  * prerequisites), forwards the dialogue/cutscene "finished" events to the running sequence, and
  * locks and unlocks player controls through PlayerActions.
  *
- * Listeners are registered once here rather than per interaction, because EventHandler cannot
+ * <p>Listeners are registered once here rather than per interaction, because EventHandler cannot
  * remove listeners.
  */
 public class NpcInteractorComponent extends Component {
