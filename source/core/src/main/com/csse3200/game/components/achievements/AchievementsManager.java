@@ -10,7 +10,7 @@ import java.util.List;
  * necessary.
  */
 public class AchievementsManager extends Component {
-  private List<Achievement> achievements = new ArrayList<>();
+  private final List<Achievement> achievements = new ArrayList<>();
 
   /**
    * Initializes the achievements' manager.

@@ -6,8 +6,8 @@ import com.csse3200.game.entities.Entity;
 public class Achievement {
   private final int maxProgression;
   private int currentProgression;
-  private String progression;
-  private String name;
+  private final String progression;
+  private final String name;
   private boolean unlocked = false;
   private Entity room;
 
