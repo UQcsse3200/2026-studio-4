@@ -143,13 +143,6 @@ public class NpcInteractorComponent extends Component {
     activeNpc = null;
   }
 
-  private void setControlsLocked(boolean locked) {
-    PlayerActions actions = entity.getComponent(PlayerActions.class);
-    if (actions != null) {
-      actions.setControlsLocked(this, locked);
-    }
-  }
-
   /** Turns sequence requests into player events and control locks */
   private class Output implements NpcInteractionSequence.Output {
     private final Entity npc;
@@ -171,6 +164,13 @@ public class NpcInteractorComponent extends Component {
     @Override
     public void setMovementLocked(boolean locked) {
       setControlsLocked(locked);
+    }
+
+    private void setControlsLocked(boolean locked) {
+      PlayerActions actions = entity.getComponent(PlayerActions.class);
+      if (actions != null) {
+        actions.setControlsLocked(this, locked);
+      }
     }
   }
 }

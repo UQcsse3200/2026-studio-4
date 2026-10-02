@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,7 +60,7 @@ class FriendlyNpcManagerComponentTest {
         .thenAnswer(
             inv -> {
               GridPoint2 tile = inv.getArgument(0);
-              return new Vector2(tile.x, tile.y);
+              return new Vector2((float) tile.x, (float) tile.y);
             });
     when(room.getComponent(TerrainComponent.class)).thenReturn(terrain);
 
@@ -97,7 +98,7 @@ class FriendlyNpcManagerComponentTest {
     FriendlyNpcManagerComponent manager = spawnedManager();
 
     assertEquals(2, manager.getNpcs().size());
-    verify(entityService, org.mockito.Mockito.times(2)).register(any(Entity.class));
+    verify(entityService, times(2)).register(any(Entity.class));
 
     player.setPosition(1f, 0f);
     NpcInteractableComponent nearest = manager.findNearestInRange(player);

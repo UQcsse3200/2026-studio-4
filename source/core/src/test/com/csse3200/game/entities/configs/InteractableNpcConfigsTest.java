@@ -50,26 +50,30 @@ class InteractableNpcConfigsTest {
   void rejectsNpcWithNeitherDialogueNorCutscene() {
     InteractableNpcConfig npc = valid("a");
     npc.dialogueId = null;
-    assertThrows(IllegalArgumentException.class, () -> of(npc).validate());
+    InteractableNpcConfigs configs = of(npc);
+    assertThrows(IllegalArgumentException.class, configs::validate);
   }
 
   @Test
   void rejectsDuplicateIds() {
-    assertThrows(IllegalArgumentException.class, () -> of(valid("a"), valid("a")).validate());
+    InteractableNpcConfigs configs = of(valid("a"), valid("a"));
+    assertThrows(IllegalArgumentException.class, configs::validate);
   }
 
   @Test
   void rejectsUnknownPrerequisite() {
     InteractableNpcConfig npc = valid("a");
     npc.requiresCompleted = new String[] {"ghost"};
-    assertThrows(IllegalArgumentException.class, () -> of(npc).validate());
+    InteractableNpcConfigs configs = of(npc);
+    assertThrows(IllegalArgumentException.class, configs::validate);
   }
 
   @Test
   void rejectsMissingSprite() {
     InteractableNpcConfig npc = valid("a");
     npc.atlas = null;
-    assertThrows(IllegalArgumentException.class, () -> of(npc).validate());
+    InteractableNpcConfigs configs = of(npc);
+    assertThrows(IllegalArgumentException.class, configs::validate);
   }
 
   @Test
@@ -79,7 +83,8 @@ class InteractableNpcConfigsTest {
     npc.cutsceneId = "scene";
     npc.atlas = null;
     npc.texture = "images/rock.png";
-    assertDoesNotThrow(() -> of(npc).validate());
+    InteractableNpcConfigs configs = of(npc);
+    assertDoesNotThrow(configs::validate);
   }
 
   private static InteractableNpcConfigs load() {
