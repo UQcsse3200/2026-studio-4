@@ -51,6 +51,7 @@ class FinalBossStageTwoFireIntegrationTest {
     ServiceLocator.registerPhysicsService(physics);
     world = physics.getPhysics().getWorld();
     config = new FinalBossStageTwoConfig();
+    config.iceCoverCount = 0; // This fixture isolates fire/player/wall behaviour from random cover.
     playerStats = new CombatStatsComponent(100, 10);
     player = new Entity().addComponent(playerStats).addComponent(new PhysicsComponent());
     player.setPosition(79.5f, 79.5f);

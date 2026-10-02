@@ -21,6 +21,7 @@ public class FinalBossStageTwoVisualComponent extends RenderComponent {
   private TextureRegion[] shield;
   private TextureRegion[] fireball;
   private TextureRegion[] impact;
+  private FinalBossStageTwoIceVisuals iceVisuals;
   private RenderComponent overlay;
   private float elapsed;
   private float hitRemaining;
@@ -43,6 +44,7 @@ public class FinalBossStageTwoVisualComponent extends RenderComponent {
     shield = FinalBossStageTwoAssets.shieldFrames();
     fireball = FinalBossStageTwoAssets.fireballFrames();
     impact = FinalBossStageTwoAssets.impactFrames();
+    iceVisuals = new FinalBossStageTwoIceVisuals();
     entity.getEvents().addListener("updateHealth", this::healthChanged);
     entity.getEvents().addListener(FinalBossEvents.PHASE_CHANGED, this::phaseChanged);
     super.create();
@@ -95,6 +97,7 @@ public class FinalBossStageTwoVisualComponent extends RenderComponent {
     if (!isVisible()) return;
     float colour = batch.getPackedColor();
     try {
+      iceVisuals.draw(batch, stage.getIceController());
       Vector2 centre = entity.getCenterPosition();
       Vector2 size = entity.getScale();
       boolean transforming = phases.isTransitioning();

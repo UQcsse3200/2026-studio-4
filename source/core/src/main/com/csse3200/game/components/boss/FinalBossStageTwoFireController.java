@@ -18,6 +18,9 @@ final class FinalBossStageTwoFireController {
   @FunctionalInterface
   interface WallQuery {
     float firstHitFraction(Vector2 from, Vector2 to);
+
+    /** Called once only when this wall actually wins the collision, after consuming the shot. */
+    default void onHit(Vector2 from, Vector2 to) {}
   }
 
   final List<Fireball> fireballs = new ArrayList<>();
@@ -127,10 +130,12 @@ final class FinalBossStageTwoFireController {
       // Remove before the callback, including when damage synchronously changes the phase.
       hitPlayer.run();
     } else if (blockedAt <= 1f) {
-      fireball.position.set(from.lerp(to, blockedAt));
+      fireball.position.set(from.cpy().lerp(to, blockedAt));
       fireballs.remove(fireball);
-      if (wallHit <= boundaryHit && wallHit <= expiryHit)
+      if (wallHit <= boundaryHit && wallHit <= expiryHit) {
         impacts.add(new Impact(fireball.position));
+        if (walls != null) walls.onHit(from, to);
+      }
     } else {
       fireball.position.set(to);
       fireball.elapsed += flightTime;

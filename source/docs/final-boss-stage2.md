@@ -2,6 +2,7 @@
 
 Branch: `Final-boss`. Step 1 starts from the art-assets commit `34bf7dc3`.
 Step 2 builds on `9c3d2f2`, including the separate Step 1 format fix.
+Step 3 builds on `63ff13c`, including the tuned fireball size, speed and spacing.
 
 ## Step 1: fixed arena and slow movement
 
@@ -87,13 +88,64 @@ nonempty fire-circle frames, the first five flying-fireball images and seven
 impact images. The fireball's visual head, at source pixel (50,32), is aligned
 with its collision centre when rotating the sprite.
 
+## Step 3: destructible ice cover
+
+Once the Stage 2 transition ends, the encounter places up to six ice crystals
+at random safe positions in the fixed arena. Each crystal is 0.9 by 1.8 world
+units and has a solid static obstacle collider. A 1.25-unit clearance keeps new
+cover away from the player, Boss, walls, other cover and the visible edges.
+Placement uses bounded attempts; cramped arenas may contain fewer crystals.
+While below the limit, the encounter attempts to replenish up to two crystals
+every two seconds, including during firing pauses. A long frame makes at most
+one replenishment attempt, and a partial batch cannot exceed the six-cover cap.
+
+Each crystal lasts at most seven seconds from creation, including its arrival
+animation. Its visual and collider disappear together when it expires, without
+starting a shatter effect. Fire hits do not reset this timer, and newly replenished
+crystals have their own full lifetime. Expiry also continues during firing pauses.
+
+Every new crystal plays a blue/cyan arrival swirl once for 0.6 seconds. The
+crystal is visible and solid from the start, so the animation does not delay
+usable protection. It uses nine 64x64 cells from row seven of the same supplied
+`transform/01.png` sheet (start index 66). This reuses the existing texture;
+the newly supplied `01.png` is byte-identical. The swirl ages with its crystal
+and disappears if that crystal breaks or the encounter clears.
+
+This adjusts the original three-cover, one-per-six-seconds version after
+playtesting showed that it left too little cover available. The later lifetime
+adjustment reduces replenishment frequency from every 1.5 seconds to every two
+seconds, keeping the six-cover cap and two-cover batch.
+
+Players and the Boss collide with the cover. Each actual fireball hit consumes
+that bullet and removes one of four durability points. The first three hits
+add cracks and a brief hit flash. The fourth removes the collider immediately
+and plays six ice-shard frames over 0.55 seconds. A later shot in the same update
+can pass through the newly opened gap. Collision queries and shots that hit the
+player or a nearer wall do not reduce a crystal's durability.
+
+Cover has no enemy combat stats or enemy hitbox, so ordinary player attacks do
+not damage it or affect the room's enemy count. Future Stage 2 ice projectiles
+will be consumed by the static obstacle query without calling the fire-damage
+callback; the player ice attack is still a later increment.
+
+The encounter owns these stationary collision entities and renders them with
+its ice layer. They are not registered as updating room enemies. Broken pieces
+are visual data only. Leaving Stage 2, either combatant dying, losing the arena,
+or disposing the Boss clears cover and effects. Physics changes from a locked
+world callback are deferred safely, and invalidated spawns cannot reappear after
+cleanup. Cover outside a resized arena is removed.
+
+The crystal uses region (128,64,32,64) from the existing 160x128 tileset. The
+supplied 2048x341 shatter image is sliced using its actual 18-column/3-row layout,
+starting with six breaking frames in row three; it is not treated as an original
+256-pixel-cell sheet. No source PNG bytes are changed.
+
 ## Subsequent increments
 
-1. Ice cover, its four-fireball durability, and break effects.
-2. Ice pickups, seven-second expiry, two charges, and two separate blue bars.
-3. Held-J homing ice fire, sequential charge consumption, and buff-end effects;
+1. Ice pickups, seven-second expiry, two charges, and two separate blue bars.
+2. Held-J homing ice fire, sequential charge consumption, and buff-end effects;
    enable ice-only Boss damage when this attack is functional.
-4. One-to-one ice/fire cancellation, remaining effects, cleanup and balance.
+3. One-to-one ice/fire cancellation, remaining effects, cleanup and balance.
 
 Each increment gets its own local test, commit and push before work proceeds.
 The firing-pattern timings and pickup/charge balance will be tuned in those
@@ -139,6 +191,26 @@ multiplier prevents its low-health ability assertion from passing. Keep that
 debug edit out of the commit and use the normal player configuration for the
 full suite.
 
+Step 3 validation: Gradle 8.5/JDK 21 passed all 1,418 core tests across 203
+classes, including 102 Stage 2/configuration tests, with zero failures, errors
+or skips. The full `formatCheck` passed. Added checks cover actual static-body
+blocking at dash speed, safe random placement, nearest-hit ordering, four-hit
+durability and same-update follow-through, pause-time hits, locked-world
+disposal, invalidated queued spawns, resize cleanup, cracks and shatter frames.
+The patch starts at `63ff13c` and does not include the local player debug edit.
+
+The subsequent spawn-effects/availability adjustment passed 104 focused Stage 2
+and configuration tests plus an independent full `formatCheck`. These include
+batch replenishment without exceeding capacity, no catch-up burst on long
+frames, solid cover during its arrival animation, and the blue animation ending
+without replay. The source texture bytes and local player debug edit are unchanged.
+
+The seven-second lifetime adjustment passed 107 focused Stage 2/configuration
+tests and an independent full `formatCheck`. New coverage checks expiry at seven
+seconds including arrival, fire hits
+not extending lifetime, independent timers for replenished crystals, and expiry
+removing collision during a firing pause.
+
 For the local graphical playtest:
 
 1. Enter the Final Boss encounter and finish Stage 1. At 80% health, check that
@@ -159,3 +231,24 @@ For the local graphical playtest:
 
 Headless tests cannot confirm the final room's visual framing or the feel of the
 movement. Those remain local playtest checks before committing this increment.
+
+Step 3 playtest, with the local player damage multiplier still at zero:
+
+1. Enter Stage 2 and wait for the transformation to finish. Check that up to
+   six small ice crystals appear with space around characters and walls. Each
+   should arrive with a short blue swirl while already providing protection.
+2. Walk and dash into a crystal from each side; it should block movement. Watch
+   the Boss also collide with it as it roams.
+3. Hide behind one crystal. Fireballs that hit it should disappear; the first
+   three hits add cracks/flash and the fourth opens the gap with a brief icy
+   shatter. Your local invulnerability does not protect the crystal.
+4. Watch the refill: up to two new crystals appear per two-second attempt,
+   up to six intact crystals, and they should never appear on either character.
+   Active fireballs must still damage crystals during the three-second pause.
+   Each unbroken crystal should disappear within seven seconds of appearing,
+   including during a firing pause, and leave no invisible collision behind.
+5. Shrink the window and check no cover remains beyond the visible battle area
+   or traps a character moved inward by the arena clamp.
+6. Reach 60% Boss health, or restart/leave the encounter. All ice collision and
+   fragments should disappear with the fire effects. Normal player attacks are
+   still usable against the Boss until the later player-ice step is implemented.

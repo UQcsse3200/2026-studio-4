@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
@@ -15,7 +16,7 @@ import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Random;
 
-/** Controls Stage 2's single encounter, slow roaming, firing rhythm and Stage 3 health floor. */
+/** Controls Stage 2's slow roaming, fire volleys, ice cover and Stage 3 health floor. */
 public class FinalBossStageTwoComponent extends Component {
   private static final float ARRIVAL_DISTANCE = 0.15f;
   private static final int DESTINATION_ATTEMPTS = 4;
@@ -36,6 +37,20 @@ public class FinalBossStageTwoComponent extends Component {
   private Vector2 roamDestination;
   private Vector2 previousPlayerCentre;
   private FinalBossStageTwoFireController fire;
+  private FinalBossStageTwoIceController ice;
+  private final FinalBossStageTwoFireController.WallQuery walls =
+      new FinalBossStageTwoFireController.WallQuery() {
+        @Override
+        public float firstHitFraction(Vector2 from, Vector2 to) {
+          return findWall(from, to).fraction();
+        }
+
+        @Override
+        public void onHit(Vector2 from, Vector2 to) {
+          WallHit hit = findWall(from, to);
+          if (ice != null && hit.fixture() != null) ice.hitByFire(hit.fixture());
+        }
+      };
 
   public FinalBossStageTwoComponent(FinalBossStageTwoConfig stageTwoConfig) {
     this(null, stageTwoConfig);
@@ -64,8 +79,11 @@ public class FinalBossStageTwoComponent extends Component {
     }
     entity.getEvents().addListener("updateHealth", this::onBossHealthChanged);
     entity.getEvents().addListener(FinalBossEvents.PHASE_CHANGED, this::onPhaseChanged);
-    entity.getEvents().addListener("entityDied", this::clearFire);
-    if (target != null) fire = new FinalBossStageTwoFireController(stageTwoConfig, new Random());
+    entity.getEvents().addListener("entityDied", this::clearEffects);
+    if (target != null) {
+      fire = new FinalBossStageTwoFireController(stageTwoConfig, new Random());
+      ice = new FinalBossStageTwoIceController(entity, target, stageTwoConfig, new Random());
+    }
   }
 
   /** Begins one continuous encounter only after the phase-transition protection ends. */
@@ -80,7 +98,7 @@ public class FinalBossStageTwoComponent extends Component {
     cycleTimer = 0f;
     retargetRemaining = 0f;
     roamDestination = null;
-    clearFire();
+    clearEffects();
     previousPlayerCentre = target == null ? null : target.getCenterPosition();
     movementComponent.disableChargeAttacks();
     movementComponent.setMode(FinalBossMovementComponent.Mode.STOPPED);
@@ -95,7 +113,7 @@ public class FinalBossStageTwoComponent extends Component {
         || phaseController.isTransitioning()
         || bossStats.isDead()
         || isTargetDead()) {
-      clearFire();
+      clearEffects();
       stopRoaming();
       return;
     }
@@ -127,11 +145,12 @@ public class FinalBossStageTwoComponent extends Component {
     if (fire == null) return;
     Rectangle bounds = arena == null ? null : arena.getBounds();
     if (bounds == null) {
-      clearFire();
+      clearEffects();
       return;
     }
     PhysicsComponent playerPhysics = target.getComponent(PhysicsComponent.class);
     if (playerPhysics != null) playerPhysics.earlyUpdate();
+    if (ice != null) ice.update(delta, bounds);
     Vector2 playerNow = target.getCenterPosition();
     Vector2 playerBefore = previousPlayerCentre == null ? playerNow : previousPlayerCentre;
     Vector2 origin = entity.getCenterPosition();
@@ -146,18 +165,9 @@ public class FinalBossStageTwoComponent extends Component {
       if (chunk <= 0) break;
       Vector2 from = playerBefore.cpy().lerp(playerNow, (float) (consumed / delta));
       Vector2 to = playerBefore.cpy().lerp(playerNow, (float) ((consumed + chunk) / delta));
-      fire.update(
-          (float) chunk,
-          firing,
-          origin,
-          from,
-          to,
-          radius,
-          bounds,
-          this::wallHitFraction,
-          this::hitPlayer);
+      fire.update((float) chunk, firing, origin, from, to, radius, bounds, walls, this::hitPlayer);
       if (!canContinueFire()) {
-        clearFire();
+        clearEffects();
         stopRoaming();
         return;
       }
@@ -175,9 +185,9 @@ public class FinalBossStageTwoComponent extends Component {
           playerNow,
           radius,
           bounds,
-          this::wallHitFraction,
+          walls,
           this::hitPlayer);
-      if (!canContinueFire()) clearFire();
+      if (!canContinueFire()) clearEffects();
     }
     previousPlayerCentre = playerNow;
   }
@@ -193,19 +203,21 @@ public class FinalBossStageTwoComponent extends Component {
     CombatStatsComponent stats = target.getComponent(CombatStatsComponent.class);
     if (stats == null || !canContinueFire()) return;
     stats.takeDamage(stageTwoConfig.fireballDamage, entity);
-    if (!canContinueFire()) clearFire();
+    if (!canContinueFire()) clearEffects();
   }
 
-  private float wallHitFraction(Vector2 from, Vector2 to) {
-    if (ServiceLocator.getPhysicsService() == null) return Float.POSITIVE_INFINITY;
+  /** Pure query; cover durability changes only after the fire controller consumes a real hit. */
+  private WallHit findWall(Vector2 from, Vector2 to) {
+    if (ServiceLocator.getPhysicsService() == null)
+      return new WallHit(null, Float.POSITIVE_INFINITY);
     World world = ServiceLocator.getPhysicsService().getPhysics().getWorld();
-    boolean[] inside = {false};
+    Fixture[] nearestFixture = {null};
     world.QueryAABB(
         fixture -> {
           if (!fixture.isSensor()
               && fixture.getBody().getType() == BodyType.StaticBody
               && fixture.testPoint(from)) {
-            inside[0] = true;
+            nearestFixture[0] = fixture;
             return false;
           }
           return true;
@@ -214,26 +226,36 @@ public class FinalBossStageTwoComponent extends Component {
         from.y - 0.001f,
         from.x + 0.001f,
         from.y + 0.001f);
-    if (inside[0]) return 0f;
-    if (from.epsilonEquals(to, 0.0001f)) return Float.POSITIVE_INFINITY;
+    if (nearestFixture[0] != null) return new WallHit(nearestFixture[0], 0f);
+    if (from.epsilonEquals(to, 0.0001f)) return new WallHit(null, Float.POSITIVE_INFINITY);
     float[] nearest = {Float.POSITIVE_INFINITY};
     world.rayCast(
         (fixture, point, normal, fraction) -> {
           if (fixture.isSensor() || fixture.getBody().getType() != BodyType.StaticBody) return -1f;
-          nearest[0] = Math.min(nearest[0], fraction);
+          if (fraction < nearest[0]) {
+            nearest[0] = fraction;
+            nearestFixture[0] = fixture;
+          }
           return fraction;
         },
         from,
         to);
-    return nearest[0];
+    return new WallHit(nearestFixture[0], nearest[0]);
+  }
+
+  private record WallHit(Fixture fixture, float fraction) {}
+
+  FinalBossStageTwoIceController getIceController() {
+    return ice;
   }
 
   FinalBossStageTwoFireController getFireController() {
     return fire;
   }
 
-  private void clearFire() {
+  private void clearEffects() {
     if (fire != null) fire.clear();
+    if (ice != null) ice.clear();
     previousPlayerCentre = null;
   }
 
@@ -295,7 +317,7 @@ public class FinalBossStageTwoComponent extends Component {
   }
 
   private void onPhaseChanged(FinalBossPhase phase) {
-    clearFire();
+    clearEffects();
     encounterStarted = false;
     isAttacking = false;
     cycleTimer = 0f;
@@ -341,7 +363,8 @@ public class FinalBossStageTwoComponent extends Component {
   @Override
   public void dispose() {
     disposed = true;
-    clearFire();
+    clearEffects();
+    if (ice != null) ice.dispose();
     encounterStarted = false;
     roamDestination = null;
     // Entity disposal may already have destroyed its physics body; do not steer it here.

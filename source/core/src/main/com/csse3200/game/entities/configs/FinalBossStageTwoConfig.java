@@ -16,6 +16,18 @@ public class FinalBossStageTwoConfig {
   public int maxFireballs = 128;
   public float fireImpactDuration = 0.35f;
 
+  // Random ice cover. Zero count disables cover for isolated encounter tests.
+  public int iceCoverCount = 6;
+  public float iceCoverWidth = 0.9f;
+  public float iceCoverHeight = 1.8f;
+  public float iceCoverRespawnInterval = 2f;
+  public int iceCoverRespawnBatch = 2;
+  public float iceCoverLifetime = 7f;
+  public int iceCoverHits = 4;
+  public float iceCoverGap = 1.25f;
+  public float iceShatterDuration = 0.55f;
+  public float iceSpawnDuration = 0.6f;
+
   // Stage 2 charge attacks
   public float bossChargeAttackDelay = 0.5f;
   public float bossChargeDistance = 6f;
@@ -33,10 +45,33 @@ public class FinalBossStageTwoConfig {
   public void validate() {
     validateArenaMovement();
     validateFireballs();
+    validateIceCover();
     validateChargeAttack();
     validateStageThreeThreshold();
     validateStageTwoContactDamage();
     validateAttackCycle();
+  }
+
+  private void validateIceCover() {
+    if (iceCoverCount < 0
+        || iceCoverCount > 8
+        || iceCoverRespawnBatch < 1
+        || iceCoverRespawnBatch > 8
+        || iceCoverHits <= 0
+        || !positiveFinite(iceCoverWidth)
+        || !positiveFinite(iceCoverHeight)
+        || !positiveFinite(iceCoverRespawnInterval)
+        || !positiveFinite(iceCoverLifetime)
+        || !positiveFinite(iceShatterDuration)
+        || !positiveFinite(iceSpawnDuration)
+        || !Float.isFinite(iceCoverGap)
+        || iceCoverGap < 0f) {
+      throw new IllegalArgumentException("Stage 2 ice cover values are invalid");
+    }
+  }
+
+  private static boolean positiveFinite(float value) {
+    return Float.isFinite(value) && value > 0f;
   }
 
   private void validateFireballs() {

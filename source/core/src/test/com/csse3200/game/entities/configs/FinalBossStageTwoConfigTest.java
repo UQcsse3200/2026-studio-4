@@ -115,4 +115,58 @@ class FinalBossStageTwoConfigTest {
       assertThrows(IllegalArgumentException.class, pause::validate);
     }
   }
+
+  @Test
+  void iceCoverSizeAndTimingsMustBePositiveAndFinite() {
+    List<BiConsumer<FinalBossStageTwoConfig, Float>> setters =
+        List.of(
+            (config, value) -> config.iceCoverWidth = value,
+            (config, value) -> config.iceCoverHeight = value,
+            (config, value) -> config.iceCoverRespawnInterval = value,
+            (config, value) -> config.iceCoverLifetime = value,
+            (config, value) -> config.iceShatterDuration = value,
+            (config, value) -> config.iceSpawnDuration = value);
+    for (BiConsumer<FinalBossStageTwoConfig, Float> setter : setters) {
+      for (float invalid : new float[] {0f, -1f, Float.NaN, Float.POSITIVE_INFINITY}) {
+        FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
+        setter.accept(config, invalid);
+        assertThrows(IllegalArgumentException.class, config::validate);
+      }
+    }
+  }
+
+  @Test
+  void iceCoverCountIsBoundedAndDurabilityIsPositive() {
+    for (int accepted : new int[] {0, 3, 8}) {
+      FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
+      config.iceCoverCount = accepted;
+      assertDoesNotThrow(config::validate);
+    }
+    for (int invalid : new int[] {-1, 9, Integer.MAX_VALUE}) {
+      FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
+      config.iceCoverCount = invalid;
+      assertThrows(IllegalArgumentException.class, config::validate);
+    }
+    for (int invalid : new int[] {0, -1}) {
+      FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
+      config.iceCoverHits = invalid;
+      assertThrows(IllegalArgumentException.class, config::validate);
+    }
+    for (int invalid : new int[] {-1, 0, 9, Integer.MAX_VALUE}) {
+      FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
+      config.iceCoverRespawnBatch = invalid;
+      assertThrows(IllegalArgumentException.class, config::validate);
+    }
+  }
+
+  @Test
+  void iceCoverGapAllowsZeroButRejectsNegativeOrNonfiniteValues() {
+    FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
+    config.iceCoverGap = 0f;
+    assertDoesNotThrow(config::validate);
+    for (float invalid : new float[] {-0.01f, Float.NaN, Float.POSITIVE_INFINITY}) {
+      config.iceCoverGap = invalid;
+      assertThrows(IllegalArgumentException.class, config::validate);
+    }
+  }
 }

@@ -1,8 +1,9 @@
 # Final Boss Stage 2 art sources
 
 Selected artwork supplied by Eden, reorganized without changing source image bytes.
-Step 2 integrates the fire transformation, shield, fireballs and impact effects
-through runtime regions; other selections remain reserved for later steps.
+Steps 2 and 3 integrate the fire transformation, shield, fireballs, impact effects,
+ice cover and cover debris through runtime regions; other selections remain
+reserved for later steps.
 Third-party artwork retains its own license; this document does not relicense it.
 
 | Folder | Source / author | License |
@@ -46,13 +47,27 @@ permission as an explicit grant to publish standalone source assets.
 - impact: 001-007 are 64x64 frames played once when a fireball hits.
 - shield: 50x50 cells in a 400x400 source sheet, eight columns. The 61 nonempty
   frames loop; the last three blank cells are excluded.
-- obstacle: crystal-icy.png is a static 160x128 tileset; choose a region later.
+- obstacle: crystal-icy.png is a static 160x128 tileset. Runtime region
+  (128,64,32,64) selects the lower-right small crystal. It is drawn at its original
+  1:2 aspect ratio, anchored at the cover's bottom edge (default 0.9x1.8 world
+  units). Damage cracks use a 1x1 bright pixel from the same texture, with tint
+  and geometry applied only while drawing. A brief additive pass brightens the
+  crystal on a hit; source PNG bytes are unchanged.
 - ice-projectile: six 64x32 frames, retained in their original names.
 - transform: 01.png is a 704x576 sheet with 64x64 cells and 11 columns. The first
   nine cells of the sixth row (start index 55) form the orange/yellow burst.
+  Ice-cover spawning uses the nine nonempty cyan-swirl cells of the seventh row
+  (start index 66, y=384, x=0 through 512). The final two empty cells are excluded.
+  Both effects reuse the same loaded texture; no additional image or resource
+  path is introduced, and the original PNG is unchanged.
 - ice-aura: the source sheet is 240x64 with five 48x64 cells.
-- shatter: the supplied copy is 2048x341. This is suitable for visual review,
-  but not a verified original 256x256-cell sprite sheet. Obtain the originally
-  downloaded PNG before exact slicing; enlarging this copy will not restore it.
-- Damage cracks for the ice obstacle have not been created.
+- shatter: the supplied copy is 2048x341 and has been resampled; it is not an
+  original 256x256-cell sheet. Runtime regions select six visibly separated
+  debris cells from its third row, skipping the preceding intact trap images.
+  Their x positions are 228,341,455,569,683,796; widths are 113,114,114,114,113,114;
+  all use y=227 and height=114. Frames play once for the configured shatter
+  duration (default 0.55 seconds), then fade out. This uses the current copy's
+  measured regions without claiming to recover original pixels or modifying it.
+- Damage cracks are drawn progressively after the first three fireball hits;
+  they are not additional image files. Destroyed cover no longer draws a body.
 - The wizard body already exists in the project. Mana bars will be drawn in code.

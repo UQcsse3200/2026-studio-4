@@ -14,6 +14,8 @@ public final class FinalBossStageTwoAssets {
   private static final String ROOT = "images/final-boss/stage2/";
   private static final String TRANSFORM = ROOT + "transform/01.png";
   private static final String SHIELD = ROOT + "shield/fire_circles_50x50px.png";
+  private static final String OBSTACLE = ROOT + "obstacle/crystal-icy.png";
+  private static final String SHATTER = ROOT + "shatter/PixelTraps-IceShards_spritesheet.png";
   private static final int FIREBALL_FRAMES = 5;
   private static final int IMPACT_FRAMES = 7;
 
@@ -24,6 +26,8 @@ public final class FinalBossStageTwoAssets {
     List<String> paths = new ArrayList<>();
     paths.add(TRANSFORM);
     paths.add(SHIELD);
+    paths.add(OBSTACLE);
+    paths.add(SHATTER);
     for (int i = 1; i <= FIREBALL_FRAMES; i++) {
       paths.add(numberedPath("fireball", i));
     }
@@ -38,6 +42,11 @@ public final class FinalBossStageTwoAssets {
     return sheet(TRANSFORM, 64, 11, 55, 9);
   }
 
+  /** The cyan swirl occupies the first nine cells of the seventh row of the shared effect sheet. */
+  static TextureRegion[] iceSpawnFrames() {
+    return sheet(TRANSFORM, 64, 11, 66, 9);
+  }
+
   /** The final three cells are empty and must not introduce gaps in the shield loop. */
   static TextureRegion[] shieldFrames() {
     return sheet(SHIELD, 50, 8, 0, 61);
@@ -50,6 +59,25 @@ public final class FinalBossStageTwoAssets {
 
   static TextureRegion[] impactFrames() {
     return individualFrames("impact", IMPACT_FRAMES);
+  }
+
+  /** The lower-right small crystal, preserving its original 1:2 aspect ratio. */
+  static TextureRegion obstacleRegion() {
+    return new TextureRegion(texture(OBSTACLE), 128, 64, 32, 64);
+  }
+
+  /**
+   * Six debris frames from the supplied 2048x341 copy. These measured regions deliberately do not
+   * assume the original pack's 256px cells or include the preceding intact trap animation.
+   */
+  static TextureRegion[] shatterFrames() {
+    Texture texture = texture(SHATTER);
+    int[] edges = {228, 341, 455, 569, 683, 796, 910};
+    TextureRegion[] frames = new TextureRegion[edges.length - 1];
+    for (int i = 0; i < frames.length; i++) {
+      frames[i] = new TextureRegion(texture, edges[i], 227, edges[i + 1] - edges[i], 114);
+    }
+    return frames;
   }
 
   private static Texture texture(String path) {

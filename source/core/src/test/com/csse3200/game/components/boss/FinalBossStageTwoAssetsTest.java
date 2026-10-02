@@ -23,7 +23,7 @@ class FinalBossStageTwoAssetsTest {
     ResourceService resources = new ResourceService();
     ServiceLocator.registerResourceService(resources);
     String[] paths = FinalBossStageTwoAssets.paths();
-    assertEquals(14, paths.length);
+    assertEquals(16, paths.length);
     assertEquals(paths.length, new HashSet<>(Arrays.asList(paths)).size());
     resources.loadTextures(paths);
     resources.loadAll();
@@ -34,6 +34,14 @@ class FinalBossStageTwoAssetsTest {
       assertRegion(transform[8], 512, 320, 64);
       assertVisibleRegions(resources, ROOT + "transform/01.png", transform);
       assertSharedTextures(transform, FinalBossStageTwoAssets.transformFrames());
+
+      TextureRegion[] iceSpawn = FinalBossStageTwoAssets.iceSpawnFrames();
+      assertEquals(9, iceSpawn.length);
+      assertRegion(iceSpawn[0], 0, 384, 64);
+      assertRegion(iceSpawn[8], 512, 384, 64);
+      assertVisibleRegions(resources, ROOT + "transform/01.png", iceSpawn);
+      assertSharedTextures(iceSpawn, FinalBossStageTwoAssets.iceSpawnFrames());
+      assertSame(transform[0].getTexture(), iceSpawn[0].getTexture());
 
       TextureRegion[] shield = FinalBossStageTwoAssets.shieldFrames();
       assertEquals(61, shield.length);
@@ -51,6 +59,29 @@ class FinalBossStageTwoAssetsTest {
       assertEquals(7, impact.length);
       assertIndividualFrames(resources, "impact", impact);
       assertSharedTextures(impact, FinalBossStageTwoAssets.impactFrames());
+
+      TextureRegion obstacle = FinalBossStageTwoAssets.obstacleRegion();
+      assertEquals(128, obstacle.getRegionX());
+      assertEquals(64, obstacle.getRegionY());
+      assertEquals(32, obstacle.getRegionWidth());
+      assertEquals(64, obstacle.getRegionHeight());
+      assertVisibleRegions(
+          resources, ROOT + "obstacle/crystal-icy.png", new TextureRegion[] {obstacle});
+      assertSame(obstacle.getTexture(), FinalBossStageTwoAssets.obstacleRegion().getTexture());
+
+      TextureRegion[] shatter = FinalBossStageTwoAssets.shatterFrames();
+      assertEquals(6, shatter.length);
+      int[] x = {228, 341, 455, 569, 683, 796};
+      int[] widths = {113, 114, 114, 114, 113, 114};
+      for (int i = 0; i < shatter.length; i++) {
+        assertEquals(x[i], shatter[i].getRegionX());
+        assertEquals(227, shatter[i].getRegionY());
+        assertEquals(widths[i], shatter[i].getRegionWidth());
+        assertEquals(114, shatter[i].getRegionHeight());
+      }
+      assertVisibleRegions(
+          resources, ROOT + "shatter/PixelTraps-IceShards_spritesheet.png", shatter);
+      assertSharedTextures(shatter, FinalBossStageTwoAssets.shatterFrames());
     } finally {
       resources.unloadAssets(paths);
     }
