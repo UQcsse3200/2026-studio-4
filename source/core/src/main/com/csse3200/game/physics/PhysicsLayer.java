@@ -28,6 +28,9 @@ public class PhysicsLayer {
   // World items, e.g. dropped charms, that the player can pick up.
   public static final short ITEM = (1 << 5);
 
+  /** Category for Friendly, interactable NPCs */
+  public static final short FRIENDLY_NPC = (1 << 6);
+
   public static final short ALL = ~0;
 
   public static boolean contains(short filterBits, short layer) {
