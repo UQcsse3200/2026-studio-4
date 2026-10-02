@@ -1,9 +1,13 @@
 package com.csse3200.game.components.achievements;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -17,11 +21,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 
 @ExtendWith(GameExtension.class)
-class AchievementsManagerTest {
+class AchievementTest {
 
   private Entity room;
   private EventHandler events;
-  private AchievementsManager achievementsManager;
+  private Achievement achievement;
 
   @BeforeEach
   void setUp() {
@@ -30,23 +34,75 @@ class AchievementsManagerTest {
 
     when(room.getEvents()).thenReturn(events);
 
-    achievementsManager = new AchievementsManager(room);
+    achievement = new Achievement(room, "FinalBossDefeated", 3, "Grandpa Fighter");
   }
 
   @Test
-  void shouldCreateFinalBossAchievement() {
+  void shouldSetAchievementProperties() {
+    assertEquals("Grandpa Fighter", achievement.getName());
+    assertEquals(3, achievement.getMaxProgression());
+    assertEquals(0, achievement.getCurrentProgression());
+    assertFalse(achievement.isUnlocked());
+  }
+
+  @Test
+  void shouldRegisterProgressionListenerWhenCreated() {
     verify(events).addListener(eq("FinalBossDefeated"), any(EventListener0.class));
   }
 
   @Test
-  void shouldCreateFinalBossAchievementWithCorrectName() {
-    ArgumentCaptor<EventListener0> listenerCaptor = ArgumentCaptor.forClass(EventListener0.class);
+  void shouldProgressAchievementWhenEventOccurs() {
+    EventListener0 listener = captureProgressListener();
 
-    verify(events).addListener(eq("FinalBossDefeated"), listenerCaptor.capture());
+    listener.handle();
 
-    listenerCaptor.getValue().handle();
+    assertEquals(1, achievement.getCurrentProgression());
+    assertFalse(achievement.isUnlocked());
+  }
+
+  @Test
+  void shouldUnlockAchievementAtMaximumProgression() {
+    EventListener0 listener = captureProgressListener();
+
+    listener.handle();
+    listener.handle();
+    listener.handle();
+
+    assertEquals(3, achievement.getCurrentProgression());
+    assertTrue(achievement.isUnlocked());
 
     verify(events).trigger("achievementUnlocked", "Grandpa Fighter");
+  }
+
+  @Test
+  void shouldNotProgressAfterAchievementIsUnlocked() {
+    EventListener0 listener = captureProgressListener();
+
+    listener.handle();
+    listener.handle();
+    listener.handle();
+
+    assertTrue(achievement.isUnlocked());
+    assertEquals(3, achievement.getCurrentProgression());
+
+    listener.handle();
+    listener.handle();
+
+    assertEquals(3, achievement.getCurrentProgression());
+    verify(events, times(1)).trigger("achievementUnlocked", "Grandpa Fighter");
+  }
+
+  @Test
+  void shouldNotUnlockBeforeMaximumProgression() {
+    EventListener0 listener = captureProgressListener();
+
+    listener.handle();
+    listener.handle();
+
+    assertEquals(2, achievement.getCurrentProgression());
+    assertFalse(achievement.isUnlocked());
+
+    verify(events, never()).trigger("achievementUnlocked", "Grandpa Fighter");
   }
 
   @Test
@@ -56,9 +112,28 @@ class AchievementsManagerTest {
 
     when(newRoom.getEvents()).thenReturn(newEvents);
 
-    achievementsManager.newRoom(newRoom);
+    achievement.newRoom(newRoom);
 
     verify(newEvents).addListener(eq("FinalBossDefeated"), any(EventListener0.class));
+  }
+
+  @Test
+  void shouldProgressUsingListenerFromNewRoom() {
+    Entity newRoom = mock(Entity.class);
+    EventHandler newEvents = mock(EventHandler.class);
+
+    when(newRoom.getEvents()).thenReturn(newEvents);
+
+    achievement.newRoom(newRoom);
+
+    ArgumentCaptor<EventListener0> listenerCaptor = ArgumentCaptor.forClass(EventListener0.class);
+
+    verify(newEvents).addListener(eq("FinalBossDefeated"), listenerCaptor.capture());
+
+    listenerCaptor.getValue().handle();
+
+    assertEquals(1, achievement.getCurrentProgression());
+    assertFalse(achievement.isUnlocked());
   }
 
   @Test
@@ -68,36 +143,64 @@ class AchievementsManagerTest {
 
     when(newRoom.getEvents()).thenReturn(newEvents);
 
-    achievementsManager.newRoom(newRoom);
+    achievement.newRoom(newRoom);
 
     ArgumentCaptor<EventListener0> listenerCaptor = ArgumentCaptor.forClass(EventListener0.class);
 
     verify(newEvents).addListener(eq("FinalBossDefeated"), listenerCaptor.capture());
 
-    listenerCaptor.getValue().handle();
+    EventListener0 listener = listenerCaptor.getValue();
+
+    listener.handle();
+    listener.handle();
+    listener.handle();
+
+    assertEquals(3, achievement.getCurrentProgression());
+    assertTrue(achievement.isUnlocked());
 
     verify(newEvents).trigger("achievementUnlocked", "Grandpa Fighter");
+    verify(events, never()).trigger("achievementUnlocked", "Grandpa Fighter");
   }
 
   @Test
-  void shouldAllowMovingToMultipleNewRooms() {
-    Entity secondRoom = mock(Entity.class);
-    EventHandler secondEvents = mock(EventHandler.class);
+  void shouldUnlockImmediatelyWhenMaximumProgressionIsOne() {
+    // Ignore the listener registered by the achievement created in setUp().
+    org.mockito.Mockito.clearInvocations(events);
 
-    Entity thirdRoom = mock(Entity.class);
-    EventHandler thirdEvents = mock(EventHandler.class);
+    Achievement singleProgressAchievement =
+        new Achievement(room, "FinalBossDefeated", 1, "Grandpa Fighter");
 
-    when(secondRoom.getEvents()).thenReturn(secondEvents);
-    when(thirdRoom.getEvents()).thenReturn(thirdEvents);
+    ArgumentCaptor<EventListener0> listenerCaptor = ArgumentCaptor.forClass(EventListener0.class);
 
-    assertDoesNotThrow(
-        () -> {
-          achievementsManager.newRoom(secondRoom);
-          achievementsManager.newRoom(thirdRoom);
-        });
+    verify(events).addListener(eq("FinalBossDefeated"), listenerCaptor.capture());
 
-    verify(secondEvents).addListener(eq("FinalBossDefeated"), any(EventListener0.class));
+    listenerCaptor.getValue().handle();
 
-    verify(thirdEvents).addListener(eq("FinalBossDefeated"), any(EventListener0.class));
+    assertEquals(1, singleProgressAchievement.getCurrentProgression());
+    assertTrue(singleProgressAchievement.isUnlocked());
+
+    verify(events).trigger("achievementUnlocked", "Grandpa Fighter");
+  }
+
+  @Test
+  void shouldOnlyUnlockOnceWhenEventOccursManyTimes() {
+    EventListener0 listener = captureProgressListener();
+
+    for (int i = 0; i < 10; i++) {
+      listener.handle();
+    }
+
+    assertEquals(3, achievement.getCurrentProgression());
+    assertTrue(achievement.isUnlocked());
+
+    verify(events, times(1)).trigger("achievementUnlocked", "Grandpa Fighter");
+  }
+
+  private EventListener0 captureProgressListener() {
+    ArgumentCaptor<EventListener0> listenerCaptor = ArgumentCaptor.forClass(EventListener0.class);
+
+    verify(events).addListener(eq("FinalBossDefeated"), listenerCaptor.capture());
+
+    return listenerCaptor.getValue();
   }
 }
