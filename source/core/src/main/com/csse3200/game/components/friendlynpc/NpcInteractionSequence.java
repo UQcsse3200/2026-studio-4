@@ -92,7 +92,7 @@ public class NpcInteractionSequence {
     if (finished || !cutsceneActive || !Objects.equals(finishedCutsceneId, cutsceneId)) {
       return false;
     }
-    dialogueActive = false;
+    cutsceneActive = false;
     advance();
     refreshMovementLock();
     return true;
