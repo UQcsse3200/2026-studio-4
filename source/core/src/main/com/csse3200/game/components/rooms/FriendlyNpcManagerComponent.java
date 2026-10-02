@@ -19,10 +19,10 @@ import java.util.Set;
 /**
  * Spawns a room's friendly NPCs and finds the one the player can interact with.
  *
- * The friendly counterpart to EnemyManagerComponent. Friendly NPCs are tracked here and
- * never there, so they do not block a room from being cleared.
+ * <p>The friendly counterpart to EnemyManagerComponent. Friendly NPCs are tracked here and never
+ * there, so they do not block a room from being cleared.
  *
- * Each frame it shows the interaction indicator on the nearest in-range NPC that is available.
+ * <p>Each frame it shows the interaction indicator on the nearest in-range NPC that is available.
  * RoomManager asks it for the HUD prompt and routes the E key to it.
  */
 public class FriendlyNpcManagerComponent extends EntityManagerComponent {

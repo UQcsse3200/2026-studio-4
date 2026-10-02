@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
+import com.csse3200.game.components.friendlynpc.PlaceholderNarrativeComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.ConsumableLoadoutComponent;
@@ -41,7 +42,6 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.components.friendlynpc.PlaceholderNarrativeComponent;
 
 /**
  * Factory to create a player entity.
@@ -103,7 +103,7 @@ public class PlayerFactory {
             .addComponent(new ItemPickupComponent())
             // Runs friendly NPC interactions and remembers which have been completed
             .addComponent(new NpcInteractorComponent())
-              // TEMPORARY: fakes the dialogue/cutscene systems until they exist. 
+            // TEMPORARY: fakes the dialogue/cutscene systems until they exist.
             // Without it, talking to an NPC locks the player's controls forever
             // remove when cutscenes/dialogue is implemented
             .addComponent(new PlaceholderNarrativeComponent(PLACEHOLDER_SECONDS))

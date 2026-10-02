@@ -13,9 +13,9 @@ import com.csse3200.game.services.ServiceLocator;
 /**
  * Draws a soft, bobbing marker above an NPC's head while the player can interact with it.
  *
- * Visibility follows NpcInteractionEvents INDICATOR_SHOWN / NpcInteractionEvents INDICATOR_HIDDEN},
- * which NpcInteractableComponent fires on the same entity. The marker texture is generated, 
- * so no art asset is required.
+ * <p>Visibility follows NpcInteractionEvents INDICATOR_SHOWN / NpcInteractionEvents
+ * INDICATOR_HIDDEN}, which NpcInteractableComponent fires on the same entity. The marker texture is
+ * generated, so no art asset is required.
  */
 public class NpcInteractionIndicatorComponent extends RenderComponent {
   private static final int TEXTURE_SIZE = 32;

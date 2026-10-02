@@ -12,13 +12,14 @@ import org.slf4j.LoggerFactory;
 /**
  * TEMPORARY stand-in for the dialogue and cutscene systems, which are being built separately.
  *
- * Answers NpcInteractionEvents START_DIALOGUE and NpcInteractionEvents START_CUTSCENE by logging them and reporting "finished" after a short
- * delay, so NPC interactions can be played and tested end to end today. Halfway through a dialogue
- * it also sends NpcInteractionEvents DIALOGUE_CUTSCENE_CUE, which exercises DURING_DIALOGUE NPCs.
+ * <p>Answers NpcInteractionEvents START_DIALOGUE and NpcInteractionEvents START_CUTSCENE by logging
+ * them and reporting "finished" after a short delay, so NPC interactions can be played and tested
+ * end to end today. Halfway through a dialogue it also sends NpcInteractionEvents
+ * DIALOGUE_CUTSCENE_CUE, which exercises DURING_DIALOGUE NPCs.
  *
- * Remove this from PlayerFactory once the real dialogue and cutscene systems send the
- * "finished" events themselves, otherwise interactions will be reported finished before the
- * real content has played.
+ * <p>Remove this from PlayerFactory once the real dialogue and cutscene systems send the "finished"
+ * events themselves, otherwise interactions will be reported finished before the real content has
+ * played.
  */
 public class PlaceholderNarrativeComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(PlaceholderNarrativeComponent.class);

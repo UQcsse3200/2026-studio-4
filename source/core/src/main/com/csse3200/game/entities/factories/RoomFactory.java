@@ -14,7 +14,7 @@ import com.csse3200.game.files.FileLoader;
 /** Factory for creating rooms with their terrain and gameplay components. */
 public class RoomFactory {
   private static InteractableNpcConfigs friendlyNpcs;
-  
+
   private RoomFactory() {
     throw new IllegalStateException("Instantiating static utility class");
   }
@@ -32,14 +32,14 @@ public class RoomFactory {
         .addComponent(new ObstacleComponent(room))
         .addComponent(new ExitComponent(room.exits))
         .addComponent(
-            new EnemyManagerComponent(
-                cleared ? new EnemySpawnConfig[0] : room.enemySpawns, camera))
+            new EnemyManagerComponent(cleared ? new EnemySpawnConfig[0] : room.enemySpawns, camera))
         .addComponent(new FriendlyNpcManagerComponent(room.npcSpawns, getFriendlyNpcs()));
   }
 
   private static InteractableNpcConfigs getFriendlyNpcs() {
     if (friendlyNpcs == null) {
-      InteractableNpcConfigs loaded = FileLoader.readClass(InteractableNpcConfigs.class, InteractableNpcConfigs.CONFIG_PATH);
+      InteractableNpcConfigs loaded =
+          FileLoader.readClass(InteractableNpcConfigs.class, InteractableNpcConfigs.CONFIG_PATH);
       if (loaded == null) {
         throw new IllegalStateException("Unable to load " + InteractableNpcConfigs.CONFIG_PATH);
       }

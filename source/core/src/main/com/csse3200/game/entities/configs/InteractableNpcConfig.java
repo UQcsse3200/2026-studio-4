@@ -3,7 +3,7 @@ package com.csse3200.game.entities.configs;
 /**
  * Declarative definition of one friendly, interactable NPC, loaded from configs/friendlyNpcs.json.
  *
- * Everything that makes one NPC different from another lives here, so new NPCs are added by
+ * <p>Everything that makes one NPC different from another lives here, so new NPCs are added by
  * editing JSON rather than the interaction code. Friendly NPCs are deliberately kept apart from the
  * enemy configs in NPCConfigs.
  */
@@ -15,7 +15,7 @@ public class InteractableNpcConfig {
     /** Cutscene first, then the dialogue once the cutscene finishes. */
     BEFORE_DIALOGUE,
     /**
-     * The cutscene starts part-way through the dialogue, when the dialogue system fires 
+     * The cutscene starts part-way through the dialogue, when the dialogue system fires
      * dialogueCutsceneCue. If no cue arrives, the cutscene plays after the dialogue instead so it
      * is never skipped.
      */

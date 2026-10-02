@@ -11,9 +11,9 @@ import java.util.function.BooleanSupplier;
  * NPC-side half of the friendly NPC system: makes an entity something the player can walk up to and
  * interact with.
  *
- * Every NPC uses this same component what differs between NPCs (name, range, dialogue,
- * cutscene, conditions) comes from its InteractableNpcConfig. The player-side work of
- * running the interaction is done by NpcInteractorComponent.
+ * <p>Every NPC uses this same component what differs between NPCs (name, range, dialogue, cutscene,
+ * conditions) comes from its InteractableNpcConfig. The player-side work of running the interaction
+ * is done by NpcInteractorComponent.
  */
 public class NpcInteractableComponent extends Component {
   /** Whether the player can interact right now, and if not, why. */

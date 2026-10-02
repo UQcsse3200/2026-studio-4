@@ -10,11 +10,12 @@ import java.util.Objects;
  * Runs one NPC interaction: its dialogue and/or cutscene, in the configured order, locking player
  * movement only while a step that asks for it is running.
  *
- * Talks to the outside world through Output, and is told about progress through onDialogueFinished, 
- * onCutsceneFinished and onCutsceneCue.
+ * <p>Talks to the outside world through Output, and is told about progress through
+ * onDialogueFinished, onCutsceneFinished and onCutsceneCue.
  *
- * The dialogue or cutscene system may report "finished" synchronously from inside startDialogue/startCutscene
- * (for example when content is missing). Every output call is therefore the last thing a method does.
+ * <p>The dialogue or cutscene system may report "finished" synchronously from inside
+ * startDialogue/startCutscene (for example when content is missing). Every output call is therefore
+ * the last thing a method does.
  */
 public class NpcInteractionSequence {
   /** Side effects of the sequence. */
