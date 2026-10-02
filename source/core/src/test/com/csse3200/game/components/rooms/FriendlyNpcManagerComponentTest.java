@@ -52,8 +52,15 @@ class FriendlyNpcManagerComponentTest {
     TerrainComponent terrain = mock(TerrainComponent.class);
     when(room.getEvents()).thenReturn(new EventHandler());
     when(terrain.getTileSize()).thenReturn(1f);
+    // EntityManagerComponent.spawnEntity rejects entities outside the map bounds, so the mocked
+    // terrain needs a map large enough to hold every NPC these tests spawn.
+    when(terrain.getMapBounds(0)).thenReturn(new GridPoint2(20, 20));
     when(terrain.tileToWorldPosition(any(GridPoint2.class)))
-        .thenAnswer(inv -> new Vector2(((GridPoint2) inv.getArgument(0)).x, 0f));
+        .thenAnswer(
+            inv -> {
+              GridPoint2 tile = inv.getArgument(0);
+              return new Vector2(tile.x, tile.y);
+            });
     when(room.getComponent(TerrainComponent.class)).thenReturn(terrain);
 
     player = new Entity().addComponent(new NpcInteractorComponent());
