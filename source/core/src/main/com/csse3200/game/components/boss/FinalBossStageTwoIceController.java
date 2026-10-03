@@ -64,30 +64,11 @@ class FinalBossStageTwoIceController {
 
   void update(float delta, Rectangle arenaBounds) {
     if (disposed || !Float.isFinite(delta) || delta < 0f) return;
-    for (Cover cover : new ArrayList<>(covers)) {
-      cover.lifetimeElapsed += delta;
-      if (cover.lifetimeElapsed >= config.iceCoverLifetime) {
-        covers.remove(cover);
-        disposeCover(cover);
-        continue;
-      }
-      cover.hitFlashRemaining = Math.max(0f, cover.hitFlashRemaining - delta);
-      cover.spawnElapsed = Math.min(config.iceSpawnDuration, cover.spawnElapsed + delta);
-    }
-    for (Shatter shatter : shatters) shatter.elapsed += delta;
-    shatters.removeIf(shatter -> shatter.elapsed >= config.iceShatterDuration);
+    updateCoverEffects(delta);
     if (!validBounds(arenaBounds)) return;
     boolean resized = currentArena != null && !currentArena.equals(arenaBounds);
     currentArena = new Rectangle(arenaBounds);
-
-    Rectangle interior = inset(currentArena, config.iceCoverGap);
-    for (Cover cover : new ArrayList<>(covers)) {
-      boolean actorClampedInside =
-          resized && (overlapsActor(cover.bounds, boss) || overlapsActor(cover.bounds, player));
-      if ((!contains(interior, cover.bounds) || actorClampedInside) && covers.remove(cover)) {
-        disposeCover(cover);
-      }
-    }
+    removeBlockedCovers(resized);
 
     PhysicsService physicsService = ServiceLocator.getPhysicsService();
     EntityService entities = ServiceLocator.getEntityService();
@@ -106,6 +87,32 @@ class FinalBossStageTwoIceController {
       // A long frame replenishes at most one batch, without accumulating missed spawn attempts.
       respawnElapsed %= config.iceCoverRespawnInterval;
       requestSpawn(config.iceCoverRespawnBatch, physics, entities);
+    }
+  }
+
+  private void updateCoverEffects(float delta) {
+    for (Cover cover : new ArrayList<>(covers)) {
+      cover.lifetimeElapsed += delta;
+      if (cover.lifetimeElapsed >= config.iceCoverLifetime) {
+        covers.remove(cover);
+        disposeCover(cover);
+        continue;
+      }
+      cover.hitFlashRemaining = Math.max(0f, cover.hitFlashRemaining - delta);
+      cover.spawnElapsed = Math.min(config.iceSpawnDuration, cover.spawnElapsed + delta);
+    }
+    for (Shatter shatter : shatters) shatter.elapsed += delta;
+    shatters.removeIf(shatter -> shatter.elapsed >= config.iceShatterDuration);
+  }
+
+  private void removeBlockedCovers(boolean resized) {
+    Rectangle interior = inset(currentArena, config.iceCoverGap);
+    for (Cover cover : new ArrayList<>(covers)) {
+      boolean actorClampedInside =
+          resized && (overlapsActor(cover.bounds, boss) || overlapsActor(cover.bounds, player));
+      if ((!contains(interior, cover.bounds) || actorClampedInside) && covers.remove(cover)) {
+        disposeCover(cover);
+      }
     }
   }
 

@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageTwoConfig;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.GameTime;
@@ -187,9 +188,8 @@ class FinalBossStageTwoComponentTest {
   @Test
   void oversizedDamageStopsAtSixtyPercentAndCompletesTheStageOnlyOnce() {
     List<FinalBossPhase> completed = new ArrayList<>();
-    boss.getEvents()
-        .addListener(
-            FinalBossEvents.STAGE_COMPLETED, (FinalBossPhase phase) -> completed.add(phase));
+    EventListener1<FinalBossPhase> completionListener = completed::add;
+    boss.getEvents().addListener(FinalBossEvents.STAGE_COMPLETED, completionListener);
     stageTwo.startEncounter();
 
     stats.takeDamage(10000);

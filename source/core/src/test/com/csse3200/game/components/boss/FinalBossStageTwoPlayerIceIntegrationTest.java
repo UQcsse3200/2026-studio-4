@@ -137,7 +137,7 @@ class FinalBossStageTwoPlayerIceIntegrationTest {
     assertTrue(weapon.shots.getFirst().velocity.y > 0f);
     for (int frame = 0; frame < 70 && bossStats.getHealth() == 800; frame++) advance(0.05f);
 
-    assertEquals(800 - config.iceProjectileDamage, bossStats.getHealth());
+    assertEquals(800 - config.iceProjectileDamage, (float) bossStats.getHealth());
     assertTrue(weapon.shots.isEmpty());
     assertTrue(protection.isShielded());
     assertTrue(bossStats.isInvulnerable());
@@ -350,7 +350,7 @@ class FinalBossStageTwoPlayerIceIntegrationTest {
 
     assertEquals(100, playerStats.getHealth());
     assertEquals(0f, playerStats.getIncomingDamageMultiplier());
-    assertEquals(800 - config.iceProjectileDamage, bossStats.getHealth());
+    assertEquals(800 - config.iceProjectileDamage, (float) bossStats.getHealth());
   }
 
   @Test

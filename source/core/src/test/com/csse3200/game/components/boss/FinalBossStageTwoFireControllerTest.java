@@ -60,12 +60,9 @@ class FinalBossStageTwoFireControllerTest {
           true,
           ORIGIN,
           0f,
-          DISTANT_PLAYER,
-          DISTANT_PLAYER,
-          0.25f,
+          new FinalBossStageTwoProjectileTarget(DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, () -> {}),
           LARGE_ARENA,
-          NO_WALL,
-          () -> {});
+          NO_WALL);
 
       assertEquals(expectedCounts[pattern], patterned.fireballs.size());
       for (FinalBossStageTwoFireController.Fireball ball : patterned.fireballs) {
@@ -89,12 +86,9 @@ class FinalBossStageTwoFireControllerTest {
         true,
         movedOrigin,
         0f,
-        DISTANT_PLAYER,
-        DISTANT_PLAYER,
-        0.25f,
+        new FinalBossStageTwoProjectileTarget(DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, () -> {}),
         LARGE_ARENA,
-        NO_WALL,
-        () -> {});
+        NO_WALL);
 
     assertTrue(controller.fireballs.size() > earlierCount);
     for (int i = earlierCount; i < controller.fireballs.size(); i++) {
@@ -241,12 +235,9 @@ class FinalBossStageTwoFireControllerTest {
         true,
         ORIGIN,
         0f,
-        DISTANT_PLAYER,
-        DISTANT_PLAYER,
-        0.25f,
+        new FinalBossStageTwoProjectileTarget(DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, () -> {}),
         ARENA,
-        (from, to) -> from.equals(ORIGIN) ? 0f : Float.POSITIVE_INFINITY,
-        () -> {});
+        (from, to) -> from.equals(ORIGIN) ? 0f : Float.POSITIVE_INFINITY);
 
     assertTrue(controller.fireballs.isEmpty());
     assertEquals(0f, controller.getCastRemaining());
@@ -278,16 +269,17 @@ class FinalBossStageTwoFireControllerTest {
         true,
         ORIGIN,
         0f,
-        ORIGIN,
-        ORIGIN,
-        0.25f,
+        new FinalBossStageTwoProjectileTarget(
+            ORIGIN,
+            ORIGIN,
+            0.25f,
+            () -> {
+              hits.incrementAndGet();
+              assertEquals(1, controller.fireballs.size());
+              controller.clear();
+            }),
         ARENA,
-        NO_WALL,
-        () -> {
-          hits.incrementAndGet();
-          assertEquals(1, controller.fireballs.size());
-          controller.clear();
-        });
+        NO_WALL);
 
     assertEquals(1, hits.get());
     assertTrue(controller.fireballs.isEmpty());
@@ -318,7 +310,13 @@ class FinalBossStageTwoFireControllerTest {
     controller.impacts.add(new FinalBossStageTwoFireController.Impact(ORIGIN));
 
     controller.update(
-        0.1f, true, ORIGIN, 0f, DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, null, NO_WALL, () -> {});
+        0.1f,
+        true,
+        ORIGIN,
+        0f,
+        new FinalBossStageTwoProjectileTarget(DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, () -> {}),
+        null,
+        NO_WALL);
 
     assertTrue(controller.fireballs.isEmpty());
     assertTrue(controller.impacts.isEmpty());
@@ -363,12 +361,9 @@ class FinalBossStageTwoFireControllerTest {
           true,
           origin,
           radius,
-          DISTANT_PLAYER,
-          DISTANT_PLAYER,
-          0.25f,
+          new FinalBossStageTwoProjectileTarget(DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, () -> {}),
           LARGE_ARENA,
-          NO_WALL,
-          () -> {});
+          NO_WALL);
 
       assertEquals(expectedCounts[pattern], patterned.fireballs.size());
       for (var ball : patterned.fireballs) {
@@ -397,12 +392,9 @@ class FinalBossStageTwoFireControllerTest {
         true,
         origin,
         2f,
-        DISTANT_PLAYER,
-        DISTANT_PLAYER,
-        0.25f,
+        new FinalBossStageTwoProjectileTarget(DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, () -> {}),
         LARGE_ARENA,
-        NO_WALL,
-        () -> {});
+        NO_WALL);
     List<Vector2> initial = controller.fireballs.stream().map(ball -> ball.position.cpy()).toList();
     origin.set(100f, 100f);
 
@@ -411,12 +403,9 @@ class FinalBossStageTwoFireControllerTest {
         false,
         origin,
         9f,
-        DISTANT_PLAYER,
-        DISTANT_PLAYER,
-        0.25f,
+        new FinalBossStageTwoProjectileTarget(DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, () -> {}),
         LARGE_ARENA,
-        NO_WALL,
-        () -> {});
+        NO_WALL);
 
     for (int index = 0; index < initial.size(); index++) {
       var ball = controller.fireballs.get(index);
@@ -450,7 +439,13 @@ class FinalBossStageTwoFireControllerTest {
           }
         };
     controller.update(
-        0.61f, true, ORIGIN, 2f, DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, ARENA, wall, () -> {});
+        0.61f,
+        true,
+        ORIGIN,
+        2f,
+        new FinalBossStageTwoProjectileTarget(DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, () -> {}),
+        ARENA,
+        wall);
 
     assertEquals(3, controller.fireballs.size());
     assertTrue(controller.fireballs.stream().allMatch(ball -> ball.position.x < 5.5f));
@@ -474,7 +469,13 @@ class FinalBossStageTwoFireControllerTest {
           }
         };
     controller.update(
-        0.61f, true, ORIGIN, 2f, DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, ARENA, enclosure, () -> {});
+        0.61f,
+        true,
+        ORIGIN,
+        2f,
+        new FinalBossStageTwoProjectileTarget(DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, () -> {}),
+        ARENA,
+        enclosure);
 
     assertTrue(controller.fireballs.isEmpty());
     assertTrue(controller.impacts.isEmpty());
@@ -487,7 +488,13 @@ class FinalBossStageTwoFireControllerTest {
     controller = new FinalBossStageTwoFireController(config, new PatternRandom(0));
     Vector2 nearEdge = new Vector2(9.5f, 5f);
     controller.update(
-        0.61f, true, nearEdge, 2f, DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, ARENA, NO_WALL, () -> {});
+        0.61f,
+        true,
+        nearEdge,
+        2f,
+        new FinalBossStageTwoProjectileTarget(DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, () -> {}),
+        ARENA,
+        NO_WALL);
 
     assertEquals(3, controller.fireballs.size());
     for (var ball : controller.fireballs) {
@@ -496,7 +503,13 @@ class FinalBossStageTwoFireControllerTest {
     }
     controller.clear();
     controller.update(
-        0.61f, true, ORIGIN, 100f, DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, ARENA, NO_WALL, () -> {});
+        0.61f,
+        true,
+        ORIGIN,
+        100f,
+        new FinalBossStageTwoProjectileTarget(DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, () -> {}),
+        ARENA,
+        NO_WALL);
     assertTrue(controller.fireballs.isEmpty());
   }
 
@@ -510,12 +523,9 @@ class FinalBossStageTwoFireControllerTest {
         true,
         ORIGIN,
         2f,
-        insideRing,
-        insideRing,
-        0.25f,
+        new FinalBossStageTwoProjectileTarget(insideRing, insideRing, 0.25f, hits::incrementAndGet),
         ARENA,
-        NO_WALL,
-        hits::incrementAndGet);
+        NO_WALL);
     assertEquals(0, hits.get(), "The left spawn skips over x=4 without being a damaging sweep");
     assertEquals(6, controller.fireballs.size());
 
@@ -525,12 +535,10 @@ class FinalBossStageTwoFireControllerTest {
         false,
         ORIGIN,
         2f,
-        outsideRing,
-        outsideRing,
-        0.25f,
+        new FinalBossStageTwoProjectileTarget(
+            outsideRing, outsideRing, 0.25f, hits::incrementAndGet),
         ARENA,
-        NO_WALL,
-        hits::incrementAndGet);
+        NO_WALL);
     assertEquals(1, hits.get());
     assertEquals(5, controller.fireballs.size());
     assertEquals(1, controller.impacts.size());
@@ -547,12 +555,9 @@ class FinalBossStageTwoFireControllerTest {
           true,
           ORIGIN,
           radius,
-          DISTANT_PLAYER,
-          DISTANT_PLAYER,
-          0.25f,
+          new FinalBossStageTwoProjectileTarget(DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, () -> {}),
           LARGE_ARENA,
-          NO_WALL,
-          () -> {});
+          NO_WALL);
       assertEquals(List.of(ball), controller.fireballs);
       assertTrue(ball.position.x > previousX);
     }
@@ -568,12 +573,9 @@ class FinalBossStageTwoFireControllerTest {
         true,
         ORIGIN,
         2f,
-        DISTANT_PLAYER,
-        DISTANT_PLAYER,
-        0.25f,
+        new FinalBossStageTwoProjectileTarget(DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, () -> {}),
         LARGE_ARENA,
-        verticalWall(4.5f),
-        () -> {});
+        verticalWall(4.5f));
 
     assertEquals(8, controller.fireballs.size());
     assertTrue(
@@ -588,12 +590,9 @@ class FinalBossStageTwoFireControllerTest {
         canFire,
         ORIGIN,
         0f,
-        DISTANT_PLAYER,
-        DISTANT_PLAYER,
-        0.25f,
+        new FinalBossStageTwoProjectileTarget(DISTANT_PLAYER, DISTANT_PLAYER, 0.25f, () -> {}),
         LARGE_ARENA,
-        NO_WALL,
-        () -> {});
+        NO_WALL);
   }
 
   private void updateAgainstPlayer(
@@ -602,7 +601,14 @@ class FinalBossStageTwoFireControllerTest {
       Vector2 now,
       FinalBossStageTwoFireController.WallQuery walls,
       Runnable hit) {
-    controller.update(delta, false, ORIGIN, 0f, before, now, 0.25f, ARENA, walls, hit);
+    controller.update(
+        delta,
+        false,
+        ORIGIN,
+        0f,
+        new FinalBossStageTwoProjectileTarget(before, now, 0.25f, hit),
+        ARENA,
+        walls);
   }
 
   private FinalBossStageTwoFireController.Fireball addBall(

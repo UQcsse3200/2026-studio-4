@@ -62,6 +62,46 @@ public class FinalBossStageTwoComponent extends Component {
           WallHit hit = findWall(from, to);
           if (ice != null && hit.fixture() != null) ice.hitByFire(hit.fixture());
         }
+
+        /**
+         * Pure query; cover durability changes only after the fire controller consumes a real hit.
+         */
+        private WallHit findWall(Vector2 from, Vector2 to) {
+          if (ServiceLocator.getPhysicsService() == null)
+            return new WallHit(null, Float.POSITIVE_INFINITY);
+          World world = ServiceLocator.getPhysicsService().getPhysics().getWorld();
+          Fixture[] nearestFixture = {null};
+          world.QueryAABB(
+              fixture -> {
+                if (!fixture.isSensor()
+                    && fixture.getBody().getType() == BodyType.StaticBody
+                    && fixture.testPoint(from)) {
+                  nearestFixture[0] = fixture;
+                  return false;
+                }
+                return true;
+              },
+              from.x - 0.001f,
+              from.y - 0.001f,
+              from.x + 0.001f,
+              from.y + 0.001f);
+          if (nearestFixture[0] != null) return new WallHit(nearestFixture[0], 0f);
+          if (from.epsilonEquals(to, 0.0001f)) return new WallHit(null, Float.POSITIVE_INFINITY);
+          float[] nearest = {Float.POSITIVE_INFINITY};
+          world.rayCast(
+              (fixture, point, normal, fraction) -> {
+                if (fixture.isSensor() || fixture.getBody().getType() != BodyType.StaticBody)
+                  return -1f;
+                if (fraction < nearest[0]) {
+                  nearest[0] = fraction;
+                  nearestFixture[0] = fixture;
+                }
+                return fraction;
+              },
+              from,
+              to);
+          return new WallHit(nearestFixture[0], nearest[0]);
+        }
       };
 
   public FinalBossStageTwoComponent(FinalBossStageTwoConfig stageTwoConfig) {
@@ -185,6 +225,16 @@ public class FinalBossStageTwoComponent extends Component {
     if (ice != null) ice.update(delta, bounds);
     Vector2 playerNow = target.getCenterPosition();
     Vector2 playerBefore = previousPlayerCentre == null ? playerNow : previousPlayerCentre;
+    if (!advanceFireCycle(delta, bounds, playerBefore, playerNow)) return;
+    updatePickups(delta, bounds, playerBefore, playerNow);
+    previousPlayerCentre = playerNow;
+  }
+
+  /**
+   * Splits player motion at firing boundaries and stops if a damage callback ends the encounter.
+   */
+  private boolean advanceFireCycle(
+      float delta, Rectangle bounds, Vector2 playerBefore, Vector2 playerNow) {
     Vector2 origin = entity.getCenterPosition();
     float spawnRadius = FinalBossStageTwoFireGeometry.spawnRadius(entity.getScale());
     float radius = Math.max(0.2f, Math.min(target.getScale().x, target.getScale().y) * 0.3f);
@@ -203,16 +253,13 @@ public class FinalBossStageTwoComponent extends Component {
           firing,
           origin,
           spawnRadius,
-          from,
-          to,
-          radius,
+          new FinalBossStageTwoProjectileTarget(from, to, radius, this::hitPlayer),
           bounds,
-          walls,
-          this::hitPlayer);
+          walls);
       if (!canContinueFire()) {
         clearEffects();
         stopRoaming();
-        return;
+        return false;
       }
       consumed += chunk;
       cursor += chunk;
@@ -225,26 +272,30 @@ public class FinalBossStageTwoComponent extends Component {
           false,
           origin,
           spawnRadius,
-          playerBefore.cpy().lerp(playerNow, (float) (consumed / delta)),
-          playerNow,
-          radius,
+          new FinalBossStageTwoProjectileTarget(
+              playerBefore.cpy().lerp(playerNow, (float) (consumed / delta)),
+              playerNow,
+              radius,
+              this::hitPlayer),
           bounds,
-          walls,
-          this::hitPlayer);
+          walls);
       if (!canContinueFire()) clearEffects();
     }
-    if (pickups != null && canContinueFire()) {
-      pickups.update(
-          delta,
-          bounds,
-          actorBounds(entity),
-          actorBounds(target),
-          playerBefore,
-          this::isPickupSpaceClear);
-      if (pickups.getChargeCount() > 0) iceBuffEndRemaining = 0f;
-      updatePlayerIce(delta, bounds, playerNow);
-    }
-    previousPlayerCentre = playerNow;
+    return true;
+  }
+
+  private void updatePickups(
+      float delta, Rectangle bounds, Vector2 playerBefore, Vector2 playerNow) {
+    if (pickups == null || !canContinueFire()) return;
+    pickups.update(
+        delta,
+        bounds,
+        actorBounds(entity),
+        actorBounds(target),
+        playerBefore,
+        this::isPickupSpaceClear);
+    if (pickups.getChargeCount() > 0) iceBuffEndRemaining = 0f;
+    updatePlayerIce(delta, bounds, playerNow);
   }
 
   private boolean isIceInputActive() {
@@ -275,12 +326,9 @@ public class FinalBossStageTwoComponent extends Component {
         delta,
         held && canAct,
         origin,
-        bossBefore,
-        bossNow,
-        radius,
+        new FinalBossStageTwoProjectileTarget(bossBefore, bossNow, radius, this::hitBossWithIce),
         bounds,
         walls,
-        this::hitBossWithIce,
         pickups);
     if (!canContinueFire()) {
       clearEffects();
@@ -379,43 +427,6 @@ public class FinalBossStageTwoComponent extends Component {
   private void clearFireDamage() {
     fireDamageRemainder = 0d;
     shieldFireDamageRemainder = 0d;
-  }
-
-  /** Pure query; cover durability changes only after the fire controller consumes a real hit. */
-  private WallHit findWall(Vector2 from, Vector2 to) {
-    if (ServiceLocator.getPhysicsService() == null)
-      return new WallHit(null, Float.POSITIVE_INFINITY);
-    World world = ServiceLocator.getPhysicsService().getPhysics().getWorld();
-    Fixture[] nearestFixture = {null};
-    world.QueryAABB(
-        fixture -> {
-          if (!fixture.isSensor()
-              && fixture.getBody().getType() == BodyType.StaticBody
-              && fixture.testPoint(from)) {
-            nearestFixture[0] = fixture;
-            return false;
-          }
-          return true;
-        },
-        from.x - 0.001f,
-        from.y - 0.001f,
-        from.x + 0.001f,
-        from.y + 0.001f);
-    if (nearestFixture[0] != null) return new WallHit(nearestFixture[0], 0f);
-    if (from.epsilonEquals(to, 0.0001f)) return new WallHit(null, Float.POSITIVE_INFINITY);
-    float[] nearest = {Float.POSITIVE_INFINITY};
-    world.rayCast(
-        (fixture, point, normal, fraction) -> {
-          if (fixture.isSensor() || fixture.getBody().getType() != BodyType.StaticBody) return -1f;
-          if (fraction < nearest[0]) {
-            nearest[0] = fraction;
-            nearestFixture[0] = fixture;
-          }
-          return fraction;
-        },
-        from,
-        to);
-    return new WallHit(nearestFixture[0], nearest[0]);
   }
 
   private record WallHit(Fixture fixture, float fraction) {}

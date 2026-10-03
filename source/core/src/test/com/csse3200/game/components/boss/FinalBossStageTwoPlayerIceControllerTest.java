@@ -177,7 +177,13 @@ class FinalBossStageTwoPlayerIceControllerTest {
     for (Vector2 origin :
         new Vector2[] {null, new Vector2(Float.NaN, 0f), new Vector2(2000f, 0f)}) {
       controller.update(
-          1f, true, origin, DISTANT_BOSS, DISTANT_BOSS, 0.5f, ARENA, null, () -> {}, energy);
+          1f,
+          true,
+          origin,
+          new FinalBossStageTwoProjectileTarget(DISTANT_BOSS, DISTANT_BOSS, 0.5f, () -> {}),
+          ARENA,
+          null,
+          energy);
     }
     update(1f, true, DISTANT_BOSS, DISTANT_BOSS, (from, to) -> 0f, () -> {});
     assertTrue(controller.shots.isEmpty());
@@ -279,12 +285,10 @@ class FinalBossStageTwoPlayerIceControllerTest {
         1f,
         false,
         ORIGIN,
-        new Vector2(0.2f, -1f),
-        new Vector2(0.2f, 1f),
-        0.1f,
+        new FinalBossStageTwoProjectileTarget(
+            new Vector2(0.2f, -1f), new Vector2(0.2f, 1f), 0.1f, hits::incrementAndGet),
         ARENA,
         null,
-        hits::incrementAndGet,
         energy);
     assertEquals(0, hits.get(), "The boss crosses this path only after the shot has expired");
     assertTrue(controller.shots.isEmpty());
@@ -301,12 +305,9 @@ class FinalBossStageTwoPlayerIceControllerTest {
         1f,
         false,
         ORIGIN,
-        target,
-        target,
-        1.5f,
+        new FinalBossStageTwoProjectileTarget(target, target, 1.5f, hits::incrementAndGet),
         new Rectangle(0f, 0f, 10f, 10f),
         null,
-        hits::incrementAndGet,
         energy);
     assertEquals(0, hits.get());
     assertEquals(10f, shot.position.x, EPSILON);
@@ -388,7 +389,13 @@ class FinalBossStageTwoPlayerIceControllerTest {
     }
     controller.impacts.add(new FinalBossStageTwoPlayerIceController.Impact(ORIGIN));
     controller.update(
-        0.1f, false, ORIGIN, DISTANT_BOSS, DISTANT_BOSS, 0.5f, null, null, () -> {}, energy);
+        0.1f,
+        false,
+        ORIGIN,
+        new FinalBossStageTwoProjectileTarget(DISTANT_BOSS, DISTANT_BOSS, 0.5f, () -> {}),
+        null,
+        null,
+        energy);
     assertTrue(controller.shots.isEmpty());
     assertTrue(controller.impacts.isEmpty());
   }
@@ -419,6 +426,13 @@ class FinalBossStageTwoPlayerIceControllerTest {
       Vector2 now,
       FinalBossStageTwoFireController.WallQuery walls,
       Runnable hit) {
-    controller.update(delta, firing, ORIGIN, before, now, 0.5f, ARENA, walls, hit, energy);
+    controller.update(
+        delta,
+        firing,
+        ORIGIN,
+        new FinalBossStageTwoProjectileTarget(before, now, 0.5f, hit),
+        ARENA,
+        walls,
+        energy);
   }
 }

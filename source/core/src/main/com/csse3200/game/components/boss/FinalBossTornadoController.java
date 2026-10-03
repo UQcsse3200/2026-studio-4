@@ -220,8 +220,8 @@ final class FinalBossTornadoController {
     Vector2 lower = clamp(new Vector2(bounds.x, bounds.y));
     Vector2 upper = clamp(new Vector2(bounds.x + bounds.width, bounds.y + bounds.height));
     float diagonalOffset = radius / (float) Math.sqrt(2d);
-    float marginX = Math.min(diagonalOffset, Math.max(0f, (upper.x - lower.x) * 0.5f));
-    float marginY = Math.min(diagonalOffset, Math.max(0f, (upper.y - lower.y) * 0.5f));
+    float marginX = Math.clamp((upper.x - lower.x) * 0.5f, 0f, diagonalOffset);
+    float marginY = Math.clamp((upper.y - lower.y) * 0.5f, 0f, diagonalOffset);
     return new Vector2(
         MathUtils.clamp(player.x, lower.x + marginX, upper.x - marginX),
         MathUtils.clamp(player.y, lower.y + marginY, upper.y - marginY));

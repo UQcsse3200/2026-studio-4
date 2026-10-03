@@ -31,12 +31,9 @@ final class FinalBossStageTwoPlayerIceController {
       float delta,
       boolean firing,
       Vector2 origin,
-      Vector2 bossBefore,
-      Vector2 bossNow,
-      float bossRadius,
+      FinalBossStageTwoProjectileTarget target,
       Rectangle bounds,
       FinalBossStageTwoFireController.WallQuery walls,
-      Runnable hitBoss,
       FinalBossStageTwoPickupController energy) {
     if (disposed || !Float.isFinite(delta) || delta <= 0f) return;
     if (!validBounds(bounds)) {
@@ -50,10 +47,11 @@ final class FinalBossStageTwoPlayerIceController {
     long version = clearVersion;
     for (Shot shot : new ArrayList<>(shots)) {
       if (!shots.contains(shot)) continue;
-      advance(shot, delta, bossBefore, bossNow, bossRadius, bounds, walls, hitBoss);
+      advance(shot, delta, target, bounds, walls);
       if (version != clearVersion) return;
     }
 
+    Vector2 bossNow = target == null ? null : target.currentPosition();
     float cost = 1f / config.iceShotsPerCharge;
     if (!firing
         || cooldown > 0f
@@ -78,19 +76,16 @@ final class FinalBossStageTwoPlayerIceController {
   private void advance(
       Shot shot,
       float delta,
-      Vector2 bossBefore,
-      Vector2 bossNow,
-      float bossRadius,
+      FinalBossStageTwoProjectileTarget target,
       Rectangle bounds,
-      FinalBossStageTwoFireController.WallQuery walls,
-      Runnable hitBoss) {
+      FinalBossStageTwoFireController.WallQuery walls) {
     float remaining = config.iceProjectileLifetime - shot.elapsed;
     if (remaining <= 0f) {
       shots.remove(shot);
       return;
     }
     float flightTime = Math.min(delta, remaining);
-    steer(shot, bossNow, flightTime);
+    steer(shot, target == null ? null : target.currentPosition(), flightTime);
     Vector2 from = shot.position.cpy();
     Vector2 to = from.cpy().mulAdd(shot.velocity, flightTime);
     float wallHit = wallFraction(walls, from, to);
@@ -98,24 +93,21 @@ final class FinalBossStageTwoPlayerIceController {
     float expiryHit = delta >= remaining ? 1f : NO_HIT;
     float blockedAt = Math.min(wallHit, Math.min(boundaryHit, expiryHit));
     float bossHit = NO_HIT;
-    if (hitBoss != null
-        && validPoint(bossBefore)
-        && validPoint(bossNow)
-        && Float.isFinite(bossRadius)
-        && bossRadius >= 0f) {
-      Vector2 bossEnd = bossBefore.cpy().lerp(bossNow, flightTime / delta);
+    if (target != null && target.canBeHit()) {
+      Vector2 bossEnd =
+          target.previousPosition().cpy().lerp(target.currentPosition(), flightTime / delta);
       bossHit =
           circleHitFraction(
-              from.cpy().sub(bossBefore),
+              from.cpy().sub(target.previousPosition()),
               to.cpy().sub(bossEnd),
-              config.iceProjectileRadius + bossRadius);
+              config.iceProjectileRadius + target.radius());
     }
     if (bossHit < blockedAt && bossHit <= 1f) {
       shot.position.set(from.lerp(to, bossHit));
       shots.remove(shot);
       impacts.add(new Impact(shot.position));
       // Health events may synchronously end the encounter. Remove before notifying the owner.
-      hitBoss.run();
+      target.onHit().run();
     } else if (blockedAt <= 1f) {
       shot.position.set(from.lerp(to, blockedAt));
       shots.remove(shot);

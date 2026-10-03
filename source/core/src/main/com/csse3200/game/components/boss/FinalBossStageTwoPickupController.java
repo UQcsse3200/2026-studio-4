@@ -54,6 +54,25 @@ final class FinalBossStageTwoPickupController {
       return;
     }
     arenaBounds = new Rectangle(arena);
+    updateEffects(delta);
+    pickups.removeIf(pickup -> !insideArena(pickup.position));
+    collectOrExpirePickups(delta, playerBounds, previousPlayerCentre);
+
+    // New gems exist only at the end of this update, so an earlier dash cannot collect them.
+    if (!initialized) {
+      initialized = true;
+      spawnElapsed = 0d;
+      spawn(bossBounds, playerBounds, placement);
+      return;
+    }
+    spawnElapsed += delta;
+    if (spawnElapsed >= config.icePickupSpawnInterval) {
+      spawnElapsed %= config.icePickupSpawnInterval;
+      spawn(bossBounds, playerBounds, placement);
+    }
+  }
+
+  private void updateEffects(float delta) {
     for (Burst burst : bursts) burst.elapsed += delta;
     bursts.removeIf(burst -> burst.elapsed >= config.icePickupEffectDuration);
     for (Burst disappearance : disappearances) disappearance.elapsed += delta;
@@ -61,8 +80,10 @@ final class FinalBossStageTwoPickupController {
         disappearance ->
             disappearance.elapsed >= config.icePickupDisappearDuration
                 || !insideArena(disappearance.position));
-    pickups.removeIf(pickup -> !insideArena(pickup.position));
+  }
 
+  private void collectOrExpirePickups(
+      float delta, Rectangle playerBounds, Vector2 previousPlayerCentre) {
     Vector2 current = validBounds(playerBounds) ? playerBounds.getCenter(new Vector2()) : null;
     Vector2 previous = validPoint(previousPlayerCentre) ? previousPlayerCentre : current;
     double radius =
@@ -83,31 +104,21 @@ final class FinalBossStageTwoPickupController {
         chargeOrder[chargeCount++] = slot;
         bursts.add(new Burst(pickup.position));
       } else {
-        pickup.elapsed += delta;
-        if (pickup.elapsed >= config.icePickupLifetime) {
-          pickups.remove(pickup);
-          double sinceExpiry = pickup.elapsed - config.icePickupLifetime;
-          // Expiry occurs within the frame. Do not replay an animation already over after a stall.
-          if (sinceExpiry < config.icePickupDisappearDuration) {
-            Burst disappearance = new Burst(pickup.position);
-            disappearance.elapsed = (float) sinceExpiry;
-            disappearances.add(disappearance);
-          }
-        }
+        expirePickup(pickup, delta);
       }
     }
+  }
 
-    // New gems exist only at the end of this update, so an earlier dash cannot collect them.
-    if (!initialized) {
-      initialized = true;
-      spawnElapsed = 0d;
-      spawn(bossBounds, playerBounds, placement);
-      return;
-    }
-    spawnElapsed += delta;
-    if (spawnElapsed >= config.icePickupSpawnInterval) {
-      spawnElapsed %= config.icePickupSpawnInterval;
-      spawn(bossBounds, playerBounds, placement);
+  private void expirePickup(Pickup pickup, float delta) {
+    pickup.elapsed += delta;
+    if (pickup.elapsed < config.icePickupLifetime) return;
+    pickups.remove(pickup);
+    double sinceExpiry = pickup.elapsed - config.icePickupLifetime;
+    // Expiry occurs within the frame. Do not replay an animation already over after a stall.
+    if (sinceExpiry < config.icePickupDisappearDuration) {
+      Burst disappearance = new Burst(pickup.position);
+      disappearance.elapsed = (float) sinceExpiry;
+      disappearances.add(disappearance);
     }
   }
 

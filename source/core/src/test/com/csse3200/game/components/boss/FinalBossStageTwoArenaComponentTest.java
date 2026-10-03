@@ -129,6 +129,25 @@ class FinalBossStageTwoArenaComponentTest {
   }
 
   @Test
+  void phaseExitDuringBossContainmentDoesNotClampThePlayerWithClearedBounds() {
+    activate();
+    boss.setPosition(22f, 20f);
+    player.setPosition(-4f, -4f);
+    boss.getEvents()
+        .addListener(
+            "setPosition",
+            (Vector2 position) -> {
+              when(phases.getCurrentPhase()).thenReturn(FinalBossPhase.STAGE_THREE);
+              boss.getEvents().trigger(FinalBossEvents.PHASE_CHANGED, FinalBossPhase.STAGE_THREE);
+            });
+
+    assertDoesNotThrow(arena::update);
+
+    assertNull(arena.getBounds());
+    assertEquals(new Vector2(-4f, -4f), player.getPosition());
+  }
+
+  @Test
   void movementBoundsIncludeWholeActorAndRemainValidInTinyView() {
     activate();
     player.setScale(1.5f, 2.5f);

@@ -11,6 +11,8 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Arrays;
 import java.util.HashSet;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -18,121 +20,148 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class FinalBossStageTwoAssetsTest {
   private static final String ROOT = "images/final-boss/stage2/";
 
-  @Test
-  void selectedArtworkLoadsWithVisibleFramesWithinTextureBoundsAndReusesTextures() {
-    ResourceService resources = new ResourceService();
+  private ResourceService resources;
+  private String[] paths;
+
+  @BeforeEach
+  void loadArtwork() {
+    resources = new ResourceService();
     ServiceLocator.registerResourceService(resources);
-    String[] paths = FinalBossStageTwoAssets.paths();
-    assertEquals(25, paths.length);
-    assertEquals(paths.length, new HashSet<>(Arrays.asList(paths)).size());
+    paths = FinalBossStageTwoAssets.paths();
     resources.loadTextures(paths);
     resources.loadAll();
-    try {
-      TextureRegion[] transform = FinalBossStageTwoAssets.transformFrames();
-      assertEquals(9, transform.length);
-      assertRegion(transform[0], 0, 320, 64);
-      assertRegion(transform[8], 512, 320, 64);
-      assertVisibleRegions(resources, ROOT + "transform/01.png", transform);
-      assertSharedTextures(transform, FinalBossStageTwoAssets.transformFrames());
+  }
 
-      TextureRegion[] iceSpawn = FinalBossStageTwoAssets.iceSpawnFrames();
-      assertEquals(9, iceSpawn.length);
-      assertRegion(iceSpawn[0], 0, 384, 64);
-      assertRegion(iceSpawn[8], 512, 384, 64);
-      assertVisibleRegions(resources, ROOT + "transform/01.png", iceSpawn);
-      assertSharedTextures(iceSpawn, FinalBossStageTwoAssets.iceSpawnFrames());
-      assertSame(transform[0].getTexture(), iceSpawn[0].getTexture());
+  @AfterEach
+  void unloadArtwork() {
+    resources.unloadAssets(paths);
+  }
 
-      TextureRegion[] buffEnd = FinalBossStageTwoAssets.iceBuffEndFrames();
-      assertEquals(9, buffEnd.length);
-      assertRegion(buffEnd[0], 0, 256, 64);
-      assertRegion(buffEnd[8], 512, 256, 64);
-      assertVisibleRegions(resources, ROOT + "transform/01.png", buffEnd);
-      assertSharedTextures(buffEnd, FinalBossStageTwoAssets.iceBuffEndFrames());
-      assertSame(transform[0].getTexture(), buffEnd[0].getTexture());
+  @Test
+  void texturePathsContainEverySelectedAssetWithoutDuplicates() {
+    assertEquals(25, paths.length);
+    assertEquals(paths.length, new HashSet<>(Arrays.asList(paths)).size());
+  }
 
-      TextureRegion[] disappear = FinalBossStageTwoAssets.icePickupDisappearFrames();
-      assertEquals(9, disappear.length);
-      assertRegion(disappear[0], 0, 256, 64);
-      assertRegion(disappear[8], 512, 256, 64);
-      assertVisibleRegions(resources, ROOT + "transform/01.png", disappear);
-      assertSharedTextures(disappear, FinalBossStageTwoAssets.icePickupDisappearFrames());
-      assertSame(buffEnd[0].getTexture(), disappear[0].getTexture());
+  @Test
+  void transformationAndIceSpawnUseVisibleFramesAndShareTheirTexture() {
+    TextureRegion[] transform = FinalBossStageTwoAssets.transformFrames();
+    assertEquals(9, transform.length);
+    assertRegion(transform[0], 0, 320, 64);
+    assertRegion(transform[8], 512, 320, 64);
+    assertVisibleRegions(resources, ROOT + "transform/01.png", transform);
+    assertSharedTextures(transform, FinalBossStageTwoAssets.transformFrames());
 
-      TextureRegion[] playerIce = FinalBossStageTwoAssets.playerIceFrames();
-      String[] iceNames = {
-        "Icespear.png",
-        "Icespear2.png",
-        "Icespear3.png",
-        "Icespear4.png",
-        "Icespear5.png",
-        "Icespear6.png"
-      };
-      assertEquals(iceNames.length, playerIce.length);
-      for (int i = 0; i < playerIce.length; i++) {
-        assertEquals(0, playerIce[i].getRegionX());
-        assertEquals(0, playerIce[i].getRegionY());
-        assertEquals(64, playerIce[i].getRegionWidth());
-        assertEquals(32, playerIce[i].getRegionHeight());
-        assertVisibleRegions(
-            resources, ROOT + "ice-projectile/" + iceNames[i], new TextureRegion[] {playerIce[i]});
-      }
-      assertSharedTextures(playerIce, FinalBossStageTwoAssets.playerIceFrames());
+    TextureRegion[] iceSpawn = FinalBossStageTwoAssets.iceSpawnFrames();
+    assertEquals(9, iceSpawn.length);
+    assertRegion(iceSpawn[0], 0, 384, 64);
+    assertRegion(iceSpawn[8], 512, 384, 64);
+    assertVisibleRegions(resources, ROOT + "transform/01.png", iceSpawn);
+    assertSharedTextures(iceSpawn, FinalBossStageTwoAssets.iceSpawnFrames());
+    assertSame(transform[0].getTexture(), iceSpawn[0].getTexture());
+  }
 
-      TextureRegion[] shield = FinalBossStageTwoAssets.shieldFrames();
-      assertEquals(61, shield.length);
-      assertRegion(shield[0], 0, 0, 50);
-      assertRegion(shield[60], 200, 350, 50);
-      assertVisibleRegions(resources, ROOT + "shield/fire_circles_50x50px.png", shield);
-      assertSharedTextures(shield, FinalBossStageTwoAssets.shieldFrames());
+  @Test
+  void iceEndEffectsUseVisibleFramesAndShareTheirTexture() {
+    TextureRegion[] transform = FinalBossStageTwoAssets.transformFrames();
+    TextureRegion[] buffEnd = FinalBossStageTwoAssets.iceBuffEndFrames();
+    assertEquals(9, buffEnd.length);
+    assertRegion(buffEnd[0], 0, 256, 64);
+    assertRegion(buffEnd[8], 512, 256, 64);
+    assertVisibleRegions(resources, ROOT + "transform/01.png", buffEnd);
+    assertSharedTextures(buffEnd, FinalBossStageTwoAssets.iceBuffEndFrames());
+    assertSame(transform[0].getTexture(), buffEnd[0].getTexture());
 
-      TextureRegion[] fireball = FinalBossStageTwoAssets.fireballFrames();
-      assertEquals(5, fireball.length);
-      assertIndividualFrames(resources, "fireball", fireball);
-      assertSharedTextures(fireball, FinalBossStageTwoAssets.fireballFrames());
+    TextureRegion[] disappear = FinalBossStageTwoAssets.icePickupDisappearFrames();
+    assertEquals(9, disappear.length);
+    assertRegion(disappear[0], 0, 256, 64);
+    assertRegion(disappear[8], 512, 256, 64);
+    assertVisibleRegions(resources, ROOT + "transform/01.png", disappear);
+    assertSharedTextures(disappear, FinalBossStageTwoAssets.icePickupDisappearFrames());
+    assertSame(buffEnd[0].getTexture(), disappear[0].getTexture());
+  }
 
-      TextureRegion[] impact = FinalBossStageTwoAssets.impactFrames();
-      assertEquals(7, impact.length);
-      assertIndividualFrames(resources, "impact", impact);
-      assertSharedTextures(impact, FinalBossStageTwoAssets.impactFrames());
-
-      TextureRegion obstacle = FinalBossStageTwoAssets.obstacleRegion();
-      assertEquals(128, obstacle.getRegionX());
-      assertEquals(64, obstacle.getRegionY());
-      assertEquals(32, obstacle.getRegionWidth());
-      assertEquals(64, obstacle.getRegionHeight());
+  @Test
+  void playerIceArtworkLoadsVisibleFramesAndReusesTextures() {
+    TextureRegion[] playerIce = FinalBossStageTwoAssets.playerIceFrames();
+    String[] iceNames = {
+      "Icespear.png",
+      "Icespear2.png",
+      "Icespear3.png",
+      "Icespear4.png",
+      "Icespear5.png",
+      "Icespear6.png"
+    };
+    assertEquals(iceNames.length, playerIce.length);
+    for (int i = 0; i < playerIce.length; i++) {
+      assertEquals(0, playerIce[i].getRegionX());
+      assertEquals(0, playerIce[i].getRegionY());
+      assertEquals(64, playerIce[i].getRegionWidth());
+      assertEquals(32, playerIce[i].getRegionHeight());
       assertVisibleRegions(
-          resources, ROOT + "obstacle/crystal-icy.png", new TextureRegion[] {obstacle});
-      assertSame(obstacle.getTexture(), FinalBossStageTwoAssets.obstacleRegion().getTexture());
-
-      TextureRegion[] shatter = FinalBossStageTwoAssets.shatterFrames();
-      assertEquals(6, shatter.length);
-      int[] x = {228, 341, 455, 569, 683, 796};
-      int[] widths = {113, 114, 114, 114, 113, 114};
-      for (int i = 0; i < shatter.length; i++) {
-        assertEquals(x[i], shatter[i].getRegionX());
-        assertEquals(227, shatter[i].getRegionY());
-        assertEquals(widths[i], shatter[i].getRegionWidth());
-        assertEquals(114, shatter[i].getRegionHeight());
-      }
-      assertVisibleRegions(
-          resources, ROOT + "shatter/PixelTraps-IceShards_spritesheet.png", shatter);
-      assertSharedTextures(shatter, FinalBossStageTwoAssets.shatterFrames());
-
-      TextureRegion[] pickup = FinalBossStageTwoAssets.pickupFrames();
-      assertHorizontalFrames(
-          resources, ROOT + "pickup/GEM 1 - BLUE - Spritesheet.png", pickup, 18, 30, 10);
-      assertSharedTextures(pickup, FinalBossStageTwoAssets.pickupFrames());
-      TextureRegion[] spark = FinalBossStageTwoAssets.pickupSparkFrames();
-      assertHorizontalFrames(resources, ROOT + "pickup/Spark - Spritesheet.png", spark, 20, 19, 10);
-      assertEquals(200, spark[9].getRegionX() + spark[9].getRegionWidth());
-      assertSharedTextures(spark, FinalBossStageTwoAssets.pickupSparkFrames());
-      TextureRegion[] aura = FinalBossStageTwoAssets.iceAuraFrames();
-      assertHorizontalFrames(resources, ROOT + "ice-aura/ice_sparkles.png", aura, 48, 64, 5);
-      assertSharedTextures(aura, FinalBossStageTwoAssets.iceAuraFrames());
-    } finally {
-      resources.unloadAssets(paths);
+          resources, ROOT + "ice-projectile/" + iceNames[i], new TextureRegion[] {playerIce[i]});
     }
+    assertSharedTextures(playerIce, FinalBossStageTwoAssets.playerIceFrames());
+  }
+
+  @Test
+  void shieldAndFireArtworkLoadsVisibleFramesAndReusesTextures() {
+    TextureRegion[] shield = FinalBossStageTwoAssets.shieldFrames();
+    assertEquals(61, shield.length);
+    assertRegion(shield[0], 0, 0, 50);
+    assertRegion(shield[60], 200, 350, 50);
+    assertVisibleRegions(resources, ROOT + "shield/fire_circles_50x50px.png", shield);
+    assertSharedTextures(shield, FinalBossStageTwoAssets.shieldFrames());
+
+    TextureRegion[] fireball = FinalBossStageTwoAssets.fireballFrames();
+    assertEquals(5, fireball.length);
+    assertIndividualFrames(resources, "fireball", fireball);
+    assertSharedTextures(fireball, FinalBossStageTwoAssets.fireballFrames());
+
+    TextureRegion[] impact = FinalBossStageTwoAssets.impactFrames();
+    assertEquals(7, impact.length);
+    assertIndividualFrames(resources, "impact", impact);
+    assertSharedTextures(impact, FinalBossStageTwoAssets.impactFrames());
+  }
+
+  @Test
+  void iceCoverAndShatterArtworkLoadsVisibleFramesAndReusesTextures() {
+    TextureRegion obstacle = FinalBossStageTwoAssets.obstacleRegion();
+    assertEquals(128, obstacle.getRegionX());
+    assertEquals(64, obstacle.getRegionY());
+    assertEquals(32, obstacle.getRegionWidth());
+    assertEquals(64, obstacle.getRegionHeight());
+    assertVisibleRegions(
+        resources, ROOT + "obstacle/crystal-icy.png", new TextureRegion[] {obstacle});
+    assertSame(obstacle.getTexture(), FinalBossStageTwoAssets.obstacleRegion().getTexture());
+
+    TextureRegion[] shatter = FinalBossStageTwoAssets.shatterFrames();
+    assertEquals(6, shatter.length);
+    int[] x = {228, 341, 455, 569, 683, 796};
+    int[] widths = {113, 114, 114, 114, 113, 114};
+    for (int i = 0; i < shatter.length; i++) {
+      assertEquals(x[i], shatter[i].getRegionX());
+      assertEquals(227, shatter[i].getRegionY());
+      assertEquals(widths[i], shatter[i].getRegionWidth());
+      assertEquals(114, shatter[i].getRegionHeight());
+    }
+    assertVisibleRegions(resources, ROOT + "shatter/PixelTraps-IceShards_spritesheet.png", shatter);
+    assertSharedTextures(shatter, FinalBossStageTwoAssets.shatterFrames());
+  }
+
+  @Test
+  void pickupAndAuraArtworkLoadsVisibleFramesAndReusesTextures() {
+    TextureRegion[] pickup = FinalBossStageTwoAssets.pickupFrames();
+    assertHorizontalFrames(
+        resources, ROOT + "pickup/GEM 1 - BLUE - Spritesheet.png", pickup, 18, 30, 10);
+    assertSharedTextures(pickup, FinalBossStageTwoAssets.pickupFrames());
+    TextureRegion[] spark = FinalBossStageTwoAssets.pickupSparkFrames();
+    assertHorizontalFrames(resources, ROOT + "pickup/Spark - Spritesheet.png", spark, 20, 19, 10);
+    assertEquals(200, spark[9].getRegionX() + spark[9].getRegionWidth());
+    assertSharedTextures(spark, FinalBossStageTwoAssets.pickupSparkFrames());
+    TextureRegion[] aura = FinalBossStageTwoAssets.iceAuraFrames();
+    assertHorizontalFrames(resources, ROOT + "ice-aura/ice_sparkles.png", aura, 48, 64, 5);
+    assertSharedTextures(aura, FinalBossStageTwoAssets.iceAuraFrames());
   }
 
   @Test

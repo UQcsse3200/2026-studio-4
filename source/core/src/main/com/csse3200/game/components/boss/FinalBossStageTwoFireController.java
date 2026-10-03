@@ -49,12 +49,9 @@ final class FinalBossStageTwoFireController {
       boolean canFire,
       Vector2 origin,
       float spawnRadius,
-      Vector2 playerBefore,
-      Vector2 playerNow,
-      float playerRadius,
+      FinalBossStageTwoProjectileTarget target,
       Rectangle bounds,
-      WallQuery walls,
-      Runnable hitPlayer) {
+      WallQuery walls) {
     if (!Float.isFinite(delta) || delta <= 0f) return;
     if (!validBounds(bounds)) {
       clear();
@@ -69,8 +66,7 @@ final class FinalBossStageTwoFireController {
     // invalidating an iterator; membership checks prevent later hits from already-consumed balls.
     for (Fireball fireball : new ArrayList<>(fireballs)) {
       if (!fireballs.contains(fireball)) continue;
-      advanceFireball(
-          fireball, delta, playerBefore, playerNow, playerRadius, bounds, walls, hitPlayer);
+      advanceFireball(fireball, delta, target, bounds, walls);
       if (clearVersion != version) return;
     }
 
@@ -94,12 +90,9 @@ final class FinalBossStageTwoFireController {
   private void advanceFireball(
       Fireball fireball,
       float delta,
-      Vector2 playerBefore,
-      Vector2 playerNow,
-      float playerRadius,
+      FinalBossStageTwoProjectileTarget target,
       Rectangle bounds,
-      WallQuery walls,
-      Runnable hitPlayer) {
+      WallQuery walls) {
     float remaining = config.fireballLifetime - fireball.elapsed;
     if (remaining <= 0f) {
       fireballs.remove(fireball);
@@ -115,17 +108,14 @@ final class FinalBossStageTwoFireController {
     float expiryHit = delta >= remaining ? 1f : NO_HIT;
     float blockedAt = Math.min(wallHit, Math.min(boundaryHit, expiryHit));
     float playerHit = NO_HIT;
-    if (hitPlayer != null
-        && validPoint(playerBefore)
-        && validPoint(playerNow)
-        && Float.isFinite(playerRadius)
-        && playerRadius >= 0f) {
-      Vector2 playerEnd = playerBefore.cpy().lerp(playerNow, flightTime / delta);
+    if (target != null && target.canBeHit()) {
+      Vector2 playerEnd =
+          target.previousPosition().cpy().lerp(target.currentPosition(), flightTime / delta);
       playerHit =
           circleHitFraction(
-              from.cpy().sub(playerBefore),
+              from.cpy().sub(target.previousPosition()),
               to.cpy().sub(playerEnd),
-              config.fireballRadius + playerRadius);
+              config.fireballRadius + target.radius());
     }
 
     if (playerHit < blockedAt && playerHit <= 1f) {
@@ -133,7 +123,7 @@ final class FinalBossStageTwoFireController {
       fireballs.remove(fireball);
       impacts.add(new Impact(fireball.position));
       // Remove before the callback, including when damage synchronously changes the phase.
-      hitPlayer.run();
+      target.onHit().run();
     } else if (blockedAt <= 1f) {
       fireball.position.set(from.cpy().lerp(to, blockedAt));
       fireballs.remove(fireball);
@@ -150,7 +140,12 @@ final class FinalBossStageTwoFireController {
   private void fireVolley(Vector2 origin, float spawnRadius, Rectangle bounds, WallQuery walls) {
     if (fireballs.size() >= config.maxFireballs) return;
     int pattern = random.nextInt(3);
-    int count = pattern == 0 ? 6 : pattern == 1 ? 4 : 5;
+    int count =
+        switch (pattern) {
+          case 0 -> 6;
+          case 1 -> 4;
+          default -> 5;
+        };
     float baseAngle = random.nextFloat() * 360f;
     boolean emitted = false;
     for (int i = 0; i < count && fireballs.size() < config.maxFireballs; i++) {

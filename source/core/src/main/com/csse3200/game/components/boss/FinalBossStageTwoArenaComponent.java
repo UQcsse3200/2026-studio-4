@@ -147,13 +147,20 @@ public class FinalBossStageTwoArenaComponent extends Component {
       physics.earlyUpdate();
     }
     Rectangle movementBounds = getMovementBounds(actor);
+    // A previous actor's position listener may have ended the arena during this update.
+    if (movementBounds == null) return;
     Vector2 position = actor.getPosition();
     float right = movementBounds.x + movementBounds.width;
     float top = movementBounds.y + movementBounds.height;
     float x = MathUtils.clamp(position.x, movementBounds.x, right);
     float y = MathUtils.clamp(position.y, movementBounds.y, top);
     if (position.x != x || position.y != y) actor.setPosition(x, y);
-    if (body == null) return;
+    if (body != null) clampVelocity(body, movementBounds, x, y);
+  }
+
+  private static void clampVelocity(Body body, Rectangle movementBounds, float x, float y) {
+    float right = movementBounds.x + movementBounds.width;
+    float top = movementBounds.y + movementBounds.height;
     Vector2 velocity = body.getLinearVelocity();
     float vx = velocity.x;
     float vy = velocity.y;

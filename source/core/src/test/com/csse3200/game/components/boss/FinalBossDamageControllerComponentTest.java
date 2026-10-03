@@ -251,9 +251,9 @@ class FinalBossDamageControllerComponentTest {
               throw new IllegalStateException("Broken damage observer");
             });
 
+    Entity attacker = new Entity();
     assertThrows(
-        IllegalStateException.class,
-        () -> fight.controller.takeStageTwoIceDamage(10, new Entity()));
+        IllegalStateException.class, () -> fight.controller.takeStageTwoIceDamage(10, attacker));
     fight.stats.takeDamage(20, new Entity());
 
     assertEquals(90, fight.stats.getHealth());

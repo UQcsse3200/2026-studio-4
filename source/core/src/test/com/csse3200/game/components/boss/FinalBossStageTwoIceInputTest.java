@@ -226,7 +226,8 @@ class FinalBossStageTwoIceInputTest {
     input.keyDown(Keys.J);
     assertTrue(input.isHeld());
 
-    when(stage.getKeyboardFocus()).thenReturn(mock(TextField.class));
+    TextField textField = mock(TextField.class);
+    when(stage.getKeyboardFocus()).thenReturn(textField);
     assertFalse(input.isHeld());
     assertFalse(input.keyDown(Keys.J));
     when(stage.getKeyboardFocus()).thenReturn(null);

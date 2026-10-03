@@ -120,22 +120,7 @@ public class FinalBossStageThreeComponent extends Component {
 
   @Override
   public void update() {
-    if (disposed || tornadoDamageInProgress) return;
-    if (phases.getCurrentPhase() == FinalBossPhase.STAGE_ONE
-        || phases.getCurrentPhase() == FinalBossPhase.STAGE_TWO) {
-      if (state != FinalBossStageThreeState.INACTIVE) tornadoes.clear();
-      clearTornadoDamage();
-      return;
-    }
-    if (stats.isDead()) {
-      tornadoes.clear();
-      clearStatueCombat();
-      return;
-    }
-    if (phases.getCurrentPhase() == FinalBossPhase.DEFEATED) {
-      tornadoes.clear();
-      clearTornadoDamage();
-    }
+    if (disposed || tornadoDamageInProgress || !prepareEncounterUpdate()) return;
     if (ServiceLocator.getTimeSource() == null) return;
     float delta = ServiceLocator.getTimeSource().getDeltaTime();
     if (!Float.isFinite(delta) || delta <= 0f) return;
@@ -152,19 +137,40 @@ public class FinalBossStageThreeComponent extends Component {
     switch (state) {
       case WAVE_ONE -> updateWaveOne(delta);
       case CHARGING -> updateCharge();
-      case WAVE_TWO -> {
-        updateTornadoDamage(delta);
-        if (!disposed
-            && !stats.isDead()
-            && state == FinalBossStageThreeState.WAVE_TWO
-            && phases.getCurrentPhase() == FinalBossPhase.STAGE_THREE
-            && !stopIfPlayerDefeated()) updateStatues(delta);
-      }
+      case WAVE_TWO -> updateWaveTwo(delta);
       case ENDING -> updateEnding();
       default -> {
         // Inactive and peaceful states have no combat behaviour to advance.
       }
     }
+  }
+
+  private boolean prepareEncounterUpdate() {
+    if (phases.getCurrentPhase() == FinalBossPhase.STAGE_ONE
+        || phases.getCurrentPhase() == FinalBossPhase.STAGE_TWO) {
+      if (state != FinalBossStageThreeState.INACTIVE) tornadoes.clear();
+      clearTornadoDamage();
+      return false;
+    }
+    if (stats.isDead()) {
+      tornadoes.clear();
+      clearStatueCombat();
+      return false;
+    }
+    if (phases.getCurrentPhase() == FinalBossPhase.DEFEATED) {
+      tornadoes.clear();
+      clearTornadoDamage();
+    }
+    return true;
+  }
+
+  private void updateWaveTwo(float delta) {
+    updateTornadoDamage(delta);
+    if (!disposed
+        && !stats.isDead()
+        && state == FinalBossStageThreeState.WAVE_TWO
+        && phases.getCurrentPhase() == FinalBossPhase.STAGE_THREE
+        && !stopIfPlayerDefeated()) updateStatues(delta);
   }
 
   private boolean stopIfPlayerDefeated() {

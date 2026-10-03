@@ -276,7 +276,7 @@ class FinalBossStageTwoFireIntegrationTest {
 
     advance(0.5f);
 
-    assertEquals(100 - config.fireballDamage, playerStats.getHealth());
+    assertEquals(100 - config.fireballDamage, (float) playerStats.getHealth());
     assertTrue(fire.fireballs.isEmpty());
   }
 
@@ -356,7 +356,7 @@ class FinalBossStageTwoFireIntegrationTest {
 
     advance(0.1f);
 
-    assertEquals(100 - config.fireballDamage, playerStats.getHealth());
+    assertEquals(100 - config.fireballDamage, (float) playerStats.getHealth());
     assertTrue(fire.fireballs.isEmpty());
   }
 
