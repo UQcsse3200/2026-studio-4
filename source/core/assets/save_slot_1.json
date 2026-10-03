@@ -1,9 +1,13 @@
 {
 checkpoint: {
-	roomId: selection
-	entryPointId: start
-	tileX: 14
-	tileY: 14
+	roomId: dungeonOneEntrance
+	tileX: 4
+	tileY: 7
+}
+resumePosition: {
+	roomId: dungeonOneEntrance
+	x: 3.9204392
+	y: 4.314816
 }
 playerData: {
 	gold: 60

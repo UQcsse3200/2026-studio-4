@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.components.gamearea.TimerDisplay;
 import com.csse3200.game.components.maingame.HotbarDisplay;
 import com.csse3200.game.components.maingame.InventoryActions;
 import com.csse3200.game.components.maingame.InventoryDisplay;
@@ -30,6 +31,7 @@ import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
+import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
@@ -73,6 +75,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final GameSaveData loadedSave;
   private final boolean loadAtCheckpoint;
   private boolean runSaved;
+  private final RunTimer runTimer = new RunTimer(new GameTime());
 
   public MainGameScreen(GdxGame game) {
     this(game, null, 1);
@@ -130,11 +133,13 @@ public class MainGameScreen extends ScreenAdapter {
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     roomManager.update();
+    runTimer.update();
     renderer.render();
     if (!deathScreenTriggered && player != null) {
       CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
       if (stats != null && stats.getHealth() <= 0) {
         deathScreenTriggered = true;
+        runTimer.stopRun();
         game.setScreen(GdxGame.ScreenType.DEATH_SCREEN);
       }
     }
@@ -230,7 +235,7 @@ public class MainGameScreen extends ScreenAdapter {
     HotbarDisplay hotbarDisplay = new HotbarDisplay(player);
     InventoryActions inventoryActions = new InventoryActions(inventoryDisplay);
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
-
+    TimerDisplay timerDisplay = new TimerDisplay(runTimer);
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
@@ -239,6 +244,8 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay())
+        .addComponent(timerDisplay)
+        .addComponent(new TimerDisplay.ToggleInput(timerDisplay))
         .addComponent(inventoryDisplay)
         .addComponent(hotbarDisplay)
         .addComponent(inventoryActions);
