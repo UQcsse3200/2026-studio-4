@@ -9,6 +9,7 @@ import com.csse3200.game.components.boss.FinalBossMovementComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.CerberusFactory;
+import com.csse3200.game.entities.factories.DragonFactory;
 import com.csse3200.game.entities.factories.FinalBossFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
@@ -134,6 +135,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             anchorPoint,
             head -> spawnAndTrackCerberusHead(head, spawn.type.name()),
             "images/cerberus.atlas");
+      case DRAGON:
+        return DragonFactory.createDragon(target, this::spawnEntity);
       case FINAL_BOSS:
         Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnEntity);
         if (camera != null) {

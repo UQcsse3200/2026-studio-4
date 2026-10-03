@@ -53,7 +53,12 @@ class EnemyManagerComponentTest {
     when(room.getEvents()).thenReturn(new EventHandler());
     when(terrain.getMapBounds(0)).thenAnswer(inv -> new GridPoint2(20, 20));
     when(terrain.getTileSize()).thenReturn(1f);
-    when(terrain.tileToWorldPosition(Mockito.any())).thenReturn(new Vector2());
+    when(terrain.tileToWorldPosition(Mockito.any(GridPoint2.class)))
+        .thenAnswer(
+            invocation -> {
+              GridPoint2 tile = invocation.getArgument(0);
+              return new Vector2(tile.x, tile.y);
+            });
     when(room.getComponent(TerrainComponent.class)).thenReturn(terrain);
 
     return room;
