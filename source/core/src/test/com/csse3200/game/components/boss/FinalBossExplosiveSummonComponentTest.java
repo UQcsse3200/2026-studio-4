@@ -61,6 +61,7 @@ class FinalBossExplosiveSummonComponentTest {
 
     ResourceService resources = new ResourceService();
     resources.loadTextures(FinalBossVisualAssets.paths());
+    resources.loadTextures(FinalBossStageTwoAssets.paths());
     resources.loadTextures(FinalBossStageThreeAssets.paths());
     resources.loadAll();
     ServiceLocator.registerResourceService(resources);

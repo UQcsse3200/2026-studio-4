@@ -22,13 +22,15 @@ final class FinalBossTornadoController {
   static final float SPAWN_DURATION = 0.6f;
   static final float DISSOLVE_DURATION = 0.6f;
   static final float WANDER_SPEED = 0.55f;
-  static final float CHASE_SPEED = 0.85f;
-  static final float CHASE_RADIUS = 2.5f;
-  static final float RELEASE_RADIUS = 3.5f;
+  static final float CHASE_SPEED = 0.65f;
+  static final float APPROACH_RADIUS = 1.2f;
   static final float STATUE_CLEARANCE = 2.35f;
   static final float PEER_CLEARANCE = 1.6f;
   private static final float EPSILON = 0.00001f;
+  private static final float ARRIVAL_DISTANCE = 0.001f;
   private static final float FOOTPRINT = 0.65f;
+  private static final float CONTACT_PATH_WIDTH = 0.04f;
+  private static final float ASSEMBLY_RADIUS = 2.5f;
   private static final float MAX_MOVEMENT_DELTA = 0.25f;
   private static final float SPAWN_RETRY_INTERVAL = 0.25f;
   private static final float[] AVOIDANCE_ANGLES = {0f, 45f, -45f, 90f, -90f, 135f, -135f, 180f};
@@ -98,7 +100,7 @@ final class FinalBossTornadoController {
     if (items.size() + pendingSpawns.size() >= MAX_TORNADOES) return;
     Vector2 spawn = findSpawn(position, null);
     if (spawn != null) {
-      items.add(new Tornado(spawn, items.size() * 0.37f));
+      addTornado(spawn);
     } else {
       if (pendingSpawns.isEmpty()) spawnRetryRemaining = SPAWN_RETRY_INTERVAL;
       pendingSpawns.add(position.cpy());
@@ -107,6 +109,25 @@ final class FinalBossTornadoController {
 
   int activeCount() {
     return (int) items.stream().filter(tornado -> !tornado.dissolving).count();
+  }
+
+  /** Reports unobstructed contact; the encounter owns the shared damage interval. */
+  boolean canDamagePlayer(float radius) {
+    if (ending || !Float.isFinite(radius) || radius <= 0f) return false;
+    CombatStatsComponent stats = target.getComponent(CombatStatsComponent.class);
+    Vector2 player = FinalBossStageThreeComponent.groundPosition(target);
+    if ((stats != null && stats.isDead()) || !canTrackPlayer(player)) return false;
+    for (Tornado tornado : items) {
+      if (tornado.dissolving
+          || tornado.elapsed < SPAWN_DURATION
+          || tornado.position.dst2(player) > radius * radius) continue;
+      Vector2 swept =
+          new Vector2(
+              CONTACT_PATH_WIDTH + Math.abs(player.x - tornado.position.x),
+              CONTACT_PATH_WIDTH + Math.abs(player.y - tornado.position.y));
+      if (clearSpace.test(tornado.position.cpy().add(player).scl(0.5f), swept)) return true;
+    }
+    return false;
   }
 
   void update(float delta, boolean combatActive) {
@@ -149,10 +170,84 @@ final class FinalBossTornadoController {
     while (pending.hasNext()) {
       Vector2 spawn = findSpawn(pending.next(), null);
       if (spawn != null) {
-        items.add(new Tornado(spawn, items.size() * 0.37f));
+        addTornado(spawn);
         pending.remove();
       }
     }
+  }
+
+  /**
+   * Give each remnant one stable side of the player, preferring its original approach direction.
+   */
+  private void addTornado(Vector2 position) {
+    Vector2 direction = position.cpy().sub(FinalBossStageThreeComponent.groundPosition(target));
+    int chosenSlot = 0;
+    float bestAlignment = Float.NEGATIVE_INFINITY;
+    for (int slot = 0; slot < MAX_TORNADOES; slot++) {
+      boolean occupied = false;
+      for (Tornado tornado : items) {
+        if (tornado.approachSlot == slot) occupied = true;
+      }
+      if (occupied) continue;
+      float alignment = approachOffset(slot).dot(direction);
+      if (alignment > bestAlignment) {
+        bestAlignment = alignment;
+        chosenSlot = slot;
+      }
+    }
+    items.add(new Tornado(position, items.size() * 0.37f, chosenSlot));
+  }
+
+  private static Vector2 approachOffset(int slot) {
+    return approachOffset(slot, APPROACH_RADIUS);
+  }
+
+  private static Vector2 approachOffset(int slot, float radius) {
+    return new Vector2(radius, 0f).rotateDeg(45f + slot * 90f);
+  }
+
+  /** Move the whole formation at camera edges, keeping its four destinations distinct. */
+  private Vector2 approachDestination(Vector2 player, int slot) {
+    return approachDestination(player, slot, APPROACH_RADIUS);
+  }
+
+  private Vector2 approachDestination(Vector2 player, int slot, float radius) {
+    return clamp(formationCentre(player, radius).add(approachOffset(slot, radius)));
+  }
+
+  private Vector2 formationCentre(Vector2 player, float radius) {
+    Rectangle bounds = arena.get();
+    Vector2 lower = clamp(new Vector2(bounds.x, bounds.y));
+    Vector2 upper = clamp(new Vector2(bounds.x + bounds.width, bounds.y + bounds.height));
+    float diagonalOffset = radius / (float) Math.sqrt(2d);
+    float marginX = Math.clamp((upper.x - lower.x) * 0.5f, 0f, diagonalOffset);
+    float marginY = Math.clamp((upper.y - lower.y) * 0.5f, 0f, diagonalOffset);
+    return new Vector2(
+        MathUtils.clamp(player.x, lower.x + marginX, upper.x - marginX),
+        MathUtils.clamp(player.y, lower.y + marginY, upper.y - marginY));
+  }
+
+  /** Keep an approach lane open until the deepest camera-edge destinations are occupied. */
+  private Vector2 chaseDestination(Tornado owner, Vector2 player) {
+    Vector2 destination = approachDestination(player, owner.approachSlot);
+    if (formationCentre(player, APPROACH_RADIUS).epsilonEquals(player, EPSILON)) return destination;
+    float priority = destination.dst2(player);
+    for (Tornado peer : items) {
+      if (peer == owner || peer.dissolving) continue;
+      Vector2 peerDestination = approachDestination(player, peer.approachSlot);
+      float peerPriority = peerDestination.dst2(player);
+      boolean entersFirst =
+          peerPriority + EPSILON < priority
+              || (Math.abs(peerPriority - priority) <= EPSILON
+                  && peer.approachSlot < owner.approachSlot);
+      if (entersFirst
+          && peer.position.dst2(peerDestination) > ARRIVAL_DISTANCE * ARRIVAL_DISTANCE) {
+        // Adjacent waiting points are more than twice PEER_CLEARANCE apart. A late remnant
+        // can pass between them instead of being permanently fenced out of a corner.
+        return approachDestination(player, owner.approachSlot, ASSEMBLY_RADIUS);
+      }
+    }
+    return destination;
   }
 
   /**
@@ -179,23 +274,26 @@ final class FinalBossTornadoController {
       return;
     }
     Vector2 player = FinalBossStageThreeComponent.groundPosition(target);
-    float radius = tornado.chasing ? RELEASE_RADIUS : CHASE_RADIUS;
-    boolean chase =
-        !StatusEffectsControllerComponent.isConcealed(target)
-            && tornado.position.dst2(player) <= radius * radius
-            && positionClear(clamp(player), tornado);
+    boolean chase = canTrackPlayer(player);
     if (chase != tornado.chasing) {
       resetDestination(tornado);
     }
     tornado.chasing = chase;
     tornado.retargetRemaining = Math.max(0f, tornado.retargetRemaining - delta);
-    if (chase) tornado.destination = clamp(player);
+    if (chase) tornado.destination = chaseDestination(tornado, player);
     else if (tornado.destination == null
         || tornado.retargetRemaining == 0f
         || tornado.position.dst2(tornado.destination) < 0.04f) chooseWanderDestination(tornado);
     if (tornado.destination == null) return;
     float speed = chase ? CHASE_SPEED : WANDER_SPEED;
     if (!advance(tornado, speed * movementDelta)) resetDestination(tornado);
+  }
+
+  private boolean canTrackPlayer(Vector2 player) {
+    Rectangle bounds = arena.get();
+    return bounds != null
+        && bounds.contains(player)
+        && !StatusEffectsControllerComponent.isConcealed(target);
   }
 
   private void chooseWanderDestination(Tornado tornado) {
@@ -216,7 +314,7 @@ final class FinalBossTornadoController {
 
   private boolean advance(Tornado tornado, float distance) {
     Vector2 direction = tornado.destination.cpy().sub(tornado.position);
-    if (direction.isZero(0.001f)) return true;
+    if (direction.len2() <= ARRIVAL_DISTANCE * ARRIVAL_DISTANCE) return true;
     direction.setLength(Math.min(distance, direction.len()));
     for (float angle : AVOIDANCE_ANGLES) {
       Vector2 candidate = clamp(tornado.position.cpy().add(direction.cpy().rotateDeg(angle)));
@@ -399,6 +497,7 @@ final class FinalBossTornadoController {
   static final class Tornado {
     final Vector2 position;
     final float animationOffset;
+    final int approachSlot;
     Vector2 destination;
     float elapsed;
     float retargetRemaining;
@@ -406,9 +505,10 @@ final class FinalBossTornadoController {
     boolean dissolving;
     boolean chasing;
 
-    Tornado(Vector2 position, float animationOffset) {
+    Tornado(Vector2 position, float animationOffset, int approachSlot) {
       this.position = position.cpy();
       this.animationOffset = animationOffset;
+      this.approachSlot = approachSlot;
     }
   }
 }
