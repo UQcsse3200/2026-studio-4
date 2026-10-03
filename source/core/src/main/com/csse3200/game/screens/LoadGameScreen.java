@@ -193,24 +193,14 @@ public class LoadGameScreen extends ScreenAdapter {
                   ? "Unknown location"
                   : displayRoom(save.checkpoint.roomId));
       details.add(label(room, "font", TEXT, 1f)).left().row();
-        details
-          .add(
-            label(
-              "Play Time  " + formatPlayTime(save.playTimeSeconds),
-              "font_small",
-              TEXT,
-              1f))
+      details
+          .add(label("Play Time  " + formatPlayTime(save.playTimeSeconds), "font_small", TEXT, 1f))
           .left()
           .row();
-          details
-            .add(
-              label(
-                formatDungeonTimes(save.dungeonTimesSeconds),
-                "font_small",
-                MUTED,
-                0.9f))
-            .left()
-            .row();
+      details
+          .add(label(formatDungeonTimes(save.dungeonTimesSeconds), "font_small", MUTED, 0.9f))
+          .left()
+          .row();
       String stats =
           "Gold  "
               + save.playerData.gold
@@ -272,7 +262,8 @@ public class LoadGameScreen extends ScreenAdapter {
     if (roomId == null || roomId.isBlank()) {
       return "Unknown location";
     }
-    String spaced = roomId.replaceAll("([a-z])([A-Z])", "$1 $2").replace('_', ' ').replace('-', ' ');
+    String spaced =
+        roomId.replaceAll("([a-z])([A-Z])", "$1 $2").replace('_', ' ').replace('-', ' ');
     return Character.toUpperCase(spaced.charAt(0)) + spaced.substring(1);
   }
 

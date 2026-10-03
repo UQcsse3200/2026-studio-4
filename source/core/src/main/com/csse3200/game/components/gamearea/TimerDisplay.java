@@ -51,14 +51,14 @@ public class TimerDisplay extends UIComponent {
     totalLabel.setText(runTimer.formatTime(runTimer.getTotalTime()));
     StringBuilder dungeonTimes = new StringBuilder("Dungeons:");
     runTimer
-      .getDungeonTimes()
-      .forEach(
-        (dungeonId, seconds) ->
-          dungeonTimes
-            .append('\n')
-            .append(displayDungeonName(dungeonId))
-            .append(": ")
-            .append(runTimer.formatTime(seconds)));
+        .getDungeonTimes()
+        .forEach(
+            (dungeonId, seconds) ->
+                dungeonTimes
+                    .append('\n')
+                    .append(displayDungeonName(dungeonId))
+                    .append(": ")
+                    .append(runTimer.formatTime(seconds)));
     if (runTimer.getDungeonTimes().isEmpty()) {
       dungeonTimes.append("\n--");
     }

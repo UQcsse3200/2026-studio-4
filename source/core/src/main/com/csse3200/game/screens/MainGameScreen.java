@@ -176,8 +176,8 @@ public class MainGameScreen extends ScreenAdapter {
       runSaved = true;
       try {
         GameSaveData save =
-          GameSaveMapper.capture(
-            player, roomManager.getCheckpointData(), roomManager.getResumePositionData());
+            GameSaveMapper.capture(
+                player, roomManager.getCheckpointData(), roomManager.getResumePositionData());
         save.playTimeSeconds = runTimer.getTotalTime();
         save.dungeonTimesSeconds.putAll(runTimer.getDungeonTimes());
         FileLoader.save(save, saveSlot);

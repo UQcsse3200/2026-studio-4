@@ -43,8 +43,11 @@ public class RunTimer {
     if (savedDungeonTimes != null) {
       savedDungeonTimes.forEach(
           (id, seconds) -> {
-            if (id == null || id.isBlank() || seconds == null
-                || !Float.isFinite(seconds) || seconds < 0f) {
+            if (id == null
+                || id.isBlank()
+                || seconds == null
+                || !Float.isFinite(seconds)
+                || seconds < 0f) {
               throw new IllegalArgumentException("Invalid saved dungeon time");
             }
             dungeonTimes.put(id, seconds);
