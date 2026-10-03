@@ -1,0 +1,46 @@
+package com.csse3200.game.utils.shapes;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+
+public abstract class ShapeActor extends Actor {
+  protected final ShapeRenderer shape;
+  protected final Color color;
+
+  public ShapeActor(Color color) {
+    this.shape = new ShapeRenderer();
+    this.color = color;
+  }
+
+  @Override
+  public void draw(Batch batch, float parentAlpha) {
+    batch.end();
+
+    // enable transparency
+    Gdx.gl.glEnable(GL20.GL_BLEND);
+    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+    shape.setProjectionMatrix(batch.getProjectionMatrix());
+
+    shape.begin(ShapeRenderer.ShapeType.Filled);
+    shape.setColor(color);
+
+    drawShape();
+
+    shape.end();
+
+    Gdx.gl.glDisable(GL20.GL_BLEND);
+    batch.begin();
+  }
+
+  /**
+   * Different shapes should call different methods on {@link #shape}
+   *
+   * @see {@link ShapeRenderer}
+   */
+  protected abstract void drawShape();
+}
