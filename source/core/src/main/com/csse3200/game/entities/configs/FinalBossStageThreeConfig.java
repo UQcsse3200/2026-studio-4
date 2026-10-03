@@ -44,6 +44,10 @@ public class FinalBossStageThreeConfig {
   public float shockwaveSpeed = 4.5f;
   public float shockwaveWidth = 0.24f;
   public int shockwaveDamage = 6;
+  // All nearby tornadoes share this tick so overlapping ranges cannot multiply the damage.
+  public int tornadoDamage = 1;
+  public float tornadoDamageInterval = 0.25f;
+  public float tornadoDamageRadius = 1.35f;
   public float returnTransformDuration = 1.2f;
   public float disappearanceDuration = 0.6f;
   // Draft dialogue: replace these lines with the team's approved story text.
@@ -83,6 +87,8 @@ public class FinalBossStageThreeConfig {
         statueJumpHeight,
         shockwaveSpeed,
         shockwaveWidth,
+        tornadoDamageInterval,
+        tornadoDamageRadius,
         returnTransformDuration,
         disappearanceDuration);
     if (!Float.isFinite(waveTwoHealthThreshold)
@@ -98,6 +104,7 @@ public class FinalBossStageThreeConfig {
         || statueEvadeHits <= 0
         || strikeDamage < 0
         || shockwaveDamage < 0
+        || tornadoDamage < 0
         || teleportDelay + strikeDelay >= freezeDuration) {
       throw new IllegalArgumentException("Invalid Stage 3 combat configuration");
     }

@@ -1,4 +1,4 @@
-# Stage 3 Wave 2: gathering statues and wandering tornadoes
+# Stage 3 Wave 2: gathering statues and pursuing tornadoes
 
 This update follows the delivered `final-boss-feedback-tuning.patch` baseline. The earlier player
 red-flash feedback, petrification timing and warning-only targeting remain in place.
@@ -34,11 +34,16 @@ their reserved walking routes and other tornadoes. If all safe positions are tem
 the spawn waits and retries every 0.25 seconds during combat. Visible and waiting tornadoes together
 are capped at four. The final statue does not spawn a fifth tornado and cancels waiting spawns.
 
-Tornadoes fade in for 0.6 seconds, then randomly wander at 0.55 units/second. Within 2.5 units of the
-player they begin slowly chasing at 0.85 units/second. Beyond 3.5 units they return to wandering;
-this difference avoids switching modes every frame at the boundary. Concealed players are not
-chased. Movement checks a swept footprint against static walls and remains within visible bounds.
-The smaller chase-entry radius makes ordinary wandering the default outside close encounters.
+Tornadoes fade in harmlessly for 0.6 seconds, then pursue a visible, unconcealed player
+inside the current camera at 0.65 units/second. Leaving the camera or becoming concealed returns
+them to wandering at 0.55 units/second. Each remnant chooses a different persistent approach
+angle, starting at 45 degrees and spaced 90 degrees apart, with a 1.2-unit approach radius.
+Near camera edges, the entire four-position formation shifts inward together instead of clamping
+several positions onto the same corner. Near an edge, the innermost target is filled first;
+other tornadoes temporarily use a 2.5-unit spread radius to leave a passage, then move inward
+in a stable order. They follow the moving player without all targeting the same point. At least 1.6 units of peer clearance is
+still required by every actual movement step; obstructed approach positions never override walls,
+statues or peers. Long frames cap movement time at 0.25 seconds.
 
 Tornado movement and statue movement use the same floor anchors and keep approximately 2.35 world
 units of clearance. Tornadoes check entire reserved statue routes; statues check tornado positions
@@ -52,9 +57,22 @@ itself abruptly moves or zooms, the controller explicitly restores in-view place
 its old destination before resuming movement. Separation is best-effort if a viewport is too small
 or completely obstructed to satisfy all clearances simultaneously.
 
-This version implements movement and visual pressure only. Tornadoes do not yet apply contact
-damage, knockback or extra status effects. The owner explicitly deferred damage design to a later
-sprint; this sprint focuses on movement, spacing and presentation.
+During Wave 2, a fully spawned tornado within 1.35 world units of the player's ground point
+applies 1 HP of damage after every 0.25 seconds of continuous contact. All tornadoes share one
+contact clock, so overlapping ranges do not multiply the damage. Static walls block the contact
+path; distance alone cannot hurt the player through a wall. Leaving all contact ranges, concealment,
+or phase transition resets the clock. A long frame can cause at most one tick, with no catch-up
+burst. Jumping only avoids statue shockwaves and does not grant immunity to the tall tornado.
+
+Damage goes through `CombatStatsComponent.takeDamage`, preserving invulnerability, incoming-damage
+modifiers and the local zero-damage test switch. Actual HP loss plays a separate white whirlwind
+at the player's centre for 0.24 seconds; blocked damage does not show a false hit. The fourth row
+(one-based) of `stage2/transform/01.png` supplies its nine nonempty 64-by-64 frames (indices 33–41).
+Stage 3 explicitly lists this shared texture in its assets, so it can also load independently.
+The uploaded `01(2).png` is byte-identical to that existing texture; no new PNG is needed.
+
+Final-statue defeat, player death, phase exit and disposal stop contact damage and clear the white
+hit effect. There is no new knockback, stun or freeze mechanic.
 
 When the last statue breaks, every tornado immediately stops roaming/chasing, plays the existing
 grey-white break/transformation effect at its own location and fades out over 0.6 seconds.
@@ -78,10 +96,15 @@ the rest of the artwork is preserved. See the asset provenance note for hash and
 
 1. Break statues one by one: verify one, two, three and four tornadoes appear.
 2. Watch the remaining statues gather gradually while the jump-dodge rhythm becomes faster.
-3. Approach a tornado, then move away: it should pursue slowly and later resume random movement.
-   Lead it near a statue and verify that it turns or waits, leaving room to attack and dodge.
-4. Break the final statue: no fifth tornado appears, all four play grey effects and disappear.
-5. Confirm death/restart leaves no leftover tornadoes, attacks or movement locks.
+3. With one to four tornadoes alive, move around the camera: they should follow slowly from
+   different directions and remain separated. Lead them near walls and statues; they should turn
+   or wait without passing through. Concealment or leaving the camera releases pursuit.
+4. With normal player damage enabled, remain near a tornado: HP falls by 1 every 0.25 seconds,
+   with the white fourth-row whirlwind at the player. Several nearby tornadoes share that rate.
+   Moving away stops the ticks, and standing behind a wall prevents them. A local zero-damage
+   multiplier intentionally prevents both HP loss and the white damage effect.
+5. Break the final statue: no fifth tornado appears, all four play grey effects and disappear.
+6. Confirm death/restart leaves no leftover tornadoes, attacks or movement locks.
 
 Automated tests cover timing, actual Box2D statue movement, clearance, tornado movement and
 lifecycle. Final visual readability and difficulty still require gameplay on the target machine.
@@ -98,3 +121,14 @@ with JDK 21; all 817 JUnit tests passed with no failures or skips. Coverage incl
 and tornadoes together in Box2D, close pursuit and release, evade destinations, camera changes,
 blocked-spawn recovery and terminal cleanup. All four changed Java files passed Google Java Format
 1.28.0. Full Gradle verification and visual playtesting remain local checks.
+
+
+Validation for the pursuit/contact update (base `03129a1`): Gradle ran 457 Boss and Final Boss
+configuration tests with zero failures, errors or skips, and `formatCheck` passed. Coverage includes
+four simultaneous approaches, same-side spawns, moving players, corner and wall-edge assembly,
+Box2D statue clearance, shared damage cadence, long frames, static-wall blocking, local zero-damage
+and invulnerability, actual fourth-row frame slicing/rendering, and terminal/reentrant cleanup.
+Graphical playtesting is still needed for movement feel and final balance. On a local debug build,
+the zero incoming-damage multiplier intentionally hides the damage flash as well as preventing HP
+loss; test actual hits with normal incoming damage temporarily enabled, without committing that
+local player-factory edit.
