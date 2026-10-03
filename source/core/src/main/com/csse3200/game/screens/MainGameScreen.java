@@ -187,7 +187,7 @@ public class MainGameScreen extends ScreenAdapter {
 
   /* Schedule the death screen to be shown */
   private void scheduleDeathScreen() {
-      runTimer.stopRun();
+    runTimer.stopRun();
     ServiceLocator.getEntityService().schedule(() -> game.setScreen(ScreenType.DEATH_SCREEN));
   }
 }
