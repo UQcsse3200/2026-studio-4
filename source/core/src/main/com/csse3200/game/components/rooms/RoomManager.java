@@ -56,6 +56,11 @@ public class RoomManager {
     currentConfig = world.getRoom(world.startRoomId);
     initialEntryPoint = currentConfig.getEntryPoint(world.startEntryPointId);
     currentConfig = world.getRoom(world.startRoomId);
+    for (RoomConfig room : world.rooms) {
+      if (room.dungeonId != null) {
+        runTimer.registerDungeon(room.dungeonId);
+      }
+    }
     checkpointRoomId = currentConfig.id;
     checkpointEntryPointId = world.startEntryPointId;
     checkpointPosition = new PositionConfig();
@@ -156,6 +161,9 @@ public class RoomManager {
       start(initialEntryPoint);
     } else {
       start(initialWorldPosition);
+    }
+    if (runTimer != null) {
+      runTimer.startDungeon(currentConfig.dungeonId);
     }
   }
 

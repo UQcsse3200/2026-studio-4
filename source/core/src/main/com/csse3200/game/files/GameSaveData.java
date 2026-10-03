@@ -2,12 +2,14 @@ package com.csse3200.game.files;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class GameSaveData {
   public int version = 1;
   public float playTimeSeconds;
+  public Map<String, Float> dungeonTimesSeconds = new LinkedHashMap<>();
   public Checkpoint checkpoint = new Checkpoint();
   public ResumePosition resumePosition;
   public PlayerData playerData = new PlayerData();

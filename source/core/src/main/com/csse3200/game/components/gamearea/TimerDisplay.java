@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.ui.UIComponent;
@@ -14,6 +15,7 @@ public class TimerDisplay extends UIComponent {
   private boolean visible = true;
   private Label totalLabel;
   private Label dungeonLabel;
+  private Table panel;
 
   /** Creates a display backed by the supplied game runTimer. */
   public TimerDisplay(RunTimer runTimer) {
@@ -30,12 +32,13 @@ public class TimerDisplay extends UIComponent {
     dungeonStyle.fontColor = Color.GREEN.cpy();
 
     totalLabel = new Label("Total: 00:00.00", totalStyle);
-    dungeonLabel = new Label("Dungeon: 00:00.00", dungeonStyle);
-    stage.addActor(dungeonLabel);
-    stage.addActor(totalLabel);
-
-    dungeonLabel.toFront();
-    totalLabel.toFront();
+    dungeonLabel = new Label("Dungeon times", dungeonStyle);
+    panel = new Table();
+    panel.setBackground(skin.newDrawable("window-c", Color.BLACK));
+    panel.pad(8f, 12f, 8f, 12f);
+    panel.add(totalLabel).right().row();
+    panel.add(dungeonLabel).right();
+    stage.addActor(panel);
   }
 
   /** Updates the runTimer text, positions the labels, and keeps them above other UI actors. */
@@ -46,10 +49,22 @@ public class TimerDisplay extends UIComponent {
     }
 
     totalLabel.setText(runTimer.formatTime(runTimer.getTotalTime()));
-    dungeonLabel.setText("Dungeon " + runTimer.formatTime(runTimer.getDungeonTime()));
+    StringBuilder dungeonTimes = new StringBuilder("Dungeons:");
+    runTimer
+      .getDungeonTimes()
+      .forEach(
+        (dungeonId, seconds) ->
+          dungeonTimes
+            .append('\n')
+            .append(displayDungeonName(dungeonId))
+            .append(": ")
+            .append(runTimer.formatTime(seconds)));
+    if (runTimer.getDungeonTimes().isEmpty()) {
+      dungeonTimes.append("\n--");
+    }
+    dungeonLabel.setText(dungeonTimes.toString());
 
-    totalLabel.setVisible(visible);
-    dungeonLabel.setVisible(visible);
+    panel.setVisible(visible);
 
     totalLabel.setFontScale(2.5f);
     dungeonLabel.setFontScale(1.0f);
@@ -58,23 +73,22 @@ public class TimerDisplay extends UIComponent {
     float topMargin = 24f;
     float spacing = 4f;
 
-    totalLabel.setPosition(
-        stage.getWidth() - totalLabel.getWidth() - rightMargin,
-        stage.getHeight() - totalLabel.getHeight() - topMargin);
+    panel.pack();
+    panel.setPosition(
+        stage.getWidth() - panel.getWidth() - rightMargin,
+        stage.getHeight() - panel.getHeight() - topMargin);
+    panel.toFront();
+  }
 
-    dungeonLabel.setPosition(
-        stage.getWidth() - dungeonLabel.getWidth() - rightMargin,
-        totalLabel.getY() - dungeonLabel.getHeight() - spacing);
-
-    dungeonLabel.toFront();
-    totalLabel.toFront();
+  private String displayDungeonName(String dungeonId) {
+    String spaced = dungeonId.replaceAll("([a-z])([A-Z])", "$1 $2").replace('_', ' ');
+    return Character.toUpperCase(spaced.charAt(0)) + spaced.substring(1);
   }
 
   /** Shows or hides both runTimer labels without stopping the timers. */
   public void toggle() {
     visible = !visible;
-    totalLabel.setVisible(visible);
-    dungeonLabel.setVisible(visible);
+    panel.setVisible(visible);
   }
 
   /** Handles the T key used to toggle the runTimer display. */
@@ -103,13 +117,10 @@ public class TimerDisplay extends UIComponent {
   public void dispose() {
     super.dispose();
 
-    if (totalLabel != null) {
-      totalLabel.remove();
+    if (panel != null) {
+      panel.remove();
+      panel = null;
       totalLabel = null;
-    }
-
-    if (dungeonLabel != null) {
-      dungeonLabel.remove();
       dungeonLabel = null;
     }
   }

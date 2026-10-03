@@ -202,6 +202,15 @@ public class LoadGameScreen extends ScreenAdapter {
               1f))
           .left()
           .row();
+          details
+            .add(
+              label(
+                formatDungeonTimes(save.dungeonTimesSeconds),
+                "font_small",
+                MUTED,
+                0.9f))
+            .left()
+            .row();
       String stats =
           "Gold  "
               + save.playerData.gold
@@ -263,8 +272,21 @@ public class LoadGameScreen extends ScreenAdapter {
     if (roomId == null || roomId.isBlank()) {
       return "Unknown location";
     }
-    String spaced = roomId.replace('_', ' ').replace('-', ' ');
+    String spaced = roomId.replaceAll("([a-z])([A-Z])", "$1 $2").replace('_', ' ').replace('-', ' ');
     return Character.toUpperCase(spaced.charAt(0)) + spaced.substring(1);
+  }
+
+  private String formatDungeonTimes(java.util.Map<String, Float> times) {
+    if (times == null || times.isEmpty()) {
+      return "Dungeons  --";
+    }
+    List<String> dungeonIds = new ArrayList<>(times.keySet());
+    dungeonIds.sort(String::compareTo);
+    List<String> entries = new ArrayList<>();
+    for (String dungeonId : dungeonIds) {
+      entries.add(displayRoom(dungeonId) + " " + formatPlayTime(times.get(dungeonId)));
+    }
+    return String.join("  |  ", entries);
   }
 
   private int count(List<?> values) {

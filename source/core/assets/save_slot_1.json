@@ -1,29 +1,44 @@
 {
+playTimeSeconds: 234.00905
 checkpoint: {
-	roomId: dungeonOneEntrance
+	roomId: dungeonTwoEntrance
 	tileX: 4
 	tileY: 7
 }
 resumePosition: {
-	roomId: dungeonOneEntrance
-	x: 3.9204392
-	y: 4.314816
+	roomId: dungeonTwoEntrance
+	x: 10.296042
+	y: 4.029168
 }
 playerData: {
-	gold: 60
+	gold: 100
 	inventory: {
 		class: java.util.HashMap
-		HEALTH_POTION: 2
-		STRENGTH_POTION: 1
+		HEALTH_POTION: 7
+		SHIELD: 6
+		SPEED_POTION: 8
+		STRENGTH_POTION: 10
 	}
 	charms: [
-		speed
 		attack_speed
 		attack_speed
 		attack_speed
 		attack_speed
 		strength
+		strength
 		speed
+		strength
+		strength
+		strength
+		speed
+		strength
+		attack_speed
+		attack_speed
+		strength
+		speed
+		speed
+		strength
+		strength
 	]
 }
 }

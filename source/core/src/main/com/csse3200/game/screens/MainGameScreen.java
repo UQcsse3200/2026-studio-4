@@ -99,7 +99,7 @@ public class MainGameScreen extends ScreenAdapter {
     if (loadedSave == null) {
       runTimer.startRun();
     } else {
-      runTimer.restoreRun(loadedSave.playTimeSeconds);
+      runTimer.restoreRun(loadedSave.playTimeSeconds, loadedSave.dungeonTimesSeconds);
     }
 
     PhysicsService physicsService = new PhysicsService();
@@ -179,6 +179,7 @@ public class MainGameScreen extends ScreenAdapter {
           GameSaveMapper.capture(
             player, roomManager.getCheckpointData(), roomManager.getResumePositionData());
         save.playTimeSeconds = runTimer.getTotalTime();
+        save.dungeonTimesSeconds.putAll(runTimer.getDungeonTimes());
         FileLoader.save(save, saveSlot);
       } catch (RuntimeException exception) {
         logger.error("Failed to save game data for slot {}", saveSlot, exception);
