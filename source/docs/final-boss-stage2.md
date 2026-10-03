@@ -60,10 +60,14 @@ provisional values in `FinalBossStageTwoConfig` are:
 | Firing interval / pause | 20 seconds / 3 seconds |
 | Delay between volleys | 0.3 seconds |
 | Fireball speed | 2.4 world units/second |
-| Damage per fireball | 8 |
+| Damage per fireball | 2 |
 | Fireball hit radius | 0.16 world units |
 | Maximum lifetime / simultaneous fireballs | 6 seconds / 128 |
 | Impact animation duration | 0.35 seconds |
+
+The damage adjustment reduces each fireball from 8 to 2 HP (75% less), giving the
+player more room for mistakes in the dense barrage. Speed, firing cadence, size,
+collision radius and ice-cover durability are unchanged.
 
 The first density adjustment reduces speed from 4 to 2.4 world units/second
 and shortens the volley interval from 0.9 to 0.3 seconds. Slower travel and
