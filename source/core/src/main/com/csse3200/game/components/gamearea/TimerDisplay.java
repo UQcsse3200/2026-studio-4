@@ -23,7 +23,6 @@ public class TimerDisplay extends UIComponent {
   private boolean visible = true;
 
   private Table rootTable;
-  private Label runCaption;
   private Label runTime;
   private Label dungeonCaption;
   private Label dungeonTime;
@@ -38,7 +37,7 @@ public class TimerDisplay extends UIComponent {
   public void create() {
     super.create();
 
-    runCaption = new Label("RUN: ", skin, "caption");
+    Label runCaption = new Label("RUN: ", skin, "caption");
     runCaption.setFontScale(1.2f);
     runTime = new Label("00:00", skin, "runTime");
     dungeonCaption = new Label("DUNGEON", skin, "caption");

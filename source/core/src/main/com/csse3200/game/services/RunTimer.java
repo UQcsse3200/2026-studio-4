@@ -38,7 +38,7 @@ public class RunTimer {
     if (dungeonRunning) {
       dungeonTime = totalTime - dungeonStartTotal;
       // Whole seconds on the run clock's boundaries, so both labels tick together
-      dungeonSyncedTime = (int) totalTime - (int) dungeonStartTotal;
+      dungeonSyncedTime = (float) ((int) totalTime - (int) dungeonStartTotal);
     }
   }
 
