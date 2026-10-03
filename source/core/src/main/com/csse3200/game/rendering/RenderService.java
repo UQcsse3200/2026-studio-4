@@ -18,6 +18,8 @@ public class RenderService implements Disposable {
   private static final int INITIAL_LAYER_CAPACITY = 4;
   private static final int INITIAL_CAPACITY = 4;
   private static final float SHAKE_ANGULAR_SPEED = 80f;
+  private static final float WHITE_FLASH_RISE = 0.1f;
+  private static final float WHITE_FLASH_FALL = 0.25f;
   private Stage stage;
   private DebugRenderer debugRenderer;
   private final Matrix4 worldProjection = new Matrix4();
@@ -25,6 +27,8 @@ public class RenderService implements Disposable {
   private float shakeDuration;
   private float shakeElapsed;
   private float shakeStrength;
+  private float whiteFlashElapsed;
+  private boolean whiteFlashActive;
 
   /** Map from layer to list of renderables, allows us to render each layer in the correct order */
   private final SortedIntMap<Array<Renderable>> renderables =
@@ -138,6 +142,30 @@ public class RenderService implements Disposable {
     shakeStrength = 0f;
   }
 
+  /** Start or restart the brief full-screen flash used by the freeze bomb. */
+  public void startWhiteFlash() {
+    whiteFlashElapsed = 0f;
+    whiteFlashActive = true;
+  }
+
+  /** Advance one frame and return the white overlay's opacity. */
+  public float getWhiteFlashAlpha() {
+    if (!whiteFlashActive) return 0f;
+
+    GameTime time = ServiceLocator.getTimeSource();
+    float delta = time == null ? 0f : time.getDeltaTime();
+    if (Float.isFinite(delta) && delta > 0f) {
+      whiteFlashElapsed += delta;
+    }
+    if (whiteFlashElapsed >= WHITE_FLASH_RISE + WHITE_FLASH_FALL) {
+      whiteFlashActive = false;
+      return 0f;
+    }
+    return whiteFlashElapsed < WHITE_FLASH_RISE
+        ? whiteFlashElapsed / WHITE_FLASH_RISE
+        : (WHITE_FLASH_RISE + WHITE_FLASH_FALL - whiteFlashElapsed) / WHITE_FLASH_FALL;
+  }
+
   public void setStage(Stage stage) {
     this.stage = stage;
   }
@@ -158,5 +186,6 @@ public class RenderService implements Disposable {
   public void dispose() {
     renderables.clear();
     resetShake();
+    whiteFlashActive = false;
   }
 }

@@ -57,6 +57,9 @@ public class RoomAssets implements Disposable {
     "images/shield_consumable_pixel.png",
     "images/speed_potion_pixel.png",
     "images/strength_potion_pixel.png",
+    "images/freeze_bomb_pixel.png",
+    "images/consumable-slot-idle.png",
+    "images/consumable-slot-selected.png",
     "images/gold_coin_pixel.png"
   };
 

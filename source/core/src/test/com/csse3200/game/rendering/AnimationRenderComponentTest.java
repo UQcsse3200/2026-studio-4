@@ -93,6 +93,22 @@ class AnimationRenderComponentTest {
   }
 
   @Test
+  void currentFrameFollowsTheAnimationPlayhead() {
+    TextureAtlas atlas = createMockAtlas("walk", 2);
+    GameTime time = mock(GameTime.class);
+    when(time.getDeltaTime()).thenReturn(0.1f);
+    ServiceLocator.registerTimeSource(time);
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    animator.setEntity(new Entity());
+    animator.addAnimation("walk", 0.1f);
+    animator.startAnimation("walk");
+
+    assertSame(atlas.findRegions("walk").get(0), animator.getCurrentFrame());
+    animator.draw(mock(SpriteBatch.class));
+    assertSame(atlas.findRegions("walk").get(1), animator.getCurrentFrame());
+  }
+
+  @Test
   void shouldFinish() {
     TextureAtlas atlas = createMockAtlas("test_name", 1);
     SpriteBatch batch = mock(SpriteBatch.class);

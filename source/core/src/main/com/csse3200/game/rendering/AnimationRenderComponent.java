@@ -168,6 +168,11 @@ public class AnimationRenderComponent extends RenderComponent {
     return currentAnimationName;
   }
 
+  /** Current visible frame, for effects that need a snapshot of this animation. */
+  public TextureRegion getCurrentFrame() {
+    return currentAnimation == null ? null : currentAnimation.getKeyFrame(animationPlayTime);
+  }
+
   /**
    * Has the playing animation finished? This will always be false for looping animations.
    *

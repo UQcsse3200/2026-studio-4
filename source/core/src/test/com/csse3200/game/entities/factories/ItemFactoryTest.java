@@ -3,7 +3,6 @@ package com.csse3200.game.entities.factories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -14,12 +13,15 @@ import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.items.ItemSpinComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.items.Item;
+import com.csse3200.game.items.CurrencyItem;
+import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.ItemDropSpec;
-import com.csse3200.game.items.ItemType;
-import com.csse3200.game.items.charms.AttackSpeedCharm;
-import com.csse3200.game.items.charms.SpeedCharm;
-import com.csse3200.game.items.charms.StrengthCharm;
+import com.csse3200.game.items.ItemIds;
+import com.csse3200.game.items.WeaponItem;
+import com.csse3200.game.items.consumables.InstantHealingPotion;
+import com.csse3200.game.items.consumables.ShieldPotion;
+import com.csse3200.game.items.consumables.SpeedPotion;
+import com.csse3200.game.items.consumables.StrengthPotion;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -36,8 +38,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class ItemFactoryTest {
-  private Item item;
-
   @BeforeEach
   void setup() {
     RenderService renderService = new RenderService();
@@ -47,49 +47,88 @@ class ItemFactoryTest {
 
     ResourceService resourceService = mock(ResourceService.class);
     Texture texture = mock(Texture.class);
-    for (ItemType itemType : ItemType.values()) {
-      when(resourceService.getAsset(itemType.getTexturePath(), Texture.class)).thenReturn(texture);
+    for (String itemId : ItemCatalog.ids()) {
+      when(resourceService.getAsset(ItemCatalog.create(itemId, 1).getTexture(), Texture.class))
+          .thenReturn(texture);
     }
-    // The random drop pool also includes charms not represented in ItemType.
-    when(resourceService.getAsset(SpeedCharm.TEXTURE, Texture.class)).thenReturn(texture);
-    when(resourceService.getAsset(AttackSpeedCharm.TEXTURE, Texture.class)).thenReturn(texture);
     when(texture.getWidth()).thenReturn(1270);
     when(texture.getHeight()).thenReturn(1239);
     ServiceLocator.registerResourceService(resourceService);
-
-    item = mock(Item.class);
-    when(item.getTexture()).thenReturn(StrengthCharm.TEXTURE);
   }
 
   @Test
   void shouldCreateSharedItemWithCorrectComponents() {
-    Entity itemEntity = ItemFactory.createItem(item);
+    Entity itemEntity =
+        ItemFactory.createItem(ItemCatalog.create(ItemIds.STRENGTH_CHARM, 1), new Vector2());
 
     assertNotNull(itemEntity.getComponent(ItemComponent.class));
     assertNotNull(itemEntity.getComponent(RotatingTextureRenderComponent.class));
-    assertNull(itemEntity.getComponent(ItemSpinComponent.class));
+    assertNotNull(itemEntity.getComponent(ItemSpinComponent.class));
     assertNotNull(itemEntity.getComponent(HitboxComponent.class));
     assertNotNull(itemEntity.getComponent(PhysicsComponent.class));
     assertEquals(PhysicsLayer.ITEM, itemEntity.getComponent(HitboxComponent.class).getLayer());
   }
 
   @Test
-  void shouldCreateEverySupportedItemType() {
-    for (ItemType expectedType : ItemType.values()) {
-      Entity created = ItemFactory.createDrop(expectedType, Vector2.Zero);
+  void shouldCreateEveryRegisteredItemId() {
+    for (String expectedType : ItemCatalog.ids()) {
+      Entity created = ItemFactory.createItem(ItemCatalog.create(expectedType, 1), Vector2.Zero);
 
-      assertEquals(expectedType, created.getComponent(ItemComponent.class).getItemType());
+      assertEquals(expectedType, created.getComponent(ItemComponent.class).getItemId());
       assertEquals(PhysicsLayer.ITEM, created.getComponent(HitboxComponent.class).getLayer());
     }
   }
 
   @Test
+  void shouldCreateAnUnregisteredItemWithoutInspectingItsSubtype() {
+    WeaponItem weapon = WeaponItem.createWeaponItem(WeaponItem.WeaponType.SWORD);
+    Texture texture = mock(Texture.class);
+    when(texture.getWidth()).thenReturn(1);
+    when(texture.getHeight()).thenReturn(1);
+    when(ServiceLocator.getResourceService().getAsset(weapon.getTexture(), Texture.class))
+        .thenReturn(texture);
+
+    Entity created = ItemFactory.createItem(weapon, new Vector2());
+
+    assertEquals(weapon, created.getComponent(ItemComponent.class).getItem());
+  }
+
+  @Test
   void shouldPreserveCallerSelectedGoldQuantity() {
     Entity gold =
-        ItemFactory.createDrop(new ItemDropSpec(ItemType.GOLD_COIN, 25), new Vector2(2f, 4f));
+        ItemFactory.createItem(ItemCatalog.create(ItemIds.GOLD_COIN, 25), new Vector2(2f, 4f));
 
-    assertEquals(ItemType.GOLD_COIN, gold.getComponent(ItemComponent.class).getItemType());
+    assertEquals(ItemIds.GOLD_COIN, gold.getComponent(ItemComponent.class).getItemId());
     assertEquals(25, gold.getComponent(ItemComponent.class).getQuantity());
+    assertEquals(CurrencyItem.class, gold.getComponent(ItemComponent.class).getItem().getClass());
+  }
+
+  @Test
+  void shouldCreateConsumableThroughTheSameRegistry() {
+    Entity potion =
+        ItemFactory.createItem(ItemCatalog.create(ItemIds.HEALTH_POTION, 1), new Vector2());
+    assertEquals(
+        InstantHealingPotion.class, potion.getComponent(ItemComponent.class).getItem().getClass());
+    assertEquals(ShieldPotion.class, ItemCatalog.create(ItemIds.SHIELD, 1).getClass());
+    assertEquals(SpeedPotion.class, ItemCatalog.create(ItemIds.SPEED_POTION, 1).getClass());
+    assertEquals(StrengthPotion.class, ItemCatalog.create(ItemIds.STRENGTH_POTION, 1).getClass());
+  }
+
+  @Test
+  void shouldCreateIndependentCharmItemsWhenRequestedTwice() {
+    Entity first =
+        ItemFactory.createItem(ItemCatalog.create(ItemIds.SPEED_CHARM, 1), new Vector2(2f, 4f));
+    Entity second =
+        ItemFactory.createItem(ItemCatalog.create(ItemIds.SPEED_CHARM, 1), new Vector2(2f, 4f));
+
+    assertNotSame(first, second);
+    assertNotSame(
+        first.getComponent(ItemComponent.class).getItem(),
+        second.getComponent(ItemComponent.class).getItem());
+    assertEquals(ItemIds.SPEED_CHARM, itemTypeOf(first));
+    assertEquals(ItemIds.SPEED_CHARM, itemTypeOf(second));
+    assertEquals(1, first.getComponent(ItemComponent.class).getQuantity());
+    assertNotNull(first.getComponent(ItemSpinComponent.class));
   }
 
   @Test
@@ -97,46 +136,44 @@ class ItemFactoryTest {
     Vector2 position = new Vector2(3f, 5f);
     List<ItemDropSpec> selectedDrops =
         List.of(
-            ItemDropSpec.single(ItemType.HEALTH_POTION),
-            ItemDropSpec.single(ItemType.SPEED_POTION),
-            new ItemDropSpec(ItemType.HEALTH_POTION, 2));
+            ItemDropSpec.single(ItemIds.HEALTH_POTION),
+            ItemDropSpec.single(ItemIds.SPEED_POTION),
+            new ItemDropSpec(ItemIds.HEALTH_POTION, 2));
 
-    List<Entity> drops = ItemFactory.createDrops(selectedDrops, position);
+    List<Entity> drops =
+        selectedDrops.stream()
+            .map(
+                spec ->
+                    ItemFactory.createItem(
+                        ItemCatalog.create(spec.itemId(), spec.quantity()), position))
+            .toList();
 
     assertEquals(3, drops.size());
-    assertEquals(ItemType.HEALTH_POTION, itemTypeOf(drops.get(0)));
-    assertEquals(ItemType.SPEED_POTION, itemTypeOf(drops.get(1)));
-    assertEquals(ItemType.HEALTH_POTION, itemTypeOf(drops.get(2)));
+    assertEquals(ItemIds.HEALTH_POTION, itemTypeOf(drops.get(0)));
+    assertEquals(ItemIds.SPEED_POTION, itemTypeOf(drops.get(1)));
+    assertEquals(ItemIds.HEALTH_POTION, itemTypeOf(drops.get(2)));
     assertEquals(2, drops.get(2).getComponent(ItemComponent.class).getQuantity());
     drops.forEach(drop -> assertEquals(position, drop.getPosition()));
     assertNotSame(drops.get(0), drops.get(2));
   }
 
   @Test
-  void shouldRejectInvalidDropRequest() {
+  void shouldRejectNullItemOrPosition() {
     Vector2 validPosition = new Vector2(1f, 2f);
-    assertThrows(
-        NullPointerException.class, () -> ItemFactory.createDrop((ItemType) null, validPosition));
-    assertThrows(
-        NullPointerException.class, () -> ItemFactory.createDrop(ItemType.STRENGTH_CHARM, null));
+    assertThrows(NullPointerException.class, () -> ItemFactory.createItem(null, validPosition));
     assertThrows(
         NullPointerException.class,
-        () -> ItemFactory.createDrop((ItemDropSpec) null, validPosition));
-    assertThrows(NullPointerException.class, () -> ItemFactory.createDrops(null, validPosition));
-    List<ItemDropSpec> validDrops = List.of(ItemDropSpec.single(ItemType.GOLD_COIN));
-    assertThrows(NullPointerException.class, () -> ItemFactory.createDrops(validDrops, null));
+        () -> ItemFactory.createItem(ItemCatalog.create(ItemIds.GOLD_COIN, 1), null));
   }
 
-  private static ItemType itemTypeOf(Entity entity) {
-    return entity.getComponent(ItemComponent.class).getItemType();
+  private static String itemTypeOf(Entity entity) {
+    return entity.getComponent(ItemComponent.class).getItemId();
   }
 
   @Test
   void shouldCreateAtCorrectPostion() {
-    Entity itemEntity = ItemFactory.createDrop(new Vector2(2, 2));
-    Entity randomItemEntity = ItemFactory.createRandomDrop(new Vector2(1, 2));
-
-    assertEquals(itemEntity.getPosition(), new Vector2(2, 2));
-    assertEquals(randomItemEntity.getPosition(), new Vector2(1, 2));
+    Entity itemEntity =
+        ItemFactory.createItem(ItemCatalog.create(ItemIds.STRENGTH_CHARM, 1), new Vector2(2, 2));
+    assertEquals(new Vector2(2, 2), itemEntity.getPosition());
   }
 }
