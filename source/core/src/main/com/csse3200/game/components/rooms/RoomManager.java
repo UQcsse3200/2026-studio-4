@@ -16,11 +16,8 @@ import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RoomFactory;
-<<<<<<< HEAD
 import com.csse3200.game.files.GameSaveData;
-=======
 import com.csse3200.game.services.RunTimer;
->>>>>>> 8c457723bc1799a844a8eb7f7948a4a926b3a30d
 import com.csse3200.game.services.ServiceLocator;
 import java.util.HashSet;
 import java.util.Objects;
@@ -155,7 +152,6 @@ public class RoomManager {
     EntityService entityService = ServiceLocator.getEntityService();
     entityService.register(currentRoom);
     entityService.register(player);
-<<<<<<< HEAD
     if (initialWorldPosition == null) {
       start(initialEntryPoint);
     } else {
@@ -168,12 +164,6 @@ public class RoomManager {
     currentRoom.getEvents().trigger("RoomCreated", player);
     scaleRoom(currentRoom);
     player.setPosition(worldPosition);
-=======
-    start(initialEntryPoint);
-    if (runTimer != null && currentConfig.dungeonId != null) {
-      runTimer.startDungeon(currentConfig.dungeonId);
-    }
->>>>>>> 8c457723bc1799a844a8eb7f7948a4a926b3a30d
   }
 
   /** Package private for testing */

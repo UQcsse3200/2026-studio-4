@@ -193,6 +193,15 @@ public class LoadGameScreen extends ScreenAdapter {
                   ? "Unknown location"
                   : displayRoom(save.checkpoint.roomId));
       details.add(label(room, "font", TEXT, 1f)).left().row();
+        details
+          .add(
+            label(
+              "Play Time  " + formatPlayTime(save.playTimeSeconds),
+              "font_small",
+              TEXT,
+              1f))
+          .left()
+          .row();
       String stats =
           "Gold  "
               + save.playerData.gold
@@ -260,6 +269,17 @@ public class LoadGameScreen extends ScreenAdapter {
 
   private int count(List<?> values) {
     return values == null ? 0 : values.size();
+  }
+
+  private String formatPlayTime(float seconds) {
+    if (!Float.isFinite(seconds) || seconds < 0f) {
+      seconds = 0f;
+    }
+    int totalSeconds = (int) seconds;
+    int minutes = totalSeconds / 60;
+    int wholeSeconds = totalSeconds % 60;
+    int hundredths = (int) ((seconds - totalSeconds) * 100f);
+    return String.format("%02d:%02d.%02d", minutes, wholeSeconds, hundredths);
   }
 
   private void updateSelection() {

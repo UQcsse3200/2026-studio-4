@@ -19,6 +19,15 @@ public class RunTimer {
     }
   }
 
+  /** Restores an elapsed run and continues counting from that time. */
+  public void restoreRun(float elapsedSeconds) {
+    if (!Float.isFinite(elapsedSeconds) || elapsedSeconds < 0f) {
+      throw new IllegalArgumentException("Elapsed run time must be a finite non-negative value");
+    }
+    totalTime = elapsedSeconds;
+    runRunning = true;
+  }
+
   public void startDungeon(String dungeonId) {
     if (!dungeonRunning) {
       dungeonRunning = true;

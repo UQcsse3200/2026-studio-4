@@ -75,7 +75,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final GameSaveData loadedSave;
   private final boolean loadAtCheckpoint;
   private boolean runSaved;
-  private final RunTimer runTimer = new RunTimer(new GameTime());
+  private final RunTimer runTimer;
 
   public MainGameScreen(GdxGame game) {
     this(game, null, 1);
@@ -93,7 +93,14 @@ public class MainGameScreen extends ScreenAdapter {
 
     logger.debug("Initialising main game screen services");
     terminal = new Terminal();
-    ServiceLocator.registerTimeSource(new GameTime());
+    GameTime gameTime = new GameTime();
+    ServiceLocator.registerTimeSource(gameTime);
+    runTimer = new RunTimer(gameTime);
+    if (loadedSave == null) {
+      runTimer.startRun();
+    } else {
+      runTimer.restoreRun(loadedSave.playTimeSeconds);
+    }
 
     PhysicsService physicsService = new PhysicsService();
     ServiceLocator.registerPhysicsService(physicsService);
@@ -113,7 +120,7 @@ public class MainGameScreen extends ScreenAdapter {
     if (world == null) {
       throw new IllegalStateException("Unable to load configs/rooms.json");
     }
-    roomManager = new RoomManager(world, player, renderer.getCamera());
+    roomManager = new RoomManager(world, player, renderer.getCamera(), runTimer);
     if (loadedSave != null) {
       roomManager.initializeFromSavedRun(loadedSave, loadAtCheckpoint);
     }
@@ -168,10 +175,11 @@ public class MainGameScreen extends ScreenAdapter {
     if (!runSaved && player != null && roomManager != null) {
       runSaved = true;
       try {
-        FileLoader.save(
-            GameSaveMapper.capture(
-                player, roomManager.getCheckpointData(), roomManager.getResumePositionData()),
-            saveSlot);
+        GameSaveData save =
+          GameSaveMapper.capture(
+            player, roomManager.getCheckpointData(), roomManager.getResumePositionData());
+        save.playTimeSeconds = runTimer.getTotalTime();
+        FileLoader.save(save, saveSlot);
       } catch (RuntimeException exception) {
         logger.error("Failed to save game data for slot {}", saveSlot, exception);
       }

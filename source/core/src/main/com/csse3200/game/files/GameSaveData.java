@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class GameSaveData {
   public int version = 1;
+  public float playTimeSeconds;
   public Checkpoint checkpoint = new Checkpoint();
   public ResumePosition resumePosition;
   public PlayerData playerData = new PlayerData();
