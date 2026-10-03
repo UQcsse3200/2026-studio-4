@@ -192,11 +192,23 @@ class FinalBossStageTwoConfigTest {
   }
 
   @Test
-  void fireballDamageMustBePositive() {
-    for (int invalid : new int[] {0, -1}) {
+  void fireballDamageMustBePositiveAndFinite() {
+    for (float invalid :
+        new float[] {0f, -1f, Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY}) {
       FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
       config.fireballDamage = invalid;
       assertThrows(IllegalArgumentException.class, config::validate);
+    }
+  }
+
+  @Test
+  void fireballDamageDefaultsToOneHalfAndAcceptsFractionalOrIntegerValues() {
+    FinalBossStageTwoConfig config = new FinalBossStageTwoConfig();
+    assertEquals(0.5f, config.fireballDamage);
+    assertDoesNotThrow(config::validate);
+    for (float damage : new float[] {0.25f, 0.5f, 1f, 2f}) {
+      config.fireballDamage = damage;
+      assertDoesNotThrow(config::validate);
     }
   }
 

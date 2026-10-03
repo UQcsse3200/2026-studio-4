@@ -8,7 +8,7 @@ public class FinalBossStageTwoConfig {
 
   // Outward fire volleys. The pause stops new shots, not existing projectiles.
   public float fireballSpeed = 2.4f;
-  public int fireballDamage = 2;
+  public float fireballDamage = 0.5f;
   public float fireVolleyInterval = 0.3f;
   public float fireballLifetime = 6f;
   public float fireballRadius = 0.16f;
@@ -136,7 +136,7 @@ public class FinalBossStageTwoConfig {
   private void validateFireballs() {
     if (!Float.isFinite(fireballSpeed)
         || fireballSpeed <= 0f
-        || fireballDamage <= 0
+        || !positiveFinite(fireballDamage)
         || !Float.isFinite(fireVolleyInterval)
         || fireVolleyInterval <= 0f
         || !Float.isFinite(fireballLifetime)

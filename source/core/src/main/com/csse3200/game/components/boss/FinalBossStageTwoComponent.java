@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageTwoConfig;
@@ -36,6 +37,9 @@ public class FinalBossStageTwoComponent extends Component {
   private boolean disposed;
   private boolean isAttacking;
   private double cycleTimer;
+  private double fireDamageRemainder;
+  private double shieldFireDamageRemainder;
+  private boolean fireDamageInProgress;
   private float retargetRemaining;
   private Vector2 roamDestination;
   private Vector2 previousPlayerCentre;
@@ -129,6 +133,7 @@ public class FinalBossStageTwoComponent extends Component {
   @Override
   public void update() {
     if (disposed || phaseController.getCurrentPhase() != FinalBossPhase.STAGE_TWO) {
+      clearFireDamage();
       return;
     }
     if (!encounterStarted
@@ -145,6 +150,7 @@ public class FinalBossStageTwoComponent extends Component {
       stopRoaming();
       return;
     }
+    if (!isPlayerShieldActive()) shieldFireDamageRemainder = 0d;
     updateRoaming(deltaTime);
     updateFire(deltaTime);
     if (!canContinueFire()) return;
@@ -335,9 +341,44 @@ public class FinalBossStageTwoComponent extends Component {
 
   private void hitPlayer() {
     CombatStatsComponent stats = target.getComponent(CombatStatsComponent.class);
-    if (stats == null || !canContinueFire()) return;
-    stats.takeDamage(stageTwoConfig.fireballDamage, entity);
-    if (!canContinueFire()) clearEffects();
+    ConsumableEffectComponent consumables = target.getComponent(ConsumableEffectComponent.class);
+    if (stats == null
+        || fireDamageInProgress
+        || !canContinueFire()
+        || phaseController.isTransitioning()
+        || stats.isInvulnerable()
+        || stats.getIncomingDamageMultiplier() <= 0f
+        || StatusEffectsControllerComponent.isConcealed(target)
+        || StatusEffectsControllerComponent.isImmobilised(entity)
+        || (consumables != null && consumables.isShielded())) return;
+    float damage = stageTwoConfig.fireballDamage;
+    if (!Float.isFinite(damage) || damage <= 0f) return;
+    boolean shieldActive = isPlayerShieldActive();
+    if (!shieldActive) shieldFireDamageRemainder = 0d;
+    double accumulated = (shieldActive ? shieldFireDamageRemainder : fireDamageRemainder) + damage;
+    double wholeDamage = Math.floor(accumulated);
+    // Consume before dispatch: damage callbacks may dispose this encounter or throw.
+    if (shieldActive) shieldFireDamageRemainder = accumulated - wholeDamage;
+    else fireDamageRemainder = accumulated - wholeDamage;
+    if (wholeDamage < 1d) return;
+    fireDamageInProgress = true;
+    try {
+      stats.takeDamage((int) Math.min(wholeDamage, Integer.MAX_VALUE), entity);
+    } finally {
+      fireDamageInProgress = false;
+      if (!canContinueFire()) clearEffects();
+    }
+  }
+
+  private boolean isPlayerShieldActive() {
+    StatusEffectsControllerComponent effects =
+        target == null ? null : target.getComponent(StatusEffectsControllerComponent.class);
+    return effects != null && effects.isShieldActive();
+  }
+
+  private void clearFireDamage() {
+    fireDamageRemainder = 0d;
+    shieldFireDamageRemainder = 0d;
   }
 
   /** Pure query; cover durability changes only after the fire controller consumes a real hit. */
@@ -408,6 +449,7 @@ public class FinalBossStageTwoComponent extends Component {
   }
 
   private void clearEffects() {
+    clearFireDamage();
     if (fire != null) fire.clear();
     if (ice != null) ice.clear();
     if (pickups != null) pickups.clear();

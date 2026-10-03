@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Rectangle;
@@ -13,9 +15,13 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.player.ConsumableEffectComponent;
+import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageTwoConfig;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.items.ItemType;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.GameTime;
@@ -23,10 +29,12 @@ import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedConstruction;
 
 /** Fire controller integration with stage transitions, combat events and real wall fixtures. */
 @ExtendWith(GameExtension.class)
@@ -38,10 +46,14 @@ class FinalBossStageTwoFireIntegrationTest {
   private FinalBossStageTwoArenaComponent arena;
   private CombatStatsComponent bossStats;
   private CombatStatsComponent playerStats;
+  private StatusEffectsControllerComponent playerEffects;
+  private ConsumableEffectComponent consumables;
+  private InventoryComponent inventory;
   private Entity boss;
   private Entity player;
   private GameTime time;
   private World world;
+  private long nextTestFireballId;
 
   @BeforeEach
   void setUp() {
@@ -51,9 +63,19 @@ class FinalBossStageTwoFireIntegrationTest {
     ServiceLocator.registerPhysicsService(physics);
     world = physics.getPhysics().getWorld();
     config = new FinalBossStageTwoConfig();
+    config.fireballDamage = 2f; // Keep collision tests independent of fractional-damage balancing.
     config.iceCoverCount = 0; // This fixture isolates fire/player/wall behaviour from random cover.
     playerStats = new CombatStatsComponent(100, 10);
-    player = new Entity().addComponent(playerStats).addComponent(new PhysicsComponent());
+    playerEffects = spy(new StatusEffectsControllerComponent());
+    consumables = new ConsumableEffectComponent();
+    inventory = new InventoryComponent(0);
+    player =
+        new Entity()
+            .addComponent(playerStats)
+            .addComponent(playerEffects)
+            .addComponent(inventory)
+            .addComponent(consumables)
+            .addComponent(new PhysicsComponent());
     player.setPosition(79.5f, 79.5f);
     player.create();
     phases = new FinalBossPhaseControllerComponent();
@@ -73,6 +95,7 @@ class FinalBossStageTwoFireIntegrationTest {
     boss.create();
     bossStats.setHealth(800);
     fire = stageTwo.getFireController();
+    nextTestFireballId = 10000L;
   }
 
   @AfterEach
@@ -335,6 +358,290 @@ class FinalBossStageTwoFireIntegrationTest {
 
     assertEquals(100 - config.fireballDamage, playerStats.getHealth());
     assertTrue(fire.fireballs.isEmpty());
+  }
+
+  @Test
+  void fourHalfDamageHitsConsumeEveryShotAndImpactButRemoveOnlyTwoHealth() {
+    startHalfDamageEncounter();
+    List<Entity> damageSources = new ArrayList<>();
+    player
+        .getEvents()
+        .addListener(
+            "damageTaken",
+            (Entity attacker, Integer lost, Integer left) -> damageSources.add(attacker));
+
+    for (int expectedHealth : new int[] {100, 99, 99, 98}) {
+      hitWithFireball();
+      assertEquals(expectedHealth, playerStats.getHealth());
+    }
+
+    assertTrue(fire.fireballs.isEmpty());
+    assertEquals(4, fire.impacts.size());
+    assertEquals(List.of(boss, boss), damageSources);
+  }
+
+  @Test
+  void halfDamageRemainderSurvivesNewVolleysAndTheFiringPause() {
+    config.fireballDamage = 0.5f;
+    config.fireballInitialDelay = 0.02f;
+    config.fireballSpeed = 0.01f;
+    config.attackDuration = 0.2f;
+    config.pauseDuration = 0.2f;
+    startEncounter();
+    hitWithFireball();
+    assertEquals(100, playerStats.getHealth());
+    advance(0.02f);
+    List<Long> firstVolley = fire.fireballs.stream().map(ball -> ball.id).toList();
+    assertFalse(firstVolley.isEmpty());
+    advance(0.18f);
+    assertFalse(stageTwo.isAttacking());
+
+    hitWithFireball();
+    assertEquals(99, playerStats.getHealth());
+    hitWithFireball();
+    assertEquals(99, playerStats.getHealth());
+    advance(0.19f);
+    assertTrue(stageTwo.isAttacking());
+    assertTrue(fire.fireballs.stream().anyMatch(ball -> !firstVolley.contains(ball.id)));
+    hitWithFireball();
+
+    assertEquals(98, playerStats.getHealth());
+  }
+
+  @Test
+  void restartingTheEncounterDiscardsThePreviousHalfDamage() {
+    startHalfDamageEncounter();
+    hitWithFireball();
+    assertEquals(100, playerStats.getHealth());
+
+    stageTwo.startEncounter();
+
+    assertFireCleared();
+    hitWithFireball();
+    assertEquals(100, playerStats.getHealth());
+    hitWithFireball();
+    assertEquals(99, playerStats.getHealth());
+  }
+
+  @Test
+  void leavingTheStageClearsPendingHalfDamageAndPreventsAnyQueuedHit() {
+    startHalfDamageEncounter();
+    hitWithFireball();
+    addFireballAtPlayer();
+
+    phases.completeStage(FinalBossPhase.STAGE_TWO);
+    advance(1f);
+
+    assertEquals(FinalBossPhase.STAGE_THREE, phases.getCurrentPhase());
+    assertEquals(100, playerStats.getHealth());
+    assertFireCleared();
+  }
+
+  @Test
+  void localZeroDamageNeitherAddsHalfDamageNorDiscardsAnEarlierEffectiveHalf() {
+    assertBlockedHitsDoNotChangeRemainder(
+        () -> playerStats.setIncomingDamageMultiplier(0f),
+        () -> playerStats.setIncomingDamageMultiplier(1f));
+  }
+
+  @Test
+  void invulnerabilityNeitherAddsHalfDamageNorDiscardsAnEarlierEffectiveHalf() {
+    assertBlockedHitsDoNotChangeRemainder(
+        () -> playerStats.setInvulnerable(true), () -> playerStats.setInvulnerable(false));
+  }
+
+  @Test
+  void concealmentNeitherAddsHalfDamageNorDiscardsAnEarlierEffectiveHalf() {
+    assertBlockedHitsDoNotChangeRemainder(
+        () -> when(playerEffects.isConcealed()).thenReturn(true),
+        () -> when(playerEffects.isConcealed()).thenReturn(false));
+  }
+
+  @Test
+  void timedShieldPreservesEarlierHealthRemainderWithoutLeakingItsOwnHalfOnExpiry() {
+    startHalfDamageEncounter();
+    hitWithFireball();
+    AtomicLong shieldTime = new AtomicLong();
+    try (MockedConstruction<GameTime> ignored =
+        mockConstruction(
+            GameTime.class,
+            (clock, context) -> when(clock.getTime()).thenAnswer(call -> shieldTime.get()))) {
+      playerEffects.activateTimed();
+      assertTrue(playerEffects.isShieldActive());
+      hitWithFireball();
+      hitWithFireball();
+      hitWithFireball();
+      assertEquals(100, playerStats.getHealth());
+
+      shieldTime.set(3001L);
+      playerEffects.update();
+      assertFalse(playerEffects.isShieldActive());
+      hitWithFireball();
+      assertEquals(99, playerStats.getHealth());
+      hitWithFireball();
+      assertEquals(99, playerStats.getHealth());
+      hitWithFireball();
+      assertEquals(98, playerStats.getHealth());
+    }
+  }
+
+  @Test
+  void absorbShieldLosesOnePointPerPairAndItsRemainingHalfExpiresWithTheShield() {
+    startHalfDamageEncounter();
+    AtomicInteger shieldPoints = new AtomicInteger();
+    player
+        .getEvents()
+        .addListener(
+            "updateShield", (Integer current, Integer maximum) -> shieldPoints.set(current));
+    AtomicLong shieldTime = new AtomicLong();
+    try (MockedConstruction<GameTime> ignored =
+        mockConstruction(
+            GameTime.class,
+            (clock, context) -> when(clock.getTime()).thenAnswer(call -> shieldTime.get()))) {
+      playerEffects.activateAbsorb();
+      assertTrue(playerEffects.isShieldActive());
+      assertEquals(20, shieldPoints.get());
+
+      hitWithFireball();
+      assertEquals(20, shieldPoints.get());
+      hitWithFireball();
+      assertEquals(19, shieldPoints.get());
+      hitWithFireball();
+      assertEquals(19, shieldPoints.get());
+      assertEquals(100, playerStats.getHealth());
+      shieldTime.set(5001L);
+      playerEffects.update();
+      assertFalse(playerEffects.isShieldActive());
+      hitWithFireball();
+      assertEquals(100, playerStats.getHealth());
+      hitWithFireball();
+      assertEquals(99, playerStats.getHealth());
+    }
+  }
+
+  @Test
+  void consumableShieldNeitherAddsHalfDamageNorDiscardsEarlierEffectiveHalfOnExpiry() {
+    startHalfDamageEncounter();
+    inventory.addConsumable(ItemType.SHIELD, 2);
+    assertTrue(consumables.tryUse(ItemType.SHIELD));
+    assertTrue(consumables.isShielded());
+    hitWithFireball();
+    assertEquals(100, playerStats.getHealth());
+
+    when(time.getTime()).thenReturn(ConsumableEffectComponent.DURATION_MS + 1);
+    playerEffects.update();
+    assertFalse(consumables.isShielded());
+    hitWithFireball();
+    assertEquals(100, playerStats.getHealth());
+    assertTrue(consumables.tryUse(ItemType.SHIELD));
+    hitWithFireball();
+    assertEquals(100, playerStats.getHealth());
+    when(time.getTime()).thenReturn(2 * ConsumableEffectComponent.DURATION_MS + 2);
+    playerEffects.update();
+    assertFalse(consumables.isShielded());
+    hitWithFireball();
+
+    assertEquals(99, playerStats.getHealth());
+  }
+
+  @Test
+  void aHalfDamageLethalHitClearsTheRestOfItsVolleySynchronously() {
+    startHalfDamageEncounter();
+    playerStats.setHealth(1);
+    hitWithFireball();
+    assertEquals(1, playerStats.getHealth());
+    addFireballAtPlayer();
+    addFireballAtPlayer();
+    AtomicInteger damagingHits = new AtomicInteger();
+    player
+        .getEvents()
+        .addListener(
+            "damageTaken",
+            (Entity attacker, Integer lost, Integer left) -> damagingHits.incrementAndGet());
+
+    advance(0.01f);
+
+    assertTrue(playerStats.isDead());
+    assertEquals(1, damagingHits.get());
+    assertFireCleared();
+  }
+
+  @Test
+  void synchronousDisposalOnAWholeDamageTickDoesNotProcessTheRestOfTheVolley() {
+    startHalfDamageEncounter();
+    hitWithFireball();
+    addFireballAtPlayer();
+    addFireballAtPlayer();
+    addFireballAtPlayer();
+    AtomicInteger damagingHits = new AtomicInteger();
+    player
+        .getEvents()
+        .addListener(
+            "damageTaken",
+            (Entity attacker, Integer lost, Integer left) -> {
+              damagingHits.incrementAndGet();
+              stageTwo.dispose();
+            });
+
+    advance(0.01f);
+
+    assertEquals(99, playerStats.getHealth());
+    assertEquals(1, damagingHits.get());
+    assertFireCleared();
+    advance(1f);
+    assertEquals(99, playerStats.getHealth());
+    assertFireCleared();
+  }
+
+  @Test
+  void positiveIntegerDamageStillAppliesFullyOnEveryHit() {
+    config.fireballDamage = 3f;
+    config.fireballInitialDelay = 1000f;
+    startEncounter();
+
+    hitWithFireball();
+    assertEquals(97, playerStats.getHealth());
+    hitWithFireball();
+    assertEquals(94, playerStats.getHealth());
+  }
+
+  private void startHalfDamageEncounter() {
+    config.fireballDamage = 0.5f;
+    config.fireballInitialDelay = 1000f;
+    startEncounter();
+  }
+
+  private void assertBlockedHitsDoNotChangeRemainder(Runnable block, Runnable unblock) {
+    startHalfDamageEncounter();
+    block.run();
+    hitWithFireball();
+    assertEquals(100, playerStats.getHealth());
+    unblock.run();
+    hitWithFireball();
+    assertEquals(100, playerStats.getHealth());
+    block.run();
+    hitWithFireball();
+    assertEquals(100, playerStats.getHealth());
+    unblock.run();
+    hitWithFireball();
+    assertEquals(99, playerStats.getHealth());
+  }
+
+  private FinalBossStageTwoFireController.Fireball addFireballAtPlayer() {
+    FinalBossStageTwoFireController.Fireball ball =
+        new FinalBossStageTwoFireController.Fireball(
+            nextTestFireballId++, player.getCenterPosition(), new Vector2());
+    fire.fireballs.add(ball);
+    return ball;
+  }
+
+  private void hitWithFireball() {
+    FinalBossStageTwoFireController.Fireball ball = addFireballAtPlayer();
+    advance(0.01f);
+    assertFalse(fire.fireballs.contains(ball));
+    assertFalse(fire.impacts.isEmpty());
+    assertTrue(fire.impacts.getLast().position.epsilonEquals(player.getCenterPosition()));
+    assertEquals(0f, fire.impacts.getLast().elapsed);
   }
 
   private void startEncounter() {

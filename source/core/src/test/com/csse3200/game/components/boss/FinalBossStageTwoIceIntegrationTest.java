@@ -56,6 +56,7 @@ class FinalBossStageTwoIceIntegrationTest {
     entities = new EntityService();
     ServiceLocator.registerEntityService(entities);
     config = new FinalBossStageTwoConfig();
+    config.fireballDamage = 2f; // Keep collision tests independent of fractional-damage balancing.
     config.iceCoverCount = 1;
     config.fireballInitialDelay = 1000f;
     playerStats = new CombatStatsComponent(100, 10);
@@ -128,6 +129,28 @@ class FinalBossStageTwoIceIntegrationTest {
 
     assertEquals(100 - config.fireballDamage, playerStats.getHealth());
     assertEquals(4, cover.hitsRemaining);
+    assertTrue(fire.fireballs.isEmpty());
+  }
+
+  @Test
+  void aCoverHitDoesNotCountTowardThePlayersTwoRequiredHalfDamageHits() {
+    config.fireballDamage = 0.5f;
+    FinalBossStageTwoIceController.Cover cover = prepareCoverAndPlayerBehind();
+    addShotsThrough(cover, 1);
+    advance(0.3f);
+    assertEquals(3, cover.hitsRemaining);
+    assertEquals(100, playerStats.getHealth());
+
+    placePlayerAt(cover.bounds.x - 1f, centreY(cover));
+    addShotsThrough(cover, 1);
+    advance(0.3f);
+    assertEquals(100, playerStats.getHealth());
+    assertEquals(3, cover.hitsRemaining);
+    addShotsThrough(cover, 1);
+    advance(0.3f);
+
+    assertEquals(99, playerStats.getHealth());
+    assertEquals(3, cover.hitsRemaining);
     assertTrue(fire.fireballs.isEmpty());
   }
 

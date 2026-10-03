@@ -60,14 +60,28 @@ provisional values in `FinalBossStageTwoConfig` are:
 | Firing interval / pause | 20 seconds / 3 seconds |
 | Delay between volleys | 0.3 seconds |
 | Fireball speed | 2.4 world units/second |
-| Damage per fireball | 2 |
+| Damage per fireball | 0.5; two normal hits accumulate into 1 HP |
 | Fireball hit radius | 0.16 world units |
 | Maximum lifetime / simultaneous fireballs | 6 seconds / 128 |
 | Impact animation duration | 0.35 seconds |
 
-The damage adjustment reduces each fireball from 8 to 2 HP (75% less), giving the
-player more room for mistakes in the dense barrage. Speed, firing cadence, size,
-collision radius and ice-cover durability are unchanged.
+The current damage adjustment reduces each fireball from 2 to 0.5 HP (the earlier
+setting was 8 HP). Player health remains integer-valued: one valid impact stores
+half a point, the second removes one HP, and four remove two HP. Fractions persist
+across volleys and firing pauses, but reset on encounter restart, stage exit,
+death or disposal. Whole damage still uses `CombatStatsComponent.takeDamage`.
+Bullet impact effects and removal happen on every collision, including the first
+half-point hit. Speed, firing cadence, size, collision radius and ice-cover
+hit-count durability are unchanged.
+
+Hits blocked by invulnerability, local zero incoming damage, concealment,
+consumable shields, or an immobilised attacker add no fractional damage.
+Existing legitimate half-points are preserved. Rechargeable shields use a
+separate accumulator: two half-point hits pass one integer point through the
+normal shield mitigation, while leftover shield fractions are discarded once
+that shield becomes inactive. Shielded fractions cannot become later HP damage.
+Status-effect damage modifiers still apply through the existing integer pipeline
+when accumulated damage is dispatched.
 
 The first density adjustment reduces speed from 4 to 2.4 world units/second
 and shortens the volley interval from 0.9 to 0.3 seconds. Slower travel and
@@ -551,3 +565,11 @@ Outer-ring/expiry follow-up playtest:
    produces sparks, and final energy depletion retains its separate head effect.
 5. Leave/restart the encounter or enter Stage 3 while a disappearance is playing;
    the old blue ring must not survive the encounter cleanup.
+
+
+Half-point fireball damage validation (base `3f97df2`): 299 selected Stage 2,
+configuration and status-effect tests passed with no failures, errors or skips;
+`formatCheck` passed. Regression cases include 0.5-point accumulation across
+volleys and pauses, per-collision effects, ice-cover interception, invulnerability,
+local zero damage, concealment, timed/absorb/consumable shields, encounter cleanup
+and disposal during damage callbacks. Integer damage overrides remain supported.
