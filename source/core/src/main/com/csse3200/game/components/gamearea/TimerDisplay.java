@@ -1,25 +1,13 @@
 package com.csse3200.game.components.gamearea;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.ui.UIComponent;
-import java.util.Locale;
 
 /**
  * Displays the total run time and current dungeon time in a HUD panel in the upper-right corner.
@@ -30,7 +18,6 @@ import java.util.Locale;
  */
 public class TimerDisplay extends UIComponent {
   private static final float EDGE_MARGIN = 20f;
-
 
   private final RunTimer runTimer;
   private boolean visible = true;
@@ -53,12 +40,12 @@ public class TimerDisplay extends UIComponent {
 
     runCaption = new Label("RUN: ", skin, "caption");
     runCaption.setFontScale(1.2f);
-    runTime = new Label("00:00",skin, "runTime");
+    runTime = new Label("00:00", skin, "runTime");
     dungeonCaption = new Label("DUNGEON", skin, "caption");
     dungeonTime = new Label("--:--", skin, "dungeonTime");
 
     Drawable ab = hud.getDrawable("timer_back");
-    ab.setMinWidth(190f);  // Set your desired fixed width
+    ab.setMinWidth(190f); // Set your desired fixed width
     ab.setMinHeight(170f);
     Table content = new Table();
     content.defaults().left();
@@ -67,7 +54,6 @@ public class TimerDisplay extends UIComponent {
     content.add(dungeonCaption).row();
     content.add(dungeonTime).center().row();
     content.setBackground(ab);
-
 
     rootTable = new Table();
     content.defaults().center();
@@ -79,8 +65,6 @@ public class TimerDisplay extends UIComponent {
 
     stage.addActor(rootTable);
     rootTable.toFront();
-
-
   }
 
   /** Refreshes the time text and accent animation every frame. */
@@ -105,13 +89,13 @@ public class TimerDisplay extends UIComponent {
   }
 
   private String id(String dungeonId) {
-      return switch (dungeonId) {
-          case "dungeonOne" -> "1";
-          case "dungeonTwo" -> "2";
-          case "dungeonThree" -> "3";
-          case "finalDungeon" -> "END";
-          default -> "";
-      };
+    return switch (dungeonId) {
+      case "dungeonOne" -> "1";
+      case "dungeonTwo" -> "2";
+      case "dungeonThree" -> "3";
+      case "finalDungeon" -> "END";
+      default -> "";
+    };
   }
 
   /** Fades the panel in or out without stopping the timers. */

@@ -7,9 +7,8 @@ public class RunTimer {
   private String currentDungeonId;
   private boolean runRunning;
   private boolean dungeonRunning;
-  private float dungeonSyncedTime;    // whole seconds, flips with the run clock
-  private float dungeonStartTotal;    // totalTime when the dungeon began
-
+  private float dungeonSyncedTime; // whole seconds, flips with the run clock
+  private float dungeonStartTotal; // totalTime when the dungeon began
 
   public RunTimer(GameTime gameTime) {
     this.gameTime = gameTime;
@@ -21,7 +20,6 @@ public class RunTimer {
       totalTime = 0;
     }
   }
-
 
   public void startDungeon(String dungeonId) {
     if (!dungeonRunning) {
