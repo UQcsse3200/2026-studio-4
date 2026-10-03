@@ -5,15 +5,22 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public abstract class ShapeActor extends Actor {
   protected final ShapeRenderer shape;
   protected final Color color;
+  protected boolean fill;
 
-  public ShapeActor(Color color) {
+  public ShapeActor(Color color, boolean fill) {
     this.shape = new ShapeRenderer();
     this.color = color;
+    this.fill = fill;
+  }
+
+  public ShapeActor(Color color) {
+    this(color, true);
   }
 
   @Override
@@ -26,7 +33,7 @@ public abstract class ShapeActor extends Actor {
 
     shape.setProjectionMatrix(batch.getProjectionMatrix());
 
-    shape.begin(ShapeRenderer.ShapeType.Filled);
+    shape.begin(fill ? ShapeType.Filled : ShapeType.Line);
     shape.setColor(color);
 
     drawShape();
