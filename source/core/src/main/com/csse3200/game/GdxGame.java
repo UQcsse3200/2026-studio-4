@@ -1,10 +1,11 @@
 package com.csse3200.game;
 
 import static com.badlogic.gdx.Gdx.app;
-import com.csse3200.game.files.GameSaveData;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.csse3200.game.files.GameSaveData;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.DeathScreen;
 import com.csse3200.game.screens.LoadGameScreen;
@@ -53,6 +54,7 @@ public class GdxGame extends Game {
     }
     setScreen(newScreen(screenType));
   }
+
   public void startGame(GameSaveData save, int slot) {
     Screen currentScreen = getScreen();
     if (currentScreen != null) {

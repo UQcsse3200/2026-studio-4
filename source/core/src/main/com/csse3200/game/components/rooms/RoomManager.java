@@ -48,7 +48,7 @@ public class RoomManager {
     this.camera = camera;
     currentConfig = world.getRoom(world.startRoomId);
     initialEntryPoint = currentConfig.getEntryPoint(world.startEntryPointId);
-    currentConfig = world.getRoom(world.startRoomId);   
+    currentConfig = world.getRoom(world.startRoomId);
     checkpointRoomId = currentConfig.id;
     checkpointEntryPointId = world.startEntryPointId;
     checkpointPosition = new PositionConfig();
@@ -70,6 +70,7 @@ public class RoomManager {
     this.camera = null;
     this.initialEntryPoint = null;
   }
+
   /** Call after construction and before create() when starting from a save. */
   public void initializeFromCheckpoint(GameSaveData.Checkpoint checkpoint) {
     if (checkpoint == null) {
@@ -86,9 +87,9 @@ public class RoomManager {
     spawn.y = checkpoint.tileY;
 
     if (checkpoint.entryPointId != null
-      && savedRoom.getEntryPoint(checkpoint.entryPointId) == null) {
-        throw new IllegalArgumentException("Unknown checkpoint entry: " + checkpoint.entryPointId);
-    } 
+        && savedRoom.getEntryPoint(checkpoint.entryPointId) == null) {
+      throw new IllegalArgumentException("Unknown checkpoint entry: " + checkpoint.entryPointId);
+    }
 
     currentRoom.dispose();
     currentConfig = savedRoom;
@@ -99,7 +100,7 @@ public class RoomManager {
     checkpointEntryPointId = checkpoint.entryPointId;
     checkpointPosition = spawn;
 
-    FollowingCameraComponent following =currentRoom.getComponent(FollowingCameraComponent.class);
+    FollowingCameraComponent following = currentRoom.getComponent(FollowingCameraComponent.class);
     following.setCamera(camera);
     following.setTarget(player);
   }
@@ -292,6 +293,7 @@ public class RoomManager {
   void setCurrentRoom(Entity room) {
     this.currentRoom = room;
   }
+
   public void activateCheckpoint(String entryPointId) {
     PositionConfig entry = currentConfig.getEntryPoint(entryPointId);
     if (entry == null) {
@@ -303,6 +305,7 @@ public class RoomManager {
     checkpointPosition.x = entry.x;
     checkpointPosition.y = entry.y;
   }
+
   public GameSaveData.Checkpoint getCheckpointData() {
     GameSaveData.Checkpoint checkpoint = new GameSaveData.Checkpoint();
     checkpoint.roomId = checkpointRoomId;

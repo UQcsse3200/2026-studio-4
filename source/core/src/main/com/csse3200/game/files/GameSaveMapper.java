@@ -12,8 +12,7 @@ import com.csse3200.game.items.charms.*;
 public final class GameSaveMapper {
   private GameSaveMapper() {}
 
-  public static GameSaveData capture(
-      Entity player, GameSaveData.Checkpoint checkpoint) {
+  public static GameSaveData capture(Entity player, GameSaveData.Checkpoint checkpoint) {
     GameSaveData save = new GameSaveData();
     save.checkpoint = copyCheckpoint(checkpoint);
 
@@ -68,15 +67,15 @@ public final class GameSaveMapper {
         charmFromId(id).pickUp(player);
       }
     }
-    WeaponSelectionComponent selection =
-    required(player, WeaponSelectionComponent.class);
+    WeaponSelectionComponent selection = required(player, WeaponSelectionComponent.class);
 
     if (save.playerData.selectedWeapon != null) {
-        WeaponType selected = WeaponType.valueOf(save.playerData.selectedWeapon);
-        if (!selection.equip(selected)) {
-            throw new IllegalArgumentException("Could not equip saved weapon: " + save.playerData.selectedWeapon);
-  }
-}
+      WeaponType selected = WeaponType.valueOf(save.playerData.selectedWeapon);
+      if (!selection.equip(selected)) {
+        throw new IllegalArgumentException(
+            "Could not equip saved weapon: " + save.playerData.selectedWeapon);
+      }
+    }
 
     WeaponUpgradeComponent upgrades = required(player, WeaponUpgradeComponent.class);
     if (save.playerData.upgradedWeapons != null) {
@@ -110,8 +109,7 @@ public final class GameSaveMapper {
     };
   }
 
-  private static GameSaveData.Checkpoint copyCheckpoint(
-      GameSaveData.Checkpoint source) {
+  private static GameSaveData.Checkpoint copyCheckpoint(GameSaveData.Checkpoint source) {
     if (source == null) throw new IllegalArgumentException("Checkpoint is required");
     GameSaveData.Checkpoint copy = new GameSaveData.Checkpoint();
     copy.roomId = source.roomId;

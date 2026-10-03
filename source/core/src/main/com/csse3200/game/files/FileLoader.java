@@ -18,6 +18,7 @@ public class FileLoader {
   private static final Logger logger = LoggerFactory.getLogger(FileLoader.class);
   static final Json json = new Json();
   private static final int SAVE_SLOT_COUNT = 3;
+
   private static String saveFileName(int slot) {
     validateSlot(slot);
     return "save_slot_" + slot + ".json";
@@ -33,6 +34,7 @@ public class FileLoader {
       throw new IllegalArgumentException("Invalid save slot: " + slot);
     }
   }
+
   /**
    * Read generic Java classes from a JSON file. Properties in the JSON file will override class
    * defaults.
@@ -128,6 +130,7 @@ public class FileLoader {
     EXTERNAL,
     ABSOLUTE
   }
+
   public static void save(GameSaveData saveData, int slot) {
     writeClass(saveData, saveFileName(slot), Location.LOCAL);
   }

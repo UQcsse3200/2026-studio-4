@@ -14,8 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -126,11 +126,12 @@ public class LoadGameScreen extends ScreenAdapter {
       panel.add(row).expandX().fillX().height(rowHeight).padBottom(9f).row();
     }
 
-    footer = label(
-      "UP / DOWN  Select     ENTER  Load     F  Delete     ESC  Back",
-      "font_small",
-      MUTED,
-      1f);
+    footer =
+        label(
+            "UP / DOWN  Select     ENTER  Load     F  Delete     ESC  Back",
+            "font_small",
+            MUTED,
+            1f);
     footer.setAlignment(Align.left);
     panel.add(footer).expandX().fillX().left().padTop(8f);
 
@@ -185,12 +186,16 @@ public class LoadGameScreen extends ScreenAdapter {
       String status = saveFiles[index] ? "This record could not be read" : "No saved journey";
       details.add(label(status, "font_small", MUTED, 1f)).left();
     } else {
-      String room = save.checkpoint == null ? "Unknown location" : displayRoom(save.checkpoint.roomId);
+      String room =
+          save.checkpoint == null ? "Unknown location" : displayRoom(save.checkpoint.roomId);
       details.add(label(room, "font", TEXT, 1f)).left().row();
       String stats =
-          "Gold  " + save.playerData.gold
-            + "     Charms  " + count(save.playerData.charms)
-            + "     Upgrades  " + count(save.playerData.upgradedWeapons);
+          "Gold  "
+              + save.playerData.gold
+              + "     Charms  "
+              + count(save.playerData.charms)
+              + "     Upgrades  "
+              + count(save.playerData.upgradedWeapons);
       details.add(label(stats, "font_small", MUTED, 0.95f)).left();
     }
     content.add(details).expandX().fillX().left();
@@ -256,7 +261,8 @@ public class LoadGameScreen extends ScreenAdapter {
   private void updateSelection() {
     for (int index = 0; index < SLOT_COUNT; index++) {
       if (slotButtons[index] != null) {
-        slotButtons[index].setStyle(index == selectedIndex ? selectedStyles[index] : normalStyles[index]);
+        slotButtons[index].setStyle(
+            index == selectedIndex ? selectedStyles[index] : normalStyles[index]);
       }
     }
   }

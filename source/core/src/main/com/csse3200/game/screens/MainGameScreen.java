@@ -157,8 +157,7 @@ public class MainGameScreen extends ScreenAdapter {
     if (!runSaved && player != null && roomManager != null) {
       runSaved = true;
       try {
-        FileLoader.save(
-            GameSaveMapper.capture(player, roomManager.getCheckpointData()), saveSlot);
+        FileLoader.save(GameSaveMapper.capture(player, roomManager.getCheckpointData()), saveSlot);
       } catch (RuntimeException exception) {
         logger.error("Failed to save game data for slot {}", saveSlot, exception);
       }
