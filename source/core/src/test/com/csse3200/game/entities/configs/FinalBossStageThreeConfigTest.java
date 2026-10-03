@@ -11,7 +11,7 @@ class FinalBossStageThreeConfigTest {
   void defaultTornadoDamageUsesOneSharedQuarterSecondTickAndNearbyRadius() {
     FinalBossStageThreeConfig config = new FinalBossStageThreeConfig();
 
-    assertEquals(1, config.tornadoDamage);
+    assertEquals(0.5f, config.tornadoDamage);
     assertEquals(0.25f, config.tornadoDamageInterval);
     assertEquals(1.35f, config.tornadoDamageRadius);
     assertDoesNotThrow(config::validate);
@@ -41,8 +41,9 @@ class FinalBossStageThreeConfigTest {
   }
 
   @Test
-  void negativeTornadoDamageIsRejected() {
-    for (int damage : new int[] {-1, Integer.MIN_VALUE}) {
+  void negativeOrNonfiniteTornadoDamageIsRejected() {
+    for (float damage :
+        new float[] {-0.01f, -1f, Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY}) {
       FinalBossStageThreeConfig config = new FinalBossStageThreeConfig();
       config.tornadoDamage = damage;
 
@@ -56,5 +57,15 @@ class FinalBossStageThreeConfigTest {
     config.tornadoDamage = 0;
 
     assertDoesNotThrow(config::validate);
+  }
+
+  @Test
+  void fractionalAndIntegerTornadoDamageAreBothSupported() {
+    for (float damage : new float[] {0.25f, 0.5f, 1f, 2f}) {
+      FinalBossStageThreeConfig config = new FinalBossStageThreeConfig();
+      config.tornadoDamage = damage;
+
+      assertDoesNotThrow(config::validate);
+    }
   }
 }

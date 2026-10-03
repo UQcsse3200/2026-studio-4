@@ -58,16 +58,27 @@ its old destination before resuming movement. Separation is best-effort if a vie
 or completely obstructed to satisfy all clearances simultaneously.
 
 During Wave 2, a fully spawned tornado within 1.35 world units of the player's ground point
-applies 1 HP of damage after every 0.25 seconds of continuous contact. All tornadoes share one
+applies 0.5 HP of damage after every 0.25 seconds of continuous contact. All tornadoes share one
 contact clock, so overlapping ranges do not multiply the damage. Static walls block the contact
 path; distance alone cannot hurt the player through a wall. Leaving all contact ranges, concealment,
 or phase transition resets the clock. A long frame can cause at most one tick, with no catch-up
 burst. Jumping only avoids statue shockwaves and does not grant immunity to the tall tornado.
 
 Damage goes through `CombatStatsComponent.takeDamage`, preserving invulnerability, incoming-damage
-modifiers and the local zero-damage test switch. Actual HP loss plays a separate white whirlwind
-at the player's centre for 0.24 seconds; blocked damage does not show a false hit. The fourth row
-(one-based) of `stage2/transform/01.png` supplies its nine nonempty 64-by-64 frames (indices 33–41).
+modifiers and the local zero-damage test switch. Health remains integer-valued: normal ticks
+1/2/3/4 remove 0/1/1/2 HP cumulatively. Each accepted unshielded tick plays a separate white
+whirlwind at the player's centre for 0.24 seconds, including a half-point tick before integer HP
+changes; blocked damage does not show a false hit. This preserves the 0.25-second attack and
+visual cadence. Leaving contact or a temporary transition pause resets only the contact clock,
+not previously accepted half-points. Terminal cleanup clears both the clock and fractions.
+
+Invulnerability, zero incoming-damage multiplier, concealment, consumable shields, the health
+floor, and an immobilised attacker do not accumulate new damage. Rechargeable shields use a
+separate fractional bucket; two half-point ticks pass one integer damage point through normal
+shield mitigation. That bucket is discarded when the shield becomes inactive and never leaks
+into later HP damage. The ordinary bucket retains previously accepted unshielded half-points.
+
+The fourth row (one-based) of `stage2/transform/01.png` supplies its nine nonempty 64-by-64 frames (indices 33–41).
 Stage 3 explicitly lists this shared texture in its assets, so it can also load independently.
 The uploaded `01(2).png` is byte-identical to that existing texture; no new PNG is needed.
 
@@ -99,8 +110,8 @@ the rest of the artwork is preserved. See the asset provenance note for hash and
 3. With one to four tornadoes alive, move around the camera: they should follow slowly from
    different directions and remain separated. Lead them near walls and statues; they should turn
    or wait without passing through. Concealment or leaving the camera releases pursuit.
-4. With normal player damage enabled, remain near a tornado: HP falls by 1 every 0.25 seconds,
-   with the white fourth-row whirlwind at the player. Several nearby tornadoes share that rate.
+4. With normal player damage enabled, remain near a tornado: each 0.25-second tick deals 0.5 HP,
+   so two ticks remove one integer HP. The white fourth-row whirlwind still plays every valid tick. Several nearby tornadoes share that rate.
    Moving away stops the ticks, and standing behind a wall prevents them. A local zero-damage
    multiplier intentionally prevents both HP loss and the white damage effect.
 5. Break the final statue: no fifth tornado appears, all four play grey effects and disappear.
@@ -132,3 +143,11 @@ Graphical playtesting is still needed for movement feel and final balance. On a 
 the zero incoming-damage multiplier intentionally hides the damage flash as well as preventing HP
 loss; test actual hits with normal incoming damage temporarily enabled, without committing that
 local player-factory edit.
+
+
+Half-point tornado update (base `a819d08`): 124 selected Stage 3, tornado and
+Stage 3 configuration tests passed with no failures, errors or skips. Gradle
+format and `formatCheck` completed successfully. Coverage verifies the unchanged
+0.25-second shared tick and white-effect cadence, two half-points per integer HP,
+contact interruptions, long frames, shield fractions, local zero damage and
+terminal cleanup. Final movement feel remains a graphical playtest check.
