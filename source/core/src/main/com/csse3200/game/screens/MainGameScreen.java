@@ -168,6 +168,7 @@ public class MainGameScreen extends ScreenAdapter {
     InventoryActions inventoryActions = new InventoryActions(inventoryDisplay);
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
     TimerDisplay timerDisplay = new TimerDisplay(runTimer);
+
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())

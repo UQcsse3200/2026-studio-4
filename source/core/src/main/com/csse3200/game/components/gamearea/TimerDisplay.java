@@ -1,87 +1,130 @@
 package com.csse3200.game.components.gamearea;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.ui.UIComponent;
+import java.util.Locale;
 
-/** Displays the total run time and current dungeon time in the upper-right corner. */
+/**
+ * Displays the total run time and current dungeon time in a HUD panel in the upper-right corner.
+ *
+ * <p>The panel has a dark rounded background and an accent bar on its left edge. The bar is cyan
+ * while exploring and pulses orange while a dungeon is being timed. The dungeon row is dimmed and
+ * shows {@code --:--} when no dungeon is active. Press T to fade the panel in and out.
+ */
 public class TimerDisplay extends UIComponent {
+  private static final float EDGE_MARGIN = 20f;
+
+
   private final RunTimer runTimer;
   private boolean visible = true;
-  private Label totalLabel;
-  private Label dungeonLabel;
+
+  private Table rootTable;
+  private Label runCaption;
+  private Label runTime;
+  private Label dungeonCaption;
+  private Label dungeonTime;
 
   /** Creates a display backed by the supplied game runTimer. */
   public TimerDisplay(RunTimer runTimer) {
     this.runTimer = runTimer;
   }
 
-  /** Creates and adds the total and dungeon labels to the shared UI stage. */
+  /** Builds the HUD panel and adds it to the shared UI stage. */
   @Override
   public void create() {
     super.create();
-    Label.LabelStyle totalStyle = new Label.LabelStyle(skin.get("small", Label.LabelStyle.class));
-    Label.LabelStyle dungeonStyle = new Label.LabelStyle(skin.get("small", Label.LabelStyle.class));
-    totalStyle.fontColor = Color.GREEN.cpy();
-    dungeonStyle.fontColor = Color.GREEN.cpy();
 
-    totalLabel = new Label("Total: 00:00.00", totalStyle);
-    dungeonLabel = new Label("Dungeon: 00:00.00", dungeonStyle);
-    stage.addActor(dungeonLabel);
-    stage.addActor(totalLabel);
+    runCaption = new Label("RUN: ", skin, "caption");
+    runCaption.setFontScale(1.2f);
+    runTime = new Label("00:00",skin, "runTime");
+    dungeonCaption = new Label("DUNGEON", skin, "caption");
+    dungeonTime = new Label("--:--", skin, "dungeonTime");
 
-    dungeonLabel.toFront();
-    totalLabel.toFront();
+    Drawable ab = hud.getDrawable("timer_back");
+    ab.setMinWidth(190f);  // Set your desired fixed width
+    ab.setMinHeight(170f);
+    Table content = new Table();
+    content.defaults().left();
+    content.add(runCaption).row();
+    content.add(runTime).row();
+    content.add(dungeonCaption).row();
+    content.add(dungeonTime).center().row();
+    content.setBackground(ab);
+
+
+    rootTable = new Table();
+    content.defaults().center();
+    rootTable.setFillParent(true);
+    rootTable.bottom().left().pad(EDGE_MARGIN);
+    rootTable.add(content);
+    rootTable.setTransform(true);
+    rootTable.setScale(0.9f);
+
+    stage.addActor(rootTable);
+    rootTable.toFront();
+
+
   }
 
-  /** Updates the runTimer text, positions the labels, and keeps them above other UI actors. */
+  /** Refreshes the time text and accent animation every frame. */
   @Override
   public void draw(SpriteBatch batch) {
-    if (totalLabel == null || dungeonLabel == null) {
+    if (rootTable == null) {
       return;
     }
 
-    totalLabel.setText(runTimer.formatTime(runTimer.getTotalTime()));
-    dungeonLabel.setText("Dungeon " + runTimer.formatTime(runTimer.getDungeonTime()));
+    boolean dungeonActive = runTimer.getCurrentDungeonId() != null;
 
-    totalLabel.setVisible(visible);
-    dungeonLabel.setVisible(visible);
+    runTime.setText(runTimer.formatTimeWithNoMilliSec(runTimer.getTotalTime()));
+    if (dungeonActive) {
+      dungeonTime.setText(runTimer.formatTimeWithNoMilliSec(runTimer.getDungeonSyncedTime()));
+      dungeonCaption.setText("DUNGEON: " + id(runTimer.getCurrentDungeonId()));
+    } else {
+      dungeonTime.setText("--:--");
+      dungeonCaption.setText("DUNGEON");
+    }
 
-    totalLabel.setFontScale(2.5f);
-    dungeonLabel.setFontScale(1.0f);
-
-    float rightMargin = 24f;
-    float topMargin = 24f;
-    float spacing = 4f;
-
-    totalLabel.setPosition(
-        stage.getWidth() - totalLabel.getWidth() - rightMargin,
-        stage.getHeight() - totalLabel.getHeight() - topMargin);
-
-    dungeonLabel.setPosition(
-        stage.getWidth() - dungeonLabel.getWidth() - rightMargin,
-        totalLabel.getY() - dungeonLabel.getHeight() - spacing);
-
-    dungeonLabel.toFront();
-    totalLabel.toFront();
+    rootTable.toFront();
   }
 
-  /** Shows or hides both runTimer labels without stopping the timers. */
+  private String id(String dungeonId) {
+      return switch (dungeonId) {
+          case "dungeonOne" -> "1";
+          case "dungeonTwo" -> "2";
+          case "dungeonThree" -> "3";
+          case "finalDungeon" -> "END";
+          default -> "";
+      };
+  }
+
+  /** Fades the panel in or out without stopping the timers. */
   public void toggle() {
     visible = !visible;
-    totalLabel.setVisible(visible);
-    dungeonLabel.setVisible(visible);
+    rootTable.setVisible(visible);
   }
 
-  /** Handles the T key used to toggle the runTimer display. */
+  /** Handles the T key used to toggle the timer display. */
   public static class ToggleInput extends InputComponent {
     private final TimerDisplay display;
 
-    /** Creates a keyboard handler for the supplied runTimer display. */
+    /** Creates a keyboard handler for the supplied timer display. */
     public ToggleInput(TimerDisplay display) {
       super(20);
       this.display = display;
@@ -98,19 +141,14 @@ public class TimerDisplay extends UIComponent {
     }
   }
 
-  /** Removes both runTimer labels from the UI stage. */
+  /** Removes the panel from the UI stage and frees the textures it created. */
   @Override
   public void dispose() {
     super.dispose();
 
-    if (totalLabel != null) {
-      totalLabel.remove();
-      totalLabel = null;
-    }
-
-    if (dungeonLabel != null) {
-      dungeonLabel.remove();
-      dungeonLabel = null;
+    if (rootTable != null) {
+      rootTable.remove();
+      rootTable = null;
     }
   }
 }

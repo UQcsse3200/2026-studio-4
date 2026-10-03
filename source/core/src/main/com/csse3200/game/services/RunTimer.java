@@ -7,6 +7,9 @@ public class RunTimer {
   private String currentDungeonId;
   private boolean runRunning;
   private boolean dungeonRunning;
+  private float dungeonSyncedTime;    // whole seconds, flips with the run clock
+  private float dungeonStartTotal;    // totalTime when the dungeon began
+
 
   public RunTimer(GameTime gameTime) {
     this.gameTime = gameTime;
@@ -19,11 +22,14 @@ public class RunTimer {
     }
   }
 
+
   public void startDungeon(String dungeonId) {
     if (!dungeonRunning) {
       dungeonRunning = true;
       currentDungeonId = dungeonId;
+      dungeonStartTotal = totalTime;
       dungeonTime = 0f;
+      dungeonSyncedTime = 0f;
     }
   }
 
@@ -31,7 +37,11 @@ public class RunTimer {
   public void update() {
     float delta = gameTime.getDeltaTime();
     if (runRunning) totalTime += delta;
-    if (dungeonRunning) dungeonTime += delta;
+    if (dungeonRunning) {
+      dungeonTime = totalTime - dungeonStartTotal;
+      // Whole seconds on the run clock's boundaries, so both labels tick together
+      dungeonSyncedTime = (int) totalTime - (int) dungeonStartTotal;
+    }
   }
 
   public void stopDungeon() {
@@ -56,11 +66,23 @@ public class RunTimer {
     return currentDungeonId;
   }
 
+  /** Dungeon time in whole seconds, aligned to the run clock's second boundaries. */
+  public float getDungeonSyncedTime() {
+    return dungeonSyncedTime;
+  }
+
   public String formatTime(float seconds) {
     int totalSeconds = (int) seconds;
     int minutes = totalSeconds / 60;
     int secs = totalSeconds % 60;
     int hundredths = (int) ((seconds - totalSeconds) * 100);
     return String.format("%02d:%02d.%02d", minutes, secs, hundredths);
+  }
+
+  public String formatTimeWithNoMilliSec(float seconds) {
+    int totalSeconds = (int) seconds;
+    int minutes = totalSeconds / 60;
+    int secs = totalSeconds % 60;
+    return String.format("%02d:%02d", minutes, secs);
   }
 }
