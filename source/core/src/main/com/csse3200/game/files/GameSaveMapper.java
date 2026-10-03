@@ -67,6 +67,15 @@ public final class GameSaveMapper {
         charmFromId(id).pickUp(player);
       }
     }
+    WeaponSelectionComponent selection =
+    required(player, WeaponSelectionComponent.class);
+
+    if (save.playerData.selectedWeapon != null) {
+        WeaponType selected = WeaponType.valueOf(save.playerData.selectedWeapon);
+        if (!selection.equip(selected)) {
+            throw new IllegalArgumentException("Could not equip saved weapon: " + save.playerData.selectedWeapon);
+  }
+}
 
     WeaponUpgradeComponent upgrades = required(player, WeaponUpgradeComponent.class);
     if (save.playerData.upgradedWeapons != null) {
@@ -79,12 +88,6 @@ public final class GameSaveMapper {
         }
       }
     }
-
-    WeaponSelectionComponent selection = required(player, WeaponSelectionComponent.class);
-    if (save.playerData.selectedWeapon != null) {
-      selection.equip(WeaponType.valueOf(save.playerData.selectedWeapon));
-    }
-
     // Death restores the player alive at the checkpoint.
     required(player, CombatStatsComponent.class)
         .setHealth(required(player, CombatStatsComponent.class).getMaxHealth());

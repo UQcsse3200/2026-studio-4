@@ -20,6 +20,7 @@ public class GameSaveData {
         public Map<String, Integer> inventory = new HashMap<>();
         public List<String> charms = new ArrayList<>();
         public List<String> upgradedWeapons = new ArrayList<>();
+        public String selectedWeapon = "SWORD";
     }
     
 }

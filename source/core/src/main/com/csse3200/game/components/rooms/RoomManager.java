@@ -31,6 +31,9 @@ public class RoomManager {
   private final Set<String> clearedRoomIds = new HashSet<>();
   private final Set<String> completedDungeonIds = new HashSet<>();
   private RoomConfig currentConfig;
+  private String checkpointRoomId;
+  private String checkpointEntryPointId;
+  private PositionConfig checkpointPosition;
   private final PositionConfig initialEntryPoint;
   private RoomConfig pendingDestination;
   private PositionConfig pendingArrivalPosition;
@@ -248,5 +251,16 @@ public class RoomManager {
   /** Package private setter for unit testing */
   void setCurrentRoom(Entity room) {
     this.currentRoom = room;
+  }
+  public void activateCheckpoint(String entryPointId) {
+    PositionConfig entry = currentConfig.getEntryPoint(entryPointId);
+    if (entry == null) {
+      throw new IllegalArgumentException("Unknown checkpoint entry: " + entryPointId);
+    }
+    checkpointRoomId = currentConfig.id;
+    checkpointEntryPointId = entryPointId;
+    checkpointPosition = new PositionConfig();
+    checkpointPosition.x = entry.x;
+    checkpointPosition.y = entry.y;
   }
 }
