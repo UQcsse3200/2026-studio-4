@@ -5,19 +5,19 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.csse3200.game.input.InputComponent;
-import com.csse3200.game.services.Timer;
+import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.ui.UIComponent;
 
 /** Displays the total run time and current dungeon time in the upper-right corner. */
 public class TimerDisplay extends UIComponent {
-  private final Timer timer;
+  private final RunTimer runTimer;
   private boolean visible = true;
   private Label totalLabel;
   private Label dungeonLabel;
 
-  /** Creates a display backed by the supplied game timer. */
-  public TimerDisplay(Timer timer) {
-    this.timer = timer;
+  /** Creates a display backed by the supplied game runTimer. */
+  public TimerDisplay(RunTimer runTimer) {
+    this.runTimer = runTimer;
   }
 
   /** Creates and adds the total and dungeon labels to the shared UI stage. */
@@ -38,15 +38,15 @@ public class TimerDisplay extends UIComponent {
     totalLabel.toFront();
   }
 
-  /** Updates the timer text, positions the labels, and keeps them above other UI actors. */
+  /** Updates the runTimer text, positions the labels, and keeps them above other UI actors. */
   @Override
   public void draw(SpriteBatch batch) {
     if (totalLabel == null || dungeonLabel == null) {
       return;
     }
 
-    totalLabel.setText(timer.formatTime(timer.getTotalTime()));
-    dungeonLabel.setText("Dungeon " + timer.formatTime(timer.getDungeonTime()));
+    totalLabel.setText(runTimer.formatTime(runTimer.getTotalTime()));
+    dungeonLabel.setText("Dungeon " + runTimer.formatTime(runTimer.getDungeonTime()));
 
     totalLabel.setVisible(visible);
     dungeonLabel.setVisible(visible);
@@ -70,18 +70,18 @@ public class TimerDisplay extends UIComponent {
     totalLabel.toFront();
   }
 
-  /** Shows or hides both timer labels without stopping the timers. */
+  /** Shows or hides both runTimer labels without stopping the timers. */
   public void toggle() {
     visible = !visible;
     totalLabel.setVisible(visible);
     dungeonLabel.setVisible(visible);
   }
 
-  /** Handles the T key used to toggle the timer display. */
+  /** Handles the T key used to toggle the runTimer display. */
   public static class ToggleInput extends InputComponent {
     private final TimerDisplay display;
 
-    /** Creates a keyboard handler for the supplied timer display. */
+    /** Creates a keyboard handler for the supplied runTimer display. */
     public ToggleInput(TimerDisplay display) {
       super(20);
       this.display = display;
@@ -98,7 +98,7 @@ public class TimerDisplay extends UIComponent {
     }
   }
 
-  /** Removes both timer labels from the UI stage. */
+  /** Removes both runTimer labels from the UI stage. */
   @Override
   public void dispose() {
     super.dispose();

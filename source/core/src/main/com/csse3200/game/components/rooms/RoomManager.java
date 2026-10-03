@@ -16,8 +16,8 @@ import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RoomFactory;
+import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.services.Timer;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -38,16 +38,16 @@ public class RoomManager {
   private RoomConfig pendingDestination;
   private PositionConfig pendingArrivalPosition;
   private boolean clearRequested;
-  private final Timer timer;
+  private final RunTimer runTimer;
   private final AchievementsManager achievements;
 
   /** Creates the JSON-driven room manager. Call {@link #create()} to register the initial room. */
-  public RoomManager(WorldConfig world, Entity player, CameraComponent camera, Timer timer) {
+  public RoomManager(WorldConfig world, Entity player, CameraComponent camera, RunTimer runTimer) {
     world.validate();
     this.world = world;
     this.player = player;
     this.camera = camera;
-    this.timer = timer;
+    this.runTimer = runTimer;
     currentConfig = world.getRoom(world.startRoomId);
     initialEntryPoint = currentConfig.getEntryPoint(world.startEntryPointId);
     currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
@@ -60,9 +60,9 @@ public class RoomManager {
   }
 
   /** Package private constructer to create empty room manager for testing */
-  RoomManager(Entity player, Timer timer) {
+  RoomManager(Entity player, RunTimer runTimer) {
     this.player = player;
-    this.timer = timer;
+    this.runTimer = runTimer;
     this.world = null;
     this.camera = null;
     this.initialEntryPoint = null;
@@ -75,8 +75,8 @@ public class RoomManager {
     entityService.register(currentRoom);
     entityService.register(player);
     start(initialEntryPoint);
-    if (timer != null && currentConfig.dungeonId != null) {
-      timer.startDungeon(currentConfig.dungeonId);
+    if (runTimer != null && currentConfig.dungeonId != null) {
+      runTimer.startDungeon(currentConfig.dungeonId);
     }
   }
 
@@ -192,10 +192,10 @@ public class RoomManager {
     currentConfig = destination;
     currentRoom = nextRoom;
     achievements.newRoom(currentRoom); // move here, before start()
-    if (timer != null && !Objects.equals(previousDungeonId, destination.dungeonId)) {
-      timer.stopDungeon();
+    if (runTimer != null && !Objects.equals(previousDungeonId, destination.dungeonId)) {
+      runTimer.stopDungeon();
       if (destination.dungeonId != null) {
-        timer.startDungeon(destination.dungeonId);
+        runTimer.startDungeon(destination.dungeonId);
       }
     }
     ServiceLocator.getEntityService().register(currentRoom);

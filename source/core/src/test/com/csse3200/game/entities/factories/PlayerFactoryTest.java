@@ -64,31 +64,4 @@ class PlayerFactoryTest {
     assertTrue(firstAbilities.isActive(Invisibility.class));
     assertFalse(secondAbilities.isActive(Invisibility.class));
   }
-
-  //  @Test
-  //  void shouldWireFactoryAbilitiesToCombatStatsAndRegisteredClock() {
-  //    Entity player = PlayerFactory.createPlayer();
-  //    PlayerAbilitiesComponent abilities = player.getComponent(PlayerAbilitiesComponent.class);
-  //    CombatStatsComponent combat = player.getComponent(CombatStatsComponent.class);
-  //    assertNotNull(abilities);
-  //    assertNotNull(combat);
-  //    abilities.create();
-  //    int rawAttack = combat.getBaseAttack();
-  //    float rawAttackSpeed = combat.getAttackSpeed();
-  //    float movementSpeed = combat.getMovementSpeed();
-  //    abilities.unlock(LastStand.class);
-  //    combat.takeDamage(
-  //        combat.getHealth() - 1,
-  //        new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
-  //
-  //    assertTrue(abilities.isActive(LastStand.class));
-  //    assertEquals(Math.round(rawAttack * 1.5f), combat.getEffectiveBaseAttack());
-  //    assertEquals(rawAttackSpeed * 1.5f, combat.getEffectiveAttackSpeed());
-  //    assertEquals(rawAttack, combat.getBaseAttack());
-  //    assertEquals(rawAttackSpeed, combat.getAttackSpeed());
-  //    assertEquals(movementSpeed, combat.getMovementSpeed());
-  //    when(time.getTime()).thenReturn(LastStand.DURATION_MS);
-  //    assertEquals(rawAttack, combat.getEffectiveBaseAttack());
-  //    assertEquals(rawAttackSpeed, combat.getEffectiveAttackSpeed());
-  //  }
 }

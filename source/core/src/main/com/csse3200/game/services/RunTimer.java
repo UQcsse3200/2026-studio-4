@@ -1,16 +1,21 @@
 package com.csse3200.game.services;
 
-public class Timer {
-  private float TotalTime;
+public class RunTimer {
+  private final GameTime gameTime;
+  private float totalTime;
   private float dungeonTime;
   private String currentDungeonId;
   private boolean runRunning;
   private boolean dungeonRunning;
 
+  public RunTimer(GameTime gameTime) {
+    this.gameTime = gameTime;
+  }
+
   public void startRun() {
     if (!runRunning) {
       runRunning = true;
-      TotalTime = 0;
+      totalTime = 0;
     }
   }
 
@@ -22,13 +27,11 @@ public class Timer {
     }
   }
 
-  public void update(float delta) {
-    if (runRunning) {
-      TotalTime += delta;
-    }
-    if (dungeonRunning) {
-      dungeonTime += delta;
-    }
+  /** Call once per frame. Uses scaled delta so pausing via timeScale pauses the timers. */
+  public void update() {
+    float delta = gameTime.getDeltaTime();
+    if (runRunning) totalTime += delta;
+    if (dungeonRunning) dungeonTime += delta;
   }
 
   public void stopDungeon() {
@@ -42,7 +45,7 @@ public class Timer {
   }
 
   public float getTotalTime() {
-    return TotalTime;
+    return totalTime;
   }
 
   public float getDungeonTime() {
