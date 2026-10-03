@@ -19,6 +19,8 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.files.GameSaveData;
+import com.csse3200.game.files.GameSaveMapper;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
@@ -67,9 +69,18 @@ public class MainGameScreen extends ScreenAdapter {
   private Entity player;
   private boolean deathScreenTriggered = false; // prevents screen-setting every frame
   private final Terminal terminal;
+  private final int saveSlot;
+  private final GameSaveData loadedSave;
+  private boolean runSaved;
 
   public MainGameScreen(GdxGame game) {
+    this(game, null, 1);
+  }
+
+  public MainGameScreen(GdxGame game, GameSaveData save, int saveSlot) {
     this.game = game;
+    this.loadedSave = save;
+    this.saveSlot = saveSlot;
 
     logger.debug("Initialising main game screen services");
     terminal = new Terminal();
@@ -94,7 +105,14 @@ public class MainGameScreen extends ScreenAdapter {
       throw new IllegalStateException("Unable to load configs/rooms.json");
     }
     roomManager = new RoomManager(world, player, renderer.getCamera());
+    if (loadedSave != null) {
+      roomManager.initializeFromCheckpoint(loadedSave.checkpoint);
+    }
     roomManager.create();
+
+    if (loadedSave != null) {
+      GameSaveMapper.restore(player, loadedSave);
+    }
     RoomCommand roomCommand = new RoomCommand(roomManager);
     terminal.addCommand("room", roomCommand);
 
@@ -135,6 +153,26 @@ public class MainGameScreen extends ScreenAdapter {
   @Override
   public void dispose() {
     logger.debug("Disposing main game screen");
+
+    if (!runSaved && player != null && roomManager != null) {
+      runSaved = true;
+      try {
+        FileLoader.save(
+            GameSaveMapper.capture(player, roomManager.getCheckpointData()), saveSlot);
+      } catch (RuntimeException exception) {
+        logger.error("Failed to save game data for slot {}", saveSlot, exception);
+      }
+      Stage stage = ServiceLocator.getRenderService().getStage();
+      try {
+        stage.getRoot().setVisible(false);
+        renderer.render();
+        FileLoader.savePreview(saveSlot);
+      } catch (RuntimeException exception) {
+        logger.error("Failed to save preview for slot {}", saveSlot, exception);
+      } finally {
+        stage.getRoot().setVisible(true);
+      }
+    }
 
     renderer.dispose();
     unloadAssets();

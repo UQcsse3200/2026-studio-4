@@ -1,6 +1,7 @@
 package com.csse3200.game.files;
 
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.Component;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.weapons.*;
 import com.csse3200.game.entities.Entity;
@@ -120,7 +121,7 @@ public final class GameSaveMapper {
     return copy;
   }
 
-  private static <T> T required(Entity entity, Class<T> type) {
+  private static <T extends Component> T required(Entity entity, Class<T> type) {
     T component = entity.getComponent(type);
     if (component == null) {
       throw new IllegalStateException("Player is missing " + type.getSimpleName());

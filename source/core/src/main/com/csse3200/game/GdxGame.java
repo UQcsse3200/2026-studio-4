@@ -1,12 +1,13 @@
 package com.csse3200.game;
 
 import static com.badlogic.gdx.Gdx.app;
-
+import com.csse3200.game.files.GameSaveData;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.DeathScreen;
+import com.csse3200.game.screens.LoadGameScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsScreen;
@@ -52,6 +53,13 @@ public class GdxGame extends Game {
     }
     setScreen(newScreen(screenType));
   }
+  public void startGame(GameSaveData save, int slot) {
+    Screen currentScreen = getScreen();
+    if (currentScreen != null) {
+      currentScreen.dispose();
+    }
+    setScreen(new MainGameScreen(this, save, slot));
+  }
 
   @Override
   public void dispose() {
@@ -69,6 +77,8 @@ public class GdxGame extends Game {
     switch (screenType) {
       case MAIN_MENU:
         return new MainMenuScreen(this);
+      case LOAD_GAME:
+        return new LoadGameScreen(this);
       case MAIN_GAME:
         return new MainGameScreen(this);
       case SETTINGS:
@@ -82,6 +92,7 @@ public class GdxGame extends Game {
 
   public enum ScreenType {
     MAIN_MENU,
+    LOAD_GAME,
     MAIN_GAME,
     SETTINGS,
     DEATH_SCREEN

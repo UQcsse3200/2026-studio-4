@@ -2,6 +2,8 @@ package com.csse3200.game.files;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.utils.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,11 +18,20 @@ public class FileLoader {
   private static final Logger logger = LoggerFactory.getLogger(FileLoader.class);
   static final Json json = new Json();
   private static final int SAVE_SLOT_COUNT = 3;
-  private static final String SAVE_FILE_NAME(int slot) {
+  private static String saveFileName(int slot) {
+    validateSlot(slot);
+    return "save_slot_" + slot + ".json";
+  }
+
+  private static String previewFileName(int slot) {
+    validateSlot(slot);
+    return "save_slot_" + slot + "_preview.png";
+  }
+
+  private static void validateSlot(int slot) {
     if (slot < 1 || slot > SAVE_SLOT_COUNT) {
       throw new IllegalArgumentException("Invalid save slot: " + slot);
     }
-    return "save_slot_" + slot + ".json";
   }
   /**
    * Read generic Java classes from a JSON file. Properties in the JSON file will override class
@@ -118,14 +129,41 @@ public class FileLoader {
     ABSOLUTE
   }
   public static void save(GameSaveData saveData, int slot) {
-    FileLoader.writeClass(saveData, SAVE_FILE_NAME(slot), FileLoader.Location.LOCAL);
+    writeClass(saveData, saveFileName(slot), Location.LOCAL);
   }
 
   public static GameSaveData load(int slot) {
-    return FileLoader.readClass(GameSaveData.class, SAVE_FILE_NAME(slot), FileLoader.Location.LOCAL);
+    return readClass(GameSaveData.class, saveFileName(slot), Location.LOCAL);
   }
+
   public static boolean saveExists(int slot) {
-    FileHandle file = Gdx.files.local(SAVE_FILE_NAME(slot));
-    return file.exists();
+    return Gdx.files.local(saveFileName(slot)).exists();
+  }
+
+  public static FileHandle getSavePreview(int slot) {
+    return Gdx.files.local(previewFileName(slot));
+  }
+
+  public static void deleteSaveSlot(int slot) {
+    Gdx.files.local(saveFileName(slot)).delete();
+    getSavePreview(slot).delete();
+  }
+
+  public static void savePreview(int slot) {
+    int width = Gdx.graphics.getBackBufferWidth();
+    int height = Gdx.graphics.getBackBufferHeight();
+    Pixmap framebuffer = Pixmap.createFromFrameBuffer(0, 0, width, height);
+    Pixmap upright = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+    try {
+      for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+          upright.drawPixel(x, height - y - 1, framebuffer.getPixel(x, y));
+        }
+      }
+      PixmapIO.writePNG(getSavePreview(slot), upright);
+    } finally {
+      framebuffer.dispose();
+      upright.dispose();
+    }
   }
 }

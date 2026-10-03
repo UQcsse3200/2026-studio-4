@@ -15,6 +15,7 @@ import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RoomFactory;
+import com.csse3200.game.files.GameSaveData;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,7 +35,7 @@ public class RoomManager {
   private String checkpointRoomId;
   private String checkpointEntryPointId;
   private PositionConfig checkpointPosition;
-  private final PositionConfig initialEntryPoint;
+  private PositionConfig initialEntryPoint;
   private RoomConfig pendingDestination;
   private PositionConfig pendingArrivalPosition;
   private boolean clearRequested;
@@ -47,6 +48,12 @@ public class RoomManager {
     this.camera = camera;
     currentConfig = world.getRoom(world.startRoomId);
     initialEntryPoint = currentConfig.getEntryPoint(world.startEntryPointId);
+    currentConfig = world.getRoom(world.startRoomId);   
+    checkpointRoomId = currentConfig.id;
+    checkpointEntryPointId = world.startEntryPointId;
+    checkpointPosition = new PositionConfig();
+    checkpointPosition.x = initialEntryPoint.x;
+    checkpointPosition.y = initialEntryPoint.y;
     currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
     player.getEvents().addListener("interact", this::interact);
     FollowingCameraComponent cameraFollowingComponent =
@@ -62,6 +69,39 @@ public class RoomManager {
     this.world = null;
     this.camera = null;
     this.initialEntryPoint = null;
+  }
+  /** Call after construction and before create() when starting from a save. */
+  public void initializeFromCheckpoint(GameSaveData.Checkpoint checkpoint) {
+    if (checkpoint == null) {
+      throw new IllegalArgumentException("Checkpoint is required");
+    }
+
+    RoomConfig savedRoom = world.getRoom(checkpoint.roomId);
+    if (savedRoom == null) {
+      throw new IllegalArgumentException("Unknown checkpoint room: " + checkpoint.roomId);
+    }
+
+    PositionConfig spawn = new PositionConfig();
+    spawn.x = checkpoint.tileX;
+    spawn.y = checkpoint.tileY;
+
+    if (checkpoint.entryPointId != null
+      && savedRoom.getEntryPoint(checkpoint.entryPointId) == null) {
+        throw new IllegalArgumentException("Unknown checkpoint entry: " + checkpoint.entryPointId);
+    } 
+
+    currentRoom.dispose();
+    currentConfig = savedRoom;
+    currentRoom = RoomFactory.createRoom(savedRoom, camera, false);
+    initialEntryPoint = spawn;
+
+    checkpointRoomId = savedRoom.id;
+    checkpointEntryPointId = checkpoint.entryPointId;
+    checkpointPosition = spawn;
+
+    FollowingCameraComponent following =currentRoom.getComponent(FollowingCameraComponent.class);
+    following.setCamera(camera);
+    following.setTarget(player);
   }
 
   /** Registers the active room and player, then positions the player at its entry point. */
@@ -262,5 +302,13 @@ public class RoomManager {
     checkpointPosition = new PositionConfig();
     checkpointPosition.x = entry.x;
     checkpointPosition.y = entry.y;
+  }
+  public GameSaveData.Checkpoint getCheckpointData() {
+    GameSaveData.Checkpoint checkpoint = new GameSaveData.Checkpoint();
+    checkpoint.roomId = checkpointRoomId;
+    checkpoint.entryPointId = checkpointEntryPointId;
+    checkpoint.tileX = checkpointPosition.x;
+    checkpoint.tileY = checkpointPosition.y;
+    return checkpoint;
   }
 }
