@@ -15,7 +15,13 @@ import org.slf4j.LoggerFactory;
 public class FileLoader {
   private static final Logger logger = LoggerFactory.getLogger(FileLoader.class);
   static final Json json = new Json();
-
+  private static final int SAVE_SLOT_COUNT = 3;
+  private static final String SAVE_FILE_NAME(int slot) {
+    if (slot < 1 || slot > SAVE_SLOT_COUNT) {
+      throw new IllegalArgumentException("Invalid save slot: " + slot);
+    }
+    return "save_slot_" + slot + ".json";
+  }
   /**
    * Read generic Java classes from a JSON file. Properties in the JSON file will override class
    * defaults.
@@ -110,5 +116,16 @@ public class FileLoader {
     LOCAL,
     EXTERNAL,
     ABSOLUTE
+  }
+  public static void save(GameSaveData saveData, int slot) {
+    FileLoader.writeClass(saveData, SAVE_FILE_NAME(slot), FileLoader.Location.LOCAL);
+  }
+
+  public static GameSaveData load(int slot) {
+    return FileLoader.readClass(GameSaveData.class, SAVE_FILE_NAME(slot), FileLoader.Location.LOCAL);
+  }
+  public static boolean saveExists(int slot) {
+    FileHandle file = Gdx.files.local(SAVE_FILE_NAME(slot));
+    return file.exists();
   }
 }
