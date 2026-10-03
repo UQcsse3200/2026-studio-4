@@ -36,6 +36,7 @@ public class RoomManager {
   private String checkpointEntryPointId;
   private PositionConfig checkpointPosition;
   private PositionConfig initialEntryPoint;
+  private Vector2 initialWorldPosition;
   private RoomConfig pendingDestination;
   private PositionConfig pendingArrivalPosition;
   private boolean clearRequested;
@@ -95,6 +96,7 @@ public class RoomManager {
     currentConfig = savedRoom;
     currentRoom = RoomFactory.createRoom(savedRoom, camera, false);
     initialEntryPoint = spawn;
+    initialWorldPosition = null;
 
     checkpointRoomId = savedRoom.id;
     checkpointEntryPointId = checkpoint.entryPointId;
@@ -105,12 +107,55 @@ public class RoomManager {
     following.setTarget(player);
   }
 
+  /** Starts at the last quit position, while retaining the saved death checkpoint. */
+  public void initializeFromSavedRun(GameSaveData save, boolean atCheckpoint) {
+    if (save == null || save.checkpoint == null) {
+      throw new IllegalArgumentException("Save data and checkpoint are required");
+    }
+    initializeFromCheckpoint(save.checkpoint);
+    if (atCheckpoint || save.resumePosition == null) {
+      return;
+    }
+
+    GameSaveData.ResumePosition resume = save.resumePosition;
+    RoomConfig resumeRoom = world.getRoom(resume.roomId);
+    if (resumeRoom == null || !Float.isFinite(resume.x) || !Float.isFinite(resume.y)) {
+      throw new IllegalArgumentException("Invalid saved resume position");
+    }
+
+    currentRoom.dispose();
+    currentConfig = resumeRoom;
+    currentRoom = RoomFactory.createRoom(resumeRoom, camera, false);
+    initialEntryPoint = null;
+    initialWorldPosition = new Vector2(resume.x, resume.y);
+
+    FollowingCameraComponent following = currentRoom.getComponent(FollowingCameraComponent.class);
+    following.setCamera(camera);
+    following.setTarget(player);
+  }
+
   /** Registers the active room and player, then positions the player at its entry point. */
   public void create() {
+    currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
+    FollowingCameraComponent following = currentRoom.getComponent(FollowingCameraComponent.class);
+    following.setCamera(camera);
+    following.setTarget(player);
+
     EntityService entityService = ServiceLocator.getEntityService();
     entityService.register(currentRoom);
     entityService.register(player);
-    start(initialEntryPoint);
+    if (initialWorldPosition == null) {
+      start(initialEntryPoint);
+    } else {
+      start(initialWorldPosition);
+    }
+  }
+
+  private void start(Vector2 worldPosition) {
+    currentRoom.getEvents().addListener("roomCleared", this::onRoomCleared);
+    currentRoom.getEvents().trigger("RoomCreated", player);
+    scaleRoom(currentRoom);
+    player.setPosition(worldPosition);
   }
 
   /** Package private for testing */
@@ -224,6 +269,7 @@ public class RoomManager {
     currentRoom = nextRoom;
     ServiceLocator.getEntityService().register(currentRoom);
     start(arrivalPosition);
+    rememberCheckpoint(arrivalPosition, null);
     FollowingCameraComponent cameraFollowingComponent =
         currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
@@ -299,11 +345,15 @@ public class RoomManager {
     if (entry == null) {
       throw new IllegalArgumentException("Unknown checkpoint entry: " + entryPointId);
     }
+    rememberCheckpoint(entry, entryPointId);
+  }
+
+  private void rememberCheckpoint(PositionConfig position, String entryPointId) {
     checkpointRoomId = currentConfig.id;
     checkpointEntryPointId = entryPointId;
     checkpointPosition = new PositionConfig();
-    checkpointPosition.x = entry.x;
-    checkpointPosition.y = entry.y;
+    checkpointPosition.x = position.x;
+    checkpointPosition.y = position.y;
   }
 
   public GameSaveData.Checkpoint getCheckpointData() {
@@ -313,5 +363,14 @@ public class RoomManager {
     checkpoint.tileX = checkpointPosition.x;
     checkpoint.tileY = checkpointPosition.y;
     return checkpoint;
+  }
+
+  public GameSaveData.ResumePosition getResumePositionData() {
+    GameSaveData.ResumePosition position = new GameSaveData.ResumePosition();
+    Vector2 playerPosition = player.getPosition();
+    position.roomId = currentConfig.id;
+    position.x = playerPosition.x;
+    position.y = playerPosition.y;
+    return position;
   }
 }

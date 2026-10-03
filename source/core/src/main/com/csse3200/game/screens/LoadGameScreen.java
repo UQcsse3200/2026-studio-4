@@ -187,7 +187,11 @@ public class LoadGameScreen extends ScreenAdapter {
       details.add(label(status, "font_small", MUTED, 1f)).left();
     } else {
       String room =
-          save.checkpoint == null ? "Unknown location" : displayRoom(save.checkpoint.roomId);
+          save.resumePosition != null
+              ? displayRoom(save.resumePosition.roomId)
+              : (save.checkpoint == null
+                  ? "Unknown location"
+                  : displayRoom(save.checkpoint.roomId));
       details.add(label(room, "font", TEXT, 1f)).left().row();
       String stats =
           "Gold  "

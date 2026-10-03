@@ -8,6 +8,7 @@ import java.util.Map;
 public class GameSaveData {
   public int version = 1;
   public Checkpoint checkpoint = new Checkpoint();
+  public ResumePosition resumePosition;
   public PlayerData playerData = new PlayerData();
 
   public static class Checkpoint {
@@ -15,6 +16,12 @@ public class GameSaveData {
     public String entryPointId;
     public int tileX;
     public int tileY;
+  }
+
+  public static class ResumePosition {
+    public String roomId;
+    public float x;
+    public float y;
   }
 
   public static class PlayerData {

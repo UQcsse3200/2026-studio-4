@@ -1,0 +1,25 @@
+{
+checkpoint: {
+	roomId: selection
+	entryPointId: start
+	tileX: 14
+	tileY: 14
+}
+playerData: {
+	gold: 60
+	inventory: {
+		class: java.util.HashMap
+		HEALTH_POTION: 2
+		STRENGTH_POTION: 1
+	}
+	charms: [
+		speed
+		attack_speed
+		attack_speed
+		attack_speed
+		attack_speed
+		strength
+		speed
+	]
+}
+}

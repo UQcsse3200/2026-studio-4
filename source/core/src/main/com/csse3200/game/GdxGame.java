@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GdxGame extends Game {
   private static final Logger logger = LoggerFactory.getLogger(GdxGame.class);
+  private int activeSaveSlot = 1;
 
   @Override
   public void create() {
@@ -56,11 +57,24 @@ public class GdxGame extends Game {
   }
 
   public void startGame(GameSaveData save, int slot) {
+    startGame(save, slot, false);
+  }
+
+  public void startGameAtCheckpoint(GameSaveData save, int slot) {
+    startGame(save, slot, true);
+  }
+
+  public int getActiveSaveSlot() {
+    return activeSaveSlot;
+  }
+
+  private void startGame(GameSaveData save, int slot, boolean loadAtCheckpoint) {
+    activeSaveSlot = slot;
     Screen currentScreen = getScreen();
     if (currentScreen != null) {
       currentScreen.dispose();
     }
-    setScreen(new MainGameScreen(this, save, slot));
+    setScreen(new MainGameScreen(this, save, slot, loadAtCheckpoint));
   }
 
   @Override

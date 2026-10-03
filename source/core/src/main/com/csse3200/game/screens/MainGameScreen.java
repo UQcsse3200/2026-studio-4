@@ -71,6 +71,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final Terminal terminal;
   private final int saveSlot;
   private final GameSaveData loadedSave;
+  private final boolean loadAtCheckpoint;
   private boolean runSaved;
 
   public MainGameScreen(GdxGame game) {
@@ -78,9 +79,14 @@ public class MainGameScreen extends ScreenAdapter {
   }
 
   public MainGameScreen(GdxGame game, GameSaveData save, int saveSlot) {
+    this(game, save, saveSlot, false);
+  }
+
+  public MainGameScreen(GdxGame game, GameSaveData save, int saveSlot, boolean loadAtCheckpoint) {
     this.game = game;
     this.loadedSave = save;
     this.saveSlot = saveSlot;
+    this.loadAtCheckpoint = loadAtCheckpoint;
 
     logger.debug("Initialising main game screen services");
     terminal = new Terminal();
@@ -106,7 +112,7 @@ public class MainGameScreen extends ScreenAdapter {
     }
     roomManager = new RoomManager(world, player, renderer.getCamera());
     if (loadedSave != null) {
-      roomManager.initializeFromCheckpoint(loadedSave.checkpoint);
+      roomManager.initializeFromSavedRun(loadedSave, loadAtCheckpoint);
     }
     roomManager.create();
 
@@ -157,7 +163,10 @@ public class MainGameScreen extends ScreenAdapter {
     if (!runSaved && player != null && roomManager != null) {
       runSaved = true;
       try {
-        FileLoader.save(GameSaveMapper.capture(player, roomManager.getCheckpointData()), saveSlot);
+        FileLoader.save(
+            GameSaveMapper.capture(
+                player, roomManager.getCheckpointData(), roomManager.getResumePositionData()),
+            saveSlot);
       } catch (RuntimeException exception) {
         logger.error("Failed to save game data for slot {}", saveSlot, exception);
       }

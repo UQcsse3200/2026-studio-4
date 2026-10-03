@@ -13,8 +13,16 @@ public final class GameSaveMapper {
   private GameSaveMapper() {}
 
   public static GameSaveData capture(Entity player, GameSaveData.Checkpoint checkpoint) {
+    return capture(player, checkpoint, null);
+  }
+
+  public static GameSaveData capture(
+      Entity player,
+      GameSaveData.Checkpoint checkpoint,
+      GameSaveData.ResumePosition resumePosition) {
     GameSaveData save = new GameSaveData();
     save.checkpoint = copyCheckpoint(checkpoint);
+    save.resumePosition = copyResumePosition(resumePosition);
 
     InventoryComponent inventory = required(player, InventoryComponent.class);
     GameSaveData.PlayerData data = save.playerData;
@@ -116,6 +124,16 @@ public final class GameSaveMapper {
     copy.entryPointId = source.entryPointId;
     copy.tileX = source.tileX;
     copy.tileY = source.tileY;
+    return copy;
+  }
+
+  private static GameSaveData.ResumePosition copyResumePosition(
+      GameSaveData.ResumePosition source) {
+    if (source == null) return null;
+    GameSaveData.ResumePosition copy = new GameSaveData.ResumePosition();
+    copy.roomId = source.roomId;
+    copy.x = source.x;
+    copy.y = source.y;
     return copy;
   }
 
