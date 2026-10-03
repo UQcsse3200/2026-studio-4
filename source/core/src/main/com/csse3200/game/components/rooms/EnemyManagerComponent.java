@@ -70,6 +70,23 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
 
     switch (spawn.type) {
+      // Chinese
+      case JINGWEI:
+        TerrainComponent jingweiTerrain = entity.getComponent(TerrainComponent.class);
+        Vector2 jingweiLeftPoint = jingweiTerrain.tileToWorldPosition(spawn.x - 4, spawn.y);
+        Vector2 jingweiTopPoint = jingweiTerrain.tileToWorldPosition(spawn.x, spawn.y + 3);
+        Vector2 jingweiRightPoint = jingweiTerrain.tileToWorldPosition(spawn.x + 4, spawn.y);
+        return NPCFactory.createFloatingDemon(
+            target,
+            jingweiLeftPoint,
+            jingweiTopPoint,
+            jingweiRightPoint,
+            this::spawnEntity,
+            "images/jingwei.atlas");
+      case ZOMBIE:
+        return NPCFactory.createBombEnemy(target, "images/zombie.atlas", 2f);
+      case WUKONG:
+        return NPCFactory.createChaseEnemy(target, false, "images/wukong.atlas");
       // Norse
       case WOLF:
         return NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas");
