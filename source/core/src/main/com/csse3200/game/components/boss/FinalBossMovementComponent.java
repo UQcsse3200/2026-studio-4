@@ -123,6 +123,12 @@ public class FinalBossMovementComponent extends Component {
     chargeWarningRemaining = 0f;
   }
 
+  /** Stops the legacy Stage 2 charge cycle until explicitly enabled again. */
+  public void disableChargeAttacks() {
+    chargeAttacksEnabled = false;
+    cancelChargeAttack();
+  }
+
   @Override
   public void update() {
     if (disposed) {
@@ -132,7 +138,8 @@ public class FinalBossMovementComponent extends Component {
     FinalBossPhaseControllerComponent phases =
         entity.getComponent(FinalBossPhaseControllerComponent.class);
     if (phases != null
-        && (phases.getCurrentPhase() == FinalBossPhase.STAGE_THREE
+        && (phases.getCurrentPhase() == FinalBossPhase.STAGE_TWO
+            || phases.getCurrentPhase() == FinalBossPhase.STAGE_THREE
             || phases.getCurrentPhase() == FinalBossPhase.DEFEATED)) {
       if (phases.isTransitioning()) movement.setMoving(false);
       return;
