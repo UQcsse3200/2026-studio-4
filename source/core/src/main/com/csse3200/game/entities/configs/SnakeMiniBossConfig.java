@@ -10,7 +10,7 @@ public class SnakeMiniBossConfig extends BaseEntityConfig {
   public float burrowDuration = 0.45f;
   public float undergroundDuration = 2.4f;
   public float warningDuration = 0.9f;
-  public float exposedDuration = 2f;
+  public float exposedDuration = 1.5f;
   public float burrowSpeed = 3.5f;
   public float orbitRadius = 1.8f;
   public float burrowAttackRadius = 0.9f;

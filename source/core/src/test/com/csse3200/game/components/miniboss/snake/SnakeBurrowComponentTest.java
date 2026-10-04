@@ -168,10 +168,10 @@ class SnakeBurrowComponentTest {
   }
 
   @Test
-  void snakeCanBeDamagedDuringTheFullTwoSecondExposedWindow() {
+  void snakeCanBeDamagedDuringTheFullOneAndAHalfSecondExposedWindow() {
     reachExposed();
     snakeStats.takeDamage(10);
-    tick(1.99f);
+    tick(1.49f);
     snakeStats.hit(playerStats);
 
     assertEquals(SnakeBurrowComponent.State.EXPOSED, burrow.getState());

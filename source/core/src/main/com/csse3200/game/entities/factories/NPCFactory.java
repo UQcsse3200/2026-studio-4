@@ -168,8 +168,8 @@ public class NPCFactory {
 
   /**
    * Creates the snake mini-boss with an invulnerable underground approach, a fixed ground warning,
-   * one emergence strike and a two-second vulnerable recovery. Its old contact and poison-pool
-   * attacks are replaced by the burrow controller.
+   * one emergence strike and a brief vulnerable recovery. Its old contact and poison-pool attacks
+   * are replaced by the burrow controller.
    *
    * @param target entity to chase
    * @return entity
@@ -197,6 +197,8 @@ public class NPCFactory {
         .addComponent(new EnemyStatDisplay(1.5f));
 
     animator.scaleEntity();
+    snakeBoss.scaleWidth(1.5f);
+    PhysicsUtils.setScaledCollider(snakeBoss, 0.9f, 0.4f);
     animator.startAnimation(DEFAULT_ANIMATION);
 
     snakeBoss

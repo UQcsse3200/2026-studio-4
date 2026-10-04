@@ -16,7 +16,7 @@ import com.csse3200.game.services.ServiceLocator;
 import java.util.Objects;
 import java.util.Optional;
 
-/** Owns the Snake's burrow, locked warning, single strike and two-second recovery cycle. */
+/** Owns the Snake's burrow, locked warning, single strike and vulnerable recovery cycle. */
 public class SnakeBurrowComponent extends Component {
   public enum State {
     BURROWING,

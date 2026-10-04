@@ -16,7 +16,7 @@ import java.util.List;
 /** Draws green burrowing dust and a fixed warning circle without external effect textures. */
 public class SnakeBurrowVisualComponent extends RenderComponent {
   private static final int MAX_PARTICLES = 128;
-  private static final float PIXEL_SIZE = 0.035f;
+  private static final float PIXEL_SIZE = 0.065f;
   private final List<Particle> particles = new ArrayList<>();
   private final Vector2 warningCentre = new Vector2();
   private Texture pixel;
@@ -50,17 +50,17 @@ public class SnakeBurrowVisualComponent extends RenderComponent {
 
   /** Adds the initial dust cloud; safe to call before render registration. */
   public void startBurrow(Vector2 centre) {
-    emit(centre, 24, 0.65f);
+    emit(centre, 36, 1.3f);
   }
 
   /** Adds the larger cloud when the Snake comes back above ground. */
   public void startEmergence(Vector2 centre) {
-    emit(centre, 32, 1.2f);
+    emit(centre, 44, 1.8f);
   }
 
   /** Leaves a brief green mark at a position travelled while underground. */
   public void addTrail(Vector2 centre) {
-    emit(centre, 6, 0.3f);
+    emit(centre, 8, 0.55f);
   }
 
   private void emit(Vector2 centre, int count, float spread) {
