@@ -109,12 +109,42 @@ All listed gameplay settings are on `SnakeMiniBossConfig`, so later playtest
 tuning remains separate from the attack logic. The old poison-pool task stays
 disconnected.
 
-## Next step: green gems and shield
+## Implemented: green gems and poison shield
 
-Random green gem pickups will refill one shield-durability bar and show a
-translucent green shield. It will consume durability only when blocking a
-Snake poison projectile, and will not block the emergence attack. Gems and
-the shield are not enabled in this step.
+Crossing the half-health threshold starts green gem drops once, even if the
+Snake later heals. The pickup is the supplied pack's rotating light-green
+GEM 1 spritesheet, with ten original frames. Gems fall briefly into clear space
+and can be collected by walking over them after they land.
+
+| Setting | Default |
+| --- | --- |
+| Gems at the start of phase two | 2 |
+| Further drops | 1 every 5 seconds |
+| Maximum gems on the ground | 3 |
+| Gem lifetime | 12 seconds |
+| Shield capacity per pickup | 6 poison hits |
+
+A pickup fills one durability bar beside the player and shows the selected
+translucent green shield image. A second pickup refills that same bar; it does
+not add another bar or stack capacity. Durability has no time drain: each
+intercepted Snake poison projectile spends one point and fades without damage
+or the player's red/green hurt effects. The shield briefly brightens on a block.
+When empty, both the shield and its bar disappear until another gem is collected.
+
+Only Snake poison projectiles consult this shield. The 5-damage emergence
+strike and other damage still use their normal rules. Projectile collision
+checks the nearest wall, shield and player, so shots cannot consume durability
+through a wall. Once depleted, later projectiles can damage the player normally.
+
+Gem placement checks the player's footprint against room bounds and static
+walls, leaves space around the player and existing gems, and requires a clear
+approach from the player. If no suitable position is found, it waits until the
+next drop interval. A slow frame never produces a burst of missed drops.
+Gem timers and collection continue while the Snake is frozen or the player
+is concealed; shield durability is spent only on intercepted poison. A paused
+game does not advance gem timers. Death of either participant
+or leaving the room removes the gems, shield and bar. They are encounter-only
+resources, not inventory items or permanent player status effects.
 
 ## Verification
 
@@ -123,7 +153,8 @@ dodging and single-hit damage, long-frame transitions, freeze and concealment,
 death cancellation, physics activation, bounded emergence selection, obstacle
 avoidance, hit feedback and sprite selection, the half-health transition,
 ordered poison volleys, non-homing flight, obstacle collision and single-hit
-damage, effect lifetime and cleanup, and factory wiring.
+damage, effect lifetime and cleanup, gem collection and refill, poison-only
+shield absorption and depletion, and factory wiring.
 
 Run from `source`:
 
@@ -157,6 +188,18 @@ For playtesting in Dungeon 2's Snake room:
 9. Put a stone wall between yourself and the shots; they must fade at the wall.
 10. Defeat the Snake and verify that dust, warnings and poison all stop and the
     room clears normally. Leaving the room must not leave damaging projectiles.
+11. On entering phase two, find two falling green gems. After landing, collect
+    one: one green bar and a translucent shield should appear beside/around you.
+    Walking and waiting should not drain it. Additional drops should remain
+    bounded to three active gems and disappear after twelve seconds.
+12. Block six poison shots: each should shrink the bar without reducing health
+    or triggering a red damage flash. The seventh should damage you if no refill
+    was collected. Pick up another gem before depletion and check the same bar
+    refills instead of producing a second bar.
+13. With the shield active, stay in an emergence warning once. Expect 5 damage
+    and unchanged shield durability. Near walls, gems must be reachable and
+    must not be collected through stone. Defeat the Snake or leave the room
+    with a partially filled shield: the shield, bar and leftover gems must clear.
 
 If local invulnerability is enabled, it will intentionally mask the player
 health checks above. Keep local test-only edits outside the feature commit.

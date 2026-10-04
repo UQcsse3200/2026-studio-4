@@ -2,8 +2,8 @@
 
 These files support the Dungeon 2 Snake miniboss. The first-phase burrow cycle
 uses the existing Snake atlas, code-drawn dust and a green player-hit animation.
-The second-phase attack uses the three poison textures; gem and shield textures
-remain reserved for the next implementation step.
+The second-phase attack uses the three poison textures, rotating green gem
+pickups and the player's translucent green poison shield.
 
 ## Animation layout
 
@@ -24,7 +24,7 @@ frame duplicates the previous one. The included spritesheet contains 10 frames.
 Animation timing is a game setting, not metadata supplied by this document.
 
 The shield already contains transparency. Do not treat it as a spritesheet.
-Its appearance, hit flash and fade can be controlled by the renderer later.
+The renderer controls its translucent appearance and brief block flash.
 
 ## Sources and attribution
 
@@ -83,7 +83,7 @@ Source pages checked on 2026-10-04.
   does not use third-party dust sprites.
 - Smoke N Dust 03 was considered for burrow visuals, but is not included because
   its source page prohibits sprite redistribution.
-- The single green shield-durability bar remains part of the second-phase work.
+- The second phase adds one green shield-durability bar beside the player.
 
 ## Second-phase poison visuals
 
@@ -98,3 +98,15 @@ Source pages checked on 2026-10-04.
   direction.
 - `RoomAssets` owns texture loading and unloading. The Snake owns the active
   projectiles and clears them when the encounter ends.
+
+## Second-phase gem and shield visuals
+
+- `SnakeShieldPickupComponent` animates all ten 18 x 30 cells of the original
+  light-green GEM 1 sheet, with a brief falling motion before collection.
+  The sheet is byte-identical to GEM 1 in the newly supplied
+  `Pixel Art Gem Pack - Animated (1).zip`.
+- `SnakeShieldComponent` draws the original green shield with reduced alpha
+  and a brief brighter flash when blocking poison. One code-drawn green bar
+  shows remaining blocks; refilling never adds a second bar.
+- Both original images are preloaded and unloaded by `RoomAssets`. The small
+  white texture used to draw the bar is owned and disposed by the component.

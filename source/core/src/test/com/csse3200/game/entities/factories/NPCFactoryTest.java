@@ -5,9 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
@@ -18,6 +22,8 @@ import com.csse3200.game.components.miniboss.snake.SnakeBurrowVisualComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePoisonAssets;
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
+import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
+import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -60,6 +66,8 @@ class NPCFactoryTest {
         });
     resourceService.loadTextures(new String[] {SnakePlayerHitVisualComponent.HIT_SHEET});
     resourceService.loadTextures(SnakePoisonAssets.paths());
+    resourceService.loadTextures(
+        new String[] {SnakeShieldComponent.SHIELD_TEXTURE, SnakeShieldPickupComponent.GEM_TEXTURE});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
@@ -95,6 +103,8 @@ class NPCFactoryTest {
     assertNotNull(enemy.getComponent(SnakeBurrowComponent.class));
     assertNotNull(enemy.getComponent(SnakePlayerHitVisualComponent.class));
     assertNotNull(enemy.getComponent(SnakePoisonVolleyComponent.class));
+    assertNotNull(enemy.getComponent(SnakeShieldComponent.class));
+    assertNotNull(enemy.getComponent(SnakeShieldPickupComponent.class));
     assertNull(enemy.getComponent(AITaskComponent.class));
   }
 
@@ -240,6 +250,68 @@ class NPCFactoryTest {
 
     assertFalse(entities.getEntities().contains(snake, true));
     assertEquals(100, player.getComponent(CombatStatsComponent.class).getHealth());
+    snake.dispose();
+  }
+
+  @Test
+  void collectedStageTwoGemRendersAShieldThatBlocksPoisonAndClearsOnDeath() {
+    GameTime time = mock(GameTime.class);
+    ServiceLocator.registerTimeSource(time);
+    EntityService entities = new EntityService();
+    ServiceLocator.registerEntityService(entities);
+    CombatStatsComponent playerStats = new CombatStatsComponent(100, 10);
+    Entity player = new Entity().addComponent(playerStats);
+    player.setPosition(5f, 5f);
+    entities.register(player);
+    Entity snake = NPCFactory.createSnakeMiniBoss(player);
+    entities.register(snake);
+    CombatStatsComponent stats = snake.getComponent(CombatStatsComponent.class);
+    SnakeBurrowComponent burrow = snake.getComponent(SnakeBurrowComponent.class);
+    SnakeShieldComponent shield = snake.getComponent(SnakeShieldComponent.class);
+    SnakeShieldPickupComponent pickups = snake.getComponent(SnakeShieldPickupComponent.class);
+    SnakeMiniBossConfig config = new SnakeMiniBossConfig();
+    SpriteBatch batch = mock(SpriteBatch.class);
+
+    advanceEntities(entities, time, 0f);
+    assertEquals(0, pickups.getPickupCount());
+    assertFalse(shield.isActive());
+    stats.setHealth(stats.getMaxHealth() / 2);
+    advanceEntities(entities, time, 0.01f);
+    assertEquals(2, pickups.getPickupCount());
+
+    Vector2 gem = pickups.getPickupPositions().getFirst();
+    player.setPosition(gem.mulAdd(player.getScale(), -0.5f));
+    advanceEntities(entities, time, 0.01f);
+    advanceEntities(entities, time, 0.36f);
+
+    assertEquals(1, pickups.getPickupCount());
+    assertTrue(shield.isActive());
+    assertEquals(6, shield.getDurability());
+    ServiceLocator.getRenderService().render(batch);
+    Texture shieldTexture =
+        ServiceLocator.getResourceService()
+            .getAsset(SnakeShieldComponent.SHIELD_TEXTURE, Texture.class);
+    verify(batch).draw(eq(shieldTexture), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+
+    advanceEntities(entities, time, config.burrowDuration);
+    advanceEntities(entities, time, config.undergroundDuration);
+    player.setPosition(burrow.getWarningCentre().add(3f, 0f).mulAdd(player.getScale(), -0.5f));
+    advanceEntities(entities, time, config.warningDuration);
+    advanceEntities(entities, time, config.exposedDuration);
+    advanceEntities(entities, time, config.spitWindupDuration);
+    advanceEntities(entities, time, 0.01f);
+    advanceEntities(entities, time, 0.21f);
+    advanceEntities(entities, time, 0.7f);
+
+    assertTrue(shield.getDurability() < 6);
+    assertTrue(shield.isActive());
+    assertEquals(100, playerStats.getHealth());
+    stats.setHealth(0);
+    ServiceLocator.getRenderService().render(batch);
+
+    assertFalse(shield.isActive());
+    assertEquals(0, shield.getDurability());
+    assertEquals(0, pickups.getPickupCount());
     snake.dispose();
   }
 

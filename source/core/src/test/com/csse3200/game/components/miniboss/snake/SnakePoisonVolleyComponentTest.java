@@ -3,6 +3,7 @@ package com.csse3200.game.components.miniboss.snake;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,6 +25,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.player.PlayerDamageFlashComponent;
 import com.csse3200.game.components.statuseffects.FrozenEffect;
 import com.csse3200.game.components.statuseffects.InvisibilityEffect;
 import com.csse3200.game.entities.Entity;
@@ -58,6 +60,7 @@ class SnakePoisonVolleyComponentTest {
   private StatusEffectsControllerComponent snakeEffects;
   private SnakePoisonVolleyComponent poison;
   private SnakePlayerHitVisualComponent impact;
+  private SnakeShieldComponent shield;
   private AnimationRenderComponent animator;
   private SpriteBatch batch;
   private World world;
@@ -75,12 +78,17 @@ class SnakePoisonVolleyComponentTest {
     config = new SnakeMiniBossConfig();
     playerStats = new CombatStatsComponent(100, 1);
     playerEffects = new StatusEffectsControllerComponent();
-    player = new Entity().addComponent(playerStats).addComponent(playerEffects);
+    player =
+        new Entity()
+            .addComponent(playerStats)
+            .addComponent(playerEffects)
+            .addComponent(new PlayerDamageFlashComponent());
     player.setPosition(8.28125f, 0.21875f);
     player.create();
     snakeStats = new CombatStatsComponent(150, 1);
     snakeEffects = new StatusEffectsControllerComponent();
     impact = new SnakePlayerHitVisualComponent(player);
+    shield = new SnakeShieldComponent(player, config);
     poison = new SnakePoisonVolleyComponent(player, config);
     animator = new AnimationRenderComponent(mock(TextureAtlas.class));
     snake =
@@ -88,6 +96,7 @@ class SnakePoisonVolleyComponentTest {
             .addComponent(snakeStats)
             .addComponent(snakeEffects)
             .addComponent(impact)
+            .addComponent(shield)
             .addComponent(poison)
             .addComponent(animator);
     snake.create();
@@ -264,6 +273,103 @@ class SnakePoisonVolleyComponentTest {
     tick(10f);
     assertEquals(99, playerStats.getHealth());
     assertEquals(0, poison.getProjectileCount());
+  }
+
+  @Test
+  void shieldBlocksSixShotsWithoutDamageFeedbackThenTheNextShotHitsPlayer() {
+    player.setPosition(2f, 0f);
+    shield.refill();
+    int[] damageEvents = {0};
+    player
+        .getEvents()
+        .addListener(
+            "damageTaken", (Entity attacker, Integer lost, Integer health) -> damageEvents[0]++);
+    config.poisonShotsPerVolley = 6;
+    config.poisonVolleyCount = 1;
+    config.poisonFanDegrees = 0f;
+    config.poisonWaveOffsetDegrees = 0f;
+    poison.beginSpit();
+    poison.fireVolley(0);
+    poison.endSpit();
+    primeFlight();
+    tick(1f);
+
+    assertEquals(0, shield.getDurability());
+    assertFalse(shield.isActive());
+    assertEquals(100, playerStats.getHealth());
+    assertEquals(0, damageEvents[0]);
+    assertFalse(impact.isPlaying());
+    assertNull(playerEffects.getTint());
+
+    tick(1f);
+    assertEquals(100, playerStats.getHealth());
+    assertEquals(0, damageEvents[0]);
+    fireOne();
+    primeFlight();
+    tick(1f);
+
+    assertEquals(99, playerStats.getHealth());
+    assertEquals(1, damageEvents[0]);
+    assertTrue(impact.isPlaying());
+    assertEquals(new Color(1f, 0.2f, 0.2f, 1f), playerEffects.getTint());
+  }
+
+  @Test
+  void aWallBeforeTheShieldBlocksPoisonWithoutSpendingDurability() {
+    createWall(new Rectangle(2f, -2f, 0.05f, 5f));
+    player.setPosition(4f, 0f);
+    shield.refill();
+
+    fireOne();
+    primeFlight();
+    tick(2f);
+
+    assertEquals(6, shield.getDurability());
+    assertEquals(100, playerStats.getHealth());
+    assertFalse(impact.isPlaying());
+    render();
+    assertSame(texture(2), draws.getFirst().region().getTexture());
+  }
+
+  @Test
+  void shieldOverlappingTheFarSideOfAWallDoesNotInterceptThroughTheWall() {
+    createWall(new Rectangle(2f, -2f, 0.05f, 5f));
+    player.setPosition(2f, 0f);
+    shield.refill();
+    fireOne();
+    primeFlight();
+
+    // Reach the shield's protruding edge before the projectile itself reaches the wall.
+    tick(0.3f);
+    render();
+    assertEquals(6, shield.getDurability());
+    assertSame(texture(1), draws.getFirst().region().getTexture());
+
+    tick(1f);
+    render();
+
+    assertEquals(6, shield.getDurability());
+    assertEquals(100, playerStats.getHealth());
+    assertFalse(impact.isPlaying());
+    assertNull(playerEffects.getTint());
+    assertSame(texture(2), draws.getFirst().region().getTexture());
+  }
+
+  @Test
+  void concealmentLetsAnAlreadyFiredShotPassWithoutSpendingShieldDurability() {
+    player.setPosition(2f, 0f);
+    shield.refill();
+    fireOne();
+    playerEffects.addStatusEffect(new InvisibilityEffect(time, 10000L));
+
+    primeFlight();
+    tick(1f);
+    render();
+
+    assertEquals(6, shield.getDurability());
+    assertEquals(100, playerStats.getHealth());
+    assertFalse(impact.isPlaying());
+    assertSame(texture(1), draws.getFirst().region().getTexture());
   }
 
   @Test

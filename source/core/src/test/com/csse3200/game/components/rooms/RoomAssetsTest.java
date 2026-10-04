@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.audio.Music;
 import com.csse3200.game.components.miniboss.snake.SnakePoisonAssets;
+import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
+import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -60,7 +62,9 @@ public class RoomAssetsTest {
         .loadTextures(
             argThat(
                 paths ->
-                    Arrays.asList(paths).containsAll(Arrays.asList(SnakePoisonAssets.paths()))));
+                    Arrays.asList(paths).containsAll(Arrays.asList(SnakePoisonAssets.paths()))
+                        && Arrays.asList(paths).contains(SnakeShieldComponent.SHIELD_TEXTURE)
+                        && Arrays.asList(paths).contains(SnakeShieldPickupComponent.GEM_TEXTURE)));
   }
 
   /**
@@ -76,5 +80,11 @@ public class RoomAssetsTest {
     roomAssets.dispose();
     verify(music).stop();
     verify(resourceService, times(4)).unloadAssets(any());
+    verify(resourceService)
+        .unloadAssets(
+            argThat(
+                paths ->
+                    Arrays.asList(paths).contains(SnakeShieldComponent.SHIELD_TEXTURE)
+                        && Arrays.asList(paths).contains(SnakeShieldPickupComponent.GEM_TEXTURE)));
   }
 }

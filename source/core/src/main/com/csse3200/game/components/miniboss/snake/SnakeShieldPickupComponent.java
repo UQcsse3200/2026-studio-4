@@ -1,0 +1,246 @@
+package com.csse3200.game.components.miniboss.snake;
+
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.configs.SnakeMiniBossConfig;
+import com.csse3200.game.rendering.RenderComponent;
+import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ServiceLocator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+
+/** Stage-two green gems, owned by the Snake encounter rather than separate physics entities. */
+public class SnakeShieldPickupComponent extends RenderComponent {
+  public static final String GEM_TEXTURE =
+      "images/snake-miniboss/pickup/GEM 1 - LIGHT GREEN - Spritesheet.png";
+  private static final float LANDING_DURATION = 0.35f;
+  private static final float DROP_HEIGHT = 0.8f;
+  private static final float VISUAL_HEIGHT = 0.8f;
+  private static final float VISUAL_WIDTH = VISUAL_HEIGHT * 18f / 30f;
+  private static final float PICKUP_RADIUS = 0.65f;
+  private static final float FRAME_DURATION = 0.09f;
+  private static final int PLACEMENT_ATTEMPTS = 32;
+  private final Entity target;
+  private final SnakeMiniBossConfig config;
+  private final Random random;
+  private final List<Gem> gems = new ArrayList<>();
+  private Rectangle bounds;
+  private GameTime time;
+  private TextureRegion[] frames;
+  private float spawnAge;
+  private boolean active;
+  private boolean stopped;
+  private boolean fresh;
+
+  public SnakeShieldPickupComponent(Entity target, SnakeMiniBossConfig config) {
+    this(target, config, new Random());
+  }
+
+  SnakeShieldPickupComponent(Entity target, SnakeMiniBossConfig config, Random random) {
+    this.target = Objects.requireNonNull(target);
+    this.config = Objects.requireNonNull(config);
+    this.random = Objects.requireNonNull(random);
+  }
+
+  /** Copies the room bounds so later changes to the caller's rectangle cannot move the drops. */
+  public void setArenaBounds(Rectangle bounds) {
+    this.bounds = bounds == null ? null : new Rectangle(bounds);
+  }
+
+  @Override
+  public void create() {
+    super.create();
+    time = ServiceLocator.getTimeSource();
+    entity.getEvents().addListener("entityDied", this::stop);
+  }
+
+  /** Activates once when stage two begins and seeds the first usable drops. */
+  public void start() {
+    if (active || encounterEnded()) {
+      return;
+    }
+    active = true;
+    fresh = true;
+    spawnAge = 0f;
+    int initial = Math.min(config.shieldGemInitialCount, config.shieldGemMaxActive);
+    for (int i = 0; i < initial; i++) {
+      spawnGem();
+    }
+  }
+
+  /** Clears the current drops and disables spawning until explicitly started again. */
+  public void clear() {
+    active = false;
+    fresh = false;
+    spawnAge = 0f;
+    gems.clear();
+  }
+
+  /** Permanently ends this encounter's drops. */
+  public void stop() {
+    stopped = true;
+    clear();
+  }
+
+  public int getPickupCount() {
+    return gems.size();
+  }
+
+  /** Returns independent positions so callers cannot move live drops through the list. */
+  public List<Vector2> getPickupPositions() {
+    return gems.stream().map(gem -> gem.position.cpy()).toList();
+  }
+
+  @Override
+  public void update() {
+    if (encounterEnded()) {
+      stop();
+      return;
+    }
+    float delta = time == null ? 0f : time.getDeltaTime();
+    if (!active || !Float.isFinite(delta) || delta <= 0f) {
+      return;
+    }
+    // Stage activation earlier in this frame must not consume the frame that just ended.
+    if (fresh) {
+      fresh = false;
+      return;
+    }
+    for (int i = gems.size() - 1; i >= 0; i--) {
+      Gem gem = gems.get(i);
+      gem.age += delta;
+      if (gem.age >= config.shieldGemLifetime) {
+        gems.remove(i);
+      } else if (gem.age >= LANDING_DURATION && canCollect(gem)) {
+        SnakeShieldComponent shield = entity.getComponent(SnakeShieldComponent.class);
+        if (shield != null) {
+          gems.remove(i);
+          shield.refill();
+        }
+      }
+    }
+    spawnAge += delta;
+    if (spawnAge >= config.shieldGemSpawnInterval) {
+      // At most one spawn after a long frame; missed intervals never pile up.
+      spawnAge = 0f;
+      spawnGem();
+    }
+  }
+
+  private boolean canCollect(Gem gem) {
+    Vector2 centre = target.getCenterPosition();
+    return centre.dst2(gem.position) <= PICKUP_RADIUS * PICKUP_RADIUS
+        && SnakePoisonCollision.wallFraction(centre, gem.position, 0f, null) > 1f;
+  }
+
+  private void spawnGem() {
+    if (gems.size() >= config.shieldGemMaxActive) {
+      return;
+    }
+    Vector2 playerCentre = target.getCenterPosition();
+    Vector2 scale = target.getScale();
+    float clearance = Math.max(scale.x, scale.y) * 0.5f;
+    if (bounds != null && (bounds.width <= clearance * 2f || bounds.height <= clearance * 2f)) {
+      return;
+    }
+    for (int attempt = 0; attempt < PLACEMENT_ATTEMPTS; attempt++) {
+      Vector2 candidate = randomPosition(playerCentre, clearance);
+      if (candidate.dst2(playerCentre) >= 1.25f * 1.25f
+          && candidate.dst2(entity.getCenterPosition()) >= 1f
+          && gems.stream().noneMatch(gem -> gem.position.dst2(candidate) < 1f)
+          && SnakePoisonCollision.wallFraction(candidate, candidate, clearance, bounds) > 1f
+          && SnakePoisonCollision.wallFraction(playerCentre, candidate, 0f, null) > 1f) {
+        gems.add(new Gem(candidate));
+        return;
+      }
+    }
+  }
+
+  private Vector2 randomPosition(Vector2 playerCentre, float clearance) {
+    if (bounds == null) {
+      float radius = 2f + random.nextFloat() * 3f;
+      return new Vector2(radius, 0f).rotateDeg(random.nextFloat() * 360f).add(playerCentre);
+    }
+    return new Vector2(
+        bounds.x + clearance + random.nextFloat() * (bounds.width - clearance * 2f),
+        bounds.y + clearance + random.nextFloat() * (bounds.height - clearance * 2f));
+  }
+
+  private boolean encounterEnded() {
+    return stopped || isDead(entity) || isDead(target);
+  }
+
+  private static boolean isDead(Entity entity) {
+    CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
+    return stats != null && stats.isDead();
+  }
+
+  // Gems keep their original green colour while the Snake is hidden, frozen or glowing.
+  @Override
+  public void render(SpriteBatch batch) {
+    draw(batch);
+  }
+
+  @Override
+  protected void draw(SpriteBatch batch) {
+    if (encounterEnded()) {
+      stop();
+      return;
+    }
+    if (gems.isEmpty()) {
+      return;
+    }
+    if (frames == null) {
+      Texture texture = ServiceLocator.getResourceService().getAsset(GEM_TEXTURE, Texture.class);
+      frames = new TextureRegion[10];
+      for (int i = 0; i < frames.length; i++) {
+        frames[i] = new TextureRegion(texture, i * 18, 0, 18, 30);
+      }
+    }
+    float previousColour = batch.getPackedColor();
+    try {
+      for (Gem gem : gems) {
+        float fade = Math.min(1f, Math.max(0f, config.shieldGemLifetime - gem.age));
+        batch.setColor(1f, 1f, 1f, fade);
+        float drop = DROP_HEIGHT * Math.max(0f, 1f - gem.age / LANDING_DURATION);
+        TextureRegion frame = frames[(int) (gem.age / FRAME_DURATION) % frames.length];
+        batch.draw(
+            frame,
+            gem.position.x - VISUAL_WIDTH / 2f,
+            gem.position.y - VISUAL_HEIGHT / 2f + drop,
+            VISUAL_WIDTH,
+            VISUAL_HEIGHT);
+      }
+    } finally {
+      batch.setPackedColor(previousColour);
+    }
+  }
+
+  @Override
+  public float getZIndex() {
+    return Float.POSITIVE_INFINITY;
+  }
+
+  @Override
+  public void dispose() {
+    stop();
+    frames = null;
+    super.dispose();
+  }
+
+  private static final class Gem {
+    private final Vector2 position;
+    private float age;
+
+    private Gem(Vector2 position) {
+      this.position = position.cpy();
+    }
+  }
+}

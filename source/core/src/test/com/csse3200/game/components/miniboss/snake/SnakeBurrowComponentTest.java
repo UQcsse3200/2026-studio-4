@@ -49,6 +49,8 @@ class SnakeBurrowComponentTest {
   private SnakeBurrowComponent burrow;
   private SnakePlayerHitVisualComponent hitVisual;
   private SnakePoisonVolleyComponent poison;
+  private SnakeShieldComponent shield;
+  private SnakeShieldPickupComponent pickups;
 
   @BeforeEach
   void setUp() {
@@ -70,13 +72,17 @@ class SnakeBurrowComponentTest {
     burrow = new SnakeBurrowComponent(player, config);
     hitVisual = new SnakePlayerHitVisualComponent(player);
     poison = mock(SnakePoisonVolleyComponent.class);
+    shield = new SnakeShieldComponent(player, config);
+    pickups = mock(SnakeShieldPickupComponent.class);
     snake =
         new Entity()
             .addComponent(snakeStats)
             .addComponent(new StatusEffectsControllerComponent())
             .addComponent(burrow)
             .addComponent(hitVisual)
-            .addComponent(poison);
+            .addComponent(poison)
+            .addComponent(shield)
+            .addComponent(pickups);
     snake.setPosition(3f, 5f);
     snake.create();
     tick(0f);
@@ -140,12 +146,14 @@ class SnakeBurrowComponentTest {
   }
 
   @Test
-  void stayingInsideTheWarningTakesOneHitWithGreenAndRedFeedback() {
+  void burrowStrikeBypassesPoisonShieldAndPlaysGreenAndRedFeedbackOnce() {
+    shield.refill();
     reachWarning();
     movePlayerCentre(burrow.getWarningCentre());
     tick(config.warningDuration);
 
-    assertEquals(100 - config.burrowDamage, playerStats.getHealth());
+    assertEquals(95, playerStats.getHealth());
+    assertEquals(6, shield.getDurability());
     assertTrue(hitVisual.isPlaying());
     assertEquals(new Color(1f, 0.2f, 0.2f, 1f), playerEffects.getTint());
 
@@ -158,6 +166,7 @@ class SnakeBurrowComponentTest {
     tick(0.5f);
 
     assertEquals(100 - config.burrowDamage, playerStats.getHealth());
+    assertEquals(6, shield.getDurability());
     assertFalse(hitVisual.isPlaying());
     assertNull(playerEffects.getTint());
   }
@@ -410,6 +419,7 @@ class SnakeBurrowComponentTest {
     assertEquals(SnakeBurrowComponent.State.BURROWING, burrow.getState());
     verify(poison, never()).beginSpit();
     verify(poison, never()).fireVolley(anyInt());
+    verify(pickups, never()).start();
   }
 
   @Test
@@ -421,6 +431,7 @@ class SnakeBurrowComponentTest {
 
     assertTrue(burrow.isStageTwo());
     assertEquals(SnakeBurrowComponent.State.WARNING, burrow.getState());
+    verify(pickups).start();
     verify(poison, never()).beginSpit();
 
     tick(config.warningDuration / 2f);
@@ -435,6 +446,7 @@ class SnakeBurrowComponentTest {
     assertFalse(snakeStats.isInvulnerable());
     verify(poison).beginSpit();
     verify(poison, never()).fireVolley(anyInt());
+    verify(pickups, times(1)).start();
   }
 
   @Test
@@ -455,6 +467,7 @@ class SnakeBurrowComponentTest {
     assertTrue(burrow.isStageTwo());
     assertEquals(SnakeBurrowComponent.State.SPITTING, burrow.getState());
     verify(poison).beginSpit();
+    verify(pickups, times(1)).start();
   }
 
   @Test

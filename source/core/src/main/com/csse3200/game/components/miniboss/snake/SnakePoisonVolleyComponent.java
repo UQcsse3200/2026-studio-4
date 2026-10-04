@@ -33,6 +33,7 @@ public class SnakePoisonVolleyComponent extends RenderComponent {
   private Rectangle bounds;
   private GameTime time;
   private AnimationRenderComponent animator;
+  private SnakeShieldComponent shield;
   private SnakePoisonAssets.Frames frames;
   private float facingDegrees;
   private float chargeAge;
@@ -58,6 +59,7 @@ public class SnakePoisonVolleyComponent extends RenderComponent {
     super.create();
     time = ServiceLocator.getTimeSource();
     animator = entity.getComponent(AnimationRenderComponent.class);
+    shield = entity.getComponent(SnakeShieldComponent.class);
     entity.getEvents().addListener("entityDied", this::stop);
   }
 
@@ -179,12 +181,16 @@ public class SnakePoisonVolleyComponent extends RenderComponent {
     Vector2 end = shot.position.cpy().mulAdd(shot.velocity, travelTime);
     float wall = SnakePoisonCollision.wallFraction(shot.position, end, config.poisonRadius, bounds);
     float player = playerFraction(shot.position, end);
-    float collision = Math.min(wall, player);
+    float shieldHit = shieldFraction(shot.position, end);
+    float collision = Math.min(wall, Math.min(player, shieldHit));
     shot.age += travelTime;
     if (collision <= 1f) {
       shot.position.lerp(end, collision);
       shot.fading = true;
-      if (player < wall) {
+      if (shield != null && shieldHit < wall && shieldHit <= player && shield.tryBlock()) {
+        return false;
+      }
+      if (player < wall && player <= shieldHit) {
         damagePlayer();
       }
     } else {
@@ -202,6 +208,27 @@ public class SnakePoisonVolleyComponent extends RenderComponent {
     Vector2 scale = target.getScale();
     float radius = Math.min(scale.x, scale.y) * PLAYER_RADIUS_SCALE + config.poisonRadius;
     return SnakePoisonCollision.circleFraction(start, end, target.getCenterPosition(), radius);
+  }
+
+  private float shieldFraction(Vector2 start, Vector2 end) {
+    if (shield == null
+        || !shield.isActive()
+        || StatusEffectsControllerComponent.isConcealed(target)) {
+      return Float.POSITIVE_INFINITY;
+    }
+    Vector2 centre = target.getCenterPosition();
+    float fraction =
+        SnakePoisonCollision.circleFraction(
+            start, end, centre, shield.getRadius() + config.poisonRadius);
+    if (fraction <= 1f) {
+      Vector2 contact = start.cpy().lerp(end, fraction);
+      // A shield near a wall may overlap its far side visually; that must not spend durability
+      // on shots separated from the player by the wall.
+      if (SnakePoisonCollision.wallFraction(contact, centre, 0f, null) <= 1f) {
+        return Float.POSITIVE_INFINITY;
+      }
+    }
+    return fraction;
   }
 
   private void damagePlayer() {

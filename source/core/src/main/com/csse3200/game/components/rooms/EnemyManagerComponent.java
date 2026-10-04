@@ -9,6 +9,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
+import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
@@ -104,6 +105,9 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             .setArenaBounds(new Rectangle(0f, 0f, roomSize.x, roomSize.y));
         snake
             .getComponent(SnakePoisonVolleyComponent.class)
+            .setArenaBounds(new Rectangle(0f, 0f, roomSize.x, roomSize.y));
+        snake
+            .getComponent(SnakeShieldPickupComponent.class)
             .setArenaBounds(new Rectangle(0f, 0f, roomSize.x, roomSize.y));
         return snake;
       // Greek

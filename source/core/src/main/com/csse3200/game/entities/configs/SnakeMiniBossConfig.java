@@ -29,4 +29,10 @@ public class SnakeMiniBossConfig extends BaseEntityConfig {
   public float poisonLifetime = 5f;
   public float poisonRadius = 0.12f;
   public float poisonVisualSize = 1.2f;
+
+  public int shieldCapacity = 6;
+  public int shieldGemInitialCount = 2;
+  public int shieldGemMaxActive = 3;
+  public float shieldGemSpawnInterval = 5f;
+  public float shieldGemLifetime = 12f;
 }

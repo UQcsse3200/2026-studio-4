@@ -9,6 +9,8 @@ import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowVisualComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
+import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
+import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -194,6 +196,8 @@ public class NPCFactory {
         .addComponent(new SnakeBurrowComponent(target, config))
         .addComponent(new SnakeBurrowVisualComponent())
         .addComponent(new SnakePlayerHitVisualComponent(target))
+        .addComponent(new SnakeShieldComponent(target, config))
+        .addComponent(new SnakeShieldPickupComponent(target, config))
         .addComponent(new SnakePoisonVolleyComponent(target, config))
         .addComponent(animator)
         .addComponent(new EnemyDeathComponent(true))

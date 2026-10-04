@@ -41,6 +41,7 @@ public class SnakeBurrowComponent extends Component {
   private SnakeBurrowVisualComponent visual;
   private SnakePlayerHitVisualComponent playerHitVisual;
   private SnakePoisonVolleyComponent poison;
+  private SnakeShieldPickupComponent shieldPickups;
   private GameTime time;
   private State state = State.BURROWING;
   private float stateTime;
@@ -72,6 +73,7 @@ public class SnakeBurrowComponent extends Component {
     visual = entity.getComponent(SnakeBurrowVisualComponent.class);
     playerHitVisual = entity.getComponent(SnakePlayerHitVisualComponent.class);
     poison = entity.getComponent(SnakePoisonVolleyComponent.class);
+    shieldPickups = entity.getComponent(SnakeShieldPickupComponent.class);
     time = ServiceLocator.getTimeSource();
     stats.setInvulnerable(true);
     if (animator != null) {
@@ -116,7 +118,12 @@ public class SnakeBurrowComponent extends Component {
       cancelAttack();
       return;
     }
-    stageTwo |= stats.getHealth() <= stats.getMaxHealth() * config.stageTwoHealthThreshold;
+    if (!stageTwo && stats.getHealth() <= stats.getMaxHealth() * config.stageTwoHealthThreshold) {
+      stageTwo = true;
+      if (shieldPickups != null) {
+        shieldPickups.start();
+      }
+    }
     if (StatusEffectsControllerComponent.isImmobilised(entity)
         || StatusEffectsControllerComponent.isConcealed(target)) {
       return;
@@ -306,6 +313,9 @@ public class SnakeBurrowComponent extends Component {
     if (poison != null) {
       poison.clear();
     }
+    if (shieldPickups != null) {
+      shieldPickups.stop();
+    }
   }
 
   private void enter(State next) {
@@ -319,6 +329,9 @@ public class SnakeBurrowComponent extends Component {
       return;
     }
     enter(State.DEAD);
+    if (shieldPickups != null) {
+      shieldPickups.stop();
+    }
     if (poison != null) {
       poison.clear();
     }
@@ -348,6 +361,9 @@ public class SnakeBurrowComponent extends Component {
   public void dispose() {
     disposed = true;
     state = State.DEAD;
+    if (shieldPickups != null) {
+      shieldPickups.stop();
+    }
     if (poison != null) {
       poison.clear();
     }
