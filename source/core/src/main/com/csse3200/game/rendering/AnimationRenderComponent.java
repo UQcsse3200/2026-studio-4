@@ -44,6 +44,7 @@ public class AnimationRenderComponent extends RenderComponent {
   private float animationPlayTime;
   private float drawnPlayTime;
   private float verticalOffset;
+  private float rotation;
 
   /**
    * Create the component for a given texture atlas.
@@ -139,15 +140,17 @@ public class AnimationRenderComponent extends RenderComponent {
     currentAnimation = animation;
     currentAnimationName = name;
     animationPlayTime = 0f;
+    rotation = 0f;
     logger.debug("Starting animation {}", name);
   }
 
   /**
-   * Stop the currently running animation. Does nothing if no animation is playing.
+   * Stops the current animation and resets its visual rotation, including when already stopped.
    *
    * @return true if animation was stopped, false if no animation is playing.
    */
   public boolean stopAnimation() {
+    rotation = 0f;
     if (currentAnimation == null) {
       return false;
     }
@@ -186,6 +189,15 @@ public class AnimationRenderComponent extends RenderComponent {
     return verticalOffset;
   }
 
+  /** Rotates only the rendered sprite counterclockwise about its centre, in degrees. */
+  public void setRotation(float degrees) {
+    rotation = Float.isFinite(degrees) ? degrees : 0f;
+  }
+
+  public float getRotation() {
+    return rotation;
+  }
+
   @Override
   protected void draw(SpriteBatch batch) {
     if (currentAnimation == null) {
@@ -197,7 +209,21 @@ public class AnimationRenderComponent extends RenderComponent {
         currentAnimation.getKeyFrame(isRepeatPass() ? drawnPlayTime : animationPlayTime);
     Vector2 pos = entity.getPosition();
     Vector2 scale = entity.getScale();
-    batch.draw(region, pos.x, pos.y + verticalOffset, scale.x, scale.y);
+    if (rotation == 0f) {
+      batch.draw(region, pos.x, pos.y + verticalOffset, scale.x, scale.y);
+    } else {
+      batch.draw(
+          region,
+          pos.x,
+          pos.y + verticalOffset,
+          scale.x / 2f,
+          scale.y / 2f,
+          scale.x,
+          scale.y,
+          1f,
+          1f,
+          rotation);
+    }
     if (isRepeatPass()) {
       return;
     }
