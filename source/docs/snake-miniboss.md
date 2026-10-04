@@ -11,15 +11,15 @@ The Snake enters the encounter with a green dust burst, then repeats this cycle:
 | Warning | 0.9 seconds | Lock a clear position near the player's current centre and show a fixed ground circle. |
 | Exposed | 1.5 seconds | Emerge at that position, strike once, then remain above ground and vulnerable. |
 
-The emergence attack deals 2 direct damage when the player's centre is inside
+The emergence attack deals 5 direct damage when the player's centre is inside
 the warning radius at the instant the Snake emerges. It has no poison-over-time
 effect. Leaving the circle avoids the strike; entering it after the strike does
 not cause damage. The Snake no longer has automatic contact damage.
 
 When this strike actually lowers a surviving player's health, a green impact
 plays around their current centre and follows their movement for 0.56 seconds.
-It uses the supplied effect sheet's second row from the top: seven 64 x 64
-frames, at 80 milliseconds per frame, excluding the four empty cells. The
+It uses the supplied `16.png` sheet's fourth row from the top: fourteen 64 x 64
+frames, at 40 milliseconds per frame, including the final fading particles. The
 player's existing 0.6-second red damage flash plays at the same time. The green
 art retains its own colour instead of inheriting the red tint. A later hit
 restarts one animation rather than stacking effects.
@@ -80,7 +80,7 @@ For playtesting in Dungeon 2's Snake room:
 
 1. Watch the entry dust and underground trail; the Snake and its bar should hide.
 2. Move out of the warning circle before emergence; health should not decrease.
-3. Stay inside once; expect one 2-damage strike, a red player flash and the green
+3. Stay inside once; expect one 5-damage strike, a red player flash and the green
    impact following the player briefly, with no subsequent poison ticks.
 4. Attack while the Snake is exposed, then again underground. Only exposed
    attacks should lower its health, and the exposed window should last 1.5 seconds.

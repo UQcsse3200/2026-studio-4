@@ -138,7 +138,7 @@ class NPCFactoryTest {
     assertFalse(visual.isWarningVisible());
 
     int healthAfterStrike = player.getComponent(CombatStatsComponent.class).getHealth();
-    assertEquals(100 - config.burrowDamage, healthAfterStrike);
+    assertEquals(95, healthAfterStrike);
     snake.getComponent(CombatStatsComponent.class).setHealth(0);
     assertEquals("dieAnimation", animator.getCurrentAnimation());
     advanceEntities(entities, time, 0.6f);

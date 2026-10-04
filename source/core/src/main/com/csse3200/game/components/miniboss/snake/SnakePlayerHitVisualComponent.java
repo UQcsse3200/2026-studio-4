@@ -15,8 +15,9 @@ import java.util.Objects;
 public class SnakePlayerHitVisualComponent extends RenderComponent {
   public static final String HIT_SHEET = "images/snake-miniboss/hit/green-hit-sheet.png";
   private static final int CELL_SIZE = 64;
-  private static final int FRAME_COUNT = 7;
-  private static final long FRAME_MILLIS = 80L;
+  private static final int GREEN_ROW = 3;
+  private static final int FRAME_COUNT = 14;
+  private static final long FRAME_MILLIS = 40L;
   private static final long DURATION_MILLIS = FRAME_COUNT * FRAME_MILLIS;
   private static final float SIZE_MULTIPLIER = 1.5f;
   private final Entity target;
@@ -84,9 +85,10 @@ public class SnakePlayerHitVisualComponent extends RenderComponent {
     }
     Texture sheet = ServiceLocator.getResourceService().getAsset(HIT_SHEET, Texture.class);
     frames = new TextureRegion[FRAME_COUNT];
-    // Second row from the top, columns 0-6. Columns 7-10 are empty.
+    // Fourth row from the top, all 14 columns including the final fading particles.
     for (int i = 0; i < FRAME_COUNT; i++) {
-      frames[i] = new TextureRegion(sheet, i * CELL_SIZE, CELL_SIZE, CELL_SIZE, CELL_SIZE);
+      frames[i] =
+          new TextureRegion(sheet, i * CELL_SIZE, GREEN_ROW * CELL_SIZE, CELL_SIZE, CELL_SIZE);
     }
   }
 

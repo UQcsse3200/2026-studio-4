@@ -14,5 +14,5 @@ public class SnakeMiniBossConfig extends BaseEntityConfig {
   public float burrowSpeed = 3.5f;
   public float orbitRadius = 1.8f;
   public float burrowAttackRadius = 0.9f;
-  public int burrowDamage = 2;
+  public int burrowDamage = 5;
 }

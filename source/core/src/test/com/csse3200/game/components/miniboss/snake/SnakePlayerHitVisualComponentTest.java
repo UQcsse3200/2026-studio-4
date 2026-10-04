@@ -108,22 +108,22 @@ class SnakePlayerHitVisualComponentTest {
   }
 
   @Test
-  void shouldPlayOnlyTheSevenGreenFramesAndStopAt560Millis() {
+  void shouldPlayAllFourteenGreenFramesAndStopAt560Millis() {
     visual.render(batch);
     assertTrue(draws.isEmpty());
     visual.play();
     Texture sheet = resources.getAsset(SnakePlayerHitVisualComponent.HIT_SHEET, Texture.class);
-    assertEquals(704, sheet.getWidth());
+    assertEquals(896, sheet.getWidth());
     assertEquals(576, sheet.getHeight());
 
-    for (int frame = 0; frame < 7; frame++) {
-      for (long offset : new long[] {0L, 79L}) {
-        now = 1000L + frame * 80L + offset;
+    for (int frame = 0; frame < 14; frame++) {
+      for (long offset : new long[] {0L, 39L}) {
+        now = 1000L + frame * 40L + offset;
         visual.render(batch);
         TextureRegion region = draws.getLast().region();
         assertSame(sheet, region.getTexture());
         assertEquals(frame * 64, region.getRegionX());
-        assertEquals(64, region.getRegionY());
+        assertEquals(192, region.getRegionY());
         assertEquals(64, region.getRegionWidth());
         assertEquals(64, region.getRegionHeight());
       }
@@ -133,7 +133,7 @@ class SnakePlayerHitVisualComponentTest {
     visual.update();
     visual.render(batch);
     assertFalse(visual.isPlaying());
-    assertEquals(14, draws.size());
+    assertEquals(28, draws.size());
   }
 
   @Test
@@ -191,7 +191,7 @@ class SnakePlayerHitVisualComponentTest {
     visual.play();
     now += 320L;
     visual.render(batch);
-    assertEquals(256, draws.getLast().region().getRegionX());
+    assertEquals(512, draws.getLast().region().getRegionX());
     visual.play();
     visual.render(batch);
     assertEquals(0, draws.getLast().region().getRegionX());
