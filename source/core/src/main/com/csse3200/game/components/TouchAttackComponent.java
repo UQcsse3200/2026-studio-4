@@ -8,6 +8,8 @@ import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ServiceLocator;
 
 /**
  * When this entity touches a valid enemy's hitbox, deal damage to them and apply a knockback.
@@ -16,12 +18,28 @@ import com.csse3200.game.physics.components.PhysicsComponent;
  *
  * <p>Damage is only applied if target entity has a CombatStatsComponent. Knockback is only applied
  * if target entity has a PhysicsComponent.
+ *
+ * <p>Normally the knockback pushes the target away after a hit, so later damage comes from a fresh
+ * collision once they touch again. If the target can't actually be pushed away - for example, it's
+ * immobilised by a status effect such as Frozen, and something zeroes its velocity every frame -
+ * the two stay in continuous contact without a new collision ever firing, so the target would
+ * otherwise sit right next to the attacker taking no further damage. While contact is sustained,
+ * this component re-applies the attack on a fixed interval so stuck-together contact still deals
+ * damage over time instead of going silent.
  */
 public class TouchAttackComponent extends Component {
+  /** How often (in ms) a sustained, unbroken contact re-deals damage. */
+  private static final long REPEAT_HIT_INTERVAL_MS = 1000;
+
   private short targetLayer;
   private float knockbackForce = 0f;
   private CombatStatsComponent combatStats;
   private HitboxComponent hitboxComponent;
+
+  /** The entity currently overlapping our hitbox, or null if contact has ended. */
+  private Entity overlappingTarget;
+
+  private long lastHitTime;
 
   /**
    * Create a component which attacks entities on collision, without knockback.
@@ -58,8 +76,29 @@ public class TouchAttackComponent extends Component {
   @Override
   public void create() {
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
+    entity.getEvents().addListener("collisionEnd", this::onCollisionEnd);
     combatStats = entity.getComponent(CombatStatsComponent.class);
     hitboxComponent = entity.getComponent(HitboxComponent.class);
+  }
+
+  /**
+   * Re-deals damage on a fixed interval while contact with a target is sustained without ever
+   * separating (e.g. a frozen, immobilised target that can't be knocked away).
+   */
+  @Override
+  public void update() {
+    if (overlappingTarget == null) {
+      return;
+    }
+
+    GameTime time = ServiceLocator.getTimeSource();
+    if (time == null) {
+      return;
+    }
+
+    if (time.getTime() - lastHitTime >= REPEAT_HIT_INTERVAL_MS) {
+      attack(overlappingTarget);
+    }
   }
 
   private void onCollisionStart(Fixture me, Fixture other) {
@@ -73,16 +112,43 @@ public class TouchAttackComponent extends Component {
       return;
     }
 
-    // Try to attack target.
     Entity target = ((BodyUserData) other.getBody().getUserData()).entity;
+    overlappingTarget = target;
+    attack(target);
+  }
+
+  private void onCollisionEnd(Fixture me, Fixture other) {
+    if (hitboxComponent.getFixture() != me || overlappingTarget == null) {
+      return;
+    }
+
+    if (!(other.getBody().getUserData() instanceof BodyUserData)) {
+      return;
+    }
+
+    Entity endedWith = ((BodyUserData) other.getBody().getUserData()).entity;
+    if (endedWith == overlappingTarget) {
+      // Contact genuinely broke, so the next hit should come from a fresh collision again.
+      overlappingTarget = null;
+    }
+  }
+
+  /** Deals damage and knockback to a target we are (or still are) touching. */
+  private void attack(Entity target) {
     if (PhysicsLayer.contains(targetLayer, PhysicsLayer.PLAYER)
-        && StatusEffectsControllerComponent.isConcealed(target)) {
+            && StatusEffectsControllerComponent.isConcealed(target)) {
       // A hostile cannot find a concealed target, so it neither damages nor shoves them.
       return;
     }
+
     CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
     if (targetStats != null) {
       targetStats.hit(combatStats);
+    }
+
+    GameTime time = ServiceLocator.getTimeSource();
+    if (time != null) {
+      lastHitTime = time.getTime();
     }
 
     // Apply knockback
@@ -95,3 +161,4 @@ public class TouchAttackComponent extends Component {
     }
   }
 }
+

@@ -47,15 +47,16 @@ public class SplitComponent extends Component {
     int halfAttack = Math.max(1, stats.getBaseAttack() / 2);
 
     ServiceLocator.getEntityService()
-        .schedule(
-            () -> {
-              // Spawn both children at the parent's exact death position (no offset).
-              // That position is guaranteed to already be inside the reachable map,
-              // since the parent walked there itself. This avoids the bug where a
-              // fixed offset could push a child outside the map near room edges.
-              spawnChild(0f, halfHealth, halfAttack);
-              spawnChild(0f, halfHealth, halfAttack);
-            });
+            .schedule(
+                    () -> {
+                      // Small offset so the two children don't spawn stacked on the same
+                      // physics body (which caused a violent Box2D separation push,
+                      // especially against a wall, making the children look
+                      // "hyperactive"). Kept small enough to stay inside the room
+                      // even when the parent died right at a room edge.
+                      spawnChild(-0.15f, halfHealth, halfAttack);
+                      spawnChild(0.15f, halfHealth, halfAttack);
+                    });
     ServiceLocator.getEntityService().scheduleDisposal(entity);
     hasSplit = true;
   }
@@ -82,3 +83,4 @@ public class SplitComponent extends Component {
     entity.getEvents().trigger("spawnChildren", child);
   }
 }
+

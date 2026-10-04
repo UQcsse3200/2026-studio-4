@@ -1,6 +1,8 @@
 package com.csse3200.game.components;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.entities.Entity;
@@ -8,6 +10,7 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,9 +18,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class TouchAttackComponentTest {
+  private GameTime gameTime;
+
   @BeforeEach
   void beforeEach() {
     ServiceLocator.registerPhysicsService(new PhysicsService());
+    gameTime = mock(GameTime.class);
+    when(gameTime.getTime()).thenReturn(0L);
+    ServiceLocator.registerTimeSource(gameTime);
   }
 
   @Test
@@ -53,9 +61,9 @@ class TouchAttackComponentTest {
     Entity entity = createAttacker(targetLayer);
     // Target does not have a combat component
     Entity target =
-        new Entity()
-            .addComponent(new PhysicsComponent())
-            .addComponent(new HitboxComponent().setLayer(targetLayer));
+            new Entity()
+                    .addComponent(new PhysicsComponent())
+                    .addComponent(new HitboxComponent().setLayer(targetLayer));
     target.create();
 
     Fixture entityFixture = entity.getComponent(HitboxComponent.class).getFixture();
@@ -65,23 +73,83 @@ class TouchAttackComponentTest {
     entity.getEvents().trigger("collisionStart", entityFixture, targetFixture);
   }
 
+  @Test
+  void shouldNotRepeatDamageBeforeIntervalElapses() {
+    short targetLayer = (1 << 3);
+    Entity entity = createAttacker(targetLayer);
+    Entity target = createTarget(targetLayer, 1000);
+
+    Fixture entityFixture = entity.getComponent(HitboxComponent.class).getFixture();
+    Fixture targetFixture = target.getComponent(HitboxComponent.class).getFixture();
+    entity.getEvents().trigger("collisionStart", entityFixture, targetFixture);
+    assertEquals(990, target.getComponent(CombatStatsComponent.class).getHealth());
+
+    // Contact is sustained (no collisionEnd) but less than a second has passed.
+    when(gameTime.getTime()).thenReturn(500L);
+    entity.getComponent(TouchAttackComponent.class).update();
+
+    assertEquals(990, target.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void shouldRepeatDamageWhileContactIsSustained() {
+    short targetLayer = (1 << 3);
+    Entity entity = createAttacker(targetLayer);
+    Entity target = createTarget(targetLayer, 1000);
+
+    Fixture entityFixture = entity.getComponent(HitboxComponent.class).getFixture();
+    Fixture targetFixture = target.getComponent(HitboxComponent.class).getFixture();
+    entity.getEvents().trigger("collisionStart", entityFixture, targetFixture);
+    assertEquals(990, target.getComponent(CombatStatsComponent.class).getHealth());
+
+    // The two entities never separate (e.g. target is frozen in place), so no further
+    // collisionStart ever fires, but contact is still sustained a full interval later.
+    when(gameTime.getTime()).thenReturn(1000L);
+    entity.getComponent(TouchAttackComponent.class).update();
+
+    assertEquals(980, target.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void shouldNotRepeatDamageAfterContactEnds() {
+    short targetLayer = (1 << 3);
+    Entity entity = createAttacker(targetLayer);
+    Entity target = createTarget(targetLayer, 1000);
+
+    Fixture entityFixture = entity.getComponent(HitboxComponent.class).getFixture();
+    Fixture targetFixture = target.getComponent(HitboxComponent.class).getFixture();
+    entity.getEvents().trigger("collisionStart", entityFixture, targetFixture);
+    assertEquals(990, target.getComponent(CombatStatsComponent.class).getHealth());
+
+    entity.getEvents().trigger("collisionEnd", entityFixture, targetFixture);
+
+    when(gameTime.getTime()).thenReturn(5000L);
+    entity.getComponent(TouchAttackComponent.class).update();
+
+    assertEquals(990, target.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
   Entity createAttacker(short targetLayer) {
     Entity entity =
-        new Entity()
-            .addComponent(new TouchAttackComponent(targetLayer))
-            .addComponent(new CombatStatsComponent(100, 10))
-            .addComponent(new PhysicsComponent())
-            .addComponent(new HitboxComponent());
+            new Entity()
+                    .addComponent(new TouchAttackComponent(targetLayer))
+                    .addComponent(new CombatStatsComponent(100, 10))
+                    .addComponent(new PhysicsComponent())
+                    .addComponent(new HitboxComponent());
     entity.create();
     return entity;
   }
 
   Entity createTarget(short layer) {
+    return createTarget(layer, 10);
+  }
+
+  Entity createTarget(short layer, int health) {
     Entity target =
-        new Entity()
-            .addComponent(new CombatStatsComponent(10, 0))
-            .addComponent(new PhysicsComponent())
-            .addComponent(new HitboxComponent().setLayer(layer));
+            new Entity()
+                    .addComponent(new CombatStatsComponent(health, 0))
+                    .addComponent(new PhysicsComponent())
+                    .addComponent(new HitboxComponent().setLayer(layer));
     target.create();
     return target;
   }
