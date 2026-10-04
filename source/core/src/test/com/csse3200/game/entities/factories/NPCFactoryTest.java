@@ -67,7 +67,11 @@ class NPCFactoryTest {
     resourceService.loadTextures(new String[] {SnakePlayerHitVisualComponent.HIT_SHEET});
     resourceService.loadTextures(SnakePoisonAssets.paths());
     resourceService.loadTextures(
-        new String[] {SnakeShieldComponent.SHIELD_TEXTURE, SnakeShieldPickupComponent.GEM_TEXTURE});
+        new String[] {
+          SnakeShieldComponent.SHIELD_TEXTURE,
+          SnakeShieldPickupComponent.GEM_TEXTURE,
+          SnakeShieldPickupComponent.SPAWN_TEXTURE
+        });
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }

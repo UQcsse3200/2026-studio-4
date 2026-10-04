@@ -113,8 +113,12 @@ disconnected.
 
 Crossing the half-health threshold starts green gem drops once, even if the
 Snake later heals. The pickup is the supplied pack's rotating light-green
-GEM 1 spritesheet, with ten original frames. Gems fall briefly into clear space
-and can be collected by walking over them after they land.
+GEM 1 spritesheet, with ten original frames. Each gem is 0.65 world units tall
+and 0.39 wide. It materialises in clear space during a 0.35-second green burst,
+using the supplied `01(4).png` sheet's second row: seven 64 x 64 frames at
+0.05 seconds each. The effect plays once at the fixed pickup position while
+the gem fades in, then only the rotating gem remains. Collection becomes
+available when the appearance animation finishes.
 
 | Setting | Default |
 | --- | --- |
@@ -188,7 +192,8 @@ For playtesting in Dungeon 2's Snake room:
 9. Put a stone wall between yourself and the shots; they must fade at the wall.
 10. Defeat the Snake and verify that dust, warnings and poison all stop and the
     room clears normally. Leaving the room must not leave damaging projectiles.
-11. On entering phase two, find two falling green gems. After landing, collect
+11. On entering phase two, find two smaller gems appearing in green bursts.
+    Check that each burst plays once at its gem's position. After it ends, collect
     one: one green bar and a translucent shield should appear beside/around you.
     Walking and waiting should not drain it. Additional drops should remain
     bounded to three active gems and disappear after twelve seconds.

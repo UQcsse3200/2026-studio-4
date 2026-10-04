@@ -20,9 +20,13 @@ import java.util.Random;
 public class SnakeShieldPickupComponent extends RenderComponent {
   public static final String GEM_TEXTURE =
       "images/snake-miniboss/pickup/GEM 1 - LIGHT GREEN - Spritesheet.png";
-  private static final float LANDING_DURATION = 0.35f;
-  private static final float DROP_HEIGHT = 0.8f;
-  private static final float VISUAL_HEIGHT = 0.8f;
+  public static final String SPAWN_TEXTURE =
+      "images/snake-miniboss/pickup/green-gem-spawn-sheet.png";
+  private static final int SPAWN_FRAME_COUNT = 7;
+  private static final float SPAWN_FRAME_DURATION = 0.05f;
+  private static final float SPAWN_DURATION = SPAWN_FRAME_COUNT * SPAWN_FRAME_DURATION;
+  private static final float SPAWN_SIZE = 1.1f;
+  private static final float VISUAL_HEIGHT = 0.65f;
   private static final float VISUAL_WIDTH = VISUAL_HEIGHT * 18f / 30f;
   private static final float PICKUP_RADIUS = 0.65f;
   private static final float FRAME_DURATION = 0.09f;
@@ -34,6 +38,7 @@ public class SnakeShieldPickupComponent extends RenderComponent {
   private Rectangle bounds;
   private GameTime time;
   private TextureRegion[] frames;
+  private TextureRegion[] spawnFrames;
   private float spawnAge;
   private boolean active;
   private boolean stopped;
@@ -118,7 +123,7 @@ public class SnakeShieldPickupComponent extends RenderComponent {
       gem.age += delta;
       if (gem.age >= config.shieldGemLifetime) {
         gems.remove(i);
-      } else if (gem.age >= LANDING_DURATION && canCollect(gem)) {
+      } else if (gem.age >= SPAWN_DURATION && canCollect(gem)) {
         SnakeShieldComponent shield = entity.getComponent(SnakeShieldComponent.class);
         if (shield != null) {
           gems.remove(i);
@@ -197,29 +202,50 @@ public class SnakeShieldPickupComponent extends RenderComponent {
     if (gems.isEmpty()) {
       return;
     }
-    if (frames == null) {
-      Texture texture = ServiceLocator.getResourceService().getAsset(GEM_TEXTURE, Texture.class);
-      frames = new TextureRegion[10];
-      for (int i = 0; i < frames.length; i++) {
-        frames[i] = new TextureRegion(texture, i * 18, 0, 18, 30);
-      }
-    }
+    ensureFrames();
     float previousColour = batch.getPackedColor();
     try {
       for (Gem gem : gems) {
         float fade = Math.min(1f, Math.max(0f, config.shieldGemLifetime - gem.age));
-        batch.setColor(1f, 1f, 1f, fade);
-        float drop = DROP_HEIGHT * Math.max(0f, 1f - gem.age / LANDING_DURATION);
+        if (gem.age < SPAWN_DURATION) {
+          batch.setColor(1f, 1f, 1f, fade);
+          int frameIndex = Math.min(SPAWN_FRAME_COUNT - 1, (int) (gem.age / SPAWN_FRAME_DURATION));
+          batch.draw(
+              spawnFrames[frameIndex],
+              gem.position.x - SPAWN_SIZE / 2f,
+              gem.position.y - SPAWN_SIZE / 2f,
+              SPAWN_SIZE,
+              SPAWN_SIZE);
+        }
+        batch.setColor(1f, 1f, 1f, fade * Math.min(1f, gem.age / SPAWN_DURATION));
         TextureRegion frame = frames[(int) (gem.age / FRAME_DURATION) % frames.length];
         batch.draw(
             frame,
             gem.position.x - VISUAL_WIDTH / 2f,
-            gem.position.y - VISUAL_HEIGHT / 2f + drop,
+            gem.position.y - VISUAL_HEIGHT / 2f,
             VISUAL_WIDTH,
             VISUAL_HEIGHT);
       }
     } finally {
       batch.setPackedColor(previousColour);
+    }
+  }
+
+  private void ensureFrames() {
+    if (frames != null) {
+      return;
+    }
+    Texture gemTexture = ServiceLocator.getResourceService().getAsset(GEM_TEXTURE, Texture.class);
+    Texture spawnTexture =
+        ServiceLocator.getResourceService().getAsset(SPAWN_TEXTURE, Texture.class);
+    frames = new TextureRegion[10];
+    for (int i = 0; i < frames.length; i++) {
+      frames[i] = new TextureRegion(gemTexture, i * 18, 0, 18, 30);
+    }
+    spawnFrames = new TextureRegion[SPAWN_FRAME_COUNT];
+    // Second row from the top: seven 64px green frames, followed by four empty cells.
+    for (int i = 0; i < spawnFrames.length; i++) {
+      spawnFrames[i] = new TextureRegion(spawnTexture, i * 64, 64, 64, 64);
     }
   }
 
@@ -232,6 +258,7 @@ public class SnakeShieldPickupComponent extends RenderComponent {
   public void dispose() {
     stop();
     frames = null;
+    spawnFrames = null;
     super.dispose();
   }
 

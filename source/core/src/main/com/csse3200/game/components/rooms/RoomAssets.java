@@ -25,7 +25,8 @@ public class RoomAssets implements Disposable {
     "images/dragon/smoke_sheet.png",
     SnakePlayerHitVisualComponent.HIT_SHEET,
     SnakeShieldComponent.SHIELD_TEXTURE,
-    SnakeShieldPickupComponent.GEM_TEXTURE
+    SnakeShieldPickupComponent.GEM_TEXTURE,
+    SnakeShieldPickupComponent.SPAWN_TEXTURE
   };
 
   private static final String[] ENEMY_TEXTURE_ATLASES = {

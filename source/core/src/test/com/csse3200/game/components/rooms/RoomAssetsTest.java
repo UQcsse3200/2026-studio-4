@@ -64,7 +64,9 @@ public class RoomAssetsTest {
                 paths ->
                     Arrays.asList(paths).containsAll(Arrays.asList(SnakePoisonAssets.paths()))
                         && Arrays.asList(paths).contains(SnakeShieldComponent.SHIELD_TEXTURE)
-                        && Arrays.asList(paths).contains(SnakeShieldPickupComponent.GEM_TEXTURE)));
+                        && Arrays.asList(paths).contains(SnakeShieldPickupComponent.GEM_TEXTURE)
+                        && Arrays.asList(paths)
+                            .contains(SnakeShieldPickupComponent.SPAWN_TEXTURE)));
   }
 
   /**
@@ -85,6 +87,8 @@ public class RoomAssetsTest {
             argThat(
                 paths ->
                     Arrays.asList(paths).contains(SnakeShieldComponent.SHIELD_TEXTURE)
-                        && Arrays.asList(paths).contains(SnakeShieldPickupComponent.GEM_TEXTURE)));
+                        && Arrays.asList(paths).contains(SnakeShieldPickupComponent.GEM_TEXTURE)
+                        && Arrays.asList(paths)
+                            .contains(SnakeShieldPickupComponent.SPAWN_TEXTURE)));
   }
 }

@@ -14,6 +14,7 @@ then top to bottom. Exclude the trailing empty cells listed below.
 | --- | --- | --- | --- | --- | --- |
 | `hit/green-hit-sheet.png` | 896 x 576 | 64 x 64 | 14 columns, 9 rows | Fourth row from top, all 14 cells | Green impact on a damaged player |
 | `pickup/GEM 1 - LIGHT GREEN - Spritesheet.png` | 180 x 30 | 18 x 30 | 10 columns, 1 row | 10 | Green shield-refill pickup |
+| `pickup/green-gem-spawn-sheet.png` | 704 x 576 | 64 x 64 | 11 columns, 9 rows | Second row from top, first 7 cells | Green gem appearance |
 | `shield/shieldGreen_Edit.png` | 556 x 556 | Whole image | Static | 1 | Translucent shield around the player |
 | `poison/PoisonProjectile_forming_spritesheet.png` | 256 x 192 | 64 x 64 | 4 columns, 3 rows | 10; skip last 2 cells | Poison shot forming |
 | `poison/PoisonProjectile_flying_spritesheet.png` | 128 x 128 | 64 x 64 | 2 columns, 2 rows | 4 | Poison shot in flight |
@@ -39,6 +40,22 @@ The renderer controls its translucent appearance and brief block flash.
   the earlier sheet's attribution and terms must not be assumed to apply.
   Record the original source and applicable permission before redistribution.
 - Changes to the artwork: none. The game selects frames at runtime.
+
+### Green gem appearance effect
+
+- Work: Pixel Holy Spell Effect 32x32 Pack 3 (the actual cells are 64 x 64).
+- Author: BDragon1727.
+- Source: https://bdragon1727.itch.io/pixel-holy-spell-effect-32x32-pack-3
+- Input: user-supplied `01(4).png`, copied without changing its bytes. It is
+  identical to the earlier `01(3).png` recorded in commit `8fad26ff`.
+- Selected animation: row index 1, columns 0 through 6; the last four cells
+  of that row are empty. The game plays these seven frames once in 0.35 seconds.
+- Terms retained from the existing source record: non-commercial game use is
+  free; commercial game use requires a contribution of any amount. Modification
+  is allowed; resale and redistribution of the asset are prohibited. This is
+  a custom licence, not CC0 or Creative Commons. Permission to redistribute
+  the raw spritesheet in a public repository was not established by that record.
+- Changes to the artwork: none; frame selection and scaling happen at runtime.
 
 ### Green gem
 
@@ -102,11 +119,14 @@ Source pages checked on 2026-10-04.
 ## Second-phase gem and shield visuals
 
 - `SnakeShieldPickupComponent` animates all ten 18 x 30 cells of the original
-  light-green GEM 1 sheet, with a brief falling motion before collection.
+  light-green GEM 1 sheet at a height of 0.65 world units. The gem fades in at
+  its fixed position during a 0.35-second green appearance effect, then becomes
+  collectible. The effect uses the second row's seven non-empty 64 x 64 cells
+  from the supplied `01(4).png`, once at 0.05 seconds per frame.
   The sheet is byte-identical to GEM 1 in the newly supplied
   `Pixel Art Gem Pack - Animated (1).zip`.
 - `SnakeShieldComponent` draws the original green shield with reduced alpha
   and a brief brighter flash when blocking poison. One code-drawn green bar
   shows remaining blocks; refilling never adds a second bar.
-- Both original images are preloaded and unloaded by `RoomAssets`. The small
+- All three original images are preloaded and unloaded by `RoomAssets`. The small
   white texture used to draw the bar is owned and disposed by the component.

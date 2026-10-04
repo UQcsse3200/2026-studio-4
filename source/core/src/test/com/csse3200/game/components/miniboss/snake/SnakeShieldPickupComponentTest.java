@@ -1,6 +1,7 @@
 package com.csse3200.game.components.miniboss.snake;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
@@ -59,7 +60,10 @@ class SnakeShieldPickupComponentTest {
     ServiceLocator.registerTimeSource(time);
     ServiceLocator.registerRenderService(renderer);
     resources = new ResourceService();
-    resources.loadTextures(new String[] {SnakeShieldPickupComponent.GEM_TEXTURE});
+    resources.loadTextures(
+        new String[] {
+          SnakeShieldPickupComponent.GEM_TEXTURE, SnakeShieldPickupComponent.SPAWN_TEXTURE
+        });
     resources.loadAll();
     ServiceLocator.registerResourceService(resources);
     config = new SnakeMiniBossConfig();
@@ -132,7 +136,7 @@ class SnakeShieldPickupComponentTest {
   }
 
   @Test
-  void collectsOnlyAfterLandingAndRefillsOnceForEachGem() {
+  void collectsOnlyAfterAppearanceFinishesAndRefillsOnceForEachGem() {
     pickups.start();
     tick(0.01f);
     List<Vector2> positions = pickups.getPickupPositions();
@@ -256,6 +260,7 @@ class SnakeShieldPickupComponentTest {
     pickups.dispose();
     verify(renderer).unregister(pickups);
     assertTrue(resources.containsAsset(SnakeShieldPickupComponent.GEM_TEXTURE, Texture.class));
+    assertTrue(resources.containsAsset(SnakeShieldPickupComponent.SPAWN_TEXTURE, Texture.class));
   }
 
   @Test
@@ -268,11 +273,82 @@ class SnakeShieldPickupComponentTest {
   }
 
   @Test
-  void rendersOriginalTenFrameGemWithLandingOffsetFadeAndRestoresBatchColour() {
-    SpriteBatch batch = mock(SpriteBatch.class);
+  void smallerGemAppearsInPlaceWithSecondRowGreenEffectOnceAndRestoresBatchColour() {
     Color colour = new Color(0.2f, 0.3f, 0.4f, 0.5f);
     float original = colour.toFloatBits();
     List<Draw> draws = new ArrayList<>();
+    SpriteBatch batch = recordingBatch(colour, draws);
+    Texture effectTexture =
+        resources.getAsset(SnakeShieldPickupComponent.SPAWN_TEXTURE, Texture.class);
+    Texture gemTexture = resources.getAsset(SnakeShieldPickupComponent.GEM_TEXTURE, Texture.class);
+    config.shieldGemInitialCount = 1;
+    config.shieldGemSpawnInterval = 100f;
+    pickups.start();
+    Vector2 position = pickups.getPickupPositions().getFirst();
+    tick(0.01f); // Do not charge the activation frame to either animation.
+    for (int frameIndex = 0; frameIndex < 7; frameIndex++) {
+      if (frameIndex > 0) {
+        tick(0.051f);
+      }
+      draws.clear();
+      pickups.render(batch);
+      assertEquals(2, draws.size());
+      Draw effect = draws.getFirst();
+      assertSame(effectTexture, effect.region().getTexture());
+      assertEquals(frameIndex * 64, effect.region().getRegionX());
+      assertEquals(64, effect.region().getRegionY());
+      assertEquals(64, effect.region().getRegionWidth());
+      assertEquals(64, effect.region().getRegionHeight());
+      assertEquals(1.1f, effect.width(), 0.0001f);
+      assertEquals(1.1f, effect.height(), 0.0001f);
+      assertTrue(effect.centre().epsilonEquals(position, 0.0001f));
+      assertEquals(Color.WHITE, effect.colour());
+      Draw gem = draws.getLast();
+      assertSame(gemTexture, gem.region().getTexture());
+      assertEquals(0.39f, gem.width(), 0.0001f);
+      assertEquals(0.65f, gem.height(), 0.0001f);
+      assertTrue(gem.centre().epsilonEquals(position, 0.0001f));
+      assertEquals(frameIndex * 0.051f / 0.35f, gem.colour().a, 0.0001f);
+      assertEquals(1f, gem.colour().r);
+      assertEquals(1f, gem.colour().g);
+      assertEquals(1f, gem.colour().b);
+      assertEquals(original, colour.toFloatBits());
+    }
+
+    tick(0.045f); // The seventh effect frame ends; only the fully visible gem remains.
+    draws.clear();
+    pickups.render(batch);
+    assertEquals(1, draws.size());
+    assertSame(gemTexture, draws.getFirst().region().getTexture());
+    assertEquals(Color.WHITE, draws.getFirst().colour());
+    tick(0.469f); // Age 0.82: the original ten-frame gem keeps animating.
+    draws.clear();
+    pickups.render(batch);
+    assertEquals(1, draws.size());
+    assertEquals(162, draws.getFirst().region().getRegionX());
+    assertEquals(18, draws.getFirst().region().getRegionWidth());
+    assertEquals(30, draws.getFirst().region().getRegionHeight());
+    assertTrue(draws.getFirst().centre().epsilonEquals(position, 0.0001f));
+    tick(10.68f);
+    draws.clear();
+    pickups.render(batch);
+    assertEquals(1, draws.size());
+    assertEquals(0.5f, draws.getFirst().colour().a, 0.0001f);
+    assertEquals(original, colour.toFloatBits());
+
+    pickups.clear();
+    pickups.start();
+    draws.clear();
+    pickups.render(batch);
+    assertEquals(2, draws.size());
+    pickups.dispose();
+    draws.clear();
+    pickups.render(batch);
+    assertTrue(draws.isEmpty());
+  }
+
+  private SpriteBatch recordingBatch(Color colour, List<Draw> draws) {
+    SpriteBatch batch = mock(SpriteBatch.class);
     when(batch.getPackedColor()).thenAnswer(ignored -> colour.toFloatBits());
     doAnswer(
             invocation -> {
@@ -294,35 +370,22 @@ class SnakeShieldPickupComponentTest {
         .setPackedColor(anyFloat());
     doAnswer(
             invocation -> {
+              float x = invocation.getArgument(1);
+              float y = invocation.getArgument(2);
+              float width = invocation.getArgument(3);
+              float height = invocation.getArgument(4);
               draws.add(
                   new Draw(
-                      invocation.getArgument(0), invocation.getArgument(2), new Color(colour)));
-              assertEquals(0.48f, (float) invocation.getArgument(3), 0.0001f);
-              assertEquals(0.8f, (float) invocation.getArgument(4), 0.0001f);
+                      invocation.getArgument(0),
+                      new Vector2(x + width / 2f, y + height / 2f),
+                      width,
+                      height,
+                      new Color(colour)));
               return null;
             })
         .when(batch)
         .draw(any(TextureRegion.class), anyFloat(), anyFloat(), anyFloat(), anyFloat());
-    config.shieldGemInitialCount = 1;
-    config.shieldGemSpawnInterval = 100f;
-    pickups.start();
-    Vector2 position = pickups.getPickupPositions().getFirst();
-    pickups.render(batch);
-    assertEquals(0, draws.getLast().region().getRegionX());
-    assertEquals(position.y + 0.4f, draws.getLast().y(), 0.0001f);
-    tick(0.01f);
-    tick(0.82f);
-    pickups.render(batch);
-    Draw frame = draws.getLast();
-    assertEquals(162, frame.region().getRegionX());
-    assertEquals(18, frame.region().getRegionWidth());
-    assertEquals(30, frame.region().getRegionHeight());
-    assertEquals(position.y - 0.4f, frame.y(), 0.0001f);
-    assertEquals(Color.WHITE, frame.colour());
-    tick(10.68f);
-    pickups.render(batch);
-    assertEquals(0.5f, draws.getLast().colour().a, 0.0001f);
-    assertEquals(original, colour.toFloatBits());
+    return batch;
   }
 
   private void tick(float delta) {
@@ -351,5 +414,6 @@ class SnakeShieldPickupComponentTest {
     }
   }
 
-  private record Draw(TextureRegion region, float y, Color colour) {}
+  private record Draw(
+      TextureRegion region, Vector2 centre, float width, float height, Color colour) {}
 }
