@@ -15,6 +15,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowVisualComponent;
+import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -55,6 +56,7 @@ class NPCFactoryTest {
           "images/mummy.atlas",
           "images/snake.atlas"
         });
+    resourceService.loadTextures(new String[] {SnakePlayerHitVisualComponent.HIT_SHEET});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
@@ -88,6 +90,7 @@ class NPCFactoryTest {
     Entity enemy = NPCFactory.createSnakeMiniBoss(new Entity());
 
     assertNotNull(enemy.getComponent(SnakeBurrowComponent.class));
+    assertNotNull(enemy.getComponent(SnakePlayerHitVisualComponent.class));
     assertNull(enemy.getComponent(AITaskComponent.class));
   }
 
@@ -135,6 +138,7 @@ class NPCFactoryTest {
     assertFalse(visual.isWarningVisible());
 
     int healthAfterStrike = player.getComponent(CombatStatsComponent.class).getHealth();
+    assertEquals(100 - config.burrowDamage, healthAfterStrike);
     snake.getComponent(CombatStatsComponent.class).setHealth(0);
     assertEquals("dieAnimation", animator.getCurrentAnimation());
     advanceEntities(entities, time, 0.6f);

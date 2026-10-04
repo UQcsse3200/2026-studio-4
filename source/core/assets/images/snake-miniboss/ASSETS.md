@@ -1,7 +1,7 @@
 # Snake miniboss art assets
 
-These files support the planned second phase of the Dungeon 2 Snake miniboss.
-The first-phase burrow cycle uses the existing Snake atlas and code-drawn effects;
+These files support the Dungeon 2 Snake miniboss. The first-phase burrow cycle
+uses the existing Snake atlas, code-drawn dust and a green player-hit animation;
 the gem, shield and poison textures will be registered with the second phase.
 
 ## Animation layout
@@ -11,6 +11,7 @@ then top to bottom. Exclude the trailing empty cells listed below.
 
 | File | Image size | Cell size | Layout | Frames to play | Intended use |
 | --- | --- | --- | --- | --- | --- |
+| `hit/green-hit-sheet.png` | 704 x 576 | 64 x 64 | 11 columns, 9 rows | Second row from top, first 7 cells only | Green impact on a damaged player |
 | `pickup/GEM 1 - LIGHT GREEN - Spritesheet.png` | 180 x 30 | 18 x 30 | 10 columns, 1 row | 10 | Green shield-refill pickup |
 | `shield/shieldGreen_Edit.png` | 556 x 556 | Whole image | Static | 1 | Translucent shield around the player |
 | `poison/PoisonProjectile_forming_spritesheet.png` | 256 x 192 | 64 x 64 | 4 columns, 3 rows | 10; skip last 2 cells | Poison shot forming |
@@ -25,6 +26,22 @@ The shield already contains transparency. Do not treat it as a spritesheet.
 Its appearance, hit flash and fade can be controlled by the renderer later.
 
 ## Sources and attribution
+
+### Green player-hit effect
+
+- Work: Pixel Holy Spell Effect 32x32 Pack 3 (the actual cells are 64 x 64).
+- Author: BDragon1727.
+- Source: https://bdragon1727.itch.io/pixel-holy-spell-effect-32x32-pack-3
+- Input: the user-supplied `01(3).png`, renamed without changing its bytes.
+- Selected animation: row index 1, columns 0 through 6; the remaining four
+  cells in that row are transparent and must not be played.
+- Terms on the author's page: non-commercial game use is free; commercial
+  game use requires a contribution of any amount. Modification is allowed;
+  resale and redistribution of the asset are prohibited. This is a custom
+  licence, not CC0 or a Creative Commons licence. Permission to redistribute
+  the raw spritesheet in a public repository has not been established by this
+  attribution; retain the author's terms and obtain it before redistribution.
+- Changes to the artwork: none. The game selects frames at runtime.
 
 ### Green gem
 

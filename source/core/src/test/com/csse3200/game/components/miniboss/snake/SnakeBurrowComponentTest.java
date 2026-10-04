@@ -2,15 +2,18 @@ package com.csse3200.game.components.miniboss.snake;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.player.PlayerDamageFlashComponent;
 import com.csse3200.game.components.statuseffects.FrozenEffect;
 import com.csse3200.game.components.statuseffects.InvisibilityEffect;
 import com.csse3200.game.entities.Entity;
@@ -19,6 +22,7 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
+import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,26 +38,35 @@ class SnakeBurrowComponentTest {
   private Entity player;
   private CombatStatsComponent snakeStats;
   private CombatStatsComponent playerStats;
+  private StatusEffectsControllerComponent playerEffects;
   private SnakeBurrowComponent burrow;
+  private SnakePlayerHitVisualComponent hitVisual;
 
   @BeforeEach
   void setUp() {
     time = mock(GameTime.class);
     ServiceLocator.registerTimeSource(time);
+    ServiceLocator.registerRenderService(new RenderService());
     config = new SnakeMiniBossConfig();
     playerStats = new CombatStatsComponent(100, 10);
+    playerEffects = new StatusEffectsControllerComponent();
     player =
-        new Entity().addComponent(playerStats).addComponent(new StatusEffectsControllerComponent());
+        new Entity()
+            .addComponent(playerStats)
+            .addComponent(playerEffects)
+            .addComponent(new PlayerDamageFlashComponent());
     player.setPosition(5f, 5f);
     player.create();
 
     snakeStats = new CombatStatsComponent(150, 10);
     burrow = new SnakeBurrowComponent(player, config);
+    hitVisual = new SnakePlayerHitVisualComponent(player);
     snake =
         new Entity()
             .addComponent(snakeStats)
             .addComponent(new StatusEffectsControllerComponent())
-            .addComponent(burrow);
+            .addComponent(burrow)
+            .addComponent(hitVisual);
     snake.setPosition(3f, 5f);
     snake.create();
     tick(0f);
@@ -112,20 +125,31 @@ class SnakeBurrowComponentTest {
 
     assertEquals(SnakeBurrowComponent.State.EXPOSED, burrow.getState());
     assertEquals(100, playerStats.getHealth());
+    assertFalse(hitVisual.isPlaying());
+    assertNull(playerEffects.getTint());
   }
 
   @Test
-  void stayingInsideTheWarningTakesOneLowDamageHit() {
+  void stayingInsideTheWarningTakesOneHitWithGreenAndRedFeedback() {
     reachWarning();
     movePlayerCentre(burrow.getWarningCentre());
     tick(config.warningDuration);
 
     assertEquals(100 - config.burrowDamage, playerStats.getHealth());
+    assertTrue(hitVisual.isPlaying());
+    assertEquals(new Color(1f, 0.2f, 0.2f, 1f), playerEffects.getTint());
 
+    when(time.getTime()).thenReturn(600L);
     tick(0.5f);
+    assertFalse(hitVisual.isPlaying());
+    assertNull(playerEffects.getTint());
+
+    when(time.getTime()).thenReturn(1000L);
     tick(0.5f);
 
     assertEquals(100 - config.burrowDamage, playerStats.getHealth());
+    assertFalse(hitVisual.isPlaying());
+    assertNull(playerEffects.getTint());
   }
 
   @Test
@@ -139,6 +163,8 @@ class SnakeBurrowComponentTest {
     tick(0.5f);
 
     assertEquals(100, playerStats.getHealth());
+    assertFalse(hitVisual.isPlaying());
+    assertNull(playerEffects.getTint());
   }
 
   @Test
@@ -165,6 +191,38 @@ class SnakeBurrowComponentTest {
     tick(config.warningDuration);
 
     assertEquals(100, playerStats.getHealth());
+    assertFalse(hitVisual.isPlaying());
+    assertNull(playerEffects.getTint());
+  }
+
+  @Test
+  void invulnerablePlayerDoesNotReceiveHitFeedback() {
+    playerStats.setInvulnerable(true);
+    reachExposed();
+
+    assertEquals(100, playerStats.getHealth());
+    assertFalse(hitVisual.isPlaying());
+    assertNull(playerEffects.getTint());
+  }
+
+  @Test
+  void fullyAbsorbedAttackDoesNotReceiveHitFeedback() {
+    playerEffects.activateTimed();
+    reachExposed();
+
+    assertEquals(100, playerStats.getHealth());
+    assertFalse(hitVisual.isPlaying());
+    assertNull(playerEffects.getTint());
+  }
+
+  @Test
+  void lethalStrikeDoesNotRestartFeedbackAfterPlayerDeath() {
+    playerStats.setHealth(config.burrowDamage);
+    reachExposed();
+
+    assertEquals(0, playerStats.getHealth());
+    assertFalse(hitVisual.isPlaying());
+    assertNull(playerEffects.getTint());
   }
 
   @Test

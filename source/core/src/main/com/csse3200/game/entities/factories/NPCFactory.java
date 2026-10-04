@@ -7,6 +7,7 @@ import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.*;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowVisualComponent;
+import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -191,6 +192,7 @@ public class NPCFactory {
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(new SnakeBurrowComponent(target, config))
         .addComponent(new SnakeBurrowVisualComponent())
+        .addComponent(new SnakePlayerHitVisualComponent(target))
         .addComponent(animator)
         .addComponent(new EnemyDeathComponent(true))
         .addComponent(new EnemyAnimationController())

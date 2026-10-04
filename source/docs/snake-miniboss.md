@@ -16,6 +16,19 @@ the warning radius at the instant the Snake emerges. It has no poison-over-time
 effect. Leaving the circle avoids the strike; entering it after the strike does
 not cause damage. The Snake no longer has automatic contact damage.
 
+When this strike actually lowers a surviving player's health, a green impact
+plays around their current centre and follows their movement for 0.56 seconds.
+It uses the supplied effect sheet's second row from the top: seven 64 x 64
+frames, at 80 milliseconds per frame, excluding the four empty cells. The
+player's existing 0.6-second red damage flash plays at the same time. The green
+art retains its own colour instead of inheriting the red tint. A later hit
+restarts one animation rather than stacking effects.
+
+Dodging, invulnerability, fully absorbed damage and a local zero-damage
+multiplier do not start these hurt effects. Player or Snake death ends the
+impact, and disposal unregisters its renderer. The room preloads and owns the
+texture. This feedback does not add poison damage over time.
+
 The warning radius is 0.9 world units. The same centre and radius are used for
 drawing and damage. The warning does not follow the player after it appears.
 The Snake is 1.5 world units wide and tall, with its damage-detection hitbox and
@@ -53,7 +66,8 @@ levels. The old poison-pool attack is disconnected. The next step will add:
 Automated tests cover real damage immunity and recovery, a locked warning,
 dodging and single-hit damage, long-frame transitions, freeze and concealment,
 death cancellation, physics activation, bounded emergence selection, obstacle
-avoidance, effect lifetime and cleanup, and factory wiring.
+avoidance, hit feedback and sprite selection, effect lifetime and cleanup, and
+factory wiring.
 
 Run from `source`:
 
@@ -66,7 +80,8 @@ For playtesting in Dungeon 2's Snake room:
 
 1. Watch the entry dust and underground trail; the Snake and its bar should hide.
 2. Move out of the warning circle before emergence; health should not decrease.
-3. Stay inside once; expect one 2-damage strike, with no subsequent poison ticks.
+3. Stay inside once; expect one 2-damage strike, a red player flash and the green
+   impact following the player briefly, with no subsequent poison ticks.
 4. Attack while the Snake is exposed, then again underground. Only exposed
    attacks should lower its health, and the exposed window should last 1.5 seconds.
 5. Stand near the outer and internal walls. Warnings must stay in clear room

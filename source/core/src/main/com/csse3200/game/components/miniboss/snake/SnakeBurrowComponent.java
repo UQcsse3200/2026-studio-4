@@ -38,6 +38,7 @@ public class SnakeBurrowComponent extends Component {
   private PhysicsComponent physics;
   private AnimationRenderComponent animator;
   private SnakeBurrowVisualComponent visual;
+  private SnakePlayerHitVisualComponent playerHitVisual;
   private GameTime time;
   private State state = State.BURROWING;
   private float stateTime;
@@ -63,6 +64,7 @@ public class SnakeBurrowComponent extends Component {
     physics = entity.getComponent(PhysicsComponent.class);
     animator = entity.getComponent(AnimationRenderComponent.class);
     visual = entity.getComponent(SnakeBurrowVisualComponent.class);
+    playerHitVisual = entity.getComponent(SnakePlayerHitVisualComponent.class);
     time = ServiceLocator.getTimeSource();
     stats.setInvulnerable(true);
     if (animator != null) {
@@ -208,7 +210,13 @@ public class SnakeBurrowComponent extends Component {
         && !targetStats.isDead()
         && target.getCenterPosition().dst2(warningCentre)
             <= config.burrowAttackRadius * config.burrowAttackRadius) {
+      int previousHealth = targetStats.getHealth();
       targetStats.takeDamage(config.burrowDamage, entity);
+      if (playerHitVisual != null
+          && !targetStats.isDead()
+          && targetStats.getHealth() < previousHealth) {
+        playerHitVisual.play();
+      }
     }
   }
 

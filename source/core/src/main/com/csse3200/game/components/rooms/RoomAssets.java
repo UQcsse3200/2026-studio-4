@@ -4,6 +4,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.components.boss.FinalBossStageThreeAssets;
 import com.csse3200.game.components.boss.FinalBossVisualAssets;
+import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Arrays;
@@ -17,7 +18,7 @@ public class RoomAssets implements Disposable {
   private static final String[] SOUNDS = {IMPACT_SOUND};
 
   private static final String[] ENEMY_TEXTURES = {
-    "images/hole.png", "images/dragon/smoke_sheet.png"
+    "images/hole.png", "images/dragon/smoke_sheet.png", SnakePlayerHitVisualComponent.HIT_SHEET
   };
 
   private static final String[] ENEMY_TEXTURE_ATLASES = {
