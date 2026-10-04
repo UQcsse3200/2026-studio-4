@@ -30,6 +30,10 @@ public class RunTimer {
     }
   }
 
+  public Map<String, Float> getDungeonTimes() {
+    return new LinkedHashMap<>(dungeonTimes);
+  }
+
   /** Restores an elapsed run and continues counting from that time. */
   public void restoreRun(float elapsedSeconds) {
     restoreRun(elapsedSeconds, null);

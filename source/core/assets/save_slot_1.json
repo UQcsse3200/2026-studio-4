@@ -1,23 +1,34 @@
 {
-playTimeSeconds: 2.9172783
+playTimeSeconds: 13.389533
 dungeonTimesSeconds: {
 	class: java.util.LinkedHashMap
-	dungeonOne: 0
+	dungeonOne: 10.984713
 	dungeonTwo: 0
 	finalDungeon: 0
 }
 checkpoint: {
-	roomId: selection
-	entryPointId: start
-	tileX: 14
-	tileY: 14
+	roomId: dungeonOneEntrance
+	tileX: 4
+	tileY: 7
 }
 resumePosition: {
-	roomId: selection
-	x: 7
-	y: 7
+	roomId: dungeonOneEntrance
+	x: 9.486815
+	y: 10.748066
 }
 playerData: {
-	gold: 50
+	gold: 60
+	inventory: {
+		class: java.util.HashMap
+		HEALTH_POTION: 1
+		SHIELD: 1
+		SPEED_POTION: 1
+	}
+	charms: [
+		attack_speed
+		strength
+		attack_speed
+		strength
+	]
 }
 }

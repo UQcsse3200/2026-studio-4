@@ -64,7 +64,6 @@ public class MainGameScreen extends ScreenAdapter {
   private boolean runSaved;
   private final RunTimer runTimer;
   private final RoomAssets roomAssets = new RoomAssets();
-  private final RunTimer runTimer = new RunTimer(new GameTime());
 
   public MainGameScreen(GdxGame game) {
     this(game, null, 1);
