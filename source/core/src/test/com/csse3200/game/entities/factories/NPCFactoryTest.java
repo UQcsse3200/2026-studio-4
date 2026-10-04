@@ -191,6 +191,7 @@ class NPCFactoryTest {
 
     assertEquals(SnakeBurrowComponent.State.SPITTING, burrow.getState());
     assertEquals("chase", animator.getCurrentAnimation());
+    assertTrue(Math.abs(animator.getRotation()) > 1f);
     assertTrue(physics.getBody().isActive());
     assertFalse(stats.isInvulnerable());
     assertTrue(poison.isSpitting());
@@ -198,16 +199,25 @@ class NPCFactoryTest {
     ServiceLocator.getRenderService().render(batch);
 
     for (int volley = 0; volley < 4; volley++) {
+      float facing = volley * 90f;
+      Vector2 scale = snake.getScale();
+      Vector2 targetCentre =
+          new Vector2(0.28125f * scale.x + 50f, 0.21875f * scale.y)
+              .rotateDeg(facing)
+              .add(snake.getCenterPosition());
+      player.setPosition(targetCentre.mulAdd(player.getScale(), -0.5f));
       advanceEntities(
           entities, time, volley == 0 ? config.spitWindupDuration : config.spitVolleyInterval);
       assertEquals((volley + 1) * 4, poison.getProjectileCount());
       ServiceLocator.getRenderService().render(batch);
       assertEquals("chase", animator.getCurrentAnimation());
+      assertEquals(0f, (animator.getRotation() - facing + 540f) % 360f - 180f, 0.002f);
     }
     advanceEntities(entities, time, config.spitRecoveryDuration);
 
     assertEquals(SnakeBurrowComponent.State.BURROWING, burrow.getState());
     assertNull(animator.getCurrentAnimation());
+    assertEquals(0f, animator.getRotation());
     assertFalse(poison.isSpitting());
     assertFalse(physics.getBody().isActive());
     assertEquals(16, poison.getProjectileCount());
@@ -218,9 +228,11 @@ class NPCFactoryTest {
     advanceEntities(entities, time, config.warningDuration);
     assertEquals(SnakeBurrowComponent.State.EXPOSED, burrow.getState());
     assertEquals("default", animator.getCurrentAnimation());
+    assertEquals(0f, animator.getRotation());
 
     stats.setHealth(0);
     assertEquals("dieAnimation", animator.getCurrentAnimation());
+    assertEquals(0f, animator.getRotation());
     assertEquals(0, poison.getProjectileCount());
     advanceEntities(entities, time, 0.6f);
     ServiceLocator.getRenderService().render(batch);

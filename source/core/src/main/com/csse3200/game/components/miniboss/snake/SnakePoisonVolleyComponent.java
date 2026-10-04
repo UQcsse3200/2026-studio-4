@@ -8,6 +8,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.SnakeMiniBossConfig;
+import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
@@ -31,7 +32,9 @@ public class SnakePoisonVolleyComponent extends RenderComponent {
   private final Vector2 aim = new Vector2(1f, 0f);
   private Rectangle bounds;
   private GameTime time;
+  private AnimationRenderComponent animator;
   private SnakePoisonAssets.Frames frames;
+  private float facingDegrees;
   private float chargeAge;
   private int nextWave;
   private boolean spitting;
@@ -54,20 +57,16 @@ public class SnakePoisonVolleyComponent extends RenderComponent {
   public void create() {
     super.create();
     time = ServiceLocator.getTimeSource();
+    animator = entity.getComponent(AnimationRenderComponent.class);
     entity.getEvents().addListener("entityDied", this::stop);
   }
 
-  /** Locks the aim once for this entire four-wave attack and begins the visible mouth charge. */
+  /** Faces the player and begins the visible mouth charge before the first volley. */
   public void beginSpit() {
     if (!canFire()) {
       return;
     }
-    aim.set(target.getCenterPosition()).sub(mouthPosition());
-    if (aim.isZero()) {
-      aim.set(1f, 0f);
-    } else {
-      aim.nor();
-    }
+    faceTarget();
     chargeAge = 0f;
     nextWave = 0;
     spitting = true;
@@ -75,13 +74,15 @@ public class SnakePoisonVolleyComponent extends RenderComponent {
   }
 
   /**
-   * Emits one fan; only the next wave is accepted, preventing duplicate updates from stacking it.
+   * Faces the player and emits one fan. Only the next wave is accepted, preventing duplicate
+   * updates from turning the Snake or stacking shots.
    */
   public void fireVolley(int waveIndex) {
     if (!spitting || !canFire() || waveIndex != nextWave || waveIndex >= config.poisonVolleyCount) {
       return;
     }
     nextWave++;
+    faceTarget();
     Vector2 mouth = mouthPosition();
     if (SnakePoisonCollision.wallFraction(
             entity.getCenterPosition(), mouth, config.poisonRadius, bounds)
@@ -104,11 +105,12 @@ public class SnakePoisonVolleyComponent extends RenderComponent {
   /** Hides the charge while already-fired shots keep moving through the burrow cycle. */
   public void endSpit() {
     spitting = false;
+    resetFacing();
   }
 
   /** Cancels all encounter poison without unloading the room's shared textures. */
   public void clear() {
-    spitting = false;
+    endSpit();
     chargeAge = 0f;
     if (updating) {
       clearRequested = true;
@@ -232,9 +234,42 @@ public class SnakePoisonVolleyComponent extends RenderComponent {
     return stats != null && stats.isDead();
   }
 
-  private Vector2 mouthPosition() {
+  private void faceTarget() {
+    Vector2 toTarget = target.getCenterPosition().sub(entity.getCenterPosition());
+    Vector2 offset = mouthOffset();
+    if (!toTarget.isZero()) {
+      facingDegrees = toTarget.angleDeg();
+      // Account for the mouth sitting above the sprite's centre so its forward ray aims at
+      // the player. Inside the head's turning radius, use a stable centre-to-player bearing.
+      if (toTarget.len2() > offset.len2()) {
+        facingDegrees -= (float) Math.toDegrees(Math.asin(offset.y / toTarget.len()));
+      }
+    }
+    if (animator != null) {
+      animator.setRotation(facingDegrees);
+    }
+    aim.set(target.getCenterPosition()).sub(mouthPosition());
+    if (aim.isZero()) {
+      aim.set(1f, 0f).rotateDeg(facingDegrees);
+    } else {
+      aim.nor();
+    }
+  }
+
+  private Vector2 mouthOffset() {
     Vector2 scale = entity.getScale();
-    return entity.getPosition().add(scale.x * MOUTH_X, scale.y * MOUTH_Y);
+    return new Vector2(scale.x * (MOUTH_X - 0.5f), scale.y * (MOUTH_Y - 0.5f));
+  }
+
+  private Vector2 mouthPosition() {
+    return entity.getCenterPosition().add(mouthOffset().rotateDeg(facingDegrees));
+  }
+
+  private void resetFacing() {
+    facingDegrees = 0f;
+    if (animator != null) {
+      animator.setRotation(0f);
+    }
   }
 
   // Preserve original green artwork rather than inheriting the Snake's tint or glow pass.

@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -29,6 +30,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.SnakeMiniBossConfig;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
@@ -56,6 +58,7 @@ class SnakePoisonVolleyComponentTest {
   private StatusEffectsControllerComponent snakeEffects;
   private SnakePoisonVolleyComponent poison;
   private SnakePlayerHitVisualComponent impact;
+  private AnimationRenderComponent animator;
   private SpriteBatch batch;
   private World world;
 
@@ -73,18 +76,20 @@ class SnakePoisonVolleyComponentTest {
     playerStats = new CombatStatsComponent(100, 1);
     playerEffects = new StatusEffectsControllerComponent();
     player = new Entity().addComponent(playerStats).addComponent(playerEffects);
-    player.setPosition(8f, 0f);
+    player.setPosition(8.28125f, 0.21875f);
     player.create();
     snakeStats = new CombatStatsComponent(150, 1);
     snakeEffects = new StatusEffectsControllerComponent();
     impact = new SnakePlayerHitVisualComponent(player);
     poison = new SnakePoisonVolleyComponent(player, config);
+    animator = new AnimationRenderComponent(mock(TextureAtlas.class));
     snake =
         new Entity()
             .addComponent(snakeStats)
             .addComponent(snakeEffects)
             .addComponent(impact)
-            .addComponent(poison);
+            .addComponent(poison)
+            .addComponent(animator);
     snake.create();
     configureBatch();
   }
@@ -98,25 +103,26 @@ class SnakePoisonVolleyComponentTest {
   }
 
   @Test
-  void emitsFourOffsetFansUsingOneLockedAimAndIgnoresDuplicateWaves() {
-    Vector2 mouth = new Vector2(0.78125f, 0.71875f);
-    float lockedAngle = player.getCenterPosition().sub(mouth).angleDeg();
+  void eachVolleyFacesThePlayerWithoutRetargetingEarlierShotsOrDuplicateWaves() {
     poison.beginSpit();
-    player.setPosition(0f, 8f);
     for (int wave = 0; wave < 4; wave++) {
+      placePlayerForFacing(wave * 90f);
       poison.fireVolley(wave);
+      placePlayerForFacing((wave + 1) * 90f);
       poison.fireVolley(wave);
       assertEquals((wave + 1) * 4, poison.getProjectileCount());
+      assertAngle(wave * 90f, animator.getRotation());
     }
     poison.fireVolley(4);
     poison.endSpit();
     render();
     assertEquals(16, draws.size());
     for (int wave = 0; wave < 4; wave++) {
+      Vector2 mouth = new Vector2(0.28125f, 0.21875f).rotateDeg(wave * 90f).add(0.5f, 0.5f);
       for (int shot = 0; shot < 4; shot++) {
-        float expected = (lockedAngle + 324f + wave * 6f + shot * 18f) % 360f;
-        assertEquals(expected, draws.get(wave * 4 + shot).angle(), 0.001f);
-        assertTrue(draws.get(wave * 4 + shot).centre().epsilonEquals(mouth, 0.000001f));
+        float expected = (wave * 90f + 324f + wave * 6f + shot * 18f) % 360f;
+        assertAngle(expected, draws.get(wave * 4 + shot).angle());
+        assertTrue(draws.get(wave * 4 + shot).centre().epsilonEquals(mouth, 0.00001f));
       }
     }
   }
@@ -134,28 +140,26 @@ class SnakePoisonVolleyComponentTest {
     render();
     Vector2 expected = start.cpy().mulAdd(lockedDirection, 1.5f);
     assertTrue(draws.getFirst().centre().epsilonEquals(expected, 0.0001f));
-    assertEquals(lockedDirection.angleDeg(), draws.getFirst().angle(), 0.001f);
+    assertAngle(lockedDirection.angleDeg(), draws.getFirst().angle());
   }
 
   @Test
-  void chargeAndShotsStayAtTheMouthForPlayersOnAllFourSides() {
+  void chargeAndShotsRotateWithTheMouthForPlayersOnAllFourSides() {
     oneShotConfig();
-    Vector2 mouth = new Vector2(0.78125f, 0.71875f);
-    for (Vector2 offset :
-        new Vector2[] {
-          new Vector2(8f, 0f), new Vector2(-8f, 0f), new Vector2(0f, 8f), new Vector2(0f, -8f)
-        }) {
+    for (float angle : new float[] {0f, 90f, 180f, 270f}) {
       poison.clear();
-      player.setPosition(mouth.cpy().add(offset).mulAdd(player.getScale(), -0.5f));
+      placePlayerForFacing(angle);
       poison.beginSpit();
+      assertAngle(angle, animator.getRotation());
       poison.fireVolley(0);
       render();
 
       assertEquals(2, draws.size());
       assertSame(texture(0), draws.getFirst().region().getTexture());
+      Vector2 mouth = new Vector2(0.28125f, 0.21875f).rotateDeg(angle).add(0.5f, 0.5f);
       for (Draw draw : draws) {
-        assertTrue(draw.centre().epsilonEquals(mouth, 0.000001f));
-        assertEquals(offset.angleDeg(), draw.angle(), 0.001f);
+        assertTrue(draw.centre().epsilonEquals(mouth, 0.00001f));
+        assertAngle(angle, draw.angle());
       }
     }
   }
@@ -165,17 +169,43 @@ class SnakePoisonVolleyComponentTest {
     oneShotConfig();
     snake.setPosition(3f, -2f);
     snake.setScale(2f, 4f);
+    player.setPosition(2.625f, 8.0625f);
     poison.beginSpit();
     poison.fireVolley(0);
     render();
 
     assertEquals(2, draws.size());
-    Vector2 mouth = new Vector2(4.5625f, 0.875f);
-    float expectedAngle = player.getCenterPosition().sub(mouth).angleDeg();
+    Vector2 mouth = new Vector2(3.125f, 0.5625f);
+    assertAngle(90f, animator.getRotation());
     for (Draw draw : draws) {
-      assertTrue(draw.centre().epsilonEquals(mouth, 0.000001f));
-      assertEquals(expectedAngle, draw.angle(), 0.001f);
+      assertTrue(draw.centre().epsilonEquals(mouth, 0.00001f));
+      assertAngle(90f, draw.angle());
     }
+  }
+
+  @Test
+  void overlappingTargetKeepsPreviousFacingAndCloseTargetsStayFinite() {
+    oneShotConfig();
+    placePlayerForFacing(90f);
+    poison.beginSpit();
+    player.setPosition(snake.getCenterPosition().mulAdd(player.getScale(), -0.5f));
+    poison.fireVolley(0);
+    render();
+
+    assertAngle(90f, animator.getRotation());
+    assertFiniteDraws();
+    poison.clear();
+    assertEquals(0f, animator.getRotation());
+
+    player.setPosition(snake.getPosition().add(0.05f, 0.02f));
+    poison.beginSpit();
+    poison.fireVolley(0);
+    render();
+
+    assertTrue(Float.isFinite(animator.getRotation()));
+    assertFiniteDraws();
+    poison.endSpit();
+    assertEquals(0f, animator.getRotation());
   }
 
   @Test
@@ -411,6 +441,26 @@ class SnakePoisonVolleyComponentTest {
     config.poisonShotsPerVolley = 1;
     config.poisonVolleyCount = 1;
     config.poisonWaveOffsetDegrees = 0f;
+  }
+
+  private void placePlayerForFacing(float angle) {
+    // Construct a target eight units directly in front of a known, rotated mouth pose.
+    Vector2 targetCentre = new Vector2(8.28125f, 0.21875f).rotateDeg(angle).add(0.5f, 0.5f);
+    player.setPosition(targetCentre.mulAdd(player.getScale(), -0.5f));
+  }
+
+  private void assertFiniteDraws() {
+    assertEquals(2, draws.size());
+    for (Draw draw : draws) {
+      assertTrue(Float.isFinite(draw.centre().x));
+      assertTrue(Float.isFinite(draw.centre().y));
+      assertTrue(Float.isFinite(draw.angle()));
+    }
+  }
+
+  private static void assertAngle(float expected, float actual) {
+    float difference = (actual - expected + 540f) % 360f - 180f;
+    assertEquals(0f, difference, 0.002f);
   }
 
   private void fireOne() {

@@ -62,13 +62,17 @@ poison attack and recovery, and invulnerable underground.
 
 During the spit, the Snake uses the existing `chase` atlas region: the horizontal
 tongue-out pose at (96, 0) in `images/snake.png`. This source pose has one frame;
-it is held throughout the windup, volleys and short spit recovery. The ordinary
-emergence window restores `default`, and burrowing hides the character again.
+it is held throughout the windup, volleys and short spit recovery. The pose turns
+towards the player at windup and immediately before each of the four volleys.
+The ordinary emergence window restores `default`, and burrowing hides the
+character again.
 
 The windup effect and every new projectile originate at this pose's mouth,
 at (25, 9) from the top-left of the 32 x 32 frame. This anchor scales and moves
-with the Snake, independent of the player's direction; aiming starts at the
-mouth rather than the body's centre. Already-fired shots move independently.
+with the Snake and rotates with the spit pose around the sprite's centre.
+Aiming starts at the transformed mouth rather than the body's centre. Rotation
+is visual only; it does not rotate the collider or health bar, and resets when
+the spit ends. Already-fired shots move independently.
 
 | Setting | Default |
 | --- | --- |
@@ -77,7 +81,7 @@ mouth rather than the body's centre. Already-fired shots move independently.
 | Projectiles per volley | 4; 16 in total |
 | Time between volleys | 0.4 seconds |
 | Fan width | 54 degrees |
-| Direction offset per volley | -9, -3, +3, +9 degrees relative to the initial aim |
+| Direction offset per volley | -9, -3, +3, +9 degrees relative to that volley's aim |
 | Recovery after the last volley | 0.35 seconds |
 | Poison speed | 3 world units per second |
 | Poison direct damage | 1 per projectile |
@@ -85,9 +89,10 @@ mouth rather than the body's centre. Already-fired shots move independently.
 | Maximum flight time | 5 seconds |
 | Projectile visual width / collision radius | 0.9 / 0.12 world units |
 
-Aim is captured once at the beginning of the spit. Every projectile keeps its
-own direction after being emitted; moving the player does not steer it. A slow
-frame emits at most one volley and preserves the next interval instead of
+Aim is captured again from the mouth to the player's current position before
+each volley. Every projectile keeps its own direction after being emitted;
+moving the player does not steer shots already in flight. A slow frame emits
+at most one volley and preserves the next interval instead of
 releasing several volleys at once. Emergence damage remains 5 and poison does
 not apply damage over time. Actual poison damage also triggers the existing
 green player-hit animation and red damage flash.
@@ -139,7 +144,8 @@ For playtesting in Dungeon 2's Snake room:
    space and the Snake must emerge at the marked position.
 6. Lower its health to half. After the current exposed window, watch for the
    horizontal tongue-out pose, windup and four waves of four larger green shots.
-   Stand on different sides: the windup and shots must originate at the mouth.
+   Move between sides: the head must turn towards you before each volley, with
+   the windup and shots remaining aligned to the rotated mouth.
    Move sideways; the shots must continue straight instead of turning to follow
    you. After burrowing, the next emergence should restore the curled pose.
 7. Attack while it spits, then again underground. Only ground attacks should
