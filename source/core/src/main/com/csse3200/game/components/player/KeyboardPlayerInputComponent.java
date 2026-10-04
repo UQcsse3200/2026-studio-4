@@ -50,6 +50,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
           loadout.useSlot(slot);
         }
         return true;
+      case Keys.TAB:
+        entity.getEvents().trigger(ConsumableSelectionComponent.CYCLE_REQUEST);
+        return true;
+      case Keys.Q:
+        entity.getEvents().trigger(ConsumableSelectionComponent.USE_SELECTED_REQUEST);
+        return true;
       case Keys.W:
         walkDirection.add(Vector2Utils.UP);
         triggerWalkEvent();

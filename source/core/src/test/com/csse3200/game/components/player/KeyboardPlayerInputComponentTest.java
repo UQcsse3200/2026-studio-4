@@ -60,6 +60,25 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
+  void tabCyclesConsumablesOnceOnKeyDown() {
+    int[] cycles = {0};
+    player.getEvents().addListener("cycleConsumable", () -> cycles[0]++);
+    assertTrue(input.keyDown(Keys.TAB));
+    assertFalse(input.keyUp(Keys.TAB));
+    assertEquals(1, cycles[0]);
+  }
+
+  @Test
+  void qRequestsSelectedConsumableWithoutUsingWeaponInput() {
+    int[] uses = {0};
+    player.getEvents().addListener("useSelectedConsumable", () -> uses[0]++);
+    assertTrue(input.keyDown(Keys.Q));
+    assertFalse(input.keyUp(Keys.Q));
+    assertEquals(1, uses[0]);
+    assertEquals(0, attackCount);
+  }
+
+  @Test
   void numberKeysSelectWeaponsOnlyOnKeyDown() {
     List<WeaponType> selected = new ArrayList<>();
     player.getEvents().addListener("equipWeapon", (EventListener1<WeaponType>) selected::add);
@@ -163,8 +182,8 @@ class KeyboardPlayerInputComponentTest {
 
   @Test
   void shouldIgnoreUnboundKeys() {
-    assertFalse(input.keyDown(Keys.Q));
-    assertFalse(input.keyUp(Keys.Q));
+    assertFalse(input.keyDown(Keys.R));
+    assertFalse(input.keyUp(Keys.R));
     assertEquals(0, walkCount);
     assertEquals(0, attackCount);
   }
