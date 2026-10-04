@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.services.RunTimer;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
 /**
@@ -101,6 +102,7 @@ public class TimerDisplay extends UIComponent {
   public void toggle() {
     visible = !visible;
     rootTable.setVisible(visible);
+    ServiceLocator.getEntityService().toggleUpdate();
   }
 
   /** Handles the T key used to toggle the timer display. */
@@ -109,7 +111,7 @@ public class TimerDisplay extends UIComponent {
 
     /** Creates a keyboard handler for the supplied timer display. */
     public ToggleInput(TimerDisplay display) {
-      super(20);
+      super(5);
       this.display = display;
     }
 
