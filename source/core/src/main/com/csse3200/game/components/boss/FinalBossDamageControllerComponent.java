@@ -2,21 +2,29 @@ package com.csse3200.game.components.boss;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.entities.Entity;
 
 /** Controls the Final Boss shield, damage reduction and scripted health floors. */
 public class FinalBossDamageControllerComponent extends Component {
   private CombatStatsComponent stats;
   private boolean shielded;
+  private final Entity iceDamageSource = new Entity();
+  private boolean stageTwoIceProtection;
+  private boolean iceDamageInProgress;
+  private boolean iceDamagePending;
+  private double iceDamageRemainder;
 
   @Override
   public void create() {
     requireStats();
     entity.getEvents().addListener("damageBlocked", this::onDamageBlocked);
+    entity.getEvents().addListener("damageAttempted", this::onDamageAttempted);
     enableShield();
   }
 
   /** Enables the shield and blocks all incoming damage. */
   public void enableShield() {
+    clearStageTwoIceProtection();
     CombatStatsComponent combatStats = requireStats();
     combatStats.setMinimumHealth(0);
     combatStats.setIncomingDamageMultiplier(1f);
@@ -35,6 +43,7 @@ public class FinalBossDamageControllerComponent extends Component {
    * @param minimumHealth lowest health reachable through incoming attacks
    */
   public void openVulnerabilityWindow(float damageMultiplier, int minimumHealth) {
+    clearStageTwoIceProtection();
     CombatStatsComponent combatStats = requireStats();
     combatStats.setInvulnerable(false);
     combatStats.setIncomingDamageMultiplier(damageMultiplier);
@@ -48,6 +57,7 @@ public class FinalBossDamageControllerComponent extends Component {
 
   /** Removes all Stage 1 damage restrictions before Stage 2 begins. */
   public void disableStageOneProtection() {
+    clearStageTwoIceProtection();
     CombatStatsComponent combatStats = requireStats();
     combatStats.setInvulnerable(false);
     combatStats.setIncomingDamageMultiplier(1f);
@@ -56,6 +66,75 @@ public class FinalBossDamageControllerComponent extends Component {
     if (shielded) {
       shielded = false;
       entity.getEvents().trigger(FinalBossEvents.SHIELD_DEACTIVATED);
+    }
+  }
+
+  /**
+   * Keeps the Stage 2 shield active while allowing only this encounter's ice shots to damage it.
+   */
+  public void enableStageTwoIceProtection(int minimumHealth) {
+    if (!isActiveStageTwo()) {
+      return;
+    }
+    CombatStatsComponent combatStats = requireStats();
+    combatStats.setMinimumHealth(minimumHealth);
+    combatStats.setIncomingDamageMultiplier(1f);
+    combatStats.setInvulnerable(true);
+    if (!stageTwoIceProtection) {
+      iceDamageRemainder = 0d;
+    }
+    stageTwoIceProtection = true;
+    iceDamagePending = false;
+    if (!shielded) {
+      shielded = true;
+      entity.getEvents().trigger(FinalBossEvents.SHIELD_ACTIVATED);
+    }
+  }
+
+  /**
+   * Accumulates authorised ice impacts and applies whole damage through the normal health pipeline.
+   *
+   * <p>The private source is neither registered nor given a physical body. Its position preserves
+   * the normal hit reaction, while a one-use authorisation prevents another attack from sharing the
+   * brief damage window, including attacks made by damage callbacks.
+   *
+   * <p>Fractional damage belongs to this Stage 2 encounter, independent of energy pickups or
+   * volleys. Four impacts of {@code 0.25f} therefore remove one health point. Replacing the
+   * protection for another stage clears any remainder.
+   *
+   * @param damage positive, finite raw ice impact damage
+   * @param player player whose ice projectile landed
+   */
+  public void takeStageTwoIceDamage(float damage, Entity player) {
+    if (!Float.isFinite(damage)
+        || damage <= 0f
+        || player == null
+        || iceDamageInProgress
+        || !stageTwoIceProtection
+        || !isActiveStageTwo()) {
+      return;
+    }
+    double accumulatedDamage = iceDamageRemainder + damage;
+    double wholeDamage = Math.floor(accumulatedDamage);
+    // Consume before dispatch: an observer may throw after health has already changed.
+    iceDamageRemainder = accumulatedDamage - wholeDamage;
+    if (wholeDamage < 1d) {
+      return;
+    }
+    int appliedDamage = (int) Math.min(wholeDamage, Integer.MAX_VALUE);
+    iceDamageSource.setPosition(player.getPosition());
+    iceDamageSource.setScale(player.getScale());
+    iceDamageInProgress = true;
+    iceDamagePending = true;
+    try {
+      requireStats().takeDamage(appliedDamage, iceDamageSource);
+    } finally {
+      iceDamagePending = false;
+      iceDamageInProgress = false;
+      // A health-floor callback can already have installed Stage 3's protection.
+      if (stageTwoIceProtection) {
+        requireStats().setInvulnerable(true);
+      }
     }
   }
 
@@ -68,6 +147,31 @@ public class FinalBossDamageControllerComponent extends Component {
     if (shielded) {
       entity.getEvents().trigger(FinalBossEvents.SHIELD_HIT);
     }
+  }
+
+  private void onDamageAttempted(int damage, Entity source) {
+    if (!stageTwoIceProtection) {
+      return;
+    }
+    boolean authorised =
+        damage > 0 && iceDamagePending && source == iceDamageSource && isActiveStageTwo();
+    iceDamagePending = false;
+    requireStats().setInvulnerable(!authorised);
+  }
+
+  private void clearStageTwoIceProtection() {
+    stageTwoIceProtection = false;
+    iceDamagePending = false;
+    iceDamageRemainder = 0d;
+  }
+
+  private boolean isActiveStageTwo() {
+    FinalBossPhaseControllerComponent phases =
+        entity.getComponent(FinalBossPhaseControllerComponent.class);
+    return phases != null
+        && phases.getCurrentPhase() == FinalBossPhase.STAGE_TWO
+        && !phases.isTransitioning()
+        && !requireStats().isDead();
   }
 
   private CombatStatsComponent requireStats() {

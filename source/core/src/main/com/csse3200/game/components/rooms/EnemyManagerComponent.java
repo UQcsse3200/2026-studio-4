@@ -7,6 +7,7 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
+import com.csse3200.game.components.boss.FinalBossStageTwoArenaComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
@@ -153,6 +154,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnEntity);
         if (camera != null) {
           boss.getComponent(FinalBossMovementComponent.class).setCamera(camera.getCamera());
+          boss.getComponent(FinalBossStageTwoArenaComponent.class)
+              .setCamera(camera.getCamera(), entity.getComponent(FollowingCameraComponent.class));
         }
         return boss;
       default:

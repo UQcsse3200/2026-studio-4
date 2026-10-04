@@ -282,6 +282,11 @@ public class StatusEffectsControllerComponent extends Component {
     triggerShieldUi();
   }
 
+  /** Returns the rechargeable shield's current mode without consuming points or updating it. */
+  public boolean isShieldActive() {
+    return shield != null && shield.isActive();
+  }
+
   /**
    * Passes incoming damage through the entity's shield, if one has been created.
    *

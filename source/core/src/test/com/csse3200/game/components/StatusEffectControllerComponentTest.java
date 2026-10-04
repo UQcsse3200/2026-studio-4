@@ -209,6 +209,43 @@ class StatusEffectControllerComponentTest {
   // ---------------------------------------------------------
 
   @Test
+  void queryingAnAbsentShieldDoesNotCreateItOrPublishAnUpdate() {
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
+      StatusEffectsControllerComponent controller = createController();
+      clearInvocations(eventHandler);
+
+      assertFalse(controller.isShieldActive());
+
+      factory.verifyNoInteractions();
+      verifyNoInteractions(eventHandler);
+    }
+  }
+
+  @Test
+  void shieldActivityQueryReflectsBothModesWithoutConsumingOrUpdatingTheShield() {
+    Shield shield = mock(Shield.class);
+    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
+      factory.when(StatusEffectsFactory::createShield).thenReturn(shield);
+      StatusEffectsControllerComponent controller = createController();
+
+      for (Runnable activate :
+          List.<Runnable>of(controller::activateAbsorb, controller::activateTimed)) {
+        activate.run();
+        when(shield.isActive()).thenReturn(true, true, false);
+        clearInvocations(shield, eventHandler);
+
+        assertTrue(controller.isShieldActive());
+        assertTrue(controller.isShieldActive());
+        assertFalse(controller.isShieldActive());
+
+        verify(shield, times(3)).isActive();
+        verifyNoMoreInteractions(shield);
+        verifyNoInteractions(eventHandler);
+      }
+    }
+  }
+
+  @Test
   void activateAbsorbCreatesShield() {
     Shield shield = mock(Shield.class);
 

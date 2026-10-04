@@ -3,6 +3,7 @@ package com.csse3200.game.components.rooms;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.components.boss.FinalBossStageThreeAssets;
+import com.csse3200.game.components.boss.FinalBossStageTwoAssets;
 import com.csse3200.game.components.boss.FinalBossVisualAssets;
 import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePoisonAssets;
@@ -77,6 +78,7 @@ public class RoomAssets implements Disposable {
               ENEMY_TEXTURES,
               SnakePoisonAssets.paths(),
               FinalBossVisualAssets.paths(),
+              FinalBossStageTwoAssets.paths(),
               FinalBossStageThreeAssets.paths())
           .flatMap(Arrays::stream)
           .toArray(String[]::new);
