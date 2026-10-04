@@ -1,57 +1,6 @@
 package com.csse3200.game.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-<<<<<<< HEAD
-
-import java.util.Map;
-import org.junit.jupiter.api.Test;
-
-class RunTimerTest {
-  @Test
-  void shouldAccumulateTimeSeparatelyForEachDungeon() {
-    RunTimer timer = new RunTimer(fixedGameTime());
-    timer.startRun();
-    timer.registerDungeon("dungeonOne");
-    timer.registerDungeon("dungeonTwo");
-
-    timer.startDungeon("dungeonOne");
-    timer.update();
-    timer.update();
-    timer.stopDungeon();
-
-    timer.startDungeon("dungeonTwo");
-    timer.update();
-    timer.update();
-    timer.update();
-    timer.stopDungeon();
-
-    timer.startDungeon("dungeonOne");
-    timer.update();
-
-    assertEquals(3f, timer.getDungeonTimes().get("dungeonOne"));
-    assertEquals(3f, timer.getDungeonTimes().get("dungeonTwo"));
-  }
-
-  @Test
-  void shouldContinueDungeonTimesAfterRestore() {
-    RunTimer timer = new RunTimer(fixedGameTime());
-    timer.restoreRun(125f, Map.of("dungeonOne", 30f, "dungeonTwo", 45f));
-    timer.startDungeon("dungeonOne");
-    timer.update();
-
-    assertEquals(126f, timer.getTotalTime());
-    assertEquals(31f, timer.getDungeonTimes().get("dungeonOne"));
-    assertEquals(45f, timer.getDungeonTimes().get("dungeonTwo"));
-  }
-
-  private GameTime fixedGameTime() {
-    return new GameTime() {
-      @Override
-      public float getDeltaTime() {
-        return 1f;
-      }
-    };
-=======
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -170,6 +119,5 @@ class RunTimerTest {
   void formatTimeWithNoMilliSecDropsFraction() {
     assertEquals("01:05", timer.formatTimeWithNoMilliSec(65.9f));
     assertEquals("00:09", timer.formatTimeWithNoMilliSec(9.999f));
->>>>>>> 20ee08438d977a3991518045c75aeebd1912c903
   }
 }

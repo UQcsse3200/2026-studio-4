@@ -58,16 +58,13 @@ public class MainGameScreen extends ScreenAdapter {
   private RoomManager roomManager;
   private Entity player;
   private final Terminal terminal;
-<<<<<<< HEAD
   private final int saveSlot;
   private final GameSaveData loadedSave;
   private final boolean loadAtCheckpoint;
   private boolean runSaved;
   private final RunTimer runTimer;
-=======
   private final RoomAssets roomAssets = new RoomAssets();
   private final RunTimer runTimer = new RunTimer(new GameTime());
->>>>>>> 20ee08438d977a3991518045c75aeebd1912c903
 
   public MainGameScreen(GdxGame game) {
     this(game, null, 1);
@@ -84,7 +81,6 @@ public class MainGameScreen extends ScreenAdapter {
     this.loadAtCheckpoint = loadAtCheckpoint;
 
     terminal = new Terminal();
-<<<<<<< HEAD
     GameTime gameTime = new GameTime();
     ServiceLocator.registerTimeSource(gameTime);
     runTimer = new RunTimer(gameTime);
@@ -93,8 +89,6 @@ public class MainGameScreen extends ScreenAdapter {
     } else {
       runTimer.restoreRun(loadedSave.playTimeSeconds, loadedSave.dungeonTimesSeconds);
     }
-=======
->>>>>>> 20ee08438d977a3991518045c75aeebd1912c903
 
     // load all game services
     logger.debug("Initialising main game screen services");
@@ -124,15 +118,12 @@ public class MainGameScreen extends ScreenAdapter {
       roomManager.initializeFromSavedRun(loadedSave, loadAtCheckpoint);
     }
     roomManager.create();
-<<<<<<< HEAD
 
     if (loadedSave != null) {
       GameSaveMapper.restore(player, loadedSave);
     }
     RoomCommand roomCommand = new RoomCommand(roomManager);
     terminal.addCommand("room", roomCommand);
-=======
->>>>>>> 20ee08438d977a3991518045c75aeebd1912c903
 
     createUI();
   }
