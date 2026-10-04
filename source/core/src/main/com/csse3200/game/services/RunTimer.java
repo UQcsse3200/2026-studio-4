@@ -12,6 +12,8 @@ public class RunTimer {
   private String currentDungeonId;
   private boolean runRunning;
   private boolean dungeonRunning;
+  private float dungeonSyncedTime; // whole seconds, flips with the run clock
+  private float dungeonStartTotal; // totalTime when the dungeon began
 
   public RunTimer(GameTime gameTime) {
     this.gameTime = gameTime;
@@ -67,9 +69,12 @@ public class RunTimer {
   }
 
   public void startDungeon(String dungeonId) {
-    if (dungeonId == null || dungeonId.isBlank()) {
-      stopDungeon();
-      return;
+    if (!dungeonRunning) {
+      dungeonRunning = true;
+      currentDungeonId = dungeonId;
+      dungeonStartTotal = totalTime;
+      dungeonTime = 0f;
+      dungeonSyncedTime = 0f;
     }
     if (dungeonRunning && Objects.equals(currentDungeonId, dungeonId)) {
       return;
@@ -86,8 +91,9 @@ public class RunTimer {
     float delta = gameTime.getDeltaTime();
     if (runRunning) totalTime += delta;
     if (dungeonRunning) {
-      dungeonTime += delta;
-      dungeonTimes.put(currentDungeonId, dungeonTime);
+      dungeonTime = totalTime - dungeonStartTotal;
+      // Whole seconds on the run clock's boundaries, so both labels tick together
+      dungeonSyncedTime = ((float) (int) totalTime) - (int) dungeonStartTotal;
     }
   }
 
@@ -116,13 +122,9 @@ public class RunTimer {
     return currentDungeonId;
   }
 
-  /** Returns all dungeon times, including the live elapsed time for the active dungeon. */
-  public Map<String, Float> getDungeonTimes() {
-    Map<String, Float> times = new LinkedHashMap<>(dungeonTimes);
-    if (dungeonRunning && currentDungeonId != null) {
-      times.put(currentDungeonId, dungeonTime);
-    }
-    return times;
+  /** Dungeon time in whole seconds, aligned to the run clock's second boundaries. */
+  public float getDungeonSyncedTime() {
+    return dungeonSyncedTime;
   }
 
   public String formatTime(float seconds) {
@@ -131,5 +133,12 @@ public class RunTimer {
     int secs = totalSeconds % 60;
     int hundredths = (int) ((seconds - totalSeconds) * 100);
     return String.format("%02d:%02d.%02d", minutes, secs, hundredths);
+  }
+
+  public String formatTimeWithNoMilliSec(float seconds) {
+    int totalSeconds = (int) seconds;
+    int minutes = totalSeconds / 60;
+    int secs = totalSeconds % 60;
+    return String.format("%02d:%02d", minutes, secs);
   }
 }
