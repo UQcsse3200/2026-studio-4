@@ -127,7 +127,7 @@ class Team5CombatHudIntegrationTest {
     player.getComponent(CombatStatsComponent.class).setHealth(50);
     pickUp(player, createTypedItem(ItemType.HEALTH_POTION, 2));
     assertHudContains("[7] Health x2");
-    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.NUM_7);
+    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.Q);
     assertEquals(75, player.getComponent(CombatStatsComponent.class).getHealth());
     assertEquals(
         1,
@@ -137,12 +137,12 @@ class Team5CombatHudIntegrationTest {
   }
 
   @Test
-  void fixedStrengthKeyWorksWithoutChangeControls() {
+  void selectedStrengthPotionWorksThroughQ() {
     Entity player = createPlayerWithHud();
     pickUp(player, createTypedItem(ItemType.STRENGTH_POTION, 1));
     assertNull(stage.getRoot().findActor("consumable-change-2"));
     assertHudContains("[0] Strength x1");
-    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.NUM_0);
+    player.getComponent(KeyboardPlayerInputComponent.class).keyDown(Keys.Q);
     assertHudContains("[0] Strength x0");
     assertHudContains("[8] Shield x0");
     assertEquals(12, player.getComponent(CombatStatsComponent.class).getEffectiveBaseAttack());
@@ -160,7 +160,7 @@ class Team5CombatHudIntegrationTest {
     pickUp(player, createTypedItem(ItemType.SHIELD, 2));
     KeyboardPlayerInputComponent input = player.getComponent(KeyboardPlayerInputComponent.class);
     CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
-    input.keyDown(Keys.NUM_8);
+    input.keyDown(Keys.Q);
     assertEquals(1f, bar.getValue());
     assertHudContains("8.0s");
     now.set(4000);
@@ -168,9 +168,9 @@ class Team5CombatHudIntegrationTest {
     assertEquals(0.5f, bar.getValue(), 0.001f);
     stats.takeDamage(10);
     assertEquals(100, stats.getHealth());
-    input.keyDown(Keys.NUM_8);
+    input.keyDown(Keys.Q);
     assertEquals(1f, bar.getValue());
-    input.keyDown(Keys.NUM_8); // Out of stock must not refresh the timer.
+    input.keyDown(Keys.Q); // Out of stock must not refresh the timer.
     now.set(12000);
     player.getComponent(Team5CombatHudDisplay.class).update();
     assertEquals(0f, bar.getValue());
@@ -178,7 +178,7 @@ class Team5CombatHudIntegrationTest {
     stats.takeDamage(10);
     assertEquals(90, stats.getHealth());
     pickUp(player, createTypedItem(ItemType.SHIELD, 1));
-    input.keyDown(Keys.NUM_8);
+    input.keyDown(Keys.Q);
     player.getComponent(StatusEffectsControllerComponent.class).clearStatusEffects();
     player.getComponent(Team5CombatHudDisplay.class).update();
     assertEquals(0f, bar.getValue());
@@ -199,22 +199,22 @@ class Team5CombatHudIntegrationTest {
     assertEquals("--", strengthTime.getText().toString());
     pickUp(player, createTypedItem(ItemType.SPEED_POTION, 2));
     pickUp(player, createTypedItem(ItemType.STRENGTH_POTION, 1));
-    KeyboardPlayerInputComponent input = player.getComponent(KeyboardPlayerInputComponent.class);
+    ConsumableEffectComponent consumables = player.getComponent(ConsumableEffectComponent.class);
     Team5CombatHudDisplay hud = player.getComponent(Team5CombatHudDisplay.class);
-    input.keyDown(Keys.NUM_9);
+    consumables.tryUse(ItemType.SPEED_POTION);
     now.set(2000);
-    input.keyDown(Keys.NUM_0);
+    consumables.tryUse(ItemType.STRENGTH_POTION);
     assertEquals("6.0s", speedTime.getText().toString());
     assertEquals("8.0s", strengthTime.getText().toString());
     now.set(4000);
     hud.update();
     assertEquals(0.5f, speed.getValue(), 0.001f);
     assertEquals(0.75f, strength.getValue(), 0.001f);
-    input.keyDown(Keys.NUM_9);
+    consumables.tryUse(ItemType.SPEED_POTION);
     assertEquals(1f, speed.getValue());
     assertEquals(0.75f, strength.getValue(), 0.001f);
     now.set(5000);
-    input.keyDown(Keys.NUM_9); // Empty stock cannot refresh the active effect.
+    consumables.tryUse(ItemType.SPEED_POTION); // Empty stock cannot refresh the active effect.
     hud.update();
     assertEquals("7.0s", speedTime.getText().toString());
     now.set(10000);
@@ -237,7 +237,7 @@ class Team5CombatHudIntegrationTest {
             .addComponent(new InventoryComponent(0))
             .addComponent(new StatusEffectsControllerComponent())
             .addComponent(new ConsumableEffectComponent())
-            .addComponent(new ConsumableLoadoutComponent())
+            .addComponent(new ConsumableSelectionComponent())
             .addComponent(new KeyboardPlayerInputComponent())
             .addComponent(new ItemPickupComponent())
             .addComponent(new Team5CombatHudDisplay());

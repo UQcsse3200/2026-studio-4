@@ -23,7 +23,8 @@ It can be merged independently of the item identity/drop refactor in PR #198.
 - The blue arc follows Speed in whichever slot currently holds it and hides
   when that slot clears or holds another item. It follows the existing effect's remaining time,
   including refresh, expiry and status-effect removal.
-- Existing **7 / 8 / 9 / 0** quick-use bindings remain available for compatibility.
+- **7 / 8 / 9 / 0** are unbound and do not consume items or apply effects.
+  Consumables use **Tab / Q** only.
   The weapon/spell hotbar and inventory book are unchanged.
 
 The new display is mounted by `MainGameScreen`, and `PlayerFactory` adds the
@@ -46,10 +47,11 @@ cd source
 Initial HUD integration result on 2026-10-04: **1,322 tests in 193 suites; zero failures, errors or skipped
 tests**. Formatting and desktop compilation passed.
 
-Pickup-order update on 2026-10-04: `./gradlew test` passed **1,324 tests** with
+Pickup-order update on 2026-10-04: `./gradlew test` passed **1,325 tests** with
 zero failures, errors or skipped tests. Regression coverage checks Shield picked
 first, duplicate stacking, clearing and reusing a gap without moving Strength,
-Q using the displayed item, and pickups made before player creation. The updated
+Q using the displayed item, pickups made before player creation, and removed
+7 / 8 / 9 / 0 bindings leaving stock and effects untouched. The updated
 game also started successfully at the main menu.
 
 Coverage exercises the real enum-based inventory and effect components:

@@ -51,10 +51,37 @@ class ConsumableUseIntegrationTest {
             .addComponent(effects)
             .addComponent(consumables)
             .addComponent(loadout)
+            .addComponent(new ConsumableSelectionComponent())
             .addComponent(input);
     // Input registers with the input service in create; these tests invoke the real input directly.
     effects.create();
     consumables.create();
+    player.getComponent(ConsumableSelectionComponent.class).create();
+  }
+
+  @Test
+  void removedNumberBindingsLeaveAllConsumablesAndEffectsUntouched() {
+    stats.setHealth(50);
+    for (ItemType type :
+        new ItemType[] {
+          ItemType.HEALTH_POTION, ItemType.SHIELD, ItemType.SPEED_POTION, ItemType.STRENGTH_POTION
+        }) {
+      inventory.addConsumable(type);
+    }
+    for (int key : new int[] {Keys.NUM_7, Keys.NUM_8, Keys.NUM_9, Keys.NUM_0}) {
+      assertFalse(input.keyDown(key));
+      assertFalse(input.keyUp(key));
+    }
+    assertEquals(50, stats.getHealth());
+    assertFalse(consumables.isShielded());
+    assertEquals(10, stats.getEffectiveBaseAttack());
+    assertEquals(4f, stats.getEffectiveMovementSpeed());
+    for (ItemType type :
+        new ItemType[] {
+          ItemType.HEALTH_POTION, ItemType.SHIELD, ItemType.SPEED_POTION, ItemType.STRENGTH_POTION
+        }) {
+      assertEquals(1, inventory.getConsumableCount(type));
+    }
   }
 
   @Test
@@ -65,10 +92,10 @@ class ConsumableUseIntegrationTest {
     player
         .getEvents()
         .addListener(ConsumableEffectComponent.USED, (ItemType type) -> used.incrementAndGet());
-    assertTrue(input.keyDown(Keys.NUM_7));
+    assertTrue(input.keyDown(Keys.Q));
     assertEquals(75, stats.getHealth());
     assertEquals(0, inventory.getConsumableCount(ItemType.HEALTH_POTION));
-    input.keyDown(Keys.NUM_7);
+    input.keyDown(Keys.Q);
     assertEquals(75, stats.getHealth());
     assertEquals(1, used.get());
   }
@@ -87,7 +114,7 @@ class ConsumableUseIntegrationTest {
   @Test
   void shieldBlocksActualDamageAndExpiresBeforeControllerTick() {
     inventory.addConsumable(ItemType.SHIELD);
-    input.keyDown(Keys.NUM_8);
+    input.keyDown(Keys.Q);
     assertTrue(consumables.isShielded());
     stats.takeDamage(30, new Entity());
     assertEquals(100, stats.getHealth());
@@ -100,13 +127,13 @@ class ConsumableUseIntegrationTest {
   @Test
   void strengthRefreshDoesNotCompoundOrRemoveNewCharm() {
     inventory.addConsumable(ItemType.STRENGTH_POTION, 2);
-    input.keyDown(Keys.NUM_0);
+    input.keyDown(Keys.Q);
     assertEquals(15, stats.getEffectiveBaseAttack());
     new StrengthCharm().pickUp(player);
     assertEquals(20, stats.getBaseAttack());
     assertEquals(30, stats.getEffectiveBaseAttack());
     now.set(4000);
-    input.keyDown(Keys.NUM_0);
+    input.keyDown(Keys.Q);
     assertEquals(30, stats.getEffectiveBaseAttack());
     now.set(8000);
     effects.update();
@@ -127,7 +154,7 @@ class ConsumableUseIntegrationTest {
           }
         });
     inventory.addConsumable(ItemType.SPEED_POTION);
-    input.keyDown(Keys.NUM_9);
+    input.keyDown(Keys.Q);
     assertEquals(3f, stats.getEffectiveMovementSpeed());
     stats.setMovementSpeed(6);
     assertEquals(4.5f, stats.getEffectiveMovementSpeed());
@@ -144,7 +171,7 @@ class ConsumableUseIntegrationTest {
     mist.create();
     Entity source = new Entity();
     inventory.addConsumable(ItemType.SPEED_POTION, 2);
-    input.keyDown(Keys.NUM_9);
+    input.keyDown(Keys.Q);
     assertEquals(6f, stats.getEffectiveMovementSpeed());
     player.getEvents().trigger(CerberusMistComponent.ENTERED, source);
     assertEquals(3f, stats.getEffectiveMovementSpeed());
@@ -155,7 +182,7 @@ class ConsumableUseIntegrationTest {
     effects.update();
     assertEquals(2f, stats.getEffectiveMovementSpeed());
     assertTrue(mist.isMistDebuffed());
-    input.keyDown(Keys.NUM_9);
+    input.keyDown(Keys.Q);
     assertEquals(3f, stats.getEffectiveMovementSpeed());
     player.getEvents().trigger(CerberusMistComponent.EXITED, source);
     assertEquals(6f, stats.getEffectiveMovementSpeed());
