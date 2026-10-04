@@ -201,7 +201,7 @@ public class NPCFactory {
         .addComponent(new EnemyStatDisplay(1.5f));
 
     animator.scaleEntity();
-    snakeBoss.scaleWidth(1.5f);
+    snakeBoss.scaleWidth(2f);
     PhysicsUtils.setScaledCollider(snakeBoss, 0.9f, 0.4f);
     animator.startAnimation(DEFAULT_ANIMATION);
 

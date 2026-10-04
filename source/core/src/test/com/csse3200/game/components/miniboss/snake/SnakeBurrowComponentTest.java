@@ -469,14 +469,15 @@ class SnakeBurrowComponentTest {
   }
 
   @Test
-  void fourOrderedVolleysFinishBeforeTheNextBurrowAndSpitCycle() {
+  void fiveOrderedVolleysFinishBeforeTheNextBurrowAndSpitCycle() {
     reachSpitting();
     tick(config.spitWindupDuration - 0.01f);
     verify(poison, never()).fireVolley(anyInt());
 
     tick(0.02f);
-    for (int volley = 1; volley < 4; volley++) {
+    for (int volley = 1; volley < 5; volley++) {
       tick(config.spitVolleyInterval);
+      assertEquals(SnakeBurrowComponent.State.SPITTING, burrow.getState());
     }
     tick(config.spitRecoveryDuration - 0.01f);
     assertEquals(SnakeBurrowComponent.State.SPITTING, burrow.getState());
@@ -488,8 +489,9 @@ class SnakeBurrowComponentTest {
     order.verify(poison).fireVolley(1);
     order.verify(poison).fireVolley(2);
     order.verify(poison).fireVolley(3);
+    order.verify(poison).fireVolley(4);
     order.verify(poison).endSpit();
-    verify(poison, times(4)).fireVolley(anyInt());
+    verify(poison, times(5)).fireVolley(anyInt());
     assertEquals(SnakeBurrowComponent.State.BURROWING, burrow.getState());
     assertTrue(snakeStats.isInvulnerable());
 

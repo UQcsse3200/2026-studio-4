@@ -162,7 +162,7 @@ class NPCFactoryTest {
   }
 
   @Test
-  void snakeFactoryRendersSixteenPoisonShotsAndClearsThemOnDeath() {
+  void snakeFactoryRendersTwentyPoisonShotsAndClearsThemOnDeath() {
     GameTime time = mock(GameTime.class);
     ServiceLocator.registerTimeSource(time);
     EntityService entities = new EntityService();
@@ -198,7 +198,7 @@ class NPCFactoryTest {
     assertEquals(0, poison.getProjectileCount());
     ServiceLocator.getRenderService().render(batch);
 
-    for (int volley = 0; volley < 4; volley++) {
+    for (int volley = 0; volley < 5; volley++) {
       float facing = volley * 90f;
       Vector2 scale = snake.getScale();
       Vector2 targetCentre =
@@ -220,7 +220,7 @@ class NPCFactoryTest {
     assertEquals(0f, animator.getRotation());
     assertFalse(poison.isSpitting());
     assertFalse(physics.getBody().isActive());
-    assertEquals(16, poison.getProjectileCount());
+    assertEquals(20, poison.getProjectileCount());
 
     advanceEntities(entities, time, config.burrowDuration);
     advanceEntities(entities, time, config.undergroundDuration);

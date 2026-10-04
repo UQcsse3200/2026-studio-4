@@ -31,7 +31,7 @@ texture. This feedback does not add poison damage over time.
 
 The warning radius is 0.9 world units. The same centre and radius are used for
 drawing and damage. The warning does not follow the player after it appears.
-The Snake is 1.5 world units wide and tall, with its damage-detection hitbox and
+The Snake is 2 world units wide and tall, with its damage-detection hitbox and
 ground collider scaled to match. The green dust bursts and trails use larger
 particles and a wider spread to remain visible around the larger character.
 The room supplies world bounds; emergence positions also check static solid
@@ -55,7 +55,7 @@ enters its second phase. It completes the current burrow/warning and the full
 1.5-second exposed window, then adds a poison attack before burrowing again.
 Healing above half health does not revert the phase.
 
-The second-phase loop is: poison windup, four volleys, brief recovery, burrow,
+The second-phase loop is: poison windup, five volleys, brief recovery, burrow,
 underground movement, ground warning, one emergence strike, then 1.5 seconds
 exposed before the next poison attack. The Snake is vulnerable throughout its
 poison attack and recovery, and invulnerable underground.
@@ -63,7 +63,7 @@ poison attack and recovery, and invulnerable underground.
 During the spit, the Snake uses the existing `chase` atlas region: the horizontal
 tongue-out pose at (96, 0) in `images/snake.png`. This source pose has one frame;
 it is held throughout the windup, volleys and short spit recovery. The pose turns
-towards the player at windup and immediately before each of the four volleys.
+towards the player at windup and immediately before each of the five volleys.
 The ordinary emergence window restores `default`, and burrowing hides the
 character again.
 
@@ -77,17 +77,17 @@ the spit ends. Already-fired shots move independently.
 | Setting | Default |
 | --- | --- |
 | Spit windup | 0.6 seconds, with a green forming effect |
-| Volleys per attack | 4 |
-| Projectiles per volley | 4; 16 in total |
+| Volleys per attack | 5 |
+| Projectiles per volley | 4; 20 in total |
 | Time between volleys | 0.4 seconds |
 | Fan width | 54 degrees |
-| Direction offset per volley | -9, -3, +3, +9 degrees relative to that volley's aim |
+| Direction offset per volley | -12, -6, 0, +6, +12 degrees relative to that volley's aim |
 | Recovery after the last volley | 0.35 seconds |
 | Poison speed | 3 world units per second |
 | Poison direct damage | 1 per projectile |
 | Projectile forming / fading time | 0.2 / 0.28 seconds |
 | Maximum flight time | 5 seconds |
-| Projectile visual width / collision radius | 0.9 / 0.12 world units |
+| Projectile visual width / collision radius | 1.2 / 0.12 world units |
 
 Aim is captured again from the mouth to the player's current position before
 each volley. Every projectile keeps its own direction after being emitted;
@@ -143,7 +143,7 @@ For playtesting in Dungeon 2's Snake room:
 5. Stand near the outer and internal walls. Warnings must stay in clear room
    space and the Snake must emerge at the marked position.
 6. Lower its health to half. After the current exposed window, watch for the
-   horizontal tongue-out pose, windup and four waves of four larger green shots.
+   horizontal tongue-out pose, windup and five waves of four larger green shots.
    Move between sides: the head must turn towards you before each volley, with
    the windup and shots remaining aligned to the rotated mouth.
    Move sideways; the shots must continue straight instead of turning to follow

@@ -20,7 +20,7 @@ public class SnakeMiniBossConfig extends BaseEntityConfig {
   public float spitWindupDuration = 0.6f;
   public float spitVolleyInterval = 0.4f;
   public float spitRecoveryDuration = 0.35f;
-  public int poisonVolleyCount = 4;
+  public int poisonVolleyCount = 5;
   public int poisonShotsPerVolley = 4;
   public float poisonFanDegrees = 54f;
   public float poisonWaveOffsetDegrees = 6f;
@@ -28,5 +28,5 @@ public class SnakeMiniBossConfig extends BaseEntityConfig {
   public int poisonDamage = 1;
   public float poisonLifetime = 5f;
   public float poisonRadius = 0.12f;
-  public float poisonVisualSize = 0.9f;
+  public float poisonVisualSize = 1.2f;
 }

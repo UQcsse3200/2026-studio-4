@@ -105,7 +105,7 @@ class SnakePoisonVolleyComponentTest {
   @Test
   void eachVolleyFacesThePlayerWithoutRetargetingEarlierShotsOrDuplicateWaves() {
     poison.beginSpit();
-    for (int wave = 0; wave < 4; wave++) {
+    for (int wave = 0; wave < 5; wave++) {
       placePlayerForFacing(wave * 90f);
       poison.fireVolley(wave);
       placePlayerForFacing((wave + 1) * 90f);
@@ -113,14 +113,14 @@ class SnakePoisonVolleyComponentTest {
       assertEquals((wave + 1) * 4, poison.getProjectileCount());
       assertAngle(wave * 90f, animator.getRotation());
     }
-    poison.fireVolley(4);
+    poison.fireVolley(5);
     poison.endSpit();
     render();
-    assertEquals(16, draws.size());
-    for (int wave = 0; wave < 4; wave++) {
+    assertEquals(20, draws.size());
+    for (int wave = 0; wave < 5; wave++) {
       Vector2 mouth = new Vector2(0.28125f, 0.21875f).rotateDeg(wave * 90f).add(0.5f, 0.5f);
       for (int shot = 0; shot < 4; shot++) {
-        float expected = (wave * 90f + 324f + wave * 6f + shot * 18f) % 360f;
+        float expected = (wave * 90f + 321f + wave * 6f + shot * 18f) % 360f;
         assertAngle(expected, draws.get(wave * 4 + shot).angle());
         assertTrue(draws.get(wave * 4 + shot).centre().epsilonEquals(mouth, 0.00001f));
       }
