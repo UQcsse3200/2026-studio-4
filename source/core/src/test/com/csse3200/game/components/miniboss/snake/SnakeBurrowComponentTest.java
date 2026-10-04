@@ -5,7 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.Color;
@@ -28,6 +34,7 @@ import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 
 /** Gameplay regressions for the telegraphed burrow attack and its vulnerability window. */
 @ExtendWith(GameExtension.class)
@@ -41,6 +48,7 @@ class SnakeBurrowComponentTest {
   private StatusEffectsControllerComponent playerEffects;
   private SnakeBurrowComponent burrow;
   private SnakePlayerHitVisualComponent hitVisual;
+  private SnakePoisonVolleyComponent poison;
 
   @BeforeEach
   void setUp() {
@@ -61,12 +69,14 @@ class SnakeBurrowComponentTest {
     snakeStats = new CombatStatsComponent(150, 10);
     burrow = new SnakeBurrowComponent(player, config);
     hitVisual = new SnakePlayerHitVisualComponent(player);
+    poison = mock(SnakePoisonVolleyComponent.class);
     snake =
         new Entity()
             .addComponent(snakeStats)
             .addComponent(new StatusEffectsControllerComponent())
             .addComponent(burrow)
-            .addComponent(hitVisual);
+            .addComponent(hitVisual)
+            .addComponent(poison);
     snake.setPosition(3f, 5f);
     snake.create();
     tick(0f);
@@ -387,6 +397,208 @@ class SnakeBurrowComponentTest {
 
     assertEquals(SnakeBurrowComponent.State.EXPOSED, physicalBurrow.getState());
     assertTrue(physics.getBody().isActive());
+  }
+
+  @Test
+  void healthAboveHalfKeepsTheOriginalBurrowCycle() {
+    snakeStats.setHealth(76);
+    reachExposed();
+
+    tick(config.exposedDuration);
+
+    assertFalse(burrow.isStageTwo());
+    assertEquals(SnakeBurrowComponent.State.BURROWING, burrow.getState());
+    verify(poison, never()).beginSpit();
+    verify(poison, never()).fireVolley(anyInt());
+  }
+
+  @Test
+  void reachingHalfHealthPreservesTheWarningAndFullRecoveryWindow() {
+    reachWarning();
+    snakeStats.setHealth(75);
+
+    tick(config.warningDuration / 2f);
+
+    assertTrue(burrow.isStageTwo());
+    assertEquals(SnakeBurrowComponent.State.WARNING, burrow.getState());
+    verify(poison, never()).beginSpit();
+
+    tick(config.warningDuration / 2f);
+    tick(1.49f);
+
+    assertEquals(SnakeBurrowComponent.State.EXPOSED, burrow.getState());
+    verify(poison, never()).beginSpit();
+
+    tick(0.02f);
+
+    assertEquals(SnakeBurrowComponent.State.SPITTING, burrow.getState());
+    assertFalse(snakeStats.isInvulnerable());
+    verify(poison).beginSpit();
+    verify(poison, never()).fireVolley(anyInt());
+  }
+
+  @Test
+  void stageTwoUsesMaximumHealthRatioAndRemainsLatchedAfterHealing() {
+    reachExposed();
+    snakeStats.setMaxHealth(200);
+    snakeStats.setHealth(101);
+    tick(0.1f);
+    assertFalse(burrow.isStageTwo());
+
+    snakeStats.setHealth(100);
+    tick(0.1f);
+    assertTrue(burrow.isStageTwo());
+
+    snakeStats.setHealth(200);
+    tick(config.exposedDuration);
+
+    assertTrue(burrow.isStageTwo());
+    assertEquals(SnakeBurrowComponent.State.SPITTING, burrow.getState());
+    verify(poison).beginSpit();
+  }
+
+  @Test
+  void spittingKeepsSnakeVulnerable() {
+    reachSpitting();
+
+    snakeStats.takeDamage(10, player);
+
+    assertFalse(snakeStats.isInvulnerable());
+    assertEquals(65, snakeStats.getHealth());
+    assertEquals(SnakeBurrowComponent.State.SPITTING, burrow.getState());
+  }
+
+  @Test
+  void fourOrderedVolleysFinishBeforeTheNextBurrowAndSpitCycle() {
+    reachSpitting();
+    tick(config.spitWindupDuration - 0.01f);
+    verify(poison, never()).fireVolley(anyInt());
+
+    tick(0.02f);
+    for (int volley = 1; volley < 4; volley++) {
+      tick(config.spitVolleyInterval);
+    }
+    tick(config.spitRecoveryDuration - 0.01f);
+    assertEquals(SnakeBurrowComponent.State.SPITTING, burrow.getState());
+    tick(0.02f);
+
+    InOrder order = inOrder(poison);
+    order.verify(poison).beginSpit();
+    order.verify(poison).fireVolley(0);
+    order.verify(poison).fireVolley(1);
+    order.verify(poison).fireVolley(2);
+    order.verify(poison).fireVolley(3);
+    order.verify(poison).endSpit();
+    verify(poison, times(4)).fireVolley(anyInt());
+    assertEquals(SnakeBurrowComponent.State.BURROWING, burrow.getState());
+    assertTrue(snakeStats.isInvulnerable());
+
+    reachExposed();
+    tick(config.exposedDuration);
+
+    assertEquals(SnakeBurrowComponent.State.SPITTING, burrow.getState());
+    verify(poison, times(2)).beginSpit();
+  }
+
+  @Test
+  void aLongSpitFrameEmitsOnlyOneVolleyAndPreservesTheNextGap() {
+    reachSpitting();
+
+    tick(100f);
+
+    verify(poison).fireVolley(0);
+    verify(poison, times(1)).fireVolley(anyInt());
+    tick(config.spitVolleyInterval - 0.01f);
+    verify(poison, never()).fireVolley(1);
+
+    tick(0.02f);
+
+    verify(poison).fireVolley(1);
+    verify(poison, times(2)).fireVolley(anyInt());
+  }
+
+  @Test
+  void freezingPausesSpitWindupUntilSnakeThaws() {
+    reachSpitting();
+    tick(config.spitWindupDuration / 2f);
+    float before = burrow.getStateTime();
+    snake
+        .getComponent(StatusEffectsControllerComponent.class)
+        .addStatusEffect(new FrozenEffect(time, 1000L));
+
+    tick(100f);
+
+    assertEquals(before, burrow.getStateTime());
+    verify(poison, never()).fireVolley(anyInt());
+
+    when(time.getTime()).thenReturn(1000L);
+    tick(config.spitWindupDuration / 2f);
+
+    verify(poison).fireVolley(0);
+  }
+
+  @Test
+  void concealmentPausesTheGapBetweenPoisonVolleys() {
+    reachSpitting();
+    tick(config.spitWindupDuration);
+    playerEffects.addStatusEffect(new InvisibilityEffect(time, 1000L));
+    float before = burrow.getStateTime();
+
+    tick(100f);
+
+    assertEquals(before, burrow.getStateTime());
+    verify(poison, never()).fireVolley(1);
+
+    when(time.getTime()).thenReturn(1000L);
+    tick(config.spitVolleyInterval);
+
+    verify(poison).fireVolley(1);
+  }
+
+  @Test
+  void snakeDeathCancelsPoisonAndPreventsFurtherVolleys() {
+    reachSpitting();
+    tick(config.spitWindupDuration);
+    clearInvocations(poison);
+
+    snakeStats.setHealth(0);
+    tick(100f);
+
+    assertEquals(SnakeBurrowComponent.State.DEAD, burrow.getState());
+    verify(poison).clear();
+    verify(poison, never()).fireVolley(anyInt());
+  }
+
+  @Test
+  void playerDeathCancelsPoisonAndPreventsFurtherVolleys() {
+    reachSpitting();
+    clearInvocations(poison);
+
+    playerStats.setHealth(0);
+    tick(100f);
+
+    verify(poison).clear();
+    verify(poison, never()).fireVolley(anyInt());
+  }
+
+  @Test
+  void disposalCancelsPoisonAndPreventsFurtherVolleys() {
+    reachSpitting();
+    clearInvocations(poison);
+
+    burrow.dispose();
+    tick(100f);
+
+    assertEquals(SnakeBurrowComponent.State.DEAD, burrow.getState());
+    verify(poison).clear();
+    verify(poison, never()).fireVolley(anyInt());
+  }
+
+  private void reachSpitting() {
+    reachExposed();
+    snakeStats.setHealth(75);
+    tick(config.exposedDuration);
+    assertEquals(SnakeBurrowComponent.State.SPITTING, burrow.getState());
   }
 
   private void reachWarning() {

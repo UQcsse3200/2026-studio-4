@@ -48,26 +48,67 @@ Settings are fields on `SnakeMiniBossConfig`; `configs/NPCs.json` can override
 them without altering other enemy configurations. The default underground speed
 is 3.5 world units per second, with an orbit radius of 1.8 world units.
 
-## Planned: second phase at 50% health
+## Implemented: second-phase poison and burrow cycle
 
-This incremental implementation repeats the first-phase cycle at all health
-levels. The old poison-pool attack is disconnected. The next step will add:
+At or below 50% of maximum health (75 of the default 150), the Snake permanently
+enters its second phase. It completes the current burrow/warning and the full
+1.5-second exposed window, then adds a poison attack before burrowing again.
+Healing above half health does not revert the phase.
 
-- Four fan volleys of four poison projectiles, with a small angle change per
-  volley. Projectiles do not home and deal low direct damage.
-- A spit, burrow, emergence-strike and 1.5-second recovery cycle. The Snake can
-  be damaged while spitting and during recovery, but not underground.
-- Random green gem pickups that refill one shield-durability bar.
-- A translucent green shield that consumes durability only when blocking a
-  Snake poison projectile. It does not block the emergence attack.
+The second-phase loop is: poison windup, four volleys, brief recovery, burrow,
+underground movement, ground warning, one emergence strike, then 1.5 seconds
+exposed before the next poison attack. The Snake is vulnerable throughout its
+poison attack and recovery, and invulnerable underground.
+
+| Setting | Default |
+| --- | --- |
+| Spit windup | 0.6 seconds, with a green forming effect |
+| Volleys per attack | 4 |
+| Projectiles per volley | 4; 16 in total |
+| Time between volleys | 0.4 seconds |
+| Fan width | 54 degrees |
+| Direction offset per volley | -9, -3, +3, +9 degrees relative to the initial aim |
+| Recovery after the last volley | 0.35 seconds |
+| Poison speed | 3 world units per second |
+| Poison direct damage | 1 per projectile |
+| Projectile forming / fading time | 0.2 / 0.28 seconds |
+| Maximum flight time | 5 seconds |
+| Projectile visual width / collision radius | 0.55 / 0.12 world units |
+
+Aim is captured once at the beginning of the spit. Every projectile keeps its
+own direction after being emitted; moving the player does not steer it. A slow
+frame emits at most one volley and preserves the next interval instead of
+releasing several volleys at once. Emergence damage remains 5 and poison does
+not apply damage over time. Actual poison damage also triggers the existing
+green player-hit animation and red damage flash.
+
+The attack uses the previously supplied forming, flying and fading poison
+spritesheets. The room preloads these textures. Projectiles stop on solid
+static room obstacles and room boundaries, use swept collision checks, and
+can hit the player only once. Already emitted projectiles remain after the
+Snake burrows. Freezing the Snake pauses its attacks and poison projectiles;
+concealment pauses new volleys and prevents poison damage to the player.
+Snake death, player death or room disposal clears the poison effects.
+
+All listed gameplay settings are on `SnakeMiniBossConfig`, so later playtest
+tuning remains separate from the attack logic. The old poison-pool task stays
+disconnected.
+
+## Next step: green gems and shield
+
+Random green gem pickups will refill one shield-durability bar and show a
+translucent green shield. It will consume durability only when blocking a
+Snake poison projectile, and will not block the emergence attack. Gems and
+the shield are not enabled in this step.
 
 ## Verification
 
 Automated tests cover real damage immunity and recovery, a locked warning,
 dodging and single-hit damage, long-frame transitions, freeze and concealment,
 death cancellation, physics activation, bounded emergence selection, obstacle
-avoidance, hit feedback and sprite selection, effect lifetime and cleanup, and
-factory wiring.
+avoidance, hit feedback and sprite selection, the half-health transition,
+ordered poison volleys, non-homing flight, obstacle collision and single-hit
+damage, effect lifetime and cleanup, and factory wiring.
 
 Run from `source`:
 
@@ -86,7 +127,18 @@ For playtesting in Dungeon 2's Snake room:
    attacks should lower its health, and the exposed window should last 1.5 seconds.
 5. Stand near the outer and internal walls. Warnings must stay in clear room
    space and the Snake must emerge at the marked position.
-6. Defeat it and verify that all dust/warnings stop and the room clears normally.
+6. Lower its health to half. After the current exposed window, watch for the
+   windup and four waves of four green shots. Move sideways; the shots must
+   continue straight instead of turning to follow you.
+7. Attack while it spits, then again underground. Only ground attacks should
+   lower its health. Check that it returns to the marked burrow strike and
+   repeats the poison cycle after the next 1.5-second exposed window.
+8. With no shield or damage modifier active, let one poison projectile hit:
+   expect 1 damage, green impact and red flash, with no poison ticks. The
+   existing burrow strike should still deal 5 damage.
+9. Put a stone wall between yourself and the shots; they must fade at the wall.
+10. Defeat the Snake and verify that dust, warnings and poison all stop and the
+    room clears normally. Leaving the room must not leave damaging projectiles.
 
 If local invulnerability is enabled, it will intentionally mask the player
 health checks above. Keep local test-only edits outside the feature commit.

@@ -2,15 +2,18 @@ package com.csse3200.game.components.rooms;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.audio.Music;
+import com.csse3200.game.components.miniboss.snake.SnakePoisonAssets;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,6 +56,11 @@ public class RoomAssetsTest {
     roomAssets.loadAll();
 
     verify(resourceService).loadAll();
+    verify(resourceService)
+        .loadTextures(
+            argThat(
+                paths ->
+                    Arrays.asList(paths).containsAll(Arrays.asList(SnakePoisonAssets.paths()))));
   }
 
   /**

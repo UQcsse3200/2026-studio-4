@@ -1,8 +1,9 @@
 # Snake miniboss art assets
 
 These files support the Dungeon 2 Snake miniboss. The first-phase burrow cycle
-uses the existing Snake atlas, code-drawn dust and a green player-hit animation;
-the gem, shield and poison textures will be registered with the second phase.
+uses the existing Snake atlas, code-drawn dust and a green player-hit animation.
+The second-phase attack uses the three poison textures; gem and shield textures
+remain reserved for the next implementation step.
 
 ## Animation layout
 
@@ -83,3 +84,14 @@ Source pages checked on 2026-10-04.
 - Smoke N Dust 03 was considered for burrow visuals, but is not included because
   its source page prohibits sprite redistribution.
 - The single green shield-durability bar remains part of the second-phase work.
+
+## Second-phase poison visuals
+
+- `SnakePoisonAssets` selects 10 forming, 4 flying and 8 fading frames, excluding
+  the sheets' trailing transparent cells. No artwork has been changed.
+- The forming effect telegraphs the spit; individual shots form for 0.2 seconds,
+  fly with a looping four-frame animation and fade for 0.28 seconds on impact or
+  expiry. The flying artwork points right and is rotated to each shot's fixed
+  direction.
+- `RoomAssets` owns texture loading and unloading. The Snake owns the active
+  projectiles and clears them when the encounter ends.

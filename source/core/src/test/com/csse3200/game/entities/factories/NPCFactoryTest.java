@@ -16,6 +16,8 @@ import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowVisualComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent;
+import com.csse3200.game.components.miniboss.snake.SnakePoisonAssets;
+import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -57,6 +59,7 @@ class NPCFactoryTest {
           "images/snake.atlas"
         });
     resourceService.loadTextures(new String[] {SnakePlayerHitVisualComponent.HIT_SHEET});
+    resourceService.loadTextures(SnakePoisonAssets.paths());
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
@@ -91,6 +94,7 @@ class NPCFactoryTest {
 
     assertNotNull(enemy.getComponent(SnakeBurrowComponent.class));
     assertNotNull(enemy.getComponent(SnakePlayerHitVisualComponent.class));
+    assertNotNull(enemy.getComponent(SnakePoisonVolleyComponent.class));
     assertNull(enemy.getComponent(AITaskComponent.class));
   }
 
@@ -155,6 +159,63 @@ class NPCFactoryTest {
   private void advanceEntities(EntityService entities, GameTime time, float delta) {
     when(time.getDeltaTime()).thenReturn(delta);
     entities.update();
+  }
+
+  @Test
+  void snakeFactoryRendersSixteenPoisonShotsAndClearsThemOnDeath() {
+    GameTime time = mock(GameTime.class);
+    ServiceLocator.registerTimeSource(time);
+    EntityService entities = new EntityService();
+    ServiceLocator.registerEntityService(entities);
+    Entity player = new Entity().addComponent(new CombatStatsComponent(100, 10));
+    player.setPosition(5f, 5f);
+    entities.register(player);
+    Entity snake = NPCFactory.createSnakeMiniBoss(player);
+    entities.register(snake);
+    CombatStatsComponent stats = snake.getComponent(CombatStatsComponent.class);
+    SnakeBurrowComponent burrow = snake.getComponent(SnakeBurrowComponent.class);
+    SnakePoisonVolleyComponent poison = snake.getComponent(SnakePoisonVolleyComponent.class);
+    PhysicsComponent physics = snake.getComponent(PhysicsComponent.class);
+    SnakeMiniBossConfig config = new SnakeMiniBossConfig();
+    SpriteBatch batch = mock(SpriteBatch.class);
+
+    advanceEntities(entities, time, 0f);
+    advanceEntities(entities, time, config.burrowDuration);
+    advanceEntities(entities, time, config.undergroundDuration);
+    player.setPosition(50f, 50f);
+    advanceEntities(entities, time, config.warningDuration);
+    stats.setHealth(stats.getMaxHealth() / 2);
+    advanceEntities(entities, time, config.exposedDuration);
+
+    assertEquals(SnakeBurrowComponent.State.SPITTING, burrow.getState());
+    assertTrue(physics.getBody().isActive());
+    assertFalse(stats.isInvulnerable());
+    assertTrue(poison.isSpitting());
+    assertEquals(0, poison.getProjectileCount());
+    ServiceLocator.getRenderService().render(batch);
+
+    for (int volley = 0; volley < 4; volley++) {
+      advanceEntities(
+          entities, time, volley == 0 ? config.spitWindupDuration : config.spitVolleyInterval);
+      assertEquals((volley + 1) * 4, poison.getProjectileCount());
+      ServiceLocator.getRenderService().render(batch);
+    }
+    advanceEntities(entities, time, config.spitRecoveryDuration);
+
+    assertEquals(SnakeBurrowComponent.State.BURROWING, burrow.getState());
+    assertFalse(poison.isSpitting());
+    assertFalse(physics.getBody().isActive());
+    assertEquals(16, poison.getProjectileCount());
+
+    stats.setHealth(0);
+    assertEquals(0, poison.getProjectileCount());
+    advanceEntities(entities, time, 0.6f);
+    ServiceLocator.getRenderService().render(batch);
+    advanceEntities(entities, time, 0.1f);
+
+    assertFalse(entities.getEntities().contains(snake, true));
+    assertEquals(100, player.getComponent(CombatStatsComponent.class).getHealth());
+    snake.dispose();
   }
 
   @Test

@@ -16,13 +16,14 @@ import com.csse3200.game.services.ServiceLocator;
 import java.util.Objects;
 import java.util.Optional;
 
-/** Owns the Snake's burrow, locked warning, single strike and vulnerable recovery cycle. */
+/** Owns the Snake's burrow cycle and its second-phase poison volleys below half health. */
 public class SnakeBurrowComponent extends Component {
   public enum State {
     BURROWING,
     UNDERGROUND,
     WARNING,
     EXPOSED,
+    SPITTING,
     DEAD
   }
 
@@ -39,6 +40,7 @@ public class SnakeBurrowComponent extends Component {
   private AnimationRenderComponent animator;
   private SnakeBurrowVisualComponent visual;
   private SnakePlayerHitVisualComponent playerHitVisual;
+  private SnakePoisonVolleyComponent poison;
   private GameTime time;
   private State state = State.BURROWING;
   private float stateTime;
@@ -47,6 +49,10 @@ public class SnakeBurrowComponent extends Component {
   private boolean started;
   private boolean disposed;
   private boolean deathPhysicsStopped;
+  private boolean stageTwo;
+  private int volleysFired;
+  private float nextVolleyTime;
+  private float spitFinishTime;
 
   public SnakeBurrowComponent(Entity target, SnakeMiniBossConfig config) {
     this.target = Objects.requireNonNull(target);
@@ -65,6 +71,7 @@ public class SnakeBurrowComponent extends Component {
     animator = entity.getComponent(AnimationRenderComponent.class);
     visual = entity.getComponent(SnakeBurrowVisualComponent.class);
     playerHitVisual = entity.getComponent(SnakePlayerHitVisualComponent.class);
+    poison = entity.getComponent(SnakePoisonVolleyComponent.class);
     time = ServiceLocator.getTimeSource();
     stats.setInvulnerable(true);
     if (animator != null) {
@@ -109,6 +116,7 @@ public class SnakeBurrowComponent extends Component {
       cancelAttack();
       return;
     }
+    stageTwo |= stats.getHealth() <= stats.getMaxHealth() * config.stageTwoHealthThreshold;
     if (StatusEffectsControllerComponent.isImmobilised(entity)
         || StatusEffectsControllerComponent.isConcealed(target)) {
       return;
@@ -127,23 +135,61 @@ public class SnakeBurrowComponent extends Component {
       }
       case UNDERGROUND -> updateUnderground(delta);
       case WARNING -> updateWarning();
-      case EXPOSED -> {
-        if (stateTime >= config.exposedDuration) {
-          beginBurrowing();
-        }
-      }
+      case EXPOSED -> updateExposed();
+      case SPITTING -> updateSpitting();
       default -> {
         // Death is handled before advancing encounter time.
       }
     }
   }
 
+  private void updateExposed() {
+    if (stateTime < config.exposedDuration) {
+      return;
+    }
+    if (stageTwo) {
+      beginSpitting();
+    } else {
+      beginBurrowing();
+    }
+  }
+
   private void beginBurrowing() {
     enter(State.BURROWING);
+    if (poison != null) {
+      poison.endSpit();
+    }
     setUnderground(true);
     if (visual != null) {
       visual.hideWarning();
       visual.startBurrow(entity.getCenterPosition());
+    }
+  }
+
+  private void beginSpitting() {
+    enter(State.SPITTING);
+    setUnderground(false);
+    volleysFired = 0;
+    nextVolleyTime = config.spitWindupDuration;
+    spitFinishTime = 0f;
+    if (poison != null) {
+      poison.beginSpit();
+    }
+  }
+
+  private void updateSpitting() {
+    if (volleysFired < config.poisonVolleyCount) {
+      if (stateTime >= nextVolleyTime) {
+        if (poison != null) {
+          poison.fireVolley(volleysFired);
+        }
+        volleysFired++;
+        spitFinishTime = stateTime + config.spitRecoveryDuration;
+        // Preserve a full dodge interval even after a slow frame; never catch up in a burst.
+        nextVolleyTime = stateTime + config.spitVolleyInterval;
+      }
+    } else if (stateTime >= spitFinishTime) {
+      beginBurrowing();
     }
   }
 
@@ -257,6 +303,9 @@ public class SnakeBurrowComponent extends Component {
     if (visual != null) {
       visual.clear();
     }
+    if (poison != null) {
+      poison.clear();
+    }
   }
 
   private void enter(State next) {
@@ -270,6 +319,9 @@ public class SnakeBurrowComponent extends Component {
       return;
     }
     enter(State.DEAD);
+    if (poison != null) {
+      poison.clear();
+    }
     if (visual != null) {
       visual.clear();
     }
@@ -296,6 +348,9 @@ public class SnakeBurrowComponent extends Component {
   public void dispose() {
     disposed = true;
     state = State.DEAD;
+    if (poison != null) {
+      poison.clear();
+    }
     if (visual != null) {
       visual.clear();
     }
@@ -303,6 +358,11 @@ public class SnakeBurrowComponent extends Component {
 
   public State getState() {
     return state;
+  }
+
+  /** Once the half-health threshold is crossed, healing does not return to the first phase. */
+  public boolean isStageTwo() {
+    return stageTwo;
   }
 
   public float getStateTime() {
