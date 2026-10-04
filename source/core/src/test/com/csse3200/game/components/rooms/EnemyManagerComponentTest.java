@@ -57,7 +57,7 @@ class EnemyManagerComponentTest {
         .thenAnswer(
             invocation -> {
               GridPoint2 tile = invocation.getArgument(0);
-              return new Vector2(tile.x, tile.y);
+              return new Vector2((float) tile.x, (float) tile.y);
             });
     when(room.getComponent(TerrainComponent.class)).thenReturn(terrain);
 

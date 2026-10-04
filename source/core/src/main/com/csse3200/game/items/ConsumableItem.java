@@ -28,7 +28,11 @@ public abstract class ConsumableItem extends Item {
   /** Whether this item can be consumed with the player's current state. */
   public boolean canUse(
       CombatStatsComponent stats, StatusEffectsControllerComponent effects, GameTime time) {
-    return effects != null && !effects.isDisposed() && time != null;
+    return stats != null
+        && !stats.isDead()
+        && effects != null
+        && !effects.isDisposed()
+        && time != null;
   }
 
   /** Applies the item's effect; timed effects are registered by the use component. */

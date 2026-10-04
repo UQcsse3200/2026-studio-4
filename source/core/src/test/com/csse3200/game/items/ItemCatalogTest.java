@@ -2,6 +2,7 @@ package com.csse3200.game.items;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,12 +31,12 @@ class ItemCatalogTest {
     Item medium = ItemCatalog.create(ItemIds.MEDIUM_HEALTH_POTION, 1);
     Item large = ItemCatalog.create(ItemIds.LARGE_HEALTH_POTION, 1);
     assertEquals("Small Health Potion", small.getName());
-    assertFalse(small.getId().equals(small.getName()));
+    assertNotEquals(small.getId(), small.getName());
     assertEquals(InstantHealingPotion.class, small.getClass());
     assertEquals(small.getClass(), medium.getClass());
     assertEquals(medium.getClass(), large.getClass());
-    assertFalse(small.getId().equals(medium.getId()));
-    assertFalse(medium.getId().equals(large.getId()));
+    assertNotEquals(small.getId(), medium.getId());
+    assertNotEquals(medium.getId(), large.getId());
   }
 
   @Test

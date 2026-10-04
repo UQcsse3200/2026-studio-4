@@ -14,6 +14,7 @@ import com.csse3200.game.components.items.ItemSpinComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.CurrencyItem;
+import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.ItemIds;
@@ -161,9 +162,8 @@ class ItemFactoryTest {
   void shouldRejectNullItemOrPosition() {
     Vector2 validPosition = new Vector2(1f, 2f);
     assertThrows(NullPointerException.class, () -> ItemFactory.createItem(null, validPosition));
-    assertThrows(
-        NullPointerException.class,
-        () -> ItemFactory.createItem(ItemCatalog.create(ItemIds.GOLD_COIN, 1), null));
+    Item validItem = ItemCatalog.create(ItemIds.GOLD_COIN, 1);
+    assertThrows(NullPointerException.class, () -> ItemFactory.createItem(validItem, null));
   }
 
   private static String itemTypeOf(Entity entity) {

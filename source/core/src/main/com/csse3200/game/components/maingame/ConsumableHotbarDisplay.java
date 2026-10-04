@@ -36,12 +36,12 @@ public class ConsumableHotbarDisplay extends UIComponent {
   private final InventoryComponent inventoryComponent;
   private final ConsumableSelectionComponent selection;
   private final ConsumableEffectComponent effects;
-  private final Image[] frames = new Image[ConsumableSelectionComponent.SLOTS.length];
-  private final Image[] icons = new Image[ConsumableSelectionComponent.SLOTS.length];
-  private final Label[] counts = new Label[ConsumableSelectionComponent.SLOTS.length];
-  private final Label[] pointers = new Label[ConsumableSelectionComponent.SLOTS.length];
-  private final Label[] useHints = new Label[ConsumableSelectionComponent.SLOTS.length];
-  private final int[] slotCounts = new int[ConsumableSelectionComponent.SLOTS.length];
+  private final Image[] frames = new Image[ConsumableSelectionComponent.SLOTS.size()];
+  private final Image[] icons = new Image[ConsumableSelectionComponent.SLOTS.size()];
+  private final Label[] counts = new Label[ConsumableSelectionComponent.SLOTS.size()];
+  private final Label[] pointers = new Label[ConsumableSelectionComponent.SLOTS.size()];
+  private final Label[] useHints = new Label[ConsumableSelectionComponent.SLOTS.size()];
+  private final int[] slotCounts = new int[ConsumableSelectionComponent.SLOTS.size()];
   private Table root;
   private Texture regularFrame;
   private Texture selectedFrame;
@@ -70,10 +70,10 @@ public class ConsumableHotbarDisplay extends UIComponent {
     pixmap.dispose();
     buildActors();
     refreshSelection(selection.getSelectedType());
-    for (int i = 0; i < ConsumableSelectionComponent.SLOTS.length; i++) {
+    for (int i = 0; i < ConsumableSelectionComponent.SLOTS.size(); i++) {
       refreshCount(
-          ConsumableSelectionComponent.SLOTS[i],
-          inventoryComponent.getConsumableCount(ConsumableSelectionComponent.SLOTS[i]));
+          ConsumableSelectionComponent.SLOTS.get(i),
+          inventoryComponent.getConsumableCount(ConsumableSelectionComponent.SLOTS.get(i)));
     }
     player
         .getEvents()
@@ -96,8 +96,8 @@ public class ConsumableHotbarDisplay extends UIComponent {
     root.setTouchable(Touchable.disabled);
 
     Table slots = new Table();
-    for (int i = 0; i < ConsumableSelectionComponent.SLOTS.length; i++) {
-      String type = ConsumableSelectionComponent.SLOTS[i];
+    for (int i = 0; i < ConsumableSelectionComponent.SLOTS.size(); i++) {
+      String type = ConsumableSelectionComponent.SLOTS.get(i);
       Stack slot = new Stack();
       slot.setName("consumable-slot-" + type.toLowerCase());
       frames[i] = new Image(regularFrame);
@@ -162,7 +162,7 @@ public class ConsumableHotbarDisplay extends UIComponent {
       return;
     }
     for (int i = 0; i < frames.length; i++) {
-      boolean active = ConsumableSelectionComponent.SLOTS[i].equals(selected);
+      boolean active = ConsumableSelectionComponent.SLOTS.get(i).equals(selected);
       frames[i].setDrawable(new TextureRegionDrawable(active ? selectedFrame : regularFrame));
       pointers[i].setVisible(active);
       useHints[i].setVisible(active && slotCounts[i] > 0);
@@ -173,8 +173,8 @@ public class ConsumableHotbarDisplay extends UIComponent {
     if (disposed) {
       return;
     }
-    for (int i = 0; i < ConsumableSelectionComponent.SLOTS.length; i++) {
-      if (ConsumableSelectionComponent.SLOTS[i].equals(type)) {
+    for (int i = 0; i < ConsumableSelectionComponent.SLOTS.size(); i++) {
+      if (ConsumableSelectionComponent.SLOTS.get(i).equals(type)) {
         slotCounts[i] = count;
         counts[i].setText(Integer.toString(count));
         boolean occupied = count > 0;

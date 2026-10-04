@@ -18,8 +18,6 @@ public final class StrengthPotion extends StatBoostPotion {
         "Temporarily increases attack strength.",
         "images/strength_potion_pixel.png",
         quantity,
-        Stat.ATTACK,
-        1.5f,
-        durationMs);
+        new Boost(Stat.ATTACK, 1.5f, durationMs));
   }
 }

@@ -130,8 +130,8 @@ class FreezeBombUseTest {
     HitboxComponent hitbox = mock(HitboxComponent.class);
     when(hitbox.getFixture()).thenReturn(fixture);
     when(enemy.getComponent(HitboxComponent.class)).thenReturn(hitbox);
-    when(enemy.getComponent(StatusEffectsControllerComponent.class))
-        .thenReturn(mock(StatusEffectsControllerComponent.class));
+    StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
+    when(enemy.getComponent(StatusEffectsControllerComponent.class)).thenReturn(effects);
     return enemy;
   }
 }

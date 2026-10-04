@@ -27,7 +27,8 @@ class ConsumableRoomAssetsIntegrationTest {
   @BeforeEach
   void setUp() {
     assetManager = mock(AssetManager.class);
-    when(assetManager.get("sounds/BGM_03_mp3.mp3", Music.class)).thenReturn(mock(Music.class));
+    Music music = mock(Music.class);
+    when(assetManager.get("sounds/BGM_03_mp3.mp3", Music.class)).thenReturn(music);
     ServiceLocator.registerResourceService(new ResourceService(assetManager));
     roomAssets = new RoomAssets();
   }

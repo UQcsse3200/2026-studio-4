@@ -111,7 +111,7 @@ class SpeedPotionAfterimageComponentTest {
     inventory.addConsumable(ItemIds.SPEED_POTION);
     assertTrue(consumables.tryUse(ItemIds.SPEED_POTION));
     for (int i = 1; i <= 4; i++) {
-      player.setPosition(i, 0f);
+      player.setPosition((float) i, 0f);
       afterimages.update();
     }
 
