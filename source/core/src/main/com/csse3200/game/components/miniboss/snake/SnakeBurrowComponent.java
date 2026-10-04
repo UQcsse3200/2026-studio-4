@@ -263,6 +263,10 @@ public class SnakeBurrowComponent extends Component {
         && !targetStats.isDead()
         && target.getCenterPosition().dst2(warningCentre)
             <= config.burrowAttackRadius * config.burrowAttackRadius) {
+      SnakeShieldComponent shield = entity.getComponent(SnakeShieldComponent.class);
+      if (shield != null && shield.tryBlock()) {
+        return;
+      }
       int previousHealth = targetStats.getHealth();
       targetStats.takeDamage(config.burrowDamage, entity);
       if (playerHitVisual != null

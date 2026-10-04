@@ -263,7 +263,7 @@ class NPCFactoryTest {
   }
 
   @Test
-  void collectedStageTwoGemRendersAShieldThatBlocksPoisonAndClearsOnDeath() {
+  void collectedStageTwoGemShieldsBothSnakeAttacksAndClearsOnDeath() {
     GameTime time = mock(GameTime.class);
     ServiceLocator.registerTimeSource(time);
     EntityService entities = new EntityService();
@@ -306,15 +306,18 @@ class NPCFactoryTest {
 
     advanceEntities(entities, time, config.burrowDuration);
     advanceEntities(entities, time, config.undergroundDuration);
-    player.setPosition(burrow.getWarningCentre().add(3f, 0f).mulAdd(player.getScale(), -0.5f));
+    player.setPosition(burrow.getWarningCentre().mulAdd(player.getScale(), -0.5f));
     advanceEntities(entities, time, config.warningDuration);
+    assertEquals(45, playerStats.getHealth());
+    assertEquals(5, shield.getDurability());
+    player.setPosition(burrow.getWarningCentre().add(3f, 0f).mulAdd(player.getScale(), -0.5f));
     advanceEntities(entities, time, config.exposedDuration);
     advanceEntities(entities, time, config.spitWindupDuration);
     advanceEntities(entities, time, 0.01f);
     advanceEntities(entities, time, 0.21f);
     advanceEntities(entities, time, 0.7f);
 
-    assertTrue(shield.getDurability() < 6);
+    assertTrue(shield.getDurability() < 5);
     assertTrue(shield.isActive());
     assertEquals(45, playerStats.getHealth());
     stats.setHealth(0);

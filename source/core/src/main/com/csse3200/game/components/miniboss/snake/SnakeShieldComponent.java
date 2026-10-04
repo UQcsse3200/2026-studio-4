@@ -14,7 +14,7 @@ import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Objects;
 
-/** One refillable player shield used only by this Snake's poison collision checks. */
+/** One refillable player shield shared by this Snake's poison and emergence attacks. */
 public class SnakeShieldComponent extends RenderComponent {
   public static final String SHIELD_TEXTURE = "images/snake-miniboss/shield/shieldGreen_Edit.png";
   private static final float RADIUS_SCALE = 0.8f;
@@ -55,7 +55,7 @@ public class SnakeShieldComponent extends RenderComponent {
     }
   }
 
-  /** Consumes one point for a confirmed poison interception, without damaging the player. */
+  /** Consumes one point for a confirmed Snake attack, without damaging the player. */
   public boolean tryBlock() {
     if (!isActive()) {
       return false;

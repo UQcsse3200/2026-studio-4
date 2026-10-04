@@ -12,7 +12,8 @@ The Snake enters the encounter with a green dust burst, then repeats this cycle:
 | Exposed | 1.5 seconds | Emerge at that position, strike once, then remain above ground and vulnerable. |
 
 The emergence attack deals 5 direct damage when the player's centre is inside
-the warning radius at the instant the Snake emerges. It has no poison-over-time
+the warning radius at the instant the Snake emerges, unless the green shield
+blocks it by spending one durability point. It has no poison-over-time
 effect. Leaving the circle avoids the strike; entering it after the strike does
 not cause damage. The Snake no longer has automatic contact damage.
 
@@ -109,7 +110,7 @@ All listed gameplay settings are on `SnakeMiniBossConfig`, so later playtest
 tuning remains separate from the attack logic. The old poison-pool task stays
 disconnected.
 
-## Implemented: green gems and poison shield
+## Implemented: green gems and Snake attack shield
 
 Crossing the half-health threshold starts green gem drops once, even if the
 Snake later heals. The pickup is the supplied pack's rotating light-green
@@ -126,7 +127,7 @@ available when the appearance animation finishes.
 | Further drops | 1 every 5 seconds |
 | Maximum gems on the ground | 3 |
 | Gem lifetime | 12 seconds |
-| Shield capacity per pickup | 6 poison hits |
+| Shield capacity per pickup | 6 Snake attacks (poison hits and emergence strikes share durability) |
 | Healing eligibility | Current health strictly below 40% of maximum, checked per pickup |
 | Healing per eligible pickup | 15% of maximum health, rounded to the nearest whole point (at least 1) |
 | Healing cap | 90% of maximum health, rounded down |
@@ -134,8 +135,9 @@ available when the appearance animation finishes.
 A pickup fills one durability bar beside the player and shows the selected
 translucent green shield image. A second pickup refills that same bar; it does
 not add another bar or stack capacity. Durability has no time drain: each
-intercepted Snake poison projectile spends one point and fades without damage
-or the player's red/green hurt effects. The shield briefly brightens on a block.
+intercepted Snake poison projectile or emergence strike spends one point and
+deals no damage or red/green player-hit effects. Blocked poison projectiles fade.
+The shield briefly brightens on a block.
 When empty, both the shield and its bar disappear until another gem is collected.
 
 Each pickup also checks the player's current health. Below 40% of maximum,
@@ -145,8 +147,12 @@ every gem: at a maximum of 100 health, 30 becomes 45, then a second pickup only
 refills the shield because the player is no longer below 40. Exactly 40% does
 not receive healing. The cap is a safeguard, not a target for continued healing.
 
-Only Snake poison projectiles consult this shield. The 5-damage emergence
-strike and other damage still use their normal rules. Projectile collision
+Snake poison projectiles and the emergence strike consult this shield; other
+damage still uses its normal rules. An emergence strike consumes durability only
+when the player is inside its warning circle at the instant of emergence. Dodging
+does not spend a point, and staying in the circle during the exposure window
+does not trigger extra blocks. The last point fully blocks that attack, then
+the next unshielded emergence strike can deal its usual 5 damage. Projectile collision
 checks the nearest wall, shield and player, so shots cannot consume durability
 through a wall. Once depleted, later projectiles can damage the player normally.
 
@@ -166,7 +172,7 @@ position exists, it skips that drop and retries at the next interval; it never
 falls back to spawning outside the view. A slow frame never produces a burst
 of missed drops.
 Gem timers and collection continue while the Snake is frozen or the player
-is concealed; shield durability is spent only on intercepted poison. A paused
+is concealed; shield durability is spent only on intercepted Snake attacks. A paused
 game does not advance gem timers. Death of either participant
 or leaving the room removes the gems, shield and bar. They are encounter-only
 resources, not inventory items or permanent player status effects.
@@ -180,7 +186,8 @@ avoidance, hit feedback and sprite selection, the half-health transition,
 ordered poison volleys, non-homing flight, obstacle collision and single-hit
 damage, effect lifetime and cleanup, gem collection and refill, camera movement
 and zoom, near/far placement and room intersections, low-health healing and
-its boundaries, poison-only shield absorption and depletion, and factory wiring.
+its boundaries, shared shield absorption and depletion for both Snake attacks,
+and factory wiring.
 
 Run from `source`:
 
@@ -223,8 +230,11 @@ For playtesting in Dungeon 2's Snake room:
     or triggering a red damage flash. The seventh should damage you if no refill
     was collected. Pick up another gem before depletion and check the same bar
     refills instead of producing a second bar.
-13. With the shield active, stay in an emergence warning once. Expect 5 damage
-    and unchanged shield durability. Near walls, gems must be reachable and
+13. With the shield active, stay in an emergence warning once. Expect no damage,
+    no red/green hurt effects and exactly one durability point spent. Dodging
+    the warning should preserve durability. The final point must still block
+    the whole strike; a later unshielded emergence should deal 5 damage.
+    Near walls, gems must be reachable and
     must not be collected through stone. Defeat the Snake or leave the room
     with a partially filled shield: the shield, bar and leftover gems must clear.
 14. Move towards room edges while new gems appear. New drops and their green

@@ -134,6 +134,7 @@ class SnakeBurrowComponentTest {
 
   @Test
   void dodgingOutsideTheWarningAvoidsTheAttack() {
+    shield.refill();
     reachWarning();
     movePlayerCentre(burrow.getWarningCentre().cpy().add(burrow.getWarningRadius() + 0.1f, 0f));
 
@@ -141,19 +142,70 @@ class SnakeBurrowComponentTest {
 
     assertEquals(SnakeBurrowComponent.State.EXPOSED, burrow.getState());
     assertEquals(100, playerStats.getHealth());
+    assertEquals(6, shield.getDurability());
     assertFalse(hitVisual.isPlaying());
     assertNull(playerEffects.getTint());
   }
 
   @Test
-  void burrowStrikeBypassesPoisonShieldAndPlaysGreenAndRedFeedbackOnce() {
+  void shieldBlocksTheBurrowStrikeOnceWithoutGreenOrRedDamageFeedback() {
     shield.refill();
     reachWarning();
     movePlayerCentre(burrow.getWarningCentre());
     tick(config.warningDuration);
 
+    assertEquals(SnakeBurrowComponent.State.EXPOSED, burrow.getState());
+    assertEquals(100, playerStats.getHealth());
+    assertEquals(5, shield.getDurability());
+    assertFalse(hitVisual.isPlaying());
+    assertNull(playerEffects.getTint());
+
+    tick(0.5f);
+    tick(0.5f);
+
+    assertEquals(SnakeBurrowComponent.State.EXPOSED, burrow.getState());
+    assertEquals(100, playerStats.getHealth());
+    assertEquals(5, shield.getDurability(), "remaining in the exposed circle must not block again");
+    assertFalse(hitVisual.isPlaying());
+    assertNull(playerEffects.getTint());
+  }
+
+  @Test
+  void theLastShieldPointBlocksThisStrikeButTheNextStrikeDealsDamage() {
+    shield.refill();
+    for (int i = 0; i < 5; i++) {
+      assertTrue(shield.tryBlock());
+    }
+    assertEquals(1, shield.getDurability());
+    reachWarning();
+    movePlayerCentre(burrow.getWarningCentre());
+    tick(config.warningDuration);
+
+    assertEquals(100, playerStats.getHealth());
+    assertEquals(0, shield.getDurability());
+    assertFalse(shield.isActive());
+    assertFalse(hitVisual.isPlaying());
+    assertNull(playerEffects.getTint());
+
+    tick(config.exposedDuration);
+    reachWarning();
+    movePlayerCentre(burrow.getWarningCentre());
+    tick(config.warningDuration);
+
     assertEquals(95, playerStats.getHealth());
-    assertEquals(6, shield.getDurability());
+    assertEquals(0, shield.getDurability());
+    assertTrue(hitVisual.isPlaying());
+    assertEquals(new Color(1f, 0.2f, 0.2f, 1f), playerEffects.getTint());
+  }
+
+  @Test
+  void unshieldedBurrowStrikePlaysGreenAndRedFeedbackOnce() {
+    reachWarning();
+    movePlayerCentre(burrow.getWarningCentre());
+    tick(config.warningDuration);
+
+    assertEquals(95, playerStats.getHealth());
+    assertEquals(0, shield.getDurability());
     assertTrue(hitVisual.isPlaying());
     assertEquals(new Color(1f, 0.2f, 0.2f, 1f), playerEffects.getTint());
 
@@ -166,7 +218,7 @@ class SnakeBurrowComponentTest {
     tick(0.5f);
 
     assertEquals(100 - config.burrowDamage, playerStats.getHealth());
-    assertEquals(6, shield.getDurability());
+    assertEquals(0, shield.getDurability());
     assertFalse(hitVisual.isPlaying());
     assertNull(playerEffects.getTint());
   }
