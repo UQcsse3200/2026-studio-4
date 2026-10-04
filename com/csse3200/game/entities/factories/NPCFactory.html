@@ -158,7 +158,8 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSnakeMiniBoss(com.csse3200.game.entities.Entity)" class="member-name-link">createSnakeMiniBoss</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates the snake mini-boss entity.</div>
+<div class="block">Creates the snake mini-boss with an invulnerable underground approach, a fixed ground warning,
+ one emergence strike and a brief vulnerable recovery.</div>
 </div>
 </div>
 </div>
@@ -221,9 +222,9 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="createSnakeMiniBoss(com.csse3200.game.entities.Entity)">
 <h3>createSnakeMiniBoss</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSnakeMiniBoss</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
-<div class="block">Creates the snake mini-boss entity. Moves toward the player and, once close enough, performs a
- telegraphed coil attack that poisons the player over time. Once its own health drops below 50%,
- it also gains a ranged venom-spit attack that creates a damaging pool on the ground.</div>
+<div class="block">Creates the snake mini-boss with an invulnerable underground approach, a fixed ground warning,
+ one emergence strike and a brief vulnerable recovery. Its old contact and poison-pool attacks
+ are replaced by the burrow controller.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>target</code> - entity to chase</dd>
