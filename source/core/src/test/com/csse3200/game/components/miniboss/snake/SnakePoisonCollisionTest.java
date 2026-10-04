@@ -168,6 +168,21 @@ class SnakePoisonCollisionTest {
         EPSILON);
   }
 
+  @Test
+  void reverseDirectionSweepIntersectsOnlyOverlappingEdgeIntervals() {
+    EdgeShape edge = new EdgeShape();
+    edge.set(new Vector2(0f, 0f), new Vector2(0f, 4f));
+    addFixture(edge, new Vector2(5f, 0f), 0f, BodyType.StaticBody, false);
+
+    assertEquals(
+        0.475f,
+        SnakePoisonCollision.wallFraction(new Vector2(10f, 2f), new Vector2(0f, 2f), 0.25f, null),
+        EPSILON);
+    assertEquals(
+        Float.POSITIVE_INFINITY,
+        SnakePoisonCollision.wallFraction(new Vector2(10f, 10f), new Vector2(0f, 0f), 0.25f, null));
+  }
+
   private void addBox(Rectangle area, BodyType type, boolean sensor) {
     PolygonShape shape = new PolygonShape();
     shape.setAsBox(area.width / 2f, area.height / 2f);

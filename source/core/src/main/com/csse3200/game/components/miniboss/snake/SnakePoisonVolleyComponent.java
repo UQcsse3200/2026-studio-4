@@ -171,13 +171,13 @@ public class SnakePoisonVolleyComponent extends RenderComponent {
       shot.fadeAge += delta;
       return shot.fadeAge >= FADING_DURATION;
     }
-    float formingTime = Math.min(delta, Math.max(0f, FORMING_DURATION - shot.formingAge));
+    float formingTime = Math.clamp(FORMING_DURATION - shot.formingAge, 0f, delta);
     shot.formingAge += formingTime;
     delta -= formingTime;
     if (delta <= 0f) {
       return false;
     }
-    float travelTime = Math.min(delta, Math.max(0f, config.poisonLifetime - shot.age));
+    float travelTime = Math.clamp(config.poisonLifetime - shot.age, 0f, delta);
     Vector2 end = shot.position.cpy().mulAdd(shot.velocity, travelTime);
     float wall = SnakePoisonCollision.wallFraction(shot.position, end, config.poisonRadius, bounds);
     float player = playerFraction(shot.position, end);
@@ -322,7 +322,7 @@ public class SnakePoisonVolleyComponent extends RenderComponent {
       batch.setColor(1f, 1f, 1f, 1f);
       if (spitting) {
         int frame = Math.min(9, (int) (chargeAge / FORMING_DURATION * 10));
-        drawFrame(batch, frames.forming()[frame], mouthPosition(), aim.angleDeg());
+        drawFrame(batch, frames.forming().get(frame), mouthPosition(), aim.angleDeg());
       }
       for (Shot shot : shots) {
         drawFrame(batch, shotFrame(shot), shot.position, shot.velocity.angleDeg());
@@ -334,12 +334,12 @@ public class SnakePoisonVolleyComponent extends RenderComponent {
 
   private TextureRegion shotFrame(Shot shot) {
     if (shot.fading) {
-      return frames.fading()[Math.min(7, (int) (shot.fadeAge / FADING_DURATION * 8))];
+      return frames.fading().get(Math.min(7, (int) (shot.fadeAge / FADING_DURATION * 8)));
     }
     if (shot.formingAge < FORMING_DURATION) {
-      return frames.forming()[Math.min(9, (int) (shot.formingAge / FORMING_DURATION * 10))];
+      return frames.forming().get(Math.min(9, (int) (shot.formingAge / FORMING_DURATION * 10)));
     }
-    return frames.flying()[(int) (shot.age / FLYING_FRAME_DURATION) % 4];
+    return frames.flying().get((int) (shot.age / FLYING_FRAME_DURATION) % 4);
   }
 
   private void drawFrame(SpriteBatch batch, TextureRegion frame, Vector2 centre, float angle) {

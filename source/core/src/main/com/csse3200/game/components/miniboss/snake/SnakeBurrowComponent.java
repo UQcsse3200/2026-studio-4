@@ -118,12 +118,7 @@ public class SnakeBurrowComponent extends Component {
       cancelAttack();
       return;
     }
-    if (!stageTwo && stats.getHealth() <= stats.getMaxHealth() * config.stageTwoHealthThreshold) {
-      stageTwo = true;
-      if (shieldPickups != null) {
-        shieldPickups.start();
-      }
-    }
+    updateStageTwo();
     if (StatusEffectsControllerComponent.isImmobilised(entity)
         || StatusEffectsControllerComponent.isConcealed(target)) {
       return;
@@ -135,11 +130,7 @@ public class SnakeBurrowComponent extends Component {
     stateTime += delta;
     // Deliberately advance at most one state per update. A slow frame must not skip a warning.
     switch (state) {
-      case BURROWING -> {
-        if (stateTime >= config.burrowDuration) {
-          enter(State.UNDERGROUND);
-        }
-      }
+      case BURROWING -> updateBurrowing();
       case UNDERGROUND -> updateUnderground(delta);
       case WARNING -> updateWarning();
       case EXPOSED -> updateExposed();
@@ -147,6 +138,21 @@ public class SnakeBurrowComponent extends Component {
       default -> {
         // Death is handled before advancing encounter time.
       }
+    }
+  }
+
+  private void updateStageTwo() {
+    if (!stageTwo && stats.getHealth() <= stats.getMaxHealth() * config.stageTwoHealthThreshold) {
+      stageTwo = true;
+      if (shieldPickups != null) {
+        shieldPickups.start();
+      }
+    }
+  }
+
+  private void updateBurrowing() {
+    if (stateTime >= config.burrowDuration) {
+      enter(State.UNDERGROUND);
     }
   }
 

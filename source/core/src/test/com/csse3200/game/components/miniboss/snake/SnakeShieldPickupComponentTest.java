@@ -397,11 +397,7 @@ class SnakeShieldPickupComponentTest {
     Texture effectTexture =
         resources.getAsset(SnakeShieldPickupComponent.SPAWN_TEXTURE, Texture.class);
     Texture gemTexture = resources.getAsset(SnakeShieldPickupComponent.GEM_TEXTURE, Texture.class);
-    config.shieldGemInitialCount = 1;
-    config.shieldGemSpawnInterval = 100f;
-    pickups.start();
-    Vector2 position = pickups.getPickupPositions().getFirst();
-    tick(0.01f); // Do not charge the activation frame to either animation.
+    Vector2 position = startOneGem();
     for (int frameIndex = 0; frameIndex < 7; frameIndex++) {
       if (frameIndex > 0) {
         tick(0.051f);
@@ -437,8 +433,16 @@ class SnakeShieldPickupComponentTest {
     assertEquals(1, draws.size());
     assertSame(gemTexture, draws.getFirst().region().getTexture());
     assertEquals(Color.WHITE, draws.getFirst().colour());
-    tick(0.469f); // Age 0.82: the original ten-frame gem keeps animating.
-    draws.clear();
+  }
+
+  @Test
+  void fullyVisibleGemKeepsRotatingThenFadesBeforeExpiry() {
+    Color colour = new Color(0.2f, 0.3f, 0.4f, 0.5f);
+    float original = colour.toFloatBits();
+    List<Draw> draws = new ArrayList<>();
+    SpriteBatch batch = recordingBatch(colour, draws);
+    Vector2 position = startOneGem();
+    tick(0.82f); // The original ten-frame gem keeps animating after the spawn effect ends.
     pickups.render(batch);
     assertEquals(1, draws.size());
     assertEquals(162, draws.getFirst().region().getRegionX());
@@ -451,16 +455,35 @@ class SnakeShieldPickupComponentTest {
     assertEquals(1, draws.size());
     assertEquals(0.5f, draws.getFirst().colour().a, 0.0001f);
     assertEquals(original, colour.toFloatBits());
+  }
 
+  @Test
+  void restartingDropsResetsAppearanceAndDisposalClearsBothLayers() {
+    List<Draw> draws = new ArrayList<>();
+    SpriteBatch batch = recordingBatch(new Color(Color.WHITE), draws);
+    startOneGem();
+    tick(0.36f);
+    pickups.render(batch);
+    assertEquals(1, draws.size());
     pickups.clear();
     pickups.start();
     draws.clear();
     pickups.render(batch);
     assertEquals(2, draws.size());
+    assertEquals(0, draws.getFirst().region().getRegionX());
+    assertEquals(0f, draws.getLast().colour().a);
     pickups.dispose();
     draws.clear();
     pickups.render(batch);
     assertTrue(draws.isEmpty());
+  }
+
+  private Vector2 startOneGem() {
+    config.shieldGemInitialCount = 1;
+    config.shieldGemSpawnInterval = 100f;
+    pickups.start();
+    tick(0.01f); // Do not charge the activation frame to either animation.
+    return pickups.getPickupPositions().getFirst();
   }
 
   private void collectNewGem() {

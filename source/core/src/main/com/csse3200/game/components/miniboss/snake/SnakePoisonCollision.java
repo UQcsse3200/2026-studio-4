@@ -171,8 +171,11 @@ final class SnakePoisonCollision {
     }
     float first = (min - start) / movement;
     float second = (max - start) / movement;
-    interval[0] = Math.max(interval[0], Math.min(first, second));
-    interval[1] = Math.min(interval[1], Math.max(first, second));
+    float slabEntry = Math.min(first, second);
+    float slabExit = Math.max(first, second);
+    // Intersect ranges; an empty interval must stay empty, rather than be clamped to an edge.
+    interval[0] = Math.max(interval[0], slabEntry);
+    interval[1] = Math.min(interval[1], slabExit);
     return interval[0] <= interval[1];
   }
 }

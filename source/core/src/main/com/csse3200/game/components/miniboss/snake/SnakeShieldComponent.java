@@ -101,7 +101,7 @@ public class SnakeShieldComponent extends RenderComponent {
   }
 
   private boolean encounterAvailable() {
-    if (stopped) {
+    if (stopped || entity == null) {
       return false;
     }
     if (isDead(entity) || isDead(target)) {
@@ -112,8 +112,7 @@ public class SnakeShieldComponent extends RenderComponent {
   }
 
   private static boolean isDead(Entity entity) {
-    CombatStatsComponent stats =
-        entity == null ? null : entity.getComponent(CombatStatsComponent.class);
+    CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
     return stats != null && stats.isDead();
   }
 

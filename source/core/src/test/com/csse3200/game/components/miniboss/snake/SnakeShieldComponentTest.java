@@ -76,6 +76,23 @@ class SnakeShieldComponentTest {
   }
 
   @Test
+  void waitsForAnAttachedSnakeBeforeActivating() {
+    SnakeShieldComponent unattached = new SnakeShieldComponent(player, new SnakeMiniBossConfig());
+    unattached.refill();
+
+    assertFalse(unattached.isActive());
+    assertFalse(unattached.tryBlock());
+    assertEquals(0, unattached.getDurability());
+
+    Entity owner = new Entity().addComponent(new CombatStatsComponent(150, 1));
+    owner.addComponent(unattached);
+    unattached.refill();
+    assertTrue(unattached.isActive());
+    assertTrue(unattached.tryBlock());
+    assertEquals(unattached.getCapacity() - 1, unattached.getDurability());
+  }
+
+  @Test
   void refillsOneCapacityAndOnlyActualBlocksSpendDurability() {
     assertEquals(6, shield.getCapacity());
     assertFalse(shield.isActive());

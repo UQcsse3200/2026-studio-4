@@ -3,6 +3,8 @@ package com.csse3200.game.components.miniboss.snake;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.csse3200.game.services.ResourceService;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Original poison sheets, owned and unloaded by the room resource service. */
 public final class SnakePoisonAssets {
@@ -24,17 +26,18 @@ public final class SnakePoisonAssets {
         frames(resources, FORMING, 10), frames(resources, FLYING, 4), frames(resources, FADING, 8));
   }
 
-  private static TextureRegion[] frames(ResourceService resources, String path, int count) {
+  private static List<TextureRegion> frames(ResourceService resources, String path, int count) {
     Texture texture = resources.getAsset(path, Texture.class);
     int columns = texture.getWidth() / CELL_SIZE;
-    TextureRegion[] frames = new TextureRegion[count];
+    List<TextureRegion> frames = new ArrayList<>(count);
     for (int i = 0; i < count; i++) {
-      frames[i] =
+      frames.add(
           new TextureRegion(
-              texture, (i % columns) * CELL_SIZE, (i / columns) * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+              texture, (i % columns) * CELL_SIZE, (i / columns) * CELL_SIZE, CELL_SIZE, CELL_SIZE));
     }
-    return frames;
+    return List.copyOf(frames);
   }
 
-  record Frames(TextureRegion[] forming, TextureRegion[] flying, TextureRegion[] fading) {}
+  record Frames(
+      List<TextureRegion> forming, List<TextureRegion> flying, List<TextureRegion> fading) {}
 }

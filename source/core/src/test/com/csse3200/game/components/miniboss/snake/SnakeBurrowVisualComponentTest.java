@@ -71,7 +71,7 @@ class SnakeBurrowVisualComponentTest {
   @Test
   void shouldBoundRepeatedTrailEmissions() {
     for (int i = 0; i < 100; i++) {
-      visual.addTrail(new Vector2(i, 0f));
+      visual.addTrail(new Vector2((float) i, 0f));
     }
     assertTrue(visual.getParticleCount() <= 128);
     visual.update(1f);

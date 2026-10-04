@@ -234,7 +234,7 @@ public class SnakeShieldPickupComponent extends RenderComponent {
     float previousColour = batch.getPackedColor();
     try {
       for (Gem gem : gems) {
-        float fade = Math.min(1f, Math.max(0f, config.shieldGemLifetime - gem.age));
+        float fade = Math.clamp(config.shieldGemLifetime - gem.age, 0f, 1f);
         if (gem.age < SPAWN_DURATION) {
           batch.setColor(1f, 1f, 1f, fade);
           int frameIndex = Math.min(SPAWN_FRAME_COUNT - 1, (int) (gem.age / SPAWN_FRAME_DURATION));
