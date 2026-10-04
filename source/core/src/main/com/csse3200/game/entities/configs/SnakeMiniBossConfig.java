@@ -35,4 +35,7 @@ public class SnakeMiniBossConfig extends BaseEntityConfig {
   public int shieldGemMaxActive = 3;
   public float shieldGemSpawnInterval = 5f;
   public float shieldGemLifetime = 12f;
+  public float shieldGemHealThreshold = 0.4f;
+  public float shieldGemHealFraction = 0.15f;
+  public float shieldGemHealCap = 0.9f;
 }

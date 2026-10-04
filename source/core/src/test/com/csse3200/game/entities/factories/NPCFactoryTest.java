@@ -11,6 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -47,6 +48,10 @@ class NPCFactoryTest {
   @BeforeEach
   void beforeEach() {
     ServiceLocator.registerPhysicsService(new PhysicsService());
+    OrthographicCamera camera = new OrthographicCamera(20f, 16f);
+    camera.position.set(5f, 5f, 0f);
+    camera.update();
+    ServiceLocator.registerWorldCamera(camera);
 
     RenderService renderService = new RenderService();
     renderService.setDebug(mock(DebugRenderer.class));
@@ -284,11 +289,13 @@ class NPCFactoryTest {
     assertEquals(2, pickups.getPickupCount());
 
     Vector2 gem = pickups.getPickupPositions().getFirst();
+    playerStats.setHealth(30);
     player.setPosition(gem.mulAdd(player.getScale(), -0.5f));
     advanceEntities(entities, time, 0.01f);
     advanceEntities(entities, time, 0.36f);
 
     assertEquals(1, pickups.getPickupCount());
+    assertEquals(45, playerStats.getHealth());
     assertTrue(shield.isActive());
     assertEquals(6, shield.getDurability());
     ServiceLocator.getRenderService().render(batch);
@@ -309,7 +316,7 @@ class NPCFactoryTest {
 
     assertTrue(shield.getDurability() < 6);
     assertTrue(shield.isActive());
-    assertEquals(100, playerStats.getHealth());
+    assertEquals(45, playerStats.getHealth());
     stats.setHealth(0);
     ServiceLocator.getRenderService().render(batch);
 

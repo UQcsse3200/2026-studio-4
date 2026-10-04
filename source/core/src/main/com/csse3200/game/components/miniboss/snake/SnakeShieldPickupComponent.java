@@ -1,5 +1,6 @@
 package com.csse3200.game.components.miniboss.snake;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -36,6 +37,7 @@ public class SnakeShieldPickupComponent extends RenderComponent {
   private final Random random;
   private final List<Gem> gems = new ArrayList<>();
   private Rectangle bounds;
+  private Camera camera;
   private GameTime time;
   private TextureRegion[] frames;
   private TextureRegion[] spawnFrames;
@@ -43,6 +45,7 @@ public class SnakeShieldPickupComponent extends RenderComponent {
   private boolean active;
   private boolean stopped;
   private boolean fresh;
+  private boolean preferNearby = true;
 
   public SnakeShieldPickupComponent(Entity target, SnakeMiniBossConfig config) {
     this(target, config, new Random());
@@ -57,6 +60,11 @@ public class SnakeShieldPickupComponent extends RenderComponent {
   /** Copies the room bounds so later changes to the caller's rectangle cannot move the drops. */
   public void setArenaBounds(Rectangle bounds) {
     this.bounds = bounds == null ? null : new Rectangle(bounds);
+  }
+
+  /** Uses the live gameplay camera; null resolves the currently registered world camera. */
+  public void setCamera(Camera camera) {
+    this.camera = camera;
   }
 
   @Override
@@ -74,6 +82,7 @@ public class SnakeShieldPickupComponent extends RenderComponent {
     active = true;
     fresh = true;
     spawnAge = 0f;
+    preferNearby = true;
     int initial = Math.min(config.shieldGemInitialCount, config.shieldGemMaxActive);
     for (int i = 0; i < initial; i++) {
       spawnGem();
@@ -128,6 +137,7 @@ public class SnakeShieldPickupComponent extends RenderComponent {
         if (shield != null) {
           gems.remove(i);
           shield.refill();
+          healIfLowHealth();
         }
       }
     }
@@ -145,6 +155,24 @@ public class SnakeShieldPickupComponent extends RenderComponent {
         && SnakePoisonCollision.wallFraction(centre, gem.position, 0f, null) > 1f;
   }
 
+  private void healIfLowHealth() {
+    CombatStatsComponent stats = target.getComponent(CombatStatsComponent.class);
+    if (stats == null || stats.isDead() || stats.getMaxHealth() <= 0) {
+      return;
+    }
+    int health = stats.getHealth();
+    int maximum = stats.getMaxHealth();
+    if (health >= maximum * config.shieldGemHealThreshold) {
+      return;
+    }
+    int restored = Math.max(1, Math.round(maximum * config.shieldGemHealFraction));
+    int cap = Math.min(maximum, (int) Math.floor(maximum * config.shieldGemHealCap));
+    int result = (int) Math.min(cap, (long) health + restored);
+    if (result > health) {
+      stats.setHealth(result);
+    }
+  }
+
   private void spawnGem() {
     if (gems.size() >= config.shieldGemMaxActive) {
       return;
@@ -152,30 +180,30 @@ public class SnakeShieldPickupComponent extends RenderComponent {
     Vector2 playerCentre = target.getCenterPosition();
     Vector2 scale = target.getScale();
     float clearance = Math.max(scale.x, scale.y) * 0.5f;
-    if (bounds != null && (bounds.width <= clearance * 2f || bounds.height <= clearance * 2f)) {
+    Camera currentCamera = camera == null ? ServiceLocator.getWorldCamera() : camera;
+    Rectangle visibleArea =
+        SnakeGemSpawnArea.visibleArea(
+                currentCamera, bounds, Math.max(clearance, SPAWN_SIZE / 2f + 0.25f))
+            .orElse(null);
+    if (visibleArea == null) {
       return;
     }
     for (int attempt = 0; attempt < PLACEMENT_ATTEMPTS; attempt++) {
-      Vector2 candidate = randomPosition(playerCentre, clearance);
-      if (candidate.dst2(playerCentre) >= 1.25f * 1.25f
+      Vector2 candidate =
+          SnakeGemSpawnArea.sample(random, visibleArea, playerCentre, preferNearby, attempt);
+      if (visibleArea.contains(candidate)
+          && (attempt >= PLACEMENT_ATTEMPTS / 2
+              || SnakeGemSpawnArea.inPreferredBand(candidate, playerCentre, preferNearby))
+          && candidate.dst2(playerCentre) >= 1.25f * 1.25f
           && candidate.dst2(entity.getCenterPosition()) >= 1f
           && gems.stream().noneMatch(gem -> gem.position.dst2(candidate) < 1f)
           && SnakePoisonCollision.wallFraction(candidate, candidate, clearance, bounds) > 1f
           && SnakePoisonCollision.wallFraction(playerCentre, candidate, 0f, null) > 1f) {
         gems.add(new Gem(candidate));
+        preferNearby = !preferNearby;
         return;
       }
     }
-  }
-
-  private Vector2 randomPosition(Vector2 playerCentre, float clearance) {
-    if (bounds == null) {
-      float radius = 2f + random.nextFloat() * 3f;
-      return new Vector2(radius, 0f).rotateDeg(random.nextFloat() * 360f).add(playerCentre);
-    }
-    return new Vector2(
-        bounds.x + clearance + random.nextFloat() * (bounds.width - clearance * 2f),
-        bounds.y + clearance + random.nextFloat() * (bounds.height - clearance * 2f));
   }
 
   private boolean encounterEnded() {

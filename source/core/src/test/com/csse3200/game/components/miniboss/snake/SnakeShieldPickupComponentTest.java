@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -52,6 +53,7 @@ class SnakeShieldPickupComponentTest {
   private SnakeShieldComponent shield;
   private SnakeShieldPickupComponent pickups;
   private World world;
+  private OrthographicCamera camera;
 
   @BeforeEach
   void setUp() {
@@ -59,6 +61,10 @@ class SnakeShieldPickupComponentTest {
     renderer = mock(RenderService.class);
     ServiceLocator.registerTimeSource(time);
     ServiceLocator.registerRenderService(renderer);
+    camera = new OrthographicCamera(20f, 20f);
+    camera.position.set(0f, 0f, 0f);
+    camera.update();
+    ServiceLocator.registerWorldCamera(camera);
     resources = new ResourceService();
     resources.loadTextures(
         new String[] {
@@ -136,22 +142,27 @@ class SnakeShieldPickupComponentTest {
   }
 
   @Test
-  void collectsOnlyAfterAppearanceFinishesAndRefillsOnceForEachGem() {
+  void collectsAfterAppearanceRefillsShieldAndRechecksHealingThresholdForEachGem() {
+    CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
+    stats.setHealth(30);
     pickups.start();
     tick(0.01f);
     List<Vector2> positions = pickups.getPickupPositions();
     placePlayerAt(positions.getFirst());
     tick(0.34f);
     verify(shield, never()).refill();
+    assertEquals(30, stats.getHealth());
     tick(0.02f);
     assertEquals(1, pickups.getPickupCount());
     verify(shield).refill();
+    assertEquals(45, stats.getHealth());
     tick(0.1f);
     verify(shield).refill();
     placePlayerAt(positions.getLast());
     tick(0.1f);
     assertEquals(0, pickups.getPickupCount());
     verify(shield, times(2)).refill();
+    assertEquals(45, stats.getHealth());
   }
 
   @Test
@@ -234,14 +245,118 @@ class SnakeShieldPickupComponentTest {
   }
 
   @Test
-  void fallsBackToBoundedNearbyDropsWhenRoomBoundsAreUnavailable() {
+  void stillUsesVisibleCameraBoundsWhenRoomBoundsAreUnavailable() {
     pickups.setArenaBounds(null);
+    camera.viewportWidth = 12f;
+    camera.viewportHeight = 8f;
+    camera.zoom = 0.75f;
+    camera.update();
     pickups.start();
     assertEquals(2, pickups.getPickupCount());
     for (Vector2 position : pickups.getPickupPositions()) {
-      float distance = position.dst(player.getCenterPosition());
-      assertTrue(distance >= 2f && distance <= 5f);
+      assertInside(position, new Rectangle(-3.7f, -2.2f, 7.4f, 4.4f));
     }
+  }
+
+  @Test
+  void initiallyAlternatesNearbyAndFartherDropsWithinTheCurrentView() {
+    pickups.start();
+    List<Vector2> positions = pickups.getPickupPositions();
+    assertEquals(2, positions.size());
+    float near = positions.getFirst().dst(player.getCenterPosition());
+    float far = positions.getLast().dst(player.getCenterPosition());
+    assertTrue(near >= 1.5f && near <= 3.5f);
+    assertTrue(far >= 3.5f);
+    for (Vector2 position : positions) {
+      assertInside(position, new Rectangle(-7.2f, -7.2f, 14.4f, 14.4f));
+    }
+  }
+
+  @Test
+  void laterSpawnsFollowCameraPositionZoomAndRoomEdgesWithoutMovingExistingGems() {
+    config.shieldGemMaxActive = 8;
+    pickups.start();
+    tick(0.01f);
+    List<Vector2> initial = pickups.getPickupPositions();
+    camera.position.set(6f, 0f, 0f);
+    camera.zoom = 0.5f;
+    camera.update();
+    tick(5f);
+    List<Vector2> firstMove = pickups.getPickupPositions();
+    assertEquals(3, firstMove.size());
+    assertEquals(initial, firstMove.subList(0, 2));
+    assertInside(firstMove.getLast(), new Rectangle(1.8f, -4.2f, 5.4f, 8.4f));
+
+    camera.position.set(-4f, 4f, 0f);
+    camera.zoom = 0.4f;
+    camera.update();
+    tick(5f);
+    List<Vector2> secondMove = pickups.getPickupPositions();
+    assertEquals(4, secondMove.size());
+    assertEquals(firstMove, secondMove.subList(0, 3));
+    assertInside(secondMove.getLast(), new Rectangle(-7.2f, 0.8f, 6.4f, 6.4f));
+  }
+
+  @Test
+  void waitsForWorldCameraInitializationAndSkipsViewsWithoutSafeRoomSpace() {
+    ServiceLocator.registerWorldCamera(null);
+    pickups.start();
+    tick(0.01f);
+    tick(5f);
+    assertEquals(0, pickups.getPickupCount());
+    ServiceLocator.registerWorldCamera(camera);
+    tick(5f);
+    assertEquals(1, pickups.getPickupCount());
+    pickups.clear();
+    camera.position.set(100f, 100f, 0f);
+    camera.update();
+    pickups.start();
+    assertEquals(0, pickups.getPickupCount());
+    pickups.clear();
+    camera.position.set(0f, 0f, 0f);
+    camera.zoom = 0.05f;
+    camera.update();
+    pickups.start();
+    assertEquals(0, pickups.getPickupCount());
+  }
+
+  @Test
+  void healsOnlyBelowFortyPercentWhileEveryGemStillRefillsTheShield() {
+    CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
+    stats.setHealth(39);
+    collectNewGem();
+    assertEquals(54, stats.getHealth());
+    stats.setHealth(40);
+    collectNewGem();
+    assertEquals(40, stats.getHealth());
+    stats.setHealth(100);
+    collectNewGem();
+    assertEquals(100, stats.getHealth());
+    verify(shield, times(3)).refill();
+  }
+
+  @Test
+  void roundsHealingToWholeHealthCapsAtNinetyPercentAndNeverLowersExistingHealth() {
+    CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
+    stats.setMaxHealth(105);
+    stats.setHealth(30);
+    collectNewGem();
+    assertEquals(46, stats.getHealth());
+    stats.setHealth(30);
+    config.shieldGemHealFraction = 1f;
+    collectNewGem();
+    assertEquals(94, stats.getHealth());
+    stats.setHealth(100);
+    config.shieldGemHealThreshold = 1f;
+    collectNewGem();
+    assertEquals(100, stats.getHealth());
+    config.shieldGemHealThreshold = 0.4f;
+    config.shieldGemHealFraction = 0.15f;
+    stats.setMaxHealth(3);
+    stats.setHealth(1);
+    collectNewGem();
+    assertEquals(2, stats.getHealth());
+    verify(shield, times(4)).refill();
   }
 
   @Test
@@ -269,6 +384,7 @@ class SnakeShieldPickupComponentTest {
     player.getComponent(CombatStatsComponent.class).setHealth(0);
     tick(10f);
     assertEquals(0, pickups.getPickupCount());
+    assertEquals(0, player.getComponent(CombatStatsComponent.class).getHealth());
     verify(shield, never()).refill();
   }
 
@@ -345,6 +461,25 @@ class SnakeShieldPickupComponentTest {
     draws.clear();
     pickups.render(batch);
     assertTrue(draws.isEmpty());
+  }
+
+  private void collectNewGem() {
+    config.shieldGemInitialCount = 1;
+    pickups.clear();
+    pickups.start();
+    assertEquals(1, pickups.getPickupCount());
+    placePlayerAt(pickups.getPickupPositions().getFirst());
+    tick(0.01f);
+    tick(0.36f);
+    assertEquals(0, pickups.getPickupCount());
+  }
+
+  private static void assertInside(Vector2 position, Rectangle rectangle) {
+    float epsilon = 0.0001f;
+    assertTrue(position.x >= rectangle.x - epsilon);
+    assertTrue(position.x <= rectangle.x + rectangle.width + epsilon);
+    assertTrue(position.y >= rectangle.y - epsilon);
+    assertTrue(position.y <= rectangle.y + rectangle.height + epsilon);
   }
 
   private SpriteBatch recordingBatch(Color colour, List<Draw> draws) {

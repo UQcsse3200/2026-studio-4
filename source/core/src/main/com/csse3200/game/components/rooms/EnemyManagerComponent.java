@@ -109,6 +109,9 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         snake
             .getComponent(SnakeShieldPickupComponent.class)
             .setArenaBounds(new Rectangle(0f, 0f, roomSize.x, roomSize.y));
+        if (camera != null) {
+          snake.getComponent(SnakeShieldPickupComponent.class).setCamera(camera.getCamera());
+        }
         return snake;
       // Greek
       case GOLEM:

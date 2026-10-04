@@ -127,6 +127,9 @@ available when the appearance animation finishes.
 | Maximum gems on the ground | 3 |
 | Gem lifetime | 12 seconds |
 | Shield capacity per pickup | 6 poison hits |
+| Healing eligibility | Current health strictly below 40% of maximum, checked per pickup |
+| Healing per eligible pickup | 15% of maximum health, rounded to the nearest whole point (at least 1) |
+| Healing cap | 90% of maximum health, rounded down |
 
 A pickup fills one durability bar beside the player and shows the selected
 translucent green shield image. A second pickup refills that same bar; it does
@@ -135,15 +138,33 @@ intercepted Snake poison projectile spends one point and fades without damage
 or the player's red/green hurt effects. The shield briefly brightens on a block.
 When empty, both the shield and its bar disappear until another gem is collected.
 
+Each pickup also checks the player's current health. Below 40% of maximum,
+it restores 15% of maximum without exceeding the 90% cap or reducing existing
+health. This does not revive a dead player. Eligibility is checked again for
+every gem: at a maximum of 100 health, 30 becomes 45, then a second pickup only
+refills the shield because the player is no longer below 40. Exactly 40% does
+not receive healing. The cap is a safeguard, not a target for continued healing.
+
 Only Snake poison projectiles consult this shield. The 5-damage emergence
 strike and other damage still use their normal rules. Projectile collision
 checks the nearest wall, shield and player, so shots cannot consume durability
 through a wall. Once depleted, later projectiles can damage the player normally.
 
-Gem placement checks the player's footprint against room bounds and static
-walls, leaves space around the player and existing gems, and requires a clear
-approach from the player. If no suitable position is found, it waits until the
-next drop interval. A slow frame never produces a burst of missed drops.
+New gem positions are limited to the current gameplay camera's visible area,
+intersected with the room bounds. A margin keeps the entire appearance effect
+inside the view. Placement reads the camera's live position, viewport and zoom
+for every drop, rather than assuming the camera is centred on the player.
+It alternates a preferred nearby band (1.5 to 3.5 world units from the player)
+with a farther visible position (at least 3.5 units). After sixteen unsuccessful
+preferred attempts, it tries any safe visible position. Existing gems remain
+at their original world positions when the player and camera move.
+
+Placement checks the player's footprint against room bounds and static walls,
+leaves space around the player, Snake and existing gems, and requires a clear
+approach from the player. If the camera is unavailable or no safe visible
+position exists, it skips that drop and retries at the next interval; it never
+falls back to spawning outside the view. A slow frame never produces a burst
+of missed drops.
 Gem timers and collection continue while the Snake is frozen or the player
 is concealed; shield durability is spent only on intercepted poison. A paused
 game does not advance gem timers. Death of either participant
@@ -157,8 +178,9 @@ dodging and single-hit damage, long-frame transitions, freeze and concealment,
 death cancellation, physics activation, bounded emergence selection, obstacle
 avoidance, hit feedback and sprite selection, the half-health transition,
 ordered poison volleys, non-homing flight, obstacle collision and single-hit
-damage, effect lifetime and cleanup, gem collection and refill, poison-only
-shield absorption and depletion, and factory wiring.
+damage, effect lifetime and cleanup, gem collection and refill, camera movement
+and zoom, near/far placement and room intersections, low-health healing and
+its boundaries, poison-only shield absorption and depletion, and factory wiring.
 
 Run from `source`:
 
@@ -205,6 +227,13 @@ For playtesting in Dungeon 2's Snake room:
     and unchanged shield durability. Near walls, gems must be reachable and
     must not be collected through stone. Defeat the Snake or leave the room
     with a partially filled shield: the shield, bar and leftover gems must clear.
+14. Move towards room edges while new gems appear. New drops and their green
+    bursts must be fully visible, with a mix of nearby and farther reachable
+    positions. Already spawned gems must stay in place as the camera moves.
+15. With maximum health 100, collect a gem at 30 health: expect 45 health and a
+    full shield bar. Collect another without taking damage: health stays 45.
+    Exactly 40 health must not trigger healing, and a full-health player must
+    never lose health on collection.
 
 If local invulnerability is enabled, it will intentionally mask the player
 health checks above. Keep local test-only edits outside the feature commit.
