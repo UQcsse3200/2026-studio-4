@@ -88,12 +88,14 @@ public class MainGameScreen extends ScreenAdapter {
     if (world == null) {
       throw new IllegalStateException("Unable to load configs/rooms.json");
     }
+
     roomManager = new RoomManager(world, player, renderer.getCamera());
     roomManager.create();
 
-    createUI();
     runTimer = ServiceLocator.getRunTimer();
     runTimer.startRun();
+
+    createUI();
   }
 
   @Override
@@ -101,8 +103,8 @@ public class MainGameScreen extends ScreenAdapter {
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     roomManager.update();
-    runTimer.update();
     renderer.render();
+    runTimer.update();
   }
 
   @Override

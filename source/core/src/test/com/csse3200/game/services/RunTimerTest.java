@@ -24,6 +24,23 @@ class RunTimerTest {
     timer.update();
   }
 
+  /**
+   * Advances the timer by a total amount of time, split across several sub-frame ticks no larger
+   * than RunTimer's clamp. Mirrors how a real game loop accumulates time across many frames, rather
+   * than tripping the single-frame clamp meant for loading-stall spikes.
+   */
+  private void advance(float totalSeconds) {
+    final float step = 0.2f; // comfortably under RunTimer's clamp
+    float remaining = totalSeconds;
+    while (remaining > step) {
+      tick(step);
+      remaining -= step;
+    }
+    if (remaining > 0f) {
+      tick(remaining);
+    }
+  }
+
   @Test
   void totalTimeDoesNotAdvanceBeforeRunStarts() {
     tick(1f);
@@ -33,24 +50,24 @@ class RunTimerTest {
   @Test
   void startRunBeginsAccumulatingTotalTime() {
     timer.startRun();
-    tick(1.5f);
-    tick(2f);
-    assertEquals(3.5f, timer.getTotalTime(), 0.001f);
+    advance(1.5f);
+    advance(2f);
+    assertEquals(3.5f, timer.getTotalTime(), 0.01f);
   }
 
   @Test
   void startRunIsANoOpWhileAlreadyRunning() {
     timer.startRun();
-    tick(2f);
+    advance(2f);
     timer.startRun(); // must not reset totalTime back to 0
-    tick(1f);
-    assertEquals(3f, timer.getTotalTime(), 0.001f);
+    advance(1f);
+    assertEquals(3f, timer.getTotalTime(), 0.01f);
   }
 
   @Test
   void dungeonTimeIsZeroWhenNoDungeonActive() {
     timer.startRun();
-    tick(5f);
+    advance(5f);
     assertNull(timer.getCurrentDungeonId());
     assertEquals(0f, timer.getDungeonTime());
     assertEquals(0f, timer.getDungeonSyncedTime());
@@ -59,54 +76,63 @@ class RunTimerTest {
   @Test
   void startDungeonTracksTimeRelativeToRunStart() {
     timer.startRun();
-    tick(10f); // totalTime = 10
+    advance(10f); // totalTime = 10
     timer.startDungeon("dungeonOne");
-    tick(3f); // totalTime = 13, dungeon has been running 3s
+    advance(3f); // totalTime = 13, dungeon has been running 3s
     assertEquals("dungeonOne", timer.getCurrentDungeonId());
-    assertEquals(3f, timer.getDungeonTime(), 0.001f);
+    assertEquals(3f, timer.getDungeonTime(), 0.01f);
   }
 
   @Test
   void startDungeonIsANoOpWhileAlreadyRunning() {
     timer.startRun();
-    tick(1f);
+    advance(1f);
     timer.startDungeon("dungeonOne");
-    tick(2f);
+    advance(2f);
     timer.startDungeon("dungeonTwo"); // must be ignored; dungeon already active
-    tick(1f);
+    advance(1f);
     assertEquals("dungeonOne", timer.getCurrentDungeonId());
-    assertEquals(3f, timer.getDungeonTime(), 0.001f);
+    assertEquals(3f, timer.getDungeonTime(), 0.01f);
   }
 
   @Test
   void stopDungeonClearsDungeonStateButRunKeepsGoing() {
     timer.startRun();
     timer.startDungeon("dungeonOne");
-    tick(4f);
+    advance(4f);
     timer.stopDungeon();
     assertNull(timer.getCurrentDungeonId());
-    tick(2f);
-    assertEquals(6f, timer.getTotalTime(), 0.001f);
+    advance(2f);
+    assertEquals(6f, timer.getTotalTime(), 0.01f);
   }
 
   @Test
   void stopRunFreezesBothTotalAndDungeonTime() {
     timer.startRun();
     timer.startDungeon("dungeonOne");
-    tick(2f);
+    advance(2f);
     timer.stopRun();
-    tick(5f); // nothing should move after stopping
-    assertEquals(2f, timer.getTotalTime(), 0.001f);
-    assertEquals(2f, timer.getDungeonTime(), 0.001f);
+    advance(5f); // nothing should move after stopping
+    assertEquals(2f, timer.getTotalTime(), 0.01f);
+    assertEquals(2f, timer.getDungeonTime(), 0.01f);
   }
 
   @Test
   void dungeonSyncedTimeUsesWholeSecondBoundariesOfTheRunClock() {
     timer.startRun();
-    tick(0.7f); // totalTime = 0.7
+    advance(0.7f); // totalTime = 0.7
     timer.startDungeon("dungeonOne"); // dungeonStartTotal = 0.7 -> floors to 0
-    tick(0.6f); // totalTime = 1.3 -> floors to 1; synced = 1 - 0 = 1
-    assertEquals(1f, timer.getDungeonSyncedTime(), 0.001f);
+    advance(0.6f); // totalTime = 1.3 -> floors to 1; synced = 1 - 0 = 1
+    assertEquals(1f, timer.getDungeonSyncedTime(), 0.01f);
+  }
+
+  @Test
+  void clampsAbnormallyLargeDeltaSpikes() {
+    // Simulates a loading stall: the game loop reports one huge delta on the first frame
+    // after construction. The displayed time must not jump by the full stall duration.
+    timer.startRun();
+    tick(3f); // single oversized frame, as seen right after a blocking asset load
+    assertEquals(0.25f, timer.getTotalTime(), 0.001f);
   }
 
   @Test

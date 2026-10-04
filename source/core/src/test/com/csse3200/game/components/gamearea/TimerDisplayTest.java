@@ -61,6 +61,22 @@ class TimerDisplayTest {
     runTimer.update();
   }
 
+  /**
+   * Advances the timer by a total amount of time, split across several sub-frame ticks no larger
+   * than RunTimer's clamp, mirroring how a real game loop accumulates time across many frames.
+   */
+  private void advance(float totalSeconds) {
+    final float step = 0.2f; // comfortably under RunTimer's clamp
+    float remaining = totalSeconds;
+    while (remaining > step) {
+      tick(step);
+      remaining -= step;
+    }
+    if (remaining > 0f) {
+      tick(remaining);
+    }
+  }
+
   @Test
   void createsPanelWithDefaultLabels() {
     assertEquals("00:00", label("runTime").getText().toString());
@@ -71,7 +87,7 @@ class TimerDisplayTest {
   @Test
   void drawShowsRunTimeOnceRunStarts() {
     runTimer.startRun();
-    tick(75f); // 1 minute 15 seconds
+    advance(75f); // 1 minute 15 seconds
     display.draw(mock(SpriteBatch.class));
     assertEquals("01:15", label("runTime").getText().toString());
   }
@@ -88,9 +104,9 @@ class TimerDisplayTest {
   @Test
   void drawShowsDungeonTimeAndLabelWhenDungeonActive() {
     runTimer.startRun();
-    tick(10f);
+    advance(10f);
     runTimer.startDungeon("dungeonOne");
-    tick(42f);
+    advance(42f);
     display.draw(mock(SpriteBatch.class));
     assertEquals("00:42", label("dungeonTime").getText().toString());
     assertEquals("DUNGEON: 1", label("dungeonCaption").getText().toString());
