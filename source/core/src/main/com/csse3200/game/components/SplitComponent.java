@@ -47,16 +47,16 @@ public class SplitComponent extends Component {
     int halfAttack = Math.max(1, stats.getBaseAttack() / 2);
 
     ServiceLocator.getEntityService()
-            .schedule(
-                    () -> {
-                      // Small offset so the two children don't spawn stacked on the same
-                      // physics body (which caused a violent Box2D separation push,
-                      // especially against a wall, making the children look
-                      // "hyperactive"). Kept small enough to stay inside the room
-                      // even when the parent died right at a room edge.
-                      spawnChild(-0.15f, halfHealth, halfAttack);
-                      spawnChild(0.15f, halfHealth, halfAttack);
-                    });
+        .schedule(
+            () -> {
+              // Small offset so the two children don't spawn stacked on the same
+              // physics body (which caused a violent Box2D separation push,
+              // especially against a wall, making the children look
+              // "hyperactive"). Kept small enough to stay inside the room
+              // even when the parent died right at a room edge.
+              spawnChild(-0.15f, halfHealth, halfAttack);
+              spawnChild(0.15f, halfHealth, halfAttack);
+            });
     ServiceLocator.getEntityService().scheduleDisposal(entity);
     hasSplit = true;
   }
@@ -83,4 +83,3 @@ public class SplitComponent extends Component {
     entity.getEvents().trigger("spawnChildren", child);
   }
 }
-

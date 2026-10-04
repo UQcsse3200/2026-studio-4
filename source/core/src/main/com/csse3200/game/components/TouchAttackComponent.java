@@ -136,7 +136,7 @@ public class TouchAttackComponent extends Component {
   /** Deals damage and knockback to a target we are (or still are) touching. */
   private void attack(Entity target) {
     if (PhysicsLayer.contains(targetLayer, PhysicsLayer.PLAYER)
-            && StatusEffectsControllerComponent.isConcealed(target)) {
+        && StatusEffectsControllerComponent.isConcealed(target)) {
       // A hostile cannot find a concealed target, so it neither damages nor shoves them.
       return;
     }
@@ -161,4 +161,3 @@ public class TouchAttackComponent extends Component {
     }
   }
 }
-

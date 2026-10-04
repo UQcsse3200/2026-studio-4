@@ -61,9 +61,9 @@ class TouchAttackComponentTest {
     Entity entity = createAttacker(targetLayer);
     // Target does not have a combat component
     Entity target =
-            new Entity()
-                    .addComponent(new PhysicsComponent())
-                    .addComponent(new HitboxComponent().setLayer(targetLayer));
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(targetLayer));
     target.create();
 
     Fixture entityFixture = entity.getComponent(HitboxComponent.class).getFixture();
@@ -131,11 +131,11 @@ class TouchAttackComponentTest {
 
   Entity createAttacker(short targetLayer) {
     Entity entity =
-            new Entity()
-                    .addComponent(new TouchAttackComponent(targetLayer))
-                    .addComponent(new CombatStatsComponent(100, 10))
-                    .addComponent(new PhysicsComponent())
-                    .addComponent(new HitboxComponent());
+        new Entity()
+            .addComponent(new TouchAttackComponent(targetLayer))
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent());
     entity.create();
     return entity;
   }
@@ -146,10 +146,10 @@ class TouchAttackComponentTest {
 
   Entity createTarget(short layer, int health) {
     Entity target =
-            new Entity()
-                    .addComponent(new CombatStatsComponent(health, 0))
-                    .addComponent(new PhysicsComponent())
-                    .addComponent(new HitboxComponent().setLayer(layer));
+        new Entity()
+            .addComponent(new CombatStatsComponent(health, 0))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(layer));
     target.create();
     return target;
   }
