@@ -1,5 +1,5 @@
 {
-  "health": 100000000000,
+  "health": 100,
   "baseAttack": 10,
   "movementSpeed": 3.0,
   "attackSpeed": 1.0,
