@@ -99,6 +99,8 @@ class SnakePoisonVolleyComponentTest {
 
   @Test
   void emitsFourOffsetFansUsingOneLockedAimAndIgnoresDuplicateWaves() {
+    Vector2 mouth = new Vector2(0.78125f, 0.71875f);
+    float lockedAngle = player.getCenterPosition().sub(mouth).angleDeg();
     poison.beginSpit();
     player.setPosition(0f, 8f);
     for (int wave = 0; wave < 4; wave++) {
@@ -112,14 +114,16 @@ class SnakePoisonVolleyComponentTest {
     assertEquals(16, draws.size());
     for (int wave = 0; wave < 4; wave++) {
       for (int shot = 0; shot < 4; shot++) {
-        float expected = (324f + wave * 6f + shot * 18f) % 360f;
+        float expected = (lockedAngle + 324f + wave * 6f + shot * 18f) % 360f;
         assertEquals(expected, draws.get(wave * 4 + shot).angle(), 0.001f);
+        assertTrue(draws.get(wave * 4 + shot).centre().epsilonEquals(mouth, 0.000001f));
       }
     }
   }
 
   @Test
   void fliesStraightWithoutRetargetingOrFollowingTheSnake() {
+    Vector2 lockedDirection = player.getCenterPosition().sub(new Vector2(0.78125f, 0.71875f)).nor();
     fireOne();
     render();
     Vector2 start = draws.getFirst().centre();
@@ -128,9 +132,50 @@ class SnakePoisonVolleyComponentTest {
     primeFlight();
     tick(0.5f);
     render();
-    assertEquals(start.x + 1.5f, draws.getFirst().centre().x, 0.0001f);
-    assertEquals(start.y, draws.getFirst().centre().y, 0.0001f);
-    assertEquals(0f, draws.getFirst().angle());
+    Vector2 expected = start.cpy().mulAdd(lockedDirection, 1.5f);
+    assertTrue(draws.getFirst().centre().epsilonEquals(expected, 0.0001f));
+    assertEquals(lockedDirection.angleDeg(), draws.getFirst().angle(), 0.001f);
+  }
+
+  @Test
+  void chargeAndShotsStayAtTheMouthForPlayersOnAllFourSides() {
+    oneShotConfig();
+    Vector2 mouth = new Vector2(0.78125f, 0.71875f);
+    for (Vector2 offset :
+        new Vector2[] {
+          new Vector2(8f, 0f), new Vector2(-8f, 0f), new Vector2(0f, 8f), new Vector2(0f, -8f)
+        }) {
+      poison.clear();
+      player.setPosition(mouth.cpy().add(offset).mulAdd(player.getScale(), -0.5f));
+      poison.beginSpit();
+      poison.fireVolley(0);
+      render();
+
+      assertEquals(2, draws.size());
+      assertSame(texture(0), draws.getFirst().region().getTexture());
+      for (Draw draw : draws) {
+        assertTrue(draw.centre().epsilonEquals(mouth, 0.000001f));
+        assertEquals(offset.angleDeg(), draw.angle(), 0.001f);
+      }
+    }
+  }
+
+  @Test
+  void mouthAnchorFollowsTheSnakesPositionAndNonUniformScale() {
+    oneShotConfig();
+    snake.setPosition(3f, -2f);
+    snake.setScale(2f, 4f);
+    poison.beginSpit();
+    poison.fireVolley(0);
+    render();
+
+    assertEquals(2, draws.size());
+    Vector2 mouth = new Vector2(4.5625f, 0.875f);
+    float expectedAngle = player.getCenterPosition().sub(mouth).angleDeg();
+    for (Draw draw : draws) {
+      assertTrue(draw.centre().epsilonEquals(mouth, 0.000001f));
+      assertEquals(expectedAngle, draw.angle(), 0.001f);
+    }
   }
 
   @Test
@@ -145,14 +190,14 @@ class SnakePoisonVolleyComponentTest {
     poison.endSpit();
     tick(1.5f);
     render();
-    assertTrue(draws.getFirst().centre().epsilonEquals(0.95f, 0.5f, 0.000001f));
+    assertTrue(draws.getFirst().centre().epsilonEquals(0.78125f, 0.71875f, 0.000001f));
     assertEquals(0, draws.getFirst().region().getRegionX());
     assertEquals(100, playerStats.getHealth());
     tick(0.19f);
     render();
     assertEquals(64, draws.getFirst().region().getRegionX());
     assertEquals(128, draws.getFirst().region().getRegionY());
-    assertTrue(draws.getFirst().centre().epsilonEquals(0.95f, 0.5f, 0.000001f));
+    assertTrue(draws.getFirst().centre().epsilonEquals(0.78125f, 0.71875f, 0.000001f));
   }
 
   @Test
@@ -221,6 +266,15 @@ class SnakePoisonVolleyComponentTest {
   }
 
   @Test
+  void willNotCreateShotsWhenTheMouthExtendsBeyondTheRoomBoundary() {
+    poison.setArenaBounds(new Rectangle(0f, 0f, 0.8f, 1f));
+
+    fireOne();
+
+    assertEquals(0, poison.getProjectileCount());
+  }
+
+  @Test
   void immunityAndConcealmentDoNotTriggerGreenHitFeedback() {
     player.setPosition(2f, 0f);
     playerStats.setInvulnerable(true);
@@ -247,6 +301,7 @@ class SnakePoisonVolleyComponentTest {
     primeFlight();
     render();
     Vector2 before = draws.getFirst().centre();
+    Vector2 direction = player.getCenterPosition().sub(before).nor();
     for (float delta : new float[] {0f, -1f, Float.NaN, Float.POSITIVE_INFINITY}) {
       tick(delta);
     }
@@ -258,7 +313,7 @@ class SnakePoisonVolleyComponentTest {
     snakeEffects.removeStatusEffect(freeze);
     tick(0.1f);
     render();
-    assertEquals(before.x + 0.3f, draws.getFirst().centre().x, 0.0001f);
+    assertTrue(draws.getFirst().centre().epsilonEquals(before.mulAdd(direction, 0.3f), 0.0001f));
   }
 
   @Test

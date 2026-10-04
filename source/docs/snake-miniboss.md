@@ -65,6 +65,11 @@ tongue-out pose at (96, 0) in `images/snake.png`. This source pose has one frame
 it is held throughout the windup, volleys and short spit recovery. The ordinary
 emergence window restores `default`, and burrowing hides the character again.
 
+The windup effect and every new projectile originate at this pose's mouth,
+at (25, 9) from the top-left of the 32 x 32 frame. This anchor scales and moves
+with the Snake, independent of the player's direction; aiming starts at the
+mouth rather than the body's centre. Already-fired shots move independently.
+
 | Setting | Default |
 | --- | --- |
 | Spit windup | 0.6 seconds, with a green forming effect |
@@ -134,6 +139,7 @@ For playtesting in Dungeon 2's Snake room:
    space and the Snake must emerge at the marked position.
 6. Lower its health to half. After the current exposed window, watch for the
    horizontal tongue-out pose, windup and four waves of four larger green shots.
+   Stand on different sides: the windup and shots must originate at the mouth.
    Move sideways; the shots must continue straight instead of turning to follow
    you. After burrowing, the next emergence should restore the curled pose.
 7. Attack while it spits, then again underground. Only ground attacks should

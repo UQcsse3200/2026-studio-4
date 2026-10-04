@@ -21,7 +21,9 @@ public class SnakePoisonVolleyComponent extends RenderComponent {
   private static final float FORMING_DURATION = 0.2f;
   private static final float FLYING_FRAME_DURATION = 0.08f;
   private static final float FADING_DURATION = 0.28f;
-  private static final float MOUTH_OFFSET = 0.45f;
+  // The right-facing chase pose's mouth is at (25, 9) from the top-left of its 32px cell.
+  private static final float MOUTH_X = 25f / 32f;
+  private static final float MOUTH_Y = 23f / 32f;
   private static final float PLAYER_RADIUS_SCALE = 0.3f;
   private final Entity target;
   private final SnakeMiniBossConfig config;
@@ -60,7 +62,7 @@ public class SnakePoisonVolleyComponent extends RenderComponent {
     if (!canFire()) {
       return;
     }
-    aim.set(target.getCenterPosition()).sub(entity.getCenterPosition());
+    aim.set(target.getCenterPosition()).sub(mouthPosition());
     if (aim.isZero()) {
       aim.set(1f, 0f);
     } else {
@@ -232,7 +234,7 @@ public class SnakePoisonVolleyComponent extends RenderComponent {
 
   private Vector2 mouthPosition() {
     Vector2 scale = entity.getScale();
-    return entity.getCenterPosition().mulAdd(aim, Math.max(scale.x, scale.y) * MOUTH_OFFSET);
+    return entity.getPosition().add(scale.x * MOUTH_X, scale.y * MOUTH_Y);
   }
 
   // Preserve original green artwork rather than inheriting the Snake's tint or glow pass.
