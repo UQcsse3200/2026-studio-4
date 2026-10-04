@@ -8,15 +8,20 @@ It can be merged independently of the item identity/drop refactor in PR #198.
 
 ## Controls and behavior
 
-- **Tab** cycles Health, Shield, Speed and Strength, including empty slots, then
-  wraps to Health. The selected slot has a highlighted frame and pointer.
+- All four slots start empty. New consumable types fill the first empty slot in
+  pickup order; repeated pickups stack in the assigned slot. Using the last item
+  clears that slot without moving other items, and later pickups reuse the first
+  available gap.
+- **Tab** cycles physical slots 1 through 4, including empty slots, then wraps to
+  slot 1. The selected slot has a highlighted frame and pointer.
 - **Q** requests use of the selected potion through the existing effect
   component. Its existing validation owns consumption: empty stock, full-health
   healing attempts and other rejected uses do not remove an item.
 - Counts refresh from the existing `consumableInventoryChanged(ItemType, count)`
   event. Empty slots hide their icon, count and Q hint. Gold remains visible and
   follows the actual inventory balance.
-- The blue arc around Speed follows the existing effect's remaining time,
+- The blue arc follows Speed in whichever slot currently holds it and hides
+  when that slot clears or holds another item. It follows the existing effect's remaining time,
   including refresh, expiry and status-effect removal.
 - Existing **7 / 8 / 9 / 0** quick-use bindings remain available for compatibility.
   The weapon/spell hotbar and inventory book are unchanged.
@@ -38,10 +43,16 @@ cd source
 ./gradlew test spotlessCheck :desktop:compileJava --no-daemon
 ```
 
-Result on 2026-10-04: **1,322 tests in 193 suites; zero failures, errors or skipped
+Initial HUD integration result on 2026-10-04: **1,322 tests in 193 suites; zero failures, errors or skipped
 tests**. Formatting and desktop compilation passed.
 
-New coverage exercises the real enum-based inventory and effect components:
+Pickup-order update on 2026-10-04: `./gradlew test` passed **1,324 tests** with
+zero failures, errors or skipped tests. Regression coverage checks Shield picked
+first, duplicate stacking, clearing and reusing a gap without moving Strength,
+Q using the displayed item, and pickups made before player creation. The updated
+game also started successfully at the main menu.
+
+Coverage exercises the real enum-based inventory and effect components:
 quantity/visibility updates, successful and rejected Q use, four-slot selection
 and wrapping, shield/speed/strength effects, speed arc refresh/expiry/removal,
 Gold refresh, 1920×1080 / 1280×720 / 906×600 layouts and HUD replacement/disposal.

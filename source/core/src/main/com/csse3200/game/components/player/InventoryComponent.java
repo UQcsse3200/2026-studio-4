@@ -18,6 +18,8 @@ public class InventoryComponent extends Component {
   private int gold;
   private final List<Charm> charms;
   private final Map<ItemType, Integer> consumables;
+  public static final int CONSUMABLE_SLOT_COUNT = 4;
+  private final ItemType[] consumableSlots = new ItemType[CONSUMABLE_SLOT_COUNT];
 
   private InventoryDisplay display;
 
@@ -85,6 +87,14 @@ public class InventoryComponent extends Component {
     return consumables.getOrDefault(type, 0);
   }
 
+  /** Returns the item currently assigned to a physical HUD slot, or null when empty. */
+  public ItemType getConsumableSlot(int index) {
+    if (index < 0 || index >= CONSUMABLE_SLOT_COUNT) {
+      throw new IllegalArgumentException("Slot must be between 0 and 3");
+    }
+    return consumableSlots[index];
+  }
+
   public boolean hasConsumable(ItemType type) {
     return getConsumableCount(type) > 0;
   }
@@ -98,6 +108,14 @@ public class InventoryComponent extends Component {
   public void addConsumable(ItemType type, int quantity) {
     if (type == null || !type.isConsumable() || quantity <= 0) {
       return;
+    }
+    if (!hasConsumable(type)) {
+      for (int i = 0; i < consumableSlots.length; i++) {
+        if (consumableSlots[i] == null) {
+          consumableSlots[i] = type;
+          break;
+        }
+      }
     }
     int newCount = getConsumableCount(type) + quantity;
     consumables.put(type, newCount);
@@ -118,6 +136,12 @@ public class InventoryComponent extends Component {
     int newCount = currentCount - 1;
     if (newCount == 0) {
       consumables.remove(type);
+      for (int i = 0; i < consumableSlots.length; i++) {
+        if (consumableSlots[i] == type) {
+          consumableSlots[i] = null;
+          break;
+        }
+      }
     } else {
       consumables.put(type, newCount);
     }
