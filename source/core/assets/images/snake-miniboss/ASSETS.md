@@ -1,7 +1,8 @@
 # Snake miniboss art assets
 
-These files support the planned Dungeon 2 Snake miniboss improvements. This
-asset-only step does not register textures or change combat behaviour.
+These files support the planned second phase of the Dungeon 2 Snake miniboss.
+The first-phase burrow cycle uses the existing Snake atlas and code-drawn effects;
+the gem, shield and poison textures will be registered with the second phase.
 
 ## Animation layout
 
@@ -60,10 +61,12 @@ Its appearance, hit flash and fade can be controlled by the renderer later.
 
 Source pages checked on 2026-10-04.
 
-## Remaining visuals
+## First-phase visuals
 
-- Reuse the existing Snake character art for the enemy.
-- Ground warnings and the single green durability bar will be drawn in code.
-- Smoke N Dust 03 was considered for burrow visuals. Its source page prohibits
-  sprite redistribution, so its PNGs are not included in this public-repository
-  asset step. Resolve the burrow artwork before integrating that effect.
+- The enemy reuses `images/snake.atlas` and its existing character art.
+- `SnakeBurrowVisualComponent` draws green dust, short underground trails and a
+  fixed orange-red ground warning. It creates its small textures at runtime and
+  does not use third-party dust sprites.
+- Smoke N Dust 03 was considered for burrow visuals, but is not included because
+  its source page prohibits sprite redistribution.
+- The single green shield-durability bar remains part of the second-phase work.

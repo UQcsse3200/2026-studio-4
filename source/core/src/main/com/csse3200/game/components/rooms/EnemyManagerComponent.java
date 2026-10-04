@@ -1,11 +1,13 @@
 package com.csse3200.game.components.rooms;
 
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
+import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
@@ -94,7 +96,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         PhysicsUtils.setScaledCollider(mummy, 0.3f, 0.3f);
         return mummy;
       case SNAKE_MINI_BOSS:
-        return NPCFactory.createSnakeMiniBoss(target);
+        Entity snake = NPCFactory.createSnakeMiniBoss(target);
+        Vector2 roomSize = terrain.tileToWorldPosition(terrain.getMapBounds(0));
+        snake
+            .getComponent(SnakeBurrowComponent.class)
+            .setArenaBounds(new Rectangle(0f, 0f, roomSize.x, roomSize.y));
+        return snake;
       // Greek
       case GOLEM:
         Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
