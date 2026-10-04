@@ -20,7 +20,7 @@ import com.csse3200.game.ui.UIComponent;
 public class TimerDisplay extends UIComponent {
   private static final float EDGE_MARGIN = 20f;
 
-  private final RunTimer runTimer;
+  private RunTimer runTimer;
   private boolean visible = true;
 
   private Table rootTable;
@@ -28,15 +28,11 @@ public class TimerDisplay extends UIComponent {
   private Label dungeonCaption;
   private Label dungeonTime;
 
-  /** Creates a display backed by the supplied game runTimer. */
-  public TimerDisplay(RunTimer runTimer) {
-    this.runTimer = runTimer;
-  }
-
   /** Builds the HUD panel and adds it to the shared UI stage. */
   @Override
   public void create() {
     super.create();
+    runTimer = ServiceLocator.getRunTimer();
 
     Label runCaption = new Label("RUN: ", skin, "caption");
     runCaption.setFontScale(1.2f);
@@ -102,7 +98,6 @@ public class TimerDisplay extends UIComponent {
   public void toggle() {
     visible = !visible;
     rootTable.setVisible(visible);
-    ServiceLocator.getEntityService().toggleUpdate();
   }
 
   /** Handles the T key used to toggle the timer display. */

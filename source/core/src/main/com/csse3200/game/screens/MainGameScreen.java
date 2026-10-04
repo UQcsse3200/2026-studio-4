@@ -57,11 +57,10 @@ public class MainGameScreen extends ScreenAdapter {
   private Entity player;
   private final Terminal terminal;
   private final RoomAssets roomAssets = new RoomAssets();
-  private final RunTimer runTimer = new RunTimer(new GameTime());
+  private final RunTimer runTimer;
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
-    runTimer.startRun();
 
     terminal = new Terminal();
 
@@ -77,6 +76,7 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.registerRenderService(new RenderService());
     renderer = RenderFactory.createRenderer();
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
+    ServiceLocator.registerRunTimer(new RunTimer(new GameTime()));
 
     loadAssets();
 
@@ -88,10 +88,12 @@ public class MainGameScreen extends ScreenAdapter {
     if (world == null) {
       throw new IllegalStateException("Unable to load configs/rooms.json");
     }
-    roomManager = new RoomManager(world, player, renderer.getCamera(), runTimer);
+    roomManager = new RoomManager(world, player, renderer.getCamera());
     roomManager.create();
 
     createUI();
+    runTimer = ServiceLocator.getRunTimer();
+    runTimer.startRun();
   }
 
   @Override
@@ -167,7 +169,7 @@ public class MainGameScreen extends ScreenAdapter {
     HotbarDisplay hotbarDisplay = new HotbarDisplay(player);
     InventoryActions inventoryActions = new InventoryActions(inventoryDisplay);
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
-    TimerDisplay timerDisplay = new TimerDisplay(runTimer);
+    TimerDisplay timerDisplay = new TimerDisplay();
 
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
