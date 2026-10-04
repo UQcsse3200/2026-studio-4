@@ -87,6 +87,9 @@ Source pages checked on 2026-10-04.
 
 ## Second-phase poison visuals
 
+- The existing `chase` region in `images/snake.atlas` supplies the horizontal
+  tongue-out pose during spitting. It is a single 32 x 32 frame at (96, 0) in
+  `images/snake.png`, not a new multi-frame animation. No character art is edited.
 - `SnakePoisonAssets` selects 10 forming, 4 flying and 8 fading frames, excluding
   the sheets' trailing transparent cells. No artwork has been changed.
 - The forming effect telegraphs the spit; individual shots form for 0.2 seconds,

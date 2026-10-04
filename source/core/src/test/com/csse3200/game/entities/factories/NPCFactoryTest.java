@@ -176,6 +176,7 @@ class NPCFactoryTest {
     SnakeBurrowComponent burrow = snake.getComponent(SnakeBurrowComponent.class);
     SnakePoisonVolleyComponent poison = snake.getComponent(SnakePoisonVolleyComponent.class);
     PhysicsComponent physics = snake.getComponent(PhysicsComponent.class);
+    AnimationRenderComponent animator = snake.getComponent(AnimationRenderComponent.class);
     SnakeMiniBossConfig config = new SnakeMiniBossConfig();
     SpriteBatch batch = mock(SpriteBatch.class);
 
@@ -184,10 +185,12 @@ class NPCFactoryTest {
     advanceEntities(entities, time, config.undergroundDuration);
     player.setPosition(50f, 50f);
     advanceEntities(entities, time, config.warningDuration);
+    assertEquals("default", animator.getCurrentAnimation());
     stats.setHealth(stats.getMaxHealth() / 2);
     advanceEntities(entities, time, config.exposedDuration);
 
     assertEquals(SnakeBurrowComponent.State.SPITTING, burrow.getState());
+    assertEquals("chase", animator.getCurrentAnimation());
     assertTrue(physics.getBody().isActive());
     assertFalse(stats.isInvulnerable());
     assertTrue(poison.isSpitting());
@@ -199,15 +202,25 @@ class NPCFactoryTest {
           entities, time, volley == 0 ? config.spitWindupDuration : config.spitVolleyInterval);
       assertEquals((volley + 1) * 4, poison.getProjectileCount());
       ServiceLocator.getRenderService().render(batch);
+      assertEquals("chase", animator.getCurrentAnimation());
     }
     advanceEntities(entities, time, config.spitRecoveryDuration);
 
     assertEquals(SnakeBurrowComponent.State.BURROWING, burrow.getState());
+    assertNull(animator.getCurrentAnimation());
     assertFalse(poison.isSpitting());
     assertFalse(physics.getBody().isActive());
     assertEquals(16, poison.getProjectileCount());
 
+    advanceEntities(entities, time, config.burrowDuration);
+    advanceEntities(entities, time, config.undergroundDuration);
+    player.setPosition(70f, 70f);
+    advanceEntities(entities, time, config.warningDuration);
+    assertEquals(SnakeBurrowComponent.State.EXPOSED, burrow.getState());
+    assertEquals("default", animator.getCurrentAnimation());
+
     stats.setHealth(0);
+    assertEquals("dieAnimation", animator.getCurrentAnimation());
     assertEquals(0, poison.getProjectileCount());
     advanceEntities(entities, time, 0.6f);
     ServiceLocator.getRenderService().render(batch);

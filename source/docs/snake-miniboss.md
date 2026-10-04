@@ -60,6 +60,11 @@ underground movement, ground warning, one emergence strike, then 1.5 seconds
 exposed before the next poison attack. The Snake is vulnerable throughout its
 poison attack and recovery, and invulnerable underground.
 
+During the spit, the Snake uses the existing `chase` atlas region: the horizontal
+tongue-out pose at (96, 0) in `images/snake.png`. This source pose has one frame;
+it is held throughout the windup, volleys and short spit recovery. The ordinary
+emergence window restores `default`, and burrowing hides the character again.
+
 | Setting | Default |
 | --- | --- |
 | Spit windup | 0.6 seconds, with a green forming effect |
@@ -73,7 +78,7 @@ poison attack and recovery, and invulnerable underground.
 | Poison direct damage | 1 per projectile |
 | Projectile forming / fading time | 0.2 / 0.28 seconds |
 | Maximum flight time | 5 seconds |
-| Projectile visual width / collision radius | 0.55 / 0.12 world units |
+| Projectile visual width / collision radius | 0.9 / 0.12 world units |
 
 Aim is captured once at the beginning of the spit. Every projectile keeps its
 own direction after being emitted; moving the player does not steer it. A slow
@@ -128,8 +133,9 @@ For playtesting in Dungeon 2's Snake room:
 5. Stand near the outer and internal walls. Warnings must stay in clear room
    space and the Snake must emerge at the marked position.
 6. Lower its health to half. After the current exposed window, watch for the
-   windup and four waves of four green shots. Move sideways; the shots must
-   continue straight instead of turning to follow you.
+   horizontal tongue-out pose, windup and four waves of four larger green shots.
+   Move sideways; the shots must continue straight instead of turning to follow
+   you. After burrowing, the next emergence should restore the curled pose.
 7. Attack while it spits, then again underground. Only ground attacks should
    lower its health. Check that it returns to the marked burrow strike and
    repeats the poison cycle after the next 1.5-second exposed window.

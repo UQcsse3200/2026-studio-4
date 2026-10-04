@@ -276,7 +276,7 @@ public class SnakeBurrowComponent extends Component {
       if (underground) {
         animator.stopAnimation();
       } else {
-        animator.startAnimation("default");
+        animator.startAnimation(state == State.SPITTING ? "chase" : "default");
       }
     }
     entity.getEvents().trigger("enemyHealthBarVisible", !underground);

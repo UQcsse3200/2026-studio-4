@@ -28,5 +28,5 @@ public class SnakeMiniBossConfig extends BaseEntityConfig {
   public int poisonDamage = 1;
   public float poisonLifetime = 5f;
   public float poisonRadius = 0.12f;
-  public float poisonVisualSize = 0.55f;
+  public float poisonVisualSize = 0.9f;
 }
