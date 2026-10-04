@@ -4,10 +4,11 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.achievements.AchievementsManager;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.items.ItemPickupComponent;
+import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InteractionPrompt;
-import com.csse3200.game.components.player.InteractionPromptDisplay;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.components.rooms.configs.PositionConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
@@ -15,8 +16,10 @@ import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RoomFactory;
+import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /** Owns the active room and applies the room graph specified by {@link WorldConfig}. */
@@ -35,16 +38,20 @@ public class RoomManager {
   private RoomConfig pendingDestination;
   private PositionConfig pendingArrivalPosition;
   private boolean clearRequested;
+  private final RunTimer runTimer;
+  private final AchievementsManager achievements;
 
   /** Creates the JSON-driven room manager. Call {@link #create()} to register the initial room. */
-  public RoomManager(WorldConfig world, Entity player, CameraComponent camera) {
+  public RoomManager(WorldConfig world, Entity player, CameraComponent camera, RunTimer runTimer) {
     world.validate();
     this.world = world;
     this.player = player;
     this.camera = camera;
+    this.runTimer = runTimer;
     currentConfig = world.getRoom(world.startRoomId);
     initialEntryPoint = currentConfig.getEntryPoint(world.startEntryPointId);
     currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
+    achievements = new AchievementsManager(currentRoom);
     player.getEvents().addListener("interact", this::interact);
     FollowingCameraComponent cameraFollowingComponent =
         currentRoom.getComponent(FollowingCameraComponent.class);
@@ -53,12 +60,13 @@ public class RoomManager {
   }
 
   /** Package private constructer to create empty room manager for testing */
-  RoomManager(Entity player) {
+  RoomManager(Entity player, RunTimer runTimer) {
     this.player = player;
-
+    this.runTimer = runTimer;
     this.world = null;
     this.camera = null;
     this.initialEntryPoint = null;
+    achievements = new AchievementsManager(new Entity());
   }
 
   /** Registers the active room and player, then positions the player at its entry point. */
@@ -67,11 +75,15 @@ public class RoomManager {
     entityService.register(currentRoom);
     entityService.register(player);
     start(initialEntryPoint);
+    if (runTimer != null && currentConfig.dungeonId != null) {
+      runTimer.startDungeon(currentConfig.dungeonId);
+    }
   }
 
   /** Package private for testing */
   void start(PositionConfig entryPoint) {
     currentRoom.getEvents().addListener("roomCleared", this::onRoomCleared);
+    currentRoom.getEvents().addListener("achievementUnlocked", this::onAchievementUnlocked);
     currentRoom.getEvents().trigger("RoomCreated", player);
     scaleRoom(currentRoom);
     Vector2 position =
@@ -173,11 +185,19 @@ public class RoomManager {
   }
 
   private void switchToRoom(RoomConfig destination, PositionConfig arrivalPosition) {
+    String previousDungeonId = currentConfig.dungeonId;
     Entity nextRoom =
         RoomFactory.createRoom(destination, camera, clearedRoomIds.contains(destination.id));
     currentRoom.dispose();
     currentConfig = destination;
     currentRoom = nextRoom;
+    achievements.newRoom(currentRoom); // move here, before start()
+    if (runTimer != null && !Objects.equals(previousDungeonId, destination.dungeonId)) {
+      runTimer.stopDungeon();
+      if (destination.dungeonId != null) {
+        runTimer.startDungeon(destination.dungeonId);
+      }
+    }
     ServiceLocator.getEntityService().register(currentRoom);
     start(arrivalPosition);
     FollowingCameraComponent cameraFollowingComponent =
@@ -242,6 +262,13 @@ public class RoomManager {
     GameAreaDisplay display = currentRoom.getComponent(GameAreaDisplay.class);
     if (display != null) {
       display.showStatus(message);
+    }
+  }
+
+  private void onAchievementUnlocked(String name) {
+    GameAreaDisplay display = currentRoom.getComponent(GameAreaDisplay.class);
+    if (display != null) {
+      display.showAchievement(name);
     }
   }
 
