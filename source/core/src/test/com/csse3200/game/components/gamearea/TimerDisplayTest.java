@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
@@ -34,6 +35,7 @@ class TimerDisplayTest {
   private RunTimer runTimer;
   private TimerDisplay display;
   private Entity ui;
+  private EntityService entityService;
 
   @BeforeEach
   void setUp() {
@@ -42,9 +44,14 @@ class TimerDisplayTest {
     when(renderService.getStage()).thenReturn(stage);
     ServiceLocator.registerRenderService(renderService);
 
+    entityService = mock(EntityService.class);
+    ServiceLocator.registerEntityService(entityService);
+
     gameTime = mock(GameTime.class);
     runTimer = new RunTimer(gameTime);
-    display = new TimerDisplay(runTimer);
+    ServiceLocator.registerRunTimer(runTimer);
+
+    display = new TimerDisplay();
     ui = new Entity().addComponent(display);
     ui.create();
   }
@@ -108,7 +115,7 @@ class TimerDisplayTest {
 
   @Test
   void drawBeforeCreateDoesNothing() {
-    TimerDisplay fresh = new TimerDisplay(new RunTimer(mock(GameTime.class)));
+    TimerDisplay fresh = new TimerDisplay();
     assertDoesNotThrow(() -> fresh.draw(mock(SpriteBatch.class)));
   }
 
