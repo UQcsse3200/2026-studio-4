@@ -133,10 +133,7 @@ public class LoadGameScreen extends ScreenAdapter {
 
     footer =
         label(
-            "UP / DOWN  Select     ENTER  Load     F  Delete     ESC  Back",
-            SMALL_FONT,
-            MUTED,
-            1f);
+            "UP / DOWN  Select     ENTER  Load     F  Delete     ESC  Back", SMALL_FONT, MUTED, 1f);
     footer.setAlignment(Align.left);
     panel.add(footer).expandX().fillX().left().padTop(8f);
 
