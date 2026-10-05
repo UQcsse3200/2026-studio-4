@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.areas.terrain.DreamlandTile;
+import com.csse3200.game.areas.terrain.TerrainTile;
 import com.csse3200.game.areas.terrain.TileSheet;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -13,6 +14,9 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * Factory to create obstacle entities.
  *
@@ -20,25 +24,6 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public class ObstacleFactory {
   private static final String DUNGEON_TILESET = "images/dungeons/fantasy_dreamland_16.png";
-
-  /**
-   * Creates a tree entity.
-   *
-   * @return entity
-   */
-  public static Entity createTree() {
-    Entity tree =
-        new Entity()
-            .addComponent(new TextureRenderComponent("images/tree.png"))
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
-
-    tree.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
-    tree.getComponent(TextureRenderComponent.class).scaleEntity();
-    tree.scaleHeight(2.5f);
-    PhysicsUtils.setScaledCollider(tree, 0.5f, 0.2f);
-    return tree;
-  }
 
   /** Creates a rock obstacle. */
   public static Entity createRock() {
@@ -103,7 +88,19 @@ public class ObstacleFactory {
   public static Entity createBarrel() {
     Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
     return createRenderedObstacle(
-        DreamlandTile.CHAIN.region(new TileSheet(texture, 16)), 0.7f, 0.9f);
+        DreamlandTile.OPEN_BARREL.region(new TileSheet(texture, 16)), 0.7f, 0.9f);
+  }
+
+  public static Entity createSword() {
+    Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
+    return createRenderedObstacle(
+            DreamlandTile.randomOfId('s', 0.1f).region(new TileSheet(texture, 16)), 0.7f, 0.9f);
+  }
+
+  public static Entity createBox() {
+    Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
+    return createRenderedObstacle(
+            DreamlandTile.randomOfId('B', 0.1f).region(new TileSheet(texture, 16)), 0.5f, 0.5f);
   }
 
   private static Entity createRenderedObstacle(

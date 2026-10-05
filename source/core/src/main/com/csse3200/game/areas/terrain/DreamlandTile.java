@@ -2,6 +2,7 @@ package com.csse3200.game.areas.terrain;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /** Curated tile palette for the prototype Fantasy Dreamland dungeon. */
 public enum DreamlandTile {
@@ -38,11 +39,37 @@ public enum DreamlandTile {
   WALL_TYPE1_DOWN_RIGHT('o', 3, 5),
   WALL_TYPE1_DOWN_LEFT('o', 5, 5),
 
-  CHAIN('P', 20, 6),
-  PURPLE_STONE_FLOOR('b', 4, 0),
+  SWORD('s', 10, 16, 2,1),
+  SWORD1('s', 11, 16, 2,1),
+  SWORD2('s', 12, 16,2,1),
+  SWORD4('s', 14, 16, 2,1),
+  SWORD6('s', 10, 18,2,1),
+  SWORD7('s', 11, 18,2,1),
+  SWORD8('s', 12, 18, 2,1),
+  SWORD9('s', 13, 18, 2,1),
+  SWORD10('s', 14, 18,2,1),
+  SWORD11('s', 15, 18,2,1),
+  PURPLE_STONE_FLOOR('j', 4, 0),
   PURPLE_STONE_WALL('c', 8, 0),
   BLUE_STONE_WALL('d', 9, 0),
-  BOOKSHELF('e', 0, 16, 2, 2),
+  BOOKSHELF('b', 0, 16, 2, 2),
+  BOOKSHELF1('b', 2, 16, 2, 2),
+  BOOKSHELF2('b', 0, 18, 2, 2),
+  BOOKSHELF3('b', 2, 18, 2, 2),
+
+  BOX('B', 2, 22, 1, 1),
+  BOX1('B', 3, 22, 1, 1),
+  BOX2('B', 2, 23, 1, 1),
+  BOX3('B', 3, 23, 1, 1),
+  BOX4('B', 6, 22, 1, 1),
+  BOX5('B', 7, 22, 1, 1),
+  BOX6('B', 6, 23, 1, 1),
+  BOX7('B', 7, 23, 1, 1),
+  BOX8('B', 10, 22, 1, 1),
+  BOX9('B', 11, 22, 1, 1),
+  BOX10('B', 10, 23, 1, 1),
+  BOX11('B', 11, 23, 1, 1),
+
   OPEN_BARREL('h', 6, 23);
 
   public static final DreamlandTile FLOOR_STONE = PURPLE_STONE_FLOOR;
@@ -85,6 +112,20 @@ public enum DreamlandTile {
   public static List<DreamlandTile> allWithId(Character id) {
     return Collections.unmodifiableList(BY_ID.getOrDefault(id, List.of()));
   }
+
+    public static DreamlandTile randomOfId(Character c, float chance) {
+      List<DreamlandTile> tiles = allWithId(c);
+      if (!tiles.isEmpty() && (!Character.isSpaceChar(c) || !Character.isDigit(c))) {
+        // found at least one return a random one.
+        ThreadLocalRandom rng = ThreadLocalRandom.current();
+
+        // 70% chance of the first entry, otherwise a random one from the rest
+        int index =
+                (tiles.size() == 1 || rng.nextDouble() < chance) ? 0 : 1 + rng.nextInt(tiles.size() - 1);
+        return (tiles.get(index));
+      }
+      return DreamlandTile.VOID;
+    }
 
   /** Gets this named tile from a Fantasy Dreamland sheet. */
   public TextureRegion region(TileSheet tileSheet) {

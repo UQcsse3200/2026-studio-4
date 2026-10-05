@@ -29,6 +29,9 @@ public class ObstacleComponent extends EntityManagerComponent {
       for (int x = 0; x < row.length(); x++) {
         char spawnType = row.charAt(x);
         // Otherwise check for the obstacle that is wanted.
+        int spawny = y;
+        boolean centreY = true;
+        Entity entity = null;
         switch (spawnType) {
           case '#':
             boolean up = isVoid(spawnConfig, x, y + 1);
@@ -40,36 +43,40 @@ public class ObstacleComponent extends EntityManagerComponent {
             boolean downRight = isVoid(spawnConfig, x + 1, y - 1);
             boolean downLeft = isVoid(spawnConfig, x - 1, y - 1);
 
-            Entity entity =
-                ObstacleFactory.createWallFor(
-                    up, right, down, left, upRight, upLeft, downRight, downLeft);
+            entity =
+                    ObstacleFactory.createWallFor(
+                            up, right, down, left, upRight, upLeft, downRight, downLeft);
+
             if (entity == null) {
               continue; // no art for this combination
             }
 
             if (isTopFace(up, right, down, left, upRight, upLeft)) {
-              spawnEntityAt(entity, new GridPoint2(x, y - 1), true, false);
-            } else {
-              spawnEntityAt(entity, new GridPoint2(x, y), true, true);
+              spawny = spawny - 1;
+              centreY = false;
             }
+            break;
 
+          case 'S':
+            entity = ObstacleFactory.createSword();
+            centreY = false;
             break;
 
           case 'B':
-            entity = ObstacleFactory.createBarrel();
+            entity = ObstacleFactory.createBox();
+            centreY = false;
             break;
-          // otherwise dont create an obstacle
-          case '.':
-            continue;
-          default:
-            continue;
+        }
+        if (entity != null) {
+          spawnEntityAt(entity, new GridPoint2(x, spawny), true, centreY);
+        }
+
         }
         //        // Spawn the entity at this location.
         //        if (entity != null) {
         //          spawnEntityAt(entity, new GridPoint2(x, y), true, true);
         //        }
       }
-    }
   }
 
   private static boolean isTopFace(

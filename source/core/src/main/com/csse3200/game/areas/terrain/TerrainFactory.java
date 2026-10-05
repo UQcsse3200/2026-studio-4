@@ -73,16 +73,8 @@ public class TerrainFactory {
   }
 
   public void randomOfId(Character c) {
-    List<DreamlandTile> tiles = DreamlandTile.allWithId(c);
-    if (!tiles.isEmpty() && (!Character.isSpaceChar(c) || !Character.isDigit(c))) {
-      // found at least one return a random one.
-      ThreadLocalRandom rng = ThreadLocalRandom.current();
-
-      // 70% chance of the first entry, otherwise a random one from the rest
-      int index =
-          (tiles.size() == 1 || rng.nextDouble() < 0.9) ? 0 : 1 + rng.nextInt(tiles.size() - 1);
-
-      setTile(new TerrainTile(tiles.get(index).region(this.tileSheet)));
+    if (Character.isDigit(c) || Character.isSpaceChar(c)) {
+      setTile(new TerrainTile(DreamlandTile.randomOfId(c, 0.9f).region(this.tileSheet)));
     }
   }
 
