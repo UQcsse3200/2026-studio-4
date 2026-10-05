@@ -28,47 +28,83 @@ public class ObstacleComponent extends EntityManagerComponent {
 
       for (int x = 0; x < row.length(); x++) {
         char spawnType = row.charAt(x);
+        // Otherwise check for the obstacle that is wanted.
+        switch (spawnType) {
+          case '#':
+            boolean up = isVoid(spawnConfig, x, y + 1);
+            boolean right = isVoid(spawnConfig, x + 1, y);
+            boolean down = isVoid(spawnConfig, x, y - 1);
+            boolean left = isVoid(spawnConfig, x - 1, y);
+            boolean upRight = isVoid(spawnConfig, x + 1, y + 1);
+            boolean upLeft = isVoid(spawnConfig, x - 1, y + 1);
+            boolean downRight = isVoid(spawnConfig, x + 1, y - 1);
+            boolean downLeft = isVoid(spawnConfig, x - 1, y - 1);
 
-        Entity entity;
-        // If its at the edges add a tile anyway
-        if (y == 1 || y == height - 1 || x == 0 || x == width - 1) {
-          entity = ObstacleFactory.createTile();
-        } else {
-          // Otherwise check for the obstacle that is wanted.
-          switch (spawnType) {
-            case '#':
-              entity = ObstacleFactory.createTile();
-              break;
+            Entity entity =
+                ObstacleFactory.createWallFor(
+                    up, right, down, left, upRight, upLeft, downRight, downLeft);
+            if (entity == null) {
+              continue; // no art for this combination
+            }
 
-            case 'B':
-              entity = ObstacleFactory.createBarrel();
-              break;
-            // otherwise dont create an obstacle
-            case '.':
-              continue;
-              default:
-              continue;
-          }
+            if (isTopFace(up, right, down, left, upRight, upLeft)) {
+              spawnEntityAt(entity, new GridPoint2(x, y - 1), true, false);
+            } else {
+              spawnEntityAt(entity, new GridPoint2(x, y), true, true);
+            }
+
+            break;
+
+          case 'B':
+            entity = ObstacleFactory.createBarrel();
+            break;
+          // otherwise dont create an obstacle
+          case '.':
+            continue;
+          default:
+            continue;
         }
-        // Spawn the entity at this location.
-        spawnEntityAt(entity, new GridPoint2(x, y), true, true);
+        //        // Spawn the entity at this location.
+        //        if (entity != null) {
+        //          spawnEntityAt(entity, new GridPoint2(x, y), true, true);
+        //        }
       }
     }
   }
 
-  public void spawn(int x, int y, Character c) {
-      // Otherwise check for the obstacle that is wanted.
-      switch (c) {
-        case '#':
-          entity = ObstacleFactory.createTile();
-          spawnEntityAt(entity, new GridPoint2(x, y), true, true);
-          break;
+  private static boolean isTopFace(
+      boolean up, boolean right, boolean down, boolean left, boolean upRight, boolean upLeft) {
+    return !left && !right && (up || ((upLeft || upRight) && !down));
+  }
 
-        case 'B':
-          entity = ObstacleFactory.createBarrel();
-          spawnEntityAt(entity, new GridPoint2(x, y), true, true);
-          break;
-      }
+  public void spawn(int x, int y, Character c) {
+    // Otherwise check for the obstacle that is wanted.
+    switch (c) {
+      case '#':
+        entity = ObstacleFactory.createTile();
+        spawnEntityAt(entity, new GridPoint2(x, y), true, true);
+        break;
+
+      case 'B':
+        entity = ObstacleFactory.createBarrel();
+        spawnEntityAt(entity, new GridPoint2(x, y), true, true);
+        break;
+    }
+  }
+
+  private static boolean isVoid(List<String> spawnConfig, int x, int y) {
+    // Outside the spawn configuration counts as void
+    if (y < 0 || y >= spawnConfig.size()) {
+      return true;
+    }
+
+    String row = spawnConfig.get(y);
+
+    // Overflow past either side counts as void
+    if (x < 0 || x >= row.length()) {
+      return true;
+    }
+
+    return row.charAt(x) == ' ';
   }
 }
-

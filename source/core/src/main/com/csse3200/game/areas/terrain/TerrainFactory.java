@@ -16,7 +16,6 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.RandomUtils;
-
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -53,11 +52,11 @@ public class TerrainFactory {
    * @param cameraComponent Camera to render terrains to. Must be orthographic.
    * @param orientation orientation to render terrain at
    */
-  public TerrainFactory(CameraComponent cameraComponent, TerrainOrientation orientation, GridPoint2 mapSize) {
+  public TerrainFactory(
+      CameraComponent cameraComponent, TerrainOrientation orientation, GridPoint2 mapSize) {
     this.camera = (OrthographicCamera) cameraComponent.getCamera();
     this.orientation = orientation;
-    this.layer =
-            new TiledMapTileLayer(mapSize.x, mapSize.y, DUNGEON_TILE_SIZE, DUNGEON_TILE_SIZE);
+    this.layer = new TiledMapTileLayer(mapSize.x, mapSize.y, DUNGEON_TILE_SIZE, DUNGEON_TILE_SIZE);
     ResourceService resourceService = ServiceLocator.getResourceService();
     Texture texture = resourceService.getAsset(FANTASY_DUNGEON_TILESET, Texture.class);
     texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
@@ -80,9 +79,8 @@ public class TerrainFactory {
       ThreadLocalRandom rng = ThreadLocalRandom.current();
 
       // 70% chance of the first entry, otherwise a random one from the rest
-      int index = (tiles.size() == 1 || rng.nextDouble() < 0.7)
-              ? 0
-              : 1 + rng.nextInt(tiles.size() - 1);
+      int index =
+          (tiles.size() == 1 || rng.nextDouble() < 0.9) ? 0 : 1 + rng.nextInt(tiles.size() - 1);
 
       setTile(new TerrainTile(tiles.get(index).region(this.tileSheet)));
     }
@@ -91,6 +89,7 @@ public class TerrainFactory {
   public void setTile(TerrainTile tile) {
     this.defaultTile = tile;
   }
+
   public TerrainComponent getTerrain() {
     TiledMap tiledMap = new TiledMap();
     tiledMap.getLayers().add(layer);
@@ -223,8 +222,6 @@ public class TerrainFactory {
       }
     }
   }
-
-
 
   /**
    * This enum should contain the different terrains in your game, e.g. forest, cave, home, all with

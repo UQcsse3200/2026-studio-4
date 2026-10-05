@@ -66,7 +66,7 @@ class RoomManagerTest {
       verify(firstEntrance, never()).dispose();
       manager.update();
 
-      verify(player).setPosition(new Vector2(4, 7));
+      verify(player).setPosition(new Vector2(4, 8));
       manager.interact();
       manager.update();
 

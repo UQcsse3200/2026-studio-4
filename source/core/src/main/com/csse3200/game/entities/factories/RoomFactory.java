@@ -12,7 +12,6 @@ import com.csse3200.game.components.rooms.WallComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
-
 import java.util.List;
 
 /** Factory for creating rooms with their terrain and gameplay components. */
@@ -30,8 +29,7 @@ public class RoomFactory {
     return new Entity()
         // .addComponent(new RoomAssetsComponent())
         .addComponent(new GameAreaDisplay(room.title))
-        .addComponent(
-            terrainFactory.getTerrain())
+        .addComponent(terrainFactory.getTerrain())
         .addComponent(new WallComponent())
         .addComponent(new FollowingCameraComponent())
         .addComponent(obstacle)
@@ -57,5 +55,3 @@ public class RoomFactory {
     }
   }
 }
-
-

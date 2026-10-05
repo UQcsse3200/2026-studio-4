@@ -53,6 +53,52 @@ public class ObstacleFactory {
         DreamlandTile.BLUE_STONE_WALL.region(new TileSheet(texture, 16)), 0.6f, 0.6f);
   }
 
+  // ObstacleFactory
+  /** True if this wall draws the top face (spawned one row lower, at y - 1). */
+  public static Entity createWallFor(
+      boolean up,
+      boolean right,
+      boolean down,
+      boolean left,
+      boolean upRight,
+      boolean upLeft,
+      boolean downRight,
+      boolean downLeft) {
+    Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
+
+    float colliderHeight = 0.5f;
+    DreamlandTile tile;
+    if (down && left || down && right) {
+      tile = DreamlandTile.VOID;
+    } else if (left) {
+      tile = DreamlandTile.WALL_TYPE1_LEFT;
+    } else if (right) {
+      tile = DreamlandTile.WALL_TYPE1_RIGHT;
+    } else if (up) {
+      tile = DreamlandTile.WALL_TYPE1_UP;
+      colliderHeight = 1f;
+    } else if (down) {
+      tile = DreamlandTile.WALL_TYPE1_DOWN;
+    }
+    // diagonal-only (inner corners)
+    else if (upLeft) {
+      tile = DreamlandTile.WALL_TYPE1_UP_LEFT;
+      colliderHeight = 1f;
+    } else if (upRight) {
+      tile = DreamlandTile.WALL_TYPE1_UP_RIGHT;
+      colliderHeight = 1f;
+    } else if (downLeft) {
+      tile = DreamlandTile.WALL_TYPE1_DOWN_LEFT;
+    } else if (downRight) {
+      tile = DreamlandTile.WALL_TYPE1_DOWN_RIGHT;
+    } else {
+      return null;
+    }
+
+    return createRenderedObstacle(
+        tile.region(new TileSheet(texture, 16), 8, 0), 0.5f, colliderHeight);
+  }
+
   /** Creates a barrel obstacle. */
   public static Entity createBarrel() {
     Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
@@ -68,7 +114,7 @@ public class ObstacleFactory {
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
     obstacle.getComponent(TextureRenderComponent.class).scaleEntity();
-    obstacle.scaleHeight(0.5f);
+    obstacle.scaleHeight(colliderHeight);
     PhysicsUtils.setScaledCollider(obstacle, colliderWidth, colliderHeight);
     return obstacle;
   }
