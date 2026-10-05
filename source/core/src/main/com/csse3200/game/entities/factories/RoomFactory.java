@@ -8,6 +8,7 @@ import com.csse3200.game.components.rooms.*;
 import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.components.rooms.ExitComponent;
 import com.csse3200.game.components.rooms.ObstacleComponent;
+import com.csse3200.game.components.rooms.TrapManagerComponent;
 import com.csse3200.game.components.rooms.WallComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
@@ -23,13 +24,13 @@ public class RoomFactory {
   public static Entity createRoom(RoomConfig room, CameraComponent camera, boolean cleared) {
     TerrainFactory terrainFactory = new TerrainFactory(camera);
     return new Entity()
-        // .addComponent(new RoomAssetsComponent())
         .addComponent(new GameAreaDisplay(room.title))
         .addComponent(
             terrainFactory.createDungeonTerrain(new GridPoint2(room.mapWidth, room.mapHeight)))
         .addComponent(new WallComponent())
         .addComponent(new FollowingCameraComponent())
         .addComponent(new ObstacleComponent(room))
+        .addComponent(new TrapManagerComponent(room.trapSpawns))
         .addComponent(new ExitComponent(room.exits))
         .addComponent(
             new EnemyManagerComponent(
