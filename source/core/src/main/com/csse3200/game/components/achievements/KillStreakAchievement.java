@@ -27,5 +27,7 @@ public class KillStreakAchievement extends Achievement {
     return false;
   }
 
-  public int getStreak() { return streak; }
+  public int getStreak() {
+    return streak;
+  }
 }

@@ -23,6 +23,11 @@ public class TypeKillAchievement extends Achievement {
     return count >= target && unlock();
   }
 
-  public int getCount() { return count; }
-  public int getTarget() { return target; }
+  public int getCount() {
+    return count;
+  }
+
+  public int getTarget() {
+    return target;
+  }
 }

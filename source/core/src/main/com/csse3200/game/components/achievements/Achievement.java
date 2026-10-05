@@ -29,13 +29,39 @@ public abstract class Achievement {
   }
 
   // ---- Hooks: override only what applies. Each returns true if it just unlocked. ----
-  public boolean onEnemyDied(EnemyType type) { return false; }
-  public boolean onPlayerDamaged() { return false; }
-  public boolean onDungeonCompleted(String dungeonId) { return false; }
-  public boolean onDungeonEntered(String dungeonId) { return false; }
-  public boolean onSingleHitDamage(int damage) { return false; }
-  public boolean onBossKilledAtLowHealth(float healthFraction) { return false; }
-  public boolean onDungeonTimeElapsed(String dungeonId, float seconds) { return false; }
-  public boolean onConsumableUsed() { return false; }
-  public boolean onGoldChanged(int totalGold) { return false; }
+  public boolean onEnemyDied(EnemyType type) {
+    return false;
+  }
+
+  public boolean onPlayerDamaged() {
+    return false;
+  }
+
+  public boolean onDungeonCompleted(String dungeonId) {
+    return false;
+  }
+
+  public boolean onDungeonEntered(String dungeonId) {
+    return false;
+  }
+
+  public boolean onSingleHitDamage(int damage) {
+    return false;
+  }
+
+  public boolean onBossKilledAtLowHealth(float healthFraction) {
+    return false;
+  }
+
+  public boolean onDungeonTimeElapsed(String dungeonId, float seconds) {
+    return false;
+  }
+
+  public boolean onConsumableUsed() {
+    return false;
+  }
+
+  public boolean onGoldChanged(int totalGold) {
+    return false;
+  }
 }

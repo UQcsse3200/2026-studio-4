@@ -6,8 +6,6 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.achievements.AchievementConfig;
 import com.csse3200.game.components.achievements.AchievementsFactory;
-import com.csse3200.game.components.achievements.KillStreakAchievement;
-import com.csse3200.game.components.achievements.TypeKillAchievement;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.gamearea.TimerDisplay;
 import com.csse3200.game.components.maingame.ConsumableHotbarDisplay;
@@ -20,7 +18,6 @@ import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.rooms.RoomAssets;
 import com.csse3200.game.components.rooms.RoomCommand;
 import com.csse3200.game.components.rooms.RoomManager;
-import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -212,7 +209,7 @@ public class MainGameScreen extends ScreenAdapter {
 
   private AchievementService createAchievementService() {
     AchievementConfig[] configs =
-            FileLoader.readClass(AchievementConfig[].class, "configs/achievements.json");
+        FileLoader.readClass(AchievementConfig[].class, "configs/achievements.json");
     if (configs == null) {
       throw new IllegalStateException("Unable to load configs/rooms.json");
     }

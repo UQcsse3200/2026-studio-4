@@ -205,7 +205,9 @@ public class RoomManager {
         currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
-    if (runTimer != null && destination.dungeonId != null && !Objects.equals(previousDungeonId, destination.dungeonId)) {
+    if (runTimer != null
+        && destination.dungeonId != null
+        && !Objects.equals(previousDungeonId, destination.dungeonId)) {
       ServiceLocator.getAchievementService().notifyDungeonEntered(destination.dungeonId);
     }
   }
