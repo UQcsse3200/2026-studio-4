@@ -1,5 +1,5 @@
 {
-playTimeSeconds: 16.734896
+playTimeSeconds: 27.869757
 dungeonTimesSeconds: {
 	class: java.util.LinkedHashMap
 	dungeonOne: 0
@@ -13,8 +13,8 @@ checkpoint: {
 }
 resumePosition: {
 	roomId: dungeonTwoEntrance
-	x: 13.810001
-	y: 8.901877
+	x: 14.461295
+	y: 0.76499987
 }
 playerData: {
 	gold: 50

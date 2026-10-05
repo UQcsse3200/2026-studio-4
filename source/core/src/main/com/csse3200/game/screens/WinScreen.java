@@ -39,7 +39,6 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import com.badlogic.gdx.audio.Music;
 
 public class WinScreen extends ScreenAdapter {
   private static final String WIN_GIF = "images/win_dance.gif";
@@ -228,7 +227,7 @@ public class WinScreen extends ScreenAdapter {
     table.add(gifImage).expand().fill().row();
     table.add(menuButton).bottom().padTop(16f).width(240f).height(64f);
     stage.addActor(table);
-     Table titleOverlay = new Table();
+    Table titleOverlay = new Table();
     titleOverlay.setFillParent(true);
     titleOverlay.add(title).center();
     stage.addActor(titleOverlay);
@@ -262,7 +261,7 @@ public class WinScreen extends ScreenAdapter {
   public void dispose() {
     winMusic.stop();
     winMusic.dispose();
-    
+
     disposeFrames(frames);
     renderer.dispose();
     ServiceLocator.getRenderService().dispose();
