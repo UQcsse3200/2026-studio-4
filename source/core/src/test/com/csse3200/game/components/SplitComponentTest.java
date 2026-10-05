@@ -90,7 +90,7 @@ class SplitComponentTest {
     CombatStatsComponent enemyStats = enemy.getComponent(CombatStatsComponent.class);
     enemyStats.scale(1);
     assertEquals(60, enemyStats.getMaxHealth());
-    assertEquals(9, enemyStats.getBaseAttack());
+    assertEquals(3, enemyStats.getBaseAttack());
 
     enemy.getComponent(CombatStatsComponent.class).setHealth(0);
     enemy.getEvents().trigger("hitReaction", (Entity) null);
@@ -102,7 +102,7 @@ class SplitComponentTest {
       CombatStatsComponent childStats = child.getComponent(CombatStatsComponent.class);
       assertEquals(45, childStats.getHealth());
       assertEquals(45, childStats.getMaxHealth());
-      assertEquals(4, childStats.getBaseAttack());
+      assertEquals(1, childStats.getBaseAttack());
     }
   }
 
@@ -122,7 +122,7 @@ class SplitComponentTest {
     EventListener1<Entity> childListener = addChildListener(enemy);
     assertEquals(40, stats.getHealth());
     assertEquals(40, stats.getMaxHealth());
-    assertEquals(6, stats.getBaseAttack());
+    assertEquals(2, stats.getBaseAttack());
 
     for (int hit = 1; hit <= 3; hit++) {
       stats.takeDamage(10);
@@ -142,7 +142,7 @@ class SplitComponentTest {
       CombatStatsComponent childStats = child.getComponent(CombatStatsComponent.class);
       assertEquals(30, childStats.getHealth());
       assertEquals(30, childStats.getMaxHealth());
-      assertEquals(3, childStats.getBaseAttack());
+      assertEquals(1, childStats.getBaseAttack());
       assertNull(child.getComponent(SplitComponent.class));
     }
   }

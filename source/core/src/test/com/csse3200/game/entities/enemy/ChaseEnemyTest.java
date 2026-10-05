@@ -88,7 +88,7 @@ class ChaseEnemyTest {
 
     chaseEnemy.getEvents().trigger("collisionStart", chaseFixture, playerFixture);
 
-    assertEquals(14, player.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals(18, player.getComponent(CombatStatsComponent.class).getHealth());
     verify(hitReactionListener, times(1)).handle(any(Entity.class));
   }
 
@@ -132,7 +132,7 @@ class ChaseEnemyTest {
 
     assertEquals(40, stats.getHealth());
     assertEquals(40, stats.getMaxHealth());
-    assertEquals(6, stats.getBaseAttack());
+    assertEquals(2, stats.getBaseAttack());
   }
 
   @Test
