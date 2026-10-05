@@ -114,12 +114,22 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             crowRightPoint,
             this::spawnEntity,
             "images/crow.atlas");
-      case THOR:
-        return NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
+      case KNIGHT:
+        Entity knight = NPCFactory.createBombEnemy(target, "images/knight.atlas", 2f);
+        knight.setScale(0.75f, 1f);
+        return knight;
       case DARK_ELVES:
         return NPCFactory.createChaseEnemy(target, true, "images/dark_elves.atlas");
       case JOTUNN:
-        return NPCFactory.createGiantEnemy(target, "images/cyclops.atlas");
+        Entity jotunn = NPCFactory.createGiantEnemy(target, "images/jotunn.atlas");
+        jotunn.setScale(3f, 3f);
+        jotunn
+            .getComponent(HitboxComponent.class)
+            .setAsBox(
+                new Vector2(1f, 1f),
+                new Vector2(jotunn.getCenterPosition().x, jotunn.getCenterPosition().y / 2));
+        PhysicsUtils.setScaledCollider(jotunn, 0.3f, 0.3f);
+        return jotunn;
 
       // Egyptian
       case BEETLE:

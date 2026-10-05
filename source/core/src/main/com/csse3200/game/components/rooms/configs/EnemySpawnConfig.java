@@ -17,7 +17,7 @@ public class EnemySpawnConfig extends PositionConfig {
     WUKONG,
     LONGWEI,
     BUG,
-    THOR,
+    KNIGHT,
     DARK_ELVES,
     JOTUNN,
     CYCLOPS,
