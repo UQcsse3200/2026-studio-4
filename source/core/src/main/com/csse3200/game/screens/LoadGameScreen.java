@@ -34,7 +34,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Three-slot save browser styled after the game's dark, gold-trimmed menu art. */
+/**
+ * Displays the available save slots and lets the player load, delete, or start a game in a slot.
+ * Slots can be selected with the keyboard or mouse. Invalid saves can be deleted after a
+ * confirmation input.
+ */
 public class LoadGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(LoadGameScreen.class);
   private static final int SLOT_COUNT = 3;
@@ -58,6 +62,11 @@ public class LoadGameScreen extends ScreenAdapter {
   private int selectedIndex;
   private boolean confirmingDelete;
 
+  /**
+   * Creates the save browser, loads saved slot data, and builds its user interface.
+   *
+   * @param game game instance used to start a save or return to the main menu
+   */
   public LoadGameScreen(GdxGame game) {
     this.game = game;
     ServiceLocator.registerInputService(new InputService());
@@ -376,17 +385,25 @@ public class LoadGameScreen extends ScreenAdapter {
     }
   }
 
+  /** Updates entities and draws the save browser. */
   @Override
   public void render(float delta) {
     ServiceLocator.getEntityService().update();
     renderer.render();
   }
 
+  /**
+   * Updates the renderer viewport after the window size changes.
+   *
+   * @param width new window width in pixels
+   * @param height new window height in pixels
+   */
   @Override
   public void resize(int width, int height) {
     renderer.resize(width, height);
   }
 
+  /** Releases preview textures, UI resources, and services owned by this screen. */
   @Override
   public void dispose() {
     for (Texture texture : previewTextures) {

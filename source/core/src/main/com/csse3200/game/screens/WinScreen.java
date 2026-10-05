@@ -40,6 +40,10 @@ import javax.imageio.stream.ImageInputStream;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+/**
+ * Displays the victory screen with an animated GIF, looping win music, and a button to return to
+ * the main menu.
+ */
 public class WinScreen extends ScreenAdapter {
   private static final String WIN_GIF = "images/win_dance.gif";
   private static final float TITLE_FONT_SCALE = 4.0f;
@@ -52,6 +56,11 @@ public class WinScreen extends ScreenAdapter {
   private float frameElapsed;
   private Music winMusic;
 
+  /**
+   * Creates the victory screen, starts its music, loads the animation, and builds its interface.
+   *
+   * @param game game instance used to return to the main menu
+   */
   public WinScreen(GdxGame game) {
     this.game = game;
 
@@ -237,6 +246,7 @@ public class WinScreen extends ScreenAdapter {
     ServiceLocator.getEntityService().register(ui);
   }
 
+  /** Advances the GIF animation and renders the victory screen. */
   @Override
   public void render(float delta) {
     frameElapsed += delta;
@@ -252,11 +262,18 @@ public class WinScreen extends ScreenAdapter {
     renderer.render();
   }
 
+  /**
+   * Updates the renderer viewport after the window size changes.
+   *
+   * @param width new window width in pixels
+   * @param height new window height in pixels
+   */
   @Override
   public void resize(int width, int height) {
     renderer.resize(width, height);
   }
 
+  /** Stops and releases the win music and disposes of screen textures and services. */
   @Override
   public void dispose() {
     winMusic.stop();
