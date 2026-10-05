@@ -63,7 +63,6 @@ public class MainGameScreen extends ScreenAdapter {
   private final Terminal terminal;
   private final int saveSlot;
   private final GameSaveData loadedSave;
-  private final boolean loadAtCheckpoint;
   private boolean runSaved;
   private boolean winScreenShortcutPressed;
   private final RoomAssets roomAssets = new RoomAssets();
@@ -81,7 +80,6 @@ public class MainGameScreen extends ScreenAdapter {
     this.game = game;
     this.loadedSave = save;
     this.saveSlot = saveSlot;
-    this.loadAtCheckpoint = loadAtCheckpoint;
 
     terminal = new Terminal();
     GameTime gameTime = new GameTime();

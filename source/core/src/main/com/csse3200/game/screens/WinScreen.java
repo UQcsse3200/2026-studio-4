@@ -110,16 +110,8 @@ public class WinScreen extends ScreenAdapter {
       String previousDisposal = "none";
 
       for (int i = 0; i < frameCount; i++) {
-        if (previousBounds != null) {
-          if ("restoreToBackgroundColor".equals(previousDisposal)) {
-            Graphics2D graphics = canvas.createGraphics();
-            graphics.setComposite(AlphaComposite.Clear);
-            graphics.fill(previousBounds);
-            graphics.dispose();
-          } else if ("restoreToPrevious".equals(previousDisposal) && previousCanvas != null) {
-            canvas = previousCanvas;
-          }
-        }
+        canvas =
+            applyPreviousFrameDisposal(canvas, previousCanvas, previousBounds, previousDisposal);
 
         Node metadata = reader.getImageMetadata(i).getAsTree("javax_imageio_gif_image_1.0");
         int x = getIntAttribute(metadata, "ImageDescriptor", "imageLeftPosition");
@@ -149,6 +141,25 @@ public class WinScreen extends ScreenAdapter {
     }
 
     return decodedFrames;
+  }
+
+  private BufferedImage applyPreviousFrameDisposal(
+      BufferedImage canvas,
+      BufferedImage previousCanvas,
+      Rectangle previousBounds,
+      String previousDisposal) {
+    if (previousBounds == null) {
+      return canvas;
+    }
+    if ("restoreToBackgroundColor".equals(previousDisposal)) {
+      Graphics2D graphics = canvas.createGraphics();
+      graphics.setComposite(AlphaComposite.Clear);
+      graphics.fill(previousBounds);
+      graphics.dispose();
+    } else if ("restoreToPrevious".equals(previousDisposal) && previousCanvas != null) {
+      return previousCanvas;
+    }
+    return canvas;
   }
 
   private Texture createTexture(BufferedImage image) {

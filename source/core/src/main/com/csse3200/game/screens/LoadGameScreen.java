@@ -31,6 +31,7 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,8 +124,8 @@ public class LoadGameScreen extends ScreenAdapter {
     divider.setBackground(skin.newDrawable("button-c", GOLD));
     panel.add(divider).height(3f).expandX().fillX().padBottom(16f).row();
 
-    float panelHeight = Math.min(680f, Gdx.graphics.getHeight() - 32f);
-    float rowHeight = Math.max(52f, Math.min(112f, (panelHeight - 213f) / 3f));
+    float panelHeight = Math.clamp(Gdx.graphics.getHeight() - 32f, 0f, 680f);
+    float rowHeight = Math.clamp((panelHeight - 213f) / 3f, 52f, 112f);
     for (int index = 0; index < SLOT_COUNT; index++) {
       Button row = createSlotRow(index, rowHeight);
       slotButtons[index] = row;
@@ -138,8 +139,8 @@ public class LoadGameScreen extends ScreenAdapter {
     panel.add(footer).expandX().fillX().left().padTop(8f);
 
     frame.add(panel).expand().fill().pad(12f);
-    float width = Math.min(1120f, Gdx.graphics.getWidth() - 32f);
-    float height = Math.min(680f, Gdx.graphics.getHeight() - 32f);
+    float width = Math.clamp(Gdx.graphics.getWidth() - 32f, 0f, 1120f);
+    float height = Math.clamp(Gdx.graphics.getHeight() - 32f, 0f, 680f);
     root.add(frame).width(width).height(height).center();
     stage.addActor(root);
     updateSelection();
@@ -204,12 +205,14 @@ public class LoadGameScreen extends ScreenAdapter {
       String status = saveFiles[index] ? "This record could not be read" : "No saved journey";
       details.add(label(status, SMALL_FONT, MUTED, 1f)).left();
     } else {
-      String room =
-          save.resumePosition != null
-              ? displayRoom(save.resumePosition.roomId)
-              : (save.checkpoint == null
-                  ? "Unknown location"
-                  : displayRoom(save.checkpoint.roomId));
+      String room;
+      if (save.resumePosition != null) {
+        room = displayRoom(save.resumePosition.roomId);
+      } else if (save.checkpoint == null) {
+        room = "Unknown location";
+      } else {
+        room = displayRoom(save.checkpoint.roomId);
+      }
       details.add(label(room, "font", TEXT, 1f)).left().row();
       details
           .add(label("Play Time  " + formatPlayTime(save.playTimeSeconds), SMALL_FONT, TEXT, 1f))
@@ -287,17 +290,18 @@ public class LoadGameScreen extends ScreenAdapter {
     return Character.toUpperCase(spaced.charAt(0)) + spaced.substring(1);
   }
 
-  private String formatDungeonTimes(java.util.Map<String, Float> times) {
+  private String formatDungeonTimes(Map<String, Float> times) {
     if (times == null || times.isEmpty()) {
       return "Dungeons  --";
     }
-    List<String> dungeonIds = new ArrayList<>(times.keySet());
-    dungeonIds.sort(String::compareTo);
-    List<String> entries = new ArrayList<>();
-    for (String dungeonId : dungeonIds) {
-      entries.add(displayRoom(dungeonId) + " " + formatPlayTime(times.get(dungeonId)));
-    }
-    return String.join("  |  ", entries);
+    return String.join(
+        "  |  ",
+        times.entrySet().stream()
+            .sorted(Map.Entry.comparingByKey())
+            .map(
+                entry ->
+                    displayRoom(entry.getKey()) + " " + formatPlayTime(entry.getValue()))
+            .toList());
   }
 
   private int count(List<?> values) {
@@ -338,42 +342,42 @@ public class LoadGameScreen extends ScreenAdapter {
     game.startGame(save, slot);
   }
 
-  private void goBack() {
-    game.setScreen(GdxGame.ScreenType.MAIN_MENU);
-  }
-
-  private void moveSelection(int amount) {
-    selectedIndex = (selectedIndex + amount + SLOT_COUNT) % SLOT_COUNT;
-    confirmingDelete = false;
-    updateSelection();
-    if (saves[selectedIndex] == null) {
-      footer.setText(
-          saveFiles[selectedIndex]
-              ? "Unreadable record     F  Delete"
-              : "Empty slot     ENTER  Begin a new journey here");
-    } else {
-      footer.setText("ENTER  Load selected record     F  Delete     ESC  Back");
-    }
-  }
-
-  private void deleteSelectedSlot() {
-    if (!saveFiles[selectedIndex]) {
-      footer.setText("This slot is already empty");
-      confirmingDelete = false;
-      return;
-    }
-    if (!confirmingDelete) {
-      confirmingDelete = true;
-      footer.setText("Press F again to delete this slot and its map preview");
-      return;
-    }
-    FileLoader.deleteSaveSlot(selectedIndex + 1);
-    game.setScreen(GdxGame.ScreenType.LOAD_GAME);
-  }
-
   private class SaveListControls extends InputComponent {
     private SaveListControls() {
       super(20);
+    }
+
+    private void goBack() {
+      game.setScreen(GdxGame.ScreenType.MAIN_MENU);
+    }
+
+    private void moveSelection(int amount) {
+      selectedIndex = (selectedIndex + amount + SLOT_COUNT) % SLOT_COUNT;
+      confirmingDelete = false;
+      updateSelection();
+      if (saves[selectedIndex] == null) {
+        footer.setText(
+            saveFiles[selectedIndex]
+                ? "Unreadable record     F  Delete"
+                : "Empty slot     ENTER  Begin a new journey here");
+      } else {
+        footer.setText("ENTER  Load selected record     F  Delete     ESC  Back");
+      }
+    }
+
+    private void deleteSelectedSlot() {
+      if (!saveFiles[selectedIndex]) {
+        footer.setText("This slot is already empty");
+        confirmingDelete = false;
+        return;
+      }
+      if (!confirmingDelete) {
+        confirmingDelete = true;
+        footer.setText("Press F again to delete this slot and its map preview");
+        return;
+      }
+      FileLoader.deleteSaveSlot(selectedIndex + 1);
+      game.setScreen(GdxGame.ScreenType.LOAD_GAME);
     }
 
     @Override

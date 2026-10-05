@@ -82,7 +82,7 @@ public class RunTimer {
       dungeonTime = 0f;
       dungeonSyncedTime = 0f;
     }
-    if (dungeonRunning && Objects.equals(currentDungeonId, dungeonId)) {
+    if (Objects.equals(currentDungeonId, dungeonId)) {
       return;
     }
     stopDungeon();
