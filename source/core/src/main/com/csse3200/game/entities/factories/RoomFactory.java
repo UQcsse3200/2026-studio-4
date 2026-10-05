@@ -8,6 +8,7 @@ import com.csse3200.game.components.rooms.*;
 import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.components.rooms.ExitComponent;
 import com.csse3200.game.components.rooms.ObstacleComponent;
+import com.csse3200.game.components.rooms.TrapManagerComponent;
 import com.csse3200.game.components.rooms.WallComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
@@ -27,12 +28,12 @@ public class RoomFactory {
     ObstacleComponent obstacle = new ObstacleComponent(room);
     spawnMap(room, terrainFactory, obstacle);
     return new Entity()
-        // .addComponent(new RoomAssetsComponent())
         .addComponent(new GameAreaDisplay(room.title))
         .addComponent(terrainFactory.getTerrain())
         .addComponent(new WallComponent())
         .addComponent(new FollowingCameraComponent())
         .addComponent(obstacle)
+        .addComponent(new TrapManagerComponent(room.trapSpawns))
         .addComponent(new ExitComponent(room.exits))
         .addComponent(
             new EnemyManagerComponent(

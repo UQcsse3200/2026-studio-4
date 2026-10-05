@@ -207,6 +207,10 @@
           "y": 50
         }
       ],
+      "trapSpawns": [
+        { "type": "FREEZE", "x": 12, "y": 12 },
+        { "type": "BURN", "x": 16, "y": 24 }
+      ],
       "obstacles": {
         "spawns": [
           "                                                                ",

@@ -3,7 +3,14 @@ package com.csse3200.game.components.rooms;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.components.boss.FinalBossStageThreeAssets;
+import com.csse3200.game.components.boss.FinalBossStageTwoAssets;
 import com.csse3200.game.components.boss.FinalBossVisualAssets;
+import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent;
+import com.csse3200.game.components.miniboss.snake.SnakePoisonAssets;
+import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
+import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
+import com.csse3200.game.components.traps.FireTrapRenderComponent;
+import com.csse3200.game.components.traps.IceTrapRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Arrays;
@@ -17,7 +24,12 @@ public class RoomAssets implements Disposable {
   private static final String[] SOUNDS = {IMPACT_SOUND};
 
   private static final String[] ENEMY_TEXTURES = {
-    "images/hole.png", "images/dragon/smoke_sheet.png"
+    "images/hole.png",
+    "images/dragon/smoke_sheet.png",
+    SnakePlayerHitVisualComponent.HIT_SHEET,
+    SnakeShieldComponent.SHIELD_TEXTURE,
+    SnakeShieldPickupComponent.GEM_TEXTURE,
+    SnakeShieldPickupComponent.SPAWN_TEXTURE
   };
 
   private static final String[] ENEMY_TEXTURE_ATLASES = {
@@ -48,6 +60,13 @@ public class RoomAssets implements Disposable {
     "images/hole.png", "images/rock.png",
   };
 
+  private static final String[] TRAP_TEXTURES = {
+    FireTrapRenderComponent.START_TEXTURE,
+    FireTrapRenderComponent.LOOP_TEXTURE,
+    FireTrapRenderComponent.END_TEXTURE,
+    IceTrapRenderComponent.TEXTURE
+  };
+
   private static final String[] ITEM_TEXTURES = {
     "images/heart.png",
     "images/strength_charm_pixel.png",
@@ -64,9 +83,12 @@ public class RoomAssets implements Disposable {
       Stream.of(
               DUNGEON_TEXTURES,
               OBSTACLE_TEXTURES,
+              TRAP_TEXTURES,
               ITEM_TEXTURES,
               ENEMY_TEXTURES,
+              SnakePoisonAssets.paths(),
               FinalBossVisualAssets.paths(),
+              FinalBossStageTwoAssets.paths(),
               FinalBossStageThreeAssets.paths())
           .flatMap(Arrays::stream)
           .toArray(String[]::new);
