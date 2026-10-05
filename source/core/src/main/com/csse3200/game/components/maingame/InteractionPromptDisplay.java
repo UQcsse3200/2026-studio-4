@@ -1,4 +1,4 @@
-package com.csse3200.game.components.player;
+package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
