@@ -150,6 +150,22 @@ public class LoadGameScreen extends ScreenAdapter {
   }
 
   private Button createSlotRow(int index, float rowHeight) {
+    Button.ButtonStyle normal = createSlotStyles(index);
+    Button row = new Button(normal);
+    row.pad(10f, 16f, 10f, 16f);
+
+    Table content = new Table();
+    content.left();
+    addPreview(content, index, rowHeight);
+    addSaveDetails(content, index);
+    addCheckpointDetails(content, saves[index]);
+
+    row.add(content).expand().fill();
+    addRowClickListener(row, index);
+    return row;
+  }
+
+  private Button.ButtonStyle createSlotStyles(int index) {
     Button.ButtonStyle normal = new Button.ButtonStyle(skin.get(Button.ButtonStyle.class));
     normal.up = skin.newDrawable(WINDOW_STYLE, DARK);
     normal.over = skin.newDrawable(WINDOW_STYLE, Color.valueOf("342719"));
@@ -160,13 +176,10 @@ public class LoadGameScreen extends ScreenAdapter {
     selected.down = skin.newDrawable(WINDOW_STYLE, Color.valueOf("654d2c"));
     normalStyles[index] = normal;
     selectedStyles[index] = selected;
+    return normal;
+  }
 
-    Button row = new Button(normal);
-    row.pad(10f, 16f, 10f, 16f);
-    Table content = new Table();
-    content.left();
-
-    GameSaveData save = saves[index];
+  private void addPreview(Table content, int index, float rowHeight) {
     Texture preview = loadPreview(index);
     if (preview != null) {
       Image image = new Image(preview);
@@ -179,7 +192,10 @@ public class LoadGameScreen extends ScreenAdapter {
       placeholder.add(label(placeholderText, SMALL_FONT, MUTED, 0.9f)).center();
       content.add(placeholder).size(138f, rowHeight - 22f).padRight(18f);
     }
+  }
 
+  private void addSaveDetails(Table content, int index) {
+    GameSaveData save = saves[index];
     Table details = new Table();
     details.left();
     String slotTitle = "SAVE SLOT " + (index + 1);
@@ -213,7 +229,9 @@ public class LoadGameScreen extends ScreenAdapter {
       details.add(label(stats, SMALL_FONT, MUTED, 0.95f)).left();
     }
     content.add(details).expandX().fillX().left();
+  }
 
+  private void addCheckpointDetails(Table content, GameSaveData save) {
     if (save != null && Gdx.graphics.getWidth() >= 900) {
       Table location = new Table();
       location.right();
@@ -222,8 +240,9 @@ public class LoadGameScreen extends ScreenAdapter {
       location.add(label(checkpoint, "font", TEXT, 0.95f)).right();
       content.add(location).width(230f).right().padLeft(12f);
     }
+  }
 
-    row.add(content).expand().fill();
+  private void addRowClickListener(Button row, int index) {
     row.addListener(
         new ClickListener() {
           @Override
@@ -233,7 +252,6 @@ public class LoadGameScreen extends ScreenAdapter {
             loadSelectedSlot();
           }
         });
-    return row;
   }
 
   private Texture loadPreview(int index) {

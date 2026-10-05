@@ -9,6 +9,8 @@ import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.items.charms.*;
+import java.util.List;
+import java.util.Map;
 
 public final class GameSaveMapper {
   private GameSaveMapper() {}
@@ -30,22 +32,6 @@ public final class GameSaveMapper {
     data.gold = inventory.getGold();
     data.inventory.putAll(inventory.getConsumables());
 
-    for (var entry : save.playerData.inventory.entrySet()) {
-      String id = entry.getKey();
-      Integer count = entry.getValue();
-
-      if (count == null
-          || count < 0
-          || !ItemCatalog.contains(id)
-          || !(ItemCatalog.create(id, 1) instanceof ConsumableItem)) {
-        throw new IllegalArgumentException("Invalid saved inventory item: " + id);
-      }
-
-      if (count > 0) {
-        inventory.addConsumable(id, count);
-      }
-    }
-
     for (Charm charm : inventory.getCharms()) {
       data.charms.add(charmId(charm));
     }
@@ -63,60 +49,90 @@ public final class GameSaveMapper {
   }
 
   public static void restore(Entity player, GameSaveData save) {
+    validateSave(save);
+
+    GameSaveData.PlayerData data = save.playerData;
+    InventoryComponent inventory = required(player, InventoryComponent.class);
+
+    inventory.setGold(data.gold);
+    restoreConsumables(data.inventory, inventory);
+    restoreCharms(player, data.charms);
+    restoreSelectedWeapon(player, data.selectedWeapon);
+    restoreUpgrades(player, data.upgradedWeapons);
+    restorePlayerHealth(player);
+  }
+
+  private static void validateSave(GameSaveData save) {
     if (save == null || save.version != 1 || save.playerData == null) {
       throw new IllegalArgumentException("Invalid or unsupported save data");
     }
+  }
 
-    InventoryComponent inventory = required(player, InventoryComponent.class);
-    inventory.setGold(save.playerData.gold);
-
-    if (save.playerData.inventory != null) {
-      for (var entry : save.playerData.inventory.entrySet()) {
-        String id = entry.getKey();
-        Integer count = entry.getValue();
-
-        if (count == null
-            || count < 0
-            || !ItemCatalog.contains(id)
-            || !(ItemCatalog.create(id, 1) instanceof ConsumableItem)) {
-          throw new IllegalArgumentException("Invalid saved inventory item: " + id);
-        }
-
-        if (count > 0) {
-          inventory.addConsumable(id, count);
-        }
-      }
+  private static void restoreConsumables(
+      Map<String, Integer> savedInventory, InventoryComponent inventory) {
+    if (savedInventory == null) {
+      return;
     }
 
-    if (save.playerData.charms != null) {
-      for (String id : save.playerData.charms) {
-        charmFromId(id).pickUp(player);
+    for (var entry : savedInventory.entrySet()) {
+      String id = entry.getKey();
+      Integer count = entry.getValue();
+
+      if (count == null
+          || count < 0
+          || !ItemCatalog.contains(id)
+          || !(ItemCatalog.create(id, 1) instanceof ConsumableItem)) {
+        throw new IllegalArgumentException("Invalid saved inventory item: " + id);
+      }
+
+      if (count > 0) {
+        inventory.addConsumable(id, count);
       }
     }
+  }
+
+  private static void restoreCharms(Entity player, List<String> savedCharms) {
+    if (savedCharms == null) {
+      return;
+    }
+
+    for (String id : savedCharms) {
+      charmFromId(id).pickUp(player);
+    }
+  }
+
+  private static void restoreSelectedWeapon(Entity player, String savedWeapon) {
+    if (savedWeapon == null) {
+      return;
+    }
+
     WeaponSelectionComponent selection = required(player, WeaponSelectionComponent.class);
+    WeaponType selected = WeaponType.valueOf(savedWeapon);
+    if (!selection.equip(selected)) {
+      throw new IllegalArgumentException("Could not equip saved weapon: " + savedWeapon);
+    }
+  }
 
-    if (save.playerData.selectedWeapon != null) {
-      WeaponType selected = WeaponType.valueOf(save.playerData.selectedWeapon);
-      if (!selection.equip(selected)) {
-        throw new IllegalArgumentException(
-            "Could not equip saved weapon: " + save.playerData.selectedWeapon);
-      }
+  private static void restoreUpgrades(Entity player, List<String> savedUpgrades) {
+    if (savedUpgrades == null) {
+      return;
     }
 
     WeaponUpgradeComponent upgrades = required(player, WeaponUpgradeComponent.class);
-    if (save.playerData.upgradedWeapons != null) {
-      for (String id : save.playerData.upgradedWeapons) {
-        switch (id) {
-          case "sword" -> upgrades.setUpgraded(SwordWeaponComponent.class, true);
-          case "knife" -> upgrades.setUpgraded(KnifeWeaponComponent.class, true);
-          case "bow" -> upgrades.setUpgraded(BowWeaponComponent.class, true);
-          default -> throw new IllegalArgumentException("Unknown saved weapon upgrade: " + id);
-        }
+    for (String id : savedUpgrades) {
+      switch (id) {
+        case "sword" -> upgrades.setUpgraded(SwordWeaponComponent.class, true);
+        case "knife" -> upgrades.setUpgraded(KnifeWeaponComponent.class, true);
+        case "bow" -> upgrades.setUpgraded(BowWeaponComponent.class, true);
+        default -> throw new IllegalArgumentException("Unknown saved weapon upgrade: " + id);
       }
     }
+  }
+
+  private static void restorePlayerHealth(Entity player) {
+    CombatStatsComponent stats = required(player, CombatStatsComponent.class);
     // Death restores the player alive at the checkpoint.
-    required(player, CombatStatsComponent.class)
-        .setHealth(required(player, CombatStatsComponent.class).getMaxHealth());
+    stats.setHealth(stats.getMaxHealth());
   }
 
   private static String charmId(Charm charm) {
