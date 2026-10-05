@@ -43,6 +43,8 @@ public class RoomAssetsComponent extends Component {
     "images/jingwei.atlas",
     "images/zombie.atlas",
     "images/wukong.atlas",
+    "images/bug.atlas",
+    "images/longwei.atlas",
     "images/dragon/dragon.atlas",
     "images/dragon/thunder-orb.atlas",
   };

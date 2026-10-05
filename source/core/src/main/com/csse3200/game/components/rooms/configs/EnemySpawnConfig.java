@@ -15,6 +15,8 @@ public class EnemySpawnConfig extends PositionConfig {
     JINGWEI,
     ZOMBIE,
     WUKONG,
+    LONGWEI,
+    BUG,
     THOR,
     DARK_ELVES,
     JOTUNN,

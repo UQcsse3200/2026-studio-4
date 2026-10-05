@@ -86,7 +86,19 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case ZOMBIE:
         return NPCFactory.createBombEnemy(target, "images/zombie.atlas", 2f);
       case WUKONG:
-        return NPCFactory.createChaseEnemy(target, false, "images/wukong.atlas");
+        Entity wukong = NPCFactory.createGiantEnemy(target, "images/wukong.atlas");
+        wukong.setScale(3f, 3f);
+        wukong
+            .getComponent(HitboxComponent.class)
+            .setAsBox(
+                new Vector2(1f, 1f),
+                new Vector2(wukong.getCenterPosition().x, wukong.getCenterPosition().y / 2));
+        PhysicsUtils.setScaledCollider(wukong, 0.3f, 0.3f);
+        return wukong;
+      case BUG:
+        return NPCFactory.createChaseEnemy(target, true, "images/bug.atlas");
+      case LONGWEI:
+        return NPCFactory.createChaseEnemy(target, false, "images/longwei.atlas");
       // Norse
       case WOLF:
         return NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas");
