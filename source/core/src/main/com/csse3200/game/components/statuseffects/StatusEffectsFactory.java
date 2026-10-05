@@ -61,6 +61,17 @@ public class StatusEffectsFactory {
   }
 
   /**
+   * Creates an effect that fully freezes its owner for a fixed duration.
+   *
+   * @param time the shared gameplay clock
+   * @param duration how long the owner stays frozen, in milliseconds
+   * @return a new frozen effect
+   */
+  public static TimedStatusEffect createFrozen(GameTime time, long duration) {
+    return new FrozenEffect(time, duration);
+  }
+
+  /**
    * Create a slow status effect
    *
    * @param combatStats The combat stats component of the entity that slow is applied to.
