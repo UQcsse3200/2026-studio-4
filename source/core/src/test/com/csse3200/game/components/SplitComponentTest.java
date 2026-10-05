@@ -50,13 +50,17 @@ class SplitComponentTest {
     ServiceLocator.registerEntityService(entityService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/crab.atlas"});
+    resourceService.loadTextureAtlases(new String[] {"images/crab.atlas", "images/medusa.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
 
   private Entity createSplitEnemy() {
-    Entity enemy = NPCFactory.createChaseEnemy(new Entity(), true, "images/crab.atlas");
+    return createSplitEnemy("images/crab.atlas");
+  }
+
+  private Entity createSplitEnemy(String skin) {
+    Entity enemy = NPCFactory.createChaseEnemy(new Entity(), true, skin);
     enemy.create();
     return enemy;
   }
@@ -80,12 +84,13 @@ class SplitComponentTest {
   }
 
   @Test
-  void shouldSpawnTwoHalvedChildrenOnEntityServiceUpdate() {
+  void shouldScaleChildHealthAndAttackWithTheParent() {
     Entity enemy = createSplitEnemy();
     EventListener1<Entity> childListener = addChildListener(enemy);
     CombatStatsComponent enemyStats = enemy.getComponent(CombatStatsComponent.class);
-    int halfHealth = Math.max(1, enemyStats.getMaxHealth() / 2);
-    int halfAttack = Math.max(1, enemyStats.getBaseAttack() / 2);
+    enemyStats.scale(1);
+    assertEquals(60, enemyStats.getMaxHealth());
+    assertEquals(9, enemyStats.getBaseAttack());
 
     enemy.getComponent(CombatStatsComponent.class).setHealth(0);
     enemy.getEvents().trigger("hitReaction", (Entity) null);
@@ -95,9 +100,50 @@ class SplitComponentTest {
     verify(childListener, times(2)).handle(childCaptor.capture());
     for (Entity child : childCaptor.getAllValues()) {
       CombatStatsComponent childStats = child.getComponent(CombatStatsComponent.class);
-      assertEquals(halfHealth, childStats.getHealth());
-      assertEquals(halfHealth, childStats.getMaxHealth());
-      assertEquals(halfAttack, childStats.getBaseAttack());
+      assertEquals(45, childStats.getHealth());
+      assertEquals(45, childStats.getMaxHealth());
+      assertEquals(4, childStats.getBaseAttack());
+    }
+  }
+
+  @Test
+  void shouldSplitCrabAfterFourNormalHits() {
+    assertSplitAfterFourNormalHits("images/crab.atlas");
+  }
+
+  @Test
+  void shouldSplitMedusaAfterFourNormalHits() {
+    assertSplitAfterFourNormalHits("images/medusa.atlas");
+  }
+
+  private void assertSplitAfterFourNormalHits(String skin) {
+    Entity enemy = createSplitEnemy(skin);
+    CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
+    EventListener1<Entity> childListener = addChildListener(enemy);
+    assertEquals(40, stats.getHealth());
+    assertEquals(40, stats.getMaxHealth());
+    assertEquals(6, stats.getBaseAttack());
+
+    for (int hit = 1; hit <= 3; hit++) {
+      stats.takeDamage(10);
+      entityService.update();
+      assertEquals(40 - 10 * hit, stats.getHealth());
+      verify(childListener, times(0)).handle(any());
+    }
+
+    stats.takeDamage(10);
+    assertEquals(0, stats.getHealth());
+    verify(childListener, times(0)).handle(any());
+    entityService.update();
+
+    ArgumentCaptor<Entity> childCaptor = ArgumentCaptor.forClass(Entity.class);
+    verify(childListener, times(2)).handle(childCaptor.capture());
+    for (Entity child : childCaptor.getAllValues()) {
+      CombatStatsComponent childStats = child.getComponent(CombatStatsComponent.class);
+      assertEquals(30, childStats.getHealth());
+      assertEquals(30, childStats.getMaxHealth());
+      assertEquals(3, childStats.getBaseAttack());
+      assertNull(child.getComponent(SplitComponent.class));
     }
   }
 

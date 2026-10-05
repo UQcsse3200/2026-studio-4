@@ -8,7 +8,7 @@
     "baseAttack": 7
   },
   "chaseEnemy" : {
-    "health": 20,
+    "health": 40,
     "baseAttack": 6
   },
   "floatingDemon" : {
