@@ -9,6 +9,8 @@ import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent
 import com.csse3200.game.components.miniboss.snake.SnakePoisonAssets;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
+import com.csse3200.game.components.traps.FireTrapRenderComponent;
+import com.csse3200.game.components.traps.IceTrapRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Arrays;
@@ -58,6 +60,13 @@ public class RoomAssets implements Disposable {
     "images/hole.png", "images/rock.png",
   };
 
+  private static final String[] TRAP_TEXTURES = {
+    FireTrapRenderComponent.START_TEXTURE,
+    FireTrapRenderComponent.LOOP_TEXTURE,
+    FireTrapRenderComponent.END_TEXTURE,
+    IceTrapRenderComponent.TEXTURE
+  };
+
   private static final String[] ITEM_TEXTURES = {
     "images/heart.png",
     "images/strength_charm_pixel.png",
@@ -67,6 +76,9 @@ public class RoomAssets implements Disposable {
     "images/shield_consumable_pixel.png",
     "images/speed_potion_pixel.png",
     "images/strength_potion_pixel.png",
+    "images/freeze_bomb_pixel.png",
+    "images/consumable-slot-idle.png",
+    "images/consumable-slot-selected.png",
     "images/gold_coin_pixel.png"
   };
 
@@ -74,6 +86,7 @@ public class RoomAssets implements Disposable {
       Stream.of(
               DUNGEON_TEXTURES,
               OBSTACLE_TEXTURES,
+              TRAP_TEXTURES,
               ITEM_TEXTURES,
               ENEMY_TEXTURES,
               SnakePoisonAssets.paths(),

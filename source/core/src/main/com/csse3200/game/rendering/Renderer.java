@@ -1,7 +1,10 @@
 package com.csse3200.game.rendering;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -26,6 +29,7 @@ public class Renderer implements Disposable {
   private Stage stage;
   private RenderService renderService;
   private DebugRenderer debugRenderer;
+  private Texture whitePixel;
 
   /**
    * Create a new renderer with default settings
@@ -107,6 +111,29 @@ public class Renderer implements Disposable {
     batch.setProjectionMatrix(projMatrix);
     stage.act();
     stage.draw();
+
+    float flashAlpha = renderService.getWhiteFlashAlpha();
+    if (flashAlpha > 0f) {
+      drawWhiteFlash(flashAlpha);
+    }
+  }
+
+  private void drawWhiteFlash(float alpha) {
+    if (whitePixel == null) {
+      Pixmap pixel = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+      pixel.setColor(Color.WHITE);
+      pixel.fill();
+      whitePixel = new Texture(pixel);
+      pixel.dispose();
+    }
+
+    batch.setProjectionMatrix(stage.getCamera().combined);
+    float originalColour = batch.getPackedColor();
+    batch.begin();
+    batch.setColor(1f, 1f, 1f, alpha);
+    batch.draw(whitePixel, 0f, 0f, stage.getWidth(), stage.getHeight());
+    batch.setPackedColor(originalColour);
+    batch.end();
   }
 
   /**
@@ -138,6 +165,7 @@ public class Renderer implements Disposable {
 
   @Override
   public void dispose() {
+    if (whitePixel != null) whitePixel.dispose();
     stage.dispose();
     batch.dispose();
   }

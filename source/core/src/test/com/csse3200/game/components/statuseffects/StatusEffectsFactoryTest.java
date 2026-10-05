@@ -134,6 +134,20 @@ class StatusEffectsFactoryTest {
   }
 
   // ---------------------------------------------------------
+  // createFrozen()
+  // ---------------------------------------------------------
+
+  @Test
+  void createFrozenReturnsAFrozenEffectInstance() {
+    GameTime time = mock(GameTime.class);
+
+    TimedStatusEffect effect = StatusEffectsFactory.createFrozen(time, 5000L);
+
+    assertNotNull(effect);
+    assertInstanceOf(FrozenEffect.class, effect);
+  }
+
+  // ---------------------------------------------------------
   // createSlow()
   // ---------------------------------------------------------
 

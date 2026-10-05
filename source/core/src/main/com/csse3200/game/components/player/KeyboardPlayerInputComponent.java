@@ -37,19 +37,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.NUM_3:
         entity.getEvents().trigger(EQUIP_WEAPON_EVENT, WeaponType.BOW);
         return true;
-      case Keys.NUM_7, Keys.NUM_8, Keys.NUM_9, Keys.NUM_0:
-        ConsumableLoadoutComponent loadout = entity.getComponent(ConsumableLoadoutComponent.class);
-        if (loadout != null) {
-          int slot =
-              switch (keycode) {
-                case Keys.NUM_7 -> 0;
-                case Keys.NUM_8 -> 1;
-                case Keys.NUM_9 -> 2;
-                default -> 3;
-              };
-          loadout.useSlot(slot);
-        }
-        return true;
       case Keys.W:
         walkDirection.add(Vector2Utils.UP);
         triggerWalkEvent();
@@ -83,6 +70,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         return true;
       case Keys.I:
         entity.getComponent(InventoryComponent.class).toggleDisplay();
+        return true;
+      case Keys.TAB:
+        entity.getEvents().trigger(ConsumableSelectionComponent.CYCLE_REQUEST);
+        return true;
+      case Keys.Q:
+        entity.getEvents().trigger(ConsumableSelectionComponent.USE_SELECTED_REQUEST);
         return true;
       default:
         return false;
