@@ -2,7 +2,6 @@ package com.csse3200.game.services;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class RunTimer {
   private final GameTime gameTime;
@@ -75,20 +74,15 @@ public class RunTimer {
   }
 
   public void startDungeon(String dungeonId) {
-    if (!dungeonRunning) {
-      dungeonRunning = true;
-      currentDungeonId = dungeonId;
-      dungeonStartTotal = totalTime;
-      dungeonTime = 0f;
-      dungeonSyncedTime = 0f;
-    }
-    if (dungeonRunning && Objects.equals(currentDungeonId, dungeonId)) {
+    if (dungeonRunning) {
       return;
     }
-    stopDungeon();
+
     registerDungeon(dungeonId);
     currentDungeonId = dungeonId;
     dungeonTime = dungeonTimes.get(dungeonId);
+    dungeonStartTotal = totalTime - dungeonTime;
+    dungeonSyncedTime = dungeonTime;
     dungeonRunning = true;
   }
 
