@@ -181,6 +181,7 @@ public class RoomManager {
     currentConfig = destination;
     currentRoom = nextRoom;
     ServiceLocator.getEntityService().register(currentRoom);
+    player.getEvents().trigger(Minimap.ROOM_CHANGE_EVENT, destination);
     start(arrivalPosition);
     FollowingCameraComponent cameraFollowingComponent =
         currentRoom.getComponent(FollowingCameraComponent.class);
@@ -252,8 +253,13 @@ public class RoomManager {
     this.currentRoom = room;
   }
 
-  /** Attaches the minimap component to the player */
+  /**
+   * Attaches the minimap component to the player
+   *
+   * @requries {@link #player} != null && player is not registered
+   * @requries {@link #currentConfig} != null
+   */
   void attachMinimap() {
-    player.addComponent(new Minimap());
+    player.addComponent(new Minimap(currentConfig));
   }
 }
