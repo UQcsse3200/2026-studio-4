@@ -92,18 +92,18 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>Record Components:</dt>
-<dd><code><span id="param-itemType">itemType</span></code> - item selected by the caller</dd>
-<dd><code><span id="param-quantity">quantity</span></code> - positive quantity represented by the world entity</dd>
+<dd><code><span id="param-itemId">itemId</span></code> - stable item ID selected by the caller</dd>
+<dd><code><span id="param-quantity">quantity</span></code> - positive unit count; Charms become separate world entities</dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">ItemDropSpec</span>(<a href="ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;itemType, int&nbsp;quantity)
+<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">ItemDropSpec</span>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId, int&nbsp;quantity)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
 <div class="block">A caller-selected item drop and its quantity.
 
- <p>Enemy and Room features own the decision about which specifications to create. Item code only
- validates and represents that decision. Multiple specifications may contain the same item type,
- allowing multiple consumables to be dropped at once. This implementation was developed with
- assistance from OpenAI Codex and reviewed by Yuezhou Wang.</div>
+ <p>LootTable selects these specifications. This record validates and represents that decision.
+ Multiple specifications may contain the same item ID, allowing multiple consumables to be dropped
+ at once. This implementation was developed with assistance from OpenAI Codex and reviewed by
+ Yuezhou Wang.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -115,7 +115,7 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.items.ItemType,int)" class="member-name-link">ItemDropSpec</a><wbr>(<a href="ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;itemType,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,int)" class="member-name-link">ItemDropSpec</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId,
  int&nbsp;quantity)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Creates an instance of a <code>ItemDropSpec</code> record class.</div>
@@ -144,10 +144,10 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a hash code value for this object.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#itemType()" class="member-name-link">itemType</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#itemId()" class="member-name-link">itemId</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <a href="#param-itemType"><code>itemType</code></a> record component.</div>
+<div class="block">Returns the value of the <a href="#param-itemId"><code>itemId</code></a> record component.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#quantity()" class="member-name-link">quantity</a>()</code></div>
@@ -155,7 +155,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns the value of the <a href="#param-quantity"><code>quantity</code></a> record component.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="ItemDropSpec.html" title="class in com.csse3200.game.items">ItemDropSpec</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#single(com.csse3200.game.items.ItemType)" class="member-name-link">single</a><wbr>(<a href="ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;itemType)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#single(java.lang.String)" class="member-name-link">single</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates a single-unit drop.</div>
 </div>
@@ -182,14 +182,14 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(com.csse3200.game.items.ItemType,int)">
+<section class="detail" id="&lt;init&gt;(java.lang.String,int)">
 <h3>ItemDropSpec</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ItemDropSpec</span><wbr><span class="parameters">(<a href="ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;itemType,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ItemDropSpec</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId,
  int&nbsp;quantity)</span></div>
 <div class="block">Creates an instance of a <code>ItemDropSpec</code> record class.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>itemType</code> - the value for the <a href="#param-itemType"><code>itemType</code></a> record component</dd>
+<dd><code>itemId</code> - the value for the <a href="#param-itemId"><code>itemId</code></a> record component</dd>
 <dd><code>quantity</code> - the value for the <a href="#param-quantity"><code>quantity</code></a> record component</dd>
 </dl>
 </section>
@@ -203,9 +203,9 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="single(com.csse3200.game.items.ItemType)">
+<section class="detail" id="single(java.lang.String)">
 <h3>single</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ItemDropSpec.html" title="class in com.csse3200.game.items">ItemDropSpec</a></span>&nbsp;<span class="element-name">single</span><wbr><span class="parameters">(<a href="ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;itemType)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ItemDropSpec.html" title="class in com.csse3200.game.items">ItemDropSpec</a></span>&nbsp;<span class="element-name">single</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId)</span></div>
 <div class="block">Creates a single-unit drop.</div>
 </section>
 </li>
@@ -251,13 +251,13 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="itemType()">
-<h3>itemType</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a></span>&nbsp;<span class="element-name">itemType</span>()</div>
-<div class="block">Returns the value of the <a href="#param-itemType"><code>itemType</code></a> record component.</div>
+<section class="detail" id="itemId()">
+<h3>itemId</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">itemId</span>()</div>
+<div class="block">Returns the value of the <a href="#param-itemId"><code>itemId</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <a href="#param-itemType"><code>itemType</code></a> record component</dd>
+<dd>the value of the <a href="#param-itemId"><code>itemId</code></a> record component</dd>
 </dl>
 </section>
 </li>

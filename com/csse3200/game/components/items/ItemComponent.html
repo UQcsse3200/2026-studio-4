@@ -120,16 +120,11 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.items.ItemDropSpec)" class="member-name-link">ItemComponent</a><wbr>(<a href="../../items/ItemDropSpec.html" title="class in com.csse3200.game.items">ItemDropSpec</a>&nbsp;dropSpec)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Creates an item component from a caller-selected Team 5 drop specification.</div>
+<div class="block">Creates an item component from a caller-selected drop specification.</div>
 </div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.items.Item,int)" class="member-name-link">ItemComponent</a><wbr>(<a href="../../items/Item.html" title="class in com.csse3200.game.items">Item</a>&nbsp;item,
- int&nbsp;quantity)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String)" class="member-name-link">ItemComponent</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Creates an item component for a caller-selected quantity of an item.</div>
-</div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.items.ItemType)" class="member-name-link">ItemComponent</a><wbr>(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;itemType)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Creates an item component for a single non-charm Team 5 item type.</div>
+<div class="block">Creates an item component for a single registered item ID.</div>
 </div>
 </div>
 </section>
@@ -155,10 +150,10 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the item represented by the entity.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getItemType()" class="member-name-link">getItemType</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getItemId()" class="member-name-link">getItemId</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the stable Team 5 item type, or <code>null</code> for unrelated item implementations.</div>
+<div class="block">Returns the stable item ID, or <code>null</code> for unrelated item implementations.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getQuantity()" class="member-name-link">getQuantity</a>()</code></div>
@@ -193,25 +188,17 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="&lt;init&gt;(com.csse3200.game.items.Item,int)">
+<section class="detail" id="&lt;init&gt;(java.lang.String)">
 <h3>ItemComponent</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ItemComponent</span><wbr><span class="parameters">(<a href="../../items/Item.html" title="class in com.csse3200.game.items">Item</a>&nbsp;item,
- int&nbsp;quantity)</span></div>
-<div class="block">Creates an item component for a caller-selected quantity of an item.</div>
-</section>
-</li>
-<li>
-<section class="detail" id="&lt;init&gt;(com.csse3200.game.items.ItemType)">
-<h3>ItemComponent</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ItemComponent</span><wbr><span class="parameters">(<a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a>&nbsp;itemType)</span></div>
-<div class="block">Creates an item component for a single non-charm Team 5 item type.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ItemComponent</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId)</span></div>
+<div class="block">Creates an item component for a single registered item ID.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="&lt;init&gt;(com.csse3200.game.items.ItemDropSpec)">
 <h3>ItemComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ItemComponent</span><wbr><span class="parameters">(<a href="../../items/ItemDropSpec.html" title="class in com.csse3200.game.items">ItemDropSpec</a>&nbsp;dropSpec)</span></div>
-<div class="block">Creates an item component from a caller-selected Team 5 drop specification.</div>
+<div class="block">Creates an item component from a caller-selected drop specification.</div>
 </section>
 </li>
 </ul>
@@ -230,10 +217,10 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="getItemType()">
-<h3>getItemType</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../items/ItemType.html" title="enum class in com.csse3200.game.items">ItemType</a></span>&nbsp;<span class="element-name">getItemType</span>()</div>
-<div class="block">Returns the stable Team 5 item type, or <code>null</code> for unrelated item implementations.</div>
+<section class="detail" id="getItemId()">
+<h3>getItemId</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getItemId</span>()</div>
+<div class="block">Returns the stable item ID, or <code>null</code> for unrelated item implementations.</div>
 </section>
 </li>
 <li>
