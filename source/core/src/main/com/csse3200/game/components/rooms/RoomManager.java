@@ -84,7 +84,6 @@ public class RoomManager {
   /** Package private for testing */
   void start(PositionConfig entryPoint) {
     currentRoom.getEvents().addListener("roomCleared", this::onRoomCleared);
-    currentRoom.getEvents().addListener("achievementUnlocked", this::onAchievementUnlocked);
     currentRoom.getEvents().trigger("RoomCreated", player);
     scaleRoom(currentRoom);
     Vector2 position =
@@ -150,6 +149,7 @@ public class RoomManager {
     }
     if (exit.completesDungeon) {
       completedDungeonIds.add(currentConfig.dungeonId);
+      ServiceLocator.getAchievementService().notifyDungeonCompleted(currentConfig.dungeonId);
     }
     pendingDestination = destination;
     if (exit.destinationExitId != null) {
@@ -199,11 +199,15 @@ public class RoomManager {
       }
     }
     ServiceLocator.getEntityService().register(currentRoom);
+
     start(arrivalPosition);
     FollowingCameraComponent cameraFollowingComponent =
         currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
+    if (runTimer != null && destination.dungeonId != null && !Objects.equals(previousDungeonId, destination.dungeonId)) {
+      ServiceLocator.getAchievementService().notifyDungeonEntered(destination.dungeonId);
+    }
   }
 
   private PositionConfig arrivalInsideDoor(ExitConfig door) {
