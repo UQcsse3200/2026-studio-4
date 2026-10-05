@@ -41,7 +41,9 @@ public class RenderService implements Disposable {
       renderables.put(layerIndex, new Array<>(INITIAL_CAPACITY));
     }
     Array<Renderable> layer = renderables.get(layerIndex);
-    layer.add(renderable);
+    if (layer != null) {
+      layer.add(renderable);
+    }
   }
 
   /**
