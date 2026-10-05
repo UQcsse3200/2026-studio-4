@@ -4,6 +4,8 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
+import com.csse3200.game.components.achievements.KillStreakAchievement;
+import com.csse3200.game.components.achievements.TypeKillAchievement;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.gamearea.TimerDisplay;
 import com.csse3200.game.components.maingame.HotbarDisplay;
@@ -15,6 +17,7 @@ import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.rooms.RoomAssets;
 import com.csse3200.game.components.rooms.RoomCommand;
 import com.csse3200.game.components.rooms.RoomManager;
+import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -28,10 +31,7 @@ import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
-import com.csse3200.game.services.GameTime;
-import com.csse3200.game.services.ResourceService;
-import com.csse3200.game.services.RunTimer;
-import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.*;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.ui.terminal.commands.AbilityCommand;
@@ -76,13 +76,22 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.registerRenderService(new RenderService());
     renderer = RenderFactory.createRenderer();
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
+
     ServiceLocator.registerRunTimer(new RunTimer(new GameTime()));
+    ServiceLocator.registerAchievementService(createAchievementService());
 
     loadAssets();
 
     player = PlayerFactory.createPlayer();
     // trigger death screen via entity died event
     player.getEvents().addListener("entityDied", this::scheduleDeathScreen);
+    // notify damage
+    player
+        .getEvents()
+        .addListener(
+            "damageTaken",
+            (Entity attacker, Integer lost, Integer remaining) ->
+                ServiceLocator.getAchievementService().notifyPlayerDamaged());
 
     WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     if (world == null) {
@@ -194,5 +203,14 @@ public class MainGameScreen extends ScreenAdapter {
   private void scheduleDeathScreen() {
     runTimer.stopRun();
     ServiceLocator.getEntityService().schedule(() -> game.setScreen(ScreenType.DEATH_SCREEN));
+  }
+
+  private AchievementService createAchievementService() {
+    AchievementService service = new AchievementService();
+    service.register(
+        new TypeKillAchievement(EnemySpawnConfig.EnemyType.FINAL_BOSS, 1, "Grandpa Fighter"));
+    service.register(new TypeKillAchievement(EnemySpawnConfig.EnemyType.CRAB, 10, "Crab Cracker"));
+    service.register(new KillStreakAchievement(5, "On a Roll"));
+    return service;
   }
 }

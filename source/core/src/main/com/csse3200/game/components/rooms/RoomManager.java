@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.achievements.AchievementsManager;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
@@ -39,7 +38,6 @@ public class RoomManager {
   private PositionConfig pendingArrivalPosition;
   private boolean clearRequested;
   private final RunTimer runTimer;
-  private final AchievementsManager achievements;
 
   /** Creates the JSON-driven room manager. Call {@link #create()} to register the initial room. */
   public RoomManager(WorldConfig world, Entity player, CameraComponent camera) {
@@ -51,12 +49,15 @@ public class RoomManager {
     currentConfig = world.getRoom(world.startRoomId);
     initialEntryPoint = currentConfig.getEntryPoint(world.startEntryPointId);
     currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
-    achievements = new AchievementsManager(currentRoom);
     player.getEvents().addListener("interact", this::interact);
     FollowingCameraComponent cameraFollowingComponent =
         currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
+
+    ServiceLocator.getAchievementService()
+        .getEvents()
+        .<String>addListener("achievementUnlocked", this::onAchievementUnlocked);
   }
 
   /** Package private constructer to create empty room manager for testing */
@@ -66,7 +67,6 @@ public class RoomManager {
     this.world = null;
     this.camera = null;
     this.initialEntryPoint = null;
-    achievements = new AchievementsManager(new Entity());
   }
 
   /** Registers the active room and player, then positions the player at its entry point. */
@@ -75,6 +75,7 @@ public class RoomManager {
     entityService.register(currentRoom);
     entityService.register(player);
     start(initialEntryPoint);
+
     if (runTimer != null && currentConfig.dungeonId != null) {
       runTimer.startDungeon(currentConfig.dungeonId);
     }
@@ -191,7 +192,6 @@ public class RoomManager {
     currentRoom.dispose();
     currentConfig = destination;
     currentRoom = nextRoom;
-    achievements.newRoom(currentRoom); // move here, before start()
     if (runTimer != null && !Objects.equals(previousDungeonId, destination.dungeonId)) {
       runTimer.stopDungeon();
       if (destination.dungeonId != null) {

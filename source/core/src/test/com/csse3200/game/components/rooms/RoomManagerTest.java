@@ -21,6 +21,7 @@ import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.services.AchievementService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.Test;
@@ -50,6 +51,10 @@ class RoomManagerTest {
     when(player.getEvents()).thenReturn(new EventHandler());
     when(player.getCenterPosition()).thenReturn(new Vector2());
     ServiceLocator.registerEntityService(entities);
+
+    AchievementService achievements = mock(AchievementService.class);
+    when(achievements.getEvents()).thenReturn(new EventHandler());
+    ServiceLocator.registerAchievementService(achievements);
 
     try (MockedStatic<RoomFactory> roomFactory = mockStatic(RoomFactory.class)) {
       roomFactory

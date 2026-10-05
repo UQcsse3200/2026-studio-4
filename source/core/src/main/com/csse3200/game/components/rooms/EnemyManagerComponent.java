@@ -63,6 +63,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   public void spawnEnemies(Entity target) {
     for (EnemySpawnConfig spawn : spawnConfigs) {
       Entity enemy = createEnemy(spawn, target);
+      enemy.addComponent(new EnemyTypeComponent(spawn.type)); // before spawnEntityAt registers it
       track(enemy);
       spawnEntityAt(enemy, new GridPoint2(spawn.x, spawn.y), true, true);
     }
@@ -189,9 +190,9 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       return;
     }
 
-    // Tell the room (where achievements listen), not the enemy.
-    if (enemy == finalBoss) {
-      entity.getEvents().trigger("FinalBossDefeated");
+    EnemyTypeComponent typeComponent = enemy.getComponent(EnemyTypeComponent.class);
+    if (typeComponent != null) {
+      ServiceLocator.getAchievementService().notifyEnemyDied(typeComponent.getType());
     }
 
     // Capture before deferred disposal or room changes can move/remove the enemy.
