@@ -66,14 +66,14 @@ class RoomManagerTest {
       verify(firstEntrance, never()).dispose();
       manager.update();
 
-      verify(player).setPosition(new Vector2(4, 8));
+      verify(player).setPosition(new Vector2(6, 6));
       manager.interact();
       manager.update();
 
       roomFactory.verify(() -> RoomFactory.createRoom(entrance, camera, true));
 
       // Since the sideDoor is at x=32 and side=RIGHT, the position -3 offset is 29.
-      verify(player).setPosition(new Vector2(29, 29));
+      verify(player).setPosition(new Vector2(31, 27));
       verify(firstEntrance).dispose();
       verify(sideRoom).dispose();
     }

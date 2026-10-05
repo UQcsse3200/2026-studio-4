@@ -75,9 +75,9 @@ public class RoomManager {
     currentRoom.getEvents().trigger("RoomCreated", player);
     scaleRoom(currentRoom);
     Vector2 position =
-            currentRoom
-                    .getComponent(TerrainComponent.class)
-                    .tileToWorldPosition(new GridPoint2(entryPoint.x + 2, entryPoint.y - 2));
+        currentRoom
+            .getComponent(TerrainComponent.class)
+            .tileToWorldPosition(new GridPoint2(entryPoint.x + 2, entryPoint.y - 2));
     player.setPosition(position);
   }
 
