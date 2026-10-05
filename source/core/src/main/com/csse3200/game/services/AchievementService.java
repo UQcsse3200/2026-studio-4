@@ -8,7 +8,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Tracks all achievements for the current run. Registered once at game start. */
 public class AchievementService {
   private static final Logger logger = LoggerFactory.getLogger(AchievementService.class);
 
@@ -20,22 +19,48 @@ public class AchievementService {
   }
 
   public void notifyEnemyDied(EnemyType type) {
-    for (Achievement a : achievements) {
-      if (a.onEnemyDied(type)) {
-        unlock(a);
-      }
-    }
+    dispatch(a -> a.onEnemyDied(type));
   }
 
   public void notifyPlayerDamaged() {
-    for (Achievement a : achievements) {
-      a.onPlayerDamaged();
-    }
+    dispatch(Achievement::onPlayerDamaged);
   }
 
-  private void unlock(Achievement a) {
-    logger.info("Achievement unlocked: {}", a.getName());
-    eventHandler.trigger("achievementUnlocked", a.getName());
+  public void notifyDungeonCompleted(String dungeonId) {
+    dispatch(a -> a.onDungeonCompleted(dungeonId));
+  }
+
+  public void notifyDungeonEntered(String dungeonId) {
+    dispatch(a -> a.onDungeonEntered(dungeonId));
+  }
+
+  public void notifySingleHitDamage(int damage) {
+    dispatch(a -> a.onSingleHitDamage(damage));
+  }
+
+  public void notifyBossKilledAtLowHealth(float healthFraction) {
+    dispatch(a -> a.onBossKilledAtLowHealth(healthFraction));
+  }
+
+  public void notifyDungeonTimeElapsed(String dungeonId, float seconds) {
+    dispatch(a -> a.onDungeonTimeElapsed(dungeonId, seconds));
+  }
+
+  public void notifyConsumableUsed() {
+    dispatch(Achievement::onConsumableUsed);
+  }
+
+  public void notifyGoldChanged(int totalGold) {
+    dispatch(a -> a.onGoldChanged(totalGold));
+  }
+
+  private void dispatch(java.util.function.Predicate<Achievement> hook) {
+    for (Achievement a : achievements) {
+      if (hook.test(a)) {
+        logger.info("Achievement unlocked: {}", a.getName());
+        eventHandler.trigger("achievementUnlocked", a.getName());
+      }
+    }
   }
 
   public EventHandler getEvents() {
