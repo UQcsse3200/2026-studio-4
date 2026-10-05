@@ -4,6 +4,8 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
+import com.csse3200.game.components.achievements.AchievementConfig;
+import com.csse3200.game.components.achievements.AchievementsFactory;
 import com.csse3200.game.components.achievements.KillStreakAchievement;
 import com.csse3200.game.components.achievements.TypeKillAchievement;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
@@ -209,11 +211,16 @@ public class MainGameScreen extends ScreenAdapter {
   }
 
   private AchievementService createAchievementService() {
-    AchievementService service = new AchievementService();
-    service.register(
-        new TypeKillAchievement(EnemySpawnConfig.EnemyType.FINAL_BOSS, 1, "Grandpa Fighter"));
-    service.register(new TypeKillAchievement(EnemySpawnConfig.EnemyType.CRAB, 10, "Crab Cracker"));
-    service.register(new KillStreakAchievement(5, "On a Roll"));
-    return service;
+    AchievementConfig[] configs =
+            FileLoader.readClass(AchievementConfig[].class, "configs/achievements.json");
+    if (configs == null) {
+      throw new IllegalStateException("Unable to load configs/rooms.json");
+    }
+    AchievementService achievementService = new AchievementService();
+    for (AchievementConfig c : configs) {
+      achievementService.register(AchievementsFactory.build(c));
+    }
+    ServiceLocator.registerAchievementService(achievementService);
+    return achievementService;
   }
 }
