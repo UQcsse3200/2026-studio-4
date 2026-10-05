@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.components.gamearea.TimerDisplay;
 import com.csse3200.game.components.maingame.ConsumableHotbarDisplay;
 import com.csse3200.game.components.maingame.HotbarDisplay;
 import com.csse3200.game.components.maingame.InventoryActions;
@@ -30,6 +31,7 @@ import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
+import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
@@ -56,6 +58,7 @@ public class MainGameScreen extends ScreenAdapter {
   private Entity player;
   private final Terminal terminal;
   private final RoomAssets roomAssets = new RoomAssets();
+  private final RunTimer runTimer;
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
@@ -74,6 +77,7 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.registerRenderService(new RenderService());
     renderer = RenderFactory.createRenderer();
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
+    ServiceLocator.registerRunTimer(new RunTimer(new GameTime()));
 
     loadAssets();
 
@@ -85,8 +89,12 @@ public class MainGameScreen extends ScreenAdapter {
     if (world == null) {
       throw new IllegalStateException("Unable to load configs/rooms.json");
     }
+
     roomManager = new RoomManager(world, player, renderer.getCamera());
     roomManager.create();
+
+    runTimer = ServiceLocator.getRunTimer();
+    runTimer.startRun();
 
     createUI();
   }
@@ -97,6 +105,7 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.getEntityService().update();
     roomManager.update();
     renderer.render();
+    runTimer.update();
   }
 
   @Override
@@ -164,6 +173,7 @@ public class MainGameScreen extends ScreenAdapter {
     ConsumableHotbarDisplay consumableHotbarDisplay = new ConsumableHotbarDisplay(player);
     InventoryActions inventoryActions = new InventoryActions(inventoryDisplay);
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
+    TimerDisplay timerDisplay = new TimerDisplay();
 
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
@@ -173,6 +183,8 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay())
+        .addComponent(timerDisplay)
+        .addComponent(new TimerDisplay.ToggleInput(timerDisplay))
         .addComponent(inventoryDisplay)
         .addComponent(hotbarDisplay)
         .addComponent(consumableHotbarDisplay)
@@ -183,6 +195,7 @@ public class MainGameScreen extends ScreenAdapter {
 
   /* Schedule the death screen to be shown */
   private void scheduleDeathScreen() {
+    runTimer.stopRun();
     ServiceLocator.getEntityService().schedule(() -> game.setScreen(ScreenType.DEATH_SCREEN));
   }
 }

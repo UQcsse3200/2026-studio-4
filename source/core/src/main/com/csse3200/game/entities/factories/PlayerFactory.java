@@ -5,12 +5,11 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
+import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.ConsumableSelectionComponent;
 import com.csse3200.game.components.player.HealingPotionFeedbackComponent;
-import com.csse3200.game.components.player.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InventoryComponent;
-import com.csse3200.game.components.player.InvisibilityPotionComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
@@ -97,7 +96,6 @@ public class PlayerFactory {
             .addComponent(new ConsumableEffectComponent())
             .addComponent(new HealingPotionFeedbackComponent())
             .addComponent(new SpeedPotionAfterimageComponent())
-            .addComponent(new InvisibilityPotionComponent())
             .addComponent(new ItemPickupComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())
