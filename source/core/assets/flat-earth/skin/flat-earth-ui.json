@@ -320,6 +320,10 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		font: font
 		fontColor: time
 	}
+	inventory: {
+		font: font
+		fontColor: brown
+	}
 
 }
 com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {

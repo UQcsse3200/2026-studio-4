@@ -112,12 +112,12 @@ public class InventoryDisplay extends UIComponent {
     Table leftPage =
         new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a")).top();
 
-    leftPage.add(new Label("Consumables", skin)).top().colspan(3).pad(25f);
+    leftPage.add(new Label("Consumables", skin, "inventory")).top().colspan(3).pad(25f);
     leftPage.row();
-    leftPage.add(new Label("Equipped", skin)).colspan(3);
+    leftPage.add(new Label("Equipped", skin, "inventory")).colspan(3);
     leftPage.row();
 
-    // Please pass in list of equiped consumabls
+    // Please pass in list of equipped consumables
     Table leftGrid = drawItemGrid(3, 3, 72, new ArrayList<>(), true);
     leftPage.add(leftGrid);
 
@@ -127,7 +127,7 @@ public class InventoryDisplay extends UIComponent {
     Table rightPage =
         new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
 
-    // Please pass in list of consumabls in inventory
+    // Please pass in list of consumables in inventory
     Table rightGrid = drawItemGrid(4, 20, 64, new ArrayList<>(), true);
 
     rightPage.add(rightGrid).center().pad(10);
@@ -150,7 +150,7 @@ public class InventoryDisplay extends UIComponent {
     Table leftPage =
         new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a")).top();
 
-    leftPage.add(new Label("Charms", skin)).top().colspan(3).pad(25f);
+    leftPage.add(new Label("Charms", skin, "inventory")).top().colspan(3).pad(25f);
     leftPage.row();
     // display stats
 
