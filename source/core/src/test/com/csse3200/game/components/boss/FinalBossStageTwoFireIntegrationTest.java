@@ -21,7 +21,7 @@ import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageTwoConfig;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.GameTime;
@@ -522,21 +522,22 @@ class FinalBossStageTwoFireIntegrationTest {
   @Test
   void consumableShieldNeitherAddsHalfDamageNorDiscardsEarlierEffectiveHalfOnExpiry() {
     startHalfDamageEncounter();
-    inventory.addConsumable(ItemType.SHIELD, 2);
-    assertTrue(consumables.tryUse(ItemType.SHIELD));
+    inventory.addConsumable(ItemIds.SHIELD, 2);
+    assertTrue(consumables.tryUse(ItemIds.SHIELD));
+    long shieldDurationMs = consumables.getShieldRemainingMs();
     assertTrue(consumables.isShielded());
     hitWithFireball();
     assertEquals(100, playerStats.getHealth());
 
-    when(time.getTime()).thenReturn(ConsumableEffectComponent.DURATION_MS + 1);
+    when(time.getTime()).thenReturn(shieldDurationMs + 1);
     playerEffects.update();
     assertFalse(consumables.isShielded());
     hitWithFireball();
     assertEquals(100, playerStats.getHealth());
-    assertTrue(consumables.tryUse(ItemType.SHIELD));
+    assertTrue(consumables.tryUse(ItemIds.SHIELD));
     hitWithFireball();
     assertEquals(100, playerStats.getHealth());
-    when(time.getTime()).thenReturn(2 * ConsumableEffectComponent.DURATION_MS + 2);
+    when(time.getTime()).thenReturn(2 * shieldDurationMs + 2);
     playerEffects.update();
     assertFalse(consumables.isShielded());
     hitWithFireball();

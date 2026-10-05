@@ -6,6 +6,7 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.gamearea.TimerDisplay;
+import com.csse3200.game.components.maingame.ConsumableHotbarDisplay;
 import com.csse3200.game.components.maingame.HotbarDisplay;
 import com.csse3200.game.components.maingame.InventoryActions;
 import com.csse3200.game.components.maingame.InventoryDisplay;
@@ -169,6 +170,7 @@ public class MainGameScreen extends ScreenAdapter {
     InventoryDisplay inventoryDisplay =
         new InventoryDisplay(player.getComponent(InventoryComponent.class));
     HotbarDisplay hotbarDisplay = new HotbarDisplay(player);
+    ConsumableHotbarDisplay consumableHotbarDisplay = new ConsumableHotbarDisplay(player);
     InventoryActions inventoryActions = new InventoryActions(inventoryDisplay);
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
     TimerDisplay timerDisplay = new TimerDisplay();
@@ -185,6 +187,7 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(new TimerDisplay.ToggleInput(timerDisplay))
         .addComponent(inventoryDisplay)
         .addComponent(hotbarDisplay)
+        .addComponent(consumableHotbarDisplay)
         .addComponent(inventoryActions);
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     ServiceLocator.getEntityService().register(ui);

@@ -10,6 +10,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.ui.terminal.KeyboardTerminalInputComponent;
 import com.csse3200.game.ui.terminal.Terminal;
@@ -69,6 +70,14 @@ class KeyboardPlayerInputComponentTest {
     }
     assertFalse(input.keyDown(Keys.NUM_4));
     assertEquals(List.of(WeaponType.SWORD, WeaponType.DAGGER, WeaponType.BOW), selected);
+  }
+
+  @Test
+  void formerConsumableKeysAreUnbound() {
+    for (int key : new int[] {Keys.NUM_7, Keys.NUM_8, Keys.NUM_9, Keys.NUM_0}) {
+      assertFalse(input.keyDown(key));
+      assertFalse(input.keyUp(key));
+    }
   }
 
   @Test
@@ -163,9 +172,33 @@ class KeyboardPlayerInputComponentTest {
 
   @Test
   void shouldIgnoreUnboundKeys() {
-    assertFalse(input.keyDown(Keys.Q));
-    assertFalse(input.keyUp(Keys.Q));
+    assertFalse(input.keyDown(Keys.R));
+    assertFalse(input.keyUp(Keys.R));
     assertEquals(0, walkCount);
     assertEquals(0, attackCount);
+  }
+
+  @Test
+  void tabCyclesConsumablesAndQUsesOnlyTheSelectedSlot() {
+    ConsumableSelectionComponent selection = new ConsumableSelectionComponent();
+    player.addComponent(selection);
+    selection.create();
+    List<String> requested = new ArrayList<>();
+    player
+        .getEvents()
+        .addListener(
+            ConsumableEffectComponent.USE_REQUEST, (EventListener1<String>) requested::add);
+
+    assertTrue(input.keyDown(Keys.Q));
+    assertTrue(input.keyDown(Keys.TAB));
+    assertTrue(input.keyDown(Keys.Q));
+    assertEquals(List.of(ItemIds.HEALTH_POTION, ItemIds.SHIELD), requested);
+    assertEquals(1, selection.getSelectedIndex());
+    for (int i = 0; i < 3; i++) {
+      assertTrue(input.keyDown(Keys.TAB));
+    }
+    assertEquals(ItemIds.FREEZE_BOMB, selection.getSelectedType());
+    assertTrue(input.keyDown(Keys.TAB));
+    assertEquals(0, selection.getSelectedIndex());
   }
 }
