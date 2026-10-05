@@ -5,9 +5,12 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.weapons.*;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ConsumableItem;
+import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.items.charms.*;
+import com.csse3200.game.items.ConsumableItem;
+import com.csse3200.game.items.ItemCatalog;
 
 public final class GameSaveMapper {
   private GameSaveMapper() {}
@@ -27,13 +30,23 @@ public final class GameSaveMapper {
     InventoryComponent inventory = required(player, InventoryComponent.class);
     GameSaveData.PlayerData data = save.playerData;
     data.gold = inventory.getGold();
+    data.inventory.putAll(inventory.getConsumables());
 
-    for (ItemType type : ItemType.values()) {
-      if (type.isConsumable()) {
-        int count = inventory.getConsumableCount(type);
-        if (count > 0) data.inventory.put(type.name(), count);
-      }
-    }
+for (var entry : save.playerData.inventory.entrySet()) {
+  String id = entry.getKey();
+  Integer count = entry.getValue();
+
+  if (count == null
+      || count < 0
+      || !ItemCatalog.contains(id)
+      || !(ItemCatalog.create(id, 1) instanceof ConsumableItem)) {
+    throw new IllegalArgumentException("Invalid saved inventory item: " + id);
+  }
+
+  if (count > 0) {
+    inventory.addConsumable(id, count);
+  }
+}
 
     for (Charm charm : inventory.getCharms()) {
       data.charms.add(charmId(charm));
@@ -59,16 +72,23 @@ public final class GameSaveMapper {
     InventoryComponent inventory = required(player, InventoryComponent.class);
     inventory.setGold(save.playerData.gold);
 
-    if (save.playerData.inventory != null) {
-      for (var entry : save.playerData.inventory.entrySet()) {
-        ItemType type = ItemType.valueOf(entry.getKey());
-        int count = entry.getValue() == null ? 0 : entry.getValue();
-        if (!type.isConsumable() || count < 0) {
-          throw new IllegalArgumentException("Invalid saved inventory item: " + entry.getKey());
-        }
-        inventory.addConsumable(type, count);
-      }
+if (save.playerData.inventory != null) {
+  for (var entry : save.playerData.inventory.entrySet()) {
+    String id = entry.getKey();
+    Integer count = entry.getValue();
+
+    if (count == null
+        || count < 0
+        || !ItemCatalog.contains(id)
+        || !(ItemCatalog.create(id, 1) instanceof ConsumableItem)) {
+      throw new IllegalArgumentException("Invalid saved inventory item: " + id);
     }
+
+    if (count > 0) {
+      inventory.addConsumable(id, count);
+    }
+  }
+}
 
     if (save.playerData.charms != null) {
       for (String id : save.playerData.charms) {

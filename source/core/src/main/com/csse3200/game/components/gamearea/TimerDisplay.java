@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.services.RunTimer;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
 /**
@@ -19,7 +20,7 @@ import com.csse3200.game.ui.UIComponent;
 public class TimerDisplay extends UIComponent {
   private static final float EDGE_MARGIN = 20f;
 
-  private final RunTimer runTimer;
+  private RunTimer runTimer;
   private boolean visible = true;
 
   private Table rootTable;
@@ -27,15 +28,11 @@ public class TimerDisplay extends UIComponent {
   private Label dungeonCaption;
   private Label dungeonTime;
 
-  /** Creates a display backed by the supplied game runTimer. */
-  public TimerDisplay(RunTimer runTimer) {
-    this.runTimer = runTimer;
-  }
-
   /** Builds the HUD panel and adds it to the shared UI stage. */
   @Override
   public void create() {
     super.create();
+    runTimer = ServiceLocator.getRunTimer();
 
     Label runCaption = new Label("RUN: ", skin, "caption");
     runCaption.setFontScale(1.2f);
@@ -109,7 +106,7 @@ public class TimerDisplay extends UIComponent {
 
     /** Creates a keyboard handler for the supplied timer display. */
     public ToggleInput(TimerDisplay display) {
-      super(20);
+      super(5);
       this.display = display;
     }
 

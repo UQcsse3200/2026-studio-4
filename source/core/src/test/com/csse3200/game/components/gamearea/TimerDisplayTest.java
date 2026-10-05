@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
@@ -34,6 +35,7 @@ class TimerDisplayTest {
   private RunTimer runTimer;
   private TimerDisplay display;
   private Entity ui;
+  private EntityService entityService;
 
   @BeforeEach
   void setUp() {
@@ -42,9 +44,14 @@ class TimerDisplayTest {
     when(renderService.getStage()).thenReturn(stage);
     ServiceLocator.registerRenderService(renderService);
 
+    entityService = mock(EntityService.class);
+    ServiceLocator.registerEntityService(entityService);
+
     gameTime = mock(GameTime.class);
     runTimer = new RunTimer(gameTime);
-    display = new TimerDisplay(runTimer);
+    ServiceLocator.registerRunTimer(runTimer);
+
+    display = new TimerDisplay();
     ui = new Entity().addComponent(display);
     ui.create();
   }
@@ -52,6 +59,22 @@ class TimerDisplayTest {
   private void tick(float delta) {
     when(gameTime.getDeltaTime()).thenReturn(delta);
     runTimer.update();
+  }
+
+  /**
+   * Advances the timer by a total amount of time, split across several sub-frame ticks no larger
+   * than RunTimer's clamp, mirroring how a real game loop accumulates time across many frames.
+   */
+  private void advance(float totalSeconds) {
+    final float step = 0.2f; // comfortably under RunTimer's clamp
+    float remaining = totalSeconds;
+    while (remaining > step) {
+      tick(step);
+      remaining -= step;
+    }
+    if (remaining > 0f) {
+      tick(remaining);
+    }
   }
 
   @Test
@@ -64,7 +87,7 @@ class TimerDisplayTest {
   @Test
   void drawShowsRunTimeOnceRunStarts() {
     runTimer.startRun();
-    tick(75f); // 1 minute 15 seconds
+    advance(75f); // 1 minute 15 seconds
     display.draw(mock(SpriteBatch.class));
     assertEquals("01:15", label("runTime").getText().toString());
   }
@@ -81,9 +104,9 @@ class TimerDisplayTest {
   @Test
   void drawShowsDungeonTimeAndLabelWhenDungeonActive() {
     runTimer.startRun();
-    tick(10f);
+    advance(10f);
     runTimer.startDungeon("dungeonOne");
-    tick(42f);
+    advance(42f);
     display.draw(mock(SpriteBatch.class));
     assertEquals("00:42", label("dungeonTime").getText().toString());
     assertEquals("DUNGEON: 1", label("dungeonCaption").getText().toString());
@@ -108,7 +131,7 @@ class TimerDisplayTest {
 
   @Test
   void drawBeforeCreateDoesNothing() {
-    TimerDisplay fresh = new TimerDisplay(new RunTimer(mock(GameTime.class)));
+    TimerDisplay fresh = new TimerDisplay();
     assertDoesNotThrow(() -> fresh.draw(mock(SpriteBatch.class)));
   }
 

@@ -47,12 +47,12 @@ public class RoomManager {
   private final AchievementsManager achievements;
 
   /** Creates the JSON-driven room manager. Call {@link #create()} to register the initial room. */
-  public RoomManager(WorldConfig world, Entity player, CameraComponent camera, RunTimer runTimer) {
+  public RoomManager(WorldConfig world, Entity player, CameraComponent camera) {
     world.validate();
     this.world = world;
     this.player = player;
     this.camera = camera;
-    this.runTimer = runTimer;
+    this.runTimer = ServiceLocator.getRunTimer();
     currentConfig = world.getRoom(world.startRoomId);
     initialEntryPoint = currentConfig.getEntryPoint(world.startEntryPointId);
     currentConfig = world.getRoom(world.startRoomId);
@@ -76,9 +76,9 @@ public class RoomManager {
   }
 
   /** Package private constructer to create empty room manager for testing */
-  RoomManager(Entity player, RunTimer runTimer) {
+  RoomManager(Entity player) {
     this.player = player;
-    this.runTimer = runTimer;
+    this.runTimer = ServiceLocator.getRunTimer();
     this.world = null;
     this.camera = null;
     this.initialEntryPoint = null;
