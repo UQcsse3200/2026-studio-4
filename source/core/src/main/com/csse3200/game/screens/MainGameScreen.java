@@ -1,5 +1,7 @@
 package com.csse3200.game.screens;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
@@ -62,6 +64,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final GameSaveData loadedSave;
   private final boolean loadAtCheckpoint;
   private boolean runSaved;
+  private boolean winScreenShortcutPressed;
   private final RunTimer runTimer;
   private final RoomAssets roomAssets = new RoomAssets();
 
@@ -129,6 +132,19 @@ public class MainGameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
+    boolean winScreenShortcutDown =
+        (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)
+                || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT))
+            && (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
+                || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT))
+            && Gdx.input.isKeyPressed(Input.Keys.W);
+    if (winScreenShortcutDown && !winScreenShortcutPressed) {
+      winScreenShortcutPressed = true;
+      game.setScreen(ScreenType.WIN_SCREEN);
+      return;
+    }
+    winScreenShortcutPressed = winScreenShortcutDown;
+
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     roomManager.update();
