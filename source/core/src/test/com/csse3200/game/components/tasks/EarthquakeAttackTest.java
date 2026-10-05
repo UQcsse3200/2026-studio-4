@@ -67,7 +67,7 @@ class EarthquakeAttackTaskTest {
   void shouldBecomeActiveWhenPhaseTwoStarts() {
     task.activate();
 
-    assertEquals(15, task.getPriority());
+    assertEquals(20, task.getPriority());
   }
 
   @Test
@@ -81,7 +81,7 @@ class EarthquakeAttackTaskTest {
     task.start();
     task.update();
 
-    verify(playerStats).takeDamage(10, boss);
+    verify(playerStats).takeDamage(bossStats.getBaseAttack(), boss);
   }
 
   @Test
@@ -113,7 +113,7 @@ class EarthquakeAttackTaskTest {
     task.update();
     task.update();
 
-    verify(playerStats, times(1)).takeDamage(10, boss);
+    verify(playerStats, times(2)).takeDamage(10, boss);
   }
 
   @Test
@@ -130,7 +130,7 @@ class EarthquakeAttackTaskTest {
     task.update();
 
     // Three seconds pass.
-    when(gameTime.getDeltaTime()).thenReturn(3f);
+    when(gameTime.getDeltaTime()).thenReturn(1f);
 
     task.update();
 

@@ -285,16 +285,16 @@ public class NPCFactory {
 
     AITaskComponent aiComponent =
         new AITaskComponent(target)
-            .addTask(new PatrolTask(mapBounds))
+            .addTask(new PatrolTask(mapBounds, false))
             .addTask(new StampedeTask(target, sleipnir))
             .addTask(new EarthquakeAttackTask(target, 5f, sleipnir))
             .addTask(new OneAttackTask(target, 2f, mapBounds[1].x / 2f, new Vector2(8f, 8f)));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/beetle.atlas", TextureAtlas.class));
+            ServiceLocator.getResourceService().getAsset("images/horse.atlas", TextureAtlas.class));
     animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
+    animator.addAnimation("attack", 0.09f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
@@ -309,6 +309,8 @@ public class NPCFactory {
         .addComponent(new BossPhaseComponent());
     sleipnir.getComponent(AnimationRenderComponent.class).scaleEntity();
     animator.startAnimation(MOVE);
+
+    sleipnir.setScale(3f, 3f);
 
     sleipnir.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(8f, 8f));
     return sleipnir;

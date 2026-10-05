@@ -12,20 +12,18 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
   private final Vector2[] patrolPoints;
   private PhysicsMovementComponent movementComponent;
   private int currentPoint;
-  private int priority = 2;
+  private int priority = 5;
+  private boolean phaseTwoActivated = false;
 
   public PatrolTask(Vector2[] layout) {
-    patrolPoints = setPatrolPoints(layout);
+    phaseTwoActivated = true;
+    patrolPoints = layout;
+    POINT_DISTANCE = 0.2f;
   }
 
-  private Vector2[] setPatrolPoints(Vector2[] grid) {
-    if (grid.length == 3) { // used by flying enemy
-      POINT_DISTANCE = 0.2f;
-      return grid;
-    } else { // used only by norse miniboss
-      POINT_DISTANCE = 2f;
-      return createBounds(grid);
-    }
+  public PatrolTask(Vector2[] layout, boolean phaseTwoActivated) {
+    POINT_DISTANCE = 2f;
+    patrolPoints = createBounds(layout);
   }
 
   private Vector2[] createBounds(Vector2[] grid) {
@@ -40,7 +38,11 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
 
   @Override
   public int getPriority() {
-    return priority;
+    if (phaseTwoActivated) {
+      return 1;
+    } else {
+      return priority;
+    }
   }
 
   @Override

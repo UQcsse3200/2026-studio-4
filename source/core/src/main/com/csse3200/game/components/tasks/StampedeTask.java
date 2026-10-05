@@ -18,15 +18,12 @@ public class StampedeTask extends DefaultTask implements PriorityTask {
   private static final float RADIUS = 3f;
   private static final float SPEED = 2.5f;
   private static final float DAMAGE = 0.25f;
-  private static final float RESTART = 5f;
   private final Entity target;
   private PhysicsComponent physicsComponent;
   private boolean phaseTwoActivated;
-  private boolean resetFlag = true;
   private float angle;
   private int rotations = 0;
   private float damageTimer;
-  private float restartTimer;
 
   public StampedeTask(Entity target, Entity entity) {
     this.target = target;
@@ -52,15 +49,7 @@ public class StampedeTask extends DefaultTask implements PriorityTask {
   @Override
   public void update() {
     float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
-    if (!resetFlag) {
-      restartTimer += deltaTime;
-    }
-    if (phaseTwoActivated && restartTimer >= RESTART && !resetFlag) {
-      resetFlag = true;
-      rotations = 0;
-      restartTimer = 0;
-    }
-    if (!phaseTwoActivated || !resetFlag) {
+    if (!phaseTwoActivated) {
       return;
     }
     Body body = physicsComponent.getBody();
@@ -75,10 +64,6 @@ public class StampedeTask extends DefaultTask implements PriorityTask {
     Vector2 movementDirection = desiredPosition.sub(currentPosition);
     body.setLinearVelocity(movementDirection.scl(1f / deltaTime));
     applyDamage(deltaTime);
-
-    if (rotations != 0 && (rotations % 20 == 0)) { // after 2/3 rotations stop
-      resetFlag = false;
-    }
   }
 
   /**
@@ -109,8 +94,8 @@ public class StampedeTask extends DefaultTask implements PriorityTask {
 
   @Override
   public int getPriority() {
-    if (phaseTwoActivated && resetFlag) {
-      return 20;
+    if (phaseTwoActivated) {
+      return 15;
     } else {
       return -10;
     }

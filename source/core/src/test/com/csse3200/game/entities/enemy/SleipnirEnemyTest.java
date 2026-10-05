@@ -46,7 +46,7 @@ public class SleipnirEnemyTest {
     ServiceLocator.registerEntityService(entityService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/beetle.atlas"});
+    resourceService.loadTextureAtlases(new String[] {"images/horse.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }

@@ -20,6 +20,8 @@ public class OneAttackTask extends DefaultTask implements PriorityTask {
   private Vector2 maxSpeed;
   private boolean hit = false;
   private final float coolDownDist;
+  private final float MAX_SPEED = 10f;
+  private boolean phaseTwoActivated = false;
 
   public OneAttackTask(Entity target, float attackDist, float coolDown, Vector2 maxSpeed) {
     this.target = target;
@@ -41,8 +43,6 @@ public class OneAttackTask extends DefaultTask implements PriorityTask {
 
   @Override
   public void update() {
-    float MAX_SPEED = 10f;
-
     CombatStatsComponent combatStatsComponent =
         owner.getEntity().getComponent(CombatStatsComponent.class);
     PhysicsMovementComponent physicsMovementComponent =
@@ -91,6 +91,9 @@ public class OneAttackTask extends DefaultTask implements PriorityTask {
       if (status == Status.ACTIVE) {
         movementTask.stop();
       }
+      return -1;
+    }
+    if (phaseTwoActivated) {
       return -1;
     }
     if (!hit && (position.dst(target.getPosition()) <= attackDist)) {

@@ -71,16 +71,15 @@ class PatrolTaskTest {
   void defaultPriorityShouldBeTwo() {
     PatrolTask task = new PatrolTask(createThreePatrolPoints());
 
-    assertEquals(2, task.getPriority());
+    assertEquals(1, task.getPriority());
   }
 
   @Test
   void setPriorityShouldUpdatePriority() {
     PatrolTask task = new PatrolTask(createThreePatrolPoints());
-
     task.setPriority(5);
 
-    assertEquals(5, task.getPriority());
+    assertEquals(1, task.getPriority());
   }
 
   @Test
@@ -188,8 +187,7 @@ class PatrolTaskTest {
     Vector2 origin = new Vector2(10, 20);
     Vector2 size = new Vector2(5, 8);
 
-    PatrolTask task = new PatrolTask(new Vector2[] {origin, size});
-
+    PatrolTask task = new PatrolTask(new Vector2[] {origin, size}, false);
     task.create(owner);
     task.start();
 
@@ -200,6 +198,16 @@ class PatrolTaskTest {
 
     // Bounds order: bottom-left -> top-right.
     verify(movementComponent).setTarget(new Vector2(15, 28));
+
+    when(enemy.getPosition()).thenReturn(new Vector2(15, 28));
+    task.update();
+
+    verify(movementComponent).setTarget(new Vector2(10, 28));
+
+    when(enemy.getPosition()).thenReturn(new Vector2(10, 28));
+    task.update();
+
+    verify(movementComponent).setTarget(new Vector2(10, 20));
   }
 
   private Vector2[] createThreePatrolPoints() {

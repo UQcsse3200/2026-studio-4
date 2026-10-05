@@ -73,7 +73,7 @@ class StampedeTaskTest {
 
     task.start();
 
-    assertEquals(20, task.getPriority());
+    assertEquals(15, task.getPriority());
   }
 
   @Test
