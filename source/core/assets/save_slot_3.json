@@ -1,5 +1,5 @@
 {
-playTimeSeconds: 1.992704
+playTimeSeconds: 8.841748
 dungeonTimesSeconds: {
 	class: java.util.LinkedHashMap
 	dungeonOne: 0
@@ -7,15 +7,14 @@ dungeonTimesSeconds: {
 	finalDungeon: 0
 }
 checkpoint: {
-	roomId: selection
-	entryPointId: start
-	tileX: 14
-	tileY: 14
+	roomId: finalBossRoom
+	tileX: 10
+	tileY: 10
 }
 resumePosition: {
-	roomId: selection
-	x: 7
-	y: 7
+	roomId: finalBossRoom
+	x: 5.707821
+	y: 4.8666663
 }
 playerData: {
 	gold: 50

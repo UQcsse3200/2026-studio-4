@@ -2,6 +2,7 @@ package com.csse3200.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -38,10 +39,11 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import com.badlogic.gdx.audio.Music;
 
 public class WinScreen extends ScreenAdapter {
   private static final String WIN_GIF = "images/win_dance.gif";
-  private static final float TITLE_FONT_SCALE = 2.5f;
+  private static final float TITLE_FONT_SCALE = 4.0f;
 
   private final GdxGame game;
   private final Renderer renderer;
@@ -49,6 +51,7 @@ public class WinScreen extends ScreenAdapter {
   private Image gifImage;
   private int currentFrame;
   private float frameElapsed;
+  private Music winMusic;
 
   public WinScreen(GdxGame game) {
     this.game = game;
@@ -57,6 +60,10 @@ public class WinScreen extends ScreenAdapter {
     ServiceLocator.registerResourceService(new ResourceService());
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
+
+    winMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/win_music.mp3"));
+    winMusic.setLooping(true);
+    winMusic.play();
 
     renderer = RenderFactory.createRenderer();
     frames = loadGifFrames();
@@ -218,10 +225,13 @@ public class WinScreen extends ScreenAdapter {
           }
         });
 
-    table.add(title).expandX().top().padBottom(16f).row();
     table.add(gifImage).expand().fill().row();
     table.add(menuButton).bottom().padTop(16f).width(240f).height(64f);
     stage.addActor(table);
+     Table titleOverlay = new Table();
+    titleOverlay.setFillParent(true);
+    titleOverlay.add(title).center();
+    stage.addActor(titleOverlay);
 
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10));
@@ -250,6 +260,9 @@ public class WinScreen extends ScreenAdapter {
 
   @Override
   public void dispose() {
+    winMusic.stop();
+    winMusic.dispose();
+    
     disposeFrames(frames);
     renderer.dispose();
     ServiceLocator.getRenderService().dispose();

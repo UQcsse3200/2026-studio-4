@@ -54,7 +54,6 @@ public class LoadGameScreen extends ScreenAdapter {
   private final Button.ButtonStyle[] normalStyles = new Button.ButtonStyle[SLOT_COUNT];
   private final Button.ButtonStyle[] selectedStyles = new Button.ButtonStyle[SLOT_COUNT];
   private final List<Texture> previewTextures = new ArrayList<>();
-  private final Texture crest;
   private Label footer;
   private int selectedIndex;
   private boolean confirmingDelete;
@@ -68,7 +67,6 @@ public class LoadGameScreen extends ScreenAdapter {
 
     renderer = RenderFactory.createRenderer();
     skin = new Skin(Gdx.files.internal("flat-earth/skin/flat-earth-ui.json"));
-    crest = new Texture(Gdx.files.internal("images/box_boy_title.png"));
     Gdx.gl.glClearColor(0.035f, 0.027f, 0.02f, 1f);
     loadSlotData();
     createUI();
@@ -103,10 +101,6 @@ public class LoadGameScreen extends ScreenAdapter {
     panel.pad(22f, 28f, 18f, 28f);
 
     Table header = new Table();
-    Image crestImage = new Image(crest);
-    crestImage.setScaling(Scaling.fit);
-    header.add(crestImage).size(62f, 62f).padRight(16f);
-
     Table heading = new Table();
     heading.left();
     heading.add(label("DATA LIST", "font_large", SELECTED_GOLD, 1.15f)).left().row();
@@ -398,7 +392,6 @@ public class LoadGameScreen extends ScreenAdapter {
     for (Texture texture : previewTextures) {
       texture.dispose();
     }
-    crest.dispose();
     skin.dispose();
     renderer.dispose();
     ServiceLocator.getRenderService().dispose();
