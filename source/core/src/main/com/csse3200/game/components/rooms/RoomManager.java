@@ -16,6 +16,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.minimap.Minimap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -50,6 +51,7 @@ public class RoomManager {
         currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
+    attachMinimap();
   }
 
   /** Package private constructer to create empty room manager for testing */
@@ -248,5 +250,10 @@ public class RoomManager {
   /** Package private setter for unit testing */
   void setCurrentRoom(Entity room) {
     this.currentRoom = room;
+  }
+
+  /** Attaches the minimap component to the player */
+  void attachMinimap() {
+    player.addComponent(new Minimap());
   }
 }

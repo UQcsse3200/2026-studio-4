@@ -40,7 +40,6 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.ui.minimap.Minimap;
 
 /**
  * Factory to create a player entity.
@@ -122,8 +121,7 @@ public class PlayerFactory {
             .addComponent(
                 new LightningSpellComponent(5f, 25, 400L, new StrategyWithinRadius(SPELL_RADIUS)))
             .addComponent(
-                new FreezeSpellComponent(5f, 5000L, new StrategyWithinRadius(SPELL_RADIUS)))
-            .addComponent(new Minimap());
+                new FreezeSpellComponent(5f, 5000L, new StrategyWithinRadius(SPELL_RADIUS)));
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
