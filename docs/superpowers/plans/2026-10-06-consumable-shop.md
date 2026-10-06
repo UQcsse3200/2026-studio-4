@@ -76,16 +76,18 @@ Paths below are relative to the worktree. Production Java paths start `source/co
 
 ### Task 4: Selected visual design and game wiring
 
+Selected by Yuri: candidate A, `/Users/yuri/CSSE3200/output/shop-visual-20261006/candidate-a.html`. Implement existing item/merchant metadata; fit the selected layout within the window. No new external art assets: existing item textures and shopkeeper atlas plus locally owned procedural border panels.
+
 **Files:** Create `components/shop/ShopDisplay.java`, `entities/factories/ShopFactory.java`; modify `screens/MainGameScreen.java` beside narrative registration; modify merchant record in `source/core/assets/configs/friendlyNpcs.json`. Add selected shop-only art assets if the approved design needs them; record exact paths in the plan after selection. Test `entities/factories/ShopFactoryTest.java` where GameExtension can exercise dependencies without an OpenGL scene.
 
 **Interfaces:** `ShopFactory.createShop(Entity player)` returns an entity with ShopDisplay, ShopSessionComponent, ShopInputComponent and updatesWhilePaused=true. ShopDisplay extends existing UIComponent, implements ShopView and binds Task 2 catalogue/service plus InventoryComponent. Use ItemCatalog item names/descriptions/effect summaries/textures and existing ResourceService lifetime management.
 
-- [ ] Present actual Gemini candidates and obtain Yuri's selection. Record chosen candidate path and any asset paths here. Do not choose visuals for Yuri or substitute a new visual direction.
-- [ ] Add meaningful binding/factory tests feasible without GL: configured catalogue has exactly five visible consumables, initial funds determine affordability, purchase refreshes balances/counts, entity continues while paused. Run focused tests to confirm failure before wiring.
-- [ ] Implement selected view with current gold, all five offers, owned counts, price/effect, Buy buttons, result message, Close. Disable unaffordable actions while service revalidates every purchase. Root is a modal full-stage actor; ensure it stays above HUD actors that move to front each frame. Layout fits 1280x800 and resizes; use ScrollPane for smaller windows. Remove actors/release loaded assets on disposal. Do not change shared skin files.
-- [ ] Register ShopFactory beside existing NarrativeFactory registration. Remove only merchant cutsceneId, cutsceneTiming, lockMovementDuringCutscene. Preserve greeting, other NPCs, all narrative files and demo assets. These exact two cross-team edits were confirmed by Yuri's “开始制作” after the written spec.
-- [ ] Run `./gradlew core:test spotlessCheck desktop:classes`; expect all pass. Inspect complete diff and blame for boundary violations.
-- [ ] Commit approved UI/wiring/config/tests: `feat(shop): connect merchant dialogue to consumable shop`.
+- [x] Present actual Gemini candidates and obtain Yuri's selection. Record chosen candidate path and any asset paths here. Do not choose visuals for Yuri or substitute a new visual direction.
+- [x] Add meaningful binding/factory tests feasible without GL: configured catalogue has exactly five visible consumables, initial funds determine affordability, purchase refreshes balances/counts, entity continues while paused. Run focused tests to confirm failure before wiring.
+- [x] Implement selected view with current gold, all five offers, owned counts, price/effect, Buy buttons, result message, Close. Disable unaffordable actions while service revalidates every purchase. Root is a modal full-stage actor; ensure it stays above HUD actors that move to front each frame. Layout fits 1280x800 and resizes; use ScrollPane for smaller windows. Remove actors/release loaded assets on disposal. Do not change shared skin files.
+- [x] Register ShopFactory beside existing NarrativeFactory registration. Remove only merchant cutsceneId, cutsceneTiming, lockMovementDuringCutscene. Preserve greeting, other NPCs, all narrative files and demo assets. These exact two cross-team edits were confirmed by Yuri's “开始制作” after the written spec.
+- [x] Run `./gradlew core:test spotlessCheck desktop:classes`; expect all pass. Inspect complete diff and blame for boundary violations.
+- [x] Commit approved UI/wiring/config/tests: `feat(shop): connect merchant dialogue to consumable shop`.
 
 ### Task 5: Windowed walkthrough and final audit
 

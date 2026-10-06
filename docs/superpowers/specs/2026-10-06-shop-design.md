@@ -1,6 +1,6 @@
 # Consumable shop: first playable version
 
-Status: proposed design for Yuri's review; product implementation has not started.
+Status: approved by Yuri; implementation plan approved with Native execution. Gemini candidate A selected. Product implementation completed; manual windowed walkthrough remains unverified because Computer Use cannot target the Java window.
 
 ## Goal and agreed scope
 

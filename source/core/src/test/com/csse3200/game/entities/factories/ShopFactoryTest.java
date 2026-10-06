@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -12,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.components.friendlynpc.NpcInteractionEvents;
 import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.shop.ShopSessionComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -117,5 +121,29 @@ class ShopFactoryTest {
     assertFalse(ServiceLocator.getEntityService().isFrozen());
     player.getEvents().trigger(NpcInteractionEvents.INTERACTION_FINISHED, "merchant", new Entity());
     assertEquals(0, stage.getActors().size);
+  }
+
+  @Test
+  void modalOwnsKeyboardAndScrollFocusThenRestoresPreviousFocus() {
+    Actor background = new Actor();
+    int[] typed = {0};
+    background.addListener(
+        new InputListener() {
+          @Override
+          public boolean keyTyped(InputEvent event, char character) {
+            typed[0]++;
+            return true;
+          }
+        });
+    stage.addActor(background);
+    stage.setKeyboardFocus(background);
+    stage.setScrollFocus(background);
+    open();
+    ServiceLocator.getInputService().keyTyped('x');
+    assertEquals(0, typed[0]);
+    assertNotSame(background, stage.getScrollFocus());
+    shop.getComponent(ShopSessionComponent.class).close();
+    assertSame(background, stage.getKeyboardFocus());
+    assertSame(background, stage.getScrollFocus());
   }
 }

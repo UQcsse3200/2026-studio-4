@@ -41,6 +41,9 @@ public class ShopDisplay extends UIComponent implements ShopView {
   private final List<Texture> panelTextures = new ArrayList<>();
   private final List<String> loadedTextures = new ArrayList<>();
   private Table root;
+  private ScrollPane productScroll;
+  private Actor previousKeyboardFocus;
+  private Actor previousScrollFocus;
   private Label goldLabel;
   private Label feedback;
   private Runnable onClose;
@@ -170,7 +173,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
       offers.add(row).growX().minHeight(88f).padBottom(8f);
       offers.row();
     }
-    ScrollPane productScroll = new ScrollPane(offers);
+    productScroll = new ScrollPane(offers);
     productScroll.setScrollingDisabled(true, false);
     productScroll.setFadeScrollBars(false);
     Table body = new Table();
@@ -237,6 +240,10 @@ public class ShopDisplay extends UIComponent implements ShopView {
     feedback.setText("Choose your supplies. Each purchase adds one item to your inventory.");
     root.setVisible(true);
     root.toFront();
+    previousKeyboardFocus = stage.getKeyboardFocus();
+    previousScrollFocus = stage.getScrollFocus();
+    stage.setKeyboardFocus(root);
+    stage.setScrollFocus(productScroll);
     refresh();
   }
 
@@ -263,7 +270,19 @@ public class ShopDisplay extends UIComponent implements ShopView {
       // Cancel press ownership before hiding, so a later release cannot buy in a reopened shop.
       stage.cancelTouchFocus();
       root.setVisible(false);
+      if (stage.getKeyboardFocus() == root) {
+        stage.setKeyboardFocus(attachedFocus(previousKeyboardFocus));
+      }
+      if (stage.getScrollFocus() == productScroll) {
+        stage.setScrollFocus(attachedFocus(previousScrollFocus));
+      }
+      previousKeyboardFocus = null;
+      previousScrollFocus = null;
     }
+  }
+
+  private Actor attachedFocus(Actor actor) {
+    return actor != null && actor.getStage() == stage ? actor : null;
   }
 
   @Override
