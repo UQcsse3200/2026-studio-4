@@ -43,10 +43,9 @@ public class DialogueRunner {
     if (finished || lineIndex < 0 || isLineComplete()) {
       return;
     }
-    revealCarry += CHARS_PER_SECOND * deltaSeconds;
-    int whole = (int) revealCarry;
-    revealCarry -= whole;
-    revealedChars += whole;
+    float total = revealCarry + CHARS_PER_SECOND * Math.max(0f, deltaSeconds);
+    revealedChars += (int) total;
+    revealCarry = total % 1f;
   }
 
   /**
