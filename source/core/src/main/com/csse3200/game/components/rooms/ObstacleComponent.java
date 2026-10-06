@@ -10,6 +10,10 @@ import java.util.List;
 public class ObstacleComponent extends EntityManagerComponent {
   private final RoomConfig room;
 
+  /**
+   * Create an obstacle component with the room config given
+   * @param room A room config.
+   */
   public ObstacleComponent(RoomConfig room) {
     this.room = room;
   }
@@ -18,9 +22,6 @@ public class ObstacleComponent extends EntityManagerComponent {
   public void create() {
     // Gets the list of obstacles from the spawnConfig
     List<String> spawnConfig = room.obstacles.spawns;
-    // Gets the height and width of the room
-    int height = room.mapHeight;
-    int width = room.mapWidth;
 
     // Loops through the spawn config
     for (int y = 0; y < spawnConfig.size(); y++) {
@@ -44,11 +45,8 @@ public class ObstacleComponent extends EntityManagerComponent {
             boolean downRight = isVoid(spawnConfig, x + 1, y - 1);
             boolean downLeft = isVoid(spawnConfig, x - 1, y - 1);
 
-            boolean shift = false;
-            if (spawnType == '#'){
-              shift = true;
-            }
-            entity =
+            boolean shift = spawnType == '#';
+              entity =
                     ObstacleFactory.createWallFor(
                             up, right, down, left, upRight, upLeft, downRight, downLeft, shift);
 
@@ -75,35 +73,32 @@ public class ObstacleComponent extends EntityManagerComponent {
         if (entity != null) {
           spawnEntityAt(entity, new GridPoint2(x, spawny), true, centreY);
         }
-
         }
-        //        // Spawn the entity at this location.
-        //        if (entity != null) {
-        //          spawnEntityAt(entity, new GridPoint2(x, y), true, true);
-        //        }
       }
   }
 
+  /**
+   * Checks if the given config is a top face.
+   * @param up Whether void above
+   * @param right Whether void right
+   * @param down Whether void below
+   * @param left Whether void left
+   * @param upRight Whether void up to the right
+   * @param upLeft Whether void up to the left
+   * @return If the config is a top face.
+   */
   private static boolean isTopFace(
       boolean up, boolean right, boolean down, boolean left, boolean upRight, boolean upLeft) {
     return !left && !right && (up || ((upLeft || upRight) && !down));
   }
 
-  public void spawn(int x, int y, Character c) {
-    // Otherwise check for the obstacle that is wanted.
-    switch (c) {
-      case '#':
-        entity = ObstacleFactory.createTile();
-        spawnEntityAt(entity, new GridPoint2(x, y), true, true);
-        break;
-
-      case 'B':
-        entity = ObstacleFactory.createBarrel();
-        spawnEntityAt(entity, new GridPoint2(x, y), true, true);
-        break;
-    }
-  }
-
+  /**
+   * Checks if the given coordinate is a void (outside the map or a ' ' Character)
+   * @param spawnConfig The spawn config
+   * @param x The x value of the coordinate
+   * @param y The y value of the coordinate
+   * @return If the given coordinate is a void.
+   */
   private static boolean isVoid(List<String> spawnConfig, int x, int y) {
     // Outside the spawn configuration counts as void
     if (y < 0 || y >= spawnConfig.size()) {
