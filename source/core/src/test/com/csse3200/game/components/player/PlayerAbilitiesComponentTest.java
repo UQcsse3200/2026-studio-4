@@ -556,6 +556,40 @@ class PlayerAbilitiesComponentTest {
     assertEquals(2, instant.starts);
   }
 
+  @Test
+  void shouldLockAnAbilityThatStartsUnlockedAndRestoreItOnRelock() {
+    InstantAbility instant = new InstantAbility();
+    assertTrue(instant.isUnlocked(), "InstantAbility starts unlocked");
+
+    // relock cannot take away an ability that starts unlocked, which is why lock exists.
+    instant.relock();
+    assertTrue(instant.isUnlocked());
+
+    instant.lock();
+    assertFalse(instant.isUnlocked());
+
+    // relock still means "back to the starting state", not "stay locked".
+    instant.relock();
+    assertTrue(instant.isUnlocked());
+  }
+
+  @Test
+  void shouldRefuseToActivateALockedAbility() {
+    InstantAbility instant = new InstantAbility();
+    abilities.register(instant);
+    instant.lock();
+
+    assertFalse(abilities.tryActivate(InstantAbility.class));
+    assertEquals(0, instant.starts);
+    assertEquals(List.of("instant:Ability is locked"), failed);
+    // A refused cast leaves the cooldown untouched.
+    assertEquals(0, abilities.getCooldownRemainingMs(InstantAbility.class));
+
+    instant.unlock();
+    assertTrue(abilities.tryActivate(InstantAbility.class));
+    assertEquals(1, instant.starts);
+  }
+
   /**
    * An ability that finishes the moment it starts. It extends PlayerAbility directly and never
    * touches the status effects system, which is the case the ability and effect split exists for.
