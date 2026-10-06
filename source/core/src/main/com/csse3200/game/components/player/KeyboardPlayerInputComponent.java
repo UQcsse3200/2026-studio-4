@@ -98,19 +98,19 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   public boolean keyUp(int keycode) {
     switch (keycode) {
       case Keys.W:
-        walkDirection.sub(Vector2Utils.UP);
+        if (walkDirection.y > 0f) walkDirection.sub(Vector2Utils.UP);
         triggerWalkEvent();
         return true;
       case Keys.A:
-        walkDirection.sub(Vector2Utils.LEFT);
+        if (walkDirection.x < 0f) walkDirection.sub(Vector2Utils.LEFT);
         triggerWalkEvent();
         return true;
       case Keys.S:
-        walkDirection.sub(Vector2Utils.DOWN);
+        if (walkDirection.y < 0f) walkDirection.sub(Vector2Utils.DOWN);
         triggerWalkEvent();
         return true;
       case Keys.D:
-        walkDirection.sub(Vector2Utils.RIGHT);
+        if (walkDirection.x > 0f) walkDirection.sub(Vector2Utils.RIGHT);
         triggerWalkEvent();
         return true;
       default:
