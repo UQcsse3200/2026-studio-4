@@ -29,7 +29,13 @@ public class Minimap extends UIComponent {
   public static final String ROOM_CHANGE_EVENT = "RoomChanged";
 
   private RoomConfig currentRoom;
-  private Table exitContainer;
+
+  private Table left;
+  private Table center;
+  private Table right;
+
+  private int leftCount;
+  private int rightCount;
 
   @Override
   public void create() {
@@ -59,11 +65,16 @@ public class Minimap extends UIComponent {
     Table mapContainer = buildMapContainer();
     root.add(mapContainer).center().size(WIDTH, HEIGHT).fillX();
 
-    // Add containers for actual room icons
-    mapContainer.add(buildLHS()).grow();
-    mapContainer.add(buildCenter()).grow();
-    mapContainer.add(buildRHS()).grow();
+    left = buildLHS();
+    center = buildCenter();
+    right = buildRHS();
 
+    // Add containers for actual room icons
+    mapContainer.add(left).grow();
+    mapContainer.add(center).grow();
+    mapContainer.add(right).grow();
+
+    rebuild();
     return root;
   }
 
@@ -75,20 +86,42 @@ public class Minimap extends UIComponent {
 
   private Table buildLHS() {
     var lhs = new Table();
-    attachRooms(lhs, 0);
+    attachRooms(lhs, leftCount);
     return lhs;
   }
 
   private Table buildRHS() {
     var rhs = new Table();
-    attachRooms(rhs, 4);
+    attachRooms(rhs, rightCount);
     return rhs;
   }
 
+  private void rebuild() {
+    logger.debug("rebuilding minimap at {}", currentRoom.id);
+    leftCount = 0;
+    rightCount = 0;
 
-  /** Clears the children in {@link Minimap#exitContainer} then rebuilds new exit count */
-  private void rebuildExits(int count) {
-    exitContainer.clearChildren();
+    for (var exits : currentRoom.exits) {
+      if (exits.side == null) {
+        // Fallback to right if side is not set
+        logger.debug("roomid {}: side field not set, falling back to right", exits.id);
+        rightCount++;
+        continue;
+      }
+
+      if (exits.side.equals("LEFT")) {
+        leftCount++;
+      } else if (exits.side.equals("RIGHT")) {
+        rightCount++;
+      } else {
+        logger.error("roomid {}: skipping unknown side field", exits.id);
+      }
+    }
+
+    right.clearChildren();
+    left.clearChildren();
+    attachRooms(right, rightCount);
+    attachRooms(left, leftCount);
   }
 
   public void setCurrentRoom(RoomConfig newRoom) {
@@ -105,7 +138,7 @@ public class Minimap extends UIComponent {
    */
   public void onRoomChanged(RoomConfig newRoom) {
     setCurrentRoom(newRoom);
-    rebuildExits(newRoom.exits.length);
+    rebuild();
   }
 
   /** Create the minimap container */
