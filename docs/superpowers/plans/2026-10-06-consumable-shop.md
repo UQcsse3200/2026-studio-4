@@ -1,6 +1,6 @@
 # Consumable Shop Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Make existing merchant dialogue lead to a working consumable shop using inventory gold.
 
@@ -37,11 +37,11 @@ Paths below are relative to the worktree. Production Java paths start `source/co
 
 **Interfaces:** Produce `ConsumablePurchaseResult tryPurchaseConsumable(String itemId, int goldPrice)` and `goldChanged(int finalGold)`. Results: SUCCESS, INVALID_ITEM, INVALID_PRICE, INSUFFICIENT_GOLD, QUANTITY_LIMIT. Existing public methods/events remain compatible.
 
-- [ ] Add tests `shouldPurchaseOneConsumable`, `shouldRejectPurchaseWithoutChangingInventory`, `shouldRejectQuantityOverflow`, `shouldPublishCommittedPurchaseState`, `shouldNotifyActualGoldChangesOnly`. Assert 25 gold buying HEALTH_POTION at 10 gives 15 gold and count 1; second gives 5/count 2; third fails with unchanged values. Invalid IDs, charm ID, zero/negative prices, Integer.MAX_VALUE count fail without events. Both purchase event callbacks observe the final balance and count. Construction without attachment remains safe.
-- [ ] Run `./gradlew core:test --tests '*InventoryComponentTest'`; expect new API tests to fail before implementation.
-- [ ] Implement result enum and transaction: validate everything, update both stored values, then publish goldChanged and consumableInventoryChanged. Add goldChanged to setGold only for actual changes with an attached entity. Do not call the event-publishing addConsumable halfway through the transaction.
-- [ ] Rerun focused tests; expect all pass. Run `./gradlew spotlessApply core:compileJava`; inspect diff for unrelated formatting.
-- [ ] Commit only inventory implementation and its tests: `feat(shop): add atomic consumable purchase to inventory`.
+- [x] Add tests `shouldPurchaseOneConsumable`, `shouldRejectPurchaseWithoutChangingInventory`, `shouldRejectQuantityOverflow`, `shouldPublishCommittedPurchaseState`, `shouldNotifyActualGoldChangesOnly`. Assert 25 gold buying HEALTH_POTION at 10 gives 15 gold and count 1; second gives 5/count 2; third fails with unchanged values. Invalid IDs, charm ID, zero/negative prices, Integer.MAX_VALUE count fail without events. Both purchase event callbacks observe the final balance and count. Construction without attachment remains safe.
+- [x] Run `./gradlew core:test --tests '*InventoryComponentTest'`; expect new API tests to fail before implementation.
+- [x] Implement result enum and transaction: validate everything, update both stored values, then publish goldChanged and consumableInventoryChanged. Add goldChanged to setGold only for actual changes with an attached entity. Do not call the event-publishing addConsumable halfway through the transaction.
+- [x] Rerun focused tests; expect all pass. Run `./gradlew spotlessApply core:compileJava`; inspect diff for unrelated formatting.
+- [x] Commit only inventory implementation and its tests: `feat(shop): add atomic consumable purchase to inventory`.
 
 ### Task 2: Catalogue and extensible purchase service
 
@@ -55,11 +55,11 @@ Paths below are relative to the worktree. Production Java paths start `source/co
 - `ShopPurchaseEffect.purchase(InventoryComponent inventory, String productId, int goldPrice)` returns ShopPurchaseResult; handler owns the validated inventory transaction.
 - `ShopService(InventoryComponent inventory, ShopCatalog catalog, Map<ShopProductKind, ShopPurchaseEffect> effects)`; `ShopPurchaseResult purchase(String offerId)`. Constructor defensively copies the handler map. Only consumable handler is registered by the factory.
 
-- [ ] Add tests `shouldUseCataloguePrice`, `shouldRejectUnknownOffer`, `shouldRejectUnregisteredProductKind`, `shouldBuyExistingConsumables`, `shouldRejectInvalidCatalogue`. Test positive-price validation, duplicate/null IDs, unknown kinds, empty catalogue, unsupported charm/upgrade offers, failure state preservation, repeated purchases. Include a fake registered future handler to prove dispatch without implementing charm/upgrade effects.
-- [ ] Run `./gradlew core:test --tests '*ShopCatalogTest' --tests '*ShopServiceTest'`; expect missing classes/API failure.
-- [ ] Implement catalogue using the repository's JSON conventions, immutable offers and service dispatch. ConsumablePurchaseEffect maps Task 1 outcomes. Reject unknown/non-consumable item IDs for consumable offers. Configure five offers: HEALTH_POTION=10, SHIELD=15, SPEED_POTION=15, STRENGTH_POTION=20, FREEZE_BOMB=20. Obtain display metadata through ItemCatalog; no copied names or textures in JSON.
-- [ ] Rerun focused tests and `./gradlew spotlessApply core:compileJava`; expect pass.
-- [ ] Commit these files: `feat(shop): add configured offers and extensible purchase dispatch`.
+- [x] Add tests `shouldUseCataloguePrice`, `shouldRejectUnknownOffer`, `shouldRejectUnregisteredProductKind`, `shouldBuyExistingConsumables`, `shouldRejectInvalidCatalogue`. Test positive-price validation, duplicate/null IDs, unknown kinds, empty catalogue, unsupported charm/upgrade offers, failure state preservation, repeated purchases. Include a fake registered future handler to prove dispatch without implementing charm/upgrade effects.
+- [x] Run `./gradlew core:test --tests '*ShopCatalogTest' --tests '*ShopServiceTest'`; expect missing classes/API failure.
+- [x] Implement catalogue using the repository's JSON conventions, immutable offers and service dispatch. ConsumablePurchaseEffect maps Task 1 outcomes. Reject unknown/non-consumable item IDs for consumable offers. Configure five offers: HEALTH_POTION=10, SHIELD=15, SPEED_POTION=15, STRENGTH_POTION=20, FREEZE_BOMB=20. Obtain display metadata through ItemCatalog; no copied names or textures in JSON.
+- [x] Rerun focused tests and `./gradlew spotlessApply core:compileJava`; expect pass.
+- [x] Commit these files: `feat(shop): add configured offers and extensible purchase dispatch`.
 
 ### Task 3: Merchant session and modal input
 
@@ -67,12 +67,12 @@ Paths below are relative to the worktree. Production Java paths start `source/co
 
 **Interfaces:** `ShopView.show(Runnable onClose)`, `close()`, `refresh()`; `ShopSessionComponent(Entity player, ShopView view)` with `boolean isOpen()`, `void open()`, `void close()`; `ShopInputComponent(ShopSessionComponent session, InputProcessor shopStageInput)` with priority 19 (below existing narrative 20, above UI 10). Factory supplies Scene2D Stage as shopStageInput.
 
-- [ ] Add session tests `shouldOpenOnlyAfterMerchantFinished`, `shouldIgnoreDuplicateOpen`, `shouldReleaseOnlyOwnedLocks`, `shouldCloseOnDispose`, `shouldReleaseLocksIfViewFailsToOpen`. Mock view and real/mocked existing owner-aware services. Assert no open on spirit/cancel events, no duplicate show, and another freeze owner remains after close. A failing view initialization releases acquired ownership before propagating failure.
-- [ ] Add input tests `shouldConsumeEscapeWhenClosing`, `shouldPassReleaseForPreheldKey`, `shouldSwallowReleaseAfterClosing`, `shouldForwardShopClicksOnce`, `shouldConsumeCloseClick`, `shouldPassInputWhenClosed`, `shouldConsumeInventoryAndPauseKeys`. Test touchDown and touchUp with pointer/button ownership and closing synchronously. Simulate narrative final-click handling at priority 20 opening the session, and assert priority 19 does not receive that same touchDown.
-- [ ] Run `./gradlew core:test --tests '*ShopSessionComponentTest' --tests '*ShopInputComponentTest'`; expect new API failure.
-- [ ] Implement session on existing `(String npcId, Entity npc)` INTERACTION_FINISHED event filtered to merchant; use separate shop owner for controls/freeze, clear interaction prompt, refresh on existing count/gold events only while open. Guard stale callbacks after disposal because EventHandler cannot remove listeners. Register once per shop entity. Modal keyboard handling blocks gameplay and allows Escape to close; pointer/scroll forwarding goes once to stage and is then consumed, including close callbacks. Swallow only releases whose presses belong to the shop.
-- [ ] Rerun focused tests and `./gradlew spotlessApply core:compileJava`; expect pass.
-- [ ] Commit session/input/tests: `feat(shop): add merchant session and modal input ownership`.
+- [x] Add session tests `shouldOpenOnlyAfterMerchantFinished`, `shouldIgnoreDuplicateOpen`, `shouldReleaseOnlyOwnedLocks`, `shouldCloseOnDispose`, `shouldReleaseLocksIfViewFailsToOpen`. Mock view and real/mocked existing owner-aware services. Assert no open on spirit/cancel events, no duplicate show, and another freeze owner remains after close. A failing view initialization releases acquired ownership before propagating failure.
+- [x] Add input tests `shouldConsumeEscapeWhenClosing`, `shouldPassReleaseForPreheldKey`, `shouldSwallowReleaseAfterClosing`, `shouldForwardShopClicksOnce`, `shouldConsumeCloseClick`, `shouldPassInputWhenClosed`, `shouldConsumeInventoryAndPauseKeys`. Test touchDown and touchUp with pointer/button ownership and closing synchronously. Simulate narrative final-click handling at priority 20 opening the session, and assert priority 19 does not receive that same touchDown.
+- [x] Run `./gradlew core:test --tests '*ShopSessionComponentTest' --tests '*ShopInputComponentTest'`; expect new API failure.
+- [x] Implement session on existing `(String npcId, Entity npc)` INTERACTION_FINISHED event filtered to merchant; use separate shop owner for controls/freeze, clear interaction prompt, refresh on existing count/gold events only while open. Guard stale callbacks after disposal because EventHandler cannot remove listeners. Register once per shop entity. Modal keyboard handling blocks gameplay and allows Escape to close; pointer/scroll forwarding goes once to stage and is then consumed, including close callbacks. Swallow only releases whose presses belong to the shop.
+- [x] Rerun focused tests and `./gradlew spotlessApply core:compileJava`; expect pass.
+- [x] Commit session/input/tests: `feat(shop): add merchant session and modal input ownership`.
 
 ### Task 4: Selected visual design and game wiring
 
