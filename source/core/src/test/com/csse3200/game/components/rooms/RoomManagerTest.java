@@ -33,16 +33,15 @@ class RoomManagerTest {
   void shouldFollowPairedDoorsAndRememberClearedRooms() {
     WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
 
-    // UPDATED: Changed from dungeonOne to dungeonTwo
-    world.startRoomId = "dungeonTwoEntrance";
+    world.startRoomId = "dungeonOneEntrance";
     world.startEntryPointId = "fromSelection";
-    RoomConfig entrance = world.getRoom("dungeonTwoEntrance");
-    RoomConfig side = world.getRoom("dungeonTwoSide");
+    RoomConfig entrance = world.getRoom("dungeonOneEntrance");
+    RoomConfig side = world.getRoom("dungeonOneSide");
 
-    // Updated GridPoints to match the new sideDoor (32, 29) and returnDoor (10, 44) coordinates
-    Entity firstEntrance = room(true, new GridPoint2(32, 29));
-    Entity sideRoom = room(true, new GridPoint2(10, 44));
-    Entity revisitedEntrance = room(true, new GridPoint2(32, 29));
+    // sideDoor (53, 52) RIGHT in the entrance, returnDoor (20, 65) LEFT in the side room
+    Entity firstEntrance = room(true, new GridPoint2(53, 52));
+    Entity sideRoom = room(true, new GridPoint2(20, 65));
+    Entity revisitedEntrance = room(true, new GridPoint2(53, 52));
 
     Entity player = mock(Entity.class);
     CameraComponent camera = mock(CameraComponent.class);
@@ -66,14 +65,16 @@ class RoomManagerTest {
       verify(firstEntrance, never()).dispose();
       manager.update();
 
-      verify(player).setPosition(new Vector2(6, 6));
+      // Arrive at the side room's returnDoor (20, 65, LEFT)
+      verify(player).setPosition(new Vector2(25, 63));
       manager.interact();
       manager.update();
 
+      // Entrance was cleared, so it is rebuilt as a revisit
       roomFactory.verify(() -> RoomFactory.createRoom(entrance, camera, true));
 
-      // Since the sideDoor is at x=32 and side=RIGHT, the position -3 offset is 29.
-      verify(player).setPosition(new Vector2(31, 27));
+      // Arrive back at the entrance's sideDoor (53, 52, RIGHT)
+      verify(player).setPosition(new Vector2(52, 50));
       verify(firstEntrance).dispose();
       verify(sideRoom).dispose();
     }
