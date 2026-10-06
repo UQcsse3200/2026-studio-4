@@ -1,5 +1,7 @@
 package com.csse3200.game.files;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,6 +53,35 @@ class UserSettingsTest {
     UserSettings.applySettings(settings);
 
     verify(Gdx.graphics).setFullscreenMode(correctMode);
+  }
+
+  @Test
+  void gameplayOptionsDefaultToVisible() {
+    Settings settings = new Settings();
+    assertTrue(settings.showTimer);
+    assertTrue(settings.showVictoryStats);
+  }
+
+  @Test
+  void shouldPersistGameplayOptionsWithoutApplyingGraphics() {
+    Settings original = UserSettings.get();
+    Settings updated = new Settings();
+    updated.fps = original.fps;
+    updated.fullscreen = original.fullscreen;
+    updated.vsync = original.vsync;
+    updated.uiScale = original.uiScale;
+    updated.displayMode = original.displayMode;
+    updated.showTimer = false;
+    updated.showVictoryStats = false;
+
+    try {
+      UserSettings.set(updated, false);
+      Settings loaded = UserSettings.get();
+      assertFalse(loaded.showTimer);
+      assertFalse(loaded.showVictoryStats);
+    } finally {
+      UserSettings.set(original, false);
+    }
   }
 
   /** This exists to make the constructor public */

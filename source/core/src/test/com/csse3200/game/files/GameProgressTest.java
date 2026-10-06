@@ -65,4 +65,29 @@ class GameProgressTest {
     assertEquals(0L, data.bestRunMs);
     assertEquals(1, data.achievements.size());
   }
+
+  @Test
+  void shouldIgnoreBlankAchievementIdsAndNegativeTimes() {
+    GameProgress.unlock(null);
+    GameProgress.unlock("");
+    GameProgress.unlock("   ");
+    assertTrue(GameProgress.get().achievements.isEmpty());
+
+    GameProgress.recordRun(-1_500L);
+    SaveData data = GameProgress.get();
+    assertEquals(0L, data.lastRunMs);
+    assertEquals(0L, data.bestRunMs);
+    assertEquals("0:00", GameProgress.formatTime(-1_500L));
+  }
+
+  @Test
+  void shouldClearAchievementsWithoutDroppingTimes() {
+    GameProgress.recordRun(20_000L);
+    GameProgress.unlock("clear");
+    GameProgress.clearAchievements();
+    SaveData data = GameProgress.get();
+    assertEquals(20_000L, data.lastRunMs);
+    assertEquals(20_000L, data.bestRunMs);
+    assertTrue(data.achievements.isEmpty());
+  }
 }
