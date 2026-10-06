@@ -33,7 +33,8 @@ public class ObstacleComponent extends EntityManagerComponent {
         boolean centreY = true;
         Entity entity = null;
         switch (spawnType) {
-          case '#':
+          case '#' :
+          case '%':
             boolean up = isVoid(spawnConfig, x, y + 1);
             boolean right = isVoid(spawnConfig, x + 1, y);
             boolean down = isVoid(spawnConfig, x, y - 1);
@@ -43,9 +44,13 @@ public class ObstacleComponent extends EntityManagerComponent {
             boolean downRight = isVoid(spawnConfig, x + 1, y - 1);
             boolean downLeft = isVoid(spawnConfig, x - 1, y - 1);
 
+            boolean shift = false;
+            if (spawnType == '#'){
+              shift = true;
+            }
             entity =
                     ObstacleFactory.createWallFor(
-                            up, right, down, left, upRight, upLeft, downRight, downLeft);
+                            up, right, down, left, upRight, upLeft, downRight, downLeft, shift);
 
             if (entity == null) {
               continue; // no art for this combination

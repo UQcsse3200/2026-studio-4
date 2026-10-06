@@ -48,7 +48,8 @@ public class ObstacleFactory {
       boolean upRight,
       boolean upLeft,
       boolean downRight,
-      boolean downLeft) {
+      boolean downLeft,
+      boolean shift) {
     Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
 
     float colliderHeight = 0.5f;
@@ -79,9 +80,12 @@ public class ObstacleFactory {
     } else {
       return null;
     }
-
+    int x_shift = 0;
+    if (shift) {
+      x_shift = 8;
+    }
     return createRenderedObstacle(
-        tile.region(new TileSheet(texture, 16), 8, 0), 0.5f, colliderHeight);
+        tile.region(new TileSheet(texture, 16), x_shift, 0), 0.5f, colliderHeight);
   }
 
   /** Creates a barrel obstacle. */
