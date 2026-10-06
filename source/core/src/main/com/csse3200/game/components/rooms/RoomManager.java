@@ -209,7 +209,7 @@ public class RoomManager {
     return nearest;
   }
 
-  private void switchToRoom(RoomConfig destination, PositionConfig arrivalPosition) {
+  void switchToRoom(RoomConfig destination, PositionConfig arrivalPosition) {
     String previousDungeonId = currentConfig.dungeonId;
     Entity nextRoom =
         RoomFactory.createRoom(destination, camera, clearedRoomIds.contains(destination.id));
@@ -310,5 +310,16 @@ public class RoomManager {
   /** Package private setter for unit testing */
   void setCurrentRoom(Entity room) {
     this.currentRoom = room;
+  }
+
+  /** debug function for RoomCommand */
+  WorldConfig getWorld() {
+    return world;
+  }
+
+  /** debug function for RoomCommand */
+  void debugSwitchRoom(RoomConfig destination) {
+    pendingDestination = destination;
+    pendingArrivalPosition = destination.exits[0];
   }
 }

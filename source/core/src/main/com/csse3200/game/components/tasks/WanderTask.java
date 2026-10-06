@@ -38,11 +38,6 @@ public class WanderTask extends DefaultTask implements PriorityTask {
   }
 
   @Override
-  public void setPriority(int status) {
-    // Intentional empty method: WanderTask priority is fixed and should not be changed.
-  }
-
-  @Override
   public void start() {
     super.start();
     startPos = owner.getEntity().getPosition();

@@ -53,11 +53,6 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
   }
 
   @Override
-  public void setPriority(int status) {
-    this.priority = status;
-  }
-
-  @Override
   public void start() {
     super.start();
     movementComponent = owner.getEntity().getComponent(PhysicsMovementComponent.class);
