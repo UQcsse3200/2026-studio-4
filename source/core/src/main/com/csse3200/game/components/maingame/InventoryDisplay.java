@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.components.achievements.Achievement;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.items.Item;
+import com.csse3200.game.services.AchievementService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.ItemTooltip;
 import com.csse3200.game.ui.UIComponent;
@@ -33,7 +34,13 @@ public class InventoryDisplay extends UIComponent {
   private Table table;
   private DragAndDrop dragAndDrop;
   private InventoryComponent inventoryComponent;
-  private enum Page { CHARMS, CONSUMABLES, ACHIEVEMENTS }
+
+  private enum Page {
+    CHARMS,
+    CONSUMABLES,
+    ACHIEVEMENTS
+  }
+
   private Page currentPage = Page.CHARMS;
 
   public InventoryDisplay(InventoryComponent inventoryComponent) {
@@ -68,11 +75,11 @@ public class InventoryDisplay extends UIComponent {
     bookStack.add(bookCover);
 
     Table pagesContainer =
-            switch (currentPage) {
-              case CHARMS -> charmsCreate();
-              case CONSUMABLES -> consumableCreate();
-              case ACHIEVEMENTS -> achievementsCreate();
-            };
+        switch (currentPage) {
+          case CHARMS -> charmsCreate();
+          case CONSUMABLES -> consumableCreate();
+          case ACHIEVEMENTS -> achievementsCreate();
+        };
 
     // combine all together
     bookStack.add(pagesContainer);
@@ -98,11 +105,11 @@ public class InventoryDisplay extends UIComponent {
     boolean visible = table.isVisible();
     table.remove();
     currentPage =
-            switch (currentPage) {
-              case CHARMS -> Page.CONSUMABLES;
-              case CONSUMABLES -> Page.ACHIEVEMENTS;
-              case ACHIEVEMENTS -> Page.CHARMS;
-            };
+        switch (currentPage) {
+          case CHARMS -> Page.CONSUMABLES;
+          case CONSUMABLES -> Page.ACHIEVEMENTS;
+          case ACHIEVEMENTS -> Page.CHARMS;
+        };
     buildPage();
     table.setVisible(visible);
   }
@@ -182,20 +189,23 @@ public class InventoryDisplay extends UIComponent {
     Table pagesContainer = new Table();
     pagesContainer.pad(40, 50, 40, 50);
 
-    List<Achievement> all = ServiceLocator.getAchievementService().getAchievements();
+    List<Achievement> all = new ArrayList<>();
+    AchievementService achievementService = ServiceLocator.getAchievementService();
+    if (achievementService != null) {
+      all.addAll(achievementService.getAchievements());
+    }
+
     List<Achievement> locked = all.stream().filter(a -> !a.isUnlocked()).toList();
     List<Achievement> unlocked = all.stream().filter(Achievement::isUnlocked).toList();
 
-    // left page: locked
     Table leftPage =
-            new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a")).top();
+        new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a")).top();
     leftPage.add(new Label("Locked", skin, "inventory")).top().pad(25f).row();
     leftPage.add(achievementList(locked, false)).grow();
     pagesContainer.add(leftPage).size(365, 500);
 
-    // right page: unlocked
     Table rightPage =
-            new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a")).top();
+        new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a")).top();
     rightPage.add(new Label("Unlocked", skin, "inventory")).top().pad(25f).row();
     rightPage.add(achievementList(unlocked, true)).grow();
     pagesContainer.add(rightPage).size(365, 500);
