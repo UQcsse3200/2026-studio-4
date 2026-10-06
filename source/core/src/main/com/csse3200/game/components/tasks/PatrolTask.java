@@ -96,7 +96,7 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
   public void update() {
     Vector2 position = owner.getEntity().getPosition();
     int temp = currentPoint;
-    if (position.dst(patrolPoints[currentPoint]) <= POINT_DISTANCE) {
+    if (position.dst(patrolPoints[currentPoint]) <= pointDist) {
       currentPoint = (currentPoint + 1) % patrolPoints.length;
       updateDirection(patrolPoints[temp], patrolPoints[currentPoint]);
       setTarget();
