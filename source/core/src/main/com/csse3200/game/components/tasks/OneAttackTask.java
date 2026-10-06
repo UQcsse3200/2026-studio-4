@@ -21,7 +21,6 @@ public class OneAttackTask extends DefaultTask implements PriorityTask {
   private boolean hit = false;
   private final float coolDownDist;
   private final float MAX_SPEED = 10f;
-  private boolean phaseTwoActivated = false;
 
   public OneAttackTask(Entity target, float attackDist, float coolDown, Vector2 maxSpeed) {
     this.target = target;
@@ -52,21 +51,24 @@ public class OneAttackTask extends DefaultTask implements PriorityTask {
       movementTask.stop();
       return;
     }
-    Vector2 position = owner.getEntity().getPosition(); // current position of horse
-    if (!hit && (position.dst(target.getPosition()) <= attackDist)) {
+    Vector2 position = owner.getEntity().getPosition();
+
+    if (!hit
+        && (position.dst(target.getPosition())
+            <= attackDist)) { // when not hit and within range of player
       movementTask.setTarget(target.getPosition());
       if (movementTask.getStatus() != Status.ACTIVE) {
         movementTask.start();
       }
       if (maxSpeed.x < MAX_SPEED) {
         this.maxSpeed = increasedSpeed;
-        physicsMovementComponent.setMaxSpeed(increasedSpeed);
+        physicsMovementComponent.setMaxSpeed(
+            increasedSpeed); // increase speed every hit until MAX_SPEED is reached
       }
       movementTask.update();
       target
           .getComponent(CombatStatsComponent.class)
           .takeDamage(combatStatsComponent.getBaseAttack(), owner.getEntity());
-      // trigger attack animation
       updateHit();
     }
   }
@@ -91,9 +93,6 @@ public class OneAttackTask extends DefaultTask implements PriorityTask {
       if (status == Status.ACTIVE) {
         movementTask.stop();
       }
-      return -1;
-    }
-    if (phaseTwoActivated) {
       return -1;
     }
     if (!hit && (position.dst(target.getPosition()) <= attackDist)) {

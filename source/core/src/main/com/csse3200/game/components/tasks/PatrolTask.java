@@ -5,7 +5,10 @@ import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 
-/** Makes an enemy patrol around three points. */
+/**
+ * Makes an enemy patrol around three points. Makes miniboss patrol 4 points with given left bottom
+ * point and the required height and width
+ */
 public class PatrolTask extends DefaultTask implements PriorityTask {
   private static float POINT_DISTANCE;
 
@@ -17,16 +20,23 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
   private Vector2 facingDirection = new Vector2(0f, 0f);
 
   public PatrolTask(Vector2[] layout) {
-    if (layout.length == 3) {
+    if (layout.length == 3) { // flying enemy
       phaseTwoActivated = true;
       patrolPoints = layout;
       POINT_DISTANCE = 0.2f;
-    } else if (layout.length == 2) {
+    } else if (layout.length == 2) { // norse miniboss
       POINT_DISTANCE = 2f;
       patrolPoints = createBounds(layout);
     }
   }
 
+  /**
+   * a function to create the four points the norse miniboss goes to with
+   *
+   * @param grid the first Vector2 is the bottom left point of the square and the second point is
+   *     the width & height
+   * @return each point the miniboss patrols in order
+   */
   private Vector2[] createBounds(Vector2[] grid) {
     float Xsize = grid[1].x;
     float Ysize = grid[1].y;
@@ -37,6 +47,13 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
     return (new Vector2[] {bottomLeft, topRight, topLeft, bottomRight});
   }
 
+  /**
+   * update the direction the miniboss is facing - triggered and listened in
+   * EnemyAnimationController
+   *
+   * @param currentPos the current x and y coordinates
+   * @param newTarget the next x and y coordinates (both found in patrolPoints)
+   */
   private void updateDirection(Vector2 currentPos, Vector2 newTarget) {
     float x = 0;
     float y = 0;
