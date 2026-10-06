@@ -34,7 +34,7 @@ class AITaskComponentImmobiliseTest {
     effects = new StatusEffectsControllerComponent();
     task = mock(PriorityTask.class);
     when(task.getPriority()).thenReturn(10);
-    ai = new AITaskComponent(new Entity());
+    ai = new AITaskComponent();
 
     Entity enemy =
         new Entity()

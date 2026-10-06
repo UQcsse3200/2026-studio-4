@@ -78,6 +78,10 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
     Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
 
+    Vector2 leftBottom = new Vector2(0, 0);
+    Vector2 size = new Vector2(10, 10);
+    Vector2[] mapBounds = (new Vector2[] {leftBottom, size});
+
     switch (spawn.type) {
       // Chinese
       case JINGWEI:
@@ -218,6 +222,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             "images/cerberus.atlas");
       case DRAGON:
         return DragonFactory.createDragon(target, this::spawnEntity);
+      case SLEIPNIR:
+        return NPCFactory.createSleipnir(target, mapBounds);
       case FINAL_BOSS:
         Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnEntity);
         if (camera != null) {

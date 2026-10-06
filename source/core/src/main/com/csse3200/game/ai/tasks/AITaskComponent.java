@@ -2,7 +2,6 @@ package com.csse3200.game.ai.tasks;
 
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
-import com.csse3200.game.entities.Entity;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,11 +19,6 @@ public class AITaskComponent extends Component implements TaskRunner {
 
   private final List<PriorityTask> priorityTasks = new ArrayList<>(2);
   private PriorityTask currentTask;
-  private Entity target;
-
-  public AITaskComponent(Entity target) {
-    this.target = target;
-  }
 
   /**
    * Add a priority task to the list of tasks. This task will be run only when it has the highest
@@ -39,20 +33,6 @@ public class AITaskComponent extends Component implements TaskRunner {
     task.create(this);
 
     return this;
-  }
-
-  public void disableHighPriority() {
-    for (PriorityTask p : priorityTasks) {
-      if (p.getPriority() > 1) {
-        p.setPriority(-1);
-      }
-    }
-  }
-
-  @Override
-  public void create() {
-    super.create();
-    target.getEvents().addListener("invisiblePlayer", this::disableHighPriority);
   }
 
   /**
