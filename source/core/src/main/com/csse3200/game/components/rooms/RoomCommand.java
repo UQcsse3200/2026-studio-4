@@ -14,7 +14,7 @@ public class RoomCommand implements Command {
 
   @Override
   public boolean action(ArrayList<String> args) {
-    if (args.size() < 1) return false;
+    if (args.isEmpty()) return false;
 
     switch (args.get(0)) {
       case "clear":

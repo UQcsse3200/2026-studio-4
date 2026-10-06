@@ -324,8 +324,14 @@ public class RoomManager {
     // sets either the first exit of the room or first exit as destination pos
     if (destination.exits.length < 1 && destination.entryPoints.length > 0) {
       pendingArrivalPosition = destination.entryPoints[0];
-    } else { // exits.length >= 1
+    } else if (destination.exits.length >= 1) {
       pendingArrivalPosition = destination.exits[0];
+    } else {
+      // fallback if no entries or exits. Should ideally never happen
+      // could end up spawning in a wall
+      pendingArrivalPosition = new PositionConfig();
+      pendingArrivalPosition.x = 5;
+      pendingArrivalPosition.y = 5;
     }
   }
 }
