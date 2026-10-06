@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.utils.shapes.Rectangle;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,18 +25,17 @@ public class Minimap extends UIComponent {
   private static final int ROOM_H = 30;
 
   private static final Color ROOM_COLOR = Color.WHITE;
+  private static final Color VISITED_COLOR = Color.GRAY;
   private static final Color BG_COLOR = new Color(0, 0, 0, 0.4f);
 
   public static final String ROOM_CHANGE_EVENT = "RoomChanged";
 
   private RoomConfig currentRoom;
+  private Set<String> clearedRooms;
 
   private Table left;
   private Table center;
   private Table right;
-
-  private int leftCount;
-  private int rightCount;
 
   @Override
   public void create() {
@@ -44,9 +44,19 @@ public class Minimap extends UIComponent {
     entity.getEvents().addListener(ROOM_CHANGE_EVENT, this::onRoomChanged);
   }
 
-  public Minimap(RoomConfig currentRoom) {
+  public Minimap(RoomConfig currentRoom, Set<String> clearedRooms) {
     logger.debug("Created with RoomConfig: {}", currentRoom.id);
     this.currentRoom = currentRoom;
+    this.clearedRooms = clearedRooms;
+  }
+
+  /** pacakge private constructor for testing */
+  Minimap(RoomConfig roomConfig, Set<String> clearedSet, Table left, Table right, Table center) {
+    this.currentRoom = roomConfig;
+    this.clearedRooms = clearedSet;
+    this.left = left;
+    this.right = right;
+    this.center = center;
   }
 
   /**
@@ -65,9 +75,9 @@ public class Minimap extends UIComponent {
     Table mapContainer = buildMapContainer();
     root.add(mapContainer).center().size(WIDTH, HEIGHT).fillX();
 
-    left = buildLHS();
+    left = new Table();
     center = buildCenter();
-    right = buildRHS();
+    right = new Table();
 
     // Add containers for actual room icons
     mapContainer.add(left).grow();
@@ -80,48 +90,31 @@ public class Minimap extends UIComponent {
 
   private Table buildCenter() {
     var center = new Table();
-    attachRooms(center, 1);
+    center.add(createRoomIcon(true, true));
     return center;
   }
 
-  private Table buildLHS() {
-    var lhs = new Table();
-    attachRooms(lhs, leftCount);
-    return lhs;
-  }
-
-  private Table buildRHS() {
-    var rhs = new Table();
-    attachRooms(rhs, rightCount);
-    return rhs;
-  }
-
   private void rebuild() {
-    logger.debug("rebuilding minimap at {}", currentRoom.id);
-    leftCount = 0;
-    rightCount = 0;
+    logger.debug("rebuilding minimap at {}. cleared: {}", currentRoom.id, clearedRooms.contains(currentRoom.id));
+    right.clearChildren();
+    left.clearChildren();
 
     for (var exits : currentRoom.exits) {
       if (exits.side == null) {
         // Fallback to right if side is not set
         logger.debug("roomid {}: side field not set, falling back to right", exits.id);
-        rightCount++;
+        attachRoom(right, true, clearedRooms.contains(exits.destinationRoomId));
         continue;
       }
 
       if (exits.side.equals("LEFT")) {
-        leftCount++;
+        attachRoom(left, true, clearedRooms.contains(exits.destinationRoomId));
       } else if (exits.side.equals("RIGHT")) {
-        rightCount++;
+        attachRoom(right, true, clearedRooms.contains(exits.destinationRoomId));
       } else {
         logger.error("roomid {}: skipping unknown side field", exits.id);
       }
     }
-
-    right.clearChildren();
-    left.clearChildren();
-    attachRooms(right, rightCount);
-    attachRooms(left, leftCount);
   }
 
   public void setCurrentRoom(RoomConfig newRoom) {
@@ -162,10 +155,26 @@ public class Minimap extends UIComponent {
     }
   }
 
-  private static Actor createRoomIcon() {
-    var room = new Rectangle(ROOM_COLOR);
+  private void attachRoom(Table table, boolean fill, boolean visited) {
+    table.add(createRoomIcon(fill, visited)).expand();
+    table.row();
+  }
+
+  /**
+   * @return Returns the room icon to be added to a table
+   * @param fill Whether to fill the icon or not
+   * @param visited Whether the room has been visited, will change color of icon.
+   */
+  private static Actor createRoomIcon(boolean fill, boolean visited) {
+    Color color = visited ? VISITED_COLOR : ROOM_COLOR;
+    var room = new Rectangle(color, fill);
+
     room.setSize(ROOM_W, ROOM_H);
     return room;
+  }
+
+  private static Actor createRoomIcon() {
+    return createRoomIcon(true, false);
   }
 
   /**

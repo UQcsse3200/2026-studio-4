@@ -287,6 +287,7 @@ public class RoomManager {
    * @requries {@link #currentConfig} != null
    */
   void attachMinimap() {
-    player.addComponent(new Minimap(currentConfig));
+    var minimap = new Minimap(currentConfig, clearedRoomIds);
+    player.addComponent(minimap);
   }
 }
