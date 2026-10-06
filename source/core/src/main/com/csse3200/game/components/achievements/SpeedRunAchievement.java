@@ -1,12 +1,12 @@
 package com.csse3200.game.components.achievements;
 
 /** Unlocks if a dungeon is completed within a time limit (checked at dungeon-complete time). */
-public class SpeedrunAchievement extends Achievement {
+public class SpeedRunAchievement extends Achievement {
   private final String dungeonId;
   private final float maxSeconds;
   private float lastKnownTime = Float.MAX_VALUE;
 
-  public SpeedrunAchievement(String dungeonId, float maxSeconds, String name) {
+  public SpeedRunAchievement(String dungeonId, float maxSeconds, String name) {
     super(name);
     this.dungeonId = dungeonId;
     this.maxSeconds = maxSeconds;

@@ -1,5 +1,6 @@
 package com.csse3200.game.components.maingame;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Payload;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Source;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Target;
 import com.badlogic.gdx.utils.Scaling;
+import com.csse3200.game.components.achievements.Achievement;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.items.Item;
 import com.csse3200.game.services.ServiceLocator;
@@ -28,10 +30,11 @@ import org.slf4j.LoggerFactory;
 public class InventoryDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(InventoryDisplay.class);
   private static final float Z_INDEX = 2f;
-  private boolean charmsPage = true;
   private Table table;
   private DragAndDrop dragAndDrop;
   private InventoryComponent inventoryComponent;
+  private enum Page { CHARMS, CONSUMABLES, ACHIEVEMENTS }
+  private Page currentPage = Page.CHARMS;
 
   public InventoryDisplay(InventoryComponent inventoryComponent) {
     this.inventoryComponent = inventoryComponent;
@@ -64,12 +67,13 @@ public class InventoryDisplay extends UIComponent {
     bookCover.setScaling(Scaling.fill); // Forces graphic to fill the stack container
     bookStack.add(bookCover);
 
-    Table pagesContainer;
-    if (charmsPage) {
-      pagesContainer = consumableCreate();
-    } else {
-      pagesContainer = charmsCreate();
-    }
+    Table pagesContainer =
+            switch (currentPage) {
+              case CHARMS -> charmsCreate();
+              case CONSUMABLES -> consumableCreate();
+              case ACHIEVEMENTS -> achievementsCreate();
+            };
+
     // combine all together
     bookStack.add(pagesContainer);
     table.add(bookStack).size(800, 500).center();
@@ -93,7 +97,12 @@ public class InventoryDisplay extends UIComponent {
   public void changePage() {
     boolean visible = table.isVisible();
     table.remove();
-    charmsPage = !charmsPage;
+    currentPage =
+            switch (currentPage) {
+              case CHARMS -> Page.CONSUMABLES;
+              case CONSUMABLES -> Page.ACHIEVEMENTS;
+              case ACHIEVEMENTS -> Page.CHARMS;
+            };
     buildPage();
     table.setVisible(visible);
   }
@@ -167,6 +176,46 @@ public class InventoryDisplay extends UIComponent {
     pagesContainer.add(rightPage).size(365, 500);
 
     return pagesContainer;
+  }
+
+  private Table achievementsCreate() {
+    Table pagesContainer = new Table();
+    pagesContainer.pad(40, 50, 40, 50);
+
+    List<Achievement> all = ServiceLocator.getAchievementService().getAchievements();
+    List<Achievement> locked = all.stream().filter(a -> !a.isUnlocked()).toList();
+    List<Achievement> unlocked = all.stream().filter(Achievement::isUnlocked).toList();
+
+    // left page: locked
+    Table leftPage =
+            new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a")).top();
+    leftPage.add(new Label("Locked", skin, "inventory")).top().pad(25f).row();
+    leftPage.add(achievementList(locked, false)).grow();
+    pagesContainer.add(leftPage).size(365, 500);
+
+    // right page: unlocked
+    Table rightPage =
+            new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a")).top();
+    rightPage.add(new Label("Unlocked", skin, "inventory")).top().pad(25f).row();
+    rightPage.add(achievementList(unlocked, true)).grow();
+    pagesContainer.add(rightPage).size(365, 500);
+
+    return pagesContainer;
+  }
+
+  /** Builds a scrollable column of achievement names, styled for locked or unlocked. */
+  private ScrollPane achievementList(List<Achievement> achievements, boolean unlockedStyle) {
+    Table list = new Table();
+    list.top();
+    for (Achievement a : achievements) {
+      Label name = new Label(a.getName(), skin, "inventory");
+      name.setColor(unlockedStyle ? Color.GOLD : Color.GRAY);
+      list.add(name).left().pad(6).row();
+    }
+    ScrollPane scrollPane = new ScrollPane(list, skin);
+    scrollPane.setScrollingDisabled(true, false);
+    scrollPane.setFadeScrollBars(false);
+    return scrollPane;
   }
 
   /**

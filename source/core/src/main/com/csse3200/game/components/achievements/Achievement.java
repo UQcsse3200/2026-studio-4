@@ -45,14 +45,6 @@ public abstract class Achievement {
     return false;
   }
 
-  public boolean onSingleHitDamage(int damage) {
-    return false;
-  }
-
-  public boolean onBossKilledAtLowHealth(float healthFraction) {
-    return false;
-  }
-
   public boolean onDungeonTimeElapsed(String dungeonId, float seconds) {
     return false;
   }

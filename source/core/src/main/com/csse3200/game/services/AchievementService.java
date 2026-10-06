@@ -34,20 +34,8 @@ public class AchievementService {
     dispatch(a -> a.onDungeonEntered(dungeonId));
   }
 
-  public void notifySingleHitDamage(int damage) {
-    dispatch(a -> a.onSingleHitDamage(damage));
-  }
-
-  public void notifyBossKilledAtLowHealth(float healthFraction) {
-    dispatch(a -> a.onBossKilledAtLowHealth(healthFraction));
-  }
-
   public void notifyDungeonTimeElapsed(String dungeonId, float seconds) {
     dispatch(a -> a.onDungeonTimeElapsed(dungeonId, seconds));
-  }
-
-  public void notifyConsumableUsed() {
-    dispatch(Achievement::onConsumableUsed);
   }
 
   public void notifyGoldChanged(int totalGold) {
