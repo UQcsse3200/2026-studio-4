@@ -51,8 +51,8 @@ public class EarthquakeAttackTask extends DefaultTask implements PriorityTask {
 
     if (target.getPosition().dst(owner.getEntity().getPosition()) <= range) {
       playerStats.takeDamage(entityStats.getBaseAttack(), owner.getEntity());
-      maxAttack += 1;
     }
+    maxAttack += 1;
   }
 
   @Override

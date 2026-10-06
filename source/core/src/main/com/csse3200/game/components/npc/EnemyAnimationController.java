@@ -1,5 +1,6 @@
 package com.csse3200.game.components.npc;
 
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
@@ -26,6 +27,23 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener("rangedAttack", this::animateAttack);
     entity.getEvents().addListener("fuseStarted", this::animateFuse);
     entity.getEvents().addListener("default", this::animatePause);
+    entity.getEvents().addListener("moving", this::animateMove);
+  }
+
+  private void animateMove(Vector2 dir) {
+    float direction = entity.getPosition().angleDeg();
+    float x = dir.x;
+    float y = dir.y;
+
+    if (x > 0 && y > 0) {
+      animator.startAnimation("move_NE");
+    } else if (x == 0 && y > 0) {
+      animator.startAnimation("move_up");
+    } else if (x > 0 && y < 0) {
+      animator.startAnimation("move_SE");
+    } else if (x < 0 && y == 0) {
+      animator.startAnimation("move_left");
+    }
   }
 
   private void animateDie() {
@@ -41,6 +59,7 @@ public class EnemyAnimationController extends Component {
 
   @Override
   public void update() {
+    super.update();
     if (dying && animator.isFinished()) {
       dying = false;
       ServiceLocator.getEntityService().scheduleDisposal(entity);
@@ -48,6 +67,9 @@ public class EnemyAnimationController extends Component {
     if ("attack".equals(animator.getCurrentAnimation()) && animator.isFinished()) {
       animator.startAnimation("move");
     }
+
+    // animateMove();
+
   }
 
   private void animateWander() {

@@ -3,6 +3,7 @@ package com.csse3200.game.components.tasks;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 
 /** Makes an enemy patrol around three points. */
@@ -14,6 +15,7 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
   private int currentPoint;
   private int priority = 5;
   private boolean phaseTwoActivated = false;
+  private Vector2 facingDirection = new Vector2(0f, 0f);
 
   public PatrolTask(Vector2[] layout) {
     phaseTwoActivated = true;
@@ -21,7 +23,7 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
     POINT_DISTANCE = 0.2f;
   }
 
-  public PatrolTask(Vector2[] layout, boolean phaseTwoActivated) {
+  public PatrolTask(Vector2[] layout, Entity entity) {
     POINT_DISTANCE = 2f;
     patrolPoints = createBounds(layout);
   }
@@ -34,6 +36,26 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
     Vector2 topLeft = new Vector2(grid[0].x, grid[0].y + Ysize);
     Vector2 topRight = new Vector2(grid[0].x + Xsize, grid[0].y + Ysize);
     return (new Vector2[] {bottomLeft, topRight, topLeft, bottomRight});
+  }
+
+  private void updateDirection(Vector2 currentPos, Vector2 newTarget) {
+    float x = 0;
+    float y = 0;
+    if (currentPos.x > newTarget.x) {
+      x -= 1f;
+      facingDirection = new Vector2(x, y);
+    } else if (currentPos.x < newTarget.x) {
+      x += 1f;
+      facingDirection = new Vector2(x, y);
+    }
+    if (currentPos.y > newTarget.y) {
+      y -= 1f;
+      facingDirection = new Vector2(x, y);
+    } else if (currentPos.y < newTarget.y) {
+      y += 1f;
+      facingDirection = new Vector2(x, y);
+    }
+    owner.getEntity().getEvents().trigger("moving", facingDirection);
   }
 
   @Override
@@ -63,8 +85,10 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
   @Override
   public void update() {
     Vector2 position = owner.getEntity().getPosition();
+    int temp = currentPoint;
     if (position.dst(patrolPoints[currentPoint]) <= POINT_DISTANCE) {
       currentPoint = (currentPoint + 1) % patrolPoints.length;
+      updateDirection(patrolPoints[temp], patrolPoints[currentPoint]);
       setTarget();
     }
   }
