@@ -42,7 +42,6 @@ public class InventoryComponent extends Component {
   public void setGold(int gold) {
     this.gold = Math.max(gold, 0);
     logger.debug("Setting gold to {}", this.gold);
-    System.out.println("GOLD NOW: " + this.gold);
     if (ServiceLocator.getAchievementService() != null) {
       ServiceLocator.getAchievementService().notifyGoldChanged(this.gold);
     }

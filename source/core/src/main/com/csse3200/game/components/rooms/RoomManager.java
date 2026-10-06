@@ -128,9 +128,6 @@ public class RoomManager {
     if (pendingDestination != null) {
       return;
     }
-    if (interactWithNpc()) {
-      return;
-    }
     ExitConfig exit = findNearestExit();
     if (exit == null) {
       return;
@@ -154,12 +151,7 @@ public class RoomManager {
       clearedRoomIds.add(currentConfig.id);
     }
     if (exit.completesDungeon) {
-      completedDungeonIds.add(currentConfig.dungeonId);
-      if (runTimer != null) {
-        ServiceLocator.getAchievementService()
-            .notifyDungeonTimeElapsed(currentConfig.dungeonId, runTimer.getDungeonTime());
-      }
-      pendingDungeonCompletion = currentConfig.dungeonId; // defer the toast
+      completeDungeon();
     }
     pendingDestination = destination;
     if (exit.destinationExitId != null) {
@@ -167,6 +159,16 @@ public class RoomManager {
     } else {
       pendingArrivalPosition = destination.getEntryPoint(exit.destinationEntryPointId);
     }
+  }
+
+  /** Records the current dungeon as completed and reports its clear time for achievements. */
+  private void completeDungeon() {
+    completedDungeonIds.add(currentConfig.dungeonId);
+    if (runTimer != null) {
+      ServiceLocator.getAchievementService()
+              .notifyDungeonTimeElapsed(currentConfig.dungeonId, runTimer.getDungeonTime());
+    }
+    pendingDungeonCompletion = currentConfig.dungeonId; // defer the toast
   }
 
   private boolean interactWithNpc() {

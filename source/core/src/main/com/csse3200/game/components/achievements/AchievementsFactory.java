@@ -16,4 +16,8 @@ public class AchievementsFactory {
       default -> throw new IllegalArgumentException("Unknown achievement type: " + c.type);
     };
   }
+
+  private AchievementsFactory() {
+    throw new IllegalStateException("Instantiating static util class");
+  }
 }
