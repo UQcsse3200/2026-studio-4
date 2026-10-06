@@ -68,8 +68,9 @@ public class Minimap extends UIComponent {
     // Root covers the screen size.
     Table root = new Table();
     root.setFillParent(true);
-    root.center().left();
-    root.padLeft(20f);
+    root.top().right();
+    root.padRight(20f);
+    root.padTop(150f);
 
     // create and place the minimap into the root
     Table mapContainer = buildMapContainer();
