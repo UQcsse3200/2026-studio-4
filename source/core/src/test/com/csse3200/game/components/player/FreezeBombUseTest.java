@@ -89,6 +89,10 @@ class FreezeBombUseTest {
     inventory.addConsumable(ItemIds.SPEED_POTION);
     inventory.addConsumable(ItemIds.STRENGTH_POTION);
     inventory.addConsumable(ItemIds.FREEZE_BOMB, 2);
+    inventory.equipConsumable(ItemIds.FREEZE_BOMB, 3);
+    for (int i = 0; i < 3; i++) {
+      input.keyDown(Keys.TAB);
+    }
     assertEquals(ItemIds.FREEZE_BOMB, selection.getSelectedType());
     input.keyDown(Keys.Q);
 

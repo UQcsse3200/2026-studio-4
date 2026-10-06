@@ -102,13 +102,71 @@ class ConsumableHotbarDisplayTest {
     Table root = stage.getRoot().findActor("consumable-hotbar");
     assertNotNull(root);
     assertEquals(Touchable.disabled, root.getTouchable());
-    for (String id : new String[] {"1", "2", "3", "4", "5"}) {
+    for (String id : new String[] {"1", "2", "3", "4"}) {
       assertNotNull(actor("consumable-slot-" + id));
       assertFalse(actor("consumable-icon-" + id).isVisible());
       assertFalse(actor("consumable-count-" + id).isVisible());
       assertFalse(actor("consumable-use-" + id).isVisible());
     }
+    assertNull(actor("consumable-slot-5"));
     assertTrue(actor("consumable-pointer-1").isVisible());
+  }
+
+  @Test
+  void drawingKeepsHudAboveLateSpawnedEnemyBarsWithoutReorderingOtherActors() {
+    Actor hud = actor("consumable-hotbar");
+    Actor existingUi = new Actor();
+    stage.addActor(existingUi);
+    Entity enemy =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 8))
+            .addComponent(new com.csse3200.game.components.npc.EnemyStatDisplay());
+    enemy.create();
+    try {
+      Actor healthBar = stage.getActors().peek();
+      assertTrue(healthBar.getZIndex() > hud.getZIndex());
+      ui.getComponent(ConsumableHotbarDisplay.class).draw(mock(SpriteBatch.class));
+      assertTrue(hud.getZIndex() > healthBar.getZIndex());
+      assertTrue(healthBar.getZIndex() > existingUi.getZIndex());
+      assertTrue(healthBar.isVisible());
+      assertTrue(existingUi.isVisible());
+
+      // Another spawn after the first render must not cover the HUD either.
+      Actor nextHealthBar = new Actor();
+      stage.addActor(nextHealthBar);
+      ui.getComponent(ConsumableHotbarDisplay.class).draw(mock(SpriteBatch.class));
+      assertTrue(hud.getZIndex() > nextHealthBar.getZIndex());
+      assertTrue(nextHealthBar.getZIndex() > healthBar.getZIndex());
+    } finally {
+      enemy.dispose();
+    }
+  }
+
+  @Test
+  void openInventoryStaysAboveHudAndOnlyHudMovesWhenBookCloses() {
+    Actor hud = actor("consumable-hotbar");
+    Actor book = new Actor();
+    book.setName("inventory-book");
+    stage.addActor(book);
+    Actor healthBar = new Actor();
+    stage.addActor(healthBar);
+    // Opening the book uses its existing behavior to bring it forward.
+    book.toFront();
+    ui.getComponent(ConsumableHotbarDisplay.class).draw(mock(SpriteBatch.class));
+    assertTrue(book.getZIndex() > hud.getZIndex());
+    assertTrue(hud.getZIndex() > healthBar.getZIndex());
+
+    // Exercise the case where the HUD already follows an open book.
+    hud.toFront();
+    ui.getComponent(ConsumableHotbarDisplay.class).draw(mock(SpriteBatch.class));
+    assertTrue(book.getZIndex() > hud.getZIndex());
+    assertTrue(hud.getZIndex() > healthBar.getZIndex());
+    book.setVisible(false);
+    stage.addActor(new Actor());
+    ui.getComponent(ConsumableHotbarDisplay.class).draw(mock(SpriteBatch.class));
+    assertSame(hud, stage.getActors().peek());
+    assertFalse(book.isVisible());
+    assertTrue(healthBar.isVisible());
   }
 
   @Test
@@ -141,8 +199,8 @@ class ConsumableHotbarDisplayTest {
   }
 
   @Test
-  void tabWrapsAllFiveSlotsAndUpdatesHighlightEvenWhenEmpty() {
-    for (String id : new String[] {"2", "3", "4", "5", "1"}) {
+  void tabWrapsAllFourSlotsAndUpdatesHighlightEvenWhenEmpty() {
+    for (String id : new String[] {"2", "3", "4", "1"}) {
       input.keyDown(Keys.TAB);
       assertTrue(actor("consumable-pointer-" + id).isVisible());
       Group slot = actor("consumable-slot-" + id);
@@ -216,7 +274,7 @@ class ConsumableHotbarDisplayTest {
       root.invalidateHierarchy();
       root.validate();
       Actor first = actor("consumable-slot-1");
-      Actor last = actor("consumable-slot-5");
+      Actor last = actor("consumable-slot-4");
       Vector2 top = first.localToStageCoordinates(new Vector2(first.getWidth(), first.getHeight()));
       Vector2 bottom = last.localToStageCoordinates(new Vector2());
       assertTrue(top.x <= size[0], "Slots must fit horizontally");
@@ -287,5 +345,20 @@ class ConsumableHotbarDisplayTest {
     return mockingDetails(batch).getInvocations().stream()
         .filter(inv -> inv.getMethod().getName().equals("draw"))
         .count();
+  }
+
+  @Test
+  void fourthSlotCanBeAssignedSelectedAndConsumedThroughQ() {
+    player.getComponent(CombatStatsComponent.class).setHealth(50);
+    inventory.addConsumable(ItemIds.HEALTH_POTION, 2);
+    inventory.equipConsumable(ItemIds.HEALTH_POTION, 3);
+    assertFalse(actor("consumable-icon-1").isVisible());
+    assertTrue(actor("consumable-icon-4").isVisible());
+    assertEquals("2", count("4").getText().toString());
+    for (int i = 0; i < 3; i++) input.keyDown(Keys.TAB);
+    assertTrue(actor("consumable-pointer-4").isVisible());
+    input.keyDown(Keys.Q);
+    assertEquals(75, player.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals("1", count("4").getText().toString());
   }
 }

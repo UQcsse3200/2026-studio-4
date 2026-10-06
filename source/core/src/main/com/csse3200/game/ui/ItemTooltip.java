@@ -1,5 +1,6 @@
 package com.csse3200.game.ui;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -59,9 +60,11 @@ public final class ItemTooltip {
 
     List<String> lines = lines(item);
     int descriptionIndex = lines.size() - 1;
+    Label.LabelStyle textStyle = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
+    textStyle.fontColor = Color.WHITE;
 
     for (int i = 0; i < lines.size(); i++) {
-      Label label = new Label(lines.get(i), skin);
+      Label label = new Label(lines.get(i), textStyle);
 
       if (i == 0) {
         label.setFontScale(2f);
@@ -86,8 +89,13 @@ public final class ItemTooltip {
    * @return a tooltip listener for the item's actor
    */
   public static Tooltip<Table> forItem(Item item, Skin skin) {
-    Tooltip<Table> tooltip = new Tooltip<>(buildContent(item, skin));
-    tooltip.getContainer().background(skin.getDrawable("tooltip"));
+    return forItem(item, skin, TooltipManager.getInstance());
+  }
+
+  /** Builds the same item hint using caller-owned timing and animation settings. */
+  public static Tooltip<Table> forItem(Item item, Skin skin, TooltipManager manager) {
+    Tooltip<Table> tooltip = new Tooltip<>(buildContent(item, skin), manager);
+    tooltip.getContainer().background(skin.newDrawable("white", 0f, 0f, 0f, 0.82f));
     tooltip.getContainer().pad(4f);
     return tooltip;
   }

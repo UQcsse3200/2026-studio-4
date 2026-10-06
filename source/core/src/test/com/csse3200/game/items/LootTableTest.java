@@ -18,6 +18,27 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class LootTableTest {
   @Test
+  void everyConfiguredNormalEnemyCanActuallyRollAShield() {
+    LootTable table = LootTable.defaultTable();
+    for (LootTable.EnemyRule rule : table.enemyRules) {
+      int shieldRoll = 0;
+      boolean shieldFound = false;
+      for (LootTable.Entry entry : rule.table.entries) {
+        if (ItemIds.SHIELD.equals(entry.itemId)) {
+          assertTrue(entry.weight > 0, rule.enemyType);
+          shieldFound = true;
+          break;
+        }
+        shieldRoll += entry.weight;
+      }
+      assertTrue(shieldFound, rule.enemyType);
+      RandomGenerator random = mock(RandomGenerator.class);
+      when(random.nextInt(100)).thenReturn(shieldRoll);
+      assertEquals(ItemIds.SHIELD, table.forEnemy(rule.enemyType).roll(random).get(0).itemId());
+    }
+  }
+
+  @Test
   void shouldLoadDefaultJsonAndDropOneCoin() {
     LootTable table = LootTable.defaultTable();
     table.validate();
