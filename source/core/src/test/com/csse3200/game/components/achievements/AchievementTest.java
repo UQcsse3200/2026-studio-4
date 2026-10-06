@@ -50,7 +50,6 @@ class AchievementTest {
     assertFalse(achievement.onDungeonCompleted("d1"));
     assertFalse(achievement.onDungeonEntered("d1"));
     assertFalse(achievement.onDungeonTimeElapsed("d1", 10f));
-    assertFalse(achievement.onConsumableUsed());
     assertFalse(achievement.onGoldChanged(100));
     assertFalse(achievement.isUnlocked());
   }

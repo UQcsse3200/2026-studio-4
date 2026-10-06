@@ -53,7 +53,6 @@ class GoldAchievementTest {
 
   @Test
   void ignoresOtherEvents() {
-    assertFalse(achievement.onConsumableUsed());
     assertFalse(achievement.onPlayerDamaged());
     assertFalse(achievement.isUnlocked());
   }

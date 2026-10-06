@@ -49,10 +49,6 @@ public abstract class Achievement {
     return false;
   }
 
-  public boolean onConsumableUsed() {
-    return false;
-  }
-
   public boolean onGoldChanged(int totalGold) {
     return false;
   }
