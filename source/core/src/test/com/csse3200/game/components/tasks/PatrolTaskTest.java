@@ -187,7 +187,7 @@ class PatrolTaskTest {
     Vector2 origin = new Vector2(10, 20);
     Vector2 size = new Vector2(5, 8);
 
-    PatrolTask task = new PatrolTask(new Vector2[] {origin, size}, enemy);
+    PatrolTask task = new PatrolTask(new Vector2[] {origin, size});
     task.create(owner);
     task.start();
 

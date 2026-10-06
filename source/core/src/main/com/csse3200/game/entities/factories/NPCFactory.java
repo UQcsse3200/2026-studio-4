@@ -285,7 +285,7 @@ public class NPCFactory {
 
     AITaskComponent aiComponent =
         new AITaskComponent(target)
-            .addTask(new PatrolTask(mapBounds, sleipnir))
+            .addTask(new PatrolTask(mapBounds))
             .addTask(new StampedeTask(target, sleipnir))
             .addTask(new EarthquakeAttackTask(target, 5f, sleipnir))
             .addTask(new OneAttackTask(target, 2f, mapBounds[1].x / 2f, new Vector2(8f, 8f)));

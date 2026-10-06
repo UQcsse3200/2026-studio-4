@@ -3,14 +3,13 @@ package com.csse3200.game.components.tasks;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
-import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 
 /** Makes an enemy patrol around three points. */
 public class PatrolTask extends DefaultTask implements PriorityTask {
   private static float POINT_DISTANCE;
 
-  private final Vector2[] patrolPoints;
+  private Vector2[] patrolPoints;
   private PhysicsMovementComponent movementComponent;
   private int currentPoint;
   private int priority = 5;
@@ -18,14 +17,14 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
   private Vector2 facingDirection = new Vector2(0f, 0f);
 
   public PatrolTask(Vector2[] layout) {
-    phaseTwoActivated = true;
-    patrolPoints = layout;
-    POINT_DISTANCE = 0.2f;
-  }
-
-  public PatrolTask(Vector2[] layout, Entity entity) {
-    POINT_DISTANCE = 2f;
-    patrolPoints = createBounds(layout);
+    if (layout.length == 3) {
+      phaseTwoActivated = true;
+      patrolPoints = layout;
+      POINT_DISTANCE = 0.2f;
+    } else if (layout.length == 2) {
+      POINT_DISTANCE = 2f;
+      patrolPoints = createBounds(layout);
+    }
   }
 
   private Vector2[] createBounds(Vector2[] grid) {
