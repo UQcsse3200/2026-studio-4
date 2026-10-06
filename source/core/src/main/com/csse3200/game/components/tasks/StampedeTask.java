@@ -22,7 +22,6 @@ public class StampedeTask extends DefaultTask implements PriorityTask {
   private PhysicsComponent physicsComponent;
   private boolean phaseTwoActivated;
   private float angle;
-  private int rotations = 0;
   private float damageTimer;
   private Entity entity;
 
@@ -84,7 +83,6 @@ public class StampedeTask extends DefaultTask implements PriorityTask {
     if (distance <= RADIUS + 0.5f) { // if within range deal damage to player
       target.getComponent(CombatStatsComponent.class).takeDamage(1, owner.getEntity());
       damageTimer = DAMAGE;
-      rotations += 1;
     }
   }
 
@@ -103,7 +101,4 @@ public class StampedeTask extends DefaultTask implements PriorityTask {
       return -10;
     }
   }
-
-  @Override
-  public void setPriority(int priority) {}
 }

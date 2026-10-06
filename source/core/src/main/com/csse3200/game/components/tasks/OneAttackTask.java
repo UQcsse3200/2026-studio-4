@@ -30,9 +30,6 @@ public class OneAttackTask extends DefaultTask implements PriorityTask {
   }
 
   @Override
-  public void setPriority(int status) {}
-
-  @Override
   public void start() {
     super.start();
     movementTask = new MovementTask(target.getPosition());

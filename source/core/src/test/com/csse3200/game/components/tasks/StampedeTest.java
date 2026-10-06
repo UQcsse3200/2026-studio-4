@@ -31,7 +31,6 @@ class StampedeTaskTest {
   private CombatStatsComponent combatStats;
   private EventHandler events;
   private GameTime timeSource;
-  private ServiceLocator serviceLocator;
 
   @BeforeEach
   void setUp() {
@@ -44,7 +43,6 @@ class StampedeTaskTest {
     body = mock(Body.class);
     combatStats = mock(CombatStatsComponent.class);
     events = mock(EventHandler.class);
-    serviceLocator = mock(ServiceLocator.class);
     timeSource = mock(GameTime.class);
 
     when(owner.getEntity()).thenReturn(horse);
@@ -192,8 +190,6 @@ class StampedeTaskTest {
   @Test
   void setPriorityShouldNotChangePriority() {
     StampedeTask task = new StampedeTask(player, eventEntity);
-
-    task.setPriority(100);
 
     // setPriority is intentionally empty. Before activation, priority remains -10.
     assertEquals(-10, task.getPriority());

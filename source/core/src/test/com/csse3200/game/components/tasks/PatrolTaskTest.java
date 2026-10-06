@@ -42,27 +42,27 @@ class PatrolTaskTest {
     PatrolTask patrolTask = new PatrolTask(new Vector2[] {leftPoint, topPoint, rightPoint});
     AITaskComponent aiTaskComponent = new AITaskComponent(new Entity()).addTask(patrolTask);
     PhysicsMovementComponent movement = new PhysicsMovementComponent();
-    Entity enemy = new Entity().addComponent(aiTaskComponent).addComponent(movement);
+    Entity enemy1 = new Entity().addComponent(aiTaskComponent).addComponent(movement);
 
     EventListener0 callback = mock(EventListener0.class);
-    enemy.getEvents().addListener("patrolStart", callback);
+    enemy1.getEvents().addListener("patrolStart", callback);
 
     patrolTask.start();
     assertEquals(leftPoint, movement.getTarget());
     verify(callback).handle();
 
-    enemy.setPosition(leftPoint);
+    enemy1.setPosition(leftPoint);
     patrolTask.update();
     assertEquals(topPoint, movement.getTarget());
 
     patrolTask.start();
     assertEquals(topPoint, movement.getTarget());
 
-    enemy.setPosition(topPoint);
+    enemy1.setPosition(topPoint);
     patrolTask.update();
     assertEquals(rightPoint, movement.getTarget());
 
-    enemy.setPosition(rightPoint);
+    enemy1.setPosition(rightPoint);
     patrolTask.update();
     assertEquals(leftPoint, movement.getTarget());
   }
@@ -77,7 +77,6 @@ class PatrolTaskTest {
   @Test
   void setPriorityShouldUpdatePriority() {
     PatrolTask task = new PatrolTask(createThreePatrolPoints());
-    task.setPriority(5);
 
     assertEquals(1, task.getPriority());
   }

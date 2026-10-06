@@ -10,8 +10,7 @@ import com.csse3200.game.physics.components.PhysicsMovementComponent;
  * point and the required height and width
  */
 public class PatrolTask extends DefaultTask implements PriorityTask {
-  private static float POINT_DISTANCE;
-
+  private float POINT_DISTANCE;
   private Vector2[] patrolPoints;
   private PhysicsMovementComponent movementComponent;
   private int currentPoint;
@@ -81,11 +80,6 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
     } else {
       return priority;
     }
-  }
-
-  @Override
-  public void setPriority(int status) {
-    this.priority = status;
   }
 
   @Override

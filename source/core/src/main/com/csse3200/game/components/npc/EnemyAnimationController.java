@@ -32,7 +32,6 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateMove(Vector2 dir) {
-    float direction = entity.getPosition().angleDeg();
     float x = dir.x;
     float y = dir.y;
 

@@ -41,20 +41,6 @@ public class AITaskComponent extends Component implements TaskRunner {
     return this;
   }
 
-  public void disableHighPriority() {
-    for (PriorityTask p : priorityTasks) {
-      if (p.getPriority() > 1) {
-        p.setPriority(-1);
-      }
-    }
-  }
-
-  @Override
-  public void create() {
-    super.create();
-    target.getEvents().addListener("invisiblePlayer", this::disableHighPriority);
-  }
-
   /**
    * On update, run the current highest priority task. If it's a different one, stop the old one and
    * start the new one. If the highest priority task has negative priority, no task will be run.

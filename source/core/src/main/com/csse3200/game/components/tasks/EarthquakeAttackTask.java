@@ -4,7 +4,6 @@ import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /** in Phase two of norse miniboss, between Stampedes, attacks within range */
@@ -16,7 +15,6 @@ public class EarthquakeAttackTask extends DefaultTask implements PriorityTask {
   private float coolDownTimer = 0f;
   private boolean phaseTwoActivated = false;
   private int maxAttack = 0;
-  private PhysicsMovementComponent movementComponent;
 
   public EarthquakeAttackTask(Entity target, float range, Entity entity) {
     this.target = target;
@@ -24,6 +22,7 @@ public class EarthquakeAttackTask extends DefaultTask implements PriorityTask {
     entity.getEvents().addListener("enragePhaseStarted", this::activate);
   }
 
+  @Override
   public void start() {
     super.start();
   }
@@ -32,6 +31,7 @@ public class EarthquakeAttackTask extends DefaultTask implements PriorityTask {
     phaseTwoActivated = true;
   }
 
+  @Override
   public void update() {
     if (!phaseTwoActivated) {
       return;
@@ -63,7 +63,4 @@ public class EarthquakeAttackTask extends DefaultTask implements PriorityTask {
       return 20;
     }
   }
-
-  @Override
-  public void setPriority(int status) {}
 }
