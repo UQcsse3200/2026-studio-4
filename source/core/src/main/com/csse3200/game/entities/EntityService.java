@@ -2,6 +2,9 @@ package com.csse3200.game.entities;
 
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.ui.UIComponent;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +26,7 @@ public class EntityService {
   private final Array<Runnable> pendingTasks = new Array<>(false, INITIAL_CAPACITY);
 
   private boolean paused;
+  private final Set<Object> freezeOwners = Collections.newSetFromMap(new IdentityHashMap<>());
 
   /**
    * Register a new entity with the entity service. The entity will be created and start updating.
@@ -84,7 +88,7 @@ public class EntityService {
   public void update() {
     updating = true;
     for (Entity entity : entities) {
-      if (!paused || entity.getComponent(UIComponent.class) != null) {
+      if (shouldUpdate(entity)) {
         entity.earlyUpdate();
         entity.update();
       }
@@ -96,6 +100,44 @@ public class EntityService {
     }
     afterUpdateActions.clear();
     drainQueues();
+  }
+
+  private boolean shouldUpdate(Entity entity) {
+    if (isFrozen()) {
+      return entity.updatesWhilePaused();
+    }
+    return !paused || entity.getComponent(UIComponent.class) != null;
+  }
+
+  /**
+   * Freezes the whole game world, e.g. while a dialogue or cutscene is playing. Unlike {@link
+   * #toggleUpdate()} (used by the inventory), a freeze stops every entity that has not opted in
+   * with {@link Entity#setUpdatesWhilePaused(boolean)}, enemies included. Each owner releases its
+   * own freeze, so overlapping dialogues and cutscenes cannot unfreeze each other.
+   *
+   * <p>The main game loop is expected to also skip physics and run timers while {@link
+   * #isFrozen()}.
+   *
+   * @param owner identity token for this freeze request
+   * @param frozen true to request a freeze, false to release this owner's request
+   */
+  public void setFrozen(Object owner, boolean frozen) {
+    boolean wasFrozen = isFrozen();
+    if (frozen) {
+      freezeOwners.add(owner);
+    } else {
+      freezeOwners.remove(owner);
+    }
+    if (wasFrozen != isFrozen()) {
+      logger.debug("Entity service frozen={}", isFrozen());
+    }
+  }
+
+  /**
+   * @return true while at least one owner is holding the world frozen.
+   */
+  public boolean isFrozen() {
+    return !freezeOwners.isEmpty();
   }
 
   public void toggleUpdate() {
