@@ -11,6 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
+import com.csse3200.game.files.GameProgress;
+import com.csse3200.game.files.GameProgress.SaveData;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.files.UserSettings.DisplaySettings;
 import com.csse3200.game.services.ServiceLocator;
@@ -33,6 +35,9 @@ public class SettingsMenuDisplay extends UIComponent {
   private CheckBox vsyncCheck;
   private Slider uiScaleSlider;
   private SelectBox<StringDecorator<DisplayMode>> displayModeSelect;
+  private CheckBox showTimerCheck;
+  private CheckBox showVictoryStatsCheck;
+  private Label progressLabel;
 
   public SettingsMenuDisplay(GdxGame game) {
     super();
@@ -117,6 +122,55 @@ public class SettingsMenuDisplay extends UIComponent {
     table.add(displayModeLabel).right().padRight(15f);
     table.add(displayModeSelect).left();
 
+    table.row().padTop(20f);
+    Label gameplayTitle = new Label("Gameplay", skin);
+    table.add(gameplayTitle).right().padRight(15f);
+    table.add().left();
+
+    table.row().padTop(10f);
+    Label timerLabel = new Label("Show run timer:", skin);
+    showTimerCheck = new CheckBox("", skin);
+    showTimerCheck.setChecked(settings.showTimer);
+    table.add(timerLabel).right().padRight(15f);
+    table.add(showTimerCheck).left();
+
+    table.row().padTop(10f);
+    Label victoryLabel = new Label("Show victory stats:", skin);
+    showVictoryStatsCheck = new CheckBox("", skin);
+    showVictoryStatsCheck.setChecked(settings.showVictoryStats);
+    table.add(victoryLabel).right().padRight(15f);
+    table.add(showVictoryStatsCheck).left();
+
+    table.row().padTop(10f);
+    progressLabel = new Label(progressText(), skin);
+    table.add(new Label("Save / achievements:", skin)).right().padRight(15f);
+    table.add(progressLabel).left();
+
+    table.row().padTop(10f);
+    TextButton resetSaveBtn = new TextButton("Reset save", skin);
+    resetSaveBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            GameProgress.clearSave();
+            refreshProgressLabel();
+          }
+        });
+    TextButton resetAchievementsBtn = new TextButton("Reset achievements", skin);
+    resetAchievementsBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            GameProgress.clearAchievements();
+            refreshProgressLabel();
+          }
+        });
+    Table progressBtns = new Table();
+    progressBtns.add(resetSaveBtn).padRight(10f);
+    progressBtns.add(resetAchievementsBtn);
+    table.add().right().padRight(15f);
+    table.add(progressBtns).left();
+
     // Events on inputs
     uiScaleSlider.addListener(
         (Event event) -> {
@@ -196,8 +250,25 @@ public class SettingsMenuDisplay extends UIComponent {
     settings.uiScale = uiScaleSlider.getValue();
     settings.displayMode = new DisplaySettings(displayModeSelect.getSelected().object);
     settings.vsync = vsyncCheck.isChecked();
+    settings.showTimer = showTimerCheck.isChecked();
+    settings.showVictoryStats = showVictoryStatsCheck.isChecked();
 
     UserSettings.set(settings, true);
+  }
+
+  private void refreshProgressLabel() {
+    if (progressLabel != null) {
+      progressLabel.setText(progressText());
+    }
+  }
+
+  private static String progressText() {
+    SaveData save = GameProgress.get();
+    return String.format(
+        "Last %s  Best %s  Achievements %d",
+        GameProgress.formatTime(save.lastRunMs),
+        GameProgress.formatTime(save.bestRunMs),
+        save.achievements.size());
   }
 
   private void exitMenu() {
