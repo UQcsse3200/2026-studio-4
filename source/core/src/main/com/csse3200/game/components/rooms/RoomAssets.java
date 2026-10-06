@@ -13,6 +13,7 @@ import com.csse3200.game.components.traps.FireTrapRenderComponent;
 import com.csse3200.game.components.traps.IceTrapRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.minimap.Minimap;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -61,6 +62,7 @@ public class RoomAssets implements Disposable {
   };
 
   private static final String[] PLAYER_ATLASES = {"images/idle_down.atlas"};
+  private static final String[] PLAYER_TEXTURES = {Minimap.PLAYER_HEAD_PATH};
 
   private static final String[] DUNGEON_TEXTURES = {
     "images/dungeons/fantasy_dreamland_16.png", // tile set texture
@@ -100,6 +102,7 @@ public class RoomAssets implements Disposable {
               TRAP_TEXTURES,
               ITEM_TEXTURES,
               ENEMY_TEXTURES,
+              PLAYER_TEXTURES,
               SnakePoisonAssets.paths(),
               FinalBossVisualAssets.paths(),
               FinalBossStageTwoAssets.paths(),

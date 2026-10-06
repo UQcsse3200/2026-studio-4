@@ -6,9 +6,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.utils.shapes.Rectangle;
 import java.util.Set;
@@ -29,6 +31,7 @@ public class Minimap extends UIComponent {
   private static final Color BG_COLOR = new Color(0, 0, 0, 0.4f);
 
   public static final String ROOM_CHANGE_EVENT = "RoomChanged";
+  public static final String PLAYER_HEAD_PATH = "images/player_head.png";
 
   private RoomConfig currentRoom;
   private Set<String> clearedRooms;
@@ -91,12 +94,19 @@ public class Minimap extends UIComponent {
 
   private Table buildCenter() {
     var center = new Table();
-    center.add(createRoomIcon(true, true));
+    Texture texture = ServiceLocator.getResourceService().getAsset(PLAYER_HEAD_PATH, Texture.class);
+    Image player_head = new Image(texture);
+
+    center.add(player_head).center();
+
     return center;
   }
 
   private void rebuild() {
-    logger.debug("rebuilding minimap at {}. cleared: {}", currentRoom.id, clearedRooms.contains(currentRoom.id));
+    logger.debug(
+        "rebuilding minimap at {}. cleared: {}",
+        currentRoom.id,
+        clearedRooms.contains(currentRoom.id));
     right.clearChildren();
     left.clearChildren();
 
