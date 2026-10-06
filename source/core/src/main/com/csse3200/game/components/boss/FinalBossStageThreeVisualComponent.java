@@ -39,6 +39,7 @@ public class FinalBossStageThreeVisualComponent extends RenderComponent {
   private TextureRegion[] shield;
   private TextureRegion[] impact;
   private TextureRegion[] tornado;
+  private TextureRegion[] tornadoHit;
   private TextureRegion statue;
   private Texture pixel;
   private final float[] quadVertices = new float[20];
@@ -72,6 +73,7 @@ public class FinalBossStageThreeVisualComponent extends RenderComponent {
     shield = FinalBossVisualAssets.SHIELD.loadFrames();
     impact = FinalBossVisualAssets.SHIELD_HIT.loadFrames();
     tornado = FinalBossStageThreeAssets.tornadoFrames();
+    tornadoHit = FinalBossStageThreeAssets.tornadoHitFrames();
     Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
     try {
       pixmap.setColor(Color.WHITE);
@@ -469,6 +471,9 @@ public class FinalBossStageThreeVisualComponent extends RenderComponent {
   }
 
   private void drawPlayerEffects(SpriteBatch batch) {
+    if (stage.getTarget() == null) return;
+    CombatStatsComponent stats = stage.getTarget().getComponent(CombatStatsComponent.class);
+    if (stats != null && stats.isDead()) return;
     Vector2 centre = stage.getTarget().getCenterPosition();
     if (stage.isFrozen() || stage.thawRemaining > 0f) {
       TextureRegion frame;
@@ -480,7 +485,19 @@ public class FinalBossStageThreeVisualComponent extends RenderComponent {
       else frame = FinalBossStageThreeAssets.frame(freezeLoop, stage.freezeElapsed, 0.48f, true);
       centred(batch, frame, centre, 1.8f, 1.8f);
     }
-    if (stage.playerHitRemaining > 0f)
+    if (stage.tornadoHitRemaining > 0f) {
+      batch.setColor(Color.WHITE);
+      centred(
+          batch,
+          FinalBossStageThreeAssets.frame(
+              tornadoHit,
+              FinalBossStageThreeComponent.TORNADO_HIT_DURATION - stage.tornadoHitRemaining,
+              FinalBossStageThreeComponent.TORNADO_HIT_DURATION,
+              false),
+          centre,
+          1.5f,
+          1.5f);
+    } else if (stage.playerHitRemaining > 0f)
       centred(
           batch,
           FinalBossStageThreeAssets.frame(blue, 0.24f - stage.playerHitRemaining, 0.24f, false),

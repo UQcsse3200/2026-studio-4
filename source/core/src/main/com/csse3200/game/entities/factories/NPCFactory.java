@@ -5,9 +5,20 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.*;
+import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
+import com.csse3200.game.components.miniboss.snake.SnakeBurrowVisualComponent;
+import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent;
+import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
+import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
+import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.components.tasks.*;
+import com.csse3200.game.components.tasks.ChaseTask;
+import com.csse3200.game.components.tasks.LungeAttackTask;
+import com.csse3200.game.components.tasks.PatrolTask;
+import com.csse3200.game.components.tasks.RangedAttackTask;
+import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.files.FileLoader;
@@ -161,9 +172,9 @@ public class NPCFactory {
   }
 
   /**
-   * Creates the snake mini-boss entity. Moves toward the player and, once close enough, performs a
-   * telegraphed coil attack that poisons the player over time. Once its own health drops below 50%,
-   * it also gains a ranged venom-spit attack that creates a damaging pool on the ground.
+   * Creates the snake mini-boss with an invulnerable underground approach, a fixed ground warning,
+   * one emergence strike and a brief vulnerable recovery. Its old contact and poison-pool attacks
+   * are replaced by the burrow controller.
    *
    * @param target entity to chase
    * @return entity
@@ -171,13 +182,6 @@ public class NPCFactory {
   public static Entity createSnakeMiniBoss(Entity target) {
     Entity snakeBoss = createBaseNPC();
     SnakeMiniBossConfig config = configs.snakeMiniBoss;
-
-    AITaskComponent aiComponent =
-        new AITaskComponent(target)
-            .addTask(new WanderTask(config.movement, 1f))
-            .addTask(new ChaseTask(target, 10, 3f, 10f))
-            .addTask(new CoilAttackTask(target, CHASE_SPEED))
-            .addTask(new VenomSpitAttackTask(target));
 
     // Shravika's own hand-drawn snake sprite sheet.
     AnimationRenderComponent animator =
@@ -190,14 +194,20 @@ public class NPCFactory {
 
     snakeBoss
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
-        .addComponent(aiComponent)
+        .addComponent(new SnakeBurrowComponent(target, config))
+        .addComponent(new SnakeBurrowVisualComponent())
+        .addComponent(new SnakePlayerHitVisualComponent(target))
+        .addComponent(new SnakeShieldComponent(target, config))
+        .addComponent(new SnakeShieldPickupComponent(target, config))
+        .addComponent(new SnakePoisonVolleyComponent(target, config))
         .addComponent(animator)
         .addComponent(new EnemyDeathComponent(true))
         .addComponent(new EnemyAnimationController())
         .addComponent(new EnemyStatDisplay(1.5f));
 
     animator.scaleEntity();
+    snakeBoss.scaleWidth(2f);
+    PhysicsUtils.setScaledCollider(snakeBoss, 0.9f, 0.4f);
     animator.startAnimation(DEFAULT_ANIMATION);
 
     snakeBoss

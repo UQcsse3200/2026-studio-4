@@ -1,33 +1,120 @@
 package com.csse3200.game.components.boss;
 
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.World;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.player.ConsumableEffectComponent;
+import com.csse3200.game.components.player.PlayerActions;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageTwoConfig;
+import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.Random;
 
-/**
- * Controls the health threshold transition from Stage 2 to Stage 3, and manages attack/pause cycle.
- */
+/** Controls Stage 2's roaming, fire volleys, ice cover/pickups and Stage 3 health floor. */
 public class FinalBossStageTwoComponent extends Component {
-  private final FinalBossStageTwoConfig stageTwoConfig;
+  private static final float ARRIVAL_DISTANCE = 0.15f;
+  private static final int DESTINATION_ATTEMPTS = 4;
 
+  private final FinalBossStageTwoConfig stageTwoConfig;
+  private final Entity target;
   private FinalBossPhaseControllerComponent phaseController;
   private CombatStatsComponent bossStats;
   private FinalBossMovementComponent movementComponent;
+  private PhysicsMovementComponent physicsMovement;
+  private FinalBossStageTwoArenaComponent arena;
   private boolean transitionSent;
+  private boolean encounterStarted;
+  private boolean disposed;
+  private boolean isAttacking;
+  private double cycleTimer;
+  private double fireDamageRemainder;
+  private double shieldFireDamageRemainder;
+  private boolean fireDamageInProgress;
+  private float retargetRemaining;
+  private Vector2 roamDestination;
+  private Vector2 previousPlayerCentre;
+  private Vector2 previousBossCentre;
+  private float iceBuffEndRemaining;
+  private FinalBossStageTwoFireController fire;
+  private FinalBossStageTwoIceController ice;
+  private FinalBossStageTwoPickupController pickups;
+  private FinalBossStageTwoPlayerIceController playerIce;
+  private FinalBossStageTwoIceInput iceInput;
+  private final FinalBossStageTwoFireController.WallQuery walls =
+      new FinalBossStageTwoFireController.WallQuery() {
+        @Override
+        public float firstHitFraction(Vector2 from, Vector2 to) {
+          return findWall(from, to).fraction();
+        }
 
-  // Attack/pause cycle tracking
-  private boolean isAttacking = true;
-  private float cycleTimer = 0f;
+        @Override
+        public void onHit(Vector2 from, Vector2 to) {
+          WallHit hit = findWall(from, to);
+          if (ice != null && hit.fixture() != null) ice.hitByFire(hit.fixture());
+        }
+
+        /**
+         * Pure query; cover durability changes only after the fire controller consumes a real hit.
+         */
+        private WallHit findWall(Vector2 from, Vector2 to) {
+          if (ServiceLocator.getPhysicsService() == null)
+            return new WallHit(null, Float.POSITIVE_INFINITY);
+          World world = ServiceLocator.getPhysicsService().getPhysics().getWorld();
+          Fixture[] nearestFixture = {null};
+          world.QueryAABB(
+              fixture -> {
+                if (!fixture.isSensor()
+                    && fixture.getBody().getType() == BodyType.StaticBody
+                    && fixture.testPoint(from)) {
+                  nearestFixture[0] = fixture;
+                  return false;
+                }
+                return true;
+              },
+              from.x - 0.001f,
+              from.y - 0.001f,
+              from.x + 0.001f,
+              from.y + 0.001f);
+          if (nearestFixture[0] != null) return new WallHit(nearestFixture[0], 0f);
+          if (from.epsilonEquals(to, 0.0001f)) return new WallHit(null, Float.POSITIVE_INFINITY);
+          float[] nearest = {Float.POSITIVE_INFINITY};
+          world.rayCast(
+              (fixture, point, normal, fraction) -> {
+                if (fixture.isSensor() || fixture.getBody().getType() != BodyType.StaticBody)
+                  return -1f;
+                if (fraction < nearest[0]) {
+                  nearest[0] = fraction;
+                  nearestFixture[0] = fixture;
+                }
+                return fraction;
+              },
+              from,
+              to);
+          return new WallHit(nearestFixture[0], nearest[0]);
+        }
+      };
 
   public FinalBossStageTwoComponent(FinalBossStageTwoConfig stageTwoConfig) {
+    this(null, stageTwoConfig);
+  }
+
+  public FinalBossStageTwoComponent(Entity target, FinalBossStageTwoConfig stageTwoConfig) {
     if (stageTwoConfig == null) {
       throw new IllegalArgumentException("Configs must not be null");
     }
-
     stageTwoConfig.validate();
     this.stageTwoConfig = stageTwoConfig;
+    this.target = target;
   }
 
   @Override
@@ -35,49 +122,421 @@ public class FinalBossStageTwoComponent extends Component {
     phaseController = entity.getComponent(FinalBossPhaseControllerComponent.class);
     bossStats = entity.getComponent(CombatStatsComponent.class);
     movementComponent = entity.getComponent(FinalBossMovementComponent.class);
-
+    physicsMovement = entity.getComponent(PhysicsMovementComponent.class);
+    arena = entity.getComponent(FinalBossStageTwoArenaComponent.class);
     if (phaseController == null || bossStats == null || movementComponent == null) {
       throw new IllegalStateException(
           "FinalBossStageTwoComponent requires FinalBossPhaseControllerComponent, "
               + "CombatStatsComponent, and FinalBossMovementComponent");
     }
-
     entity.getEvents().addListener("updateHealth", this::onBossHealthChanged);
+    entity.getEvents().addListener(FinalBossEvents.PHASE_CHANGED, this::onPhaseChanged);
+    entity.getEvents().addListener("entityDied", this::clearEffects);
+    if (target != null) {
+      fire = new FinalBossStageTwoFireController(stageTwoConfig, new Random());
+      pickups = new FinalBossStageTwoPickupController(stageTwoConfig, new Random());
+      playerIce = new FinalBossStageTwoPlayerIceController(stageTwoConfig);
+      iceInput =
+          new FinalBossStageTwoIceInput(this::isIceInputActive, () -> pickups.getChargeCount() > 0);
+      iceInput.setEntity(entity);
+      iceInput.create();
+      ice =
+          new FinalBossStageTwoIceController(
+              entity, target, stageTwoConfig, new Random(), pickups::isClearOfPickups);
+    }
+  }
+
+  /** Begins one continuous encounter only after the phase-transition protection ends. */
+  public void startEncounter() {
+    if (disposed || phaseController.getCurrentPhase() != FinalBossPhase.STAGE_TWO) {
+      return;
+    }
+    applyStageThreeHealthFloor();
+    FinalBossDamageControllerComponent protection =
+        entity.getComponent(FinalBossDamageControllerComponent.class);
+    if (protection != null) {
+      protection.enableStageTwoIceProtection(bossStats.getMinimumHealth());
+    }
+    encounterStarted = true;
+    transitionSent = false;
+    isAttacking = true;
+    cycleTimer = 0f;
+    retargetRemaining = 0f;
+    roamDestination = null;
+    clearEffects();
+    previousPlayerCentre = target == null ? null : target.getCenterPosition();
+    previousBossCentre = entity.getCenterPosition();
+    movementComponent.disableChargeAttacks();
+    movementComponent.setMode(FinalBossMovementComponent.Mode.STOPPED);
   }
 
   @Override
   public void update() {
-    if (phaseController.getCurrentPhase() != FinalBossPhase.STAGE_TWO) {
+    if (disposed || phaseController.getCurrentPhase() != FinalBossPhase.STAGE_TWO) {
+      clearFireDamage();
       return;
     }
-
+    if (!encounterStarted
+        || phaseController.isTransitioning()
+        || bossStats.isDead()
+        || isTargetDead()) {
+      clearEffects();
+      stopRoaming();
+      return;
+    }
     GameTime time = ServiceLocator.getTimeSource();
-    if (time == null) {
-      return;
-    }
-
-    float deltaTime = time.getDeltaTime();
+    float deltaTime = time == null ? 0f : time.getDeltaTime();
     if (!Float.isFinite(deltaTime) || deltaTime <= 0f) {
+      stopRoaming();
       return;
     }
+    if (!isPlayerShieldActive()) shieldFireDamageRemainder = 0d;
+    updateRoaming(deltaTime);
+    updateFire(deltaTime);
+    if (!canContinueFire()) return;
+    // Retain overshoot so the three-second pause does not depend on frame boundaries.
+    double cycleDuration = (double) stageTwoConfig.attackDuration + stageTwoConfig.pauseDuration;
+    cycleTimer = (cycleTimer + deltaTime) % cycleDuration;
+    isAttacking = cycleTimer < stageTwoConfig.attackDuration;
+  }
 
-    cycleTimer += deltaTime;
+  private boolean isTargetDead() {
+    CombatStatsComponent stats =
+        target == null ? null : target.getComponent(CombatStatsComponent.class);
+    return stats != null && stats.isDead();
+  }
 
-    if (isAttacking) {
-      if (cycleTimer >= stageTwoConfig.attackDuration) {
-        // Switch to pause phase
-        isAttacking = false;
-        cycleTimer = 0f;
-        movementComponent.cancelChargeAttack();
-        movementComponent.setMode(FinalBossMovementComponent.Mode.STOPPED);
+  /**
+   * Advances through attack/pause boundaries without moving the pause's shots into another
+   * interval.
+   */
+  private void updateFire(float delta) {
+    if (fire == null) return;
+    Rectangle bounds = arena == null ? null : arena.getBounds();
+    if (bounds == null) {
+      clearEffects();
+      return;
+    }
+    PhysicsComponent playerPhysics = target.getComponent(PhysicsComponent.class);
+    if (playerPhysics != null) playerPhysics.earlyUpdate();
+    PhysicsComponent bossPhysics = entity.getComponent(PhysicsComponent.class);
+    if (bossPhysics != null) bossPhysics.earlyUpdate();
+    iceBuffEndRemaining = Math.max(0f, iceBuffEndRemaining - delta);
+    if (ice != null) ice.update(delta, bounds);
+    Vector2 playerNow = target.getCenterPosition();
+    Vector2 playerBefore = previousPlayerCentre == null ? playerNow : previousPlayerCentre;
+    if (!advanceFireCycle(delta, bounds, playerBefore, playerNow)) return;
+    updatePickups(delta, bounds, playerBefore, playerNow);
+    previousPlayerCentre = playerNow;
+  }
+
+  /**
+   * Splits player motion at firing boundaries and stops if a damage callback ends the encounter.
+   */
+  private boolean advanceFireCycle(
+      float delta, Rectangle bounds, Vector2 playerBefore, Vector2 playerNow) {
+    Vector2 origin = entity.getCenterPosition();
+    float spawnRadius = FinalBossStageTwoFireGeometry.spawnRadius(entity.getScale());
+    float radius = Math.max(0.2f, Math.min(target.getScale().x, target.getScale().y) * 0.3f);
+    double duration = (double) stageTwoConfig.attackDuration + stageTwoConfig.pauseDuration;
+    double cursor = cycleTimer;
+    double consumed = 0;
+    for (int part = 0; consumed < delta && part < 8; part++) {
+      boolean firing = cursor < stageTwoConfig.attackDuration;
+      double boundary = firing ? stageTwoConfig.attackDuration : duration;
+      double chunk = Math.min(delta - consumed, boundary - cursor);
+      if (chunk <= 0) break;
+      Vector2 from = playerBefore.cpy().lerp(playerNow, (float) (consumed / delta));
+      Vector2 to = playerBefore.cpy().lerp(playerNow, (float) ((consumed + chunk) / delta));
+      fire.update(
+          (float) chunk,
+          firing,
+          origin,
+          spawnRadius,
+          new FinalBossStageTwoProjectileTarget(from, to, radius, this::hitPlayer),
+          bounds,
+          walls);
+      if (!canContinueFire()) {
+        clearEffects();
+        stopRoaming();
+        return false;
       }
-    } else {
-      if (cycleTimer >= stageTwoConfig.pauseDuration) {
-        // Switch back to attacking phase
-        isAttacking = true;
-        cycleTimer = 0f;
-        movementComponent.setMode(FinalBossMovementComponent.Mode.STEP_TOWARDS_PLAYER);
+      consumed += chunk;
+      cursor += chunk;
+      if (cursor >= duration) cursor = 0;
+    }
+    // A long stall may cross many cycles. Expire/move leftovers without a burst of catch-up shots.
+    if (consumed < delta) {
+      fire.update(
+          (float) (delta - consumed),
+          false,
+          origin,
+          spawnRadius,
+          new FinalBossStageTwoProjectileTarget(
+              playerBefore.cpy().lerp(playerNow, (float) (consumed / delta)),
+              playerNow,
+              radius,
+              this::hitPlayer),
+          bounds,
+          walls);
+      if (!canContinueFire()) clearEffects();
+    }
+    return true;
+  }
+
+  private void updatePickups(
+      float delta, Rectangle bounds, Vector2 playerBefore, Vector2 playerNow) {
+    if (pickups == null || !canContinueFire()) return;
+    pickups.update(
+        delta,
+        bounds,
+        actorBounds(entity),
+        actorBounds(target),
+        playerBefore,
+        this::isPickupSpaceClear);
+    if (pickups.getChargeCount() > 0) iceBuffEndRemaining = 0f;
+    updatePlayerIce(delta, bounds, playerNow);
+  }
+
+  private boolean isIceInputActive() {
+    return target != null
+        && enabled
+        && encounterStarted
+        && phaseController != null
+        && !phaseController.isTransitioning()
+        && canContinueFire()
+        && arena != null
+        && arena.getBounds() != null;
+  }
+
+  private void updatePlayerIce(float delta, Rectangle bounds, Vector2 origin) {
+    if (playerIce == null || iceInput == null) return;
+    // Registration can be retried if a headless/late-created encounter preceded InputService.
+    iceInput.create();
+    PlayerActions actions = target.getComponent(PlayerActions.class);
+    boolean held = iceInput.isHeld();
+    boolean canAct =
+        (actions == null || !actions.areControlsLocked())
+            && !StatusEffectsControllerComponent.isImmobilised(target);
+    Vector2 bossNow = entity.getCenterPosition();
+    Vector2 bossBefore = previousBossCentre == null ? bossNow : previousBossCentre;
+    float radius = Math.max(0.3f, Math.min(entity.getScale().x, entity.getScale().y) * 0.35f);
+    boolean hadEnergy = pickups.getChargeCount() > 0;
+    playerIce.update(
+        delta,
+        held && canAct,
+        origin,
+        new FinalBossStageTwoProjectileTarget(bossBefore, bossNow, radius, this::hitBossWithIce),
+        bounds,
+        walls,
+        pickups);
+    if (!canContinueFire()) {
+      clearEffects();
+      return;
+    }
+    if (hadEnergy && pickups.getChargeCount() == 0) {
+      iceBuffEndRemaining = stageTwoConfig.iceBuffEndDuration;
+    }
+    previousBossCentre = bossNow;
+  }
+
+  private void hitBossWithIce() {
+    if (!isIceInputActive()) return;
+    FinalBossDamageControllerComponent protection =
+        entity.getComponent(FinalBossDamageControllerComponent.class);
+    if (protection != null) {
+      protection.takeStageTwoIceDamage(stageTwoConfig.iceProjectileDamage, target);
+    }
+    if (!canContinueFire()) clearEffects();
+  }
+
+  private static Rectangle actorBounds(Entity actor) {
+    Vector2 position = actor.getPosition();
+    Vector2 scale = actor.getScale();
+    return new Rectangle(position.x, position.y, scale.x, scale.y);
+  }
+
+  /** Pickups have no physics bodies, but leave enough space around solid static geometry. */
+  private boolean isPickupSpaceClear(Rectangle clearance) {
+    PhysicsService physics = ServiceLocator.getPhysicsService();
+    if (physics == null || physics.getPhysics() == null) return false;
+    World world = physics.getPhysics().getWorld();
+    if (world == null) return false;
+    boolean[] blocked = {false};
+    world.QueryAABB(
+        fixture -> {
+          if (fixture.getBody().isActive()
+              && fixture.getBody().getType() == BodyType.StaticBody
+              && !fixture.isSensor()) {
+            blocked[0] = true;
+            return false;
+          }
+          return true;
+        },
+        clearance.x,
+        clearance.y,
+        clearance.x + clearance.width,
+        clearance.y + clearance.height);
+    return !blocked[0];
+  }
+
+  private boolean canContinueFire() {
+    return !disposed
+        && !bossStats.isDead()
+        && !isTargetDead()
+        && phaseController.getCurrentPhase() == FinalBossPhase.STAGE_TWO;
+  }
+
+  private void hitPlayer() {
+    CombatStatsComponent stats = target.getComponent(CombatStatsComponent.class);
+    ConsumableEffectComponent consumables = target.getComponent(ConsumableEffectComponent.class);
+    if (stats == null
+        || fireDamageInProgress
+        || !canContinueFire()
+        || phaseController.isTransitioning()
+        || stats.isInvulnerable()
+        || stats.getIncomingDamageMultiplier() <= 0f
+        || StatusEffectsControllerComponent.isConcealed(target)
+        || StatusEffectsControllerComponent.isImmobilised(entity)
+        || (consumables != null && consumables.isShielded())) return;
+    float damage = stageTwoConfig.fireballDamage;
+    if (!Float.isFinite(damage) || damage <= 0f) return;
+    boolean shieldActive = isPlayerShieldActive();
+    if (!shieldActive) shieldFireDamageRemainder = 0d;
+    double accumulated = (shieldActive ? shieldFireDamageRemainder : fireDamageRemainder) + damage;
+    double wholeDamage = Math.floor(accumulated);
+    // Consume before dispatch: damage callbacks may dispose this encounter or throw.
+    if (shieldActive) shieldFireDamageRemainder = accumulated - wholeDamage;
+    else fireDamageRemainder = accumulated - wholeDamage;
+    if (wholeDamage < 1d) return;
+    fireDamageInProgress = true;
+    try {
+      stats.takeDamage((int) Math.min(wholeDamage, Integer.MAX_VALUE), entity);
+    } finally {
+      fireDamageInProgress = false;
+      if (!canContinueFire()) clearEffects();
+    }
+  }
+
+  private boolean isPlayerShieldActive() {
+    StatusEffectsControllerComponent effects =
+        target == null ? null : target.getComponent(StatusEffectsControllerComponent.class);
+    return effects != null && effects.isShieldActive();
+  }
+
+  private void clearFireDamage() {
+    fireDamageRemainder = 0d;
+    shieldFireDamageRemainder = 0d;
+  }
+
+  private record WallHit(Fixture fixture, float fraction) {}
+
+  FinalBossStageTwoIceController getIceController() {
+    return ice;
+  }
+
+  FinalBossStageTwoFireController getFireController() {
+    return fire;
+  }
+
+  FinalBossStageTwoPickupController getPickupController() {
+    return pickups;
+  }
+
+  FinalBossStageTwoPlayerIceController getPlayerIceController() {
+    return playerIce;
+  }
+
+  FinalBossStageTwoIceInput getIceInput() {
+    return iceInput;
+  }
+
+  float getIceBuffEndRemaining() {
+    return iceBuffEndRemaining;
+  }
+
+  float getIceBuffEndDuration() {
+    return stageTwoConfig.iceBuffEndDuration;
+  }
+
+  private void clearEffects() {
+    clearFireDamage();
+    if (fire != null) fire.clear();
+    if (ice != null) ice.clear();
+    if (pickups != null) pickups.clear();
+    if (playerIce != null) playerIce.clear();
+    if (iceInput != null) iceInput.reset();
+    previousPlayerCentre = null;
+    previousBossCentre = null;
+    iceBuffEndRemaining = 0f;
+  }
+
+  private void updateRoaming(float deltaTime) {
+    Rectangle allowed = arena == null ? null : arena.getMovementBounds(entity);
+    if (physicsMovement == null || allowed == null) {
+      stopRoaming();
+      return;
+    }
+    PhysicsComponent physics = entity.getComponent(PhysicsComponent.class);
+    if (physics != null) {
+      physics.earlyUpdate();
+    }
+    Vector2 position = entity.getPosition();
+    retargetRemaining -= deltaTime;
+    if (roamDestination != null) {
+      roamDestination.set(
+          MathUtils.clamp(roamDestination.x, allowed.x, allowed.x + allowed.width),
+          MathUtils.clamp(roamDestination.y, allowed.y, allowed.y + allowed.height));
+    }
+    if (roamDestination == null
+        || retargetRemaining <= 0f
+        || position.dst2(roamDestination) <= ARRIVAL_DISTANCE * ARRIVAL_DISTANCE) {
+      roamDestination = chooseDestination(allowed, position);
+      retargetRemaining = stageTwoConfig.bossRoamRetargetInterval;
+    }
+    float distance = position.dst(roamDestination);
+    if (distance <= ARRIVAL_DISTANCE) {
+      stopRoaming();
+      return;
+    }
+    // PhysicsMovementComponent normalises direction; reduce speed close to a destination.
+    float speed = Math.min(stageTwoConfig.bossMoveSpeed, distance / deltaTime);
+    physicsMovement.setMaxSpeed(new Vector2(speed, speed));
+    physicsMovement.setTarget(roamDestination.cpy());
+    physicsMovement.setMoving(true);
+  }
+
+  private Vector2 chooseDestination(Rectangle allowed, Vector2 position) {
+    Vector2 candidate = new Vector2();
+    for (int attempt = 0; attempt < DESTINATION_ATTEMPTS; attempt++) {
+      candidate.set(
+          MathUtils.random(allowed.x, allowed.x + allowed.width),
+          MathUtils.random(allowed.y, allowed.y + allowed.height));
+      if (position.dst2(candidate) > ARRIVAL_DISTANCE * ARRIVAL_DISTANCE) {
+        return candidate;
       }
+    }
+    // A tiny viewport can leave no useful random choice; try the opposite corner safely.
+    return candidate.set(
+        position.x < allowed.x + allowed.width / 2f ? allowed.x + allowed.width : allowed.x,
+        position.y < allowed.y + allowed.height / 2f ? allowed.y + allowed.height : allowed.y);
+  }
+
+  private void stopRoaming() {
+    if (physicsMovement != null) {
+      physicsMovement.setMoving(false);
+    }
+  }
+
+  private void onPhaseChanged(FinalBossPhase phase) {
+    clearEffects();
+    encounterStarted = false;
+    isAttacking = false;
+    cycleTimer = 0f;
+    roamDestination = null;
+    retargetRemaining = 0f;
+    if (phase == FinalBossPhase.STAGE_TWO) {
+      transitionSent = false;
     }
   }
 
@@ -88,26 +547,41 @@ public class FinalBossStageTwoComponent extends Component {
             1, Math.round(bossStats.getMaxHealth() * stageTwoConfig.stageThreeHealthThreshold)));
   }
 
-  /** Returns whether the boss is currently in the attacking phase. */
+  /** Returns whether the active encounter is in its firing interval rather than its pause. */
   public boolean isAttacking() {
-    return isAttacking;
+    return encounterStarted
+        && !disposed
+        && phaseController.getCurrentPhase() == FinalBossPhase.STAGE_TWO
+        && !phaseController.isTransitioning()
+        && !bossStats.isDead()
+        && isAttacking;
   }
 
-  /** Triggers Stage 3 transition when health falls below the configured threshold. */
   private void onBossHealthChanged(Integer health) {
     if (transitionSent
         || health <= 0
         || phaseController.getCurrentPhase() != FinalBossPhase.STAGE_TWO) {
       return;
     }
-
     int healthThreshold =
         Math.round(bossStats.getMaxHealth() * stageTwoConfig.stageThreeHealthThreshold);
-
     if (health <= healthThreshold) {
       transitionSent = true;
-      movementComponent.cancelChargeAttack();
+      movementComponent.disableChargeAttacks();
       entity.getEvents().trigger(FinalBossEvents.STAGE_COMPLETED, FinalBossPhase.STAGE_TWO);
     }
+  }
+
+  @Override
+  public void dispose() {
+    disposed = true;
+    clearEffects();
+    if (ice != null) ice.dispose();
+    if (pickups != null) pickups.dispose();
+    if (playerIce != null) playerIce.dispose();
+    if (iceInput != null) iceInput.dispose();
+    encounterStarted = false;
+    roamDestination = null;
+    // Entity disposal may already have destroyed its physics body; do not steer it here.
   }
 }

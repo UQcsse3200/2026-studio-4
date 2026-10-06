@@ -4,10 +4,13 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.achievements.AchievementsManager;
+import com.csse3200.game.components.friendlynpc.NpcInteractableComponent;
+import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.items.ItemPickupComponent;
+import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InteractionPrompt;
-import com.csse3200.game.components.player.InteractionPromptDisplay;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.components.rooms.configs.PositionConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
@@ -15,8 +18,10 @@ import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RoomFactory;
+import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /** Owns the active room and applies the room graph specified by {@link WorldConfig}. */
@@ -35,6 +40,8 @@ public class RoomManager {
   private RoomConfig pendingDestination;
   private PositionConfig pendingArrivalPosition;
   private boolean clearRequested;
+  private final RunTimer runTimer;
+  private final AchievementsManager achievements;
 
   /** Creates the JSON-driven room manager. Call {@link #create()} to register the initial room. */
   public RoomManager(WorldConfig world, Entity player, CameraComponent camera) {
@@ -42,9 +49,11 @@ public class RoomManager {
     this.world = world;
     this.player = player;
     this.camera = camera;
+    this.runTimer = ServiceLocator.getRunTimer();
     currentConfig = world.getRoom(world.startRoomId);
     initialEntryPoint = currentConfig.getEntryPoint(world.startEntryPointId);
     currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
+    achievements = new AchievementsManager(currentRoom);
     player.getEvents().addListener("interact", this::interact);
     FollowingCameraComponent cameraFollowingComponent =
         currentRoom.getComponent(FollowingCameraComponent.class);
@@ -55,10 +64,11 @@ public class RoomManager {
   /** Package private constructer to create empty room manager for testing */
   RoomManager(Entity player) {
     this.player = player;
-
+    this.runTimer = ServiceLocator.getRunTimer();
     this.world = null;
     this.camera = null;
     this.initialEntryPoint = null;
+    achievements = new AchievementsManager(new Entity());
   }
 
   /** Registers the active room and player, then positions the player at its entry point. */
@@ -67,11 +77,15 @@ public class RoomManager {
     entityService.register(currentRoom);
     entityService.register(player);
     start(initialEntryPoint);
+    if (runTimer != null && currentConfig.dungeonId != null) {
+      runTimer.startDungeon(currentConfig.dungeonId);
+    }
   }
 
   /** Package private for testing */
   void start(PositionConfig entryPoint) {
     currentRoom.getEvents().addListener("roomCleared", this::onRoomCleared);
+    currentRoom.getEvents().addListener("achievementUnlocked", this::onAchievementUnlocked);
     currentRoom.getEvents().trigger("RoomCreated", player);
     scaleRoom(currentRoom);
     Vector2 position =
@@ -113,6 +127,9 @@ public class RoomManager {
     if (pendingDestination != null) {
       return;
     }
+    if (interactWithNpc()) {
+      return;
+    }
     ExitConfig exit = findNearestExit();
     if (exit == null) {
       return;
@@ -146,6 +163,26 @@ public class RoomManager {
     }
   }
 
+  private boolean interactWithNpc() {
+    FriendlyNpcManagerComponent npcs = currentRoom.getComponent(FriendlyNpcManagerComponent.class);
+    if (npcs == null) {
+      return false;
+    }
+    NpcInteractableComponent npc = npcs.findNearestInRange(player);
+    if (npc == null) {
+      return false;
+    }
+    if (npc.interact(player)) {
+      return true;
+    }
+    String reason = npc.getPrompt(player);
+    if (reason == null) {
+      return false;
+    }
+    showStatus(reason);
+    return true;
+  }
+
   /** Requests that the current room's enemies be cleared at the next safe update point. */
   public void clearCurrentRoom() {
     clearRequested = true;
@@ -173,11 +210,19 @@ public class RoomManager {
   }
 
   private void switchToRoom(RoomConfig destination, PositionConfig arrivalPosition) {
+    String previousDungeonId = currentConfig.dungeonId;
     Entity nextRoom =
         RoomFactory.createRoom(destination, camera, clearedRoomIds.contains(destination.id));
     currentRoom.dispose();
     currentConfig = destination;
     currentRoom = nextRoom;
+    achievements.newRoom(currentRoom); // move here, before start()
+    if (runTimer != null && !Objects.equals(previousDungeonId, destination.dungeonId)) {
+      runTimer.stopDungeon();
+      if (destination.dungeonId != null) {
+        runTimer.startDungeon(destination.dungeonId);
+      }
+    }
     ServiceLocator.getEntityService().register(currentRoom);
     start(arrivalPosition);
     FollowingCameraComponent cameraFollowingComponent =
@@ -214,7 +259,17 @@ public class RoomManager {
     if (display == null) {
       return;
     }
-    display.setPrompt(InteractionPrompt.resolve(getItemPrompt(), getExitPrompt()));
+    NpcInteractorComponent interactor = player.getComponent(NpcInteractorComponent.class);
+    if (interactor != null && interactor.isInteracting()) {
+      display.clearPrompt();
+      return;
+    }
+    display.setPrompt(InteractionPrompt.resolve(getNpcPrompt(), getItemPrompt(), getExitPrompt()));
+  }
+
+  private String getNpcPrompt() {
+    FriendlyNpcManagerComponent npcs = currentRoom.getComponent(FriendlyNpcManagerComponent.class);
+    return npcs == null ? null : npcs.getPrompt(player);
   }
 
   private String getItemPrompt() {
@@ -242,6 +297,13 @@ public class RoomManager {
     GameAreaDisplay display = currentRoom.getComponent(GameAreaDisplay.class);
     if (display != null) {
       display.showStatus(message);
+    }
+  }
+
+  private void onAchievementUnlocked(String name) {
+    GameAreaDisplay display = currentRoom.getComponent(GameAreaDisplay.class);
+    if (display != null) {
+      display.showAchievement(name);
     }
   }
 

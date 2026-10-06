@@ -3,6 +3,7 @@ package com.csse3200.game.components.npc;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -67,7 +68,7 @@ public class EnemyAnimationController extends Component {
 
   @Override
   public void update() {
-    super.update();
+    updateFacingDirection();
     if (dying && animator.isFinished()) {
       dying = false;
       ServiceLocator.getEntityService().scheduleDisposal(entity);
@@ -75,9 +76,18 @@ public class EnemyAnimationController extends Component {
     if ("attack".equals(animator.getCurrentAnimation()) && animator.isFinished()) {
       animator.startAnimation("move");
     }
+  }
 
-    // animateMove();
+  private void updateFacingDirection() {
+    PhysicsComponent physics = entity.getComponent(PhysicsComponent.class);
+    if (physics == null) {
+      return;
+    }
 
+    float velocityX = physics.getBody().getLinearVelocity().x;
+    if (Math.abs(velocityX) > 0.01f) {
+      animator.setFlipX(velocityX < 0f);
+    }
   }
 
   private void animateWander() {
