@@ -57,19 +57,18 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
     float x = 0;
     float y = 0;
     if (currentPos.x > newTarget.x) {
-      x -= 1f;
-      facingDirection = new Vector2(x, y);
+      x = -1f;
     } else if (currentPos.x < newTarget.x) {
-      x += 1f;
-      facingDirection = new Vector2(x, y);
+      System.out.println("x is greater");
+      x = 1f;
     }
+
     if (currentPos.y > newTarget.y) {
-      y -= 1f;
-      facingDirection = new Vector2(x, y);
+      y = -1f;
     } else if (currentPos.y < newTarget.y) {
-      y += 1f;
-      facingDirection = new Vector2(x, y);
+      y = 1f;
     }
+    facingDirection = new Vector2(x, y);
     owner.getEntity().getEvents().trigger("moving", facingDirection);
   }
 
@@ -86,7 +85,6 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
   public void start() {
     super.start();
     movementComponent = owner.getEntity().getComponent(PhysicsMovementComponent.class);
-
     setTarget();
     movementComponent.setMoving(true);
     owner.getEntity().getEvents().trigger("patrolStart");

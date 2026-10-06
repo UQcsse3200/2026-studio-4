@@ -15,6 +15,7 @@ import com.csse3200.game.services.ServiceLocator;
 public class EnemyAnimationController extends Component {
   private AnimationRenderComponent animator;
   private boolean dying = false;
+  private boolean followPlayer = false; // used by enemies to follow player
 
   @Override
   public void create() {
@@ -32,6 +33,7 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateMove(Vector2 dir) {
+    followPlayer = false;
     float x = dir.x;
     float y = dir.y;
 
@@ -67,7 +69,8 @@ public class EnemyAnimationController extends Component {
 
   @Override
   public void update() {
-    updateFacingDirection();
+    updateFacingDirection(followPlayer);
+
     if (dying && animator.isFinished()) {
       dying = false;
       ServiceLocator.getEntityService().scheduleDisposal(entity);
@@ -77,7 +80,11 @@ public class EnemyAnimationController extends Component {
     }
   }
 
-  private void updateFacingDirection() {
+  /** flip animation to face player - used by enemies */
+  private void updateFacingDirection(boolean followPlayer) {
+    if (!followPlayer) {
+      return;
+    }
     PhysicsComponent physics = entity.getComponent(PhysicsComponent.class);
     if (physics == null) {
       return;
@@ -90,10 +97,12 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateWander() {
+    followPlayer = true;
     animator.startAnimation("move");
   }
 
   private void animateChase() {
+    followPlayer = false;
     animator.startAnimation("chase");
   }
 
@@ -106,6 +115,7 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animatePatrol() {
+    followPlayer = false;
     if (!dying) {
       animator.startAnimation("move");
     }

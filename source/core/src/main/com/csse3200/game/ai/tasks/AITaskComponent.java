@@ -20,8 +20,6 @@ public class AITaskComponent extends Component implements TaskRunner {
   private final List<PriorityTask> priorityTasks = new ArrayList<>(2);
   private PriorityTask currentTask;
 
-  public AITaskComponent() {}
-
   /**
    * Add a priority task to the list of tasks. This task will be run only when it has the highest
    * priority, and can be stopped to run a higher priority task.
