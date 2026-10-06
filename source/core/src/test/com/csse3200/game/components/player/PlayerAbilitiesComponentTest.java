@@ -557,6 +557,55 @@ class PlayerAbilitiesComponentTest {
   }
 
   @Test
+  void shouldLockARegisteredAbilityAndReportUnlockState() {
+    assertTrue(abilities.isUnlocked(Invisibility.class), "Invisibility starts unlocked");
+    assertFalse(abilities.isUnlocked(LastStand.class), "Last Stand starts locked");
+
+    assertTrue(abilities.lock(Invisibility.class));
+    assertFalse(abilities.isUnlocked(Invisibility.class));
+    assertFalse(abilities.tryActivate(Invisibility.class));
+    assertEquals(List.of("invisibility:Ability is locked"), failed);
+
+    assertTrue(abilities.unlock(Invisibility.class));
+    assertTrue(abilities.isUnlocked(Invisibility.class));
+    assertTrue(abilities.tryActivate(Invisibility.class));
+  }
+
+  @Test
+  void shouldReportUnknownAbilitiesAsNeitherLockableNorUnlocked() {
+    assertFalse(abilities.lock(InstantAbility.class));
+    assertFalse(abilities.isUnlocked(InstantAbility.class));
+  }
+
+  @Test
+  void shouldEndARunningAbilityWhenItIsLocked() {
+    assertTrue(abilities.tryActivate(Invisibility.class));
+    assertTrue(abilities.isActive(Invisibility.class));
+
+    assertTrue(abilities.lock(Invisibility.class));
+    assertFalse(abilities.isActive(Invisibility.class));
+    assertEquals(List.of("invisibility"), ended);
+    // Locking revokes the ability but does not forgive the cooldown it already paid.
+    assertEquals(45_000, abilities.getCooldownRemainingMs(Invisibility.class));
+  }
+
+  @Test
+  void shouldExposeRegisteredAbilitiesInRegistrationOrderAsReadOnly() {
+    List<String> names =
+        abilities.getRegisteredAbilities().stream().map(PlayerAbility::getName).toList();
+    assertEquals(List.of(Invisibility.NAME, LastStand.NAME), names);
+
+    assertThrows(
+        UnsupportedOperationException.class,
+        () -> abilities.getRegisteredAbilities().clear(),
+        "The view must not let callers unregister abilities");
+
+    // The view is live, so a menu built from it sees later registrations.
+    abilities.register(new InstantAbility());
+    assertEquals(3, abilities.getRegisteredAbilities().size());
+  }
+
+  @Test
   void shouldLockAnAbilityThatStartsUnlockedAndRestoreItOnRelock() {
     InstantAbility instant = new InstantAbility();
     assertTrue(instant.isUnlocked(), "InstantAbility starts unlocked");
