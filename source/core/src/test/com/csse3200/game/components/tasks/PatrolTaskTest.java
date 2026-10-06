@@ -40,7 +40,7 @@ class PatrolTaskTest {
     Vector2 topPoint = new Vector2(5f, 5f);
     Vector2 rightPoint = new Vector2(10f, 3f);
     PatrolTask patrolTask = new PatrolTask(new Vector2[] {leftPoint, topPoint, rightPoint});
-    AITaskComponent aiTaskComponent = new AITaskComponent(new Entity()).addTask(patrolTask);
+    AITaskComponent aiTaskComponent = new AITaskComponent().addTask(patrolTask);
     PhysicsMovementComponent movement = new PhysicsMovementComponent();
     Entity enemy1 = new Entity().addComponent(aiTaskComponent).addComponent(movement);
 
@@ -68,7 +68,7 @@ class PatrolTaskTest {
   }
 
   @Test
-  void defaultPriorityShouldBeTwo() {
+  void defaultPriorityCheck() {
     PatrolTask task = new PatrolTask(createThreePatrolPoints());
 
     assertEquals(1, task.getPriority());

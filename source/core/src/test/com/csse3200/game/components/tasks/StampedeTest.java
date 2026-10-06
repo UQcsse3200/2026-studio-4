@@ -58,7 +58,7 @@ class StampedeTaskTest {
   }
 
   @Test
-  void priorityShouldBeNegativeBeforeStart() {
+  void checkPriorityBeforeStart() {
     StampedeTask task = new StampedeTask(player, eventEntity);
 
     assertEquals(-10, task.getPriority());

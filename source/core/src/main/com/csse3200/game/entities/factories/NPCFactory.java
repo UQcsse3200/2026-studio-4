@@ -57,7 +57,7 @@ public class NPCFactory {
     GiantEnemyConfig config = configs.giantEnemy;
 
     AITaskComponent aiComponent =
-        new AITaskComponent(target)
+        new AITaskComponent()
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new ChaseTask(target, 10, 3f, 10f));
 
@@ -95,7 +95,7 @@ public class NPCFactory {
     BombEnemyConfig config = configs.bombEnemy;
 
     AITaskComponent aiComponent =
-        new AITaskComponent(target)
+        new AITaskComponent()
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new ChaseTask(target, 10, 3f, 10f));
 
@@ -135,7 +135,7 @@ public class NPCFactory {
     ChaseEnemyConfig config = configs.chaseEnemy;
 
     AITaskComponent aiComponent =
-        new AITaskComponent(target)
+        new AITaskComponent()
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new ChaseTask(target, 10, 3f, 10f))
             .addTask(new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy));
@@ -257,7 +257,7 @@ public class NPCFactory {
     FloatingDemonConfig config = configs.floatingDemon;
 
     AITaskComponent aiComponent =
-        new AITaskComponent(target)
+        new AITaskComponent()
             .addTask(new PatrolTask(new Vector2[] {leftPoint, topPoint, rightPoint}))
             .addTask(new RangedAttackTask(target, 5, config.baseAttack, projectileSpawner));
 
@@ -294,7 +294,7 @@ public class NPCFactory {
     BaseEntityConfig config = configs.sleipnir;
 
     AITaskComponent aiComponent =
-        new AITaskComponent(target)
+        new AITaskComponent()
             .addTask(new PatrolTask(mapBounds))
             .addTask(new StampedeTask(target, sleipnir))
             .addTask(new EarthquakeAttackTask(target, 5f, sleipnir))

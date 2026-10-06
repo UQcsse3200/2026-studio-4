@@ -75,8 +75,6 @@ public class SleipnirEnemyTest {
   void shouldCreateSleipnir() {
     Entity target = new Entity();
 
-    Vector2[] mapBounds = {new Vector2(0f, 0f), new Vector2(20f, 20f)};
-
     Entity sleipnir = NPCFactory.createSleipnir(target, mapBounds);
 
     assertNotNull(sleipnir);
@@ -85,8 +83,6 @@ public class SleipnirEnemyTest {
   @Test
   void shouldHaveRequiredComponents() {
     Entity target = new Entity();
-
-    Vector2[] mapBounds = {new Vector2(0f, 0f), new Vector2(20f, 20f)};
 
     Entity sleipnir = NPCFactory.createSleipnir(target, mapBounds);
 
@@ -101,8 +97,6 @@ public class SleipnirEnemyTest {
   @Test
   void shouldSetMaximumMovementSpeed() {
     Entity target = new Entity();
-
-    Vector2[] mapBounds = {new Vector2(0f, 0f), new Vector2(20f, 20f)};
 
     Entity sleipnir = NPCFactory.createSleipnir(target, mapBounds);
 

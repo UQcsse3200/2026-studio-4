@@ -9,7 +9,7 @@ import com.csse3200.game.services.ServiceLocator;
 /** in Phase two of norse miniboss, between Stampedes, attacks within range */
 public class EarthquakeAttackTask extends DefaultTask implements PriorityTask {
 
-  private final float WAIT = 1f;
+  private final float waitFor = 1f;
   private final Entity target;
   private final float range;
   private float coolDownTimer = 0f;
@@ -20,11 +20,6 @@ public class EarthquakeAttackTask extends DefaultTask implements PriorityTask {
     this.target = target;
     this.range = range;
     entity.getEvents().addListener("enragePhaseStarted", this::activate);
-  }
-
-  @Override
-  public void start() {
-    super.start();
   }
 
   protected void activate() {
@@ -39,7 +34,7 @@ public class EarthquakeAttackTask extends DefaultTask implements PriorityTask {
     float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
     coolDownTimer += deltaTime;
 
-    if (coolDownTimer < WAIT) {
+    if (coolDownTimer < waitFor) {
       return;
     }
     coolDownTimer = 0;

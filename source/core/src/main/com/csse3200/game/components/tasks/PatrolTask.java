@@ -10,11 +10,11 @@ import com.csse3200.game.physics.components.PhysicsMovementComponent;
  * point and the required height and width
  */
 public class PatrolTask extends DefaultTask implements PriorityTask {
-  private float POINT_DISTANCE;
+  private float pointDist;
   private Vector2[] patrolPoints;
   private PhysicsMovementComponent movementComponent;
   private int currentPoint;
-  private int priority = 5;
+  private static final int priority = 5;
   private boolean phaseTwoActivated = false;
   private Vector2 facingDirection = new Vector2(0f, 0f);
 
@@ -22,9 +22,9 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
     if (layout.length == 3) { // flying enemy
       phaseTwoActivated = true;
       patrolPoints = layout;
-      POINT_DISTANCE = 0.2f;
+      pointDist = 0.2f;
     } else if (layout.length == 2) { // norse miniboss
-      POINT_DISTANCE = 2f;
+      pointDist = 2f;
       patrolPoints = createBounds(layout);
     }
   }
@@ -37,12 +37,12 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
    * @return each point the miniboss patrols in order
    */
   private Vector2[] createBounds(Vector2[] grid) {
-    float Xsize = grid[1].x;
-    float Ysize = grid[1].y;
+    float width = grid[1].x;
+    float height = grid[1].y;
     Vector2 bottomLeft = grid[0];
-    Vector2 bottomRight = new Vector2(grid[0].x + Xsize, grid[0].y);
-    Vector2 topLeft = new Vector2(grid[0].x, grid[0].y + Ysize);
-    Vector2 topRight = new Vector2(grid[0].x + Xsize, grid[0].y + Ysize);
+    Vector2 bottomRight = new Vector2(grid[0].x + width, grid[0].y);
+    Vector2 topLeft = new Vector2(grid[0].x, grid[0].y + height);
+    Vector2 topRight = new Vector2(grid[0].x + width, grid[0].y + height);
     return (new Vector2[] {bottomLeft, topRight, topLeft, bottomRight});
   }
 

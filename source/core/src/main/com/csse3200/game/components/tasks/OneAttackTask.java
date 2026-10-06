@@ -17,15 +17,15 @@ public class OneAttackTask extends DefaultTask implements PriorityTask {
   private final Entity target;
   private MovementTask movementTask;
   private final float attackDist;
-  private Vector2 maxSpeed;
+  private Vector2 speed;
   private boolean hit = false;
   private final float coolDownDist;
-  private final float MAX_SPEED = 10f;
+  private static final float maxSpeed = 10f;
 
-  public OneAttackTask(Entity target, float attackDist, float coolDown, Vector2 maxSpeed) {
+  public OneAttackTask(Entity target, float attackDist, float coolDown, Vector2 speed) {
     this.target = target;
     this.attackDist = attackDist;
-    this.maxSpeed = maxSpeed;
+    this.speed = speed;
     this.coolDownDist = coolDown;
   }
 
@@ -43,7 +43,7 @@ public class OneAttackTask extends DefaultTask implements PriorityTask {
         owner.getEntity().getComponent(CombatStatsComponent.class);
     PhysicsMovementComponent physicsMovementComponent =
         owner.getEntity().getComponent(PhysicsMovementComponent.class);
-    Vector2 increasedSpeed = (new Vector2(maxSpeed.x + 0.5f, maxSpeed.y + 0.5f));
+    Vector2 increasedSpeed = (new Vector2(speed.x + 0.5f, speed.y + 0.5f));
     if (StatusEffectsControllerComponent.isConcealed(target)) {
       movementTask.stop();
       return;
@@ -57,8 +57,8 @@ public class OneAttackTask extends DefaultTask implements PriorityTask {
       if (movementTask.getStatus() != Status.ACTIVE) {
         movementTask.start();
       }
-      if (maxSpeed.x < MAX_SPEED) {
-        this.maxSpeed = increasedSpeed;
+      if (speed.x < maxSpeed) {
+        this.speed = increasedSpeed;
         physicsMovementComponent.setMaxSpeed(
             increasedSpeed); // increase speed every hit until MAX_SPEED is reached
       }
