@@ -1,5 +1,7 @@
 # Consumable Items, Currency and Combat HUD — Sprint 2
 
+> Historical draft. The four-item Team 5 combat HUD and its 7/8/9/0 use bindings described below have been removed locally pending a redesign. Its screenshots, layout checks and HUD-specific tests no longer describe the current implementation.
+
 Local publication draft, updated 2026-09-16. This file is not a claim that the Wiki or remote items/main has been updated.
 
 ## Player guide
@@ -23,10 +25,10 @@ The fixed four-key mapping follows Yuezhou's playtest request on 2026-09-16 and 
 
 ## Contracts and ownership
 
-- `InventoryComponent` owns quantities and Gold. Quantity changes emit `consumableInventoryChanged(ItemType, count)`.
+- `InventoryComponent` owns quantities and Gold. Quantity changes emit `consumableInventoryChanged(item ID, count)`.
 - `ConsumableLoadoutComponent` defines four fixed slots (Health, Shield, Speed, Strength); `getSlot(index)` exposes their types.
-- Keyboard input calls `useSlot(index)`. `ConsumableEffectComponent.tryUse(type)` or `useConsumable(ItemType)` requests use.
-- **Only ConsumableEffectComponent removes the item on a successful use.** Input and HUD never debit inventory. `itemUsed(ItemType)` is a notification after success, not another request.
+- Keyboard input calls `useSlot(index)`. `ConsumableEffectComponent.tryUse(type)` or `useConsumable(item ID)` requests use.
+- **Only ConsumableEffectComponent removes the item on a successful use.** Input and HUD never debit inventory. `itemUsed(item ID)` is a notification after success, not another request.
 - Temporary modifiers use the existing `StatusEffectsControllerComponent`, `TimedStatusEffect`, `Stat`, and `Damageable` interfaces. No shared combat implementation was changed for these consumables.
 - `ItemFactory.DropTypes` is the shared registration point for random drops; each supplier creates a fresh `Item`. Randomness is injectable for deterministic tests.
 - `ItemFactory.createRandomDrop` selects from that pool and delegates entity construction to the shared `createItem`.

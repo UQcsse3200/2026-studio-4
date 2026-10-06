@@ -13,7 +13,7 @@ The integrated flow is:
 1. `EnemyManagerComponent` tracks an enemy and listens for its `entityDied` event.
 2. The death handler schedules item creation through `EntityService` so physics-backed entity
    creation occurs after the current update.
-3. `ItemFactory.createDrop(ItemType.STRENGTH_CHARM, enemyPosition)` returns a new, positioned,
+3. The then-current item factory returns a new, positioned,
    unregistered Strength Charm entity, which the enemy manager stores and registers.
 4. The player overlaps the item's `PhysicsLayer.ITEM` hitbox and triggers `itemPickup`.
 5. `CharmPickupComponent` transfers the Charm to `InventoryComponent` and disposes the world entity.
@@ -27,7 +27,7 @@ keyboard input emits both events for the E key without coupling their listener c
 ## Component contract
 
 `EnemyManagerComponent` owns the death-event listener, physics-safe deferred creation, registration,
-and later cleanup of dropped items. `ItemFactory.createDrop(ItemType, Vector2)` owns item selection,
+and later cleanup of dropped items. The then-current item factory owns item selection,
 positioning, and the item entity's component setup. It returns an entity containing:
 
 - `PhysicsComponent`

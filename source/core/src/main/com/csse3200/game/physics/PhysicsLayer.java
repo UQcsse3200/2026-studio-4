@@ -28,6 +28,12 @@ public class PhysicsLayer {
   // World items, e.g. dropped charms, that the player can pick up.
   public static final short ITEM = (1 << 5);
 
+  // Walkable environmental sensors such as freeze and burn traps.
+  public static final short TRAP = (1 << 6);
+
+  // Friendly interactable NPCs
+  public static final short FRIENDLY_NPC = (1 << 7);
+
   public static final short ALL = ~0;
 
   public static boolean contains(short filterBits, short layer) {

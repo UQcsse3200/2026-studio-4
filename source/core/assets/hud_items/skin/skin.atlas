@@ -57,6 +57,14 @@ heart-icon
   orig: 123, 127
   offset: 0, 0
   index: -1
+timer_back
+  rotate: false
+  xy: 769,11
+  size: 123, 127
+  split: 0,0,0,0
+  orig: 246, 254
+  offset: 0, 0
+  index: -1
 
 book.png
   size: 1683, 1026

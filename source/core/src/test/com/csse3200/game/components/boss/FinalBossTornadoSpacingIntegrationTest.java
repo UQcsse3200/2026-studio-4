@@ -58,6 +58,8 @@ class FinalBossTornadoSpacingIntegrationTest {
             .addComponent(new CombatStatsComponent(100, 10, 3f, 1f))
             .addComponent(new PlayerActions());
     player.create();
+    // These scenarios isolate locomotion; contact-damage timing has separate integration coverage.
+    player.getComponent(CombatStatsComponent.class).setIncomingDamageMultiplier(0f);
     movePlayerGroundTo(new Vector2(30f, 30f));
     config = new FinalBossStageThreeConfig();
     FinalBossPhaseControllerComponent phases = mock(FinalBossPhaseControllerComponent.class);
@@ -95,8 +97,7 @@ class FinalBossTornadoSpacingIntegrationTest {
       tickPhysics();
       tornadoTravel += assertContinuousTornadoMovement(beforeTornadoes);
       for (FinalBossTornadoController.Tornado tornado : stage.tornadoes.items) {
-        assertFalse(
-            tornado.chasing, "A distant player must not turn roaming into permanent pursuit");
+        assertFalse(tornado.chasing, "A player outside the arena must leave tornadoes wandering");
       }
       assertCrossClearanceAndCameraBounds();
       statueTravel = Math.max(statueTravel, statueDisplacement(initialStatues));
@@ -107,22 +108,30 @@ class FinalBossTornadoSpacingIntegrationTest {
   }
 
   @Test
-  void fourTornadoesRespectTheWalkingStatueDuringNearbyPursuitAndRelease() {
+  void fourTornadoesRespectTheWalkingStatueDuringPursuitAndOffscreenWandering() {
     startWithSurvivors(1);
     FinalBossTornadoController.Tornado selected = stage.tornadoes.items.getFirst();
     for (int frame = 0; frame < 40; frame++) tickPhysics();
     float pursuedDistance = 0f;
+    int chasingFrames = 0;
     for (int frame = 0; frame < 120; frame++) {
-      movePlayerGroundTo(selected.position.cpy().add(1.5f, 0f));
+      Vector2 visiblePlayer = selected.position.cpy().add(1.5f, 0f);
+      visiblePlayer.x =
+          MathUtils.clamp(visiblePlayer.x, arena.x + 0.3f, arena.x + arena.width - 0.3f);
+      visiblePlayer.y =
+          MathUtils.clamp(visiblePlayer.y, arena.y + 0.3f, arena.y + arena.height - 0.3f);
+      movePlayerGroundTo(visiblePlayer);
       Vector2 beforeSelected = selected.position.cpy();
       List<Vector2> beforeTornadoes = tornadoPositions();
       tickPhysics();
-      assertTrue(selected.chasing);
+      if (selected.chasing) chasingFrames++;
       pursuedDistance += beforeSelected.dst(selected.position);
       assertContinuousTornadoMovement(beforeTornadoes);
       assertCrossClearanceAndCameraBounds();
     }
     assertTrue(pursuedDistance > 0.2f, "Nearby pursuit should still move at a controlled speed");
+    assertTrue(
+        chasingFrames > 0, "Visible players must be pursued when no reserved route intrudes");
 
     movePlayerGroundTo(new Vector2(30f, 30f));
     for (int frame = 0; frame < 180; frame++) {
@@ -198,6 +207,18 @@ class FinalBossTornadoSpacingIntegrationTest {
           tornado.position.y + FinalBossTornadoController.HEIGHT
               <= arena.y + arena.height + EPSILON);
       assertTornadoClearOfStatues(tornado);
+    }
+    for (int first = 0; first < stage.tornadoes.items.size(); first++) {
+      for (int second = first + 1; second < stage.tornadoes.items.size(); second++) {
+        assertTrue(
+            stage
+                    .tornadoes
+                    .items
+                    .get(first)
+                    .position
+                    .dst(stage.tornadoes.items.get(second).position)
+                >= FinalBossTornadoController.PEER_CLEARANCE - EPSILON);
+      }
     }
     for (FinalBossStageThreeComponent.Statue statue : stage.statues) {
       if (statue.broken) continue;
