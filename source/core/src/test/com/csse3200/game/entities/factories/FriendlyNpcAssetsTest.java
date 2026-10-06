@@ -9,10 +9,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Region;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 import com.csse3200.game.entities.configs.InteractableNpcConfig;
 import com.csse3200.game.entities.configs.InteractableNpcConfigs;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.files.FileLoader;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -94,6 +98,50 @@ class FriendlyNpcAssetsTest {
     assertEquals(128, region.top);
     assertEquals(32, region.width);
     assertEquals(32, region.height);
+  }
+
+  @Test
+  void everyDialogueScriptIsWellFormedAndNamesArtThatExists() {
+    FileHandle dir = Gdx.files.internal("configs/dialogues");
+    assertTrue(dir.exists() && dir.isDirectory(), "configs/dialogues is missing");
+
+    FileHandle[] scripts = dir.list(".json");
+    assertTrue(scripts.length > 0, "no dialogue scripts to check");
+
+    for (FileHandle script : scripts) {
+      JsonValue root = new JsonReader().parse(script);
+      String where = script.name();
+
+      JsonValue speakers = root.get("speakers");
+      assertNotNull(speakers, where + " declares no speakers");
+
+      Set<String> speakerIds = new HashSet<>();
+      for (JsonValue speaker = speakers.child; speaker != null; speaker = speaker.next) {
+        String id = speaker.getString("id", null);
+        assertNotNull(id, where + " has a speaker with no id");
+        assertTrue(speakerIds.add(id), where + " declares speaker " + id + " twice");
+        assertFalse(
+            speaker.getString("name", "").isBlank(), where + " speaker " + id + " has no name");
+
+        String atlas = speaker.getString("atlas", null);
+        if (atlas != null) {
+          assertTrue(
+              Gdx.files.internal(atlas).exists(), where + " speaker " + id + " wants " + atlas);
+          assertFalse(
+              speaker.getString("animation", "").isBlank(),
+              where + " speaker " + id + " has an atlas but no animation");
+        }
+      }
+
+      JsonValue lines = root.get("lines");
+      assertNotNull(lines, where + " has no lines");
+      for (JsonValue line = lines.child; line != null; line = line.next) {
+        String speaker = line.getString("speaker", null);
+        assertTrue(
+            speakerIds.contains(speaker), where + " has a line from undeclared speaker " + speaker);
+        assertFalse(line.getString("text", "").isBlank(), where + " has a line with no text");
+      }
+    }
   }
 
   private static InteractableNpcConfigs load() {
