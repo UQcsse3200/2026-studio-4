@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.configs.InteractableNpcConfig;
 import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
@@ -107,6 +109,44 @@ class KeyboardPlayerInputComponentTest {
 
     assertEquals(1, roomInteractions[0]);
     assertEquals(1, itemPickups[0]);
+  }
+
+  @Test
+  void shouldIgnoreEWhileNpcInteractionIsRunning() {
+    NpcInteractorComponent interactor = new NpcInteractorComponent();
+    player.addComponent(interactor);
+    InteractableNpcConfig config = new InteractableNpcConfig();
+    config.id = "sage";
+    config.dialogueId = "hello";
+    interactor.beginInteraction(new Entity(), config);
+    int[] roomInteractions = {0};
+    int[] itemPickups = {0};
+    player.getEvents().addListener("interact", () -> roomInteractions[0]++);
+    player.getEvents().addListener("itemPickup", () -> itemPickups[0]++);
+
+    assertTrue(input.keyDown(Keys.E));
+
+    assertEquals(0, roomInteractions[0]);
+    assertEquals(0, itemPickups[0]);
+  }
+
+  @Test
+  void shouldNotPickUpItemWhenEStartsNpcInteraction() {
+    NpcInteractorComponent interactor = new NpcInteractorComponent();
+    player.addComponent(interactor);
+    InteractableNpcConfig config = new InteractableNpcConfig();
+    config.id = "sage";
+    config.dialogueId = "hello";
+    int[] itemPickups = {0};
+    player
+        .getEvents()
+        .addListener("interact", () -> interactor.beginInteraction(new Entity(), config));
+    player.getEvents().addListener("itemPickup", () -> itemPickups[0]++);
+
+    assertTrue(input.keyDown(Keys.E));
+
+    assertTrue(interactor.isInteracting());
+    assertEquals(0, itemPickups[0]);
   }
 
   @Test
