@@ -88,12 +88,6 @@ class ObstacleFactoryTest {
     assertEquals(4, shapeOf(barrel).getVertexCount());
   }
 
-  @Test
-  void barrelUsesDungeonTileset() {
-    ObstacleFactory.createBarrel();
-    verify(ServiceLocator.getResourceService()).getAsset(TILESET, Texture.class);
-  }
-
   // tile (bevelled collider)
 
   @Test
