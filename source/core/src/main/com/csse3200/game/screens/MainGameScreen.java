@@ -22,6 +22,7 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.files.GameProgress;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
@@ -127,6 +128,9 @@ public class MainGameScreen extends ScreenAdapter {
   @Override
   public void dispose() {
     logger.debug("Disposing main game screen");
+    if (runTimer != null) {
+      GameProgress.recordRun((long) (runTimer.getTotalTime() * 1000f));
+    }
 
     renderer.dispose();
     unloadAssets();
