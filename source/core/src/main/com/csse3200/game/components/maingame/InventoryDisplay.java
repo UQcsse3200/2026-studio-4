@@ -34,9 +34,9 @@ public class InventoryDisplay extends UIComponent {
   private Table table;
   private DragAndDrop dragAndDrop;
   private InventoryComponent inventoryComponent;
-  private static final String leftPageCover = "UI_TravelBook_BookPageLeft01a";
-  private static final String rightPageCover = "UI_TravelBook_BookPageRight01a";
-  private static final String inventoryStyle = "inventory";
+  private static final String LEFT_PAGE = "UI_TravelBook_BookPageLeft01a";
+  private static final String RIGHT_PAGE = "UI_TravelBook_BookPageRight01a";
+  private static final String INVENTORY_STYLE = "inventory";
 
   private enum Page {
     CHARMS,
@@ -128,11 +128,11 @@ public class InventoryDisplay extends UIComponent {
     pagesContainer.pad(40, 50, 40, 50);
 
     // left page creation
-    Table leftPage = new Table().background(inventory.getDrawable(leftPageCover)).top();
+    Table leftPage = new Table().background(inventory.getDrawable(LEFT_PAGE)).top();
 
-    leftPage.add(new Label("Consumables", skin, inventoryStyle)).top().colspan(3).pad(25f);
+    leftPage.add(new Label("Consumables", skin, INVENTORY_STYLE)).top().colspan(3).pad(25f);
     leftPage.row();
-    leftPage.add(new Label("Equipped", skin, inventoryStyle)).colspan(3);
+    leftPage.add(new Label("Equipped", skin, INVENTORY_STYLE)).colspan(3);
     leftPage.row();
 
     // Please pass in list of equipped consumables
@@ -142,7 +142,7 @@ public class InventoryDisplay extends UIComponent {
     pagesContainer.add(leftPage).size(365, 500);
 
     // right page creation
-    Table rightPage = new Table().background(inventory.getDrawable(rightPageCover));
+    Table rightPage = new Table().background(inventory.getDrawable(RIGHT_PAGE));
 
     // Please pass in list of consumables in inventory
     Table rightGrid = drawItemGrid(4, 20, 64, new ArrayList<>(), true);
@@ -164,16 +164,16 @@ public class InventoryDisplay extends UIComponent {
     pagesContainer.pad(40, 50, 40, 50);
 
     // left page creation
-    Table leftPage = new Table().background(inventory.getDrawable(leftPageCover)).top();
+    Table leftPage = new Table().background(inventory.getDrawable(LEFT_PAGE)).top();
 
-    leftPage.add(new Label("Charms", skin, inventoryStyle)).top().colspan(3).pad(25f);
+    leftPage.add(new Label("Charms", skin, INVENTORY_STYLE)).top().colspan(3).pad(25f);
     leftPage.row();
     // display stats
 
     pagesContainer.add(leftPage).size(365, 500);
 
     // right page creation
-    Table rightPage = new Table().background(inventory.getDrawable(rightPageCover));
+    Table rightPage = new Table().background(inventory.getDrawable(RIGHT_PAGE));
 
     // Create Grid
     Table rightGrid = drawItemGrid(4, 20, 64, inventoryComponent.getCharms(), false);
@@ -197,13 +197,13 @@ public class InventoryDisplay extends UIComponent {
     List<Achievement> locked = all.stream().filter(a -> !a.isUnlocked()).toList();
     List<Achievement> unlocked = all.stream().filter(Achievement::isUnlocked).toList();
 
-    Table leftPage = new Table().background(inventory.getDrawable(leftPageCover)).top();
-    leftPage.add(new Label("Locked", skin, inventoryStyle)).top().pad(25f).row();
+    Table leftPage = new Table().background(inventory.getDrawable(LEFT_PAGE)).top();
+    leftPage.add(new Label("Locked", skin, INVENTORY_STYLE)).top().pad(25f).row();
     leftPage.add(achievementList(locked, false)).grow();
     pagesContainer.add(leftPage).size(365, 500);
 
-    Table rightPage = new Table().background(inventory.getDrawable(rightPageCover)).top();
-    rightPage.add(new Label("Unlocked", skin, inventoryStyle)).top().pad(25f).row();
+    Table rightPage = new Table().background(inventory.getDrawable(RIGHT_PAGE)).top();
+    rightPage.add(new Label("Unlocked", skin, INVENTORY_STYLE)).top().pad(25f).row();
     rightPage.add(achievementList(unlocked, true)).grow();
     pagesContainer.add(rightPage).size(365, 500);
 
@@ -215,7 +215,7 @@ public class InventoryDisplay extends UIComponent {
     Table list = new Table();
     list.top();
     for (Achievement a : achievements) {
-      Label name = new Label(a.getName(), skin, inventoryStyle);
+      Label name = new Label(a.getName(), skin, INVENTORY_STYLE);
       name.setColor(unlockedStyle ? Color.GOLD : Color.GRAY);
       list.add(name).left().pad(6).row();
     }
