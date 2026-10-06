@@ -114,6 +114,29 @@ class InventoryComponentTest {
   }
 
   @Test
+  void shouldPublishCurrentQuantityAfterGoldListenerAddsAnItem() {
+    InventoryComponent inventory = new InventoryComponent(25);
+    Entity player = new Entity().addComponent(inventory);
+    List<Integer> quantities = new ArrayList<>();
+    player
+        .getEvents()
+        .addListener(
+            "goldChanged", (Integer gold) -> inventory.addConsumable(ItemIds.HEALTH_POTION));
+    player
+        .getEvents()
+        .addListener(
+            "consumableInventoryChanged", (String id, Integer count) -> quantities.add(count));
+
+    assertEquals(
+        ConsumablePurchaseResult.SUCCESS,
+        inventory.tryPurchaseConsumable(ItemIds.HEALTH_POTION, 10));
+
+    assertEquals(15, inventory.getGold());
+    assertEquals(2, inventory.getConsumableCount(ItemIds.HEALTH_POTION));
+    assertEquals(List.of(2, 2), quantities);
+  }
+
+  @Test
   void shouldSetGetGold() {
     InventoryComponent inventory = new InventoryComponent(100);
     assertEquals(100, inventory.getGold());

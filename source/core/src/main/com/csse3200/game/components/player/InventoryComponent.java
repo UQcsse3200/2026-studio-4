@@ -70,7 +70,8 @@ public class InventoryComponent extends Component {
     consumables.put(itemId, count + 1);
     if (entity != null) {
       entity.getEvents().trigger("goldChanged", gold);
-      entity.getEvents().trigger("consumableInventoryChanged", itemId, count + 1);
+      // A gold listener may synchronously add/remove items; publish the current final quantity.
+      entity.getEvents().trigger("consumableInventoryChanged", itemId, getConsumableCount(itemId));
     }
     return ConsumablePurchaseResult.SUCCESS;
   }
