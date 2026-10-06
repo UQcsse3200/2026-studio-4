@@ -32,7 +32,7 @@ public class PhysicsLayer {
   public static final short TRAP = (1 << 6);
 
   // Friendly interactable NPCs
-  public static final short FRIENDLY_NPC = (1 << 7); 
+  public static final short FRIENDLY_NPC = (1 << 7);
 
   public static final short ALL = ~0;
 
