@@ -18,7 +18,8 @@ import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.ConsumableSelectionComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemCatalog;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import java.util.Objects;
@@ -147,17 +148,17 @@ public class ConsumableHotbarDisplay extends UIComponent {
   }
 
   /** Trim transparent padding from the source art without copying or altering its pixels. */
-  private static TextureRegion iconRegion(ItemType type, Texture texture) {
+  private static TextureRegion iconRegion(String type, Texture texture) {
     return switch (type) {
-      case HEALTH_POTION -> new TextureRegion(texture, 377, 325, 519, 634);
-      case SHIELD -> new TextureRegion(texture, 310, 322, 633, 653);
-      case SPEED_POTION -> new TextureRegion(texture, 393, 220, 481, 784);
-      case STRENGTH_POTION -> new TextureRegion(texture, 310, 173, 635, 928);
-      default -> throw new IllegalArgumentException("Not a consumable: " + type);
+      case ItemIds.HEALTH_POTION -> new TextureRegion(texture, 377, 325, 519, 634);
+      case ItemIds.SHIELD -> new TextureRegion(texture, 310, 322, 633, 653);
+      case ItemIds.SPEED_POTION -> new TextureRegion(texture, 393, 220, 481, 784);
+      case ItemIds.STRENGTH_POTION -> new TextureRegion(texture, 310, 173, 635, 928);
+      default -> new TextureRegion(texture);
     };
   }
 
-  private void refreshSelection(ItemType selected) {
+  private void refreshSelection(String selected) {
     if (disposed) {
       return;
     }
@@ -169,7 +170,7 @@ public class ConsumableHotbarDisplay extends UIComponent {
     }
   }
 
-  private void refreshCount(ItemType type, Integer count) {
+  private void refreshCount(String type, Integer count) {
     if (disposed) {
       return;
     }
@@ -178,13 +179,14 @@ public class ConsumableHotbarDisplay extends UIComponent {
 
   private void refreshSlots() {
     for (int i = 0; i < InventoryComponent.CONSUMABLE_SLOT_COUNT; i++) {
-      ItemType type = inventoryComponent.getConsumableSlot(i);
+      String type = inventoryComponent.getConsumableSlot(i);
       int count = inventoryComponent.getConsumableCount(type);
       slotCounts[i] = count;
       boolean occupied = type != null && count > 0;
       if (occupied) {
         Texture texture =
-            ServiceLocator.getResourceService().getAsset(type.getTexturePath(), Texture.class);
+            ServiceLocator.getResourceService()
+                .getAsset(ItemCatalog.create(type, 1).getTexture(), Texture.class);
         icons[i].setDrawable(new TextureRegionDrawable(iconRegion(type, texture)));
       } else {
         icons[i].setDrawable(null);
@@ -192,7 +194,7 @@ public class ConsumableHotbarDisplay extends UIComponent {
       counts[i].setText(Integer.toString(count));
       counts[i].setVisible(occupied);
       icons[i].setVisible(occupied);
-      speedRings[i].setVisible(type == ItemType.SPEED_POTION);
+      speedRings[i].setVisible(ItemIds.SPEED_POTION.equals(type));
     }
     refreshSelection(selection.getSelectedType());
   }

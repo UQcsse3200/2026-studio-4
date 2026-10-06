@@ -1,7 +1,6 @@
 package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
-import com.csse3200.game.items.ItemType;
 
 /** Selects an existing consumable for the hotbar without owning stock or effect rules. */
 public class ConsumableSelectionComponent extends Component {
@@ -16,7 +15,7 @@ public class ConsumableSelectionComponent extends Component {
     entity.getEvents().addListener(USE_SELECTED_REQUEST, this::useSelected);
   }
 
-  public ItemType getSelectedType() {
+  public String getSelectedType() {
     return entity.getComponent(InventoryComponent.class).getConsumableSlot(selectedIndex);
   }
 
@@ -32,7 +31,7 @@ public class ConsumableSelectionComponent extends Component {
 
   /** The existing effect component validates stock and consumes only a successful use. */
   public void useSelected() {
-    ItemType type = getSelectedType();
+    String type = getSelectedType();
     if (type != null) {
       entity.getEvents().trigger(ConsumableEffectComponent.USE_REQUEST, type);
     }

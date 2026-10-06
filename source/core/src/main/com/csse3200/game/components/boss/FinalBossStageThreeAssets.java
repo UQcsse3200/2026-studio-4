@@ -10,6 +10,7 @@ import java.util.List;
 /** Supplied artwork, loaded once by the room and sliced in memory. */
 public final class FinalBossStageThreeAssets {
   private static final String ROOT = "images/final-boss/stage3/";
+  private static final String TORNADO_HIT = "images/final-boss/stage2/transform/01.png";
 
   private FinalBossStageThreeAssets() {}
 
@@ -34,12 +35,16 @@ public final class FinalBossStageThreeAssets {
         }) {
       paths.add(ROOT + name + ".png");
     }
+    paths.add(TORNADO_HIT);
     return paths.toArray(String[]::new);
   }
 
   private static Texture texture(String name) {
-    Texture texture =
-        ServiceLocator.getResourceService().getAsset(ROOT + name + ".png", Texture.class);
+    return texturePath(ROOT + name + ".png");
+  }
+
+  private static Texture texturePath(String path) {
+    Texture texture = ServiceLocator.getResourceService().getAsset(path, Texture.class);
     texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     return texture;
   }
@@ -75,6 +80,11 @@ public final class FinalBossStageThreeAssets {
       System.arraycopy(cells, 0, frames, sheet * 30, cells.length);
     }
     return frames;
+  }
+
+  /** Nine white swirls from the fourth row; shares the original Stage 2 effect texture. */
+  static TextureRegion[] tornadoHitFrames() {
+    return slice(texturePath(TORNADO_HIT), 64, 64, 11, 33, 9);
   }
 
   static TextureRegion frame(TextureRegion[] frames, float elapsed, float duration, boolean loop) {

@@ -30,7 +30,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
@@ -102,7 +102,7 @@ class ConsumableHotbarDisplayTest {
     Table root = stage.getRoot().findActor("consumable-hotbar");
     assertNotNull(root);
     assertEquals(Touchable.disabled, root.getTouchable());
-    for (String id : new String[] {"1", "2", "3", "4"}) {
+    for (String id : new String[] {"1", "2", "3", "4", "5"}) {
       assertNotNull(actor("consumable-slot-" + id));
       assertFalse(actor("consumable-icon-" + id).isVisible());
       assertFalse(actor("consumable-count-" + id).isVisible());
@@ -115,34 +115,34 @@ class ConsumableHotbarDisplayTest {
   void pickupAndQUseUpdateRealHealthQuantityAndHudTogether() {
     CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
     stats.setHealth(50);
-    inventory.addConsumable(ItemType.HEALTH_POTION, 2);
+    inventory.addConsumable(ItemIds.HEALTH_POTION, 2);
     assertEquals("2", count("1").getText().toString());
     assertTrue(actor("consumable-icon-1").isVisible());
     assertTrue(actor("consumable-use-1").isVisible());
     assertTrue(input.keyDown(Keys.Q));
     assertEquals(75, stats.getHealth());
-    assertEquals(1, inventory.getConsumableCount(ItemType.HEALTH_POTION));
+    assertEquals(1, inventory.getConsumableCount(ItemIds.HEALTH_POTION));
     assertEquals("1", count("1").getText().toString());
     input.keyDown(Keys.Q);
     assertEquals(100, stats.getHealth());
     assertFalse(actor("consumable-icon-1").isVisible());
     assertFalse(count("1").isVisible());
     input.keyDown(Keys.Q);
-    assertEquals(0, inventory.getConsumableCount(ItemType.HEALTH_POTION));
+    assertEquals(0, inventory.getConsumableCount(ItemIds.HEALTH_POTION));
   }
 
   @Test
   void fullHealthUseLeavesPotionAndVisibleCountUnchanged() {
-    inventory.addConsumable(ItemType.HEALTH_POTION, 2);
+    inventory.addConsumable(ItemIds.HEALTH_POTION, 2);
     input.keyDown(Keys.Q);
-    assertEquals(2, inventory.getConsumableCount(ItemType.HEALTH_POTION));
+    assertEquals(2, inventory.getConsumableCount(ItemIds.HEALTH_POTION));
     assertEquals("2", count("1").getText().toString());
     assertEquals(100, player.getComponent(CombatStatsComponent.class).getHealth());
   }
 
   @Test
-  void tabWrapsAllFourSlotsAndUpdatesHighlightEvenWhenEmpty() {
-    for (String id : new String[] {"2", "3", "4", "1"}) {
+  void tabWrapsAllFiveSlotsAndUpdatesHighlightEvenWhenEmpty() {
+    for (String id : new String[] {"2", "3", "4", "5", "1"}) {
       input.keyDown(Keys.TAB);
       assertTrue(actor("consumable-pointer-" + id).isVisible());
       Group slot = actor("consumable-slot-" + id);
@@ -158,10 +158,10 @@ class ConsumableHotbarDisplayTest {
   @Test
   void selectedQUseAppliesExistingShieldSpeedAndStrengthRules() {
     ConsumableEffectComponent effects = player.getComponent(ConsumableEffectComponent.class);
-    for (ItemType type :
-        new ItemType[] {ItemType.SHIELD, ItemType.SPEED_POTION, ItemType.STRENGTH_POTION}) {
+    for (String type :
+        new String[] {ItemIds.SHIELD, ItemIds.SPEED_POTION, ItemIds.STRENGTH_POTION}) {
       inventory.addConsumable(type, 2);
-      if (type != ItemType.SHIELD) input.keyDown(Keys.TAB);
+      if (!ItemIds.SHIELD.equals(type)) input.keyDown(Keys.TAB);
       input.keyDown(Keys.Q);
       assertEquals(1, inventory.getConsumableCount(type));
       assertEquals(8000, effects.getRemainingMs(type));
@@ -172,7 +172,7 @@ class ConsumableHotbarDisplayTest {
 
   @Test
   void speedRingTracksRealEffectRefreshExpiryAndRemoval() {
-    inventory.addConsumable(ItemType.SPEED_POTION, 3);
+    inventory.addConsumable(ItemIds.SPEED_POTION, 3);
     input.keyDown(Keys.Q);
     Actor ring = actor("speed-potion-timer-ring-1");
     Batch batch = mock(Batch.class);
@@ -190,7 +190,7 @@ class ConsumableHotbarDisplayTest {
     now.set(12000);
     ring.draw(batch, 1f);
     assertEquals(0, drawCalls(batch));
-    inventory.addConsumable(ItemType.SPEED_POTION);
+    inventory.addConsumable(ItemIds.SPEED_POTION);
     input.keyDown(Keys.Q);
     player.getComponent(StatusEffectsControllerComponent.class).clearStatusEffects();
     ring.draw(batch, 1f);
@@ -216,7 +216,7 @@ class ConsumableHotbarDisplayTest {
       root.invalidateHierarchy();
       root.validate();
       Actor first = actor("consumable-slot-1");
-      Actor last = actor("consumable-slot-4");
+      Actor last = actor("consumable-slot-5");
       Vector2 top = first.localToStageCoordinates(new Vector2(first.getWidth(), first.getHeight()));
       Vector2 bottom = last.localToStageCoordinates(new Vector2());
       assertTrue(top.x <= size[0], "Slots must fit horizontally");
@@ -230,7 +230,7 @@ class ConsumableHotbarDisplayTest {
     ui.dispose();
     ui = null;
     assertNull(stage.getRoot().findActor("consumable-hotbar"));
-    assertDoesNotThrow(() -> inventory.addConsumable(ItemType.SHIELD));
+    assertDoesNotThrow(() -> inventory.addConsumable(ItemIds.SHIELD));
     assertDoesNotThrow(() -> input.keyDown(Keys.TAB));
     assertNotNull(resources.getAsset("images/consumable-slot-idle.png", Texture.class));
     ui = new Entity().addComponent(new ConsumableHotbarDisplay(player));
@@ -241,9 +241,9 @@ class ConsumableHotbarDisplayTest {
 
   @Test
   void pickupOrderStacksDuplicatesAndReusesEmptySlotsWithoutMovingOtherItems() {
-    inventory.addConsumable(ItemType.SHIELD);
-    inventory.addConsumable(ItemType.STRENGTH_POTION);
-    inventory.addConsumable(ItemType.SHIELD);
+    inventory.addConsumable(ItemIds.SHIELD);
+    inventory.addConsumable(ItemIds.STRENGTH_POTION);
+    inventory.addConsumable(ItemIds.SHIELD);
     Image first = actor("consumable-icon-1");
     Image second = actor("consumable-icon-2");
     assertSame(
@@ -255,23 +255,23 @@ class ConsumableHotbarDisplayTest {
     assertEquals("2", count("1").getText().toString());
     assertFalse(actor("consumable-icon-3").isVisible());
     input.keyDown(Keys.Q);
-    assertEquals(1, inventory.getConsumableCount(ItemType.SHIELD));
+    assertEquals(1, inventory.getConsumableCount(ItemIds.SHIELD));
     input.keyDown(Keys.Q);
     assertFalse(first.isVisible());
     assertTrue(second.isVisible());
-    inventory.addConsumable(ItemType.SPEED_POTION);
+    inventory.addConsumable(ItemIds.SPEED_POTION);
     assertSame(
         resources.getAsset("images/speed_potion_pixel.png", Texture.class),
         ((TextureRegionDrawable) first.getDrawable()).getRegion().getTexture());
     input.keyDown(Keys.TAB);
     input.keyDown(Keys.Q);
-    assertEquals(0, inventory.getConsumableCount(ItemType.STRENGTH_POTION));
-    assertEquals(1, inventory.getConsumableCount(ItemType.SPEED_POTION));
+    assertEquals(0, inventory.getConsumableCount(ItemIds.STRENGTH_POTION));
+    assertEquals(1, inventory.getConsumableCount(ItemIds.SPEED_POTION));
     assertEquals(
         8000,
         player
             .getComponent(ConsumableEffectComponent.class)
-            .getRemainingMs(ItemType.STRENGTH_POTION));
+            .getRemainingMs(ItemIds.STRENGTH_POTION));
     assertFalse(actor("speed-potion-timer-ring-2").isVisible());
   }
 

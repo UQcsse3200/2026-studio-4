@@ -2,11 +2,12 @@ package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.maingame.InventoryDisplay;
-import com.csse3200.game.items.ItemType;
+import com.csse3200.game.items.ConsumableItem;
+import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.charms.Charm;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -17,9 +18,9 @@ public class InventoryComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(InventoryComponent.class);
   private int gold;
   private final List<Charm> charms;
-  private final Map<ItemType, Integer> consumables;
-  public static final int CONSUMABLE_SLOT_COUNT = 4;
-  private final ItemType[] consumableSlots = new ItemType[CONSUMABLE_SLOT_COUNT];
+  private final Map<String, Integer> consumables;
+  public static final int CONSUMABLE_SLOT_COUNT = 5;
+  private final String[] consumableSlots = new String[CONSUMABLE_SLOT_COUNT];
 
   private InventoryDisplay display;
 
@@ -28,7 +29,7 @@ public class InventoryComponent extends Component {
   public InventoryComponent(int gold) {
     setGold(gold);
     this.charms = new ArrayList<>();
-    this.consumables = new EnumMap<>(ItemType.class);
+    this.consumables = new HashMap<>();
   }
 
   public int getGold() {
@@ -80,75 +81,81 @@ public class InventoryComponent extends Component {
   }
 
   /** Returns the stored quantity for a consumable type. */
-  public int getConsumableCount(ItemType type) {
-    if (type == null || !type.isConsumable()) {
+  public int getConsumableCount(String id) {
+    if (!isConsumable(id)) {
       return 0;
     }
-    return consumables.getOrDefault(type, 0);
+    return consumables.getOrDefault(id, 0);
   }
 
-  /** Returns the item currently assigned to a physical HUD slot, or null when empty. */
-  public ItemType getConsumableSlot(int index) {
+  /** Returns the item ID assigned to a physical HUD slot, or null when empty. */
+  public String getConsumableSlot(int index) {
     if (index < 0 || index >= CONSUMABLE_SLOT_COUNT) {
-      throw new IllegalArgumentException("Slot must be between 0 and 3");
+      throw new IllegalArgumentException("Slot must be between 0 and 4");
     }
     return consumableSlots[index];
   }
 
-  public boolean hasConsumable(ItemType type) {
-    return getConsumableCount(type) > 0;
+  public boolean hasConsumable(String id) {
+    return getConsumableCount(id) > 0;
   }
 
   /** Adds one consumable. */
-  public void addConsumable(ItemType type) {
-    addConsumable(type, 1);
+  public void addConsumable(String id) {
+    addConsumable(id, 1);
   }
 
   /** Adds a positive quantity of one consumable type and emits one final-count event. */
-  public void addConsumable(ItemType type, int quantity) {
-    if (type == null || !type.isConsumable() || quantity <= 0) {
+  public void addConsumable(String id, int quantity) {
+    if (!isConsumable(id) || quantity <= 0) {
       return;
     }
-    if (!hasConsumable(type)) {
+    if (!hasConsumable(id)) {
       for (int i = 0; i < consumableSlots.length; i++) {
         if (consumableSlots[i] == null) {
-          consumableSlots[i] = type;
+          consumableSlots[i] = id;
           break;
         }
       }
     }
-    int newCount = getConsumableCount(type) + quantity;
-    consumables.put(type, newCount);
+    int newCount = getConsumableCount(id) + quantity;
+    consumables.put(id, newCount);
     if (entity != null && entity.getEvents() != null) {
-      entity.getEvents().trigger("consumableInventoryChanged", type, newCount);
+      entity.getEvents().trigger("consumableInventoryChanged", id, newCount);
     }
   }
 
   /** Removes one consumable if available. */
-  public boolean removeConsumable(ItemType type) {
-    if (type == null || !type.isConsumable()) {
+  public boolean removeConsumable(String id) {
+    if (!isConsumable(id)) {
       return false;
     }
-    int currentCount = getConsumableCount(type);
+    int currentCount = getConsumableCount(id);
     if (currentCount <= 0) {
       return false;
     }
     int newCount = currentCount - 1;
     if (newCount == 0) {
-      consumables.remove(type);
+      consumables.remove(id);
       for (int i = 0; i < consumableSlots.length; i++) {
-        if (consumableSlots[i] == type) {
+        if (id.equals(consumableSlots[i])) {
           consumableSlots[i] = null;
           break;
         }
       }
     } else {
-      consumables.put(type, newCount);
+      consumables.put(id, newCount);
     }
     if (entity != null && entity.getEvents() != null) {
-      entity.getEvents().trigger("consumableInventoryChanged", type, newCount);
+      entity.getEvents().trigger("consumableInventoryChanged", id, newCount);
     }
     return true;
+  }
+
+  private static boolean isConsumable(String id) {
+    return id != null
+        && ItemCatalog.contains(id)
+        && ItemCatalog.create(id, 1) instanceof ConsumableItem;
   }
 
   public void setDisplay(InventoryDisplay display) {
