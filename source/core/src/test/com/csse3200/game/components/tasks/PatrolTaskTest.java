@@ -68,7 +68,7 @@ class PatrolTaskTest {
   }
 
   @Test
-  void defaultPriorityCheck() {
+  void priorityCheck() {
     PatrolTask task = new PatrolTask(createThreePatrolPoints());
 
     assertEquals(1, task.getPriority());

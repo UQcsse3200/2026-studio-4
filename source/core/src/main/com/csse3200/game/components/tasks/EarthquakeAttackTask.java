@@ -9,7 +9,7 @@ import com.csse3200.game.services.ServiceLocator;
 /** in Phase two of norse miniboss, between Stampedes, attacks within range */
 public class EarthquakeAttackTask extends DefaultTask implements PriorityTask {
 
-  private final float waitFor = 1f;
+  private static final float waitFor = 1f;
   private final Entity target;
   private final float range;
   private float coolDownTimer = 0f;

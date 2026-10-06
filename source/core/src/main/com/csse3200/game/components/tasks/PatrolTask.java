@@ -14,9 +14,8 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
   private Vector2[] patrolPoints;
   private PhysicsMovementComponent movementComponent;
   private int currentPoint;
-  private static final int priority = 5;
+  private static final int PRIORITY = 5;
   private boolean phaseTwoActivated = false;
-  private Vector2 facingDirection = new Vector2(0f, 0f);
 
   public PatrolTask(Vector2[] layout) {
     if (layout.length == 3) { // flying enemy
@@ -68,8 +67,7 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
     } else if (currentPos.y < newTarget.y) {
       y = 1f;
     }
-    facingDirection = new Vector2(x, y);
-    owner.getEntity().getEvents().trigger("moving", facingDirection);
+    owner.getEntity().getEvents().trigger("moving", new Vector2(x, y));
   }
 
   @Override
@@ -77,7 +75,7 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
     if (phaseTwoActivated) {
       return 1;
     } else {
-      return priority;
+      return PRIORITY;
     }
   }
 
