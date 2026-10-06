@@ -40,6 +40,8 @@ public class AbilityMenu extends Component {
   private int selected;
 
   /**
+   * Builds a menu for one player.
+   *
    * @param player the entity the abilities and the NPC interaction events live on
    */
   public AbilityMenu(Entity player) {
@@ -118,22 +120,32 @@ public class AbilityMenu extends Component {
     return attuned;
   }
 
+  /**
+   * @return whether the menu is on screen and taking input
+   */
   public boolean isOpen() {
     return open;
   }
 
   /**
+   * Returns the rows on offer, snapshotted when the menu opened.
+   *
    * @return what the player is choosing between, in the order abilities were registered
    */
   public List<PlayerAbility> getOptions() {
     return Collections.unmodifiableList(options);
   }
 
+  /**
+   * @return the highlighted row
+   */
   public int getSelectedIndex() {
     return selected;
   }
 
   /**
+   * Returns what confirming would attune.
+   *
    * @return the highlighted ability, or null when the menu is empty
    */
   public PlayerAbility getSelected() {
@@ -141,7 +153,10 @@ public class AbilityMenu extends Component {
   }
 
   /**
-   * @return whether the ability on this row is the one the player currently carries
+   * Marks the row the player already carries, so a visit shows what they have.
+   *
+   * @param ability the ability on the row
+   * @return whether it is the one the player currently carries
    */
   public boolean isAttuned(PlayerAbility ability) {
     AbilityAttunementComponent attunement = player.getComponent(AbilityAttunementComponent.class);

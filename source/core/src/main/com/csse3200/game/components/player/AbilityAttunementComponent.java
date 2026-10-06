@@ -22,6 +22,9 @@ public class AbilityAttunementComponent extends Component {
 
   private Class<? extends PlayerAbility> attuned;
 
+  /** Starts the player with nothing attuned; abilities are earned, never given. */
+  public AbilityAttunementComponent() {}
+
   @Override
   public void create() {
     entity.getEvents().addListener("entityDied", this::clearAttunement);
@@ -80,12 +83,18 @@ public class AbilityAttunementComponent extends Component {
   }
 
   /**
+   * Returns the one ability the player may currently use.
+   *
    * @return the attuned ability, or null when the player has none
    */
   public Class<? extends PlayerAbility> getAttuned() {
     return attuned;
   }
 
+  /**
+   * @param type an ability class
+   * @return whether that is the ability the player currently carries
+   */
   public boolean isAttuned(Class<? extends PlayerAbility> type) {
     return attuned != null && attuned.equals(type);
   }

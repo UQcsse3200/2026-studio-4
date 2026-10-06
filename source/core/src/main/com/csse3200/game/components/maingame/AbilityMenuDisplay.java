@@ -48,6 +48,9 @@ public class AbilityMenuDisplay extends UIComponent {
   private Table rowHolder;
   private int shownSelection = -1;
 
+  /**
+   * @param menu the state this panel shows
+   */
   public AbilityMenuDisplay(AbilityMenu menu) {
     this.menu = menu;
   }

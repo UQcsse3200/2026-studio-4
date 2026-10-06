@@ -11,6 +11,7 @@ import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InteractionPrompt;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.components.rooms.configs.PositionConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
@@ -418,17 +419,31 @@ public class RoomManager {
     return arrival;
   }
 
-  private void refreshInteractionPrompt() {
+  /** Package private for unit testing */
+  void refreshInteractionPrompt() {
     InteractionPromptDisplay display = player.getComponent(InteractionPromptDisplay.class);
     if (display == null) {
       return;
     }
-    NpcInteractorComponent interactor = player.getComponent(NpcInteractorComponent.class);
-    if (interactor != null && interactor.isInteracting()) {
+    if (cannotAct()) {
       display.clearPrompt();
       return;
     }
     display.setPrompt(InteractionPrompt.resolve(getNpcPrompt(), getItemPrompt(), getExitPrompt()));
+  }
+
+  /**
+   * Whether offering the player an interaction would be a lie. An NPC interaction is one case, but
+   * so is anything else holding their controls: Hecate's menu, a boss sequence, an ending dialogue.
+   * Each takes a lock of its own, so asking about the lock covers all of them.
+   */
+  private boolean cannotAct() {
+    NpcInteractorComponent interactor = player.getComponent(NpcInteractorComponent.class);
+    if (interactor != null && interactor.isInteracting()) {
+      return true;
+    }
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    return actions != null && actions.areControlsLocked();
   }
 
   private String getNpcPrompt() {
