@@ -1,7 +1,7 @@
 package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.math.GridPoint2;
-import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.areas.terrain.TerrainBuilder;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.rooms.*;
@@ -28,12 +28,12 @@ public class RoomFactory {
   /** Creates a room entity from its declarative definition. */
   public static Entity createRoom(RoomConfig room, CameraComponent camera, boolean cleared) {
     GridPoint2 mapSize = new GridPoint2(room.mapWidth, room.mapHeight);
-    TerrainFactory terrainFactory = new TerrainFactory(camera, mapSize);
+    TerrainBuilder terrainBuilder = new TerrainBuilder(camera, mapSize);
     ObstacleComponent obstacle = new ObstacleComponent(room);
-    spawnMap(room, terrainFactory, obstacle);
+    spawnMap(room, terrainBuilder, obstacle);
     return new Entity()
         .addComponent(new GameAreaDisplay(room.title))
-        .addComponent(terrainFactory.getTerrain())
+        .addComponent(terrainBuilder.getTerrain())
         .addComponent(new WallComponent())
         .addComponent(new FollowingCameraComponent())
         .addComponent(obstacle)
@@ -57,7 +57,7 @@ public class RoomFactory {
     return friendlyNpcs;
   }
 
-  public static void spawnMap(RoomConfig room, TerrainFactory terrain, ObstacleComponent obstacle) {
+  public static void spawnMap(RoomConfig room, TerrainBuilder terrain, ObstacleComponent obstacle) {
     // Gets the list of obstacles from the spawnConfig
     List<String> spawnConfig = room.obstacles.spawns;
     // Gets the height and width of the room
