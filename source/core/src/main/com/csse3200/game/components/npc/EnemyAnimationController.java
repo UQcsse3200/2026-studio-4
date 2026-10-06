@@ -35,14 +35,22 @@ public class EnemyAnimationController extends Component {
     float x = dir.x;
     float y = dir.y;
 
-    if (x > 0 && y > 0) {
-      animator.startAnimation("move_NE");
-    } else if (x == 0 && y > 0) {
+    if (x == 0 && y > 0) {
       animator.startAnimation("move_up");
+    } else if (x > 0 && y > 0) {
+      animator.startAnimation("move_NE");
+    } else if (x > 0 && y == 0) {
+      animator.startAnimation("move_right");
     } else if (x > 0 && y < 0) {
       animator.startAnimation("move_SE");
+    } else if (x == 0 && y < 0) {
+      animator.startAnimation("move_down");
+    } else if (x < 0 && y < 0) {
+      animator.startAnimation("move_SW");
     } else if (x < 0 && y == 0) {
       animator.startAnimation("move_left");
+    } else if (x < 0 && y > 0) {
+      animator.startAnimation("move_NW");
     }
   }
 

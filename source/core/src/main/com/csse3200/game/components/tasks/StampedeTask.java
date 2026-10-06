@@ -24,9 +24,11 @@ public class StampedeTask extends DefaultTask implements PriorityTask {
   private float angle;
   private int rotations = 0;
   private float damageTimer;
+  private Entity entity;
 
   public StampedeTask(Entity target, Entity entity) {
     this.target = target;
+    this.entity = entity;
     entity.getEvents().addListener("enragePhaseStarted", this::activateStampede);
   }
 
@@ -62,6 +64,7 @@ public class StampedeTask extends DefaultTask implements PriorityTask {
 
     Vector2 currentPosition = body.getPosition();
     Vector2 movementDirection = desiredPosition.sub(currentPosition);
+    entity.getEvents().trigger("moving", movementDirection);
     body.setLinearVelocity(movementDirection.scl(1f / deltaTime));
     applyDamage(deltaTime);
   }
