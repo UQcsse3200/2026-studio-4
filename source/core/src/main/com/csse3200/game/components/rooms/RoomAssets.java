@@ -47,6 +47,16 @@ public class RoomAssets implements Disposable {
     "images/cerberus.atlas",
     "images/dragon/dragon.atlas",
     "images/dragon/thunder-orb.atlas",
+    "images/wolf.atlas",
+    "images/crow.atlas",
+    "images/dark_elves.atlas",
+    "images/jingwei.atlas",
+    "images/zombie.atlas",
+    "images/wukong.atlas",
+    "images/bug.atlas",
+    "images/longwei.atlas",
+    "images/knight.atlas",
+    "images/jotunn.atlas",
   };
 
   private static final String[] PLAYER_ATLASES = {"images/idle_down.atlas"};
