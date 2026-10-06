@@ -38,6 +38,7 @@ public class RoomManager {
   private PositionConfig pendingArrivalPosition;
   private boolean clearRequested;
   private final RunTimer runTimer;
+  private String pendingDungeonCompletion;
 
   /** Creates the JSON-driven room manager. Call {@link #create()} to register the initial room. */
   public RoomManager(WorldConfig world, Entity player, CameraComponent camera) {
@@ -149,7 +150,11 @@ public class RoomManager {
     }
     if (exit.completesDungeon) {
       completedDungeonIds.add(currentConfig.dungeonId);
-      ServiceLocator.getAchievementService().notifyDungeonCompleted(currentConfig.dungeonId);
+      if (runTimer != null) {
+        ServiceLocator.getAchievementService()
+            .notifyDungeonTimeElapsed(currentConfig.dungeonId, runTimer.getDungeonTime());
+      }
+      pendingDungeonCompletion = currentConfig.dungeonId; // defer the toast
     }
     pendingDestination = destination;
     if (exit.destinationExitId != null) {
@@ -199,6 +204,11 @@ public class RoomManager {
       }
     }
     ServiceLocator.getEntityService().register(currentRoom);
+
+    if (pendingDungeonCompletion != null) {
+      ServiceLocator.getAchievementService().notifyDungeonCompleted(pendingDungeonCompletion);
+      pendingDungeonCompletion = null;
+    }
 
     start(arrivalPosition);
     FollowingCameraComponent cameraFollowingComponent =

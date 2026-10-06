@@ -211,13 +211,12 @@ public class MainGameScreen extends ScreenAdapter {
     AchievementConfig[] configs =
         FileLoader.readClass(AchievementConfig[].class, "configs/achievements.json");
     if (configs == null) {
-      throw new IllegalStateException("Unable to load configs/rooms.json");
+      throw new IllegalStateException("Unable to load configs/achievements.json");
     }
     AchievementService achievementService = new AchievementService();
     for (AchievementConfig c : configs) {
       achievementService.register(AchievementsFactory.build(c));
     }
-    ServiceLocator.registerAchievementService(achievementService);
     return achievementService;
   }
 }
