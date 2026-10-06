@@ -1,23 +1,12 @@
 package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
-import com.csse3200.game.items.ItemIds;
-import java.util.List;
 
-/** Owns the fixed consumable slots and the currently selected slot. */
+/** Selects an existing consumable for the hotbar without owning stock or effect rules. */
 public class ConsumableSelectionComponent extends Component {
   public static final String CYCLE_REQUEST = "cycleConsumable";
   public static final String USE_SELECTED_REQUEST = "useSelectedConsumable";
   public static final String SELECTION_CHANGED = "selectedConsumableChanged";
-
-  public static final List<String> SLOTS =
-      List.of(
-          ItemIds.HEALTH_POTION,
-          ItemIds.SHIELD,
-          ItemIds.SPEED_POTION,
-          ItemIds.STRENGTH_POTION,
-          ItemIds.FREEZE_BOMB);
-
   private int selectedIndex;
 
   @Override
@@ -27,21 +16,24 @@ public class ConsumableSelectionComponent extends Component {
   }
 
   public String getSelectedType() {
-    return SLOTS.get(selectedIndex);
+    return entity.getComponent(InventoryComponent.class).getConsumableSlot(selectedIndex);
   }
 
   public int getSelectedIndex() {
     return selectedIndex;
   }
 
-  /** Advances one slot and wraps after the last. */
+  /** Cycle every slot, including empty slots, and wrap back to the first. */
   public void cycle() {
-    selectedIndex = (selectedIndex + 1) % SLOTS.size();
+    selectedIndex = (selectedIndex + 1) % InventoryComponent.CONSUMABLE_SLOT_COUNT;
     entity.getEvents().trigger(SELECTION_CHANGED, getSelectedType());
   }
 
-  /** The effect component validates inventory and whether the selected item can be used. */
+  /** The existing effect component validates stock and consumes only a successful use. */
   public void useSelected() {
-    entity.getEvents().trigger(ConsumableEffectComponent.USE_REQUEST, getSelectedType());
+    String type = getSelectedType();
+    if (type != null) {
+      entity.getEvents().trigger(ConsumableEffectComponent.USE_REQUEST, type);
+    }
   }
 }

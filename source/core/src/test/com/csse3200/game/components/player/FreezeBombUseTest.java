@@ -85,9 +85,6 @@ class FreezeBombUseTest {
     player.addComponent(selection).addComponent(input);
     selection.create();
     inventory.addConsumable(ItemIds.FREEZE_BOMB, 2);
-    for (int i = 0; i < 4; i++) {
-      input.keyDown(Keys.TAB);
-    }
     assertEquals(ItemIds.FREEZE_BOMB, selection.getSelectedType());
     input.keyDown(Keys.Q);
 

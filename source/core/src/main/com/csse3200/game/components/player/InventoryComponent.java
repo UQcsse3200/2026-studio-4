@@ -19,6 +19,8 @@ public class InventoryComponent extends Component {
   private int gold;
   private final List<Charm> charms;
   private final Map<String, Integer> consumables;
+  public static final int CONSUMABLE_SLOT_COUNT = 4;
+  private final String[] consumableSlots = new String[CONSUMABLE_SLOT_COUNT];
 
   private InventoryDisplay display;
 
@@ -86,6 +88,14 @@ public class InventoryComponent extends Component {
     return consumables.getOrDefault(id, 0);
   }
 
+  /** Returns the item currently assigned to a physical HUD slot, or null when empty. */
+  public String getConsumableSlot(int index) {
+    if (index < 0 || index >= CONSUMABLE_SLOT_COUNT) {
+      throw new IllegalArgumentException("Slot must be between 0 and 3");
+    }
+    return consumableSlots[index];
+  }
+
   public boolean hasConsumable(String id) {
     return getConsumableCount(id) > 0;
   }
@@ -99,6 +109,14 @@ public class InventoryComponent extends Component {
   public void addConsumable(String id, int quantity) {
     if (!isConsumable(id) || quantity <= 0) {
       return;
+    }
+    if (!hasConsumable(id)) {
+      for (int i = 0; i < consumableSlots.length; i++) {
+        if (consumableSlots[i] == null) {
+          consumableSlots[i] = id;
+          break;
+        }
+      }
     }
     int newCount = getConsumableCount(id) + quantity;
     consumables.put(id, newCount);
@@ -119,6 +137,12 @@ public class InventoryComponent extends Component {
     int newCount = currentCount - 1;
     if (newCount == 0) {
       consumables.remove(id);
+      for (int i = 0; i < consumableSlots.length; i++) {
+        if (id.equals(consumableSlots[i])) {
+          consumableSlots[i] = null;
+          break;
+        }
+      }
     } else {
       consumables.put(id, newCount);
     }

@@ -277,7 +277,7 @@ class ConsumableUseIntegrationTest {
     inventory.addConsumable(ItemIds.SHIELD);
 
     input.keyDown(Keys.Q);
-    assertEquals(1, inventory.getConsumableCount(ItemIds.SHIELD));
+    assertEquals(0, inventory.getConsumableCount(ItemIds.SHIELD));
     input.keyDown(Keys.TAB);
     input.keyDown(Keys.Q);
     assertEquals(0, inventory.getConsumableCount(ItemIds.SHIELD));
