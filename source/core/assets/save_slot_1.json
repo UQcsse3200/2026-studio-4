@@ -1,10 +1,10 @@
 {
-playTimeSeconds: 906.5528
+playTimeSeconds: 137.22997
 dungeonTimesSeconds: {
 	class: java.util.LinkedHashMap
-	dungeonOne: 180.80658
-	dungeonTwo: 291.00098
-	finalDungeon: 206.61145
+	dungeonOne: 0
+	dungeonTwo: 0
+	finalDungeon: 0
 }
 checkpoint: {
 	roomId: finalBossRoom
@@ -13,23 +13,10 @@ checkpoint: {
 }
 resumePosition: {
 	roomId: finalBossRoom
-	x: 14.060781
-	y: 3.6978626
+	x: 4.7554135
+	y: 7.3208227
 }
 playerData: {
-	gold: 82
-	inventory: {
-		class: java.util.HashMap
-		FREEZE_BOMB: 13
-		SHIELD: 4
-	}
-	charms: [
-		strength
-		strength
-		strength
-		attack_speed
-		strength
-	]
-	selectedWeapon: BOW
+	gold: 51
 }
 }

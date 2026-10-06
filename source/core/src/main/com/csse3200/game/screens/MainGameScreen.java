@@ -68,6 +68,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final RoomAssets roomAssets = new RoomAssets();
   private final RunTimer runTimer;
   private boolean winScreenRequested;
+  private boolean saveOnDispose = true;
 
   public MainGameScreen(GdxGame game) {
     this(game, null, 1);
@@ -180,7 +181,7 @@ public class MainGameScreen extends ScreenAdapter {
   public void dispose() {
     logger.debug("Disposing main game screen");
 
-    if (!runSaved && player != null && roomManager != null) {
+    if (saveOnDispose && !runSaved && player != null && roomManager != null) {
       runSaved = true;
       try {
         GameSaveData save =
@@ -204,6 +205,7 @@ public class MainGameScreen extends ScreenAdapter {
       }
     }
 
+
     renderer.dispose();
     unloadAssets();
 
@@ -212,6 +214,16 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.getResourceService().dispose();
 
     ServiceLocator.clear();
+  }
+  public void saveAndExit() {
+    game.setScreen(ScreenType.MAIN_MENU);
+  }
+  public void deleteSaveAndExit() {
+    saveOnDispose = false;
+    runSaved = true;
+      
+    FileLoader.deleteSaveSlot(saveSlot);
+    game.setScreen(ScreenType.MAIN_MENU);
   }
 
   private void loadAssets() {
