@@ -26,7 +26,7 @@ public class ServiceLocator {
   private static ResourceService resourceService;
   private static Camera worldCamera;
   private static RunTimer runTimer;
-  private static AchievementService achievementService;
+  private static AchievementService achievementService = new AchievementService();
 
   public static EntityService getEntityService() {
     return entityService;
@@ -118,7 +118,7 @@ public class ServiceLocator {
     resourceService = null;
     worldCamera = null;
     runTimer = null;
-    achievementService = null;
+    achievementService = new AchievementService();
   }
 
   private ServiceLocator() {

@@ -1,55 +1,35 @@
 package com.csse3200.game.components.achievements;
 
-import com.csse3200.game.components.rooms.configs.EnemySpawnConfig.EnemyType;
+import java.util.function.Predicate;
 
-/** Base type for all achievements. Override only the hook(s) relevant to this achievement. */
-public abstract class Achievement {
+/** A single achievement: a name plus a condition that decides when it unlocks. */
+public class Achievement {
   private boolean unlocked = false;
   private final String name;
+  private final Predicate<AchievementContext> condition;
 
-  protected Achievement(String name) {
+  public Achievement(String name, Predicate<AchievementContext> condition) {
     this.name = name;
+    this.condition = condition;
   }
 
-  public final boolean isUnlocked() {
-    return unlocked;
-  }
-
-  public final String getName() {
-    return name;
-  }
-
-  /** Marks this achievement unlocked. Returns true only on the call that actually unlocks it. */
-  protected final boolean unlock() {
+  /** Checks this achievement against what just happened. Returns true if it just unlocked. */
+  public boolean update(AchievementContext context) {
     if (unlocked) {
       return false;
     }
-    unlocked = true;
-    return true;
-  }
-
-  // ---- Hooks: override only what applies. Each returns true if it just unlocked. ----
-  public boolean onEnemyDied(EnemyType type) {
+    if (condition.test(context)) {
+      unlocked = true;
+      return true;
+    }
     return false;
   }
 
-  public boolean onPlayerDamaged() {
-    return false;
+  public boolean isUnlocked() {
+    return unlocked;
   }
 
-  public boolean onDungeonCompleted(String dungeonId) {
-    return false;
-  }
-
-  public boolean onDungeonEntered(String dungeonId) {
-    return false;
-  }
-
-  public boolean onDungeonTimeElapsed(String dungeonId, float seconds) {
-    return false;
-  }
-
-  public boolean onGoldChanged(int totalGold) {
-    return false;
+  public String getName() {
+    return name;
   }
 }

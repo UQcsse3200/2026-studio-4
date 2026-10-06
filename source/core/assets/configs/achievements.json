@@ -17,7 +17,7 @@
 
   { "type": "killStreak", "target": 5, "name": "On a Roll" },
 
-  { "type": "enemySet", "enemyTypes": ["BEETLE", "CRAB", "WASP", "MUMMY", "SNAKE_MINI_BOSS"], "name": "Monster Hunter: Dungeon One" },
+  { "type": "enemySet", "enemyTypes": ["BEETLE", "CRAB", "WASP", "MUMMY", "SNAKE_MINI_BOSS"], "name": "Monster Hunter: Dungeon Two" },
 
   { "type": "gold", "target": 60, "name": "Hoarder" }
 

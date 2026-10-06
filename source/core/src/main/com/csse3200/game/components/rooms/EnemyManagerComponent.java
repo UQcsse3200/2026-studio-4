@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoArenaComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
@@ -258,8 +259,10 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     }
 
     EnemyTypeComponent typeComponent = enemy.getComponent(EnemyTypeComponent.class);
-    if (typeComponent != null) {
-      ServiceLocator.getAchievementService().notifyEnemyDied(typeComponent.getType());
+    if (typeComponent != null && ServiceLocator.getAchievementService() != null) {
+      AchievementContext ctx = new AchievementContext();
+      ctx.enemyKilled = typeComponent.getType();
+      ServiceLocator.getAchievementService().update(ctx);
     }
 
     // Capture before deferred disposal or room changes can move/remove the enemy.

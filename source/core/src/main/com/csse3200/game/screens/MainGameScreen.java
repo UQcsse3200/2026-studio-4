@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.achievements.AchievementConfig;
+import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.achievements.AchievementsFactory;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.gamearea.TimerDisplay;
@@ -90,8 +91,11 @@ public class MainGameScreen extends ScreenAdapter {
         .getEvents()
         .addListener(
             "damageTaken",
-            (Entity attacker, Integer lost, Integer remaining) ->
-                ServiceLocator.getAchievementService().notifyPlayerDamaged());
+            (Entity attacker, Integer lost, Integer remaining) -> {
+              AchievementContext ctx = new AchievementContext();
+              ctx.playerDamaged = true;
+              ServiceLocator.getAchievementService().update(ctx);
+            });
 
     WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     if (world == null) {

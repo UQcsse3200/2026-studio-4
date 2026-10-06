@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.friendlynpc.NpcInteractableComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
@@ -168,8 +169,10 @@ public class RoomManager {
   private void completeDungeon() {
     completedDungeonIds.add(currentConfig.dungeonId);
     if (runTimer != null) {
-      ServiceLocator.getAchievementService()
-          .notifyDungeonTimeElapsed(currentConfig.dungeonId, runTimer.getDungeonTime());
+      AchievementContext ctx = new AchievementContext();
+      ctx.dungeonId = currentConfig.dungeonId;
+      ctx.dungeonSeconds = runTimer.getDungeonTime();
+      ServiceLocator.getAchievementService().update(ctx);
     }
     pendingDungeonCompletion = currentConfig.dungeonId; // defer the toast
   }
@@ -236,7 +239,9 @@ public class RoomManager {
     ServiceLocator.getEntityService().register(currentRoom);
 
     if (pendingDungeonCompletion != null) {
-      ServiceLocator.getAchievementService().notifyDungeonCompleted(pendingDungeonCompletion);
+      AchievementContext ctx = new AchievementContext();
+      ctx.dungeonCompletedId = pendingDungeonCompletion;
+      ServiceLocator.getAchievementService().update(ctx);
       pendingDungeonCompletion = null;
     }
 
@@ -248,7 +253,9 @@ public class RoomManager {
     if (runTimer != null
         && destination.dungeonId != null
         && !Objects.equals(previousDungeonId, destination.dungeonId)) {
-      ServiceLocator.getAchievementService().notifyDungeonEntered(destination.dungeonId);
+      AchievementContext ctx = new AchievementContext();
+      ctx.dungeonEnteredId = destination.dungeonId;
+      ServiceLocator.getAchievementService().update(ctx);
     }
   }
 
