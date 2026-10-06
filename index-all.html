@@ -120,6 +120,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Equips the named weapon.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/tasks/EarthquakeAttackTask.html#activate()" class="member-name-link">activate()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/EarthquakeAttackTask.html" title="class in com.csse3200.game.components.tasks">EarthquakeAttackTask</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/Shield.html#activateAbsorb()" class="member-name-link">activateAbsorb()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/Shield.html" title="class in com.csse3200.game.components.statuseffects">Shield</a></dt>
 <dd>
 <div class="block">Activates absorb mode if the shield is full and not already active.</div>
@@ -235,7 +237,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Task-based AI component.</div>
 </dd>
-<dt><a href="com/csse3200/game/ai/tasks/AITaskComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">AITaskComponent(Entity)</a> - Constructor for class com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/AITaskComponent.html" title="class in com.csse3200.game.ai.tasks">AITaskComponent</a></dt>
+<dt><a href="com/csse3200/game/ai/tasks/AITaskComponent.html#%3Cinit%3E()" class="member-name-link">AITaskComponent()</a> - Constructor for class com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/AITaskComponent.html" title="class in com.csse3200.game.ai.tasks">AITaskComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsLayer.html#ALL" class="member-name-link">ALL</a> - Static variable in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsLayer.html" title="class in com.csse3200.game.physics">PhysicsLayer</a></dt>
 <dd>&nbsp;</dd>
@@ -948,8 +950,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html#CRAB" class="member-name-link">CRAB</a> - Enum constant in enum class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html" title="enum class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig.EnemyType</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/ai/tasks/AITaskComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/AITaskComponent.html" title="class in com.csse3200.game.ai.tasks">AITaskComponent</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/GameArea.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.areas.<a href="com/csse3200/game/areas/GameArea.html" title="class in com.csse3200.game.areas">GameArea</a></dt>
 <dd>
 <div class="block">Create the game area in the world.</div>
@@ -1401,6 +1401,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a rechargeable shield status effect with the default shield configuration.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/factories/NPCFactory.html#createSleipnir(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2%5B%5D)" class="member-name-link">createSleipnir(Entity, Vector2[])</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/NPCFactory.html" title="class in com.csse3200.game.entities.factories">NPCFactory</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/StatusEffectsFactory.html#createSlow(com.csse3200.game.components.CombatStatsComponent)" class="member-name-link">createSlow(CombatStatsComponent)</a> - Static method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/StatusEffectsFactory.html" title="class in com.csse3200.game.components.statuseffects">StatusEffectsFactory</a></dt>
 <dd>
 <div class="block">Create a slow status effect</div>
@@ -1570,8 +1572,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Stops the legacy Stage 2 charge cycle until explicitly enabled again.</div>
 </dd>
-<dt><a href="com/csse3200/game/ai/tasks/AITaskComponent.html#disableHighPriority()" class="member-name-link">disableHighPriority()</a> - Method in class com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/AITaskComponent.html" title="class in com.csse3200.game.ai.tasks">AITaskComponent</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossDamageControllerComponent.html#disableStageOneProtection()" class="member-name-link">disableStageOneProtection()</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossDamageControllerComponent.html" title="class in com.csse3200.game.components.boss">FinalBossDamageControllerComponent</a></dt>
 <dd>
 <div class="block">Removes all Stage 1 damage restrictions before Stage 2 begins.</div>
@@ -2019,6 +2019,12 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/areas/terrain/DreamlandTile.html#EARTH_FLOOR" class="member-name-link">EARTH_FLOOR</a> - Enum constant in enum class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/DreamlandTile.html" title="enum class in com.csse3200.game.areas.terrain">DreamlandTile</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/DreamlandTile.html#EARTH_FLOOR_VARIANT" class="member-name-link">EARTH_FLOOR_VARIANT</a> - Enum constant in enum class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/DreamlandTile.html" title="enum class in com.csse3200.game.areas.terrain">DreamlandTile</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/EarthquakeAttackTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">EarthquakeAttackTask</a> - Class in <a href="com/csse3200/game/components/tasks/package-summary.html">com.csse3200.game.components.tasks</a></dt>
+<dd>
+<div class="block">in Phase two of norse miniboss, between Stampedes, attacks within range</div>
+</dd>
+<dt><a href="com/csse3200/game/components/tasks/EarthquakeAttackTask.html#%3Cinit%3E(com.csse3200.game.entities.Entity,float,com.csse3200.game.entities.Entity)" class="member-name-link">EarthquakeAttackTask(Entity, float, Entity)</a> - Constructor for class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/EarthquakeAttackTask.html" title="class in com.csse3200.game.components.tasks">EarthquakeAttackTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossMovementComponent.html#enableChargeAttacks()" class="member-name-link">enableChargeAttacks()</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossMovementComponent.html" title="class in com.csse3200.game.components.boss">FinalBossMovementComponent</a></dt>
 <dd>
@@ -3055,13 +3061,19 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/CoilAttackTask.html#getPriority()" class="member-name-link">getPriority()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/CoilAttackTask.html" title="class in com.csse3200.game.components.tasks">CoilAttackTask</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/EarthquakeAttackTask.html#getPriority()" class="member-name-link">getPriority()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/EarthquakeAttackTask.html" title="class in com.csse3200.game.components.tasks">EarthquakeAttackTask</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/LungeAttackTask.html#getPriority()" class="member-name-link">getPriority()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/LungeAttackTask.html" title="class in com.csse3200.game.components.tasks">LungeAttackTask</a></dt>
 <dd>
 <div class="block">A pure query: the scheduler calls this repeatedly, so it never changes state.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/tasks/OneAttackTask.html#getPriority()" class="member-name-link">getPriority()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/OneAttackTask.html" title="class in com.csse3200.game.components.tasks">OneAttackTask</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/PatrolTask.html#getPriority()" class="member-name-link">getPriority()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/PatrolTask.html" title="class in com.csse3200.game.components.tasks">PatrolTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/RangedAttackTask.html#getPriority()" class="member-name-link">getPriority()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/RangedAttackTask.html" title="class in com.csse3200.game.components.tasks">RangedAttackTask</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/StampedeTask.html#getPriority()" class="member-name-link">getPriority()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/StampedeTask.html" title="class in com.csse3200.game.components.tasks">StampedeTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/VenomSpitAttackTask.html#getPriority()" class="member-name-link">getPriority()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/VenomSpitAttackTask.html" title="class in com.csse3200.game.components.tasks">VenomSpitAttackTask</a></dt>
 <dd>&nbsp;</dd>
@@ -4611,6 +4623,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/math/Vector2Utils.html#ONE" class="member-name-link">ONE</a> - Static variable in class com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/Vector2Utils.html" title="class in com.csse3200.game.utils.math">Vector2Utils</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/OneAttackTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">OneAttackTask</a> - Class in <a href="com/csse3200/game/components/tasks/package-summary.html">com.csse3200.game.components.tasks</a></dt>
+<dd>
+<div class="block">Task used by Sleipnir to attack player once by running past, mostly in phase one, after damaging
+ player speed increases</div>
+</dd>
+<dt><a href="com/csse3200/game/components/tasks/OneAttackTask.html#%3Cinit%3E(com.csse3200.game.entities.Entity,float,float,com.badlogic.gdx.math.Vector2)" class="member-name-link">OneAttackTask(Entity, float, float, Vector2)</a> - Constructor for class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/OneAttackTask.html" title="class in com.csse3200.game.components.tasks">OneAttackTask</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/StatusEffect.html#onRemoved()" class="member-name-link">onRemoved()</a> - Method in interface com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></dt>
 <dd>
 <div class="block">Called once by the controller after the effect has been taken off its entity, whether it
@@ -4673,7 +4692,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Makes an enemy patrol around three points.</div>
 </dd>
-<dt><a href="com/csse3200/game/components/tasks/PatrolTask.html#%3Cinit%3E(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,int)" class="member-name-link">PatrolTask(Vector2, Vector2, Vector2, int)</a> - Constructor for class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/PatrolTask.html" title="class in com.csse3200.game.components.tasks">PatrolTask</a></dt>
+<dt><a href="com/csse3200/game/components/tasks/PatrolTask.html#%3Cinit%3E(com.badlogic.gdx.math.Vector2%5B%5D)" class="member-name-link">PatrolTask(Vector2[])</a> - Constructor for class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/PatrolTask.html" title="class in com.csse3200.game.components.tasks">PatrolTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/screens/MainGameScreen.html#pause()" class="member-name-link">pause()</a> - Method in class com.csse3200.game.screens.<a href="com/csse3200/game/screens/MainGameScreen.html" title="class in com.csse3200.game.screens">MainGameScreen</a></dt>
 <dd>&nbsp;</dd>
@@ -5698,22 +5717,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Set the entity's game position and optionally notifies listeners.</div>
 </dd>
-<dt><a href="com/csse3200/game/ai/tasks/PriorityTask.html#setPriority(int)" class="member-name-link">setPriority(int)</a> - Method in interface com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/PriorityTask.html" title="interface in com.csse3200.game.ai.tasks">PriorityTask</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/tasks/ChaseTask.html#setPriority(int)" class="member-name-link">setPriority(int)</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/ChaseTask.html" title="class in com.csse3200.game.components.tasks">ChaseTask</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/tasks/CoilAttackTask.html#setPriority(int)" class="member-name-link">setPriority(int)</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/CoilAttackTask.html" title="class in com.csse3200.game.components.tasks">CoilAttackTask</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/tasks/LungeAttackTask.html#setPriority(int)" class="member-name-link">setPriority(int)</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/LungeAttackTask.html" title="class in com.csse3200.game.components.tasks">LungeAttackTask</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/tasks/PatrolTask.html#setPriority(int)" class="member-name-link">setPriority(int)</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/PatrolTask.html" title="class in com.csse3200.game.components.tasks">PatrolTask</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/tasks/RangedAttackTask.html#setPriority(int)" class="member-name-link">setPriority(int)</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/RangedAttackTask.html" title="class in com.csse3200.game.components.tasks">RangedAttackTask</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/tasks/VenomSpitAttackTask.html#setPriority(int)" class="member-name-link">setPriority(int)</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/VenomSpitAttackTask.html" title="class in com.csse3200.game.components.tasks">VenomSpitAttackTask</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/tasks/WanderTask.html#setPriority(int)" class="member-name-link">setPriority(int)</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/WanderTask.html" title="class in com.csse3200.game.components.tasks">WanderTask</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/input/InputComponent.html#setPriority(int)" class="member-name-link">setPriority(int)</a> - Method in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/InteractionPromptDisplay.html#setPrompt(java.lang.String)" class="member-name-link">setPrompt(String)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InteractionPromptDisplay.html" title="class in com.csse3200.game.components.maingame">InteractionPromptDisplay</a></dt>
@@ -5916,6 +5919,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/factories/HitboxSpec.html#size(com.badlogic.gdx.math.Vector2)" class="member-name-link">size(Vector2)</a> - Method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HitboxSpec.html" title="class in com.csse3200.game.entities.factories">HitboxSpec</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/UIComponent.html#skin" class="member-name-link">skin</a> - Static variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/configs/NPCConfigs.html#sleipnir" class="member-name-link">sleipnir</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/NPCConfigs.html" title="class in com.csse3200.game.entities.configs">NPCConfigs</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html#SLEIPNIR" class="member-name-link">SLEIPNIR</a> - Enum constant in enum class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html" title="enum class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig.EnemyType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html#SLOT_WEAPONS" class="member-name-link">SLOT_WEAPONS</a> - Static variable in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html" title="class in com.csse3200.game.components.weapons">WeaponSelectionComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -6128,6 +6135,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/FinalBossStageOneConfig.html#stageTwoStartingHealth" class="member-name-link">stageTwoStartingHealth</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/FinalBossStageOneConfig.html" title="class in com.csse3200.game.entities.configs">FinalBossStageOneConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/StampedeTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">StampedeTask</a> - Class in <a href="com/csse3200/game/components/tasks/package-summary.html">com.csse3200.game.components.tasks</a></dt>
+<dd>
+<div class="block">Used by Sleipnir in phase two, miniboss runs around player dealing constant damage, with cool
+ downs</div>
+</dd>
+<dt><a href="com/csse3200/game/components/tasks/StampedeTask.html#%3Cinit%3E(com.csse3200.game.entities.Entity,com.csse3200.game.entities.Entity)" class="member-name-link">StampedeTask(Entity, Entity)</a> - Constructor for class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/StampedeTask.html" title="class in com.csse3200.game.components.tasks">StampedeTask</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ai/tasks/DefaultTask.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/DefaultTask.html" title="class in com.csse3200.game.ai.tasks">DefaultTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ai/tasks/Task.html#start()" class="member-name-link">start()</a> - Method in interface com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/Task.html" title="interface in com.csse3200.game.ai.tasks">Task</a></dt>
@@ -6156,9 +6170,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/MovementTask.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/MovementTask.html" title="class in com.csse3200.game.components.tasks">MovementTask</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/OneAttackTask.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/OneAttackTask.html" title="class in com.csse3200.game.components.tasks">OneAttackTask</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/PatrolTask.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/PatrolTask.html" title="class in com.csse3200.game.components.tasks">PatrolTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/RangedAttackTask.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/RangedAttackTask.html" title="class in com.csse3200.game.components.tasks">RangedAttackTask</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/StampedeTask.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/StampedeTask.html" title="class in com.csse3200.game.components.tasks">StampedeTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/VenomSpitAttackTask.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/VenomSpitAttackTask.html" title="class in com.csse3200.game.components.tasks">VenomSpitAttackTask</a></dt>
 <dd>&nbsp;</dd>
@@ -6317,7 +6335,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/MovementTask.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/MovementTask.html" title="class in com.csse3200.game.components.tasks">MovementTask</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/OneAttackTask.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/OneAttackTask.html" title="class in com.csse3200.game.components.tasks">OneAttackTask</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/PatrolTask.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/PatrolTask.html" title="class in com.csse3200.game.components.tasks">PatrolTask</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/StampedeTask.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/StampedeTask.html" title="class in com.csse3200.game.components.tasks">StampedeTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerAbilitiesComponent.html#stop(java.lang.Class)" class="member-name-link">stop(Class&lt;? extends PlayerAbility&gt;)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAbilitiesComponent.html" title="class in com.csse3200.game.components.player">PlayerAbilitiesComponent</a></dt>
 <dd>
@@ -7085,9 +7107,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/CoilAttackTask.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/CoilAttackTask.html" title="class in com.csse3200.game.components.tasks">CoilAttackTask</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/EarthquakeAttackTask.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/EarthquakeAttackTask.html" title="class in com.csse3200.game.components.tasks">EarthquakeAttackTask</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/LungeAttackTask.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/LungeAttackTask.html" title="class in com.csse3200.game.components.tasks">LungeAttackTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/MovementTask.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/MovementTask.html" title="class in com.csse3200.game.components.tasks">MovementTask</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/OneAttackTask.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/OneAttackTask.html" title="class in com.csse3200.game.components.tasks">OneAttackTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/PatrolTask.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/PatrolTask.html" title="class in com.csse3200.game.components.tasks">PatrolTask</a></dt>
 <dd>&nbsp;</dd>
@@ -7096,6 +7122,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Call this once per frame while the effect is active.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/tasks/RangedAttackTask.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/RangedAttackTask.html" title="class in com.csse3200.game.components.tasks">RangedAttackTask</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/StampedeTask.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/StampedeTask.html" title="class in com.csse3200.game.components.tasks">StampedeTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/VenomSpitAttackTask.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/VenomSpitAttackTask.html" title="class in com.csse3200.game.components.tasks">VenomSpitAttackTask</a></dt>
 <dd>&nbsp;</dd>
