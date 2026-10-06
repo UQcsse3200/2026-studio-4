@@ -86,6 +86,12 @@ public class UserSettings {
     /** ui Scale. Currently unused, but can be implemented. */
     public float uiScale = 1f;
 
+    /** When true, the in-run HUD shows the game timer. */
+    public boolean showTimer = true;
+
+    /** When true, the victory screen lists last/best time and achievement count. */
+    public boolean showVictoryStats = true;
+
     public DisplaySettings displayMode = null;
   }
 
