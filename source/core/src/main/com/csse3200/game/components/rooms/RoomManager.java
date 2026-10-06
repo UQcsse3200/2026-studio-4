@@ -128,6 +128,9 @@ public class RoomManager {
     if (pendingDestination != null) {
       return;
     }
+    if (interactWithNpc()) {
+      return;
+    }
     ExitConfig exit = findNearestExit();
     if (exit == null) {
       return;
@@ -166,7 +169,7 @@ public class RoomManager {
     completedDungeonIds.add(currentConfig.dungeonId);
     if (runTimer != null) {
       ServiceLocator.getAchievementService()
-              .notifyDungeonTimeElapsed(currentConfig.dungeonId, runTimer.getDungeonTime());
+          .notifyDungeonTimeElapsed(currentConfig.dungeonId, runTimer.getDungeonTime());
     }
     pendingDungeonCompletion = currentConfig.dungeonId; // defer the toast
   }

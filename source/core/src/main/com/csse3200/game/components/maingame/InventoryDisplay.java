@@ -128,8 +128,7 @@ public class InventoryDisplay extends UIComponent {
     pagesContainer.pad(40, 50, 40, 50);
 
     // left page creation
-    Table leftPage =
-        new Table().background(inventory.getDrawable(leftPageCover)).top();
+    Table leftPage = new Table().background(inventory.getDrawable(leftPageCover)).top();
 
     leftPage.add(new Label("Consumables", skin, inventoryStyle)).top().colspan(3).pad(25f);
     leftPage.row();
@@ -143,8 +142,7 @@ public class InventoryDisplay extends UIComponent {
     pagesContainer.add(leftPage).size(365, 500);
 
     // right page creation
-    Table rightPage =
-        new Table().background(inventory.getDrawable(rightPageCover));
+    Table rightPage = new Table().background(inventory.getDrawable(rightPageCover));
 
     // Please pass in list of consumables in inventory
     Table rightGrid = drawItemGrid(4, 20, 64, new ArrayList<>(), true);
@@ -166,8 +164,7 @@ public class InventoryDisplay extends UIComponent {
     pagesContainer.pad(40, 50, 40, 50);
 
     // left page creation
-    Table leftPage =
-        new Table().background(inventory.getDrawable(leftPageCover)).top();
+    Table leftPage = new Table().background(inventory.getDrawable(leftPageCover)).top();
 
     leftPage.add(new Label("Charms", skin, inventoryStyle)).top().colspan(3).pad(25f);
     leftPage.row();
@@ -176,8 +173,7 @@ public class InventoryDisplay extends UIComponent {
     pagesContainer.add(leftPage).size(365, 500);
 
     // right page creation
-    Table rightPage =
-        new Table().background(inventory.getDrawable(rightPageCover));
+    Table rightPage = new Table().background(inventory.getDrawable(rightPageCover));
 
     // Create Grid
     Table rightGrid = drawItemGrid(4, 20, 64, inventoryComponent.getCharms(), false);
@@ -201,14 +197,12 @@ public class InventoryDisplay extends UIComponent {
     List<Achievement> locked = all.stream().filter(a -> !a.isUnlocked()).toList();
     List<Achievement> unlocked = all.stream().filter(Achievement::isUnlocked).toList();
 
-    Table leftPage =
-        new Table().background(inventory.getDrawable(leftPageCover)).top();
+    Table leftPage = new Table().background(inventory.getDrawable(leftPageCover)).top();
     leftPage.add(new Label("Locked", skin, inventoryStyle)).top().pad(25f).row();
     leftPage.add(achievementList(locked, false)).grow();
     pagesContainer.add(leftPage).size(365, 500);
 
-    Table rightPage =
-        new Table().background(inventory.getDrawable(rightPageCover)).top();
+    Table rightPage = new Table().background(inventory.getDrawable(rightPageCover)).top();
     rightPage.add(new Label("Unlocked", skin, inventoryStyle)).top().pad(25f).row();
     rightPage.add(achievementList(unlocked, true)).grow();
     pagesContainer.add(rightPage).size(365, 500);
