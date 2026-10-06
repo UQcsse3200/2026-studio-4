@@ -18,7 +18,7 @@ All integration remains local. No remote branch, PR, review, issue or chat was m
 
 Four fixed direct-use keys: 7 Health, 8 Shield, 9 Speed, 0 Strength. Weapons retain 1–3 and K; inventory retains I. The user explicitly confirmed the four-key interface in this task. Other teams' acceptance is not implied.
 
-`TypedItem extends Item` preserves the shared item abstraction while `ItemType` identifies Team 5 quantities and requests. Input invokes `useSlot` / `tryUse`, or `useConsumable(ItemType)`; only the effects component removes stock. `itemUsed(ItemType)` is emitted after successful use. The direct-use HUD does not depend on `selectedConsumableChanged`.
+`TypedItem extends Item` preserves the shared item abstraction while the then-current item IDs identified Team 5 quantities and requests. Input invokes `useSlot` / `tryUse`, or `useConsumable(item ID)`; only the effects component removes stock. `itemUsed(item ID)` is emitted after successful use. The direct-use HUD does not depend on `selectedConsumableChanged`.
 
 ## Main compatibility decisions
 

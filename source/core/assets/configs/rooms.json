@@ -25,6 +25,23 @@
         }
       ],
       "enemySpawns": [],
+      "npcSpawns": [
+        {
+          "npcId": "merchant",
+          "x": 16,
+          "y": 16
+        },
+        {
+          "npcId": "wanderingSpirit",
+          "x": 8,
+          "y": 14
+        },
+        {
+          "npcId": "sealedGuardian",
+          "x": 8,
+          "y": 18
+        }
+      ],
       "obstacles": {
         "spawns": [
           "                                         ",
@@ -121,92 +138,93 @@
         }
       ],
       "enemySpawns": [
-//        {
-//          "type": "MEDUSA",
-//          "x": 30,
-//          "y": 6
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 41,
-//          "y": 14
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 34,
-//          "y": 20
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 28,
-//          "y": 14
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 28,
-//          "y": 29
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 41,
-//          "y": 29
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 34,
-//          "y": 5
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 55,
-//          "y": 9
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 58,
-//          "y": 13
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 54,
-//          "y": 5
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 30,
-//          "y": 44
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 38,
-//          "y": 44
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 34,
-//          "y": 44
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 55,
-//          "y": 41
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 60,
-//          "y": 50
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 8,
-//          "y": 43
-//        },
-//        {
-//          "type": "MEDUSA",
-//          "x": 12,
-//          "y": 50
-//        }
+        {
+          "type": "MEDUSA",
+          "x": 30,
+          "y": 6
+        },
+        {
+          "type": "MEDUSA",
+          "x": 41,
+          "y": 14
+        },
+        {
+          "type": "MEDUSA",
+          "x": 34,
+          "y": 20
+        },
+        {
+          "type": "MEDUSA",
+          "x": 28,
+          "y": 14
+        },
+        {
+          "type": "MEDUSA",
+          "x": 28,
+          "y": 29
+        },
+        {
+          "type": "MEDUSA",
+          "x": 41,
+          "y": 29
+        },
+        {
+          "type": "MEDUSA",
+          "x": 34,
+          "y": 5
+        },
+        {
+          "type": "MEDUSA",
+          "x": 55,
+          "y": 9
+        },
+        {
+          "type": "MEDUSA",
+          "x": 58,
+          "y": 13
+        },
+        {
+          "type": "MEDUSA",
+          "x": 54,
+          "y": 5
+        },
+        {
+          "type": "MEDUSA",
+          "x": 30,
+          "y": 44
+        },
+        {
+          "type": "MEDUSA",
+          "x": 38,
+          "y": 44
+        },
+        {
+          "type": "MEDUSA",
+          "x": 34,
+          "y": 44
+        },
+        {
+          "type": "MEDUSA",
+          "x": 55,
+          "y": 41
+        },
+        {
+          "type": "MEDUSA",
+          "x": 60,
+          "y": 50
+        },
+        {
+          "type": "MEDUSA",
+          "x": 8,
+          "y": 43
+        },
+        {
+          "type": "MEDUSA",
+          "x": 12,
+          "y": 50
+        }
       ],
+      "npcSpawns": [],
       "trapSpawns": [
         { "type": "FREEZE", "x": 9, "y": 40 },
         { "type": "BURN", "x": 9, "y": 24 }
@@ -324,6 +342,7 @@
         { "type": "BURN", "x": 28, "y": 63 },
         { "type": "BURN", "x": 33, "y": 63 }
       ],
+      "npcSpawns": [],
       "obstacles": {
         "spawns": [
           "                                                              ",
@@ -431,6 +450,7 @@
         { "type": "CYCLOPS", "x": 18, "y": 36 },
         { "type": "CYCLOPS", "x": 42, "y": 36 }
       ],
+      "npcSpawns": [],
       "obstacles": {
         "spawns": [
           "                                                              ",
@@ -528,6 +548,7 @@
         { "type": "FREEZE", "x": 25, "y": 26 },
         { "type": "BURN", "x": 23, "y": 31 }
       ],
+      "npcSpawns": [],
       "obstacles": {
         "spawns": [
           "                                                        ",
@@ -638,6 +659,7 @@
         { "type": "CRAB", "x": 19, "y": 31 },
         { "type": "CRAB", "x": 23, "y": 33 }
       ],
+      "npcSpawns": [],
       "obstacles": {
         "spawns": [
           "####################################",
@@ -714,6 +736,7 @@
         { "type": "WASP", "x": 21, "y": 16 },
         { "type": "WASP", "x": 34, "y": 36 }
       ],
+      "npcSpawns": [],
       "obstacles": {
         "spawns": [
           "################################################",
@@ -802,6 +825,7 @@
         { "type": "MUMMY", "x": 10, "y": 10 },
         { "type": "MUMMY", "x": 10, "y": 20 }
       ],
+      "npcSpawns": [],
       "obstacles": {
         "spawns": [
           "########################################",
@@ -873,6 +897,7 @@
           "y": 28
         }
       ],
+      "npcSpawns": [],
       "obstacles": {
         "spawns": [
           "########################################################",
@@ -974,6 +999,7 @@
           "y": 20
         }
       ],
+      "npcSpawns": [],
       "obstacles": {
         "spawns": [
           "................................................",

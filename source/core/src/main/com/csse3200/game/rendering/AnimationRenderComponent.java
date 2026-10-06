@@ -45,6 +45,8 @@ public class AnimationRenderComponent extends RenderComponent {
   private float drawnPlayTime;
   private float verticalOffset;
   private float rotation;
+  private boolean flipX;
+  private boolean flipY;
 
   /**
    * Create the component for a given texture atlas.
@@ -53,7 +55,7 @@ public class AnimationRenderComponent extends RenderComponent {
    */
   public AnimationRenderComponent(TextureAtlas atlas) {
     this.atlas = atlas;
-    this.animations = new HashMap<>(4);
+    this.animations = HashMap.newHashMap(4);
     timeSource = ServiceLocator.getTimeSource();
   }
 
@@ -171,6 +173,11 @@ public class AnimationRenderComponent extends RenderComponent {
     return currentAnimationName;
   }
 
+  /** Current visible frame, for effects that need a snapshot of this animation. */
+  public TextureRegion getCurrentFrame() {
+    return currentAnimation == null ? null : currentAnimation.getKeyFrame(animationPlayTime);
+  }
+
   /**
    * Has the playing animation finished? This will always be false for looping animations.
    *
@@ -198,6 +205,24 @@ public class AnimationRenderComponent extends RenderComponent {
     return rotation;
   }
 
+  /** Sets whether the rendered animation is mirrored horizontally. */
+  public void setFlipX(boolean flip) {
+    flipX = flip;
+  }
+
+  public boolean isFlipX() {
+    return flipX;
+  }
+
+  /** Sets whether the rendered animation is mirrored vertically. */
+  public void setFlipY(boolean flip) {
+    flipY = flip;
+  }
+
+  public boolean isFlipY() {
+    return flipY;
+  }
+
   @Override
   protected void draw(SpriteBatch batch) {
     if (currentAnimation == null) {
@@ -207,6 +232,10 @@ public class AnimationRenderComponent extends RenderComponent {
     // reading the playhead again, which this pass has by then already moved on.
     TextureRegion region =
         currentAnimation.getKeyFrame(isRepeatPass() ? drawnPlayTime : animationPlayTime);
+    if (flipX || flipY) {
+      region = new TextureRegion(region);
+      region.flip(flipX, flipY);
+    }
     Vector2 pos = entity.getPosition();
     Vector2 scale = entity.getScale();
     if (rotation == 0f) {

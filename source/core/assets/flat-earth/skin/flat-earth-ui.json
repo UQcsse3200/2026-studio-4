@@ -26,7 +26,8 @@ com.badlogic.gdx.graphics.Color: {
 	pressed: { hex: "b3893f" },
 	selection: { hex: "5588cc" },
 	window: { hex: "241a12" },
-	brown: {hex: "2e1503"}
+	brown: {hex: "2e1503"},
+	time: {hex: "A6B8CC" }
 }
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	button-c: {
@@ -285,7 +286,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: {
 		font: font
-		fontColor: black
+		fontColor: white
 	}
 	button: {
 		font: button
@@ -301,12 +302,25 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	}
 	large: {
 		font: font_large,
-		fontColor: black
+		fontColor: white
 	}
 	statDisplay: {
 		font: font,
 		fontColor: brown
 	}
+	caption: {
+		font: font_small,
+		fontColor: white
+	}
+	runTime: {
+		font: font_large
+		fontColor: time
+	}
+	dungeonTime: {
+		font: font
+		fontColor: time
+	}
+
 }
 com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
 	default: {

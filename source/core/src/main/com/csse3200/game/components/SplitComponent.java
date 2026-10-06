@@ -5,14 +5,15 @@ import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * Component that splits an enemy into two weaker copies when attacked by the player. This should
- * only happen once. Each new copy has half the lifespan (health) and half the base attack of the
- * original enemy.
+ * Splits an enemy into two weaker copies when its health reaches zero. Each child receives a
+ * configurable fraction of the parent's maximum health and half its base attack. Splitting occurs
+ * at most once.
  */
 public class SplitComponent extends Component {
   private boolean hasSplit = false;
   private final Entity target;
   private String skin;
+  private float childHealthRatio = 0.75f;
 
   /**
    * @param target The entity to chase (usually the player), passed on to the split-off children.
@@ -20,6 +21,18 @@ public class SplitComponent extends Component {
   public SplitComponent(Entity target, String skin) {
     this.target = target;
     this.skin = skin;
+  }
+
+  /**
+   * Sets each child's health as a fraction of the parent's maximum health.
+   *
+   * @param ratio finite, positive health ratio; defaults to 0.75
+   */
+  public void setChildHealthRatio(float ratio) {
+    if (!Float.isFinite(ratio) || ratio <= 0f) {
+      throw new IllegalArgumentException("Child health ratio must be finite and positive");
+    }
+    childHealthRatio = ratio;
   }
 
   @Override
@@ -43,14 +56,14 @@ public class SplitComponent extends Component {
     if (stats == null || stats.getHealth() != 0) {
       return;
     }
-    int halfHealth = Math.max(1, stats.getMaxHealth() / 2);
+    int childHealth = Math.max(1, (int) (stats.getMaxHealth() * childHealthRatio));
     int halfAttack = Math.max(1, stats.getBaseAttack() / 2);
 
     ServiceLocator.getEntityService()
         .schedule(
             () -> {
-              spawnChild(-0.5f, halfHealth, halfAttack);
-              spawnChild(0.5f, halfHealth, halfAttack);
+              spawnChild(-0.5f, childHealth, halfAttack);
+              spawnChild(0.5f, childHealth, halfAttack);
             });
     ServiceLocator.getEntityService().scheduleDisposal(entity);
     hasSplit = true;

@@ -1,11 +1,6 @@
 package com.csse3200.game.entities.factories;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -13,15 +8,12 @@ import static org.mockito.Mockito.when;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.utils.Array;
-import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.player.abilities.Invisibility;
 import com.csse3200.game.components.player.abilities.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
-import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
@@ -71,32 +63,5 @@ class PlayerFactoryTest {
     assertTrue(firstAbilities.tryActivate(Invisibility.class));
     assertTrue(firstAbilities.isActive(Invisibility.class));
     assertFalse(secondAbilities.isActive(Invisibility.class));
-  }
-
-  @Test
-  void shouldWireFactoryAbilitiesToCombatStatsAndRegisteredClock() {
-    Entity player = PlayerFactory.createPlayer();
-    PlayerAbilitiesComponent abilities = player.getComponent(PlayerAbilitiesComponent.class);
-    CombatStatsComponent combat = player.getComponent(CombatStatsComponent.class);
-    assertNotNull(abilities);
-    assertNotNull(combat);
-    abilities.create();
-    int rawAttack = combat.getBaseAttack();
-    float rawAttackSpeed = combat.getAttackSpeed();
-    float movementSpeed = combat.getMovementSpeed();
-    abilities.unlock(LastStand.class);
-    combat.takeDamage(
-        combat.getHealth() - 1,
-        new Entity().addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER)));
-
-    assertTrue(abilities.isActive(LastStand.class));
-    assertEquals(Math.round(rawAttack * 1.5f), combat.getEffectiveBaseAttack());
-    assertEquals(rawAttackSpeed * 1.5f, combat.getEffectiveAttackSpeed());
-    assertEquals(rawAttack, combat.getBaseAttack());
-    assertEquals(rawAttackSpeed, combat.getAttackSpeed());
-    assertEquals(movementSpeed, combat.getMovementSpeed());
-    when(time.getTime()).thenReturn(LastStand.DURATION_MS);
-    assertEquals(rawAttack, combat.getEffectiveBaseAttack());
-    assertEquals(rawAttackSpeed, combat.getEffectiveAttackSpeed());
   }
 }

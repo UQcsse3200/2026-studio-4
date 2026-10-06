@@ -47,6 +47,16 @@ public class RoomAssets implements Disposable {
     "images/cerberus.atlas",
     "images/dragon/dragon.atlas",
     "images/dragon/thunder-orb.atlas",
+    "images/wolf.atlas",
+    "images/crow.atlas",
+    "images/dark_elves.atlas",
+    "images/jingwei.atlas",
+    "images/zombie.atlas",
+    "images/wukong.atlas",
+    "images/bug.atlas",
+    "images/longwei.atlas",
+    "images/knight.atlas",
+    "images/jotunn.atlas",
   };
 
   private static final String[] PLAYER_ATLASES = {"images/idle_down.atlas"};
@@ -77,6 +87,9 @@ public class RoomAssets implements Disposable {
     "images/shield_consumable_pixel.png",
     "images/speed_potion_pixel.png",
     "images/strength_potion_pixel.png",
+    "images/freeze_bomb_pixel.png",
+    "images/consumable-slot-idle.png",
+    "images/consumable-slot-selected.png",
     "images/gold_coin_pixel.png"
   };
 
