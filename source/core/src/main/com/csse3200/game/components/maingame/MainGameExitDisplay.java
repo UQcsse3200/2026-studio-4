@@ -2,6 +2,7 @@ package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -13,7 +14,14 @@ import org.slf4j.LoggerFactory;
 public class MainGameExitDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(MainGameExitDisplay.class);
   private static final float Z_INDEX = 2f;
+  private final Runnable saveAndExit;
+  private final Runnable deleteSaveAndExit;
   private Table table;
+
+  public MainGameExitDisplay(Runnable saveAndExit, Runnable deleteSaveAndExit) {
+    this.saveAndExit = saveAndExit;
+    this.deleteSaveAndExit = deleteSaveAndExit;
+  }
 
   @Override
   public void create() {
@@ -28,19 +36,38 @@ public class MainGameExitDisplay extends UIComponent {
 
     TextButton mainMenuBtn = new TextButton("Exit", skin);
 
-    // Triggers an event when the button is pressed.
     mainMenuBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Exit button clicked");
-            entity.getEvents().trigger("exit");
+            showExitDialog();
           }
         });
 
     table.add(mainMenuBtn).padTop(10f).padRight(10f);
 
     stage.addActor(table);
+  }
+
+  private void showExitDialog() {
+    Dialog dialog =
+        new Dialog("Exit game?", skin) {
+          @Override
+          protected void result(Object object) {
+            if ("save".equals(object)) {
+              saveAndExit.run();
+            } else if ("delete".equals(object)) {
+              deleteSaveAndExit.run();
+            }
+          }
+        };
+
+    dialog.text("Do you want to save your progress before exiting?");
+    dialog.button("Save and exit", "save");
+    dialog.button("Delete save and exit", "delete");
+    dialog.button("Cancel", "cancel");
+    dialog.show(stage);
   }
 
   @Override

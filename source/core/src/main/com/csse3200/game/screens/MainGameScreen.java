@@ -12,7 +12,6 @@ import com.csse3200.game.components.maingame.ConsumableHotbarDisplay;
 import com.csse3200.game.components.maingame.HotbarDisplay;
 import com.csse3200.game.components.maingame.InventoryActions;
 import com.csse3200.game.components.maingame.InventoryDisplay;
-import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.rooms.RoomAssets;
@@ -205,7 +204,6 @@ public class MainGameScreen extends ScreenAdapter {
       }
     }
 
-
     renderer.dispose();
     unloadAssets();
 
@@ -215,13 +213,15 @@ public class MainGameScreen extends ScreenAdapter {
 
     ServiceLocator.clear();
   }
+
   public void saveAndExit() {
     game.setScreen(ScreenType.MAIN_MENU);
   }
+
   public void deleteSaveAndExit() {
     saveOnDispose = false;
     runSaved = true;
-      
+
     FileLoader.deleteSaveSlot(saveSlot);
     game.setScreen(ScreenType.MAIN_MENU);
   }
@@ -266,8 +266,7 @@ public class MainGameScreen extends ScreenAdapter {
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
-        .addComponent(new MainGameActions(this.game))
-        .addComponent(new MainGameExitDisplay())
+        .addComponent(new MainGameExitDisplay(this::saveAndExit, this::deleteSaveAndExit))
         .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay())
