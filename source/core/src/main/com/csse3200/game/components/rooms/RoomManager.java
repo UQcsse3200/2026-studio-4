@@ -320,6 +320,12 @@ public class RoomManager {
   /** debug function for RoomCommand */
   void debugSwitchRoom(RoomConfig destination) {
     pendingDestination = destination;
-    pendingArrivalPosition = destination.exits[0];
+
+    // sets either the first exit of the room or first exit as destination pos
+    if (destination.exits.length < 1 && destination.entryPoints.length > 0) {
+      pendingArrivalPosition = destination.entryPoints[0];
+    } else { // exits.length >= 1
+      pendingArrivalPosition = destination.exits[0];
+    }
   }
 }
