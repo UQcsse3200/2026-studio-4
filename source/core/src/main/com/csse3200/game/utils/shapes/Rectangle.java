@@ -8,6 +8,10 @@ public class Rectangle extends ShapeActor {
     super(color);
   }
 
+  public Rectangle(Color color, boolean fill) {
+    super(color, fill);
+  }
+
   @Override
   protected void drawShape() {
     shape.rect(getX(), getY(), getWidth(), getHeight());
