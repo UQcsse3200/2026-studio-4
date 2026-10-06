@@ -54,7 +54,7 @@ public class DialogueRunner {
       return;
     }
     if (!isLineComplete()) {
-      revealedChars = currentText().length();
+      revealedChars = (float) currentText().length();
       return;
     }
     showLine(lineIndex + 1);

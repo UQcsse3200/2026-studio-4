@@ -95,7 +95,9 @@ class EntityServiceFreezeTest {
             .addComponent(
                 new UIComponent() {
                   @Override
-                  protected void draw(com.badlogic.gdx.graphics.g2d.SpriteBatch batch) {}
+                  protected void draw(com.badlogic.gdx.graphics.g2d.SpriteBatch batch) {
+                    // not needed: only the component's presence matters to this test
+                  }
                 });
     // Entities with a UIComponent keep updating under the inventory pause, but not under a freeze
     service.getEntities().add(enemyWithHud);

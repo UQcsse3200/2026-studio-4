@@ -26,9 +26,10 @@ public class CutsceneCommand implements Command {
     if (player == null || args == null || args.size() != 1) {
       return false;
     }
-    CutsceneScript script = CutsceneScript.load(args.get(0));
+    String name = args.get(0);
+    CutsceneScript script = CutsceneScript.load(name);
     if (script == null) {
-      logger.warn("No cutscene file named '{}' in configs/cutscenes/", args.get(0));
+      logger.warn("No cutscene file named '{}' in configs/cutscenes/", name);
       return false;
     }
     CutsceneEvents.playCutscene(player, script);

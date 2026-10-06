@@ -61,12 +61,10 @@ public class NarrativeManagerComponent extends Component {
         .addListener(CutsceneEvents.START_CUTSCENE, (String id, Entity npc) -> playCutscene(id));
     player
         .getEvents()
-        .addListener(
-            CutsceneEvents.START_DIALOGUE_SCRIPT, (DialogueScript script) -> playDialogue(script));
+        .<DialogueScript>addListener(CutsceneEvents.START_DIALOGUE_SCRIPT, this::playDialogue);
     player
         .getEvents()
-        .addListener(
-            CutsceneEvents.START_CUTSCENE_SCRIPT, (CutsceneScript script) -> playCutscene(script));
+        .<CutsceneScript>addListener(CutsceneEvents.START_CUTSCENE_SCRIPT, this::playCutscene);
   }
 
   @Override

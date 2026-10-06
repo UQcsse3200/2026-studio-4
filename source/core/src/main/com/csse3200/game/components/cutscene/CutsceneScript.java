@@ -58,7 +58,7 @@ public class CutsceneScript {
   }
 
   /** A video cutscene (fluent factory). */
-  public static CutsceneScript video(String id, String videoPath) {
+  public static CutsceneScript ofVideo(String id, String videoPath) {
     CutsceneScript script = new CutsceneScript(id);
     script.video = videoPath;
     return script;

@@ -15,14 +15,14 @@ import java.util.Set;
  */
 public class NarrativeInputComponent extends InputComponent {
   /** Above the terminal and UI stage (10) and the player (0). */
-  static final int PRIORITY = 20;
+  static final int NARRATIVE_INPUT_ORDER = 20;
 
   private final NarrativeManagerComponent manager;
   private final Set<Integer> swallowedKeys = new HashSet<>();
   private final Set<Integer> swallowedButtons = new HashSet<>();
 
   public NarrativeInputComponent(NarrativeManagerComponent manager) {
-    super(PRIORITY);
+    super(NARRATIVE_INPUT_ORDER);
     this.manager = manager;
   }
 

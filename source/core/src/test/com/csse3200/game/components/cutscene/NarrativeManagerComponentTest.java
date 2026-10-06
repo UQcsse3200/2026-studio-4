@@ -209,7 +209,8 @@ class NarrativeManagerComponentTest {
         .getEvents()
         .addListener(
             CutsceneEvents.DIALOGUE_FINISHED,
-            (String id) -> manager.playCutscene(CutsceneScript.video("after", "videos/demo.mp4")));
+            (String id) ->
+                manager.playCutscene(CutsceneScript.ofVideo("after", "videos/demo.mp4")));
 
     dialogueView.listener.onFinished();
 
@@ -229,7 +230,7 @@ class NarrativeManagerComponentTest {
 
   @Test
   void cutsceneFreezesWorldLocksControlsAndReleasesWhenFinished() {
-    assertTrue(manager.playCutscene(CutsceneScript.video("c", "videos/demo.mp4")));
+    assertTrue(manager.playCutscene(CutsceneScript.ofVideo("c", "videos/demo.mp4")));
 
     assertTrue(entityService.isFrozen());
     assertTrue(actions.areControlsLocked());
@@ -253,7 +254,9 @@ class NarrativeManagerComponentTest {
           }
 
           @Override
-          public void stop() {}
+          public void stop() {
+            // not needed: this view finishes on its own from inside play()
+          }
 
           @Override
           public boolean isActive() {
@@ -266,7 +269,7 @@ class NarrativeManagerComponentTest {
         new NarrativeManagerComponent(other, dialogueView, instant);
     new Entity().addComponent(instantManager).create();
 
-    instantManager.playCutscene(CutsceneScript.video("v", "videos/nope.mp4"));
+    instantManager.playCutscene(CutsceneScript.ofVideo("v", "videos/nope.mp4"));
 
     assertFalse(entityService.isFrozen());
     assertFalse(other.getComponent(PlayerActions.class).areControlsLocked());
@@ -275,14 +278,14 @@ class NarrativeManagerComponentTest {
 
   @Test
   void secondCutsceneIsIgnoredWhileOneIsPlaying() {
-    manager.playCutscene(CutsceneScript.video("first", "videos/demo.mp4"));
-    assertFalse(manager.playCutscene(CutsceneScript.video("second", "videos/demo.mp4")));
+    manager.playCutscene(CutsceneScript.ofVideo("first", "videos/demo.mp4"));
+    assertFalse(manager.playCutscene(CutsceneScript.ofVideo("second", "videos/demo.mp4")));
     assertEquals("first", cutsceneView.played.id);
   }
 
   @Test
   void onceOnlyCutscenePlaysOncePerSession() {
-    CutsceneScript script = CutsceneScript.video("once", "videos/demo.mp4");
+    CutsceneScript script = CutsceneScript.ofVideo("once", "videos/demo.mp4");
     script.once = true;
     manager.playCutscene(script);
     cutsceneView.onFinished.run();
@@ -294,7 +297,7 @@ class NarrativeManagerComponentTest {
 
   @Test
   void skippableCutsceneCanBeSkipped() {
-    manager.playCutscene(CutsceneScript.video("c", "videos/demo.mp4"));
+    manager.playCutscene(CutsceneScript.ofVideo("c", "videos/demo.mp4"));
 
     assertTrue(manager.advance());
 
@@ -305,7 +308,7 @@ class NarrativeManagerComponentTest {
 
   @Test
   void nonSkippableCutsceneSwallowsTheKeyButKeepsPlaying() {
-    CutsceneScript script = CutsceneScript.video("c", "videos/demo.mp4");
+    CutsceneScript script = CutsceneScript.ofVideo("c", "videos/demo.mp4");
     script.skippable = false;
     manager.playCutscene(script);
 
@@ -318,7 +321,7 @@ class NarrativeManagerComponentTest {
   @Test
   void timedEventsFireInOrderAtTheirTimes() {
     CutsceneScript script =
-        CutsceneScript.video("c", "videos/demo.mp4").at(4f, "later", "x").at(1f, "early", null);
+        CutsceneScript.ofVideo("c", "videos/demo.mp4").at(4f, "later", "x").at(1f, "early", null);
     player.getEvents().addListener("early", () -> events.add("early"));
     player.getEvents().addListener("later", (String arg) -> events.add("later:" + arg));
     manager.playCutscene(script);
@@ -336,7 +339,7 @@ class NarrativeManagerComponentTest {
 
   @Test
   void timedEventsStopFiringOnceTheCutsceneEnds() {
-    CutsceneScript script = CutsceneScript.video("c", "videos/demo.mp4").at(2f, "late", null);
+    CutsceneScript script = CutsceneScript.ofVideo("c", "videos/demo.mp4").at(2f, "late", null);
     player.getEvents().addListener("late", () -> events.add("late"));
     manager.playCutscene(script);
     cutsceneView.onFinished.run();
@@ -352,7 +355,7 @@ class NarrativeManagerComponentTest {
   @Test
   void dialogueAndCutsceneReleaseTheirOwnFreezeIndependently() {
     manager.playDialogue(dialogue("d"));
-    manager.playCutscene(CutsceneScript.video("c", "videos/demo.mp4"));
+    manager.playCutscene(CutsceneScript.ofVideo("c", "videos/demo.mp4"));
 
     cutsceneView.onFinished.run();
     assertTrue(entityService.isFrozen(), "dialogue is still open");
@@ -366,7 +369,7 @@ class NarrativeManagerComponentTest {
   @Test
   void disposeNeverLeavesTheGameFrozen() {
     manager.playDialogue(dialogue("d"));
-    manager.playCutscene(CutsceneScript.video("c", "videos/demo.mp4"));
+    manager.playCutscene(CutsceneScript.ofVideo("c", "videos/demo.mp4"));
 
     manager.dispose();
 
