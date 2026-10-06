@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
@@ -17,8 +18,8 @@ import org.slf4j.LoggerFactory;
 public class Minimap extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(Minimap.class);
 
-  private static final int WIDTH = 220;
-  private static final int HEIGHT = 220;
+  private static final int WIDTH = 250;
+  private static final int HEIGHT = 250;
   private static final int ROOM_W = 40;
   private static final int ROOM_H = 30;
 
@@ -48,24 +49,46 @@ public class Minimap extends UIComponent {
    * @return Returns the root table to be added to the stage.
    */
   private Table buildRoot() {
+    // Root covers the screen size.
     Table root = new Table();
     root.setFillParent(true);
     root.center().left();
     root.padLeft(20f);
 
+    // create and place the minimap into the root
     Table mapContainer = buildMapContainer();
-    root.add(mapContainer).center().size(WIDTH, HEIGHT);
+    root.add(mapContainer).center().size(WIDTH, HEIGHT).fillX();
 
-    this.exitContainer = buildExitContainer(currentRoom.exits.length);
-    mapContainer.add(exitContainer).padLeft(20f).fillY();
+    // Add containers for actual room icons
+    mapContainer.add(buildLHS()).grow();
+    mapContainer.add(buildCenter()).grow();
+    mapContainer.add(buildRHS()).grow();
 
     return root;
   }
 
+  private Table buildCenter() {
+    var center = new Table();
+    attachRooms(center, 1);
+    return center;
+  }
+
+  private Table buildLHS() {
+    var lhs = new Table();
+    attachRooms(lhs, 0);
+    return lhs;
+  }
+
+  private Table buildRHS() {
+    var rhs = new Table();
+    attachRooms(rhs, 4);
+    return rhs;
+  }
+
+
   /** Clears the children in {@link Minimap#exitContainer} then rebuilds new exit count */
   private void rebuildExits(int count) {
     exitContainer.clearChildren();
-    attachExits(exitContainer, count);
   }
 
   public void setCurrentRoom(RoomConfig newRoom) {
@@ -85,24 +108,11 @@ public class Minimap extends UIComponent {
     rebuildExits(newRoom.exits.length);
   }
 
+  /** Create the minimap container */
   private static Table buildMapContainer() {
     Table map = new Table();
     setTableBackground(map, BG_COLOR);
-
-    map.add(new Rectangle(ROOM_COLOR)).size(ROOM_W, ROOM_H).center();
-
     return map;
-  }
-
-  /**
-   * Builds the ExitContainer and it's children
-   *
-   * @param exitCount the number of exits to add.
-   */
-  private static Table buildExitContainer(int exitCount) {
-    Table exitContainer = new Table();
-    attachExits(exitContainer, exitCount);
-    return exitContainer;
   }
 
   /**
@@ -111,12 +121,18 @@ public class Minimap extends UIComponent {
    * @param table The container to attach children
    * @param count Number of exits to attach
    */
-  private static void attachExits(Table table, int count) {
-    logger.debug("attaching {} exits", count);
+  private static void attachRooms(Table table, int count) {
+    logger.debug("attaching {} rooms", count);
     for (int i = 0; i < count; i++) {
-      table.add(new Rectangle(ROOM_COLOR)).size(40, 30).padBottom(10f);
+      table.add(createRoomIcon()).expand();
       table.row();
     }
+  }
+
+  private static Actor createRoomIcon() {
+    var room = new Rectangle(ROOM_COLOR);
+    room.setSize(ROOM_W, ROOM_H);
+    return room;
   }
 
   /**
