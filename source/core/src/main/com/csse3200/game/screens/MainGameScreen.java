@@ -67,6 +67,7 @@ public class MainGameScreen extends ScreenAdapter {
   private boolean winScreenShortcutPressed;
   private final RoomAssets roomAssets = new RoomAssets();
   private final RunTimer runTimer;
+  private boolean winScreenRequested;
 
   public MainGameScreen(GdxGame game) {
     this(game, null, 1);
@@ -110,6 +111,8 @@ public class MainGameScreen extends ScreenAdapter {
     player = PlayerFactory.createPlayer();
     // trigger death screen via entity died event
     player.getEvents().addListener("entityDied", this::scheduleDeathScreen);
+    // trigger win screen via entity win event
+    player.getEvents().addListener("winScreenRequested", () -> winScreenRequested = true);
 
     WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     if (world == null) {
@@ -147,6 +150,11 @@ public class MainGameScreen extends ScreenAdapter {
 
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
+    if (winScreenRequested) {
+      winScreenRequested = false;
+      game.setScreen(ScreenType.WIN_SCREEN);
+      return;
+    }
     roomManager.update();
     renderer.render();
     runTimer.update();

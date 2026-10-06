@@ -31,7 +31,6 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +42,6 @@ import org.slf4j.LoggerFactory;
 public class LoadGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(LoadGameScreen.class);
   private static final int SLOT_COUNT = 3;
-  private static final String WINDOW_STYLE = "window-c";
-  private static final String SMALL_FONT = "font_small";
   private static final Color DARK = Color.valueOf("211a14");
   private static final Color DEEP = Color.valueOf("100d0b");
   private static final Color GOLD = Color.valueOf("c5a15d");
@@ -107,16 +104,16 @@ public class LoadGameScreen extends ScreenAdapter {
     root.pad(24f);
 
     Table frame = new Table();
-    frame.setBackground(skin.newDrawable(WINDOW_STYLE, GOLD));
+    frame.setBackground(skin.newDrawable("window-c", GOLD));
     Table panel = new Table();
-    panel.setBackground(skin.newDrawable(WINDOW_STYLE, DARK));
+    panel.setBackground(skin.newDrawable("window-c", DARK));
     panel.pad(22f, 28f, 18f, 28f);
 
     Table header = new Table();
     Table heading = new Table();
     heading.left();
     heading.add(label("DATA LIST", "font_large", SELECTED_GOLD, 1.15f)).left().row();
-    heading.add(label("Select data to load", SMALL_FONT, TEXT, 1f)).left();
+    heading.add(label("Select data to load", "font_small", TEXT, 1f)).left();
     header.add(heading).expandX().left();
     panel.add(header).expandX().fillX().left().padBottom(14f).row();
 
@@ -124,8 +121,8 @@ public class LoadGameScreen extends ScreenAdapter {
     divider.setBackground(skin.newDrawable("button-c", GOLD));
     panel.add(divider).height(3f).expandX().fillX().padBottom(16f).row();
 
-    float panelHeight = Math.clamp(Gdx.graphics.getHeight() - 32f, 0f, 680f);
-    float rowHeight = Math.clamp((panelHeight - 213f) / 3f, 52f, 112f);
+    float panelHeight = Math.min(680f, Gdx.graphics.getHeight() - 32f);
+    float rowHeight = Math.max(52f, Math.min(112f, (panelHeight - 213f) / 3f));
     for (int index = 0; index < SLOT_COUNT; index++) {
       Button row = createSlotRow(index, rowHeight);
       slotButtons[index] = row;
@@ -134,13 +131,16 @@ public class LoadGameScreen extends ScreenAdapter {
 
     footer =
         label(
-            "UP / DOWN  Select     ENTER  Load     F  Delete     ESC  Back", SMALL_FONT, MUTED, 1f);
+            "UP / DOWN  Select     ENTER  Load     F  Delete     ESC  Back",
+            "font_small",
+            MUTED,
+            1f);
     footer.setAlignment(Align.left);
     panel.add(footer).expandX().fillX().left().padTop(8f);
 
     frame.add(panel).expand().fill().pad(12f);
-    float width = Math.clamp(Gdx.graphics.getWidth() - 32f, 0f, 1120f);
-    float height = Math.clamp(Gdx.graphics.getHeight() - 32f, 0f, 680f);
+    float width = Math.min(1120f, Gdx.graphics.getWidth() - 32f);
+    float height = Math.min(680f, Gdx.graphics.getHeight() - 32f);
     root.add(frame).width(width).height(height).center();
     stage.addActor(root);
     updateSelection();
@@ -151,36 +151,23 @@ public class LoadGameScreen extends ScreenAdapter {
   }
 
   private Button createSlotRow(int index, float rowHeight) {
-    Button.ButtonStyle normal = createSlotStyles(index);
-    Button row = new Button(normal);
-    row.pad(10f, 16f, 10f, 16f);
-
-    Table content = new Table();
-    content.left();
-    addPreview(content, index, rowHeight);
-    addSaveDetails(content, index);
-    addCheckpointDetails(content, saves[index]);
-
-    row.add(content).expand().fill();
-    addRowClickListener(row, index);
-    return row;
-  }
-
-  private Button.ButtonStyle createSlotStyles(int index) {
     Button.ButtonStyle normal = new Button.ButtonStyle(skin.get(Button.ButtonStyle.class));
-    normal.up = skin.newDrawable(WINDOW_STYLE, DARK);
-    normal.over = skin.newDrawable(WINDOW_STYLE, Color.valueOf("342719"));
-    normal.down = skin.newDrawable(WINDOW_STYLE, Color.valueOf("49351e"));
+    normal.up = skin.newDrawable("window-c", DARK);
+    normal.over = skin.newDrawable("window-c", Color.valueOf("342719"));
+    normal.down = skin.newDrawable("window-c", Color.valueOf("49351e"));
     Button.ButtonStyle selected = new Button.ButtonStyle(normal);
-    selected.up = skin.newDrawable(WINDOW_STYLE, Color.valueOf("4a371f"));
-    selected.over = skin.newDrawable(WINDOW_STYLE, Color.valueOf("594224"));
-    selected.down = skin.newDrawable(WINDOW_STYLE, Color.valueOf("654d2c"));
+    selected.up = skin.newDrawable("window-c", Color.valueOf("4a371f"));
+    selected.over = skin.newDrawable("window-c", Color.valueOf("594224"));
+    selected.down = skin.newDrawable("window-c", Color.valueOf("654d2c"));
     normalStyles[index] = normal;
     selectedStyles[index] = selected;
-    return normal;
-  }
 
-  private void addPreview(Table content, int index, float rowHeight) {
+    Button row = new Button(normal);
+    row.pad(10f, 16f, 10f, 16f);
+    Table content = new Table();
+    content.left();
+
+    GameSaveData save = saves[index];
     Texture preview = loadPreview(index);
     if (preview != null) {
       Image image = new Image(preview);
@@ -190,36 +177,31 @@ public class LoadGameScreen extends ScreenAdapter {
       Table placeholder = new Table();
       placeholder.setBackground(skin.newDrawable("button-c", DEEP));
       String placeholderText = saveFiles[index] ? "NO MAP\nPREVIEW" : "EMPTY SLOT";
-      placeholder.add(label(placeholderText, SMALL_FONT, MUTED, 0.9f)).center();
+      placeholder.add(label(placeholderText, "font_small", MUTED, 0.9f)).center();
       content.add(placeholder).size(138f, rowHeight - 22f).padRight(18f);
     }
-  }
 
-  private void addSaveDetails(Table content, int index) {
-    GameSaveData save = saves[index];
     Table details = new Table();
     details.left();
     String slotTitle = "SAVE SLOT " + (index + 1);
     details.add(label(slotTitle, "font_large", SELECTED_GOLD, 0.92f)).left().row();
     if (save == null) {
       String status = saveFiles[index] ? "This record could not be read" : "No saved journey";
-      details.add(label(status, SMALL_FONT, MUTED, 1f)).left();
+      details.add(label(status, "font_small", MUTED, 1f)).left();
     } else {
-      String room;
-      if (save.resumePosition != null) {
-        room = displayRoom(save.resumePosition.roomId);
-      } else if (save.checkpoint == null) {
-        room = "Unknown location";
-      } else {
-        room = displayRoom(save.checkpoint.roomId);
-      }
+      String room =
+          save.resumePosition != null
+              ? displayRoom(save.resumePosition.roomId)
+              : (save.checkpoint == null
+                  ? "Unknown location"
+                  : displayRoom(save.checkpoint.roomId));
       details.add(label(room, "font", TEXT, 1f)).left().row();
       details
-          .add(label("Play Time  " + formatPlayTime(save.playTimeSeconds), SMALL_FONT, TEXT, 1f))
+          .add(label("Play Time  " + formatPlayTime(save.playTimeSeconds), "font_small", TEXT, 1f))
           .left()
           .row();
       details
-          .add(label(formatDungeonTimes(save.dungeonTimesSeconds), SMALL_FONT, MUTED, 0.9f))
+          .add(label(formatDungeonTimes(save.dungeonTimesSeconds), "font_small", MUTED, 0.9f))
           .left()
           .row();
       String stats =
@@ -229,23 +211,20 @@ public class LoadGameScreen extends ScreenAdapter {
               + count(save.playerData.charms)
               + "     Upgrades  "
               + count(save.playerData.upgradedWeapons);
-      details.add(label(stats, SMALL_FONT, MUTED, 0.95f)).left();
+      details.add(label(stats, "font_small", MUTED, 0.95f)).left();
     }
     content.add(details).expandX().fillX().left();
-  }
 
-  private void addCheckpointDetails(Table content, GameSaveData save) {
     if (save != null && Gdx.graphics.getWidth() >= 900) {
       Table location = new Table();
       location.right();
-      location.add(label("LAST CHECKPOINT", SMALL_FONT, MUTED, 0.82f)).right().row();
+      location.add(label("LAST CHECKPOINT", "font_small", MUTED, 0.82f)).right().row();
       String checkpoint = save.checkpoint == null ? "Unknown" : displayRoom(save.checkpoint.roomId);
       location.add(label(checkpoint, "font", TEXT, 0.95f)).right();
       content.add(location).width(230f).right().padLeft(12f);
     }
-  }
 
-  private void addRowClickListener(Button row, int index) {
+    row.add(content).expand().fill();
     row.addListener(
         new ClickListener() {
           @Override
@@ -255,6 +234,7 @@ public class LoadGameScreen extends ScreenAdapter {
             loadSelectedSlot();
           }
         });
+    return row;
   }
 
   private Texture loadPreview(int index) {
@@ -290,16 +270,17 @@ public class LoadGameScreen extends ScreenAdapter {
     return Character.toUpperCase(spaced.charAt(0)) + spaced.substring(1);
   }
 
-  private String formatDungeonTimes(Map<String, Float> times) {
+  private String formatDungeonTimes(java.util.Map<String, Float> times) {
     if (times == null || times.isEmpty()) {
       return "Dungeons  --";
     }
-    return String.join(
-        "  |  ",
-        times.entrySet().stream()
-            .sorted(Map.Entry.comparingByKey())
-            .map(entry -> displayRoom(entry.getKey()) + " " + formatPlayTime(entry.getValue()))
-            .toList());
+    List<String> dungeonIds = new ArrayList<>(times.keySet());
+    dungeonIds.sort(String::compareTo);
+    List<String> entries = new ArrayList<>();
+    for (String dungeonId : dungeonIds) {
+      entries.add(displayRoom(dungeonId) + " " + formatPlayTime(times.get(dungeonId)));
+    }
+    return String.join("  |  ", entries);
   }
 
   private int count(List<?> values) {
@@ -340,42 +321,42 @@ public class LoadGameScreen extends ScreenAdapter {
     game.startGame(save, slot);
   }
 
+  private void goBack() {
+    game.setScreen(GdxGame.ScreenType.MAIN_MENU);
+  }
+
+  private void moveSelection(int amount) {
+    selectedIndex = (selectedIndex + amount + SLOT_COUNT) % SLOT_COUNT;
+    confirmingDelete = false;
+    updateSelection();
+    if (saves[selectedIndex] == null) {
+      footer.setText(
+          saveFiles[selectedIndex]
+              ? "Unreadable record     F  Delete"
+              : "Empty slot     ENTER  Begin a new journey here");
+    } else {
+      footer.setText("ENTER  Load selected record     F  Delete     ESC  Back");
+    }
+  }
+
+  private void deleteSelectedSlot() {
+    if (!saveFiles[selectedIndex]) {
+      footer.setText("This slot is already empty");
+      confirmingDelete = false;
+      return;
+    }
+    if (!confirmingDelete) {
+      confirmingDelete = true;
+      footer.setText("Press F again to delete this slot and its map preview");
+      return;
+    }
+    FileLoader.deleteSaveSlot(selectedIndex + 1);
+    game.setScreen(GdxGame.ScreenType.LOAD_GAME);
+  }
+
   private class SaveListControls extends InputComponent {
     private SaveListControls() {
       super(20);
-    }
-
-    private void goBack() {
-      game.setScreen(GdxGame.ScreenType.MAIN_MENU);
-    }
-
-    private void moveSelection(int amount) {
-      selectedIndex = (selectedIndex + amount + SLOT_COUNT) % SLOT_COUNT;
-      confirmingDelete = false;
-      updateSelection();
-      if (saves[selectedIndex] == null) {
-        footer.setText(
-            saveFiles[selectedIndex]
-                ? "Unreadable record     F  Delete"
-                : "Empty slot     ENTER  Begin a new journey here");
-      } else {
-        footer.setText("ENTER  Load selected record     F  Delete     ESC  Back");
-      }
-    }
-
-    private void deleteSelectedSlot() {
-      if (!saveFiles[selectedIndex]) {
-        footer.setText("This slot is already empty");
-        confirmingDelete = false;
-        return;
-      }
-      if (!confirmingDelete) {
-        confirmingDelete = true;
-        footer.setText("Press F again to delete this slot and its map preview");
-        return;
-      }
-      FileLoader.deleteSaveSlot(selectedIndex + 1);
-      game.setScreen(GdxGame.ScreenType.LOAD_GAME);
     }
 
     @Override
@@ -387,13 +368,15 @@ public class LoadGameScreen extends ScreenAdapter {
         case Input.Keys.DOWN:
           moveSelection(1);
           return true;
-        case Input.Keys.ENTER, Input.Keys.NUMPAD_ENTER:
+        case Input.Keys.ENTER:
+        case Input.Keys.NUMPAD_ENTER:
           loadSelectedSlot();
           return true;
         case Input.Keys.F:
           deleteSelectedSlot();
           return true;
-        case Input.Keys.ESCAPE, Input.Keys.Q:
+        case Input.Keys.ESCAPE:
+        case Input.Keys.Q:
           goBack();
           return true;
         default:

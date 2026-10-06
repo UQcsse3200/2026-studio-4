@@ -1,0 +1,35 @@
+{
+playTimeSeconds: 906.5528
+dungeonTimesSeconds: {
+	class: java.util.LinkedHashMap
+	dungeonOne: 180.80658
+	dungeonTwo: 291.00098
+	finalDungeon: 206.61145
+}
+checkpoint: {
+	roomId: finalBossRoom
+	tileX: 10
+	tileY: 10
+}
+resumePosition: {
+	roomId: finalBossRoom
+	x: 14.060781
+	y: 3.6978626
+}
+playerData: {
+	gold: 82
+	inventory: {
+		class: java.util.HashMap
+		FREEZE_BOMB: 13
+		SHIELD: 4
+	}
+	charms: [
+		strength
+		strength
+		strength
+		attack_speed
+		strength
+	]
+	selectedWeapon: BOW
+}
+}
