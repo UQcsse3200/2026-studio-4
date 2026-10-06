@@ -25,18 +25,23 @@ public class RoomFactory {
     throw new IllegalStateException("Instantiating static utility class");
   }
 
-  /** Creates a room entity from its declarative definition. */
+  /**
+   * Creates a room from its declarative definition, camera component and the boolean value of its cleared state.
+   * @param room The rooms declarative definition.
+   * @param camera The camera for the room.
+   * @param cleared Whether the room has been cleared.
+   * @return The room entity.
+   */
   public static Entity createRoom(RoomConfig room, CameraComponent camera, boolean cleared) {
     GridPoint2 mapSize = new GridPoint2(room.mapWidth, room.mapHeight);
     TerrainBuilder terrainBuilder = new TerrainBuilder(camera, mapSize);
-    ObstacleComponent obstacle = new ObstacleComponent(room);
-    spawnMap(room, terrainBuilder, obstacle);
+    spawnMap(room, terrainBuilder);
     return new Entity()
         .addComponent(new GameAreaDisplay(room.title))
         .addComponent(terrainBuilder.getTerrain())
         .addComponent(new WallComponent())
         .addComponent(new FollowingCameraComponent())
-        .addComponent(obstacle)
+        .addComponent(new ObstacleComponent(room))
         .addComponent(new TrapManagerComponent(room.trapSpawns))
         .addComponent(new ExitComponent(room.exits))
         .addComponent(
@@ -57,12 +62,15 @@ public class RoomFactory {
     return friendlyNpcs;
   }
 
-  public static void spawnMap(RoomConfig room, TerrainBuilder terrain, ObstacleComponent obstacle) {
+  /**
+   * Spawns the terrain of the map based upon the room config definition.
+   * @param room The room config.
+   * @param terrain The TerrainBuilder.
+   */
+  public static void spawnMap(RoomConfig room, TerrainBuilder terrain) {
     // Gets the list of obstacles from the spawnConfig
     List<String> spawnConfig = room.obstacles.spawns;
     // Gets the height and width of the room
-    int height = room.mapHeight;
-    int width = room.mapWidth;
     // Loops through the spawn config
     for (int y = 0; y < spawnConfig.size(); y++) {
       String row = spawnConfig.get(y);
