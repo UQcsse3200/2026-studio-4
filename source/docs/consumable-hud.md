@@ -73,3 +73,13 @@ For a manual walkthrough, start `./gradlew desktop:run`, enter gameplay, collect
 potions with the existing pickup interaction, cycle with Tab and use with Q.
 Check empty/full-health use, effect refresh/expiry, Gold pickups, inventory book
 visibility and resizing. Confirm no duplicate old consumable HUD appears.
+
+## Local ItemIds integration (2026-10-06)
+
+The original HUD and pickup-order commits by Jeremyzihanwu are retained through a
+merge of `origin/consumable-items`. The integration adapts their four physical slots
+to the current ItemCatalog/String IDs, without reintroducing the retired ItemType
+API or loadout component. Freeze Bomb and other registered consumables use the same
+slot assignment and their catalog textures. Existing local consumable feedback and
+the eight-second shield using the original Shield mitigation are retained.
+The earlier verification counts above describe the original remote implementation.

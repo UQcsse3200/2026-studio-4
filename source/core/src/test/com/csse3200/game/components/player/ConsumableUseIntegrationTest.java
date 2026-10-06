@@ -134,6 +134,15 @@ class ConsumableUseIntegrationTest {
     assertTrue(consumables.isShielded());
     stats.takeDamage(30, new Entity());
     assertEquals(100, stats.getHealth());
+    now.set(3001);
+    effects.update();
+    stats.takeDamage(30);
+    assertEquals(100, stats.getHealth());
+    now.set(7999);
+    effects.update();
+    stats.takeDamage(30);
+    assertEquals(100, stats.getHealth());
+    assertEquals(1, consumables.getShieldRemainingMs());
     now.set(8000);
     assertFalse(consumables.isShielded());
     stats.takeDamage(30);
@@ -266,9 +275,8 @@ class ConsumableUseIntegrationTest {
     player.addComponent(selection).addComponent(input);
     selection.create();
     input.keyDown(Keys.Q);
-    assertFalse(consumables.isShielded());
-    inventory.addConsumable(ItemIds.SHIELD);
-    assertEquals(ItemIds.SHIELD, selection.getSelectedType());
+    assertEquals(0, inventory.getConsumableCount(ItemIds.SHIELD));
+    input.keyDown(Keys.TAB);
     input.keyDown(Keys.Q);
     assertEquals(0, inventory.getConsumableCount(ItemIds.SHIELD));
     assertTrue(consumables.isShielded());

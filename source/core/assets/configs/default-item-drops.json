@@ -20,7 +20,8 @@
       "enemyType": "WASP",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 45, "minQuantity": 1, "maxQuantity": 2 },
+          { "itemId": "GOLD_COIN", "weight": 35, "minQuantity": 1, "maxQuantity": 2 },
+          { "itemId": "SHIELD", "weight": 10 },
           { "itemId": "SPEED_POTION", "weight": 25 },
           { "itemId": "ATTACK_SPEED_CHARM", "weight": 5 },
           { "itemId": "FREEZE_BOMB", "weight": 25 }
@@ -42,7 +43,8 @@
       "enemyType": "MUMMY",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 40, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "GOLD_COIN", "weight": 30, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "SHIELD", "weight": 10 },
           { "itemId": "HEALTH_POTION", "weight": 25 },
           { "itemId": "STRENGTH_POTION", "weight": 5 },
           { "itemId": "STRENGTH_CHARM", "weight": 5 },
@@ -54,7 +56,8 @@
       "enemyType": "MEDUSA",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 40, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "GOLD_COIN", "weight": 30, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "SHIELD", "weight": 10 },
           { "itemId": "HEALTH_POTION", "weight": 20 },
           { "itemId": "SPEED_POTION", "weight": 10 },
           { "itemId": "SPEED_CHARM", "weight": 5 },
@@ -90,7 +93,8 @@
       "enemyType": "CYCLOPS",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 30, "minQuantity": 2, "maxQuantity": 5 },
+          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 2, "maxQuantity": 5 },
+          { "itemId": "SHIELD", "weight": 10 },
           { "itemId": "HEALTH_POTION", "weight": 20 },
           { "itemId": "STRENGTH_POTION", "weight": 20 },
           { "itemId": "STRENGTH_CHARM", "weight": 5 },

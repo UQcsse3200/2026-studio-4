@@ -26,8 +26,6 @@ class ConsumableSelectionComponentTest {
     selection.cycle();
     assertNull(selection.getSelectedType());
     selection.cycle();
-    assertNull(selection.getSelectedType());
-    selection.cycle();
     assertEquals(ItemIds.SPEED_POTION, selection.getSelectedType());
   }
 }
