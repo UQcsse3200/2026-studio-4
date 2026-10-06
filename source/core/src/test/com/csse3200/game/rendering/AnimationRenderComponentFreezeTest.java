@@ -39,6 +39,7 @@ class AnimationRenderComponentFreezeTest {
   private GameTime time;
   private SpriteBatch batch;
   private List<TextureRegion> drawn;
+  private List<Float> drawnRotations;
   private Array<TextureAtlas.AtlasRegion> regions;
 
   @BeforeEach
@@ -55,16 +56,36 @@ class AnimationRenderComponentFreezeTest {
     }
 
     drawn = new ArrayList<>();
+    drawnRotations = new ArrayList<>();
     batch = mock(SpriteBatch.class);
     when(batch.getColor()).thenReturn(new Color(Color.WHITE));
     doAnswer(
             invocation -> {
               drawn.add(invocation.getArgument(0));
+              drawnRotations.add(0f);
               return null;
             })
         .when(batch)
         .draw(
             org.mockito.ArgumentMatchers.any(TextureRegion.class),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat());
+    doAnswer(
+            invocation -> {
+              drawn.add(invocation.getArgument(0));
+              drawnRotations.add(invocation.getArgument(9));
+              return null;
+            })
+        .when(batch)
+        .draw(
+            org.mockito.ArgumentMatchers.any(TextureRegion.class),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
             anyFloat(),
             anyFloat(),
             anyFloat(),
@@ -105,6 +126,7 @@ class AnimationRenderComponentFreezeTest {
   void aFrozenEnemyHoldsTheFrameItWasCaughtOn() {
     StatusEffectsControllerComponent effects = new StatusEffectsControllerComponent();
     AnimationRenderComponent animator = animatorOn(effects);
+    animator.setRotation(35f);
     animator.draw(batch);
     animator.draw(batch);
 
@@ -116,6 +138,7 @@ class AnimationRenderComponentFreezeTest {
     assertSame(regions.get(2), drawn.get(2), "frozen on the frame it had reached");
     assertSame(regions.get(2), drawn.get(3));
     assertSame(regions.get(2), drawn.get(4), "and it stays there");
+    assertEquals(List.of(35f, 35f, 35f, 35f, 35f), drawnRotations);
   }
 
   @Test
@@ -155,6 +178,7 @@ class AnimationRenderComponentFreezeTest {
   void aGlowingSpriteStillAnimatesOneFramePerRender() {
     StatusEffectsControllerComponent effects = new StatusEffectsControllerComponent();
     AnimationRenderComponent animator = animatorOn(effects);
+    animator.setRotation(120f);
     effects.addStatusEffect(
         new com.csse3200.game.components.statuseffects.FlashEffect(
             time, 10000L, Color.PURPLE, Color.PURPLE));
@@ -167,6 +191,7 @@ class AnimationRenderComponentFreezeTest {
     assertNotSame(
         drawn.get(1), drawn.get(2), "the next render shows the next frame, not the third");
     assertSame(regions.get(1), drawn.get(2));
+    assertEquals(List.of(120f, 120f, 120f, 120f), drawnRotations);
   }
 
   @Test

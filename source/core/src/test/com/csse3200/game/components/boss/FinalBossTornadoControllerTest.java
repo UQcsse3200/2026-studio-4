@@ -121,7 +121,8 @@ class FinalBossTornadoControllerTest {
   }
 
   @Test
-  void farRemnantsShouldWanderSlowlyInsideTheArenaWithoutExactRandomPaths() {
+  void offscreenPlayerLeavesRemnantsWanderingSlowlyInsideTheArena() {
+    movePlayerGroundTo(30f, 30f);
     controller.statueBroken(new Vector2(5f, 5f), 4);
     FinalBossTornadoController.Tornado item = controller.items.getFirst();
     float distanceTravelled = 0f;
@@ -138,29 +139,165 @@ class FinalBossTornadoControllerTest {
   }
 
   @Test
-  void chaseShouldUseSeparateEnterAndReleaseRadiiWithoutOscillatingAtTheBoundary() {
+  void aDistantVisiblePlayerIsPursuedAcrossTheArenaAndOnlyReleasedOffscreen() {
     controller.statueBroken(new Vector2(5f, 5f), 4);
     FinalBossTornadoController.Tornado item = controller.items.getFirst();
-    movePlayerGroundTo(7f, 5f);
+    movePlayerGroundTo(17f, 17f);
+    Vector2 playerGround = FinalBossStageThreeComponent.groundPosition(player);
+    float initialDistance = item.position.dst(playerGround);
     controller.update(0.6f, true);
     assertTrue(item.chasing);
+    assertTrue(item.position.dst(playerGround) < initialDistance);
 
-    movePlayerGroundTo(item.position.x + 3f, item.position.y);
+    movePlayerGroundTo(16f, 5f);
     Vector2 previous = item.position.cpy();
     controller.update(0.1f, true);
     assertTrue(item.chasing);
     assertEquals(
         FinalBossTornadoController.CHASE_SPEED * 0.1f, previous.dst(item.position), EPSILON);
 
-    movePlayerGroundTo(item.position.x + 3.6f, item.position.y);
+    movePlayerGroundTo(21f, 5f);
     controller.update(0.1f, true);
     assertFalse(item.chasing);
-    movePlayerGroundTo(item.position.x + 3f, item.position.y);
-    controller.update(0.1f, true);
-    assertFalse(item.chasing);
-    movePlayerGroundTo(item.position.x + 2.4f, item.position.y);
+    movePlayerGroundTo(17f, 17f);
     controller.update(0.1f, true);
     assertTrue(item.chasing);
+  }
+
+  @Test
+  void fourRemnantsApproachDistinctSidesAndFollowAMovingPlayerWithoutBunching() {
+    movePlayerGroundTo(10f, 10f);
+    for (Vector2 start :
+        List.of(
+            new Vector2(17f, 10f), new Vector2(10f, 17f),
+            new Vector2(3f, 10f), new Vector2(10f, 3f))) {
+      controller.statueBroken(start, 4 - controller.items.size());
+    }
+    assertEquals(4, controller.items.stream().map(item -> item.approachSlot).distinct().count());
+    for (int frame = 0; frame < 400; frame++) {
+      controller.update(0.1f, true);
+      assertPeerClearance();
+    }
+    for (var item : controller.items) {
+      assertTrue(item.chasing);
+      assertEquals(
+          FinalBossTornadoController.APPROACH_RADIUS,
+          item.position.dst(new Vector2(10f, 10f)),
+          0.01f);
+    }
+
+    List<Integer> slots = controller.items.stream().map(item -> item.approachSlot).toList();
+    movePlayerGroundTo(13f, 12f);
+    for (int frame = 0; frame < 400; frame++) {
+      controller.update(0.1f, true);
+      assertPeerClearance();
+    }
+    assertEquals(slots, controller.items.stream().map(item -> item.approachSlot).toList());
+    for (var item : controller.items) {
+      assertTrue(item.chasing);
+      assertTrue(item.position.dst(new Vector2(13f, 12f)) < 1.4f);
+    }
+  }
+
+  @Test
+  void remnantsStartingOnTheSameSideStillTakeFourDifferentApproachSlots() {
+    movePlayerGroundTo(10f, 10f);
+    for (float y : new float[] {6f, 9f, 12f, 15f}) {
+      controller.statueBroken(new Vector2(3f, y), 4 - controller.items.size());
+    }
+    assertEquals(4, controller.items.stream().map(item -> item.approachSlot).distinct().count());
+    for (int frame = 0; frame < 800; frame++) {
+      controller.update(0.1f, true);
+      assertPeerClearance();
+    }
+    for (var item : controller.items) {
+      assertTrue(item.chasing);
+      Vector2 expected =
+          new Vector2(FinalBossTornadoController.APPROACH_RADIUS, 0f)
+              .rotateDeg(45f + item.approachSlot * 90f)
+              .add(10f, 10f);
+      assertTrue(
+          item.position.dst(expected) < 0.1f,
+          "Each remnant should reach its own side instead of queuing behind the nearest one");
+    }
+  }
+
+  @Test
+  void cornerPursuitKeepsDistinctDestinationsAndContactWithoutStationaryJitter() {
+    movePlayerGroundTo(0.5f, 0.15f);
+    for (Vector2 start :
+        List.of(
+            new Vector2(4f, 4f), new Vector2(4f, 8f),
+            new Vector2(8f, 4f), new Vector2(8f, 8f))) {
+      controller.statueBroken(start, 4 - controller.items.size());
+    }
+    for (int frame = 0; frame < 800; frame++) {
+      controller.update(0.1f, true);
+      assertPeerClearance();
+    }
+    assertTrue(
+        controller.canDamagePlayer(1.35f),
+        () ->
+            controller.items.stream()
+                .map(item -> item.approachSlot + ": " + item.position + " -> " + item.destination)
+                .toList()
+                .toString());
+    List<Vector2> settled = controller.items.stream().map(item -> item.position.cpy()).toList();
+    for (int frame = 0; frame < 20; frame++) {
+      controller.update(0.1f, true);
+      assertPeerClearance();
+      for (int index = 0; index < controller.items.size(); index++) {
+        assertEquals(
+            settled.get(index),
+            controller.items.get(index).position,
+            "A stationary player at a corner must not make the formation oscillate");
+      }
+    }
+
+    movePlayerGroundTo(18.9f, 18f);
+    for (int frame = 0; frame < 1000; frame++) {
+      controller.update(0.1f, true);
+      assertPeerClearance();
+    }
+    assertTrue(controller.canDamagePlayer(1.35f));
+    for (var item : controller.items) {
+      assertTrue(item.chasing);
+      assertTrue(item.position.dst(item.destination) <= 0.0011f);
+    }
+  }
+
+  @Test
+  void aPeerAtThePlayerDoesNotDisableAnotherRemnantsPursuit() {
+    movePlayerGroundTo(10f, 10f);
+    controller.statueBroken(new Vector2(10f, 10f), 4);
+    controller.statueBroken(new Vector2(3f, 10f), 3);
+    var distant = controller.items.get(1);
+    Vector2 before = distant.position.cpy();
+
+    controller.update(0.6f, true);
+
+    assertTrue(distant.chasing);
+    assertTrue(distant.position.x > before.x);
+    assertPeerClearance();
+  }
+
+  @Test
+  void equallyNearEdgeSlotsSettleInAStableOrderWithoutBlockingOneAnother() {
+    movePlayerGroundTo(0.5f, 10f);
+    for (float y : new float[] {4f, 8f, 12f, 16f}) {
+      controller.statueBroken(new Vector2(8f, y), 4 - controller.items.size());
+    }
+
+    for (int frame = 0; frame < 1000; frame++) {
+      controller.update(0.1f, true);
+      assertPeerClearance();
+    }
+
+    assertTrue(controller.canDamagePlayer(1.35f));
+    for (var item : controller.items) {
+      assertTrue(item.chasing);
+      assertTrue(item.position.dst(item.destination) <= 0.0011f);
+    }
   }
 
   @Test
@@ -178,6 +315,62 @@ class FinalBossTornadoControllerTest {
     movePlayerGroundTo(item.position.x + 2f, item.position.y);
     controller.update(0.1f, true);
     assertTrue(item.chasing);
+  }
+
+  @Test
+  void contactRequiresAFinishedSpawnAndStopsImmediatelyWhenDissolving() {
+    movePlayerGroundTo(5.5f, 5f);
+    controller.statueBroken(new Vector2(5f, 5f), 4);
+
+    assertFalse(controller.canDamagePlayer(1.35f));
+    controller.update(FinalBossTornadoController.SPAWN_DURATION, false);
+    assertTrue(controller.canDamagePlayer(1.35f));
+    assertEquals(100, stats.getHealth(), "The controller reports contact without applying damage");
+    for (float radius : new float[] {0f, -1f, Float.NaN, Float.POSITIVE_INFINITY}) {
+      assertFalse(controller.canDamagePlayer(radius));
+    }
+
+    controller.statueBroken(new Vector2(12f, 12f), 0);
+
+    assertFalse(controller.canDamagePlayer(1.35f));
+    assertTrue(controller.items.getFirst().dissolving);
+  }
+
+  @Test
+  void aThinWallStopsContactDamageEvenWhenThePlayerIsWithinRange() {
+    Rectangle wall = new Rectangle(6f, 0f, 0.02f, 20f);
+    boolean[] wallPresent = {true};
+    controller =
+        newController(
+            (centre, size) ->
+                !wallPresent[0]
+                    || !wall.overlaps(
+                        new Rectangle(
+                            centre.x - size.x / 2f, centre.y - size.y / 2f, size.x, size.y)));
+    movePlayerGroundTo(6.5f, 5f);
+    controller.statueBroken(new Vector2(5.5f, 5f), 4);
+    controller.update(FinalBossTornadoController.SPAWN_DURATION, false);
+
+    assertFalse(controller.canDamagePlayer(1.35f));
+    wallPresent[0] = false;
+    assertTrue(controller.canDamagePlayer(1.35f));
+    assertFalse(controller.canDamagePlayer(0.5f));
+  }
+
+  @Test
+  void hiddenOffscreenAndDeadPlayersCannotReceiveReportedContactDamage() {
+    movePlayerGroundTo(5.5f, 5f);
+    controller.statueBroken(new Vector2(5f, 5f), 4);
+    controller.update(FinalBossTornadoController.SPAWN_DURATION, false);
+    effects.addStatusEffect(new InvisibilityEffect(time, 1000L));
+    assertFalse(controller.canDamagePlayer(1.35f));
+    when(time.getTime()).thenReturn(1000L);
+    assertTrue(controller.canDamagePlayer(1.35f));
+    movePlayerGroundTo(21f, 5f);
+    assertFalse(controller.canDamagePlayer(100f));
+    movePlayerGroundTo(5.5f, 5f);
+    stats.setHealth(0);
+    assertFalse(controller.canDamagePlayer(1.35f));
   }
 
   @Test
@@ -301,7 +494,7 @@ class FinalBossTornadoControllerTest {
     // A cached destination that predates the reservation must not override the new route.
     item.destination = new Vector2(12f, 5f);
     item.retargetRemaining = 100f;
-    movePlayerGroundTo(17f, 17f);
+    movePlayerGroundTo(30f, 30f);
     for (int frame = 0; frame < 30; frame++) {
       controller.update(0.1f, true);
       assertTrue(8f - item.position.x >= FinalBossTornadoController.STATUE_CLEARANCE - EPSILON);
@@ -328,6 +521,7 @@ class FinalBossTornadoControllerTest {
 
   @Test
   void anIntrudingStatueShouldCauseASlowRetreatInsteadOfPermanentFreezing() {
+    movePlayerGroundTo(30f, 30f);
     controller.statueBroken(new Vector2(5f, 5f), 4);
     FinalBossTornadoController.Tornado item = controller.items.getFirst();
     Vector2 statue = new Vector2(6f, 5f);
@@ -505,6 +699,17 @@ class FinalBossTornadoControllerTest {
   private void movePlayerGroundTo(float x, float y) {
     Vector2 size = player.getScale();
     player.setPosition(x - size.x * 0.5f, y - size.y * 0.15f);
+  }
+
+  private void assertPeerClearance() {
+    for (int first = 0; first < controller.items.size(); first++) {
+      assertInsideArena(controller.items.get(first).position);
+      for (int second = first + 1; second < controller.items.size(); second++) {
+        assertTrue(
+            controller.items.get(first).position.dst(controller.items.get(second).position)
+                >= FinalBossTornadoController.PEER_CLEARANCE - EPSILON);
+      }
+    }
   }
 
   private void assertInsideArena(Vector2 position) {

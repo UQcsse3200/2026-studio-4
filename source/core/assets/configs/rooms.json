@@ -132,6 +132,10 @@
         { "type": "MEDUSA", "x": 23, "y": 33 }
       ],
       "npcSpawns": [],
+      "trapSpawns": [
+        { "type": "FREEZE", "x": 12, "y": 12 },
+        { "type": "BURN", "x": 16, "y": 24 }
+      ],
       "obstacles": {
         "spawns": [
           "####################################",

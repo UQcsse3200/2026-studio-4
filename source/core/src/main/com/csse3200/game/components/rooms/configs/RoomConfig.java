@@ -12,6 +12,7 @@ public class RoomConfig {
   public EntryPointConfig[] entryPoints = new EntryPointConfig[0];
   public EnemySpawnConfig[] enemySpawns = new EnemySpawnConfig[0];
   public NpcSpawnConfig[] npcSpawns = new NpcSpawnConfig[0];
+  public TrapSpawnConfig[] trapSpawns = new TrapSpawnConfig[0];
   public ExitConfig[] exits = new ExitConfig[0];
   public RoomSpawnConfig obstacles = new RoomSpawnConfig();
 
