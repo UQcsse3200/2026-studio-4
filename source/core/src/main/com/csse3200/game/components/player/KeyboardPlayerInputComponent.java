@@ -19,6 +19,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     super(5);
   }
 
+  @Override
+  public void create() {
+    super.create();
+    entity.getEvents().addListener("walkStop", walkDirection::setZero);
+  }
+
   /**
    * Triggers player events on specific keycodes.
    *
