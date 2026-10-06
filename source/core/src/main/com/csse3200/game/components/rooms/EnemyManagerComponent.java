@@ -79,6 +79,67 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
 
     switch (spawn.type) {
+      // Chinese
+      case JINGWEI:
+        TerrainComponent jingweiTerrain = entity.getComponent(TerrainComponent.class);
+        Vector2 jingweiLeftPoint = jingweiTerrain.tileToWorldPosition(spawn.x - 4, spawn.y);
+        Vector2 jingweiTopPoint = jingweiTerrain.tileToWorldPosition(spawn.x, spawn.y + 3);
+        Vector2 jingweiRightPoint = jingweiTerrain.tileToWorldPosition(spawn.x + 4, spawn.y);
+        return NPCFactory.createFloatingDemon(
+            target,
+            jingweiLeftPoint,
+            jingweiTopPoint,
+            jingweiRightPoint,
+            this::spawnEntity,
+            "images/jingwei.atlas");
+      case ZOMBIE:
+        return NPCFactory.createBombEnemy(target, "images/zombie.atlas", 2f);
+      case WUKONG:
+        Entity wukong = NPCFactory.createGiantEnemy(target, "images/wukong.atlas");
+        wukong.setScale(3f, 3f);
+        wukong
+            .getComponent(HitboxComponent.class)
+            .setAsBox(
+                new Vector2(1f, 1f),
+                new Vector2(wukong.getCenterPosition().x, wukong.getCenterPosition().y / 2));
+        PhysicsUtils.setScaledCollider(wukong, 0.3f, 0.3f);
+        return wukong;
+      case BUG:
+        return NPCFactory.createChaseEnemy(target, true, "images/bug.atlas");
+      case LONGWEI:
+        return NPCFactory.createChaseEnemy(target, false, "images/longwei.atlas");
+      // Norse
+      case WOLF:
+        return NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas");
+      case CROW:
+        TerrainComponent crowTerrain = entity.getComponent(TerrainComponent.class);
+        Vector2 crowLeftPoint = crowTerrain.tileToWorldPosition(spawn.x - 4, spawn.y);
+        Vector2 crowTopPoint = crowTerrain.tileToWorldPosition(spawn.x, spawn.y + 3);
+        Vector2 crowRightPoint = crowTerrain.tileToWorldPosition(spawn.x + 4, spawn.y);
+        return NPCFactory.createFloatingDemon(
+            target,
+            crowLeftPoint,
+            crowTopPoint,
+            crowRightPoint,
+            this::spawnEntity,
+            "images/crow.atlas");
+      case KNIGHT:
+        Entity knight = NPCFactory.createBombEnemy(target, "images/knight.atlas", 2f);
+        knight.setScale(0.75f, 1f);
+        return knight;
+      case DARK_ELVES:
+        return NPCFactory.createChaseEnemy(target, true, "images/dark_elves.atlas");
+      case JOTUNN:
+        Entity jotunn = NPCFactory.createGiantEnemy(target, "images/jotunn.atlas");
+        jotunn.setScale(3f, 3f);
+        jotunn
+            .getComponent(HitboxComponent.class)
+            .setAsBox(
+                new Vector2(1f, 1f),
+                new Vector2(jotunn.getCenterPosition().x, jotunn.getCenterPosition().y / 2));
+        PhysicsUtils.setScaledCollider(jotunn, 0.3f, 0.3f);
+        return jotunn;
+
       // Egyptian
       case BEETLE:
         Entity beetle = NPCFactory.createBombEnemy(target, "images/beetle.atlas", 2f);
