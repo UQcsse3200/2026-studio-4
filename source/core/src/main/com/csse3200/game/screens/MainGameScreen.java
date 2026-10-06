@@ -22,6 +22,7 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.NarrativeFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.entities.factories.ShopFactory;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
@@ -216,6 +217,7 @@ public class MainGameScreen extends ScreenAdapter {
 
     // Dialogue and cutscene systems (events are sent on the player)
     ServiceLocator.getEntityService().register(NarrativeFactory.createNarrative(player));
+    ServiceLocator.getEntityService().register(ShopFactory.createShop(player));
   }
 
   /* Schedule the death screen to be shown */

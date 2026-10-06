@@ -1,0 +1,40 @@
+package com.csse3200.game.entities.factories;
+
+import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.shop.ConsumablePurchaseEffect;
+import com.csse3200.game.components.shop.ShopCatalog;
+import com.csse3200.game.components.shop.ShopDisplay;
+import com.csse3200.game.components.shop.ShopInputComponent;
+import com.csse3200.game.components.shop.ShopProductKind;
+import com.csse3200.game.components.shop.ShopService;
+import com.csse3200.game.components.shop.ShopSessionComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.services.ServiceLocator;
+import java.util.Map;
+import java.util.Objects;
+
+/** Builds the merchant shop on an entity that remains active while gameplay is frozen. */
+public final class ShopFactory {
+  public static Entity createShop(Entity player) {
+    InventoryComponent inventory =
+        Objects.requireNonNull(player.getComponent(InventoryComponent.class));
+    ShopCatalog catalog = ShopCatalog.load("configs/shops/merchant.json");
+    ShopService service =
+        new ShopService(
+            inventory, catalog, Map.of(ShopProductKind.CONSUMABLE, new ConsumablePurchaseEffect()));
+    ShopDisplay display = new ShopDisplay(inventory, catalog, service);
+    ShopSessionComponent session = new ShopSessionComponent(player, display);
+    Entity shop =
+        new Entity()
+            .addComponent(display)
+            .addComponent(session)
+            .addComponent(
+                new ShopInputComponent(session, ServiceLocator.getRenderService().getStage()));
+    shop.setUpdatesWhilePaused(true);
+    return shop;
+  }
+
+  private ShopFactory() {
+    throw new IllegalStateException("Instantiating static util class");
+  }
+}
