@@ -328,8 +328,8 @@ public class NPCFactory {
     sleipnir.getComponent(AnimationRenderComponent.class).scaleEntity();
     animator.startAnimation(MOVE);
     sleipnir.setScale(3f, 3f);
-    sleipnir.getComponent(HitboxComponent.class).setAsBox(new Vector2(2f, 2f));
-    PhysicsUtils.setScaledCollider(sleipnir, 0.1f, 0.1f);
+    PhysicsUtils.setScaledCollider(sleipnir, 0.3f, 0.3f);
+
     sleipnir.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(8f, 8f));
 
     return sleipnir;

@@ -58,7 +58,6 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
     if (currentPos.x > newTarget.x) {
       x = -1f;
     } else if (currentPos.x < newTarget.x) {
-      System.out.println("x is greater");
       x = 1f;
     }
 

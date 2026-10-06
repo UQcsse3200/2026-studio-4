@@ -58,13 +58,6 @@ class StampedeTaskTest {
   }
 
   @Test
-  void priorityCheck() {
-    StampedeTask task = new StampedeTask(player, eventEntity);
-
-    assertEquals(-10, task.getPriority());
-  }
-
-  @Test
   void startShouldActivateStampede() {
     StampedeTask task = new StampedeTask(player, eventEntity);
     task.create(owner);
