@@ -1,7 +1,6 @@
 package com.csse3200.game.entities.enemy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.math.Vector2;
@@ -22,6 +21,7 @@ import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 public class SleipnirEnemyTest {
 
-  private Vector2[] mapBounds = {new Vector2(10, 10), new Vector2(2, 2)};
+  private final Vector2[] mapBounds = {new Vector2(10, 10), new Vector2(2, 2)};
 
   @BeforeEach
   void setUp() {
@@ -67,8 +67,8 @@ public class SleipnirEnemyTest {
     sleipnir.create();
     AITaskComponent aiTaskComponent = sleipnir.getComponent(AITaskComponent.class);
 
-    assertNotNull(aiTaskComponent);
-    assertEquals(sleipnir, aiTaskComponent.getEntity());
+    Assertions.assertNotNull(aiTaskComponent);
+    Assertions.assertEquals(sleipnir, aiTaskComponent.getEntity());
   }
 
   @Test
@@ -77,7 +77,7 @@ public class SleipnirEnemyTest {
 
     Entity sleipnir = NPCFactory.createSleipnir(target, mapBounds);
 
-    assertNotNull(sleipnir);
+    Assertions.assertNotNull(sleipnir);
   }
 
   @Test
@@ -86,12 +86,12 @@ public class SleipnirEnemyTest {
 
     Entity sleipnir = NPCFactory.createSleipnir(target, mapBounds);
 
-    assertNotNull(sleipnir.getComponent(PhysicsMovementComponent.class));
-    assertNotNull(sleipnir.getComponent(AITaskComponent.class));
-    assertNotNull(sleipnir.getComponent(EnemyDeathComponent.class));
-    assertNotNull(sleipnir.getComponent(EnemyAnimationController.class));
-    assertNotNull(sleipnir.getComponent(EnemyStatDisplay.class));
-    assertNotNull(sleipnir.getComponent(BossPhaseComponent.class));
+    Assertions.assertNotNull(sleipnir.getComponent(PhysicsMovementComponent.class));
+    Assertions.assertNotNull(sleipnir.getComponent(AITaskComponent.class));
+    Assertions.assertNotNull(sleipnir.getComponent(EnemyDeathComponent.class));
+    Assertions.assertNotNull(sleipnir.getComponent(EnemyAnimationController.class));
+    Assertions.assertNotNull(sleipnir.getComponent(EnemyStatDisplay.class));
+    Assertions.assertNotNull(sleipnir.getComponent(BossPhaseComponent.class));
   }
 
   @Test
@@ -103,7 +103,7 @@ public class SleipnirEnemyTest {
     PhysicsMovementComponent movementComponent =
         sleipnir.getComponent(PhysicsMovementComponent.class);
 
-    assertNotNull(movementComponent);
-    assertEquals(true, movementComponent.getMoving());
+    Assertions.assertNotNull(movementComponent);
+    Assertions.assertTrue(movementComponent.getMoving());
   }
 }
