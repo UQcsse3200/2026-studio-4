@@ -26,7 +26,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class ObstacleFactoryTest {
-  private static final String TILESET = "images/dungeons/fantasy_dreamland_16.png";
   private static final float EPS = 0.0001f;
 
   @BeforeEach
