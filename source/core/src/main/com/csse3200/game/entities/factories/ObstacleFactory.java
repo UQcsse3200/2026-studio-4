@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.csse3200.game.areas.terrain.DreamlandTile;
-import com.csse3200.game.areas.terrain.TerrainTile;
 import com.csse3200.game.areas.terrain.TileSheet;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -15,9 +14,6 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
-
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Factory to create obstacle entities.
@@ -39,6 +35,7 @@ public class ObstacleFactory {
 
   /**
    * Creates a wall for the given configuration.
+   *
    * @param up If there is a void above the tile.
    * @param right If there is a void to the right of the tile.
    * @param down If there is a void below the tile.
@@ -94,9 +91,10 @@ public class ObstacleFactory {
     if (shift) {
       x_shift = WallTileTextureShift;
     }
-    Entity wall = createRenderedObstacle(
+    Entity wall =
+        createRenderedObstacle(
             tile.region(new TileSheet(texture, 16), x_shift, 0), 0.5f, colliderHeight);
-    setBevelledCollider(wall,0.5f, colliderHeight);
+    setBevelledCollider(wall, 0.5f, colliderHeight);
     return wall;
   }
 
@@ -109,31 +107,33 @@ public class ObstacleFactory {
 
   /**
    * Creates a sword obstacle
+   *
    * @return The sword obstacle
    */
   public static Entity createSword() {
     Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
     return createRenderedObstacle(
-            DreamlandTile.randomOfId('s', 0.1f).region(new TileSheet(texture, 16)), 0.7f, 0.9f);
+        DreamlandTile.randomOfId('s', 0.1f).region(new TileSheet(texture, 16)), 0.7f, 0.9f);
   }
 
   /**
    * Creates a box obstacle
+   *
    * @return A box obstacle
    */
   public static Entity createBox() {
     Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
     return createRenderedObstacle(
-            DreamlandTile.randomOfId('B', 0.1f).region(new TileSheet(texture, 16)), 0.5f, 0.5f);
+        DreamlandTile.randomOfId('B', 0.1f).region(new TileSheet(texture, 16)), 0.5f, 0.5f);
   }
 
   private static Entity createRenderedObstacle(
       TextureRegion region, float colliderWidth, float colliderHeight) {
     Entity obstacle =
-            new Entity()
-                    .addComponent(new TextureRenderComponent(region))
-                    .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-                    .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+        new Entity()
+            .addComponent(new TextureRenderComponent(region))
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
     obstacle.getComponent(TextureRenderComponent.class).scaleEntity();
     obstacle.scaleHeight(colliderHeight);
     PhysicsUtils.setScaledCollider(obstacle, colliderWidth, colliderHeight);

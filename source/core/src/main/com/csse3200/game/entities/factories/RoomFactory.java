@@ -13,9 +13,9 @@ import com.csse3200.game.components.rooms.WallComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
-import java.util.List;
 import com.csse3200.game.entities.configs.InteractableNpcConfigs;
 import com.csse3200.game.files.FileLoader;
+import java.util.List;
 
 /** Factory for creating rooms with their terrain and gameplay components. */
 public class RoomFactory {
@@ -26,7 +26,9 @@ public class RoomFactory {
   }
 
   /**
-   * Creates a room from its declarative definition, camera component and the boolean value of its cleared state.
+   * Creates a room from its declarative definition, camera component and the boolean value of its
+   * cleared state.
+   *
    * @param room The rooms declarative definition.
    * @param camera The camera for the room.
    * @param cleared Whether the room has been cleared.
@@ -64,6 +66,7 @@ public class RoomFactory {
 
   /**
    * Spawns the terrain of the map based upon the room config definition.
+   *
    * @param room The room config.
    * @param terrain The TerrainBuilder.
    */

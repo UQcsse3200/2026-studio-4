@@ -51,9 +51,9 @@ public class ExitComponent extends EntityManagerComponent {
   }
 
   private void spawnBookshelf(ExitConfig exit, TileSheet tileSheet) {
-    spawnFixture(DreamlandTile.randomOfId('b',0.5f), exit.x, exit.y, tileSheet);
-    spawnFixture(DreamlandTile.randomOfId('b',0.5f), exit.x+2, exit.y, tileSheet);
-    spawnFixture(DreamlandTile.randomOfId('b',0.5f), exit.x+4, exit.y, tileSheet);
+    spawnFixture(DreamlandTile.randomOfId('b', 0.5f), exit.x, exit.y, tileSheet);
+    spawnFixture(DreamlandTile.randomOfId('b', 0.5f), exit.x + 2, exit.y, tileSheet);
+    spawnFixture(DreamlandTile.randomOfId('b', 0.5f), exit.x + 4, exit.y, tileSheet);
   }
 
   private void spawnFixture(DreamlandTile tile, int x, int y, TileSheet tileSheet) {

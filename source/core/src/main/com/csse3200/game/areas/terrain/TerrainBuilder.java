@@ -31,8 +31,7 @@ public class TerrainBuilder {
    * @param cameraComponent Camera to render terrains to. Must be orthographic.
    * @param mapSize The size of the map to render terrain to.
    */
-  public TerrainBuilder(
-      CameraComponent cameraComponent, GridPoint2 mapSize) {
+  public TerrainBuilder(CameraComponent cameraComponent, GridPoint2 mapSize) {
     this.camera = (OrthographicCamera) cameraComponent.getCamera();
     this.layer = new TiledMapTileLayer(mapSize.x, mapSize.y, DUNGEON_TILE_SIZE, DUNGEON_TILE_SIZE);
     ResourceService resourceService = ServiceLocator.getResourceService();
@@ -45,6 +44,7 @@ public class TerrainBuilder {
 
   /**
    * Create a cell and tile it with the given texture from C
+   *
    * @param x The x coordinate of the cell to spawn
    * @param y The y coordinate of the cell to spawn
    * @param c The character matching the texture of the tile wanted.
@@ -57,7 +57,9 @@ public class TerrainBuilder {
   }
 
   /**
-   * Sets the texture to give the tile to a random terrain texture matching the given character, as long as the character is a space or a digit (a terrain texture)
+   * Sets the texture to give the tile to a random terrain texture matching the given character, as
+   * long as the character is a space or a digit (a terrain texture)
+   *
    * @param c The character matching the textures id in DreamlandTile
    */
   private void randomOfId(Character c) {
@@ -68,6 +70,7 @@ public class TerrainBuilder {
 
   /**
    * Sets the texture to give the tile.
+   *
    * @param tile The texture to give the tile.
    */
   public void setTile(TerrainTile tile) {
@@ -76,6 +79,7 @@ public class TerrainBuilder {
 
   /**
    * Gets the terrain component created by this builder.
+   *
    * @return The terrain component.
    */
   public TerrainComponent getTerrain() {

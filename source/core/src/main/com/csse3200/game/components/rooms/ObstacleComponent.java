@@ -6,12 +6,13 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import java.util.List;
 
-/** Spawns the fixed rocks and barrels declared for a room. */
+/** Spawns the fixed obstacles declared for a room. */
 public class ObstacleComponent extends EntityManagerComponent {
   private final RoomConfig room;
 
   /**
    * Create an obstacle component with the room config given
+   *
    * @param room A room config.
    */
   public ObstacleComponent(RoomConfig room) {
@@ -34,7 +35,7 @@ public class ObstacleComponent extends EntityManagerComponent {
         boolean centreY = true;
         Entity entity = null;
         switch (spawnType) {
-          case '#' :
+          case '#':
           case '%':
             boolean up = isVoid(spawnConfig, x, y + 1);
             boolean right = isVoid(spawnConfig, x + 1, y);
@@ -46,9 +47,9 @@ public class ObstacleComponent extends EntityManagerComponent {
             boolean downLeft = isVoid(spawnConfig, x - 1, y - 1);
 
             boolean shift = spawnType == '#';
-              entity =
-                    ObstacleFactory.createWallFor(
-                            up, right, down, left, upRight, upLeft, downRight, downLeft, shift);
+            entity =
+                ObstacleFactory.createWallFor(
+                    up, right, down, left, upRight, upLeft, downRight, downLeft, shift);
 
             if (entity == null) {
               continue; // no art for this combination
@@ -73,12 +74,13 @@ public class ObstacleComponent extends EntityManagerComponent {
         if (entity != null) {
           spawnEntityAt(entity, new GridPoint2(x, spawny), true, centreY);
         }
-        }
       }
+    }
   }
 
   /**
    * Checks if the given config is a top face.
+   *
    * @param up Whether void above
    * @param right Whether void right
    * @param down Whether void below
@@ -94,6 +96,7 @@ public class ObstacleComponent extends EntityManagerComponent {
 
   /**
    * Checks if the given coordinate is a void (outside the map or a ' ' Character)
+   *
    * @param spawnConfig The spawn config
    * @param x The x value of the coordinate
    * @param y The y value of the coordinate

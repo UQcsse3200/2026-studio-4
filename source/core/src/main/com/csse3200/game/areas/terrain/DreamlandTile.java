@@ -39,16 +39,16 @@ public enum DreamlandTile {
   WALL_TYPE1_DOWN_RIGHT('o', 3, 5),
   WALL_TYPE1_DOWN_LEFT('o', 5, 5),
 
-  SWORD('s', 10, 16, 2,1),
-  SWORD1('s', 11, 16, 2,1),
-  SWORD2('s', 12, 16,2,1),
-  SWORD4('s', 14, 16, 2,1),
-  SWORD6('s', 10, 18,2,1),
-  SWORD7('s', 11, 18,2,1),
-  SWORD8('s', 12, 18, 2,1),
-  SWORD9('s', 13, 18, 2,1),
-  SWORD10('s', 14, 18,2,1),
-  SWORD11('s', 15, 18,2,1),
+  SWORD('s', 10, 16, 2, 1),
+  SWORD1('s', 11, 16, 2, 1),
+  SWORD2('s', 12, 16, 2, 1),
+  SWORD4('s', 14, 16, 2, 1),
+  SWORD6('s', 10, 18, 2, 1),
+  SWORD7('s', 11, 18, 2, 1),
+  SWORD8('s', 12, 18, 2, 1),
+  SWORD9('s', 13, 18, 2, 1),
+  SWORD10('s', 14, 18, 2, 1),
+  SWORD11('s', 15, 18, 2, 1),
   PURPLE_STONE_FLOOR('j', 4, 0),
   PURPLE_STONE_WALL('c', 8, 0),
   BLUE_STONE_WALL('d', 9, 0),
@@ -113,19 +113,19 @@ public enum DreamlandTile {
     return Collections.unmodifiableList(BY_ID.getOrDefault(id, List.of()));
   }
 
-    public static DreamlandTile randomOfId(Character c, float chance) {
-      List<DreamlandTile> tiles = allWithId(c);
-      if (!tiles.isEmpty() && (!Character.isSpaceChar(c) || !Character.isDigit(c))) {
-        // found at least one return a random one.
-        ThreadLocalRandom rng = ThreadLocalRandom.current();
+  public static DreamlandTile randomOfId(Character c, float chance) {
+    List<DreamlandTile> tiles = allWithId(c);
+    if (!tiles.isEmpty() && (!Character.isSpaceChar(c) || !Character.isDigit(c))) {
+      // found at least one return a random one.
+      ThreadLocalRandom rng = ThreadLocalRandom.current();
 
-        // 70% chance of the first entry, otherwise a random one from the rest
-        int index =
-                (tiles.size() == 1 || rng.nextDouble() < chance) ? 0 : 1 + rng.nextInt(tiles.size() - 1);
-        return (tiles.get(index));
-      }
-      return DreamlandTile.VOID;
+      // 70% chance of the first entry, otherwise a random one from the rest
+      int index =
+          (tiles.size() == 1 || rng.nextDouble() < chance) ? 0 : 1 + rng.nextInt(tiles.size() - 1);
+      return (tiles.get(index));
     }
+    return DreamlandTile.VOID;
+  }
 
   /** Gets this named tile from a Fantasy Dreamland sheet. */
   public TextureRegion region(TileSheet tileSheet) {
