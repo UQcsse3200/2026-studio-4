@@ -26,6 +26,7 @@ public class RoomCommand implements Command {
 
         // uses first avaliable exit in room as spawn since all rooms must have exits
         ServiceLocator.getEntityService().schedule(() -> roomManager.debugSwitchRoom(room));
+        return true;
       default:
         return false;
     }
