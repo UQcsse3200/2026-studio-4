@@ -14,6 +14,7 @@ import org.jcodec.api.PictureWithMetadata;
 import org.jcodec.common.io.ByteBufferSeekableByteChannel;
 import org.jcodec.common.model.ColorSpace;
 import org.jcodec.common.model.Picture;
+import org.jcodec.common.model.Rect;
 import org.jcodec.scale.ColorUtil;
 import org.jcodec.scale.Transform;
 import org.slf4j.Logger;
@@ -84,7 +85,15 @@ class Mp4VideoPlayer implements Disposable {
           rgb = Picture.create(source.getWidth(), source.getHeight(), ColorSpace.RGB);
         }
         toRgb.transform(source, rgb);
-        queue.put(new Frame(rgb.getWidth(), rgb.getHeight(), toRgba(rgb), decoded.getTimestamp()));
+        // H.264 decodes whole macroblocks (e.g. 368 rows for a 360-row video); show only the crop
+        Rect crop = source.getCrop();
+        int left = crop == null ? 0 : crop.getX();
+        int top = crop == null ? 0 : crop.getY();
+        int width = source.getCroppedWidth();
+        int height = source.getCroppedHeight();
+        queue.put(
+            new Frame(
+                width, height, toRgba(rgb, left, top, width, height), decoded.getTimestamp()));
       }
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
@@ -96,16 +105,23 @@ class Mp4VideoPlayer implements Disposable {
     }
   }
 
-  /** JCodec stores RGB as interleaved signed bytes (value - 128). */
-  private static byte[] toRgba(Picture rgb) {
+  /**
+   * Converts a {@code width} x {@code height} window of a picture, starting at ({@code left},
+   * {@code top}), to RGBA. JCodec stores RGB as interleaved signed bytes (value - 128).
+   */
+  static byte[] toRgba(Picture rgb, int left, int top, int width, int height) {
     byte[] src = rgb.getPlaneData(0);
-    int pixels = rgb.getWidth() * rgb.getHeight();
-    byte[] out = new byte[pixels * 4];
-    for (int i = 0, s = 0, o = 0; i < pixels; i++) {
-      out[o++] = (byte) (src[s++] + 128);
-      out[o++] = (byte) (src[s++] + 128);
-      out[o++] = (byte) (src[s++] + 128);
-      out[o++] = (byte) 255;
+    int stride = rgb.getWidth();
+    byte[] out = new byte[width * height * 4];
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        int s = ((top + y) * stride + left + x) * 3;
+        int o = (y * width + x) * 4;
+        out[o] = (byte) (src[s] + 128);
+        out[o + 1] = (byte) (src[s + 1] + 128);
+        out[o + 2] = (byte) (src[s + 2] + 128);
+        out[o + 3] = (byte) 255;
+      }
     }
     return out;
   }

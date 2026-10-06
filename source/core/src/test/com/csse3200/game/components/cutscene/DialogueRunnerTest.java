@@ -119,10 +119,14 @@ class DialogueRunnerTest {
             script,
             new DialogueRunner.Listener() {
               @Override
-              public void onLineShown(int index, Line line) {}
+              public void onLineShown(int index, Line line) {
+                // not needed: this test only inspects the runner's own state
+              }
 
               @Override
-              public void onFinished() {}
+              public void onFinished() {
+                // not needed: this test only inspects the runner's own state
+              }
             });
     odd.start();
     assertNull(odd.getCurrentSpeaker());

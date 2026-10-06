@@ -26,9 +26,10 @@ public class DialogueCommand implements Command {
     if (player == null || args == null || args.size() != 1) {
       return false;
     }
-    DialogueScript script = DialogueScript.load(args.get(0));
+    String name = args.get(0);
+    DialogueScript script = DialogueScript.load(name);
     if (script == null || !script.hasLines()) {
-      logger.warn("No playable dialogue file named '{}' in configs/dialogues/", args.get(0));
+      logger.warn("No playable dialogue file named '{}' in configs/dialogues/", name);
       return false;
     }
     CutsceneEvents.playDialogue(player, script);

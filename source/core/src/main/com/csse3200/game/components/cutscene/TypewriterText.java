@@ -15,7 +15,7 @@ import java.util.List;
  */
 class TypewriterText extends Actor {
   private final BitmapFont font;
-  private final Color color;
+  private final Color textColor;
   private final GlyphLayout layout = new GlyphLayout();
   private final List<String> lines = new ArrayList<>();
   private String fullText = "";
@@ -24,7 +24,7 @@ class TypewriterText extends Actor {
 
   TypewriterText(BitmapFont font, Color color) {
     this.font = font;
-    this.color = color;
+    this.textColor = color;
   }
 
   /** Sets the whole line. Nothing is visible until {@link #setRevealed(int)} is called. */
@@ -43,7 +43,7 @@ class TypewriterText extends Actor {
     if (getWidth() != wrappedWidth) {
       wrap(getWidth());
     }
-    font.setColor(color.r, color.g, color.b, color.a * parentAlpha);
+    font.setColor(textColor.r, textColor.g, textColor.b, textColor.a * parentAlpha);
     float lineHeight = font.getLineHeight();
     float y = getY() + getHeight();
     int remaining = revealed;

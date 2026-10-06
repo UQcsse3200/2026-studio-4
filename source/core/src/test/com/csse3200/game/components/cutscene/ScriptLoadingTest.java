@@ -77,7 +77,7 @@ class ScriptLoadingTest {
     assertEquals(1, script.speakers.length);
     assertEquals(1, script.lines.length);
 
-    CutsceneScript cutscene = CutsceneScript.video("y", "videos/demo.mp4").at(1f, "boom", null);
+    CutsceneScript cutscene = CutsceneScript.ofVideo("y", "videos/demo.mp4").at(1f, "boom", null);
     assertEquals(1, cutscene.events.length);
     assertEquals("boom", cutscene.events[0].event);
   }
