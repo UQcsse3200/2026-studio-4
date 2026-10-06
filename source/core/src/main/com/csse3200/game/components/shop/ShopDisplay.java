@@ -176,10 +176,18 @@ public class ShopDisplay extends UIComponent implements ShopView {
     productScroll = new ScrollPane(offers);
     productScroll.setScrollingDisabled(true, false);
     productScroll.setFadeScrollBars(false);
+    ScrollPane merchantScroll = new ScrollPane(merchant);
+    merchantScroll.setName("shop-merchant-scroll");
+    merchantScroll.setScrollingDisabled(true, false);
+    merchantScroll.setFadeScrollBars(false);
     Table body = new Table();
-    body.add(merchant).width(Value.percentWidth(0.24f, window)).growY().padRight(16f);
-    body.add(productScroll).grow();
-    window.add(body).grow();
+    body.add(merchantScroll)
+        .width(Value.percentWidth(0.24f, window))
+        .minHeight(0f)
+        .growY()
+        .padRight(16f);
+    body.add(productScroll).minHeight(0f).grow();
+    window.add(body).minHeight(0f).grow();
     window.row();
     Label hint = label("One item per purchase  |  Unlimited stock  |  Esc to leave", BRASS);
     hint.setFontScale(0.85f);
@@ -270,10 +278,10 @@ public class ShopDisplay extends UIComponent implements ShopView {
       // Cancel press ownership before hiding, so a later release cannot buy in a reopened shop.
       stage.cancelTouchFocus();
       root.setVisible(false);
-      if (stage.getKeyboardFocus() == root) {
+      if (ownsFocus(stage.getKeyboardFocus())) {
         stage.setKeyboardFocus(attachedFocus(previousKeyboardFocus));
       }
-      if (stage.getScrollFocus() == productScroll) {
+      if (ownsFocus(stage.getScrollFocus())) {
         stage.setScrollFocus(attachedFocus(previousScrollFocus));
       }
       previousKeyboardFocus = null;
@@ -283,6 +291,10 @@ public class ShopDisplay extends UIComponent implements ShopView {
 
   private Actor attachedFocus(Actor actor) {
     return actor != null && actor.getStage() == stage ? actor : null;
+  }
+
+  private boolean ownsFocus(Actor actor) {
+    return actor != null && actor.isDescendantOf(root);
   }
 
   @Override

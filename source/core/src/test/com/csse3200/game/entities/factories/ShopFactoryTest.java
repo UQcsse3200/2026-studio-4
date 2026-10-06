@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -114,6 +115,11 @@ class ShopFactoryTest {
       root.validate();
       assertTrue(panel.getWidth() <= stage.getWidth());
       assertTrue(panel.getHeight() <= stage.getHeight());
+      Actor close = stage.getRoot().findActor("shop-close");
+      Vector2 corner = close.localToStageCoordinates(new Vector2());
+      assertTrue(
+          corner.y >= 0 && corner.y + close.getHeight() <= stage.getHeight(),
+          "Close button must remain inside the resized window");
     }
     shop.dispose();
     shop = null;
@@ -144,6 +150,19 @@ class ShopFactoryTest {
     assertNotSame(background, stage.getScrollFocus());
     shop.getComponent(ShopSessionComponent.class).close();
     assertSame(background, stage.getKeyboardFocus());
+    assertSame(background, stage.getScrollFocus());
+  }
+
+  @Test
+  void closeRestoresFocusAfterScrollingMerchantColumn() {
+    Actor background = new Actor();
+    stage.addActor(background);
+    stage.setScrollFocus(background);
+    open();
+    Actor merchantScroll = stage.getRoot().findActor("shop-merchant-scroll");
+    assertNotNull(merchantScroll);
+    stage.setScrollFocus(merchantScroll);
+    shop.getComponent(ShopSessionComponent.class).close();
     assertSame(background, stage.getScrollFocus());
   }
 }
