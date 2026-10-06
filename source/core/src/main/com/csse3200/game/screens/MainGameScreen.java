@@ -86,8 +86,7 @@ public class MainGameScreen extends ScreenAdapter {
     player.getEvents().addListener("entityDied", this::scheduleDeathScreen);
     WorldConfig world = null;
     try {
-      world =
-              FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
+      world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
 
       if (world == null) {
         throw new IllegalStateException("FileLoader returned null");
