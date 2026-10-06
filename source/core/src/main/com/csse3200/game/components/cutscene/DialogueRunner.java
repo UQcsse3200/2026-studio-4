@@ -21,7 +21,8 @@ public class DialogueRunner {
   private final DialogueScript script;
   private final Listener listener;
   private int lineIndex = -1;
-  private float revealedChars;
+  private int revealedChars;
+  private float revealCarry;
   private boolean finished;
 
   public DialogueRunner(DialogueScript script, Listener listener) {
@@ -42,7 +43,10 @@ public class DialogueRunner {
     if (finished || lineIndex < 0 || isLineComplete()) {
       return;
     }
-    revealedChars += CHARS_PER_SECOND * deltaSeconds;
+    revealCarry += CHARS_PER_SECOND * deltaSeconds;
+    int whole = (int) revealCarry;
+    revealCarry -= whole;
+    revealedChars += whole;
   }
 
   /**
@@ -54,7 +58,7 @@ public class DialogueRunner {
       return;
     }
     if (!isLineComplete()) {
-      revealedChars = (float) currentText().length();
+      revealedChars = currentText().length();
       return;
     }
     showLine(lineIndex + 1);
@@ -70,7 +74,7 @@ public class DialogueRunner {
    */
   public String getVisibleText() {
     String text = currentText();
-    return text.substring(0, Math.min(text.length(), (int) revealedChars));
+    return text.substring(0, Math.min(text.length(), revealedChars));
   }
 
   /**
@@ -114,7 +118,8 @@ public class DialogueRunner {
       return;
     }
     lineIndex = index;
-    revealedChars = 0f;
+    revealedChars = 0;
+    revealCarry = 0f;
     listener.onLineShown(index, script.lines[index]);
   }
 

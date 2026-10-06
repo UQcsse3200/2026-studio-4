@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.extensions.GameExtension;
+import java.util.concurrent.locks.LockSupport;
 import org.jcodec.common.model.ColorSpace;
 import org.jcodec.common.model.Picture;
 import org.junit.jupiter.api.Test;
@@ -61,7 +62,7 @@ class Mp4VideoPlayerTest {
       long deadline = System.currentTimeMillis() + TIMEOUT_MILLIS;
       while (!player.isFinished() && !player.hasFailed() && System.currentTimeMillis() < deadline) {
         player.update(1f / 30f);
-        Thread.sleep(2);
+        LockSupport.parkNanos(2_000_000L);
       }
 
       assertFalse(player.hasFailed(), "decoding should not fail");
