@@ -56,6 +56,36 @@ public final class InteractionPrompt {
   }
 
   /**
+   * Prompt while standing in range of friendly NPC that can be interacted with.
+   *
+   * @param verb
+   * @param npcName
+   * @return
+   */
+  public static String forNpc(String verb, String npcName) {
+    if (npcName == null || npcName.isBlank()) {
+      return null;
+    }
+    String action = verb == null || verb.isBlank() ? "Talk to" : verb;
+    return "Press E — " + action + " " + npcName;
+  }
+
+  /**
+   * NPC prompts take priority over items and exits when handling interactions
+   *
+   * @param npcPrompt
+   * @param itemPrompt
+   * @param exitPrompt
+   * @return
+   */
+  public static String resolve(String npcPrompt, String itemPrompt, String exitPrompt) {
+    if (npcPrompt != null) {
+      return npcPrompt;
+    }
+    return resolve(itemPrompt, exitPrompt);
+  }
+
+  /**
    * Item prompts take priority when the player is in range of both an item and an exit.
    *
    * @param itemPrompt prompt from a nearby item, or null

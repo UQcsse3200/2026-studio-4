@@ -75,6 +75,26 @@ class InteractionPromptTest {
     assertEquals("", InteractionPrompt.resolve(null, null));
   }
 
+  @Test
+  void shouldPromptForNpcWithVerbAndName() {
+    assertEquals("Press E — Talk to Old Sage", InteractionPrompt.forNpc("Talk to", "Old Sage"));
+    assertEquals("Press E — Talk to Old Sage", InteractionPrompt.forNpc(null, "Old Sage"));
+    assertEquals("Press E — Wake Guardian", InteractionPrompt.forNpc("Wake", "Guardian"));
+    assertNull(InteractionPrompt.forNpc("Talk to", " "));
+  }
+
+  @Test
+  void shouldPreferNpcPromptOverItemAndExit() {
+    assertEquals(
+        "Press E — Talk to Sage",
+        InteractionPrompt.resolve(
+            "Press E — Talk to Sage", "Press E — Pick up Charm", InteractionPrompt.NEXT_ROOM));
+    assertEquals(
+        "Press E — Pick up Charm",
+        InteractionPrompt.resolve(null, "Press E — Pick up Charm", InteractionPrompt.NEXT_ROOM));
+    assertEquals("", InteractionPrompt.resolve(null, null, null));
+  }
+
   private static ExitConfig door(boolean available, boolean requiresClear) {
     ExitConfig exit = new ExitConfig();
     exit.kind = "DOOR";
