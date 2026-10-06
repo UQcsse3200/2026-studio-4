@@ -266,7 +266,11 @@ public class MainGameScreen extends ScreenAdapter {
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
-        .addComponent(new MainGameExitDisplay(this::saveAndExit, this::deleteSaveAndExit))
+        .addComponent(
+            new MainGameExitDisplay(
+                this::saveAndExit,
+                this::deleteSaveAndExit,
+                () -> player.getEvents().trigger("walkStop")))
         .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay())

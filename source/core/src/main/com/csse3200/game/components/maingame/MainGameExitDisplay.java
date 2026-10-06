@@ -16,11 +16,14 @@ public class MainGameExitDisplay extends UIComponent {
   private static final float Z_INDEX = 2f;
   private final Runnable saveAndExit;
   private final Runnable deleteSaveAndExit;
+  private final Runnable stopMovement;
   private Table table;
 
-  public MainGameExitDisplay(Runnable saveAndExit, Runnable deleteSaveAndExit) {
+  public MainGameExitDisplay(
+      Runnable saveAndExit, Runnable deleteSaveAndExit, Runnable stopMovement) {
     this.saveAndExit = saveAndExit;
     this.deleteSaveAndExit = deleteSaveAndExit;
+    this.stopMovement = stopMovement;
   }
 
   @Override
@@ -51,6 +54,7 @@ public class MainGameExitDisplay extends UIComponent {
   }
 
   private void showExitDialog() {
+    stopMovement.run();
     Dialog dialog =
         new Dialog("Exit game?", skin) {
           @Override
