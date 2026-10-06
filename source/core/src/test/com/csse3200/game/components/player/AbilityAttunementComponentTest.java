@@ -152,15 +152,45 @@ class AbilityAttunementComponentTest {
   }
 
   @Test
-  void shouldRefuseToAttuneADeadPlayerAndKeepThePreviousAttunement() {
+  void shouldTakeBackTheAttunementWhenThePlayerDies() {
     assertTrue(attunement.attune(Invisibility.class));
+
+    stats.setHealth(0);
+    assertTrue(stats.isDead());
+
+    assertNull(attunement.getAttuned());
+    assertEquals(List.of("cleared"), unattuned);
+    // PlayerAbilitiesComponent also listens for entityDied, and whichever listener runs last wins,
+    // so the lock itself is only guaranteed from the next frame. A dead player cannot cast either
+    // way, which is the guarantee that actually matters.
+    assertFalse(abilities.tryActivate(Invisibility.class));
+    attunement.update();
+    assertFalse(abilities.isUnlocked(Invisibility.class));
+  }
+
+  @Test
+  void shouldStayLockedAfterDeathEvenThoughAbilitiesRelockToTheirDefaults() {
+    assertTrue(attunement.attune(Invisibility.class));
+    stats.setHealth(0);
+
+    // PlayerAbilitiesComponent relocks every ability to unlockedByDefault while the player is
+    // dead, which hands Invisibility back. The enforcement in update() has to take it away again.
+    abilities.update();
+    attunement.update();
+
+    assertFalse(abilities.isUnlocked(Invisibility.class), "Death must not grant a free ability");
+    assertFalse(abilities.isUnlocked(LastStand.class));
+  }
+
+  @Test
+  void shouldRefuseToAttuneADeadPlayer() {
     stats.setHealth(0);
     assertTrue(stats.isDead());
 
     assertFalse(attunement.attune(LastStand.class));
 
-    assertEquals(Invisibility.class, attunement.getAttuned(), "The old attunement is untouched");
-    assertEquals(List.of(Invisibility.NAME), attuned);
+    assertNull(attunement.getAttuned());
+    assertTrue(attuned.isEmpty());
   }
 
   @Test

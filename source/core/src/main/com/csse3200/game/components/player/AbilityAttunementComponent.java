@@ -21,20 +21,23 @@ public class AbilityAttunementComponent extends Component {
   public static final String ABILITY_UNATTUNED = "abilityUnattuned";
 
   private Class<? extends PlayerAbility> attuned;
-  private boolean locked;
 
-  /**
-   * Entity creation runs components in an unspecified order, so the abilities may not have been
-   * registered yet. Locking is retried from {@link #update()} until it finds them.
-   */
   @Override
   public void create() {
-    lockEverythingOnce();
+    entity.getEvents().addListener("entityDied", this::clearAttunement);
+    enforceAttunement();
   }
 
+  /**
+   * Re-asserts the invariant rather than trusting that nothing else touched the locks. Two things
+   * make that necessary: entity creation runs components in an unspecified order, so the abilities
+   * may not have been registered yet when {@link #create()} ran, and {@link
+   * PlayerAbilitiesComponent} relocks everything when the player dies, which restores any ability
+   * that starts unlocked. Checking is two booleans per ability; locking only happens on drift.
+   */
   @Override
   public void update() {
-    lockEverythingOnce();
+    enforceAttunement();
   }
 
   /**
@@ -58,7 +61,6 @@ public class AbilityAttunementComponent extends Component {
     }
     lockAllExcept(abilities, type);
     attuned = type;
-    locked = true;
     entity.getEvents().trigger(ABILITY_ATTUNED, nameOf(abilities, type));
     return true;
   }
@@ -70,9 +72,8 @@ public class AbilityAttunementComponent extends Component {
       return;
     }
     boolean hadAttunement = attuned != null;
-    lockAllExcept(abilities, null);
     attuned = null;
-    locked = true;
+    lockAllExcept(abilities, null);
     if (hadAttunement) {
       entity.getEvents().trigger(ABILITY_UNATTUNED);
     }
@@ -89,26 +90,18 @@ public class AbilityAttunementComponent extends Component {
     return attuned != null && attuned.equals(type);
   }
 
-  /**
-   * Locks every ability the first time they can be found. Abilities register themselves during
-   * creation, so before that there is nothing to lock and the attempt is retried.
-   */
-  private void lockEverythingOnce() {
-    if (locked) {
-      return;
-    }
+  /** Locks anything the player is holding that they are not attuned to. */
+  private void enforceAttunement() {
     PlayerAbilitiesComponent abilities = abilities();
-    if (abilities == null || abilities.getRegisteredAbilities().isEmpty()) {
-      return;
+    if (abilities != null) {
+      lockAllExcept(abilities, attuned);
     }
-    lockAllExcept(abilities, null);
-    locked = true;
   }
 
   private static void lockAllExcept(
       PlayerAbilitiesComponent abilities, Class<? extends PlayerAbility> keep) {
     for (PlayerAbility ability : abilities.getRegisteredAbilities().toArray(new PlayerAbility[0])) {
-      if (!ability.getClass().equals(keep)) {
+      if (ability.isUnlocked() && !ability.getClass().equals(keep)) {
         abilities.lock(ability.getClass());
       }
     }
