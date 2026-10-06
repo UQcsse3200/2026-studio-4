@@ -11,13 +11,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.friendlynpc.NpcInteractableComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractionEvents;
+import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.player.AbilityAttunementComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.abilities.Invisibility;
 import com.csse3200.game.components.player.abilities.LastStand;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.configs.InteractableNpcConfig;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.GameTime;
@@ -62,7 +65,8 @@ class AbilityMenuTest {
             .addComponent(new StatusEffectsControllerComponent())
             .addComponent(abilities)
             .addComponent(attunement)
-            .addComponent(actions);
+            .addComponent(actions)
+            .addComponent(new NpcInteractorComponent());
     player.create();
     attunement.update();
 
@@ -75,6 +79,42 @@ class AbilityMenuTest {
 
   private void finishInteractionWith(String npcId) {
     player.getEvents().trigger(NpcInteractionEvents.INTERACTION_FINISHED, npcId, new Entity());
+  }
+
+  /** An NPC built the way FriendlyNpcFactory builds one, minus the art. */
+  private NpcInteractableComponent npcNamed(String id) {
+    InteractableNpcConfig config = new InteractableNpcConfig();
+    config.id = id;
+    config.name = id;
+    config.dialogueId = id + "_dialogue";
+    NpcInteractableComponent npc = new NpcInteractableComponent(config);
+    new Entity().addComponent(npc).create();
+    return npc;
+  }
+
+  @Test
+  void shouldOpenOnlyOnceHecateHasFinishedSpeaking() {
+    NpcInteractableComponent hecate = npcNamed(AbilityMenu.NPC_ID);
+
+    assertTrue(hecate.interact(player));
+    assertFalse(menu.isOpen(), "the menu must not share the screen with her dialogue");
+
+    // What the dialogue system sends when the last line is done.
+    player.getEvents().trigger(NpcInteractionEvents.DIALOGUE_FINISHED, "hecate_dialogue");
+
+    assertTrue(menu.isOpen(), "the menu opens once the interaction completes");
+    assertEquals(List.of("opened"), events);
+  }
+
+  @Test
+  void shouldStayShutForAnotherNpcsWholeInteraction() {
+    NpcInteractableComponent merchant = npcNamed("merchant");
+
+    assertTrue(merchant.interact(player));
+    player.getEvents().trigger(NpcInteractionEvents.DIALOGUE_FINISHED, "merchant_dialogue");
+
+    assertFalse(menu.isOpen());
+    assertTrue(events.isEmpty());
   }
 
   @Test
