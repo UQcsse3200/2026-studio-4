@@ -45,6 +45,8 @@ class FinalBossHealthProgressionTest {
     AtomicInteger deaths = new AtomicInteger();
     boss.getEvents().addListener("entityDied", deaths::incrementAndGet);
     CombatStatsComponent stats = boss.getComponent(CombatStatsComponent.class);
+    FinalBossDamageControllerComponent protection =
+        boss.getComponent(FinalBossDamageControllerComponent.class);
 
     // Stage 1 hands over at 80%; the first transition must preserve that health.
     stats.setHealth(800);
@@ -55,12 +57,15 @@ class FinalBossHealthProgressionTest {
     phases.update();
     assertEquals(FinalBossPhase.STAGE_TWO, phases.getCurrentPhase());
     assertEquals(600, stats.getMinimumHealth());
-    assertFalse(stats.isInvulnerable());
+    assertTrue(stats.isInvulnerable());
+    assertTrue(protection.isShielded());
 
     stats.takeDamage(199, player);
+    assertEquals(800, stats.getHealth());
+    protection.takeStageTwoIceDamage(199, player);
     assertEquals(601, stats.getHealth());
     assertEquals(FinalBossPhase.STAGE_TWO, phases.getCurrentPhase());
-    stats.takeDamage(10000, player);
+    protection.takeStageTwoIceDamage(10000, player);
     assertEquals(600, stats.getHealth());
     assertEquals(FinalBossPhase.STAGE_THREE, phases.getCurrentPhase());
     assertTrue(phases.isTransitioning());

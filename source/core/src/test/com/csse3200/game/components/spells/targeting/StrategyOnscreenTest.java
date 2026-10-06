@@ -27,9 +27,10 @@ class StrategyOnscreenTest {
   private static CameraComponent cameraAt(float centreX, float centreY, float width, float height) {
     Camera camera = new OrthographicCamera();
     camera.position.set(centreX, centreY, 0f);
+    camera.viewportWidth = width;
+    camera.viewportHeight = height;
     CameraComponent component = mock(CameraComponent.class);
     when(component.getCamera()).thenReturn(camera);
-    // A fresh vector per call: the strategy halves it in place.
     when(component.getCameraSize()).thenAnswer(invocation -> new Vector2(width, height));
     return component;
   }
@@ -108,7 +109,22 @@ class StrategyOnscreenTest {
 
   @Test
   void rejectsBeingBuiltWithoutACamera() {
-    assertThrows(IllegalArgumentException.class, () -> new StrategyOnscreen(null));
+    assertThrows(IllegalArgumentException.class, () -> new StrategyOnscreen((Camera) null));
+    assertThrows(
+        IllegalArgumentException.class, () -> new StrategyOnscreen((CameraComponent) null));
+  }
+
+  @Test
+  void rawWorldCameraSelectsTheSameVisibleEnemies() {
+    Entity caster = nonEnemyAt(0f, 0f);
+    Entity visible = enemyAt(1f, 1f);
+    givenWorld(caster, visible, enemyAt(20f, 0f));
+
+    Camera camera = cameraAt(0f, 0f, 20f, 10f).getCamera();
+    Array<Entity> targets = new StrategyOnscreen(camera).selectTargets(caster);
+
+    assertEquals(1, targets.size);
+    assertTrue(targets.contains(visible, true));
   }
 
   @Test
