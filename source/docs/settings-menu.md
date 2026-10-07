@@ -2,7 +2,7 @@
 
 Players open Settings from the main menu, change display and gameplay options, then press Apply or Exit. Apply writes `settings.json` through `UserSettings` and applies the display options immediately. Exit returns to the main menu and drops unsaved edits.
 
-The menu has Display, Audio, Gameplay, Session and Run history sections. Display includes the fullscreen resolution and the window size used when fullscreen is off. Gameplay controls the in-run timer and a small FPS counter. Audio stores music and effects volume, and can mute both while the window is in the background. Session stores an online preference and a display name on this computer; it does not open a match. Run history lists last run, best run and achievement count on this settings page, and can reset those values separately. The win screen is not part of this menu.
+The menu has Display, Audio, Gameplay, Session and Run history sections. Display includes the fullscreen resolution and the window size used when fullscreen is off. Gameplay controls the in-run timer and a small FPS counter. Audio stores music and effects volume, and can mute both while the window is in the background. Session stores an online preference and a display name on this computer; it does not open a match. Run history lists last run and best run on this settings page, and can reset those times. Achievements and the win screen are not part of this menu.
 
 ## Class diagram
 
@@ -112,7 +112,7 @@ sequenceDiagram
   Run->>Save: dispose records total time
   Save->>Save: write last and best to game-save.json
   Player->>Menu: open Settings
-  Menu->>Save: read last, best and achievement count
+  Menu->>Save: read last and best
   Menu->>Player: show them in Run history
 ```
 
@@ -124,13 +124,9 @@ sequenceDiagram
   participant Menu as SettingsMenuDisplay
   participant Save as GameProgress
 
-  Player->>Menu: Reset save
+  Player->>Menu: Reset times
   Menu->>Save: clearSave
-  Save->>Save: zero last and best, keep achievements
-  Menu->>Player: refresh summary
-  Player->>Menu: Reset achievements
-  Menu->>Save: clearAchievements
-  Save->>Save: clear the list, keep times
+  Save->>Save: zero last and best
   Menu->>Player: refresh summary
 ```
 
@@ -141,7 +137,7 @@ JUnit coverage lives next to the code:
 - `UserSettingsTest` checks the gameplay options default to on, window size is applied when fullscreen is off, and the new options round-trip through `settings.json` without touching the display.
 - `WindowSizeTest` checks listed sizes, the default window, and clamping.
 - `PlayModeTest` checks the display name and the online status line.
-- `GameProgressTest` checks time formatting, best-run updates, one-time achievement unlocks, and that the two reset actions do not clear each other's data.
+- `GameProgressTest` checks time formatting and best-run updates. The settings page does not list or reset achievements.
 - `TimerDisplayTest` checks the HUD panel stays hidden when Show run timer is off.
 - `AudioLevelsTest` checks music and effects volumes stay inside 0 to 1, and that mute-in-background silences an unfocused window.
 

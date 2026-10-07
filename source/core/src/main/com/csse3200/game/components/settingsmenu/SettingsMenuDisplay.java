@@ -54,7 +54,6 @@ public class SettingsMenuDisplay extends UIComponent {
   private Label sessionLabel;
   private Label lastRunLabel;
   private Label bestRunLabel;
-  private Label achievementLabel;
   private Label resetStatusLabel;
 
   public SettingsMenuDisplay(GdxGame game) {
@@ -169,19 +168,17 @@ public class SettingsMenuDisplay extends UIComponent {
     SaveData save = GameProgress.get();
     lastRunLabel = new Label(GameProgress.formatTime(save.lastRunMs), skin);
     bestRunLabel = new Label(GameProgress.formatTime(save.bestRunMs), skin);
-    achievementLabel = new Label(Integer.toString(save.achievements.size()), skin);
     resetStatusLabel = new Label("", skin);
-    form.section("Run history", "Times and achievements stored on this computer.");
+    form.section("Run history", "Last and best time on this computer. Achievements stay with save and load.");
     form.row("Last run", lastRunLabel);
     form.row("Best run", bestRunLabel);
-    form.row("Achievements", achievementLabel);
     form.row("Saved on this computer", resetStatusLabel);
-    form.row("", resetButtons());
+    form.row("", resetTimesButton());
 
     return form.table();
   }
 
-  private Table resetButtons() {
+  private TextButton resetTimesButton() {
     TextButton resetSaveBtn = new TextButton("Reset times", skin);
     resetSaveBtn.addListener(
         new ChangeListener() {
@@ -192,20 +189,7 @@ public class SettingsMenuDisplay extends UIComponent {
             resetStatusLabel.setText("Run times cleared.");
           }
         });
-    TextButton resetAchievementsBtn = new TextButton("Reset achievements", skin);
-    resetAchievementsBtn.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent changeEvent, Actor actor) {
-            GameProgress.clearAchievements();
-            refreshProgressLabel();
-            resetStatusLabel.setText("Achievements cleared.");
-          }
-        });
-    Table buttons = new Table();
-    buttons.add(resetSaveBtn).padRight(10f);
-    buttons.add(resetAchievementsBtn);
-    return buttons;
+    return resetSaveBtn;
   }
 
   private StringDecorator<DisplayMode> getActiveMode(Array<StringDecorator<DisplayMode>> modes) {
@@ -322,9 +306,6 @@ public class SettingsMenuDisplay extends UIComponent {
     }
     if (bestRunLabel != null) {
       bestRunLabel.setText(GameProgress.formatTime(save.bestRunMs));
-    }
-    if (achievementLabel != null) {
-      achievementLabel.setText(Integer.toString(save.achievements.size()));
     }
   }
 
