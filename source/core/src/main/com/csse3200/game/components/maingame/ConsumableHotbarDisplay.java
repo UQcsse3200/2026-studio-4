@@ -152,7 +152,7 @@ public class ConsumableHotbarDisplay extends UIComponent {
       case ItemIds.SHIELD -> new TextureRegion(texture, 310, 322, 633, 653);
       case ItemIds.SPEED_POTION -> new TextureRegion(texture, 393, 220, 481, 784);
       case ItemIds.STRENGTH_POTION -> new TextureRegion(texture, 310, 173, 635, 928);
-      case ItemIds.FREEZE_BOMB -> new TextureRegion(texture);
+      case ItemIds.FREEZE_BOMB, ItemIds.BURN_VIAL -> new TextureRegion(texture);
       default -> throw new IllegalArgumentException("Not a consumable: " + type);
     };
   }
