@@ -102,7 +102,7 @@ class BurnVialTest {
 
     verify(offscreen.getComponent(StatusEffectsControllerComponent.class), never())
         .addStatusEffect(org.mockito.ArgumentMatchers.any());
-    verify(renderService).startWhiteFlash();
+    verify(renderService).startFireFlash();
   }
 
   private static Entity enemyAt(float x, float y) {

@@ -166,6 +166,37 @@ class RendererTest {
     }
   }
 
+  @Test
+  void fireFlashCoversTheScreenWithWarmColourAndRestoresBatchColour() {
+    when(graphics.getWidth()).thenReturn(100);
+    when(graphics.getHeight()).thenReturn(60);
+    when(stage.getCamera()).thenReturn(new OrthographicCamera());
+    when(stage.getWidth()).thenReturn(100f);
+    when(stage.getHeight()).thenReturn(60f);
+    when(spriteBatch.getPackedColor()).thenReturn(0.75f);
+    GameTime time = mock(GameTime.class);
+    when(time.getDeltaTime()).thenReturn(0.1f);
+    ServiceLocator.registerTimeSource(time);
+    RenderService service = new RenderService();
+    Renderer renderer =
+        new Renderer(makeCameraEntity(camera), 10, spriteBatch, stage, service, debugRenderer);
+    service.startFireFlash();
+    try (MockedConstruction<Pixmap> pixmaps = mockConstruction(Pixmap.class);
+        MockedConstruction<Texture> textures = mockConstruction(Texture.class)) {
+      renderer.render();
+      Texture pixel = textures.constructed().get(0);
+      InOrder order = inOrder(stage, spriteBatch);
+      order.verify(stage).draw();
+      order.verify(spriteBatch).begin();
+      order.verify(spriteBatch).setColor(1f, 0.32f, 0.04f, 0.65f);
+      order.verify(spriteBatch).draw(pixel, 0f, 0f, 100f, 60f);
+      order.verify(spriteBatch).setPackedColor(0.75f);
+      order.verify(spriteBatch).end();
+      renderer.dispose();
+      verify(pixel).dispose();
+    }
+  }
+
   private static CameraComponent makeCameraEntity(Camera camera) {
     Entity camEntity = new Entity().addComponent(new CameraComponent(camera));
     return camEntity.getComponent(CameraComponent.class);

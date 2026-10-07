@@ -5,7 +5,12 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
@@ -17,6 +22,7 @@ import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,18 +41,21 @@ class BurnVialUseIntegrationTest {
   private InventoryComponent inventory;
   private ConsumableEffectComponent consumables;
   private KeyboardPlayerInputComponent input;
+  private BurnVialFeedbackComponent feedback;
   private final AtomicLong now = new AtomicLong();
   private final AtomicInteger uses = new AtomicInteger();
 
   @BeforeEach
   void setUp() {
     ServiceLocator.registerTimeSource(mock(GameTime.class));
+    ServiceLocator.registerRenderService(new RenderService());
     ServiceLocator.registerWorldCamera(new OrthographicCamera(20f, 10f));
     EntityService entities = new EntityService();
     ServiceLocator.registerEntityService(entities);
     inventory = new InventoryComponent(0);
     consumables = new ConsumableEffectComponent();
     input = new KeyboardPlayerInputComponent();
+    feedback = new BurnVialFeedbackComponent();
     player =
         new Entity()
             .addComponent(new CombatStatsComponent(100, 10))
@@ -54,9 +63,11 @@ class BurnVialUseIntegrationTest {
             .addComponent(new StatusEffectsControllerComponent())
             .addComponent(consumables)
             .addComponent(new ConsumableSelectionComponent())
-            .addComponent(input);
+            .addComponent(input)
+            .addComponent(feedback);
     player.getComponent(StatusEffectsControllerComponent.class).create();
     consumables.create();
+    feedback.create();
     player.getComponent(ConsumableSelectionComponent.class).create();
     player
         .getEvents()
@@ -138,6 +149,162 @@ class BurnVialUseIntegrationTest {
     assertEquals(0, selection.getSelectedIndex());
     assertEquals(ItemIds.HEALTH_POTION, selection.getSelectedType());
     assertEquals(4, InventoryComponent.CONSUMABLE_SLOT_COUNT);
+  }
+
+  @Test
+  void realBurnDamageProducesBriefWarmGlowButUnrelatedDamageDoesNot() {
+    inventory.addConsumable(ItemIds.BURN_VIAL);
+    StatusEffectsControllerComponent effects =
+        visibleEnemy.getComponent(StatusEffectsControllerComponent.class);
+    try (MockedConstruction<GameTime> clocks = burnClocks()) {
+      assertTrue(consumables.tryUse(ItemIds.BURN_VIAL));
+      assertNull(effects.getGlow());
+      visibleEnemy.getComponent(CombatStatsComponent.class).takeDamage(5);
+      assertNull(effects.getGlow(), "ordinary damage is not a burn pulse");
+      now.set(1001);
+      tickEnemies();
+      assertEquals(93, health(visibleEnemy));
+      Color glow = effects.getGlow();
+      assertNotNull(glow, "actual burn damage must visibly scorch the enemy");
+      assertTrue(glow.r > glow.b && glow.a > 0);
+      when(ServiceLocator.getTimeSource().getDeltaTime()).thenReturn(0.2f);
+      effects.update();
+      assertNull(effects.getGlow(), "pulse must end before the next burn tick");
+    }
+  }
+
+  @Test
+  void flamesFollowMovingEnemyAndStacksShareOneGroupUntilRemoval() {
+    inventory.addConsumable(ItemIds.BURN_VIAL, 2);
+    SpriteBatch batch = mock(SpriteBatch.class);
+    try (MockedConstruction<GameTime> clocks = burnClocks();
+        MockedConstruction<Pixmap> pixels = mockConstruction(Pixmap.class);
+        MockedConstruction<Texture> textures =
+            mockConstruction(
+                Texture.class,
+                (texture, context) -> {
+                  when(texture.getWidth()).thenReturn(72);
+                  when(texture.getHeight()).thenReturn(59);
+                })) {
+      assertTrue(consumables.tryUse(ItemIds.BURN_VIAL));
+      assertTrue(consumables.tryUse(ItemIds.BURN_VIAL));
+      feedback.render(batch);
+      org.mockito.ArgumentCaptor<Float> firstX = org.mockito.ArgumentCaptor.forClass(Float.class);
+      verify(batch, times(3))
+          .draw(any(TextureRegion.class), firstX.capture(), anyFloat(), anyFloat(), anyFloat());
+      float originalX = firstX.getAllValues().get(0);
+      clearInvocations(batch);
+      visibleEnemy.setPosition(5f, 0f);
+      feedback.render(batch);
+      org.mockito.ArgumentCaptor<Float> movedX = org.mockito.ArgumentCaptor.forClass(Float.class);
+      verify(batch, times(3))
+          .draw(any(TextureRegion.class), movedX.capture(), anyFloat(), anyFloat(), anyFloat());
+      assertEquals(3f, movedX.getAllValues().get(0) - originalX, 0.001f);
+      visibleEnemy.getComponent(StatusEffectsControllerComponent.class).clearStatusEffects();
+      clearInvocations(batch);
+      feedback.render(batch);
+      verify(batch, never())
+          .draw(any(TextureRegion.class), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+    }
+  }
+
+  @Test
+  void blockedBurnDoesNotPulseButLaterActualDamageDoes() {
+    inventory.addConsumable(ItemIds.BURN_VIAL);
+    CombatStatsComponent stats = visibleEnemy.getComponent(CombatStatsComponent.class);
+    StatusEffectsControllerComponent effects =
+        visibleEnemy.getComponent(StatusEffectsControllerComponent.class);
+    try (MockedConstruction<GameTime> clocks = burnClocks()) {
+      stats.setInvulnerable(true);
+      assertTrue(consumables.tryUse(ItemIds.BURN_VIAL));
+      now.set(1001);
+      tickEnemies();
+      assertEquals(100, stats.getHealth());
+      assertNull(effects.getGlow());
+      stats.setInvulnerable(false);
+      now.set(2002);
+      tickEnemies();
+      assertEquals(98, stats.getHealth());
+      assertNotNull(effects.getGlow());
+      stats.setHealth(0);
+      assertNull(effects.getGlow(), "death clears burn appearance immediately");
+    }
+  }
+
+  @Test
+  void pulseEnlargesFlamesAndExpiryStopsRenderingAndDisposalReleasesTexture() {
+    inventory.addConsumable(ItemIds.BURN_VIAL);
+    SpriteBatch batch = mock(SpriteBatch.class);
+    when(batch.getPackedColor()).thenReturn(0.75f);
+    try (MockedConstruction<GameTime> clocks = burnClocks();
+        MockedConstruction<Pixmap> pixels = mockConstruction(Pixmap.class);
+        MockedConstruction<Texture> textures =
+            mockConstruction(
+                Texture.class,
+                (texture, context) -> {
+                  when(texture.getWidth()).thenReturn(72);
+                  when(texture.getHeight()).thenReturn(59);
+                })) {
+      assertTrue(consumables.tryUse(ItemIds.BURN_VIAL));
+      feedback.render(batch);
+      org.mockito.ArgumentCaptor<Float> widths = org.mockito.ArgumentCaptor.forClass(Float.class);
+      verify(batch, times(3))
+          .draw(any(TextureRegion.class), anyFloat(), anyFloat(), widths.capture(), anyFloat());
+      float restingWidth = widths.getAllValues().get(0);
+      clearInvocations(batch);
+      now.set(1001);
+      tickEnemies();
+      feedback.render(batch);
+      org.mockito.ArgumentCaptor<Float> pulseWidths =
+          org.mockito.ArgumentCaptor.forClass(Float.class);
+      verify(batch, times(3))
+          .draw(
+              any(TextureRegion.class), anyFloat(), anyFloat(), pulseWidths.capture(), anyFloat());
+      assertTrue(pulseWidths.getAllValues().get(0) > restingWidth);
+      verify(batch, atLeastOnce()).setPackedColor(0.75f);
+      now.set(6000);
+      clearInvocations(batch);
+      feedback.render(batch);
+      verify(batch, never())
+          .draw(any(TextureRegion.class), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+      feedback.dispose();
+      for (Texture texture : textures.constructed()) verify(texture).dispose();
+      clearInvocations(batch);
+      feedback.render(batch);
+      verifyNoInteractions(batch);
+    }
+  }
+
+  @Test
+  void everyVisibleEnemyIgnitesWithOneFlashAndRejectedReuseAddsNothing() {
+    Entity secondEnemy = enemyAt(4f);
+    ServiceLocator.getEntityService().getEntities().add(secondEnemy);
+    RenderService renderService = spy(new RenderService());
+    ServiceLocator.registerRenderService(renderService);
+    inventory.addConsumable(ItemIds.BURN_VIAL);
+    SpriteBatch batch = mock(SpriteBatch.class);
+    try (MockedConstruction<GameTime> clocks = burnClocks();
+        MockedConstruction<Pixmap> pixels = mockConstruction(Pixmap.class);
+        MockedConstruction<Texture> textures =
+            mockConstruction(
+                Texture.class,
+                (texture, context) -> {
+                  when(texture.getWidth()).thenReturn(72);
+                  when(texture.getHeight()).thenReturn(59);
+                })) {
+      assertTrue(consumables.tryUse(ItemIds.BURN_VIAL));
+      assertFalse(consumables.tryUse(ItemIds.BURN_VIAL));
+      verify(renderService, times(1)).startFireFlash();
+      feedback.render(batch);
+      verify(batch, times(6))
+          .draw(any(TextureRegion.class), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+      now.set(1001);
+      tickEnemies();
+      secondEnemy.getComponent(StatusEffectsControllerComponent.class).update();
+      assertEquals(98, health(visibleEnemy));
+      assertEquals(98, health(secondEnemy));
+      assertEquals(100, health(offscreenEnemy));
+    }
   }
 
   private MockedConstruction<GameTime> burnClocks() {

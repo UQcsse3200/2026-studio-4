@@ -2,6 +2,7 @@ package com.csse3200.game.items.consumables;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.player.BurnVialFeedbackComponent;
 import com.csse3200.game.components.spells.targeting.StrategyOnscreen;
 import com.csse3200.game.components.statuseffects.Burning;
 import com.csse3200.game.components.statuseffects.TimedStatusEffect;
@@ -54,17 +55,21 @@ public final class BurnVial extends ConsumableItem {
 
   @Override
   public TimedStatusEffect use(CombatStatsComponent stats, GameTime time) {
+    BurnVialFeedbackComponent feedback =
+        stats.getEntity().getComponent(BurnVialFeedbackComponent.class);
     for (Entity enemy :
         new StrategyOnscreen(ServiceLocator.getWorldCamera()).selectTargets(stats.getEntity())) {
       StatusEffectsControllerComponent effects =
           enemy.getComponent(StatusEffectsControllerComponent.class);
       CombatStatsComponent enemyStats = enemy.getComponent(CombatStatsComponent.class);
       if (effects != null && !effects.isDisposed() && enemyStats != null) {
-        effects.addStatusEffect(new Burning(BURN_DAMAGE, BURN_COOLDOWN_MS, durationMs, enemyStats));
+        VialBurning burn = new VialBurning(BURN_DAMAGE, BURN_COOLDOWN_MS, durationMs, enemyStats);
+        effects.addStatusEffect(burn);
+        if (feedback != null) feedback.trackBurn(enemy, burn);
       }
     }
     if (ServiceLocator.getRenderService() != null) {
-      ServiceLocator.getRenderService().startWhiteFlash();
+      ServiceLocator.getRenderService().startFireFlash();
     }
     return null;
   }
