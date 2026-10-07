@@ -31,6 +31,7 @@ import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.GameTime;
@@ -296,6 +297,10 @@ public class MainGameScreen extends ScreenAdapter {
                 () -> {
                   player.getEvents().trigger("walkStop");
                   player.getEvents().trigger("resetMovementInput");
+                  PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
+                  if (physics != null && physics.getBody() != null) {
+                    physics.getBody().setLinearVelocity(0f, 0f);
+                  }
                 }))
         .addComponent(terminal)
         .addComponent(inputComponent)
