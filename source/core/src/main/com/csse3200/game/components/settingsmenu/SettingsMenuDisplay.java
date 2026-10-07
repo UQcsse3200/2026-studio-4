@@ -194,10 +194,24 @@ public class SettingsMenuDisplay extends UIComponent {
     }
     settings.fullscreen = fullScreenCheck.isChecked();
     settings.uiScale = uiScaleSlider.getValue();
-    settings.displayMode = new DisplaySettings(displayModeSelect.getSelected().object);
+    DisplaySettings chosen = chosenDisplaySettings(displayModeSelect.getSelected());
+    if (chosen != null) {
+      settings.displayMode = chosen;
+    }
     settings.vsync = vsyncCheck.isChecked();
 
     UserSettings.set(settings, true);
+  }
+
+  /**
+   * Resolution to save, or null when nothing is selected. A missing selection must not replace the
+   * display mode already stored in settings.
+   */
+  static DisplaySettings chosenDisplaySettings(StringDecorator<DisplayMode> selected) {
+    if (selected == null || selected.object == null) {
+      return null;
+    }
+    return new DisplaySettings(selected.object);
   }
 
   private void exitMenu() {
