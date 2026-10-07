@@ -11,10 +11,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Payload;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Source;
-import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Target;
 import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.Item;
+import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.ItemTooltip;
 import com.csse3200.game.ui.UIComponent;
@@ -32,6 +33,21 @@ public class InventoryDisplay extends UIComponent {
   private Table table;
   private DragAndDrop dragAndDrop;
   private InventoryComponent inventoryComponent;
+  private final TooltipManager tooltipManager =
+      new TooltipManager() {
+        @Override
+        protected void showAction(Tooltip tooltip) {
+          tooltip.getContainer().clearActions();
+          tooltip.getContainer().setScale(1f);
+          tooltip.getContainer().getColor().a = 1f;
+        }
+
+        @Override
+        protected void hideAction(Tooltip tooltip) {
+          tooltip.getContainer().clearActions();
+          tooltip.getContainer().remove();
+        }
+      };
 
   public InventoryDisplay(InventoryComponent inventoryComponent) {
     this.inventoryComponent = inventoryComponent;
@@ -42,10 +58,12 @@ public class InventoryDisplay extends UIComponent {
     super.create();
     buildPage();
     table.setVisible(false);
-    TooltipManager manager = TooltipManager.getInstance();
-    manager.initialTime = 0.02f; // Show after 0.2 seconds instead of 2 seconds
-    manager.resetTime = 0.4f; // Reset delay when moving between items quickly
-    manager.subsequentTime = 0.2f;
+    // Keep immediate, static inventory hints separate from other UI's tooltip settings.
+    tooltipManager.initialTime = 0f;
+    tooltipManager.resetTime = 0f;
+    tooltipManager.subsequentTime = 0f;
+    tooltipManager.animations = false;
+    tooltipManager.hideAll(); // Reset the manager's internal delay after changing its timing.
   }
 
   /** Builds the inventory page depending on which inventory is being displayed */
@@ -66,9 +84,9 @@ public class InventoryDisplay extends UIComponent {
 
     Table pagesContainer;
     if (charmsPage) {
-      pagesContainer = consumableCreate();
-    } else {
       pagesContainer = charmsCreate();
+    } else {
+      pagesContainer = consumableCreate();
     }
     // combine all together
     bookStack.add(pagesContainer);
@@ -91,11 +109,52 @@ public class InventoryDisplay extends UIComponent {
 
   /** Changes the current page to the other inactive page and sets the flag */
   public void changePage() {
+    charmsPage = !charmsPage;
+    refreshPage();
+  }
+
+  /** Refreshes the current page after an inventory action without changing pages. */
+  public void refreshPage() {
+    tooltipManager.hideAll();
     boolean visible = table.isVisible();
     table.remove();
-    charmsPage = !charmsPage;
     buildPage();
     table.setVisible(visible);
+  }
+
+  /** Item snapshot used by the grids and the existing action component. */
+  public List<? extends Item> getPageItems(boolean equipped) {
+    if (charmsPage) {
+      return inventoryComponent.getCharms().stream()
+          .filter(charm -> charm.isEquipped() == equipped)
+          .toList();
+    }
+    List<Item> items = new ArrayList<>();
+    if (equipped) {
+      for (int i = 0; i < InventoryComponent.CONSUMABLE_SLOT_COUNT; i++) {
+        String id = inventoryComponent.getConsumableSlot(i);
+        items.add(id == null ? null : ItemCatalog.create(id, 1));
+      }
+    } else {
+      List<? extends Item> assignedItems = getPageItems(true);
+      for (String id : inventoryComponent.getConsumableIds()) {
+        boolean assigned =
+            assignedItems.stream().anyMatch(item -> item != null && id.equals(item.getId()));
+        if (!assigned) items.add(ItemCatalog.create(id, 1));
+      }
+    }
+    return items;
+  }
+
+  public InventoryComponent getInventoryComponent() {
+    return inventoryComponent;
+  }
+
+  private ScrollPane scrollGrid(Table grid) {
+    ScrollPane scroll = new ScrollPane(grid, skin);
+    scroll.setScrollingDisabled(true, false);
+    scroll.setFadeScrollBars(false);
+    return scroll;
   }
 
   /**
@@ -117,8 +176,10 @@ public class InventoryDisplay extends UIComponent {
     leftPage.add(new Label("Equipped", skin)).colspan(3);
     leftPage.row();
 
-    // Please pass in list of equiped consumabls
-    Table leftGrid = drawItemGrid(3, 3, 72, new ArrayList<>(), true);
+    Table leftGrid =
+        drawItemGrid(
+            3, InventoryComponent.CONSUMABLE_SLOT_COUNT, 72, getPageItems(true), true, true);
+    leftGrid.setName("consumables-equipped");
     leftPage.add(leftGrid);
 
     pagesContainer.add(leftPage).size(365, 500);
@@ -127,10 +188,10 @@ public class InventoryDisplay extends UIComponent {
     Table rightPage =
         new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
 
-    // Please pass in list of consumabls in inventory
-    Table rightGrid = drawItemGrid(4, 20, 64, new ArrayList<>(), true);
+    List<? extends Item> stored = getPageItems(false);
+    Table rightGrid = drawItemGrid(4, Math.max(20, stored.size()), 64, stored, true, false);
 
-    rightPage.add(rightGrid).center().pad(10);
+    rightPage.add(scrollGrid(rightGrid)).size(300, 360).center().pad(10);
     pagesContainer.add(rightPage).size(365, 500);
 
     return pagesContainer;
@@ -152,7 +213,12 @@ public class InventoryDisplay extends UIComponent {
 
     leftPage.add(new Label("Charms", skin)).top().colspan(3).pad(25f);
     leftPage.row();
-    // display stats
+    leftPage.add(new Label("Equipped", skin)).colspan(3);
+    leftPage.row();
+    List<? extends Item> equipped = getPageItems(true);
+    Table leftGrid = drawItemGrid(3, Math.max(5, equipped.size()), 72, equipped, true, true);
+    leftGrid.setName("charms-equipped");
+    leftPage.add(scrollGrid(leftGrid)).size(250, 300);
 
     pagesContainer.add(leftPage).size(365, 500);
 
@@ -161,9 +227,10 @@ public class InventoryDisplay extends UIComponent {
         new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a"));
 
     // Create Grid
-    Table rightGrid = drawItemGrid(4, 20, 64, inventoryComponent.getCharms(), false);
+    List<? extends Item> stored = getPageItems(false);
+    Table rightGrid = drawItemGrid(4, Math.max(20, stored.size()), 64, stored, true, false);
 
-    rightPage.add(rightGrid).center().pad(10);
+    rightPage.add(scrollGrid(rightGrid)).size(300, 360).center().pad(10);
     pagesContainer.add(rightPage).size(365, 500);
 
     return pagesContainer;
@@ -173,25 +240,62 @@ public class InventoryDisplay extends UIComponent {
    * draws an item grid from a list of items
    *
    * @param enableDrag set this to true to add drag functionality
+   * @param equipped whether the grid represents active equipment
    */
   private Table drawItemGrid(
-      int columns, int totalSlots, int slotSize, List<? extends Item> items, boolean enableDrag) {
+      int columns,
+      int totalSlots,
+      int slotSize,
+      List<? extends Item> items,
+      boolean enableDrag,
+      boolean equipped) {
     Table grid = new Table();
 
     for (int i = 0; i < totalSlots; i++) {
 
       Stack slotStack = new Stack();
       ImageButton slotBackground = new ImageButton(inventory, "inventory-box");
-      if (enableDrag) registerDropTarget(slotBackground);
+      slotBackground.setUserObject((equipped ? "active:" : "inactive:") + i);
+      slotStack.setName(
+          (charmsPage ? "charm" : "consumable") + (equipped ? "-equipped-" : "-stored-") + i);
       slotStack.add(slotBackground);
+      if (enableDrag) registerDropTarget(slotStack);
 
-      if (i < items.size()) {
+      if (i < items.size() && items.get(i) != null) {
         Item currentItem = items.get(i);
         // create an image with the items texture then extract the Drawable to draw the button
         ImageButton itemButton = new ImageButton(new Image(getTexture(currentItem)).getDrawable());
-        itemButton.addListener(ItemTooltip.forItem(currentItem, skin));
-        if (enableDrag) registerDragSource(itemButton);
+        itemButton.addListener(ItemTooltip.forItem(currentItem, skin, tooltipManager));
+        itemButton.setUserObject(slotBackground);
+        if (enableDrag) {
+          registerDragSource(itemButton);
+          final int index = i;
+          itemButton.addListener(
+              new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                  entity
+                      .getEvents()
+                      .trigger(
+                          equipped ? "moveActiveToInactiveItem" : "moveInactiveToActiveItem",
+                          index,
+                          -1);
+                }
+              });
+        }
         slotStack.add(itemButton);
+        if (currentItem instanceof ConsumableItem) {
+          Table count = new Table();
+          count.bottom().right();
+          count
+              .add(
+                  new Label(
+                      Integer.toString(inventoryComponent.getConsumableCount(currentItem.getId())),
+                      skin))
+              .pad(4);
+          count.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
+          slotStack.add(count);
+        }
       }
 
       grid.add(slotStack).size(slotSize).pad(3);
@@ -209,9 +313,9 @@ public class InventoryDisplay extends UIComponent {
   }
 
   /** Registers the item slot as a drop target */
-  private void registerDropTarget(ImageButton slotBackground) {
+  private void registerDropTarget(Stack slotStack) {
     dragAndDrop.addTarget(
-        new DragAndDrop.Target(slotBackground) {
+        new DragAndDrop.Target(slotStack) {
           @Override
           public boolean drag(Source source, Payload payload, float x, float y, int pointer) {
             return true;
@@ -220,8 +324,8 @@ public class InventoryDisplay extends UIComponent {
           @Override
           public void drop(Source source, Payload payload, float x, float y, int pointer) {
             Actor draggedGroup = payload.getDragActor();
-            ImageButton currentTargetSlot = (ImageButton) getActor();
-            Stack targetStack = (Stack) currentTargetSlot.getParent();
+            ImageButton currentTargetSlot =
+                (ImageButton) ((Stack) getActor()).getChildren().first();
 
             // Parse original source slot details
             ImageButton previousSlot = (ImageButton) draggedGroup.getUserObject();
@@ -234,42 +338,31 @@ public class InventoryDisplay extends UIComponent {
             String toType = toData[0]; // "active" or "inactive"
             int toIndex = Integer.parseInt(toData[1]);
 
-            // Complete visual UI shift
-            draggedGroup.remove();
-            targetStack.addActorAt(1, draggedGroup);
-            draggedGroup.setUserObject(currentTargetSlot);
             if (Objects.equals(fromType, "active") && Objects.equals(toType, "inactive")) {
               entity.getEvents().trigger("moveActiveToInactiveItem", fromIndex, toIndex);
             } else if (Objects.equals(fromType, "inactive") && Objects.equals(toType, "active")) {
               entity.getEvents().trigger("moveInactiveToActiveItem", fromIndex, toIndex);
+            } else if (Objects.equals(fromType, "active") && Objects.equals(toType, "active")) {
+              entity.getEvents().trigger("moveActiveItem", fromIndex, toIndex);
             }
           }
         });
   }
 
-  /** Added dragging behaviour to the ImageButton currently not implemented */
+  /** Drags a preview so rejected drops leave the original item in its slot. */
   private void registerDragSource(ImageButton item) {
     dragAndDrop.addSource(
         new DragAndDrop.Source(item) {
           @Override
           public Payload dragStart(InputEvent event, float x, float y, int pointer) {
             Payload payload = new Payload();
-            table.addActor(getActor());
-            payload.setDragActor(getActor());
+            Image preview = new Image(item.getStyle().imageUp);
+            preview.setSize(item.getWidth(), item.getHeight());
+            preview.setUserObject(item.getUserObject());
+            payload.setDragActor(preview);
             dragAndDrop.setDragActorPosition(
                 getActor().getWidth() / 2, -getActor().getHeight() / 2);
             return payload;
-          }
-
-          @Override
-          public void dragStop(
-              InputEvent event, float x, float y, int pointer, Payload payload, Target target) {
-            if (target == null) {
-              ImageButton originalSlot = (ImageButton) getActor().getUserObject();
-              Stack originalStack = (Stack) originalSlot.getParent();
-              getActor().remove();
-              originalStack.addActorAt(1, getActor());
-            }
           }
         });
   }
@@ -286,14 +379,16 @@ public class InventoryDisplay extends UIComponent {
 
   @Override
   public void dispose() {
+    tooltipManager.hideAll();
     table.remove();
     super.dispose();
   }
 
   /** Shows or hides the inventory book. */
   public void setVisible(boolean set) {
+    if (set) refreshPage();
+    else tooltipManager.hideAll();
     table.setVisible(set);
-    changePage();
     if (set) {
       // Enemy health bars may have been added to the stage since the book was created.
       table.toFront();

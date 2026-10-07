@@ -274,11 +274,10 @@ class ConsumableUseIntegrationTest {
     KeyboardPlayerInputComponent input = new KeyboardPlayerInputComponent();
     player.addComponent(selection).addComponent(input);
     selection.create();
-    inventory.addConsumable(ItemIds.SHIELD);
-
     input.keyDown(Keys.Q);
-    assertEquals(0, inventory.getConsumableCount(ItemIds.SHIELD));
-    input.keyDown(Keys.TAB);
+    assertFalse(consumables.isShielded());
+    inventory.addConsumable(ItemIds.SHIELD);
+    assertEquals(ItemIds.SHIELD, selection.getSelectedType());
     input.keyDown(Keys.Q);
     assertEquals(0, inventory.getConsumableCount(ItemIds.SHIELD));
     assertTrue(consumables.isShielded());

@@ -209,7 +209,17 @@ public class ConsumableHotbarDisplay extends UIComponent {
 
   @Override
   public void draw(SpriteBatch batch) {
-    // The shared Scene2D stage draws this actor.
+    if (disposed || root == null) return;
+    // Resolve late-spawned health bars before the shared stage draws, moving only our HUD.
+    Actor book = stage.getRoot().findActor("inventory-book");
+    if (book != null && book.isVisible() && book.getParent() == root.getParent()) {
+      // Keep the open inventory above the HUD without changing the book's actor itself.
+      int index = book.getZIndex();
+      if (root.getZIndex() < index) index--;
+      root.setZIndex(index);
+    } else {
+      root.toFront();
+    }
   }
 
   @Override

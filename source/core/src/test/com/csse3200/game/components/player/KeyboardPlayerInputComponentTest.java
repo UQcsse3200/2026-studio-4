@@ -242,8 +242,14 @@ class KeyboardPlayerInputComponentTest {
     ConsumableSelectionComponent selection = new ConsumableSelectionComponent();
     InventoryComponent inventory = new InventoryComponent(0);
     player.addComponent(inventory).addComponent(selection);
-    inventory.addConsumable(ItemIds.HEALTH_POTION);
-    inventory.addConsumable(ItemIds.SHIELD);
+    for (String id :
+        List.of(
+            ItemIds.HEALTH_POTION,
+            ItemIds.SHIELD,
+            ItemIds.SPEED_POTION,
+            ItemIds.STRENGTH_POTION,
+            ItemIds.FREEZE_BOMB)) inventory.addConsumable(id);
+    inventory.equipConsumable(ItemIds.FREEZE_BOMB, 3);
     selection.create();
     List<String> requested = new ArrayList<>();
     player
@@ -259,7 +265,7 @@ class KeyboardPlayerInputComponentTest {
     for (int i = 0; i < 2; i++) {
       assertTrue(input.keyDown(Keys.TAB));
     }
-    assertEquals(null, selection.getSelectedType());
+    assertEquals(ItemIds.FREEZE_BOMB, selection.getSelectedType());
     assertTrue(input.keyDown(Keys.TAB));
     assertEquals(0, selection.getSelectedIndex());
   }
