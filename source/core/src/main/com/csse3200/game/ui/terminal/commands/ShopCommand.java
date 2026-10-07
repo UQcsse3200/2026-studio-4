@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Terminal command that opens or closes the shop display so QA does not need a Merchant NPC:
- * {@code shop open} or {@code shop close}.
+ * Terminal command that opens or closes the shop display so QA does not need a Merchant NPC: {@code
+ * shop open} or {@code shop close}.
  *
  * <p>Standing in for the real Merchant NPC interaction (Sprint 3 #202, owned by Team 3), which is
  * not yet available. Once that lands, the NPC's interaction event should call {@link

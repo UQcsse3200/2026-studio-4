@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
  * Terminal command that grants the player one Burn Vial and immediately consumes it.
  *
  * <p>Burn Vial has no hotbar slot or loot-table entry yet (both are pending team decisions), so
- * there is no other way to trigger it in a running game. This lets QA see the on-screen-enemy
- * burn effect without either: {@code burnvial}.
+ * there is no other way to trigger it in a running game. This lets QA see the on-screen-enemy burn
+ * effect without either: {@code burnvial}.
  */
 public class BurnVialCommand implements Command {
   private static final Logger logger = LoggerFactory.getLogger(BurnVialCommand.class);

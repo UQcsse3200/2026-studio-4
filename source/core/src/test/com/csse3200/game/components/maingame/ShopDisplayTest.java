@@ -27,8 +27,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * Checks the shop display's presentation only: it must never mutate Gold or inventory itself,
- * only request a purchase for whatever listens for it (Sprint 3 #196 B2 purchase logic).
+ * Checks the shop display's presentation only: it must never mutate Gold or inventory itself, only
+ * request a purchase for whatever listens for it (Sprint 3 #196 B2 purchase logic).
  */
 @ExtendWith(GameExtension.class)
 class ShopDisplayTest {
@@ -102,7 +102,8 @@ class ShopDisplayTest {
     InventoryComponent inventory = new InventoryComponent(1);
     ShopDisplay display = createDisplay(inventory);
     boolean[] requested = {false};
-    ui.getEvents().addListener("shopPurchaseRequested", (String id, Integer price) -> requested[0] = true);
+    ui.getEvents()
+        .addListener("shopPurchaseRequested", (String id, Integer price) -> requested[0] = true);
 
     display.open();
     clickBuy(ItemIds.HEALTH_POTION);

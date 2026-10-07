@@ -3,8 +3,8 @@ package com.csse3200.game.components.maingame;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.ui.UIComponent;
@@ -19,12 +19,12 @@ import org.slf4j.LoggerFactory;
  * <p>This component owns presentation only. Clicking Buy does not itself touch Gold or the
  * inventory — it fires a {@code shopPurchaseRequested} event carrying the item ID, which the
  * purchase-transaction logic (Sprint 3 #196 work package B2) is expected to listen for and act on.
- * Keeping that boundary means this display can be built, tested and demoed today without
- * depending on, or duplicating, that logic.
+ * Keeping that boundary means this display can be built, tested and demoed today without depending
+ * on, or duplicating, that logic.
  *
  * <p>Not yet wired to a Merchant NPC interaction (#202 depends on Team 3); in the meantime it can
- * be opened for testing via the {@code shop} terminal command, the same way {@code upgrade} lets
- * QA skip a pickup.
+ * be opened for testing via the {@code shop} terminal command, the same way {@code upgrade} lets QA
+ * skip a pickup.
  */
 public class ShopDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(ShopDisplay.class);

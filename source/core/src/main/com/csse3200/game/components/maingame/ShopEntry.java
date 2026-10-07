@@ -5,9 +5,9 @@ package com.csse3200.game.components.maingame;
  * price.
  *
  * <p>This is a deliberately minimal placeholder data shape so {@link ShopDisplay} can be built and
- * tested today without depending on the real shop catalogue (Sprint 3 #196 work package B1),
- * which is being designed separately. Swap the source of this list for the agreed catalogue once
- * it lands; nothing else about the display needs to change as long as entries keep this shape.
+ * tested today without depending on the real shop catalogue (Sprint 3 #196 work package B1), which
+ * is being designed separately. Swap the source of this list for the agreed catalogue once it
+ * lands; nothing else about the display needs to change as long as entries keep this shape.
  *
  * @param itemId stable {@code ItemIds} constant the entry sells
  * @param displayName label shown to the player

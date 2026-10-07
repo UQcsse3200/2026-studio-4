@@ -10,8 +10,8 @@ import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * A short, unmissable orange flame icon drawn above the player's head whenever a Burn Vial is
- * used, so the effect is visible even though Burn Vial has no in-world sprite of its own yet.
+ * A short, unmissable orange flame icon drawn above the player's head whenever a Burn Vial is used,
+ * so the effect is visible even though Burn Vial has no in-world sprite of its own yet.
  *
  * <p>Mirrors {@link HealingPotionFeedbackComponent}'s pattern: listen for {@link
  * ConsumableEffectComponent#USED}, then draw a simple tinted shape for a fixed duration.
