@@ -8,8 +8,7 @@ public class ExitSaveDialog extends Dialog {
   private final Runnable saveAndExit;
   private final Runnable deleteSaveAndExit;
 
-  public ExitSaveDialog(
-      Skin skin, Runnable saveAndExit, Runnable deleteSaveAndExit) {
+  public ExitSaveDialog(Skin skin, Runnable saveAndExit, Runnable deleteSaveAndExit) {
     super("Exit game?", skin);
     this.saveAndExit = saveAndExit;
     this.deleteSaveAndExit = deleteSaveAndExit;

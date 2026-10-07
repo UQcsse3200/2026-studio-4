@@ -134,10 +134,7 @@ public class LoadGameScreen extends ScreenAdapter {
 
     footer =
         label(
-            "UP / DOWN  Select     ENTER  Load     F  Delete     ESC  Back",
-            SMALL_FONT,
-            MUTED,
-            1f);
+            "UP / DOWN  Select     ENTER  Load     F  Delete     ESC  Back", SMALL_FONT, MUTED, 1f);
     footer.setAlignment(Align.left);
     panel.add(footer).expandX().fillX().left().padTop(8f);
 
@@ -224,10 +221,21 @@ public class LoadGameScreen extends ScreenAdapter {
       room = displayRoom(save.checkpoint.roomId);
     }
     details.add(label(room, "font", TEXT, 1f)).left().row();
-    details.add(label("Play Time  " + formatPlayTime(save.playTimeSeconds), SMALL_FONT, TEXT, 1f)).left().row();
-    details.add(label(formatDungeonTimes(save.dungeonTimesSeconds), SMALL_FONT, MUTED, 0.9f)).left().row();
-    String stats = "Gold  " + save.playerData.gold + "     Charms  "
-        + count(save.playerData.charms) + "     Upgrades  " + count(save.playerData.upgradedWeapons);
+    details
+        .add(label("Play Time  " + formatPlayTime(save.playTimeSeconds), SMALL_FONT, TEXT, 1f))
+        .left()
+        .row();
+    details
+        .add(label(formatDungeonTimes(save.dungeonTimesSeconds), SMALL_FONT, MUTED, 0.9f))
+        .left()
+        .row();
+    String stats =
+        "Gold  "
+            + save.playerData.gold
+            + "     Charms  "
+            + count(save.playerData.charms)
+            + "     Upgrades  "
+            + count(save.playerData.upgradedWeapons);
     details.add(label(stats, SMALL_FONT, MUTED, 0.95f)).left();
     return details;
   }
