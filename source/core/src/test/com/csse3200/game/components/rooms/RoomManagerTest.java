@@ -66,7 +66,9 @@ class RoomManagerTest {
           new RoomManager(world, player, camera) {
             // initilising minimap class causes shader errors
             @Override
-            void attachMinimap() {}
+            void attachMinimap() {
+              // Constructing the minimap causes shader unloaded errors
+            }
           };
       manager.create();
       manager.interact();

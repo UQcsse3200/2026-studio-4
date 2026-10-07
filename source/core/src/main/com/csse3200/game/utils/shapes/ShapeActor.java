@@ -10,23 +10,23 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public abstract class ShapeActor extends Actor {
   protected final ShapeRenderer shape;
-  protected final Color color;
+  protected final Color shapeColor;
   protected boolean fill;
 
   /** Package private constructor for testing */
   ShapeActor(Color color, boolean fill, ShapeRenderer renderer) {
     this.shape = renderer;
-    this.color = color;
+    this.shapeColor = color;
     this.fill = fill;
   }
 
-  public ShapeActor(Color color, boolean fill) {
+  protected ShapeActor(Color color, boolean fill) {
     this.shape = new ShapeRenderer();
-    this.color = color;
+    this.shapeColor = color;
     this.fill = fill;
   }
 
-  public ShapeActor(Color color) {
+  protected ShapeActor(Color color) {
     this(color, true);
   }
 
@@ -41,7 +41,7 @@ public abstract class ShapeActor extends Actor {
     shape.setProjectionMatrix(batch.getProjectionMatrix());
 
     shape.begin(fill ? ShapeType.Filled : ShapeType.Line);
-    shape.setColor(color);
+    shape.setColor(shapeColor);
 
     drawShape();
 

@@ -1,6 +1,6 @@
 package com.csse3200.game.ui.minimap;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.graphics.Texture;
@@ -78,8 +78,10 @@ public class MinimapTest {
   void shouldClearTablesWhenRebuilding() {
     var minimap =
         new Minimap(roomConfig, clearedIds, left, right, center) {
-          void attachRoom(Table table, RoomType type) {}
-          ;
+          @Override
+          void attachRoom(Table table, RoomType type) {
+            // causes shader errors when shape in constructed.
+          }
         };
     minimap.onRoomChanged(roomConfig);
 
@@ -135,13 +137,16 @@ public class MinimapTest {
   void attachesListenerOnCreate() {
     var minimap =
         new Minimap(roomConfig, clearedIds, left, right, center) {
-          void attachRoom(Table table, RoomType type) {}
-          ;
+          @Override
+          void attachRoom(Table table, RoomType type) {
+            // causes shader errors when shape in constructed.
+          }
         };
-
+    var texture = mock(Texture.class);
+    var stage = mock(Stage.class);
     when(player.getEvents()).thenReturn(events);
-    when(resourceService.getAsset(any(), any())).thenReturn(mock(Texture.class));
-    when(renderService.getStage()).thenReturn(mock(Stage.class));
+    when(resourceService.getAsset(any(), any())).thenReturn(texture);
+    when(renderService.getStage()).thenReturn(stage);
     minimap.setEntity(player);
 
     minimap.create();

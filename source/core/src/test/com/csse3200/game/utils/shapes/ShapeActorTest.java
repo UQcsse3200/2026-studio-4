@@ -24,7 +24,9 @@ public class ShapeActorTest {
     }
 
     @Override
-    protected void drawShape() {}
+    protected void drawShape() {
+      // empty stup for concrete implementation abstract class
+    }
   }
 
   @Mock ShapeRenderer renderer;

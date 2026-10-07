@@ -99,13 +99,13 @@ public class Minimap extends UIComponent {
   }
 
   private Table buildCenter() {
-    var center = new Table();
+    var table = new Table();
     Texture texture = ServiceLocator.getResourceService().getAsset(PLAYER_HEAD_PATH, Texture.class);
-    Image player_head = new Image(texture);
+    Image playerHead = new Image(texture);
 
-    center.add(player_head).center();
+    table.add(playerHead).center();
 
-    return center;
+    return table;
   }
 
   private void rebuild() {
@@ -218,5 +218,7 @@ public class Minimap extends UIComponent {
   }
 
   @Override
-  protected void draw(SpriteBatch batch) {}
+  protected void draw(SpriteBatch batch) {
+    // Drawing is handled by the stage
+  }
 }
