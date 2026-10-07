@@ -54,9 +54,23 @@ public class MainGameExitDisplay extends UIComponent {
 
   private void showExitDialog() {
     cancel.run();
-    ExitSaveDialog dialog = new ExitSaveDialog(skin, saveAndExit, deleteSaveAndExit);
-    ServiceLocator.getRunTimer().toggleUpdate();
-    ServiceLocator.getEntityService().toggleUpdate();
+
+    // If the inventory (or anything else) already paused the game, leave that pause alone.
+    boolean alreadyPaused = ServiceLocator.getRunTimer().isPaused();
+    if (!alreadyPaused) {
+      ServiceLocator.getEntityService().toggleUpdate();
+      ServiceLocator.getRunTimer().requestPause();
+    }
+
+    Runnable onClose =
+        () -> {
+          if (!alreadyPaused) {
+            ServiceLocator.getEntityService().toggleUpdate();
+            ServiceLocator.getRunTimer().requestResume();
+          }
+        };
+
+    ExitSaveDialog dialog = new ExitSaveDialog(skin, saveAndExit, deleteSaveAndExit, onClose);
     dialog.show(stage);
   }
 

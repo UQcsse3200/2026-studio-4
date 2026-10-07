@@ -1,8 +1,6 @@
 package com.csse3200.game.services;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class RunTimer {
   private final GameTime gameTime;
@@ -14,7 +12,7 @@ public class RunTimer {
   private boolean dungeonRunning;
   private float dungeonSyncedTime; // whole seconds, flips with the run clock
   private float dungeonStartTotal; // totalTime when the dungeon began
-  private boolean paused;
+  private boolean paused = false;
   private static final float MAX_DELTA =
       0.25f; // ignore anything beyond a one quarter-second hiccup
 
@@ -152,23 +150,19 @@ public class RunTimer {
     return String.format("%02d:%02d", minutes, secs);
   }
 
-  private void pause() {
+  /**
+   * Requests that time stop advancing. Each owner's request is independent; call requestResume with
+   * the same owner to release it.
+   */
+  public void requestPause() {
     paused = true;
   }
 
-  private void resume() {
+  public void requestResume() {
     paused = false;
   }
 
-  private boolean isPaused() {
+  public boolean isPaused() {
     return paused;
-  }
-
-  public void toggleUpdate() {
-    if (isPaused()) {
-      resume();
-    } else {
-      pause();
-    }
   }
 }
