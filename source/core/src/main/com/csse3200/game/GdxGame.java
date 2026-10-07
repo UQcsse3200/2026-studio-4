@@ -5,11 +5,14 @@ import static com.badlogic.gdx.Gdx.app;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.csse3200.game.files.GameSaveData;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.DeathScreen;
+import com.csse3200.game.screens.LoadGameScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsScreen;
+import com.csse3200.game.screens.WinScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GdxGame extends Game {
   private static final Logger logger = LoggerFactory.getLogger(GdxGame.class);
+  private int activeSaveSlot = 1;
 
   @Override
   public void create() {
@@ -53,6 +57,27 @@ public class GdxGame extends Game {
     setScreen(newScreen(screenType));
   }
 
+  public void startGame(GameSaveData save, int slot) {
+    startGame(save, slot, false);
+  }
+
+  public void startGameAtCheckpoint(GameSaveData save, int slot) {
+    startGame(save, slot, true);
+  }
+
+  public int getActiveSaveSlot() {
+    return activeSaveSlot;
+  }
+
+  private void startGame(GameSaveData save, int slot, boolean loadAtCheckpoint) {
+    activeSaveSlot = slot;
+    Screen currentScreen = getScreen();
+    if (currentScreen != null) {
+      currentScreen.dispose();
+    }
+    setScreen(new MainGameScreen(this, save, slot, loadAtCheckpoint));
+  }
+
   @Override
   public void dispose() {
     logger.debug("Disposing of current screen");
@@ -69,12 +94,16 @@ public class GdxGame extends Game {
     switch (screenType) {
       case MAIN_MENU:
         return new MainMenuScreen(this);
+      case LOAD_GAME:
+        return new LoadGameScreen(this);
       case MAIN_GAME:
         return new MainGameScreen(this);
       case SETTINGS:
         return new SettingsScreen(this);
       case DEATH_SCREEN:
         return new DeathScreen(this);
+      case WIN_SCREEN:
+        return new WinScreen(this);
       default:
         return null;
     }
@@ -82,9 +111,11 @@ public class GdxGame extends Game {
 
   public enum ScreenType {
     MAIN_MENU,
+    LOAD_GAME,
     MAIN_GAME,
     SETTINGS,
-    DEATH_SCREEN
+    DEATH_SCREEN,
+    WIN_SCREEN
   }
 
   /** Exit the game. */
