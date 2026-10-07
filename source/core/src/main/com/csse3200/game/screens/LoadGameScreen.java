@@ -171,60 +171,12 @@ public class LoadGameScreen extends ScreenAdapter {
 
     GameSaveData save = saves[index];
     Texture preview = loadPreview(index);
-    if (preview != null) {
-      Image image = new Image(preview);
-      image.setScaling(Scaling.fit);
-      content.add(image).size(138f, rowHeight - 22f).padRight(18f);
-    } else {
-      Table placeholder = new Table();
-      placeholder.setBackground(skin.newDrawable("button-c", DEEP));
-      String placeholderText = saveFiles[index] ? "NO MAP\nPREVIEW" : "EMPTY SLOT";
-      placeholder.add(label(placeholderText, SMALL_FONT, MUTED, 0.9f)).center();
-      content.add(placeholder).size(138f, rowHeight - 22f).padRight(18f);
-    }
+    addPreview(content, preview, saveFiles[index], rowHeight);
 
-    Table details = new Table();
-    details.left();
-    String slotTitle = "SAVE SLOT " + (index + 1);
-    details.add(label(slotTitle, "font_large", SELECTED_GOLD, 0.92f)).left().row();
-    if (save == null) {
-      String status = saveFiles[index] ? "This record could not be read" : "No saved journey";
-      details.add(label(status, SMALL_FONT, MUTED, 1f)).left();
-    } else {
-      String room =
-          save.resumePosition != null
-              ? displayRoom(save.resumePosition.roomId)
-              : (save.checkpoint == null
-                  ? "Unknown location"
-                  : displayRoom(save.checkpoint.roomId));
-      details.add(label(room, "font", TEXT, 1f)).left().row();
-      details
-          .add(label("Play Time  " + formatPlayTime(save.playTimeSeconds), SMALL_FONT, TEXT, 1f))
-          .left()
-          .row();
-      details
-          .add(label(formatDungeonTimes(save.dungeonTimesSeconds), SMALL_FONT, MUTED, 0.9f))
-          .left()
-          .row();
-      String stats =
-          "Gold  "
-              + save.playerData.gold
-              + "     Charms  "
-              + count(save.playerData.charms)
-              + "     Upgrades  "
-              + count(save.playerData.upgradedWeapons);
-      details.add(label(stats, SMALL_FONT, MUTED, 0.95f)).left();
-    }
+    Table details = createDetails(index, save);
     content.add(details).expandX().fillX().left();
 
-    if (save != null && Gdx.graphics.getWidth() >= 900) {
-      Table location = new Table();
-      location.right();
-      location.add(label("LAST CHECKPOINT", SMALL_FONT, MUTED, 0.82f)).right().row();
-      String checkpoint = save.checkpoint == null ? "Unknown" : displayRoom(save.checkpoint.roomId);
-      location.add(label(checkpoint, "font", TEXT, 0.95f)).right();
-      content.add(location).width(230f).right().padLeft(12f);
-    }
+    addCheckpoint(content, save);
 
     row.add(content).expand().fill();
     row.addListener(
@@ -237,6 +189,51 @@ public class LoadGameScreen extends ScreenAdapter {
           }
         });
     return row;
+  }
+
+  private void addPreview(Table content, Texture preview, boolean saveFileExists, float rowHeight) {
+    if (preview != null) {
+      Image image = new Image(preview);
+      image.setScaling(Scaling.fit);
+      content.add(image).size(138f, rowHeight - 22f).padRight(18f);
+      return;
+    }
+    Table placeholder = new Table();
+    placeholder.setBackground(skin.newDrawable("button-c", DEEP));
+    String text = saveFileExists ? "NO MAP\nPREVIEW" : "EMPTY SLOT";
+    placeholder.add(label(text, SMALL_FONT, MUTED, 0.9f)).center();
+    content.add(placeholder).size(138f, rowHeight - 22f).padRight(18f);
+  }
+
+  private Table createDetails(int index, GameSaveData save) {
+    Table details = new Table();
+    details.left();
+    details.add(label("SAVE SLOT " + (index + 1), "font_large", SELECTED_GOLD, 0.92f)).left().row();
+    if (save == null) {
+      String status = saveFiles[index] ? "This record could not be read" : "No saved journey";
+      details.add(label(status, SMALL_FONT, MUTED, 1f)).left();
+      return details;
+    }
+    String room = save.resumePosition != null
+        ? displayRoom(save.resumePosition.roomId)
+        : (save.checkpoint == null ? "Unknown location" : displayRoom(save.checkpoint.roomId));
+    details.add(label(room, "font", TEXT, 1f)).left().row();
+    details.add(label("Play Time  " + formatPlayTime(save.playTimeSeconds), SMALL_FONT, TEXT, 1f)).left().row();
+    details.add(label(formatDungeonTimes(save.dungeonTimesSeconds), SMALL_FONT, MUTED, 0.9f)).left().row();
+    String stats = "Gold  " + save.playerData.gold + "     Charms  "
+        + count(save.playerData.charms) + "     Upgrades  " + count(save.playerData.upgradedWeapons);
+    details.add(label(stats, SMALL_FONT, MUTED, 0.95f)).left();
+    return details;
+  }
+
+  private void addCheckpoint(Table content, GameSaveData save) {
+    if (save == null || Gdx.graphics.getWidth() < 900) return;
+    Table location = new Table();
+    location.right();
+    location.add(label("LAST CHECKPOINT", SMALL_FONT, MUTED, 0.82f)).right().row();
+    String checkpoint = save.checkpoint == null ? "Unknown" : displayRoom(save.checkpoint.roomId);
+    location.add(label(checkpoint, "font", TEXT, 0.95f)).right();
+    content.add(location).width(230f).right().padLeft(12f);
   }
 
   private Texture loadPreview(int index) {
