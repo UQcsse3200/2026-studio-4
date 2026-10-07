@@ -8,6 +8,9 @@ public interface DialogueView {
   /** The player pressed the advance key / clicked. */
   void advance();
 
+  /** Ends the dialogue now, without showing the remaining lines. Reports finished as usual. */
+  void skip();
+
   /** Hides the dialogue UI and releases its resources. */
   void close();
 

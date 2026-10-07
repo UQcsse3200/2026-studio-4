@@ -52,6 +52,11 @@ public final class CutsceneEvents {
   /** {@code (String dialogueId)}: a dialogue has opened. */
   public static final String DIALOGUE_STARTED = "dialogueStarted";
 
+  /**
+   * {@code (String dialogueId)}: the player left the dialogue early. Followed by DIALOGUE_FINISHED.
+   */
+  public static final String DIALOGUE_SKIPPED = "dialogueSkipped";
+
   /** {@code (String dialogueId, Integer lineIndex)}: a new line is now showing. */
   public static final String DIALOGUE_LINE_SHOWN = "dialogueLineShown";
 

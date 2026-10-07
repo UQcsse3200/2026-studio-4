@@ -23,6 +23,7 @@ class NarrativeManagerComponentTest {
     DialogueScript shown;
     DialogueRunner.Listener listener;
     int advances;
+    int skips;
     int closes;
     boolean active;
 
@@ -36,6 +37,13 @@ class NarrativeManagerComponentTest {
     @Override
     public void advance() {
       advances++;
+    }
+
+    @Override
+    public void skip() {
+      skips++;
+      // like the real display, ending early reports finished
+      listener.onFinished();
     }
 
     @Override
@@ -100,6 +108,7 @@ class NarrativeManagerComponentTest {
 
     listen(CutsceneEvents.DIALOGUE_STARTED, "dialogueStarted:");
     listen(CutsceneEvents.DIALOGUE_FINISHED, "dialogueFinished:");
+    listen(CutsceneEvents.DIALOGUE_SKIPPED, "dialogueSkipped:");
     listen(CutsceneEvents.CUTSCENE_STARTED, "cutsceneStarted:");
     listen(CutsceneEvents.CUTSCENE_FINISHED, "cutsceneFinished:");
     listen(CutsceneEvents.CUTSCENE_SKIPPED, "cutsceneSkipped:");
@@ -217,6 +226,50 @@ class NarrativeManagerComponentTest {
     assertEquals("after", cutsceneView.played.id);
     assertTrue(entityService.isFrozen());
     assertTrue(actions.areControlsLocked());
+  }
+
+  @Test
+  void leavingADialogueEndsItEarlyAndReleasesTheGame() {
+    manager.playDialogue(dialogue("d"));
+    events.clear();
+
+    assertTrue(manager.leave());
+
+    assertEquals(1, dialogueView.skips);
+    assertEquals(List.of("dialogueSkipped:d", "dialogueFinished:d"), events);
+    assertFalse(entityService.isFrozen());
+    assertFalse(actions.areControlsLocked());
+    assertFalse(manager.isDialogueActive());
+  }
+
+  @Test
+  void aSkippedDialogueCanBePlayedAgainFromTheStart() {
+    DialogueScript script = dialogue("d");
+    manager.playDialogue(script);
+    manager.leave();
+
+    assertTrue(manager.playDialogue(script));
+    assertEquals(script, dialogueView.shown);
+  }
+
+  @Test
+  void leaveClosesTheDialogueBeforeTheCutscene() {
+    manager.playDialogue(dialogue("d"));
+    manager.playCutscene(CutsceneScript.ofVideo("c", "videos/demo.mp4"));
+
+    assertTrue(manager.leave());
+    assertFalse(manager.isDialogueActive());
+    assertTrue(manager.isCutsceneActive(), "first escape only leaves the dialogue");
+    assertEquals(0, cutsceneView.stops);
+
+    assertTrue(manager.leave());
+    assertFalse(manager.isCutsceneActive());
+  }
+
+  @Test
+  void leaveWithNothingPlayingDoesNothing() {
+    assertFalse(manager.leave());
+    assertTrue(events.isEmpty());
   }
 
   @Test

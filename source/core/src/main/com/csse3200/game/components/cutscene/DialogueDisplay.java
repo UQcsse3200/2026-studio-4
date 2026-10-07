@@ -255,6 +255,13 @@ public class DialogueDisplay extends UIComponent implements DialogueView {
   }
 
   @Override
+  public void skip() {
+    if (active && runner != null) {
+      runner.skipAll();
+    }
+  }
+
+  @Override
   public void close() {
     active = false;
     runner = null;

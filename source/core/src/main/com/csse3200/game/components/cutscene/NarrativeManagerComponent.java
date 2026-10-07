@@ -277,6 +277,30 @@ public class NarrativeManagerComponent extends Component {
   }
 
   /**
+   * The escape key: leaves the open dialogue entirely (the remaining lines are not shown), or if no
+   * dialogue is open, skips the running cutscene when it allows it.
+   *
+   * @return true if there was a dialogue or cutscene to leave
+   */
+  public boolean leave() {
+    if (activeDialogue != null) {
+      skipDialogue();
+      return true;
+    }
+    return skipCutscene();
+  }
+
+  /** Closes the open dialogue immediately. DIALOGUE_SKIPPED is sent, then DIALOGUE_FINISHED. */
+  public void skipDialogue() {
+    DialogueScript script = activeDialogue;
+    if (script == null) {
+      return;
+    }
+    player.getEvents().trigger(CutsceneEvents.DIALOGUE_SKIPPED, script.id);
+    dialogueView.skip();
+  }
+
+  /**
    * Skips the running cutscene if it is skippable.
    *
    * @return true if there was a cutscene to skip

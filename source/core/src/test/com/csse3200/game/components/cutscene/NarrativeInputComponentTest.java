@@ -19,12 +19,14 @@ class NarrativeInputComponentTest {
   private NarrativeManagerComponent manager;
   private NarrativeInputComponent input;
   private boolean active;
-  private int skips;
+  private int leaves;
+  private boolean terminalOpen;
 
   @BeforeEach
   void setUp() {
     advances = 0;
-    skips = 0;
+    leaves = 0;
+    terminalOpen = false;
     active = false;
     ServiceLocator.registerEntityService(new EntityService());
     // A manager whose state the test controls directly
@@ -42,12 +44,12 @@ class NarrativeInputComponentTest {
           }
 
           @Override
-          public boolean skipCutscene() {
-            skips++;
+          public boolean leave() {
+            leaves++;
             return true;
           }
         };
-    input = new NarrativeInputComponent(manager);
+    input = new NarrativeInputComponent(manager, () -> terminalOpen);
   }
 
   @Test
@@ -75,10 +77,45 @@ class NarrativeInputComponentTest {
   }
 
   @Test
-  void escapeSkipsTheCutscene() {
+  void escapeLeavesTheDialogueOrSkipsTheCutscene() {
     active = true;
     assertTrue(input.keyDown(Input.Keys.ESCAPE));
-    assertEquals(1, skips);
+    assertEquals(1, leaves);
+  }
+
+  @Test
+  void typingInTheTerminalDoesNotAdvanceTheDialogue() {
+    active = true;
+    terminalOpen = true;
+
+    assertFalse(input.keyDown(Input.Keys.SPACE), "the terminal needs the space key");
+    assertFalse(input.keyDown(Input.Keys.ENTER));
+    assertFalse(input.keyDown(Input.Keys.ESCAPE));
+    assertFalse(input.keyDown(Input.Keys.S));
+    assertFalse(input.touchDown(0, 0, 0, Input.Buttons.LEFT));
+    assertEquals(0, advances);
+    assertEquals(0, leaves);
+  }
+
+  @Test
+  void inputIsHandledAgainOnceTheTerminalCloses() {
+    active = true;
+    terminalOpen = true;
+    assertFalse(input.keyDown(Input.Keys.SPACE));
+
+    terminalOpen = false;
+
+    assertTrue(input.keyDown(Input.Keys.SPACE));
+    assertEquals(1, advances);
+  }
+
+  @Test
+  void keyUpOfAKeySwallowedBeforeTheTerminalOpenedIsStillSwallowed() {
+    active = true;
+    assertTrue(input.keyDown(Input.Keys.W));
+    terminalOpen = true;
+
+    assertTrue(input.keyUp(Input.Keys.W), "the player never saw the key go down");
   }
 
   @Test
