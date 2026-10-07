@@ -241,4 +241,23 @@ class KeyboardPlayerInputComponentTest {
     assertTrue(input.keyDown(Keys.TAB));
     assertEquals(0, selection.getSelectedIndex());
   }
+
+  @Test
+  void lCastsTheAttunedAbility() {
+    List<String> requests = new ArrayList<>();
+    player
+        .getEvents()
+        .addListener(AbilityAttunementComponent.USE_ATTUNED_REQUEST, () -> requests.add("cast"));
+
+    assertTrue(input.keyDown(Keys.L));
+    assertTrue(input.keyDown(Keys.L));
+
+    assertEquals(2, requests.size(), "L asks to cast every press");
+  }
+
+  @Test
+  void lIsNotBoundToAnythingElse() {
+    // L sits beside the J and K attacks; nothing else may claim it.
+    assertFalse(input.keyUp(Keys.L));
+  }
 }

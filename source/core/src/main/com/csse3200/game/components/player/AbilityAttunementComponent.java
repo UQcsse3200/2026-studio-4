@@ -20,6 +20,12 @@ public class AbilityAttunementComponent extends Component {
   /** Triggered with no arguments when the player is left with no ability at all. */
   public static final String ABILITY_UNATTUNED = "abilityUnattuned";
 
+  /** Asks for the attuned ability to be cast. Listened for here, triggered by player input. */
+  public static final String USE_ATTUNED_REQUEST = "useAttunedAbility";
+
+  private static final String NOTHING_ATTUNED = "No ability attuned";
+  private static final String TRIGGERS_ITSELF = "Ability triggers on its own";
+
   private Class<? extends PlayerAbility> attuned;
 
   /** Starts the player with nothing attuned; abilities are earned, never given. */
@@ -28,6 +34,7 @@ public class AbilityAttunementComponent extends Component {
   @Override
   public void create() {
     entity.getEvents().addListener("entityDied", this::clearAttunement);
+    entity.getEvents().addListener(USE_ATTUNED_REQUEST, this::castAttuned);
     enforceAttunement();
   }
 
@@ -66,6 +73,32 @@ public class AbilityAttunementComponent extends Component {
     attuned = type;
     entity.getEvents().trigger(ABILITY_ATTUNED, nameOf(abilities, type));
     return true;
+  }
+
+  /**
+   * Casts whatever the player is carrying. A passive is not cast, and nothing attuned is not a
+   * silent no-op: both report through the same abilityFailed event the abilities component uses, so
+   * one listener can explain every refusal.
+   *
+   * @return whether an ability actually started
+   */
+  public boolean castAttuned() {
+    PlayerAbilitiesComponent abilities = abilities();
+    if (abilities == null) {
+      return false;
+    }
+    if (attuned == null) {
+      entity.getEvents().trigger(PlayerAbilitiesComponent.ABILITY_FAILED, "", NOTHING_ATTUNED);
+      return false;
+    }
+    PlayerAbility ability = find(abilities, attuned);
+    if (ability != null && !ability.isCastable()) {
+      entity
+          .getEvents()
+          .trigger(PlayerAbilitiesComponent.ABILITY_FAILED, ability.getName(), TRIGGERS_ITSELF);
+      return false;
+    }
+    return abilities.tryActivate(attuned);
   }
 
   /** Takes back whatever was attuned, leaving the player with no ability. */
@@ -116,24 +149,25 @@ public class AbilityAttunementComponent extends Component {
     }
   }
 
-  private static boolean isRegistered(
+  private static PlayerAbility find(
       PlayerAbilitiesComponent abilities, Class<? extends PlayerAbility> type) {
     for (PlayerAbility ability : abilities.getRegisteredAbilities()) {
       if (ability.getClass().equals(type)) {
-        return true;
+        return ability;
       }
     }
-    return false;
+    return null;
+  }
+
+  private static boolean isRegistered(
+      PlayerAbilitiesComponent abilities, Class<? extends PlayerAbility> type) {
+    return find(abilities, type) != null;
   }
 
   private static String nameOf(
       PlayerAbilitiesComponent abilities, Class<? extends PlayerAbility> type) {
-    for (PlayerAbility ability : abilities.getRegisteredAbilities()) {
-      if (ability.getClass().equals(type)) {
-        return ability.getName();
-      }
-    }
-    return Objects.toString(type);
+    PlayerAbility ability = find(abilities, type);
+    return ability == null ? Objects.toString(type) : ability.getName();
   }
 
   private PlayerAbilitiesComponent abilities() {

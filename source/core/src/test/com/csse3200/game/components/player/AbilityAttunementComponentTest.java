@@ -31,6 +31,7 @@ class AbilityAttunementComponentTest {
   private Entity player;
   private final List<String> attuned = new ArrayList<>();
   private final List<String> unattuned = new ArrayList<>();
+  private final List<String> failed = new ArrayList<>();
 
   @BeforeEach
   void setUp() {
@@ -53,6 +54,11 @@ class AbilityAttunementComponentTest {
     player
         .getEvents()
         .addListener(AbilityAttunementComponent.ABILITY_UNATTUNED, () -> unattuned.add("cleared"));
+    player
+        .getEvents()
+        .addListener(
+            PlayerAbilitiesComponent.ABILITY_FAILED,
+            (String ability, String reason) -> failed.add(ability + ":" + reason));
     // Components are created in an unspecified order, so the lock may land on the first update.
     attunement.update();
   }
@@ -191,6 +197,51 @@ class AbilityAttunementComponentTest {
 
     assertNull(attunement.getAttuned());
     assertTrue(attuned.isEmpty());
+  }
+
+  @Test
+  void shouldCastTheAttunedAbility() {
+    assertTrue(attunement.attune(Invisibility.class));
+
+    assertTrue(attunement.castAttuned());
+
+    assertTrue(abilities.isActive(Invisibility.class));
+  }
+
+  @Test
+  void shouldCastOnRequestFromPlayerInput() {
+    assertTrue(attunement.attune(Invisibility.class));
+
+    player.getEvents().trigger(AbilityAttunementComponent.USE_ATTUNED_REQUEST);
+
+    assertTrue(abilities.isActive(Invisibility.class));
+  }
+
+  @Test
+  void shouldExplainPressingCastWithNothingAttuned() {
+    assertFalse(attunement.castAttuned());
+
+    assertEquals(List.of(":No ability attuned"), failed);
+  }
+
+  @Test
+  void shouldExplainThatAPassiveCannotBeCast() {
+    assertTrue(attunement.attune(LastStand.class));
+
+    assertFalse(attunement.castAttuned(), "Last Stand fires on its own, it is not cast");
+
+    assertEquals(List.of("laststand:Ability triggers on its own"), failed);
+    assertFalse(abilities.isActive(LastStand.class));
+  }
+
+  @Test
+  void shouldNotCastWhileOnCooldown() {
+    assertTrue(attunement.attune(Invisibility.class));
+    assertTrue(attunement.castAttuned());
+    abilities.stop(Invisibility.class);
+
+    assertFalse(attunement.castAttuned());
+    assertTrue(failed.contains("invisibility:Ability is on cooldown"));
   }
 
   @Test
