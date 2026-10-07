@@ -114,23 +114,31 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates a barrel obstacle.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createRock()" class="member-name-link">createRock</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createBox()" class="member-name-link">createBox</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a rock obstacle.</div>
+<div class="block">Creates a box obstacle</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createTile()" class="member-name-link">createTile</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createRock()" class="member-name-link">createRock</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a rock obstacle.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createTree()" class="member-name-link">createTree</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSword()" class="member-name-link">createSword</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a tree entity.</div>
+<div class="block">Creates a sword obstacle</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createWall(float,float)" class="member-name-link">createWall</a><wbr>(float&nbsp;width,
  float&nbsp;height)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates an invisible physics wall.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createWallFor(java.util.Set,boolean)" class="member-name-link">createWallFor</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../components/rooms/Direction.html" title="enum class in com.csse3200.game.components.rooms">Direction</a>&gt;&nbsp;voids,
+ boolean&nbsp;shift)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a wall for the given configuration.</div>
 </div>
 </div>
 </div>
@@ -150,17 +158,6 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="createTree()">
-<h3>createTree</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createTree</span>()</div>
-<div class="block">Creates a tree entity.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>entity</dd>
-</dl>
-</section>
-</li>
-<li>
 <section class="detail" id="createRock()">
 <h3>createRock</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createRock</span>()</div>
@@ -168,9 +165,18 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="createTile()">
-<h3>createTile</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createTile</span>()</div>
+<section class="detail" id="createWallFor(java.util.Set,boolean)">
+<h3>createWallFor</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createWallFor</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../components/rooms/Direction.html" title="enum class in com.csse3200.game.components.rooms">Direction</a>&gt;&nbsp;voids,
+ boolean&nbsp;shift)</span></div>
+<div class="block">Creates a wall for the given configuration.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>voids</code> - A set of directions where the neighbouring tile is void.</dd>
+<dd><code>shift</code> - Shift the given texture by a constant to use a different wall texture.</dd>
+<dt>Returns:</dt>
+<dd>The wall entity, with bevelled edges of the given config.</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -178,6 +184,28 @@ loadScripts(document, 'script');</script>
 <h3>createBarrel</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createBarrel</span>()</div>
 <div class="block">Creates a barrel obstacle.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createSword()">
+<h3>createSword</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSword</span>()</div>
+<div class="block">Creates a sword obstacle</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The sword obstacle</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createBox()">
+<h3>createBox</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createBox</span>()</div>
+<div class="block">Creates a box obstacle</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>A box obstacle</dd>
+</dl>
 </section>
 </li>
 <li>

@@ -111,7 +111,14 @@ loadScripts(document, 'script');</script>
  <a href="../../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera,
  boolean&nbsp;cleared)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a room entity from its declarative definition.</div>
+<div class="block">Creates a room from its declarative definition, camera component and the boolean value of its
+ cleared state.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#spawnMap(com.csse3200.game.components.rooms.configs.RoomConfig,com.csse3200.game.areas.terrain.TerrainBuilder)" class="member-name-link">spawnMap</a><wbr>(<a href="../../components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room,
+ <a href="../../areas/terrain/TerrainBuilder.html" title="class in com.csse3200.game.areas.terrain">TerrainBuilder</a>&nbsp;terrain)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Spawns the terrain of the map based upon the room config definition.</div>
 </div>
 </div>
 </div>
@@ -136,7 +143,29 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createRoom</span><wbr><span class="parameters">(<a href="../../components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room,
  <a href="../../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera,
  boolean&nbsp;cleared)</span></div>
-<div class="block">Creates a room entity from its declarative definition.</div>
+<div class="block">Creates a room from its declarative definition, camera component and the boolean value of its
+ cleared state.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>room</code> - The rooms declarative definition.</dd>
+<dd><code>camera</code> - The camera for the room.</dd>
+<dd><code>cleared</code> - Whether the room has been cleared.</dd>
+<dt>Returns:</dt>
+<dd>The room entity.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="spawnMap(com.csse3200.game.components.rooms.configs.RoomConfig,com.csse3200.game.areas.terrain.TerrainBuilder)">
+<h3>spawnMap</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">spawnMap</span><wbr><span class="parameters">(<a href="../../components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room,
+ <a href="../../areas/terrain/TerrainBuilder.html" title="class in com.csse3200.game.areas.terrain">TerrainBuilder</a>&nbsp;terrain)</span></div>
+<div class="block">Spawns the terrain of the map based upon the room config definition.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>room</code> - The room config.</dd>
+<dd><code>terrain</code> - The TerrainBuilder.</dd>
+</dl>
 </section>
 </li>
 </ul>
