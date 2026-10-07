@@ -53,6 +53,13 @@ public class InventoryComponent extends Component {
    * published only after both the balance and quantity have been committed.
    */
   public ConsumablePurchaseResult tryPurchaseConsumable(String itemId, int goldPrice) {
+    return tryPurchaseConsumable(itemId, goldPrice, 1);
+  }
+
+  /** Commits a paid consumable reward and its quantity before publishing inventory events. */
+  public ConsumablePurchaseResult tryPurchaseConsumable(
+      String itemId, int goldPrice, int quantity) {
+    if (quantity <= 0) throw new IllegalArgumentException("Quantity must be positive");
     if (!isConsumable(itemId)) {
       return ConsumablePurchaseResult.INVALID_ITEM;
     }
@@ -63,11 +70,11 @@ public class InventoryComponent extends Component {
       return ConsumablePurchaseResult.INSUFFICIENT_GOLD;
     }
     int count = getConsumableCount(itemId);
-    if (count == Integer.MAX_VALUE) {
+    if (count > Integer.MAX_VALUE - quantity) {
       return ConsumablePurchaseResult.QUANTITY_LIMIT;
     }
     gold -= goldPrice;
-    consumables.put(itemId, count + 1);
+    consumables.put(itemId, count + quantity);
     if (entity != null) {
       entity.getEvents().trigger("goldChanged", gold);
       // A gold listener may synchronously add/remove items; publish the current final quantity.
