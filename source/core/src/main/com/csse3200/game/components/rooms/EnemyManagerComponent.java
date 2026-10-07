@@ -218,7 +218,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case CERBERUS:
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
-        Vector2 wallAnchor = cerberusTerrain.tileToWorldPosition(27, 32);
+        Vector2 wallAnchor = cerberusTerrain.tileToWorldPosition(26, 50);
         wallAnchor.add(cerberusTerrain.getTileSize() / 2f, 0f);
         return CerberusFactory.createCerberus(
             target,
