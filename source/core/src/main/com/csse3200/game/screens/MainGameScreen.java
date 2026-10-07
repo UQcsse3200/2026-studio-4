@@ -135,6 +135,7 @@ public class MainGameScreen extends ScreenAdapter {
 
     if (loadedSave != null) {
       GameSaveMapper.restore(player, loadedSave);
+      GameSaveMapper.restoreAchievements(loadedSave);
     }
     RoomCommand roomCommand = new RoomCommand(roomManager);
     terminal.addCommand("room", roomCommand);
