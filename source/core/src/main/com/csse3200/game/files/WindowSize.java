@@ -46,7 +46,7 @@ public final class WindowSize {
     if (value <= 0) {
       return fallback;
     }
-    return Math.min(MAX, Math.max(MIN, value));
+    return Math.clamp(value, MIN, MAX);
   }
 
   /** One labelled window size. The menu prints {@link #toString()}. */

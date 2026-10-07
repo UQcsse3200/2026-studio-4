@@ -9,13 +9,13 @@ import com.csse3200.game.ui.UIComponent;
 /** Small FPS readout. Hidden unless Settings → Show FPS is on. */
 public class FpsOverlay extends UIComponent {
   private Label label;
-  private boolean enabled;
+  private boolean showReadout;
 
   @Override
   public void create() {
     super.create();
-    enabled = UserSettings.get().showFps;
-    if (!enabled || stage == null) {
+    showReadout = UserSettings.get().showFps;
+    if (!showReadout || stage == null) {
       return;
     }
     label = new Label("FPS 0", skin, "small");
@@ -25,7 +25,7 @@ public class FpsOverlay extends UIComponent {
 
   @Override
   public void update() {
-    if (!enabled || label == null || Gdx.graphics == null) {
+    if (!showReadout || label == null || Gdx.graphics == null) {
       return;
     }
     label.setText("FPS " + Gdx.graphics.getFramesPerSecond());

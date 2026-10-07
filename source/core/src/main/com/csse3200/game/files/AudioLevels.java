@@ -12,7 +12,7 @@ public final class AudioLevels {
     if (!Float.isFinite(value)) {
       return 0f;
     }
-    return Math.min(1f, Math.max(0f, value));
+    return Math.clamp(value, 0f, 1f);
   }
 
   public static float music() {
