@@ -3,6 +3,7 @@ package com.csse3200.game.components.rooms;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -51,10 +52,41 @@ public class RoomAssetsTest {
     Music music = mock(Music.class);
     when(resourceService.getAsset(anyString(), any())).thenReturn(music);
 
-    roomAssets.playMusicFor(null);
+    roomAssets.playMusicFor(null, true);
 
     verify(music).setLooping(true);
     verify(music).play();
+  }
+
+  @Test
+  void shouldFightOnlyWhileADungeonRoomStillHasEnemies() {
+    RoomAssets roomAssets = new RoomAssets();
+    Music calm = mock(Music.class);
+    Music fight = mock(Music.class);
+    when(resourceService.getAsset(eq("sounds/lobby_music.mp3"), any())).thenReturn(calm);
+    when(resourceService.getAsset(eq("sounds/fight_music.mp3"), any())).thenReturn(fight);
+
+    roomAssets.playMusicFor("dungeonOne", false);
+    verify(fight).play();
+    verify(calm, never()).play();
+
+    // Clearing the room drops back to the calm track and stops the fight.
+    roomAssets.playMusicFor("dungeonOne", true);
+    verify(fight).stop();
+    verify(calm).play();
+  }
+
+  @Test
+  void shouldTreatTheHubAsCalmEvenIfSomethingClaimsItIsNotCleared() {
+    RoomAssets roomAssets = new RoomAssets();
+    Music calm = mock(Music.class);
+    Music fight = mock(Music.class);
+    when(resourceService.getAsset(eq("sounds/lobby_music.mp3"), any())).thenReturn(calm);
+
+    roomAssets.playMusicFor(null, false);
+
+    verify(calm).play();
+    verify(fight, never()).play();
   }
 
   @Test
@@ -65,8 +97,8 @@ public class RoomAssetsTest {
     when(music.isPlaying()).thenReturn(true);
 
     // Walking between rooms of one dungeon must not restart its music.
-    roomAssets.playMusicFor("dungeonOne");
-    roomAssets.playMusicFor("dungeonOne");
+    roomAssets.playMusicFor("dungeonOne", false);
+    roomAssets.playMusicFor("dungeonOne", false);
 
     verify(music, never()).play();
   }

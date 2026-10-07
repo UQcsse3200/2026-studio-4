@@ -127,7 +127,8 @@ public class MainGameScreen extends ScreenAdapter {
         .getEvents()
         .addListener(
             RoomManager.ROOM_ENTERED,
-            (String roomId, String dungeonId) -> roomAssets.playMusicFor(dungeonId));
+            (String roomId, String dungeonId, Boolean cleared) ->
+                roomAssets.playMusicFor(dungeonId, Boolean.TRUE.equals(cleared)));
     // notify damage
     player
         .getEvents()

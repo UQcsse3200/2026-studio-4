@@ -20,12 +20,13 @@ import java.util.stream.Stream;
 
 /** Loads the terrain, fixtures, audio, and enemy assets used by a room. */
 public class RoomAssets implements Disposable {
-  private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
+  /** Plays in the hub, and in any dungeon room once nothing is left alive in it. */
+  private static final String CALM_MUSIC = "sounds/lobby_music.mp3";
 
-  /** Plays in the hub, which is any room that is not part of a dungeon. */
-  private static final String LOBBY_MUSIC = "sounds/lobby_music.mp3";
+  /** Plays in a dungeon room that still has enemies in it. */
+  private static final String FIGHT_MUSIC = "sounds/fight_music.mp3";
   private static final String IMPACT_SOUND = "sounds/Impact4.ogg";
-  private static final String[] MUSIC = {BACKGROUND_MUSIC, LOBBY_MUSIC};
+  private static final String[] MUSIC = {CALM_MUSIC, FIGHT_MUSIC};
   private static final String[] SOUNDS = {IMPACT_SOUND};
 
   private static final String[] ENEMY_TEXTURES = {
@@ -138,13 +139,18 @@ public class RoomAssets implements Disposable {
   }
 
   /**
-   * Switches to the track that belongs to the room the player just entered, and does nothing if
-   * that track is already playing, so walking between rooms of one dungeon never restarts it.
+   * Switches to the track the player's situation calls for: fighting music only while a dungeon
+   * room still has enemies in it, and the calm hub track everywhere else, including a dungeon room
+   * that has just been cleared.
+   *
+   * <p>Does nothing when the wanted track is already playing, so crossing rooms of one dungeon, or
+   * re-entering a room already cleared, never restarts it from the top.
    *
    * @param dungeonId the dungeon the room belongs to, or null for the hub
+   * @param cleared whether the room has no enemies left
    */
-  public void playMusicFor(String dungeonId) {
-    String wanted = dungeonId == null ? LOBBY_MUSIC : BACKGROUND_MUSIC;
+  public void playMusicFor(String dungeonId, boolean cleared) {
+    String wanted = dungeonId == null || cleared ? CALM_MUSIC : FIGHT_MUSIC;
     Music track = music(wanted);
     if (track == null || track.isPlaying()) {
       return;

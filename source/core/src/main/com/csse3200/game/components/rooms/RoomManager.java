@@ -29,7 +29,10 @@ import java.util.Set;
 
 /** Owns the active room and applies the room graph specified by {@link WorldConfig}. */
 public class RoomManager {
-  /** Triggered on the player with the room id and its dungeon id, which is null for the hub. */
+  /**
+   * Triggered on the player with the room id, its dungeon id (null for the hub) and whether the
+   * room has no enemies left. Also re-fired when the room is cleared, so the state is never stale.
+   */
   public static final String ROOM_ENTERED = "roomEntered";
 
   private static final float INTERACTION_RANGE = 1f;
@@ -339,7 +342,10 @@ public class RoomManager {
     if (player == null || currentConfig == null) {
       return;
     }
-    player.getEvents().trigger(ROOM_ENTERED, currentConfig.id, currentConfig.dungeonId);
+    EnemyManagerComponent enemies =
+        currentRoom == null ? null : currentRoom.getComponent(EnemyManagerComponent.class);
+    boolean cleared = enemies == null || enemies.isCleared();
+    player.getEvents().trigger(ROOM_ENTERED, currentConfig.id, currentConfig.dungeonId, cleared);
   }
 
   /** Requests that the current room's enemies be cleared at the next safe update point. */
@@ -351,6 +357,8 @@ public class RoomManager {
     if (clearedRoomIds.add(currentConfig.id)) {
       showStatus("Room cleared.");
     }
+    // The fight is over, so whatever was reacting to the room's state hears about it again.
+    announceRoom();
   }
 
   private ExitConfig findNearestExit() {
