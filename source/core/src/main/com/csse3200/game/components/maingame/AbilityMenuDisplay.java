@@ -22,12 +22,24 @@ public class AbilityMenuDisplay extends UIComponent {
   /** Above the inventory book (2), since the menu is modal over everything else. */
   private static final float Z_INDEX = 3f;
 
-  /** Matches the gold of the indicator that bobs over an NPC's head. */
-  private static final Color HIGHLIGHT = new Color(1f, 0.85f, 0.3f, 0.25f);
+  /**
+   * The panel is the skin's cream "window", so every colour here is a dark ink meant to be read on
+   * a light background. The highlight is the skin's own {@code highlight}, which the rest of the UI
+   * uses for a chosen thing.
+   */
+  private static final Color HIGHLIGHT = Color.valueOf("ffe6a3");
 
-  private static final Color SELECTED_TEXT = Color.WHITE;
-  private static final Color UNSELECTED_TEXT = new Color(0.72f, 0.69f, 0.62f, 1f);
-  private static final Color CARRIED_TEXT = new Color(1f, 0.85f, 0.3f, 1f);
+  /** Skin {@code brown}: near-black, so a selected row stays legible on the pale highlight. */
+  private static final Color SELECTED_TEXT = Color.valueOf("2e1503");
+
+  private static final Color UNSELECTED_TEXT = Color.valueOf("6a5440");
+  private static final Color BODY_TEXT = Color.valueOf("5c4633");
+
+  /** Skin {@code pressed}, darkened a little so it reads on the highlight too. */
+  private static final Color CARRIED_TEXT = Color.valueOf("9c6b18");
+
+  /** The bitmap font has no arrow glyphs, so name the letter keys instead. */
+  private static final String HINT = "W/S choose     ENTER attune     ESC leave";
 
   /**
    * {@link PlayerAbility#getName()} returns an event id, which is not what a player should read.
@@ -69,17 +81,20 @@ public class AbilityMenuDisplay extends UIComponent {
 
     Label title = new Label("Hecate's Gifts", skin, "title");
     title.setAlignment(Align.center);
+    // The title style's gold is pale against the cream panel; multiply it down to a deeper amber.
+    title.setColor(0.75f, 0.6f, 0.35f, 1f);
     panel.add(title).padBottom(4f).row();
 
     Label subtitle = new Label("You may carry only one.", skin, "caption");
     subtitle.setAlignment(Align.center);
+    subtitle.setColor(BODY_TEXT);
     panel.add(subtitle).padBottom(18f).row();
 
     rowHolder = new Table();
     rowHolder.setName("ability-menu-rows");
     panel.add(rowHolder).growX().row();
 
-    Label hint = new Label("↑↓ choose     ENTER attune     ESC leave", skin, "caption");
+    Label hint = new Label(HINT, skin, "caption");
     hint.setAlignment(Align.center);
     hint.setColor(UNSELECTED_TEXT);
     panel.add(hint).padTop(18f);
@@ -179,19 +194,20 @@ public class AbilityMenuDisplay extends UIComponent {
       table.row();
 
       Label blurb = new Label(BLURBS.getOrDefault(ability.getName(), ""), skin, "caption");
-      blurb.setColor(UNSELECTED_TEXT);
+      blurb.setColor(BODY_TEXT);
       blurb.setWrap(true);
       table.add(blurb).colspan(2).left().width(420f).padTop(4f).row();
 
       Label cooldown =
           new Label("Cooldown " + (ability.getCooldown() / 1000) + "s", skin, "caption");
-      cooldown.setColor(UNSELECTED_TEXT);
+      cooldown.setColor(BODY_TEXT);
       table.add(cooldown).colspan(2).left().padTop(2f);
     }
 
     private void setSelected(boolean selected) {
       table.setBackground(selected ? skin.newDrawable("white", HIGHLIGHT) : null);
       name.setColor(selected ? SELECTED_TEXT : UNSELECTED_TEXT);
+      name.setFontScale(selected ? 1.05f : 1f);
     }
   }
 }

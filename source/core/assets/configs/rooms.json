@@ -42,16 +42,6 @@
           "y": 16
         },
         {
-          "npcId": "wanderingSpirit",
-          "x": 8,
-          "y": 14
-        },
-        {
-          "npcId": "sealedGuardian",
-          "x": 13,
-          "y": 44
-        },
-        {
           "npcId": "hecate",
           "x": 11,
           "y": 18
