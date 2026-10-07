@@ -19,7 +19,7 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
 com.badlogic.gdx.graphics.Color: {
 	white: { hex: "ffffff" },
 	black: { hex: "000000" },
-	red: { hex: "ff0000" },
+	red: { hex: "ff1678" },
 	gray: { hex: "808080" },
 	color: { hex: "e9c873" },
 	highlight: { hex: "ffe6a3" },
@@ -27,7 +27,9 @@ com.badlogic.gdx.graphics.Color: {
 	selection: { hex: "5588cc" },
 	window: { hex: "241a12" },
 	brown: {hex: "2e1503"},
-	time: {hex: "A6B8CC" }
+	time: {hex: "A6B8CC" },
+	lock: {hex: "7F1D1D"},
+	unlocked: {hex: "00A3CC"}
 }
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	button-c: {
@@ -323,6 +325,14 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	inventory: {
 		font: font
 		fontColor: brown
+	}
+	achievements_lock: {
+		font: font_small
+		fontColor: lock
+	}
+	achievements_unlock: {
+		font: font_small
+		fontColor: unlocked
 	}
 
 }

@@ -205,13 +205,13 @@ public class InventoryDisplay extends UIComponent {
     List<Achievement> unlocked = all.stream().filter(Achievement::isUnlocked).toList();
 
     Table leftPage = new Table().background(inventory.getDrawable(LEFT_PAGE)).top();
-    leftPage.pad(10, 15, 20, 15);
+    leftPage.pad(10, 10, 20, 10);
     leftPage.add(new Label("Locked", skin, INVENTORY_STYLE)).top().pad(15f).row();
     leftPage.add(achievementList(locked, false)).grow();
     pagesContainer.add(leftPage).size(365, 475);
 
     Table rightPage = new Table().background(inventory.getDrawable(RIGHT_PAGE)).top();
-    rightPage.pad(10, 15, 20, 15);
+    rightPage.pad(10, 10, 20, 10);
     rightPage.add(new Label("Unlocked", skin, INVENTORY_STYLE)).top().pad(15f).row();
     rightPage.add(achievementList(unlocked, true)).grow();
     pagesContainer.add(rightPage).size(365, 475);
@@ -224,17 +224,15 @@ public class InventoryDisplay extends UIComponent {
     Table list = new Table();
     list.top();
     for (Achievement a : achievements) {
-      Label name = new Label(a.getName(), skin, INVENTORY_STYLE);
-      name.setColor(unlockedStyle ? Color.GOLD : Color.GRAY);
+      Label name = new Label("> " + a.getName(), skin, INVENTORY_STYLE);
 
       name.setWrap(true);
       list.add(name).left().width(280f).pad(6).row();
-      //      list.add(name).left().pad(6).row();
 
       if (!unlockedStyle && a.getTarget() > 0) {
         int shown = (int) Math.min(a.getProgress(), a.getTarget());
-        Label progress = new Label(shown + " / " + (int) a.getTarget(), skin);
-        progress.setColor(Color.BLUE);
+        Label progress = new Label(shown + " / " + (int) a.getTarget(), skin, "achievements_lock");
+//        progress.setColor(Color.BLUE);
         list.add(progress).left().padLeft(6).padBottom(20).row();
       }
     }
