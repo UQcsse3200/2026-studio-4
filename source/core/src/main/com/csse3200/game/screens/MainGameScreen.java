@@ -20,6 +20,7 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.NarrativeFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.entities.factories.ShopFactory;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.files.GameSaveData;
 import com.csse3200.game.files.GameSaveMapper;
@@ -65,6 +66,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final RunTimer runTimer;
   private boolean winScreenRequested;
   private boolean saveOnDispose = true;
+  private boolean worldFrozen;
 
   public MainGameScreen(GdxGame game) {
     this(game, null, 1);
@@ -144,11 +146,24 @@ public class MainGameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    physicsEngine.update();
+    // A dialogue or cutscene freezes the world: no physics, room logic or run timer.
+    boolean frozen = ServiceLocator.getEntityService().isFrozen();
+    if (frozen != worldFrozen) {
+      worldFrozen = frozen;
+      // Scaled time also stops sprite animations, status effects and other timers
+      ServiceLocator.getTimeSource().setTimeScale(frozen ? 0f : 1f);
+    }
+    if (!frozen) {
+      physicsEngine.update();
+    }
     ServiceLocator.getEntityService().update();
-    roomManager.update();
+    if (!frozen) {
+      roomManager.update();
+    }
     renderer.render();
-    runTimer.update();
+    if (!frozen) {
+      runTimer.update();
+    }
   }
 
   @Override
@@ -290,6 +305,7 @@ public class MainGameScreen extends ScreenAdapter {
     // Dialogue and cutscene systems (events are sent on the player)
     ServiceLocator.getEntityService()
         .register(NarrativeFactory.createNarrative(player, terminal::isOpen));
+    ServiceLocator.getEntityService().register(ShopFactory.createShop(player, terminal));
   }
 
   /* Schedule the death screen to be shown */
