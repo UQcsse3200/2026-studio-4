@@ -15,6 +15,8 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.files.GameSaveData;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.rendering.RenderService;
@@ -69,8 +71,23 @@ public class DeathScreen extends ScreenAdapter {
             ServiceLocator.getResourceService().getAsset("images/game_over.png", Texture.class));
 
     Skin skin = new Skin(Gdx.files.internal("flat-earth/skin/flat-earth-ui.json"));
-    TextButton retryButton = new TextButton("Retry", skin);
-    retryButton.addListener(
+    TextButton loadButton = new TextButton("Load Savepoint", skin);
+    loadButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+            int slot = game.getActiveSaveSlot();
+            if (!FileLoader.saveExists(slot)) {
+              return;
+            }
+            GameSaveData save = FileLoader.load(slot);
+            if (save != null) {
+              game.startGameAtCheckpoint(save, slot);
+            }
+          }
+        });
+    TextButton menuButton = new TextButton("Main Menu", skin);
+    menuButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
@@ -78,8 +95,9 @@ public class DeathScreen extends ScreenAdapter {
           }
         });
 
-    table.add(image).padBottom(20f).row();
-    table.add(retryButton).padTop(20f);
+    table.add(image).colspan(2).padBottom(20f).row();
+    table.add(loadButton).padTop(20f).padRight(14f);
+    table.add(menuButton).padTop(20f).padLeft(14f);
     stage.addActor(table);
 
     Entity ui = new Entity();

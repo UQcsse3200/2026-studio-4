@@ -56,11 +56,6 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   }
 
   @Override
-  public void setPriority(int status) {
-    this.priority = status;
-  }
-
-  @Override
   public void start() {
     super.start();
     PhysicsMovementComponent movementComponent =

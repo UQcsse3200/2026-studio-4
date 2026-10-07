@@ -1,0 +1,33 @@
+chinese.png
+size: 512, 512
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+default
+    rotate: false
+    xy: 320, 320
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 0
+move
+    rotate: false
+    xy: 320, 320
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 0
+chase
+    rotate: false
+    xy: 320, 320
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 0
+dieAnimation
+    rotate: false
+    xy: 320, 320
+    size: 128, 128
+    orig: 128, 128
+    offset: 0, 0
+    index: 1

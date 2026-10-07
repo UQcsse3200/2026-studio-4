@@ -1,6 +1,7 @@
 package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.maingame.InventoryDisplay;
 import com.csse3200.game.components.weapons.WeaponComponent;
 import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
@@ -45,6 +46,11 @@ public class InventoryComponent extends Component {
     int previous = this.gold;
     this.gold = Math.max(gold, 0);
     logger.debug("Setting gold to {}", this.gold);
+    if (ServiceLocator.getAchievementService() != null) {
+      AchievementContext ctx = new AchievementContext();
+      ctx.goldTotal = this.gold;
+      ServiceLocator.getAchievementService().update(ctx);
+    }
     if (previous != this.gold && entity != null) {
       entity.getEvents().trigger("goldChanged", this.gold);
     }
@@ -75,10 +81,10 @@ public class InventoryComponent extends Component {
     if (count > Integer.MAX_VALUE - quantity) {
       return ConsumablePurchaseResult.QUANTITY_LIMIT;
     }
-    gold -= goldPrice;
     consumables.put(itemId, count + quantity);
+    // Commit stock first so both achievement and gold observers see the complete transaction.
+    setGold(gold - goldPrice);
     if (entity != null) {
-      entity.getEvents().trigger("goldChanged", gold);
       // A gold listener may synchronously add/remove items; publish the current final quantity.
       entity.getEvents().trigger("consumableInventoryChanged", itemId, getConsumableCount(itemId));
     }
@@ -219,5 +225,9 @@ public class InventoryComponent extends Component {
       displayed = true;
     }
     ServiceLocator.getEntityService().toggleUpdate();
+  }
+
+  public Map<String, Integer> getConsumables() {
+    return Map.copyOf(consumables);
   }
 }

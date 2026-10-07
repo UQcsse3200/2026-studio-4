@@ -5,6 +5,7 @@ import com.csse3200.game.components.cutscene.DialogueDisplay;
 import com.csse3200.game.components.cutscene.NarrativeInputComponent;
 import com.csse3200.game.components.cutscene.NarrativeManagerComponent;
 import com.csse3200.game.entities.Entity;
+import java.util.function.BooleanSupplier;
 
 /**
  * Creates the entity that owns the dialogue and cutscene systems.
@@ -17,9 +18,10 @@ public class NarrativeFactory {
    * Creates the narrative entity. Register it with the entity service once the player exists.
    *
    * @param player the player entity; dialogue and cutscene events are sent on its event handler
+   * @param terminalOpen whether the debug terminal is open; while it is, it gets all the input
    * @return the narrative entity
    */
-  public static Entity createNarrative(Entity player) {
+  public static Entity createNarrative(Entity player, BooleanSupplier terminalOpen) {
     DialogueDisplay dialogueDisplay = new DialogueDisplay();
     CutscenePlayer cutscenePlayer = new CutscenePlayer();
     NarrativeManagerComponent manager =
@@ -30,7 +32,7 @@ public class NarrativeFactory {
             .addComponent(dialogueDisplay)
             .addComponent(cutscenePlayer)
             .addComponent(manager)
-            .addComponent(new NarrativeInputComponent(manager));
+            .addComponent(new NarrativeInputComponent(manager, terminalOpen));
     narrative.setUpdatesWhilePaused(true);
     return narrative;
   }

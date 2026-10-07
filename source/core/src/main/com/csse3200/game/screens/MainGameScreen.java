@@ -4,14 +4,12 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
+import com.csse3200.game.components.achievements.AchievementConfig;
+import com.csse3200.game.components.achievements.AchievementContext;
+import com.csse3200.game.components.achievements.AchievementsFactory;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.gamearea.TimerDisplay;
-import com.csse3200.game.components.maingame.ConsumableHotbarDisplay;
-import com.csse3200.game.components.maingame.HotbarDisplay;
-import com.csse3200.game.components.maingame.InventoryActions;
-import com.csse3200.game.components.maingame.InventoryDisplay;
-import com.csse3200.game.components.maingame.MainGameActions;
-import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.components.maingame.*;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.rooms.RoomAssets;
 import com.csse3200.game.components.rooms.RoomCommand;
@@ -24,17 +22,17 @@ import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.entities.factories.ShopFactory;
 import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.files.GameSaveData;
+import com.csse3200.game.files.GameSaveMapper;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
-import com.csse3200.game.services.GameTime;
-import com.csse3200.game.services.ResourceService;
-import com.csse3200.game.services.RunTimer;
-import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.*;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.ui.terminal.commands.AbilityCommand;
@@ -61,14 +59,37 @@ public class MainGameScreen extends ScreenAdapter {
   private RoomManager roomManager;
   private Entity player;
   private final Terminal terminal;
+  private final int saveSlot;
+  private final GameSaveData loadedSave;
+  private boolean runSaved;
   private final RoomAssets roomAssets = new RoomAssets();
   private final RunTimer runTimer;
+  private boolean winScreenRequested;
+  private boolean saveOnDispose = true;
   private boolean worldFrozen;
 
   public MainGameScreen(GdxGame game) {
+    this(game, null, 1);
+  }
+
+  public MainGameScreen(GdxGame game, GameSaveData save, int saveSlot) {
+    this(game, save, saveSlot, false);
+  }
+
+  public MainGameScreen(GdxGame game, GameSaveData save, int saveSlot, boolean loadAtCheckpoint) {
     this.game = game;
+    this.loadedSave = save;
+    this.saveSlot = saveSlot;
 
     terminal = new Terminal();
+    GameTime gameTime = new GameTime();
+    ServiceLocator.registerTimeSource(gameTime);
+    runTimer = new RunTimer(gameTime);
+    if (loadedSave == null) {
+      runTimer.startRun();
+    } else {
+      runTimer.restoreRun(loadedSave.playTimeSeconds, loadedSave.dungeonTimesSeconds);
+    }
 
     // load all game services
     logger.debug("Initialising main game screen services");
@@ -82,24 +103,43 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.registerRenderService(new RenderService());
     renderer = RenderFactory.createRenderer();
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
-    ServiceLocator.registerRunTimer(new RunTimer(new GameTime()));
+    ServiceLocator.registerRunTimer(runTimer);
+
+    ServiceLocator.registerAchievementService(createAchievementService());
 
     loadAssets();
 
     player = PlayerFactory.createPlayer();
     // trigger death screen via entity died event
     player.getEvents().addListener("entityDied", this::scheduleDeathScreen);
+    // trigger win screen via entity win event
+    player.getEvents().addListener("winScreenRequested", () -> winScreenRequested = true);
+    // notify damage
+    player
+        .getEvents()
+        .addListener(
+            "damageTaken",
+            (Entity attacker, Integer lost, Integer remaining) -> {
+              AchievementContext ctx = new AchievementContext();
+              ctx.playerDamaged = true;
+              ServiceLocator.getAchievementService().update(ctx);
+            });
 
     WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     if (world == null) {
       throw new IllegalStateException("Unable to load configs/rooms.json");
     }
-
     roomManager = new RoomManager(world, player, renderer.getCamera());
+    if (loadedSave != null) {
+      roomManager.initializeFromSavedRun(loadedSave, loadAtCheckpoint);
+    }
     roomManager.create();
 
-    runTimer = ServiceLocator.getRunTimer();
-    runTimer.startRun();
+    if (loadedSave != null) {
+      GameSaveMapper.restore(player, loadedSave);
+    }
+    RoomCommand roomCommand = new RoomCommand(roomManager);
+    terminal.addCommand("room", roomCommand);
 
     createUI();
   }
@@ -146,6 +186,30 @@ public class MainGameScreen extends ScreenAdapter {
   public void dispose() {
     logger.debug("Disposing main game screen");
 
+    if (saveOnDispose && !runSaved && player != null && roomManager != null) {
+      runSaved = true;
+      try {
+        GameSaveData save =
+            GameSaveMapper.capture(
+                player, roomManager.getCheckpointData(), roomManager.getResumePositionData());
+        save.playTimeSeconds = runTimer.getTotalTime();
+        save.dungeonTimesSeconds.putAll(runTimer.getDungeonTimes());
+        FileLoader.save(save, saveSlot);
+      } catch (RuntimeException exception) {
+        logger.error("Failed to save game data for slot {}", saveSlot, exception);
+      }
+      Stage stage = ServiceLocator.getRenderService().getStage();
+      try {
+        stage.getRoot().setVisible(false);
+        renderer.render();
+        FileLoader.savePreview(saveSlot);
+      } catch (RuntimeException exception) {
+        logger.error("Failed to save preview for slot {}", saveSlot, exception);
+      } finally {
+        stage.getRoot().setVisible(true);
+      }
+    }
+
     renderer.dispose();
     unloadAssets();
 
@@ -154,6 +218,18 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.getResourceService().dispose();
 
     ServiceLocator.clear();
+  }
+
+  public void saveAndExit() {
+    game.setScreen(ScreenType.MAIN_MENU);
+  }
+
+  public void deleteSaveAndExit() {
+    saveOnDispose = false;
+    runSaved = true;
+
+    FileLoader.deleteSaveSlot(saveSlot);
+    game.setScreen(ScreenType.MAIN_MENU);
   }
 
   private void loadAssets() {
@@ -200,7 +276,18 @@ public class MainGameScreen extends ScreenAdapter {
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new MainGameActions(this.game))
-        .addComponent(new MainGameExitDisplay())
+        .addComponent(
+            new MainGameExitDisplay(
+                this::saveAndExit,
+                this::deleteSaveAndExit,
+                () -> {
+                  player.getEvents().trigger("walkStop");
+                  player.getEvents().trigger("resetMovementInput");
+                  PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
+                  if (physics != null && physics.getBody() != null) {
+                    physics.getBody().setLinearVelocity(0f, 0f);
+                  }
+                }))
         .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay())
@@ -216,7 +303,8 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.getEntityService().register(ui);
 
     // Dialogue and cutscene systems (events are sent on the player)
-    ServiceLocator.getEntityService().register(NarrativeFactory.createNarrative(player));
+    ServiceLocator.getEntityService()
+        .register(NarrativeFactory.createNarrative(player, terminal::isOpen));
     ServiceLocator.getEntityService().register(ShopFactory.createShop(player, terminal));
   }
 
@@ -224,5 +312,18 @@ public class MainGameScreen extends ScreenAdapter {
   private void scheduleDeathScreen() {
     runTimer.stopRun();
     ServiceLocator.getEntityService().schedule(() -> game.setScreen(ScreenType.DEATH_SCREEN));
+  }
+
+  private AchievementService createAchievementService() {
+    AchievementConfig[] configs =
+        FileLoader.readClass(AchievementConfig[].class, "configs/achievements.json");
+    if (configs == null) {
+      throw new IllegalStateException("Unable to load configs/achievements.json");
+    }
+    AchievementService achievementService = new AchievementService();
+    for (AchievementConfig c : configs) {
+      achievementService.register(AchievementsFactory.build(c));
+    }
+    return achievementService;
   }
 }

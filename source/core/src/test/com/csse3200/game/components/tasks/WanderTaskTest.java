@@ -31,7 +31,7 @@ class WanderTaskTest {
   void shouldTriggerEvent() {
     WanderTask wanderTask = new WanderTask(Vector2Utils.ONE, 1f);
 
-    AITaskComponent aiTaskComponent = new AITaskComponent(new Entity()).addTask(wanderTask);
+    AITaskComponent aiTaskComponent = new AITaskComponent().addTask(wanderTask);
     Entity entity =
         new Entity().addComponent(aiTaskComponent).addComponent(new PhysicsMovementComponent());
     entity.create();
