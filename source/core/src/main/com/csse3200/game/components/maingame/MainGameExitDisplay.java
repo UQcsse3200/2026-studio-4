@@ -2,7 +2,6 @@ package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -55,22 +54,7 @@ public class MainGameExitDisplay extends UIComponent {
 
   private void showExitDialog() {
     stopMovement.run();
-    Dialog dialog =
-        new Dialog("Exit game?", skin) {
-          @Override
-          protected void result(Object object) {
-            if ("save".equals(object)) {
-              saveAndExit.run();
-            } else if ("delete".equals(object)) {
-              deleteSaveAndExit.run();
-            }
-          }
-        };
-
-    dialog.text("Do you want to save your progress before exiting?");
-    dialog.button("Save and exit", "save");
-    dialog.button("Delete save and exit", "delete");
-    dialog.button("Cancel", "cancel");
+    ExitSaveDialog dialog = new ExitSaveDialog(skin, saveAndExit, deleteSaveAndExit);
     dialog.show(stage);
   }
 
