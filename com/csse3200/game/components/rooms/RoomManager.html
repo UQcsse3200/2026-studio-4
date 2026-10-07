@@ -124,23 +124,43 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearCurrentRoom()" class="member-name-link">clearCurrentRoom</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#activateCheckpoint(java.lang.String)" class="member-name-link">activateCheckpoint</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;entryPointId)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearCurrentRoom()" class="member-name-link">clearCurrentRoom</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Requests that the current room's enemies be cleared at the next safe update point.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Registers the active room and player, then positions the player at its entry point.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../files/GameSaveData.Checkpoint.html" title="class in com.csse3200.game.files">GameSaveData.Checkpoint</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCheckpointData()" class="member-name-link">getCheckpointData</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../files/GameSaveData.ResumePosition.html" title="class in com.csse3200.game.files">GameSaveData.ResumePosition</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getResumePositionData()" class="member-name-link">getResumePositionData</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#initializeFromCheckpoint(com.csse3200.game.files.GameSaveData.Checkpoint)" class="member-name-link">initializeFromCheckpoint</a><wbr>(<a href="../../files/GameSaveData.Checkpoint.html" title="class in com.csse3200.game.files">GameSaveData.Checkpoint</a>&nbsp;checkpoint)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Call after construction and before create() when starting from a save.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#interact()" class="member-name-link">interact</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#initializeFromSavedRun(com.csse3200.game.files.GameSaveData,boolean)" class="member-name-link">initializeFromSavedRun</a><wbr>(<a href="../../files/GameSaveData.html" title="class in com.csse3200.game.files">GameSaveData</a>&nbsp;save,
+ boolean&nbsp;atCheckpoint)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Processes an E-key interaction with the nearest configured fixture.</div>
+<div class="block">Starts at the last quit position, while retaining the saved death checkpoint.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#interact()" class="member-name-link">interact</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Processes an E-key interaction with the nearest configured fixture.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Applies a requested room switch after the current physics step has completed.</div>
 </div>
 </div>
@@ -178,6 +198,21 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="initializeFromCheckpoint(com.csse3200.game.files.GameSaveData.Checkpoint)">
+<h3>initializeFromCheckpoint</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">initializeFromCheckpoint</span><wbr><span class="parameters">(<a href="../../files/GameSaveData.Checkpoint.html" title="class in com.csse3200.game.files">GameSaveData.Checkpoint</a>&nbsp;checkpoint)</span></div>
+<div class="block">Call after construction and before create() when starting from a save.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="initializeFromSavedRun(com.csse3200.game.files.GameSaveData,boolean)">
+<h3>initializeFromSavedRun</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">initializeFromSavedRun</span><wbr><span class="parameters">(<a href="../../files/GameSaveData.html" title="class in com.csse3200.game.files">GameSaveData</a>&nbsp;save,
+ boolean&nbsp;atCheckpoint)</span></div>
+<div class="block">Starts at the last quit position, while retaining the saved death checkpoint.</div>
+</section>
+</li>
+<li>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
@@ -203,6 +238,24 @@ loadScripts(document, 'script');</script>
 <h3>clearCurrentRoom</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">clearCurrentRoom</span>()</div>
 <div class="block">Requests that the current room's enemies be cleared at the next safe update point.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="activateCheckpoint(java.lang.String)">
+<h3>activateCheckpoint</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">activateCheckpoint</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;entryPointId)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="getCheckpointData()">
+<h3>getCheckpointData</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../files/GameSaveData.Checkpoint.html" title="class in com.csse3200.game.files">GameSaveData.Checkpoint</a></span>&nbsp;<span class="element-name">getCheckpointData</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getResumePositionData()">
+<h3>getResumePositionData</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../files/GameSaveData.ResumePosition.html" title="class in com.csse3200.game.files">GameSaveData.ResumePosition</a></span>&nbsp;<span class="element-name">getResumePositionData</span>()</div>
 </section>
 </li>
 </ul>
