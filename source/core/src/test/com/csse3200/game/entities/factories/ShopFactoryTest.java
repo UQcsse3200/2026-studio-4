@@ -254,6 +254,28 @@ class ShopFactoryTest {
   }
 
   @Test
+  void returningFromWeaponsAfterEitherCasinoGameRestoresSupplyInstructions() {
+    open();
+    Label feedback = stage.getRoot().findActor("shop-feedback");
+    String supplies = feedback.getText().toString();
+    for (boolean itemDraw : new boolean[] {false, true}) {
+      button("shop-casino").fire(new ChangeEvent());
+      if (itemDraw) button("casino-select-item").fire(new ChangeEvent());
+      assertNotEquals(supplies, feedback.getText().toString());
+      button("shop-weapons").fire(new ChangeEvent());
+      button("shop-weapons").fire(new ChangeEvent());
+      assertEquals(supplies, feedback.getText().toString());
+      assertTrue(stage.getRoot().findActor("shop-product-scroll").isVisible());
+      assertFalse(stage.getRoot().findActor("weapon-upgrade-panel").isVisible());
+      assertEquals(25, inventory.getGold());
+      assertTrue(shop.getComponent(ShopSessionComponent.class).isOpen());
+    }
+    buy(ItemIds.HEALTH_POTION).fire(new ChangeEvent());
+    assertEquals(15, inventory.getGold());
+    assertEquals(1, inventory.getConsumableCount(ItemIds.HEALTH_POTION));
+  }
+
+  @Test
   void weaponUpgradeCallbackMayDisposeShop() {
     assertWeaponPurchaseDisposal(true);
   }

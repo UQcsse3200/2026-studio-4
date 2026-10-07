@@ -417,25 +417,25 @@ public class ShopDisplay extends UIComponent implements ShopView {
   }
 
   private void showWeapons(boolean show) {
+    if (!show) {
+      showCasino(false);
+      return;
+    }
     stage.cancelTouchFocus();
-    weapons = show;
+    weapons = true;
     casino = false;
     casinoPanel.close();
     itemPanel.close();
-    productScroll.setVisible(!show);
+    productScroll.setVisible(false);
     casinoContent.setVisible(false);
-    shopBody.setVisible(!show);
+    shopBody.setVisible(false);
     casinoButton.setText("CASINO");
-    weaponsButton.setText(show ? "Back to Shop" : "WEAPONS");
-    title.setText(show ? "WEAPON UPGRADES" : "TRAVELLING MERCHANT");
-    if (show) weaponPanel.open();
-    else weaponPanel.close();
-    hint.setText(
-        show
-            ? "One upgrade per weapon this run  |  Selection does not equip  |  Esc to leave"
-            : "One item per purchase  |  Unlimited stock  |  Esc to leave");
+    weaponsButton.setText("Back to Shop");
+    title.setText("WEAPON UPGRADES");
+    weaponPanel.open();
+    hint.setText("One upgrade per weapon this run  |  Selection does not equip  |  Esc to leave");
     stage.setKeyboardFocus(root);
-    stage.setScrollFocus(show ? weaponPanel : productScroll);
+    stage.setScrollFocus(weaponPanel);
     refresh();
   }
 
