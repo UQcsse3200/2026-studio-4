@@ -8,6 +8,7 @@ import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.friendlynpc.PlaceholderNarrativeComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
+import com.csse3200.game.components.player.BurnVialFeedbackComponent;
 import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.ConsumableSelectionComponent;
 import com.csse3200.game.components.player.HealingPotionFeedbackComponent;
@@ -101,6 +102,7 @@ public class PlayerFactory {
             .addComponent(new ConsumableEffectComponent())
             .addComponent(new HealingPotionFeedbackComponent())
             .addComponent(new SpeedPotionAfterimageComponent())
+            .addComponent(new BurnVialFeedbackComponent())
             .addComponent(new ItemPickupComponent())
             // Runs friendly NPC interactions and remembers which have been completed
             .addComponent(new NpcInteractorComponent())

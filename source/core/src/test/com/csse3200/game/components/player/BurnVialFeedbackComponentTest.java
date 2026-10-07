@@ -1,0 +1,120 @@
+package com.csse3200.game.components.player;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.items.ItemIds;
+import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ServiceLocator;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedConstruction;
+
+@ExtendWith(GameExtension.class)
+class BurnVialFeedbackComponentTest {
+  private CombatStatsComponent stats;
+  private InventoryComponent inventory;
+  private ConsumableEffectComponent consumables;
+  private BurnVialFeedbackComponent feedback;
+
+  @BeforeEach
+  void setUp() {
+    GameTime time = mock(GameTime.class);
+    when(time.getDeltaTime()).thenReturn(0.7f);
+    ServiceLocator.registerTimeSource(time);
+    ServiceLocator.registerRenderService(new RenderService());
+    Camera camera = new OrthographicCamera();
+    camera.position.set(0f, 0f, 0f);
+    camera.viewportWidth = 20f;
+    camera.viewportHeight = 10f;
+    ServiceLocator.registerWorldCamera(camera);
+    EntityService entityService = mock(EntityService.class);
+    when(entityService.getEntities()).thenReturn(new com.badlogic.gdx.utils.Array<>());
+    ServiceLocator.registerEntityService(entityService);
+
+    stats = new CombatStatsComponent(100, 10);
+    inventory = new InventoryComponent(0);
+    consumables = new ConsumableEffectComponent();
+    feedback = new BurnVialFeedbackComponent();
+    StatusEffectsControllerComponent effects = new StatusEffectsControllerComponent();
+    Entity player =
+        new Entity()
+            .addComponent(stats)
+            .addComponent(inventory)
+            .addComponent(effects)
+            .addComponent(consumables)
+            .addComponent(feedback);
+    player.setPosition(2f, 3f);
+    effects.create();
+    consumables.create();
+    feedback.create();
+  }
+
+  @Test
+  void burnVialShowsThreeTilesThenFadesAway() {
+    SpriteBatch batch = mock(SpriteBatch.class);
+    inventory.addConsumable(ItemIds.BURN_VIAL);
+
+    try (MockedConstruction<Pixmap> pixels = mockConstruction(Pixmap.class);
+        MockedConstruction<Texture> textures = mockConstruction(Texture.class)) {
+      assertTrue(consumables.tryUse(ItemIds.BURN_VIAL));
+      feedback.render(batch);
+      Texture pixel = textures.constructed().get(0);
+      verify(batch, times(3)).draw(eq(pixel), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+
+      // DURATION is 1.2s; two 0.7s ticks is more than enough to exhaust it.
+      feedback.update();
+      feedback.update();
+      clearInvocations(batch);
+      feedback.render(batch);
+      verify(batch, never()).draw(eq(pixel), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+      feedback.dispose();
+      verify(pixel).dispose();
+    }
+  }
+
+  @Test
+  void otherConsumablesDoNotShowTheFlame() {
+    SpriteBatch batch = mock(SpriteBatch.class);
+    inventory.addConsumable(ItemIds.SPEED_POTION);
+
+    try (MockedConstruction<Pixmap> pixels = mockConstruction(Pixmap.class)) {
+      assertTrue(consumables.tryUse(ItemIds.SPEED_POTION));
+      feedback.render(batch);
+      assertTrue(pixels.constructed().isEmpty());
+    }
+  }
+
+  @Test
+  void rejectedBurnVialUseShowsNothing() {
+    SpriteBatch batch = mock(SpriteBatch.class);
+    // No Burn Vial in inventory, so the use request is rejected.
+    assertFalse(consumables.tryUse(ItemIds.BURN_VIAL));
+
+    try (MockedConstruction<Pixmap> pixels = mockConstruction(Pixmap.class)) {
+      feedback.render(batch);
+      assertTrue(pixels.constructed().isEmpty());
+    }
+  }
+}
