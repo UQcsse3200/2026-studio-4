@@ -2,7 +2,9 @@
 
 **Author:** Aarash Mehta (Team 5)
 **Ticket:** #197 — New Consumable Items and Extensible Effects (work package C1/C3)
-**Status:** Local implementation on `task/197-burn-vial`, not yet pushed or reviewed.
+**Status:** Original implementation preserved from `task/197-burn-vial`; local four-slot integration
+is documented in [the integration record](team5-burn-vial-four-slot-integration.md). The original
+commits remain attributed to Aarash. Integration does not imply publication to a remote branch.
 
 ## Summary
 
@@ -17,7 +19,10 @@ damage-over-time system, following the same reuse pattern Yuri used for the Free
 - **Target:** every enemy entity currently inside the player's camera viewport (identical
   targeting rule to Freeze Bomb — `StrategyOnscreen`).
 - **Effect:** each targeted enemy receives one `Burning` stack: 2 damage every 1 second, for
-  6 seconds total (3 ticks, 6 damage per enemy per vial).
+  a configured 6 seconds. The earlier "3 ticks, 6 damage" estimate was incorrect: exact tick
+  timing follows the existing `Burning` implementation, which applies damage before checking
+  expiry. Integration tests observe six 2-damage ticks with updates spaced 1001ms apart; this
+  does not establish a frame-independent total-damage guarantee.
 - **Stacking / reuse:** each use applies a fresh `Burning` instance per enemy; using a second
   vial on an already-burning enemy stacks an additional burn (consistent with how
   `StatusEffectsControllerComponent` already treats multiple stacks elsewhere).
@@ -48,11 +53,15 @@ damage-over-time system, following the same reuse pattern Yuri used for the Free
 
 ## Done, but flagged for review
 
-- **Hotbar slot.** `ConsumableSelectionComponent.SLOTS` now includes `ItemIds.BURN_VIAL` as a
+- **Original hotbar slot.** `ConsumableSelectionComponent.SLOTS` included `ItemIds.BURN_VIAL` as a
   6th slot; `ConsumableHotbarDisplay` already sized itself dynamically off this list, so no UI
   code changes were needed. This list is shared by every player, so flagging for Yuri/Jeremy to
   review rather than assuming a 6th slot is uncontested — happy to revert to 5 if the team
   wants a different item to take the slot instead.
+- **Four-slot integration (Yuezhou / Codex, October 7).** The original sixth-slot change remains
+  in Aarash's commit history; the integrated implementation uses the existing inventory-driven
+  four slots. Burn Vial enters the first available slot on pickup. `burnvial give` leaves one
+  vial in inventory for Tab/Q testing; `burnvial` retains Aarash's immediate-use QA command.
 - Verified in a live playthrough: pick up/grant via the `burnvial` debug terminal command,
   select via Tab, use via Q — damages on-screen enemies and shows the flame feedback correctly.
 

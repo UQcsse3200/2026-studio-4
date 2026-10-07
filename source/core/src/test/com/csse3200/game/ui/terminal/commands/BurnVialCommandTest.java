@@ -97,6 +97,13 @@ class BurnVialCommandTest {
   }
 
   @Test
+  void giveLeavesOneVialInAnExistingSlotWithoutUsingIt() {
+    assertTrue(command.action(args("give")));
+    assertEquals(1, inventory.getConsumableCount(ItemIds.BURN_VIAL));
+    assertEquals(ItemIds.BURN_VIAL, inventory.getConsumableSlot(0));
+  }
+
+  @Test
   void rejectsArguments() {
     assertFalse(command.action(args("extra")));
     assertEquals(0, inventory.getConsumableCount(ItemIds.BURN_VIAL));

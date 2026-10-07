@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -30,6 +31,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
+import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
@@ -71,7 +73,8 @@ class ConsumableHotbarDisplayTest {
         new String[] {
           "images/consumable-slot-idle.png", "images/consumable-slot-selected.png",
           "images/health_potion_pixel.png", "images/shield_consumable_pixel.png",
-          "images/speed_potion_pixel.png", "images/strength_potion_pixel.png"
+          "images/speed_potion_pixel.png", "images/strength_potion_pixel.png",
+          "images/burn_vial_pixel.png"
         });
     resources.loadAll();
     inventory = new InventoryComponent(0);
@@ -95,6 +98,34 @@ class ConsumableHotbarDisplayTest {
     player.dispose();
     resources.dispose();
     stage.dispose();
+  }
+
+  @Test
+  void burnVialPickupUsesAnExistingSlotAndQUpdatesItsIconAndCount() {
+    ServiceLocator.registerWorldCamera(new OrthographicCamera(20f, 10f));
+    inventory.addConsumable(ItemIds.HEALTH_POTION);
+    ItemCatalog.create(ItemIds.BURN_VIAL, 2).pickUp(player);
+
+    assertEquals(ItemIds.BURN_VIAL, inventory.getConsumableSlot(1));
+    assertEquals("2", count("2").getText().toString());
+    Image icon = actor("consumable-icon-2");
+    assertSame(
+        resources.getAsset("images/burn_vial_pixel.png", Texture.class),
+        ((TextureRegionDrawable) icon.getDrawable()).getRegion().getTexture());
+    assertNull(stage.getRoot().findActor("consumable-slot-5"));
+    assertNull(stage.getRoot().findActor("consumable-slot-6"));
+
+    input.keyDown(Keys.TAB);
+    input.keyDown(Keys.Q);
+    assertEquals("1", count("2").getText().toString());
+    assertEquals(1, inventory.getConsumableCount(ItemIds.HEALTH_POTION));
+    input.keyDown(Keys.Q);
+    assertEquals(0, inventory.getConsumableCount(ItemIds.BURN_VIAL));
+    assertNull(inventory.getConsumableSlot(1));
+    assertFalse(icon.isVisible());
+    assertFalse(count("2").isVisible());
+    input.keyDown(Keys.Q);
+    assertEquals(0, inventory.getConsumableCount(ItemIds.BURN_VIAL));
   }
 
   @Test

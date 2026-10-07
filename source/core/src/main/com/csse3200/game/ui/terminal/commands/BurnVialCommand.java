@@ -11,9 +11,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Terminal command that grants the player one Burn Vial and immediately consumes it.
  *
- * <p>Burn Vial has no hotbar slot or loot-table entry yet (both are pending team decisions), so
- * there is no other way to trigger it in a running game. This lets QA see the on-screen-enemy burn
- * effect without either: {@code burnvial}.
+ * <p>{@code burnvial} retains the original immediate-use QA path. {@code burnvial give} grants one
+ * vial without using it, so QA can exercise the existing four-slot inventory and Tab/Q input.
  */
 public class BurnVialCommand implements Command {
   private static final Logger logger = LoggerFactory.getLogger(BurnVialCommand.class);
@@ -28,14 +27,16 @@ public class BurnVialCommand implements Command {
   }
 
   /**
-   * Grants and consumes one Burn Vial.
+   * Grants one Burn Vial, optionally leaving it in inventory for normal selection and use.
    *
-   * @param args no arguments expected
-   * @return true if the Burn Vial was granted and the use request was sent
+   * @param args empty for immediate use, or {@code give} for pickup-only testing
+   * @return true if the vial was granted; immediate mode also sends a use request, whose success
+   *     depends on the normal consumable-use validation
    */
   @Override
   public boolean action(ArrayList<String> args) {
-    if (!args.isEmpty()) {
+    boolean giveOnly = args.size() == 1 && "give".equals(args.get(0));
+    if (!args.isEmpty() && !giveOnly) {
       logger.debug("Invalid arguments received for 'burnvial' command: {}", args);
       return false;
     }
@@ -47,7 +48,9 @@ public class BurnVialCommand implements Command {
     }
 
     inventory.addConsumable(ItemIds.BURN_VIAL, 1);
-    player.getEvents().trigger(ConsumableEffectComponent.USE_REQUEST, ItemIds.BURN_VIAL);
+    if (!giveOnly) {
+      player.getEvents().trigger(ConsumableEffectComponent.USE_REQUEST, ItemIds.BURN_VIAL);
+    }
     return true;
   }
 }
