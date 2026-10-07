@@ -41,6 +41,8 @@ import org.slf4j.LoggerFactory;
  */
 public class LoadGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(LoadGameScreen.class);
+  private static final String WINDOW_DRAWABLE = "window-c";
+  private static final String SMALL_FONT = "font_small";
   private static final int SLOT_COUNT = 3;
   private static final Color DARK = Color.valueOf("211a14");
   private static final Color DEEP = Color.valueOf("100d0b");
@@ -104,16 +106,16 @@ public class LoadGameScreen extends ScreenAdapter {
     root.pad(24f);
 
     Table frame = new Table();
-    frame.setBackground(skin.newDrawable("window-c", GOLD));
+    frame.setBackground(skin.newDrawable(WINDOW_DRAWABLE, GOLD));
     Table panel = new Table();
-    panel.setBackground(skin.newDrawable("window-c", DARK));
+    panel.setBackground(skin.newDrawable(WINDOW_DRAWABLE, DARK));
     panel.pad(22f, 28f, 18f, 28f);
 
     Table header = new Table();
     Table heading = new Table();
     heading.left();
     heading.add(label("DATA LIST", "font_large", SELECTED_GOLD, 1.15f)).left().row();
-    heading.add(label("Select data to load", "font_small", TEXT, 1f)).left();
+    heading.add(label("Select data to load", SMALL_FONT, TEXT, 1f)).left();
     header.add(heading).expandX().left();
     panel.add(header).expandX().fillX().left().padBottom(14f).row();
 
@@ -132,7 +134,7 @@ public class LoadGameScreen extends ScreenAdapter {
     footer =
         label(
             "UP / DOWN  Select     ENTER  Load     F  Delete     ESC  Back",
-            "font_small",
+            SMALL_FONT,
             MUTED,
             1f);
     footer.setAlignment(Align.left);
@@ -152,13 +154,13 @@ public class LoadGameScreen extends ScreenAdapter {
 
   private Button createSlotRow(int index, float rowHeight) {
     Button.ButtonStyle normal = new Button.ButtonStyle(skin.get(Button.ButtonStyle.class));
-    normal.up = skin.newDrawable("window-c", DARK);
-    normal.over = skin.newDrawable("window-c", Color.valueOf("342719"));
-    normal.down = skin.newDrawable("window-c", Color.valueOf("49351e"));
+    normal.up = skin.newDrawable(WINDOW_DRAWABLE, DARK);
+    normal.over = skin.newDrawable(WINDOW_DRAWABLE, Color.valueOf("342719"));
+    normal.down = skin.newDrawable(WINDOW_DRAWABLE, Color.valueOf("49351e"));
     Button.ButtonStyle selected = new Button.ButtonStyle(normal);
-    selected.up = skin.newDrawable("window-c", Color.valueOf("4a371f"));
-    selected.over = skin.newDrawable("window-c", Color.valueOf("594224"));
-    selected.down = skin.newDrawable("window-c", Color.valueOf("654d2c"));
+    selected.up = skin.newDrawable(WINDOW_DRAWABLE, Color.valueOf("4a371f"));
+    selected.over = skin.newDrawable(WINDOW_DRAWABLE, Color.valueOf("594224"));
+    selected.down = skin.newDrawable(WINDOW_DRAWABLE, Color.valueOf("654d2c"));
     normalStyles[index] = normal;
     selectedStyles[index] = selected;
 
@@ -177,7 +179,7 @@ public class LoadGameScreen extends ScreenAdapter {
       Table placeholder = new Table();
       placeholder.setBackground(skin.newDrawable("button-c", DEEP));
       String placeholderText = saveFiles[index] ? "NO MAP\nPREVIEW" : "EMPTY SLOT";
-      placeholder.add(label(placeholderText, "font_small", MUTED, 0.9f)).center();
+      placeholder.add(label(placeholderText, SMALL_FONT, MUTED, 0.9f)).center();
       content.add(placeholder).size(138f, rowHeight - 22f).padRight(18f);
     }
 
@@ -187,7 +189,7 @@ public class LoadGameScreen extends ScreenAdapter {
     details.add(label(slotTitle, "font_large", SELECTED_GOLD, 0.92f)).left().row();
     if (save == null) {
       String status = saveFiles[index] ? "This record could not be read" : "No saved journey";
-      details.add(label(status, "font_small", MUTED, 1f)).left();
+      details.add(label(status, SMALL_FONT, MUTED, 1f)).left();
     } else {
       String room =
           save.resumePosition != null
@@ -197,11 +199,11 @@ public class LoadGameScreen extends ScreenAdapter {
                   : displayRoom(save.checkpoint.roomId));
       details.add(label(room, "font", TEXT, 1f)).left().row();
       details
-          .add(label("Play Time  " + formatPlayTime(save.playTimeSeconds), "font_small", TEXT, 1f))
+          .add(label("Play Time  " + formatPlayTime(save.playTimeSeconds), SMALL_FONT, TEXT, 1f))
           .left()
           .row();
       details
-          .add(label(formatDungeonTimes(save.dungeonTimesSeconds), "font_small", MUTED, 0.9f))
+          .add(label(formatDungeonTimes(save.dungeonTimesSeconds), SMALL_FONT, MUTED, 0.9f))
           .left()
           .row();
       String stats =
@@ -211,14 +213,14 @@ public class LoadGameScreen extends ScreenAdapter {
               + count(save.playerData.charms)
               + "     Upgrades  "
               + count(save.playerData.upgradedWeapons);
-      details.add(label(stats, "font_small", MUTED, 0.95f)).left();
+      details.add(label(stats, SMALL_FONT, MUTED, 0.95f)).left();
     }
     content.add(details).expandX().fillX().left();
 
     if (save != null && Gdx.graphics.getWidth() >= 900) {
       Table location = new Table();
       location.right();
-      location.add(label("LAST CHECKPOINT", "font_small", MUTED, 0.82f)).right().row();
+      location.add(label("LAST CHECKPOINT", SMALL_FONT, MUTED, 0.82f)).right().row();
       String checkpoint = save.checkpoint == null ? "Unknown" : displayRoom(save.checkpoint.roomId);
       location.add(label(checkpoint, "font", TEXT, 0.95f)).right();
       content.add(location).width(230f).right().padLeft(12f);
