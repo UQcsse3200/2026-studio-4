@@ -39,7 +39,6 @@ public class ObstacleComponent extends EntityManagerComponent {
       case '#', '%' -> spawnWall(spawnConfig, x, y, spawnType == '#');
       case 'S' -> spawnProp(ObstacleFactory.createSword(), x, y);
       case 'B' -> spawnProp(ObstacleFactory.createBox(), x, y);
-      default -> {} // nothing to spawn
     }
   }
 
