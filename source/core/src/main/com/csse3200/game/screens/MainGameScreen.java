@@ -12,6 +12,8 @@ import com.csse3200.game.components.maingame.InventoryActions;
 import com.csse3200.game.components.maingame.InventoryDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.components.maingame.ShopDisplay;
+import com.csse3200.game.components.maingame.ShopEntry;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.rooms.RoomAssets;
 import com.csse3200.game.components.rooms.RoomCommand;
@@ -36,10 +38,13 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.ui.terminal.commands.AbilityCommand;
+import com.csse3200.game.ui.terminal.commands.ShopCommand;
 import com.csse3200.game.ui.terminal.commands.SpellCommand;
 import com.csse3200.game.ui.terminal.commands.StatusEffectCommand;
 import com.csse3200.game.ui.terminal.commands.UpgradeCommand;
 import com.csse3200.game.ui.terminal.commands.WeaponCommand;
+import com.csse3200.game.items.ItemIds;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,6 +180,17 @@ public class MainGameScreen extends ScreenAdapter {
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
     TimerDisplay timerDisplay = new TimerDisplay();
 
+    // Placeholder catalogue for Sprint 3 #196 shop display (B3 UI slice, decoupled from the
+    // real B1 catalogue and B2 purchase logic, which are being built separately). Swap this
+    // list for the agreed catalogue once it lands.
+    ShopDisplay shopDisplay =
+        new ShopDisplay(
+            player.getComponent(InventoryComponent.class),
+            List.of(
+                new ShopEntry(ItemIds.HEALTH_POTION, "Health Potion", 10),
+                new ShopEntry(ItemIds.SHIELD, "Shield", 15),
+                new ShopEntry(ItemIds.SPEED_POTION, "Speed Potion", 12)));
+
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
@@ -188,8 +204,10 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(inventoryDisplay)
         .addComponent(hotbarDisplay)
         .addComponent(consumableHotbarDisplay)
-        .addComponent(inventoryActions);
+        .addComponent(inventoryActions)
+        .addComponent(shopDisplay);
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
+    terminal.addCommand("shop", new ShopCommand(ui));
     ServiceLocator.getEntityService().register(ui);
   }
 
