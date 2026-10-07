@@ -130,6 +130,129 @@ class ShopFactoryTest {
   }
 
   @Test
+  void casinoReturnsToShopWithinOnePausedSessionAndKeepsPurchasesWorking() {
+    open();
+    TextButton casino = stage.getRoot().findActor("shop-casino");
+    assertNotNull(casino);
+    casino.fire(new ChangeEvent());
+    assertFalse(stage.getRoot().findActor("shop-product-scroll").isVisible());
+    assertTrue(stage.getRoot().findActor("coin-flip-panel").isVisible());
+    assertTrue(ServiceLocator.getEntityService().isFrozen());
+    TextButton back = stage.getRoot().findActor("shop-casino");
+    back.fire(new ChangeEvent());
+    assertTrue(stage.getRoot().findActor("shop-product-scroll").isVisible());
+    assertFalse(stage.getRoot().findActor("coin-flip-panel").isVisible());
+    buy(ItemIds.HEALTH_POTION).fire(new ChangeEvent());
+    assertEquals(15, inventory.getGold());
+    assertEquals(1, inventory.getConsumableCount(ItemIds.HEALTH_POTION));
+    ServiceLocator.getInputService().keyDown(com.badlogic.gdx.Input.Keys.ESCAPE);
+    assertFalse(ServiceLocator.getEntityService().isFrozen());
+  }
+
+  private TextButton button(String name) {
+    TextButton button = stage.getRoot().findActor(name);
+    assertNotNull(button, name);
+    return button;
+  }
+
+  private void enterCasino() {
+    open();
+    button("shop-casino").fire(new ChangeEvent());
+  }
+
+  @Test
+  void animationBlocksDuplicateWagersAndReturningRefreshesAffordability() {
+    enterCasino();
+    int[] resolutions = {0};
+    shop.getEvents()
+        .addListener(
+            "coinFlipResolved",
+            (Boolean won, Integer stake) -> {
+              assertEquals(10, stake);
+              resolutions[0]++;
+            });
+    TextButton flip = button("coin-flip-button");
+    flip.fire(new ChangeEvent());
+    int after = inventory.getGold();
+    assertEquals(10, Math.abs(after - 25));
+    flip.fire(new ChangeEvent());
+    button("coin-flip-up").fire(new ChangeEvent());
+    assertEquals(after, inventory.getGold());
+    assertEquals(1, resolutions[0]);
+    assertTrue(flip.isDisabled());
+    for (int i = 0; i < 4; i++) stage.act(0.3f);
+    assertFalse(flip.isDisabled());
+    Label result = stage.getRoot().findActor("coin-flip-result");
+    assertTrue(result.getText().toString().contains(after > 25 ? "won" : "lost"));
+    button("shop-casino").fire(new ChangeEvent());
+    assertEquals(after < 20, buy(ItemIds.STRENGTH_POTION).isDisabled());
+    Label gold = stage.getRoot().findActor("shop-gold");
+    assertEquals("Gold: " + after, gold.getText().toString());
+  }
+
+  @Test
+  void leavingDuringAnimationSettlesOnceAndHiddenControlsCannotGamble() {
+    enterCasino();
+    TextButton flip = button("coin-flip-button");
+    flip.fire(new ChangeEvent());
+    int settled = inventory.getGold();
+    button("shop-close").fire(new ChangeEvent());
+    for (int i = 0; i < 4; i++) stage.act(0.3f);
+    flip.fire(new ChangeEvent());
+    assertEquals(settled, inventory.getGold());
+    assertFalse(ServiceLocator.getEntityService().isFrozen());
+    open();
+    assertTrue(stage.getRoot().findActor("shop-product-scroll").isVisible());
+    flip.fire(new ChangeEvent());
+    assertEquals(settled, inventory.getGold());
+  }
+
+  @Test
+  void zeroGoldDisablesFlipAndSmallBalanceCanBeWagered() {
+    inventory.setGold(0);
+    enterCasino();
+    assertTrue(button("coin-flip-button").isDisabled());
+    inventory.setGold(5);
+    player.getEvents().trigger("goldChanged", 5);
+    assertFalse(button("coin-flip-button").isDisabled());
+    Label stake = stage.getRoot().findActor("coin-flip-stake");
+    assertEquals("5 Gold", stake.getText().toString());
+    button("coin-flip-button").fire(new ChangeEvent());
+    assertTrue(inventory.getGold() == 0 || inventory.getGold() == 10);
+  }
+
+  @Test
+  void casinoNavigationAndLeaveRemainInsideSmallWindow() {
+    enterCasino();
+    Table root = stage.getRoot().findActor("shop-root");
+    for (int[] size : new int[][] {{1280, 800}, {906, 706}, {640, 480}}) {
+      stage.getViewport().update(size[0], size[1], true);
+      root.invalidateHierarchy();
+      root.validate();
+      for (String name : new String[] {"shop-close", "shop-casino"}) {
+        Actor actor = stage.getRoot().findActor(name);
+        Vector2 corner = actor.localToStageCoordinates(new Vector2());
+        assertTrue(corner.x >= 0 && corner.x + actor.getWidth() <= stage.getWidth(), name);
+        assertTrue(corner.y >= 0 && corner.y + actor.getHeight() <= stage.getHeight(), name);
+      }
+    }
+  }
+
+  @Test
+  void resolutionListenerMayCloseSessionWithoutLeavingAnimationOrLocks() {
+    enterCasino();
+    shop.getEvents()
+        .addListener(
+            "coinFlipResolved",
+            (Boolean won, Integer stake) -> shop.getComponent(ShopSessionComponent.class).close());
+    button("coin-flip-button").fire(new ChangeEvent());
+    assertFalse(ServiceLocator.getEntityService().isFrozen());
+    int settled = inventory.getGold();
+    for (int i = 0; i < 4; i++) stage.act(0.3f);
+    assertEquals(settled, inventory.getGold());
+  }
+
+  @Test
   void closeAndReopenPreserveInventoryWithoutActorLeaks() {
     open();
     buy(ItemIds.HEALTH_POTION).fire(new ChangeEvent());

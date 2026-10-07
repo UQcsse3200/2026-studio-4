@@ -6,11 +6,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
@@ -42,6 +44,12 @@ public class ShopDisplay extends UIComponent implements ShopView {
   private final List<String> loadedTextures = new ArrayList<>();
   private Table root;
   private ScrollPane productScroll;
+  private ScrollPane casinoScroll;
+  private CoinFlipPanel casinoPanel;
+  private TextButton casinoButton;
+  private Label sectionLabel;
+  private Label hint;
+  private boolean casino;
   private Actor previousKeyboardFocus;
   private Actor previousScrollFocus;
   private Label goldLabel;
@@ -67,6 +75,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
         if (!loadedTextures.contains(texture)) loadedTextures.add(texture);
       }
     }
+    loadedTextures.add("images/gold_coin_pixel.png");
     resources.loadTextures(loadedTextures.toArray(new String[0]));
     resources.loadTextureAtlases(new String[] {MERCHANT_ATLAS});
     resources.loadAll();
@@ -104,6 +113,16 @@ public class ShopDisplay extends UIComponent implements ShopView {
         });
     header.add(title).growX().left().padRight(12f);
     header.add(goldLabel).width(120f).padRight(12f);
+    casinoButton = new TextButton("CASINO", buttonStyle("986419", "6b4110"));
+    casinoButton.setName("shop-casino");
+    casinoButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            if (active) showCasino(!casino);
+          }
+        });
+    header.add(casinoButton).width(150f).height(38f).padRight(8f);
     header.add(close).width(110f).height(38f);
     window.add(header).growX().padBottom(12f);
     window.row();
@@ -119,7 +138,8 @@ public class ShopDisplay extends UIComponent implements ShopView {
     merchant.row();
     merchant.add(label("Only the finest wares for brave adventurers.", INK)).growX().padBottom(18f);
     merchant.row();
-    merchant.add(label("YOUR PURCHASE", INK)).growX().padBottom(10f);
+    sectionLabel = label("YOUR PURCHASE", INK);
+    merchant.add(sectionLabel).growX().padBottom(10f);
     merchant.row();
     feedback = label("Choose your supplies. Each purchase adds one item to your inventory.", INK);
     feedback.setName("shop-feedback");
@@ -162,7 +182,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
           new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-              if (!active || buy.isDisabled()) return;
+              if (!active || casino || buy.isDisabled()) return;
               ShopPurchaseResult result = service.purchase(offer.offerId());
               feedback.setText(purchaseMessage(result, item.getName()));
               refresh();
@@ -174,22 +194,46 @@ public class ShopDisplay extends UIComponent implements ShopView {
       offers.row();
     }
     productScroll = new ScrollPane(offers);
+    productScroll.setName("shop-product-scroll");
     productScroll.setScrollingDisabled(true, false);
     productScroll.setFadeScrollBars(false);
     ScrollPane merchantScroll = new ScrollPane(merchant);
     merchantScroll.setName("shop-merchant-scroll");
     merchantScroll.setScrollingDisabled(true, false);
     merchantScroll.setFadeScrollBars(false);
+    casinoPanel =
+        new CoinFlipPanel(
+            new CoinFlipGame(inventoryData, MathUtils::randomBoolean),
+            resources.getAsset("images/gold_coin_pixel.png", Texture.class),
+            new CoinFlipPanel.Appearance(
+                new Label.LabelStyle(skin.getFont("font_small"), INK),
+                new Label.LabelStyle(skin.getFont("font_small"), BRASS),
+                buttonStyle("3d2314", "2a1a08"),
+                buyStyle,
+                parchment,
+                wood),
+            outcome -> {
+              feedback.setText(
+                  outcome.won()
+                      ? "Won " + outcome.stake() + " gold."
+                      : "Lost " + outcome.stake() + " gold.");
+              entity.getEvents().trigger("coinFlipResolved", outcome.won(), outcome.stake());
+              refresh();
+            });
+    casinoScroll = new ScrollPane(casinoPanel);
+    casinoScroll.setScrollingDisabled(true, false);
+    casinoScroll.setFadeScrollBars(false);
+    casinoScroll.setVisible(false);
     Table body = new Table();
     body.add(merchantScroll)
         .width(Value.percentWidth(0.24f, window))
         .minHeight(0f)
         .growY()
         .padRight(16f);
-    body.add(productScroll).minHeight(0f).grow();
+    body.add(new Stack(productScroll, casinoScroll)).minHeight(0f).grow();
     window.add(body).minHeight(0f).grow();
     window.row();
-    Label hint = label("One item per purchase  |  Unlimited stock  |  Esc to leave", BRASS);
+    hint = label("One item per purchase  |  Unlimited stock  |  Esc to leave", BRASS);
     hint.setFontScale(0.85f);
     window.add(hint).growX().padTop(10f);
     root.add(window)
@@ -199,6 +243,29 @@ public class ShopDisplay extends UIComponent implements ShopView {
         .maxHeight(620f);
     root.setVisible(false);
     stage.addActor(root);
+  }
+
+  private void showCasino(boolean show) {
+    stage.cancelTouchFocus();
+    casino = show;
+    productScroll.setVisible(!show);
+    casinoScroll.setVisible(show);
+    casinoPanel.setVisible(show);
+    casinoButton.setText(show ? "Back to Shop" : "CASINO");
+    sectionLabel.setText(show ? "COIN FLIP" : "YOUR PURCHASE");
+    feedback.setText(
+        show
+            ? "A fair 50/50 toss. Win your stake or lose it."
+            : "Choose your supplies. Each purchase adds one item to your inventory.");
+    hint.setText(
+        show
+            ? "Back returns to shop  |  Esc to leave"
+            : "One item per purchase  |  Unlimited stock  |  Esc to leave");
+    if (show) casinoPanel.open();
+    else casinoPanel.close();
+    stage.setKeyboardFocus(root);
+    stage.setScrollFocus(show ? casinoScroll : productScroll);
+    refresh();
   }
 
   private Label label(String text, Color color) {
@@ -252,13 +319,14 @@ public class ShopDisplay extends UIComponent implements ShopView {
     previousScrollFocus = stage.getScrollFocus();
     stage.setKeyboardFocus(root);
     stage.setScrollFocus(productScroll);
-    refresh();
+    showCasino(false);
   }
 
   @Override
   public void refresh() {
     if (!active) return;
     goldLabel.setText("Gold: " + inventoryData.getGold());
+    if (casino) casinoPanel.refresh();
     buyButtons.forEach(
         (offer, button) -> {
           boolean affordable = inventoryData.getGold() >= offer.goldPrice();
@@ -274,6 +342,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
   public void close() {
     active = false;
     onClose = null;
+    if (casinoPanel != null) casinoPanel.close();
     if (root != null) {
       // Cancel press ownership before hiding, so a later release cannot buy in a reopened shop.
       stage.cancelTouchFocus();
