@@ -1,8 +1,8 @@
 # Weapon upgrade purchase page — design review
 
-Status: two reviewed visual concepts ready; Yuezhou Wang’s selection and game implementation are pending.
+Status: Yuezhou Wang selected **A** on 2026-10-07. Implementation is in progress on `task/weapon-upgrade-page`. Candidate B is retained only as design history.
 
-Yuezhou Wang requested an isolated local task branch and immediate visual design on 2026-10-07. The task branch `task/weapon-upgrade-page` starts at clean local `items` commit `7aba55d93f62086d6ff1ab8a3d61d42f64dea3d8`. No main merge or shop branch integration is part of this design step.
+Yuezhou Wang requested an isolated local task branch and immediate visual design on 2026-10-07. The task branch `task/weapon-upgrade-page` starts at clean local `items` commit `7aba55d93f62086d6ff1ab8a3d61d42f64dea3d8`. The initial design step changed no game code. After A was selected, local `shop` at `9c427652` was merged into this task to reuse its merchant modal and purchase boundary. Existing dependency files are preserved; `items` and `shop` remain unchanged by this task.
 
 ## Player outcome
 
@@ -20,15 +20,15 @@ At the merchant, choose one of the existing weapons, understand the light-attack
 - J is light attack; K is heavy attack. Heavy attacks are unavailable before upgrading.
 - The current Bow component uses `throwing_knife.png` and `throwing_knife_upgraded.png`; mockup wording does not rename the game item.
 - The local items baseline attaches all three weapon components and starts with Sword selected. Do not infer new weapon ownership rules from visual concepts.
-- Purchase price is not yet configured. A 60-gold price and 90-gold starting balance in the concepts are illustrative values only, selected to demonstrate a successful purchase followed by insufficient funds. The game baseline starts with 50 gold.
+- The concepts use illustrative 60-gold prices and a 90-gold balance. Implementation now has a separate upgrade catalogue with provisional 60-gold defaults and uses the real player balance. The game baseline starts with 50 gold; no sample balance is injected.
 - `setUpgraded(..., true)` is idempotent and returns success for an already-upgraded weapon. A later real transaction must reject repeat purchase before charging.
-- Current `shop` work provides consumable purchase and session UI on another active task. Read only; do not merge or modify that task as part of visual design.
+- The implementation reuses the locally completed consumable shop and its existing session. It introduces a separate Team 5 upgrade catalogue; the concept's 60-gold price is a provisional local default, not an approved final economy balance. The real inventory supplies the balance; the concept's sample 90 gold is never injected into gameplay.
 
-## Scope and ownership
+## Initial design scope and ownership
 
-This local step adds design artifacts only. Combat upgrades were delivered by Team 3 in PR #151 and #177; merchant NPC base by Wouter in #216. The earlier investigation found no ordinary gameplay purchase caller for weapon upgrades. Discord's 2026-09-25 Team 3 draft assigns weapon-upgrade Merchant to Wouter. On 2026-10-07, the visible Team 3 update confirms dialogue/cutscenes #231 merged; no new upgrade purchase delivery was visible in that channel.
+The first local step added design artifacts only; A was subsequently selected for implementation (see IMPLEMENTATION.md). Combat upgrades were delivered by Team 3 in PR #151 and #177; merchant NPC base by Wouter in #216. The earlier investigation found no ordinary gameplay purchase caller for weapon upgrades. Discord's 2026-09-25 Team 3 draft assigns weapon-upgrade Merchant to Wouter. On 2026-10-07, the visible Team 3 update confirms dialogue/cutscenes #231 merged; no new upgrade purchase delivery was visible in that channel.
 
-Later implementation should reuse `WeaponUpgradeComponent`, inventory gold and the existing shop extension boundary, not rewrite weapons. Changes to Team 3 NPC configuration or shared integration files need their precise scope established before modification under the project AGENTS.md.
+Implementation reuses `WeaponUpgradeComponent`, inventory gold and the existing shop extension boundary. Changes to Team 3 NPC configuration or shared integration files need their precise scope established before modification under the project AGENTS.md.
 
 ## Review checks
 

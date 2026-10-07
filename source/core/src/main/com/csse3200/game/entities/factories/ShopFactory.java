@@ -8,6 +8,9 @@ import com.csse3200.game.components.shop.ShopInputComponent;
 import com.csse3200.game.components.shop.ShopProductKind;
 import com.csse3200.game.components.shop.ShopService;
 import com.csse3200.game.components.shop.ShopSessionComponent;
+import com.csse3200.game.components.shop.WeaponUpgradeCatalog;
+import com.csse3200.game.components.shop.WeaponUpgradePurchaseEffect;
+import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
@@ -24,7 +27,16 @@ public final class ShopFactory {
     ShopService service =
         new ShopService(
             inventory, catalog, Map.of(ShopProductKind.CONSUMABLE, new ConsumablePurchaseEffect()));
-    ShopDisplay display = new ShopDisplay(inventory, catalog, service);
+    WeaponUpgradeComponent upgrades = player.getComponent(WeaponUpgradeComponent.class);
+    WeaponUpgradeCatalog upgradeCatalog =
+        WeaponUpgradeCatalog.load("configs/shops/merchant-upgrades.json");
+    ShopService upgradeService =
+        new ShopService(
+            inventory,
+            upgradeCatalog.catalog(),
+            Map.of(ShopProductKind.WEAPON_UPGRADE, new WeaponUpgradePurchaseEffect(upgrades)));
+    ShopDisplay display =
+        new ShopDisplay(inventory, catalog, service, upgradeCatalog, upgradeService, upgrades);
     ShopSessionComponent session = new ShopSessionComponent(player, display);
     Entity shop =
         new Entity()

@@ -4,6 +4,7 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.components.friendlynpc.NpcInteractionEvents;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.PlayerActions;
+import com.csse3200.game.components.weapons.WeaponComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Objects;
@@ -30,6 +31,9 @@ public class ShopSessionComponent extends Component {
               if ("merchant".equals(npcId)) open();
             });
     player.getEvents().addListener("goldChanged", (Integer gold) -> refresh());
+    player
+        .getEvents()
+        .addListener("weaponUpgraded", (Class<? extends WeaponComponent> weapon) -> refresh());
     player
         .getEvents()
         .addListener("consumableInventoryChanged", (String id, Integer count) -> refresh());

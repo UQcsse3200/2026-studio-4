@@ -2,6 +2,8 @@ package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.maingame.InventoryDisplay;
+import com.csse3200.game.components.weapons.WeaponComponent;
+import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
 import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.charms.Charm;
@@ -81,6 +83,37 @@ public class InventoryComponent extends Component {
       entity.getEvents().trigger("consumableInventoryChanged", itemId, getConsumableCount(itemId));
     }
     return ConsumablePurchaseResult.SUCCESS;
+  }
+
+  /**
+   * Buys a weapon's existing upgrade once. Payment is committed before the upgrade component
+   * publishes its event, so both upgrade and gold observers see the completed transaction.
+   * Unsupported upgrades restore the balance without publishing a gold event. As with consumable
+   * purchases, arbitrary exceptions from event subscribers are outside the rejection guarantee.
+   */
+  public WeaponUpgradePurchaseResult tryPurchaseWeaponUpgrade(
+      WeaponUpgradeComponent upgrades, Class<? extends WeaponComponent> weapon, int goldPrice) {
+    if (upgrades == null || weapon == null) {
+      return WeaponUpgradePurchaseResult.INVALID_WEAPON;
+    }
+    if (goldPrice <= 0) {
+      return WeaponUpgradePurchaseResult.INVALID_PRICE;
+    }
+    if (upgrades.isUpgraded(weapon)) {
+      return WeaponUpgradePurchaseResult.ALREADY_UPGRADED;
+    }
+    if (gold < goldPrice) {
+      return WeaponUpgradePurchaseResult.INSUFFICIENT_GOLD;
+    }
+    gold -= goldPrice;
+    if (!upgrades.setUpgraded(weapon, true)) {
+      gold += goldPrice;
+      return WeaponUpgradePurchaseResult.INVALID_WEAPON;
+    }
+    if (entity != null) {
+      entity.getEvents().trigger("goldChanged", gold);
+    }
+    return WeaponUpgradePurchaseResult.SUCCESS;
   }
 
   /** Adds to the player's Gold. The amount may be negative. */

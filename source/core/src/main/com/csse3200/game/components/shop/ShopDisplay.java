@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -20,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
 import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.services.ResourceService;
@@ -43,6 +46,14 @@ public class ShopDisplay extends UIComponent implements ShopView {
   private final Map<ShopOffer, Label> ownedLabels = new LinkedHashMap<>();
   private final List<Texture> panelTextures = new ArrayList<>();
   private final List<String> loadedTextures = new ArrayList<>();
+  private final WeaponUpgradeCatalog upgradeCatalog;
+  private final ShopService upgradeService;
+  private final WeaponUpgradeComponent upgrades;
+  private WeaponUpgradePanel weaponPanel;
+  private TextButton weaponsButton;
+  private Table shopBody;
+  private Label title;
+  private boolean weapons;
   private Table root;
   private ScrollPane productScroll;
   private ScrollPane casinoScroll;
@@ -67,6 +78,19 @@ public class ShopDisplay extends UIComponent implements ShopView {
   private boolean assetsLoaded;
 
   public ShopDisplay(InventoryComponent inventoryData, ShopCatalog catalog, ShopService service) {
+    this(inventoryData, catalog, service, null, null, null);
+  }
+
+  public ShopDisplay(
+      InventoryComponent inventoryData,
+      ShopCatalog catalog,
+      ShopService service,
+      WeaponUpgradeCatalog upgradeCatalog,
+      ShopService upgradeService,
+      WeaponUpgradeComponent upgrades) {
+    this.upgradeCatalog = upgradeCatalog;
+    this.upgradeService = upgradeService;
+    this.upgrades = upgrades;
     this.inventoryData = inventoryData;
     this.catalog = catalog;
     this.service = service;
@@ -87,6 +111,14 @@ public class ShopDisplay extends UIComponent implements ShopView {
       if (!entry.isBust()) {
         String texture = ItemCatalog.create(entry.itemId(), 1).getTexture();
         if (!loadedTextures.contains(texture)) loadedTextures.add(texture);
+      }
+    }
+    if (upgradeCatalog != null) {
+      for (ShopOffer offer : upgradeCatalog.offers()) {
+        var descriptor = WeaponUpgradeCatalog.describe(offer.productId());
+        for (String texture : new String[] {descriptor.texture(), descriptor.upgradedTexture()}) {
+          if (!loadedTextures.contains(texture)) loadedTextures.add(texture);
+        }
       }
     }
     loadedTextures.add("images/gold_coin_pixel.png");
@@ -112,11 +144,13 @@ public class ShopDisplay extends UIComponent implements ShopView {
     window.pad(14f);
 
     Table header = new Table();
-    Label title = label("TRAVELLING MERCHANT", BRASS);
+    title = label("TRAVELLING MERCHANT", BRASS);
     title.setFontScale(1.2f);
     goldLabel = label("", BRASS);
     goldLabel.setName("shop-gold");
     TextButton close = new TextButton("Leave (Esc)", closeStyle);
+    close.getLabel().setFontScale(.75f);
+    close.getLabel().setWrap(true);
     close.setName("shop-close");
     close.addListener(
         new ChangeListener() {
@@ -126,8 +160,15 @@ public class ShopDisplay extends UIComponent implements ShopView {
           }
         });
     header.add(title).growX().left().padRight(12f);
-    header.add(goldLabel).width(120f).padRight(12f);
+    header
+        .add(goldLabel)
+        .width(Value.percentWidth(.12f, window))
+        .minWidth(64f)
+        .maxWidth(120f)
+        .padRight(12f);
     casinoButton = new TextButton("CASINO", buttonStyle("986419", "6b4110"));
+    casinoButton.getLabel().setFontScale(.75f);
+    casinoButton.getLabel().setWrap(true);
     casinoButton.setName("shop-casino");
     casinoButton.addListener(
         new ChangeListener() {
@@ -136,7 +177,33 @@ public class ShopDisplay extends UIComponent implements ShopView {
             if (active) showCasino(!casino);
           }
         });
-    header.add(casinoButton).width(150f).height(38f).padRight(8f);
+    header
+        .add(casinoButton)
+        .width(Value.percentWidth(.13f, window))
+        .minWidth(80f)
+        .maxWidth(150f)
+        .height(38f)
+        .padRight(8f);
+    if (upgradeCatalog != null) {
+      weaponsButton = new TextButton("WEAPONS", buttonStyle("986419", "6b4110"));
+      weaponsButton.getLabel().setFontScale(.75f);
+      weaponsButton.getLabel().setWrap(true);
+      weaponsButton.setName("shop-weapons");
+      weaponsButton.addListener(
+          new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+              if (active) showWeapons(!weapons);
+            }
+          });
+      header
+          .add(weaponsButton)
+          .width(Value.percentWidth(.13f, window))
+          .minWidth(80f)
+          .maxWidth(130f)
+          .height(38f)
+          .padRight(8f);
+    }
     header.add(close).width(110f).height(38f);
     window.add(header).growX().padBottom(12f);
     window.row();
@@ -196,7 +263,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
           new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-              if (!active || casino || buy.isDisabled()) return;
+              if (!active || casino || weapons || buy.isDisabled()) return;
               ShopPurchaseResult result = service.purchase(offer.offerId());
               feedback.setText(purchaseMessage(result, item.getName()));
               refresh();
@@ -282,7 +349,33 @@ public class ShopDisplay extends UIComponent implements ShopView {
         .growY()
         .padRight(16f);
     body.add(new Stack(productScroll, casinoContent)).minHeight(0f).grow();
-    window.add(body).minHeight(0f).grow();
+    shopBody = body;
+    if (upgradeCatalog != null) {
+      weaponPanel =
+          new WeaponUpgradePanel(
+              inventoryData,
+              upgradeCatalog,
+              upgradeService,
+              upgrades,
+              resources,
+              atlas.findRegion("default"),
+              resources.getAsset("images/gold_coin_pixel.png", Texture.class),
+              appearance,
+              result -> {
+                entity.getEvents().trigger("weaponUpgradePurchaseResolved", result);
+                refresh();
+              });
+      window.add(new Stack(body, weaponPanel)).minHeight(0f).grow();
+      root.addListener(
+          new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+              return active && weapons && weaponPanel.keyDown(keycode);
+            }
+          });
+    } else {
+      window.add(body).minHeight(0f).grow();
+    }
     window.row();
     hint = label("One item per purchase  |  Unlimited stock  |  Esc to leave", BRASS);
     hint.setFontScale(0.85f);
@@ -298,6 +391,11 @@ public class ShopDisplay extends UIComponent implements ShopView {
 
   private void showCasino(boolean show) {
     stage.cancelTouchFocus();
+    weapons = false;
+    if (weaponPanel != null) weaponPanel.close();
+    if (weaponsButton != null) weaponsButton.setText("WEAPONS");
+    shopBody.setVisible(true);
+    title.setText("TRAVELLING MERCHANT");
     casino = show;
     productScroll.setVisible(!show);
     casinoContent.setVisible(show);
@@ -315,6 +413,29 @@ public class ShopDisplay extends UIComponent implements ShopView {
 
     stage.setKeyboardFocus(root);
     stage.setScrollFocus(show ? casinoScroll : productScroll);
+    refresh();
+  }
+
+  private void showWeapons(boolean show) {
+    stage.cancelTouchFocus();
+    weapons = show;
+    casino = false;
+    casinoPanel.close();
+    itemPanel.close();
+    productScroll.setVisible(!show);
+    casinoContent.setVisible(false);
+    shopBody.setVisible(!show);
+    casinoButton.setText("CASINO");
+    weaponsButton.setText(show ? "Back to Shop" : "WEAPONS");
+    title.setText(show ? "WEAPON UPGRADES" : "TRAVELLING MERCHANT");
+    if (show) weaponPanel.open();
+    else weaponPanel.close();
+    hint.setText(
+        show
+            ? "One upgrade per weapon this run  |  Selection does not equip  |  Esc to leave"
+            : "One item per purchase  |  Unlimited stock  |  Esc to leave");
+    stage.setKeyboardFocus(root);
+    stage.setScrollFocus(show ? weaponPanel : productScroll);
     refresh();
   }
 
@@ -390,6 +511,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
       case SUCCESS -> "Purchased " + name + ". Added to your inventory.";
       case INSUFFICIENT_GOLD -> "Not enough gold.";
       case QUANTITY_LIMIT -> "You cannot carry another of this item.";
+      case ALREADY_UPGRADED -> "This weapon is already upgraded.";
       case INVALID_OFFER, UNSUPPORTED_PRODUCT -> "This item is unavailable.";
     };
   }
@@ -413,6 +535,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
   public void refresh() {
     if (!active) return;
     goldLabel.setText("Gold: " + inventoryData.getGold());
+    if (weaponPanel != null) weaponPanel.refresh();
     if (casino) {
       casinoPanel.refresh();
       itemPanel.refresh();
@@ -432,6 +555,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
   public void close() {
     active = false;
     onClose = null;
+    if (weaponPanel != null) weaponPanel.close();
     if (casinoPanel != null) casinoPanel.close();
     if (itemPanel != null) itemPanel.close();
     if (root != null) {
