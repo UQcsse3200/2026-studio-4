@@ -39,6 +39,11 @@ public class ObstacleComponent extends EntityManagerComponent {
       case '#', '%' -> spawnWall(spawnConfig, x, y, spawnType == '#');
       case 'S' -> spawnProp(ObstacleFactory.createSword(), x, y);
       case 'B' -> spawnProp(ObstacleFactory.createBox(), x, y);
+      default -> {
+        // Every other character is a floor tile or void (' ', '2', '3', '8' and so on).
+        // Floors are drawn by the terrain layer and void is intentionally empty,
+        // so there is no obstacle entity to spawn here.
+      }
     }
   }
 
