@@ -46,6 +46,17 @@ class CerberusStatusEffectsTest {
     ServiceLocator.registerPhysicsService(new PhysicsService());
 
     TextureAtlas atlas = mock(TextureAtlas.class);
+    String[] parts = {"body", "left", "middle", "right"};
+    String[] actions = {"idle", "move", "lunge", "cast"};
+
+    for (String part : parts) {
+      for (String action : actions) {
+        for (int index = 0; index < 4; index++) {
+          TextureAtlas.AtlasRegion region = mock(TextureAtlas.AtlasRegion.class);
+          when(atlas.findRegion(part + "_" + action, index)).thenReturn(region);
+        }
+      }
+    }
     ResourceService resources = mock(ResourceService.class);
     when(resources.getAsset(anyString(), eq(TextureAtlas.class))).thenReturn(atlas);
     ServiceLocator.registerResourceService(resources);
@@ -54,7 +65,7 @@ class CerberusStatusEffectsTest {
   private Entity createCerberus() {
     sideHeads.clear();
     return CerberusFactory.createCerberus(
-        new Vector2(5f, 5f), sideHeads::add, "images/cerberus.atlas");
+        new Vector2(5f, 5f), sideHeads::add, "images/cerberus/cerberus-modular.atlas");
   }
 
   @Test

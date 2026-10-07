@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.csse3200.game.areas.terrain.DreamlandTile;
 import com.csse3200.game.areas.terrain.TileSheet;
+import com.csse3200.game.components.rooms.Direction;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
@@ -14,6 +15,7 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.Set;
 
 /**
  * Factory to create obstacle entities.
@@ -22,28 +24,9 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public class ObstacleFactory {
   private static final String DUNGEON_TILESET = "images/dungeons/fantasy_dreamland_16.png";
-  // Wider than tall so holding a diagonal along a horizontal wall also slides past tile corners.
+  private static final int WALL_TILE_TEXTURE_SHIFT = 8;
   private static final float TILE_BEVEL_X = 0.04f;
   private static final float TILE_BEVEL_Y = 0.02f;
-
-  /**
-   * Creates a tree entity.
-   *
-   * @return entity
-   */
-  public static Entity createTree() {
-    Entity tree =
-        new Entity()
-            .addComponent(new TextureRenderComponent("images/tree.png"))
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
-
-    tree.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
-    tree.getComponent(TextureRenderComponent.class).scaleEntity();
-    tree.scaleHeight(2.5f);
-    PhysicsUtils.setScaledCollider(tree, 0.5f, 0.2f);
-    return tree;
-  }
 
   /** Creates a rock obstacle. */
   public static Entity createRock() {
@@ -52,12 +35,61 @@ public class ObstacleFactory {
     return createRenderedObstacle(new TextureRegion(texture), 0.6f, 0.7f);
   }
 
-  public static Entity createTile() {
+  /**
+   * Creates a wall for the given configuration.
+   *
+   * @param voids A set of directions where the neighbouring tile is void.
+   * @param shift Shift the given texture by a constant to use a different wall texture.
+   * @return The wall entity, with bevelled edges of the given config.
+   */
+  public static Entity createWallFor(Set<Direction> voids, boolean shift) {
+    boolean up = voids.contains(Direction.UP);
+    boolean right = voids.contains(Direction.RIGHT);
+    boolean down = voids.contains(Direction.DOWN);
+    boolean left = voids.contains(Direction.LEFT);
+    boolean upRight = voids.contains(Direction.UP_RIGHT);
+    boolean upLeft = voids.contains(Direction.UP_LEFT);
+    boolean downRight = voids.contains(Direction.DOWN_RIGHT);
+    boolean downLeft = voids.contains(Direction.DOWN_LEFT);
     Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
-    Entity tile =
-        createRenderedObstacle(DreamlandTile.BLUE_STONE_WALL.region(new TileSheet(texture, 16)));
-    setBevelledCollider(tile, 0.5f, 0.5f);
-    return tile;
+
+    float colliderHeight = 0.5f;
+    DreamlandTile tile;
+    if (down && left || down && right) {
+      tile = DreamlandTile.VOID;
+    } else if (left) {
+      tile = DreamlandTile.WALL_TYPE1_LEFT;
+    } else if (right) {
+      tile = DreamlandTile.WALL_TYPE1_RIGHT;
+    } else if (up) {
+      tile = DreamlandTile.WALL_TYPE1_UP;
+      colliderHeight = 1f;
+    } else if (down) {
+      tile = DreamlandTile.WALL_TYPE1_DOWN;
+    }
+    // diagonal-only (inner corners)
+    else if (upLeft) {
+      tile = DreamlandTile.WALL_TYPE1_UP_LEFT;
+      colliderHeight = 1f;
+    } else if (upRight) {
+      tile = DreamlandTile.WALL_TYPE1_UP_RIGHT;
+      colliderHeight = 1f;
+    } else if (downLeft) {
+      tile = DreamlandTile.WALL_TYPE1_DOWN_LEFT;
+    } else if (downRight) {
+      tile = DreamlandTile.WALL_TYPE1_DOWN_RIGHT;
+    } else {
+      return null;
+    }
+    int xShift = 0;
+    if (shift) {
+      xShift = WALL_TILE_TEXTURE_SHIFT;
+    }
+    Entity wall =
+        createRenderedObstacle(
+            tile.region(new TileSheet(texture, 16), xShift, 0), 0.5f, colliderHeight);
+    setBevelledCollider(wall, 0.5f, colliderHeight);
+    return wall;
   }
 
   /** Creates a barrel obstacle. */
@@ -67,21 +99,38 @@ public class ObstacleFactory {
         DreamlandTile.OPEN_BARREL.region(new TileSheet(texture, 16)), 0.7f, 0.9f);
   }
 
-  private static Entity createRenderedObstacle(
-      TextureRegion region, float colliderWidth, float colliderHeight) {
-    Entity obstacle = createRenderedObstacle(region);
-    PhysicsUtils.setScaledCollider(obstacle, colliderWidth, colliderHeight);
-    return obstacle;
+  /**
+   * Creates a sword obstacle
+   *
+   * @return The sword obstacle
+   */
+  public static Entity createSword() {
+    Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
+    return createRenderedObstacle(
+        DreamlandTile.randomOfId('s', 0.1f).region(new TileSheet(texture, 16)), 0.7f, 0.9f);
   }
 
-  private static Entity createRenderedObstacle(TextureRegion region) {
+  /**
+   * Creates a box obstacle
+   *
+   * @return A box obstacle
+   */
+  public static Entity createBox() {
+    Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
+    return createRenderedObstacle(
+        DreamlandTile.randomOfId('B', 0.1f).region(new TileSheet(texture, 16)), 0.5f, 0.5f);
+  }
+
+  private static Entity createRenderedObstacle(
+      TextureRegion region, float colliderWidth, float colliderHeight) {
     Entity obstacle =
         new Entity()
             .addComponent(new TextureRenderComponent(region))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
     obstacle.getComponent(TextureRenderComponent.class).scaleEntity();
-    obstacle.scaleHeight(0.5f);
+    obstacle.scaleHeight(colliderHeight);
+    PhysicsUtils.setScaledCollider(obstacle, colliderWidth, colliderHeight);
     return obstacle;
   }
 
