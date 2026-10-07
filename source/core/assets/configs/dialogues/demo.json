@@ -1,0 +1,14 @@
+{
+  "speakers": [
+    { "id": "spirit", "name": "Wandering Spirit", "atlas": "images/ghost.atlas", "animation": "float" },
+    { "id": "hero", "name": "You", "atlas": "images/idle_down.atlas", "animation": "idle_down" },
+    { "id": "merchant", "name": "Travelling Merchant", "atlas": "images/shopkeeper.atlas", "animation": "default" }
+  ],
+  "lines": [
+    { "speaker": "spirit", "text": "Ooooh... a living soul. It has been a long time since anyone wandered down here." },
+    { "speaker": "hero", "text": "Who are you? And why is everything suddenly so quiet?" },
+    { "speaker": "spirit", "text": "While we talk, the dungeon holds its breath. Nothing moves, nothing attacks. Press SPACE to keep listening." },
+    { "speaker": "merchant", "text": "Hehe, don't mind me! Speaking of which... care to buy something once the world starts moving again?" },
+    { "speaker": "hero", "text": "Maybe later. Let's get out of here first." }
+  ]
+}
