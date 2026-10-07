@@ -80,8 +80,8 @@ class ShopServiceTest {
   @Test
   void buyingMultipleLotsAtOnceChargesAndGrantsCorrectTotal() {
     FakeWallet wallet = new FakeWallet(100);
-    ShopCatalogue catalogue = new ShopCatalogue(
-        List.of(new ShopItem("arrow_bundle", "Arrow Bundle", 5, 10)));
+    ShopCatalogue catalogue =
+        new ShopCatalogue(List.of(new ShopItem("arrow_bundle", "Arrow Bundle", 5, 10)));
     ShopService shop = new ShopService(catalogue, wallet);
 
     PurchaseResult result = shop.purchase("arrow_bundle", 3);
