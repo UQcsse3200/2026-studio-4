@@ -52,8 +52,8 @@ class CerberusStatusEffectsTest {
     for (String part : parts) {
       for (String action : actions) {
         for (int index = 0; index < 4; index++) {
-          when(atlas.findRegion(part + "_" + action, index))
-              .thenReturn(mock(TextureAtlas.AtlasRegion.class));
+          TextureAtlas.AtlasRegion region = mock(TextureAtlas.AtlasRegion.class);
+          when(atlas.findRegion(part + "_" + action, index)).thenReturn(region);
         }
       }
     }

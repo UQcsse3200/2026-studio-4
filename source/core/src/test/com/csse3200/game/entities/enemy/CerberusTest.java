@@ -60,8 +60,8 @@ class CerberusTest {
     for (String part : parts) {
       for (String action : actions) {
         for (int index = 0; index < 4; index++) {
-          when(textureAtlas.findRegion(part + "_" + action, index))
-              .thenReturn(mock(TextureAtlas.AtlasRegion.class));
+          TextureAtlas.AtlasRegion region = mock(TextureAtlas.AtlasRegion.class);
+          when(textureAtlas.findRegion(part + "_" + action, index)).thenReturn(region);
         }
       }
     }
@@ -165,7 +165,8 @@ class CerberusTest {
 
   @Test
   void shouldAttachChainToBodyAndKeepWallAnchorFixed() {
-    when(textureAtlas.findRegion("chain")).thenReturn(mock(TextureAtlas.AtlasRegion.class));
+    TextureAtlas.AtlasRegion chainRegion = mock(TextureAtlas.AtlasRegion.class);
+    when(textureAtlas.findRegion("chain")).thenReturn(chainRegion);
 
     Vector2 wallAnchor = new Vector2(4f, 8f);
 

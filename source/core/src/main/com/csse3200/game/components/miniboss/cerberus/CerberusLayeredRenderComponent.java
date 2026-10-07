@@ -11,6 +11,7 @@ import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.Map;
 
 public class CerberusLayeredRenderComponent extends RenderComponent {
 
@@ -177,9 +178,9 @@ public class CerberusLayeredRenderComponent extends RenderComponent {
   }
 
   private void refreshHeadVisibility() {
-    for (Part part : headStats.keySet()) {
-      if (headStats.get(part).isDead()) {
-        setPartVisible(part, false);
+    for (Map.Entry<Part, CombatStatsComponent> entry : headStats.entrySet()) {
+      if (entry.getValue().isDead()) {
+        setPartVisible(entry.getKey(), false);
       }
     }
   }
