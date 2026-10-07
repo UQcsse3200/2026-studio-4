@@ -14,6 +14,7 @@ public class RunTimer {
   private boolean dungeonRunning;
   private float dungeonSyncedTime; // whole seconds, flips with the run clock
   private float dungeonStartTotal; // totalTime when the dungeon began
+  private boolean paused;
   private static final float MAX_DELTA =
       0.25f; // ignore anything beyond a one quarter-second hiccup
 
@@ -94,6 +95,9 @@ public class RunTimer {
 
   /** Call once per frame. Uses scaled delta so pausing via timeScale pauses the timers. */
   public void update() {
+    if (isPaused()) {
+      return;
+    }
     float delta = Math.min(gameTime.getDeltaTime(), MAX_DELTA);
     if (runRunning) totalTime += delta;
     if (dungeonRunning) {
@@ -146,5 +150,17 @@ public class RunTimer {
     int minutes = totalSeconds / 60;
     int secs = totalSeconds % 60;
     return String.format("%02d:%02d", minutes, secs);
+  }
+
+  public void pause() {
+    paused = true;
+  }
+
+  public void resume() {
+    paused = false;
+  }
+
+  public boolean isPaused() {
+    return paused;
   }
 }

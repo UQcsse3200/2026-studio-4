@@ -145,4 +145,24 @@ class RunTimerTest {
     assertEquals("01:05", timer.formatTimeWithNoMilliSec(65.9f));
     assertEquals("00:09", timer.formatTimeWithNoMilliSec(9.999f));
   }
+
+  @Test
+  void pauseStopsTimeFromAdvancing() {
+    timer.startRun();
+    advance(5f);
+    timer.pause();
+    advance(10f); // should have no effect
+    assertEquals(5f, timer.getTotalTime(), 0.01f);
+  }
+
+  @Test
+  void resumeContinuesFromWhereItLeftOff() {
+    timer.startRun();
+    advance(5f);
+    timer.pause();
+    advance(10f);
+    timer.resume();
+    advance(3f);
+    assertEquals(8f, timer.getTotalTime(), 0.01f);
+  }
 }
