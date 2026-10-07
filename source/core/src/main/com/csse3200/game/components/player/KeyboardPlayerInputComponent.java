@@ -3,6 +3,7 @@ package com.csse3200.game.components.player;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.utils.math.Vector2Utils;
@@ -70,9 +71,15 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("heavyAttack");
         return true;
       case Keys.E:
+        if (isNpcInteractionRunning()) {
+          // A dialogue or cutscene is running so E must not re-trigger it, pick up items or leave.
+          return true;
+        }
         // Keep Room navigation and Team 5 item pickup on separate event contracts.
         entity.getEvents().trigger("interact");
-        entity.getEvents().trigger("itemPickup");
+        if (!isNpcInteractionRunning()) {
+          entity.getEvents().trigger("itemPickup");
+        }
         return true;
       case Keys.I:
         entity.getComponent(InventoryComponent.class).toggleDisplay();
@@ -116,6 +123,11 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       default:
         return false;
     }
+  }
+
+  private boolean isNpcInteractionRunning() {
+    NpcInteractorComponent interactor = entity.getComponent(NpcInteractorComponent.class);
+    return interactor != null && interactor.isInteracting();
   }
 
   private void triggerWalkEvent() {

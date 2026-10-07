@@ -5,6 +5,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.achievements.AchievementsManager;
+import com.csse3200.game.components.friendlynpc.NpcInteractableComponent;
+import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
@@ -219,6 +221,9 @@ public class RoomManager {
     if (pendingDestination != null) {
       return;
     }
+    if (interactWithNpc()) {
+      return;
+    }
     ExitConfig exit = findNearestExit();
     if (exit == null) {
       return;
@@ -252,6 +257,26 @@ public class RoomManager {
     }
   }
 
+  private boolean interactWithNpc() {
+    FriendlyNpcManagerComponent npcs = currentRoom.getComponent(FriendlyNpcManagerComponent.class);
+    if (npcs == null) {
+      return false;
+    }
+    NpcInteractableComponent npc = npcs.findNearestInRange(player);
+    if (npc == null) {
+      return false;
+    }
+    if (npc.interact(player)) {
+      return true;
+    }
+    String reason = npc.getPrompt(player);
+    if (reason == null) {
+      return false;
+    }
+    showStatus(reason);
+    return true;
+  }
+
   /** Requests that the current room's enemies be cleared at the next safe update point. */
   public void clearCurrentRoom() {
     clearRequested = true;
@@ -278,7 +303,7 @@ public class RoomManager {
     return nearest;
   }
 
-  private void switchToRoom(RoomConfig destination, PositionConfig arrivalPosition) {
+  void switchToRoom(RoomConfig destination, PositionConfig arrivalPosition) {
     String previousDungeonId = currentConfig.dungeonId;
     Entity nextRoom =
         RoomFactory.createRoom(destination, camera, clearedRoomIds.contains(destination.id));
@@ -329,7 +354,17 @@ public class RoomManager {
     if (display == null) {
       return;
     }
-    display.setPrompt(InteractionPrompt.resolve(getItemPrompt(), getExitPrompt()));
+    NpcInteractorComponent interactor = player.getComponent(NpcInteractorComponent.class);
+    if (interactor != null && interactor.isInteracting()) {
+      display.clearPrompt();
+      return;
+    }
+    display.setPrompt(InteractionPrompt.resolve(getNpcPrompt(), getItemPrompt(), getExitPrompt()));
+  }
+
+  private String getNpcPrompt() {
+    FriendlyNpcManagerComponent npcs = currentRoom.getComponent(FriendlyNpcManagerComponent.class);
+    return npcs == null ? null : npcs.getPrompt(player);
   }
 
   private String getItemPrompt() {
@@ -404,5 +439,16 @@ public class RoomManager {
     position.x = playerPosition.x;
     position.y = playerPosition.y;
     return position;
+  }
+
+  /** debug function for RoomCommand */
+  WorldConfig getWorld() {
+    return world;
+  }
+
+  /** debug function for RoomCommand */
+  void debugSwitchRoom(RoomConfig destination) {
+    pendingDestination = destination;
+    pendingArrivalPosition = destination.exits[0];
   }
 }

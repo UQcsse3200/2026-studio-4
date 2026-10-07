@@ -1,0 +1,9 @@
+{
+  "speakers": [
+    { "id": "spirit", "name": "Wandering Spirit", "atlas": "images/ghost.atlas", "animation": "float" }
+  ],
+  "lines": [
+    { "speaker": "spirit", "text": "I have drifted between these halls for an age, watching the dungeons grow restless." },
+    { "speaker": "spirit", "text": "Listen closely, for the dungeons will reveal themselves to you.", "cue": true }
+  ]
+}

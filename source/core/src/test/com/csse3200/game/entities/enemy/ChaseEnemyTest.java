@@ -88,6 +88,7 @@ class ChaseEnemyTest {
 
     chaseEnemy.getEvents().trigger("collisionStart", chaseFixture, playerFixture);
 
+    assertEquals(18, player.getComponent(CombatStatsComponent.class).getHealth());
     verify(hitReactionListener, times(1)).handle(any(Entity.class));
   }
 
@@ -125,12 +126,13 @@ class ChaseEnemyTest {
   }
 
   @Test
-  void shouldUseConfiguredHealth() {
+  void shouldUseConfiguredHealthAndAttack() {
     Entity chaseEnemy = NPCFactory.createChaseEnemy(new Entity(), true, "images/crab.atlas");
     CombatStatsComponent stats = chaseEnemy.getComponent(CombatStatsComponent.class);
 
-    assertEquals(20, stats.getHealth());
-    assertEquals(20, stats.getMaxHealth());
+    assertEquals(40, stats.getHealth());
+    assertEquals(40, stats.getMaxHealth());
+    assertEquals(2, stats.getBaseAttack());
   }
 
   @Test

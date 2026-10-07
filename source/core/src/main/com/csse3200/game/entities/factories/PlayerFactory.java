@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.ConsumableEffectComponent;
@@ -97,6 +98,8 @@ public class PlayerFactory {
             .addComponent(new HealingPotionFeedbackComponent())
             .addComponent(new SpeedPotionAfterimageComponent())
             .addComponent(new ItemPickupComponent())
+            // Runs friendly NPC interactions and remembers which have been completed
+            .addComponent(new NpcInteractorComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())
             .addComponent(new PlayerStatsDisplay())

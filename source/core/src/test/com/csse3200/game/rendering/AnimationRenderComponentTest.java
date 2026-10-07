@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.entities.Entity;
@@ -15,6 +16,7 @@ import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 
 @ExtendWith(GameExtension.class)
 class AnimationRenderComponentTest {
@@ -240,6 +242,35 @@ class AnimationRenderComponentTest {
     assertEquals(0f, region.getV());
     assertEquals(0.5f, region.getU2());
     assertEquals(0.5f, region.getV2());
+  }
+
+  @Test
+  void shouldFlipAnimationWithoutMutatingSharedAtlasRegion() {
+    ServiceLocator.registerTimeSource(mock(GameTime.class));
+    Texture texture = mock(Texture.class);
+    when(texture.getWidth()).thenReturn(64);
+    when(texture.getHeight()).thenReturn(64);
+    AtlasRegion region = new AtlasRegion(texture, 0, 0, 32, 32);
+    TextureAtlas atlas = mock(TextureAtlas.class);
+    when(atlas.findRegions("idle")).thenReturn(new Array<>(new AtlasRegion[] {region}));
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    animator.setEntity(new Entity());
+    animator.addAnimation("idle", 1f);
+    animator.startAnimation("idle");
+    animator.setFlipX(true);
+    animator.setFlipY(true);
+    SpriteBatch batch = mock(SpriteBatch.class);
+
+    animator.draw(batch);
+
+    ArgumentCaptor<TextureRegion> renderedRegion = ArgumentCaptor.forClass(TextureRegion.class);
+    verify(batch).draw(renderedRegion.capture(), eq(0f), eq(0f), eq(1f), eq(1f));
+    assertTrue(renderedRegion.getValue().isFlipX());
+    assertTrue(renderedRegion.getValue().isFlipY());
+    assertFalse(region.isFlipX());
+    assertFalse(region.isFlipY());
+    assertTrue(animator.isFlipX());
+    assertTrue(animator.isFlipY());
   }
 
   @Test
