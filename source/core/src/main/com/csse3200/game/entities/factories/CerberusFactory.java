@@ -1,14 +1,15 @@
 package com.csse3200.game.entities.factories;
 
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.*;
-import com.csse3200.game.components.miniboss.cerberus.CerberusAnimationController;
 import com.csse3200.game.components.miniboss.cerberus.CerberusAttackCoordinator;
 import com.csse3200.game.components.miniboss.cerberus.CerberusBiteComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusEnrageVisualComponent;
+import com.csse3200.game.components.miniboss.cerberus.CerberusLayeredRenderComponent;
+import com.csse3200.game.components.miniboss.cerberus.CerberusLayeredRenderComponent.Action;
+import com.csse3200.game.components.miniboss.cerberus.CerberusLayeredRenderComponent.Part;
 import com.csse3200.game.components.miniboss.cerberus.CerberusMistComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusMovementComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusPhaseComponent;
@@ -19,12 +20,14 @@ import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
-import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.function.Consumer;
 
 /** Factory for creating Cerberus and its individual heads. */
 public class CerberusFactory {
+  private static final float VISUAL_SIZE = 2f;
+  private static final float SIDE_HEAD_WIDTH = VISUAL_SIZE * 0.28f;
+  private static final float SIDE_HEAD_HEIGHT = VISUAL_SIZE * 0.35f;
   private static final NPCConfigs configs =
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
 
@@ -46,45 +49,30 @@ public class CerberusFactory {
   }
 
   /**
-   * Creates the base entity for Cerberus' main body / middle head.
-   *
-   * @return Cerberus mini-boss entity
-   */
-  private static Entity createBaseCerberusMiniBoss() {
-    return createBaseCerberusPart();
-  }
-
-  /**
-   * Creates one of Cerberus' side heads.
+   * Creates a side head with independent combat and collision handling.
    *
    * @param mainHead middle head / main body entity
    * @param offset positional offset relative to the main body
    * @param health independent health of this head
-   * @param skin animation atlas path
    * @return side head entity
    */
-  private static Entity createCerberusSideHead(
-      Entity mainHead, Vector2 offset, int health, String skin) {
+  private static Entity createCerberusSideHead(Entity mainHead, Vector2 offset, int health) {
 
     Entity sideHead = createBaseCerberusPart().addComponent(new EnemyDeathComponent(false));
-    sideHead.getComponent(ColliderComponent.class).setSensor(true);
-    sideHead.getComponent(HitboxComponent.class).setAsBox(new Vector2(0.35f, 0.35f));
 
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
+    sideHead.setScale(SIDE_HEAD_WIDTH, SIDE_HEAD_HEIGHT);
 
-    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("lunge", 0.1f, Animation.PlayMode.NORMAL);
-    animator.addAnimation("idle", 0.1f, Animation.PlayMode.LOOP);
+    Vector2 headSize = new Vector2(SIDE_HEAD_WIDTH, SIDE_HEAD_HEIGHT);
+    Vector2 localCentre = new Vector2(SIDE_HEAD_WIDTH / 2f, SIDE_HEAD_HEIGHT / 2f);
+
+    sideHead.getComponent(ColliderComponent.class).setAsBox(headSize, localCentre).setSensor(true);
+
+    sideHead.getComponent(HitboxComponent.class).setAsBox(headSize, localCentre);
 
     sideHead
         .addComponent(new CombatStatsComponent(health, 10))
         .addComponent(new HeadAttachmentComponent(mainHead, offset))
-        .addComponent(new EnemyStatDisplay(1.5f))
-        .addComponent(animator);
-
-    animator.startAnimation("idle");
+        .addComponent(new EnemyStatDisplay(1.5f));
 
     return sideHead;
   }
@@ -104,31 +92,75 @@ public class CerberusFactory {
 
   public static Entity createCerberus(
       Entity target, Vector2 anchorPoint, Consumer<Entity> sideHeadSpawner, String skin) {
-    Entity mainHead = createBaseCerberusMiniBoss();
-    mainHead.getComponent(HitboxComponent.class).setAsBox(new Vector2(0.4f, 0.4f));
+    Entity mainHead = createBaseCerberusPart();
+    mainHead.setScale(VISUAL_SIZE, VISUAL_SIZE);
+    mainHead
+        .getComponent(ColliderComponent.class)
+        .setAsBox(
+            new Vector2(VISUAL_SIZE * 0.60f, VISUAL_SIZE * 0.25f),
+            new Vector2(VISUAL_SIZE * 0.50f, VISUAL_SIZE * 0.20f));
+    mainHead
+        .getComponent(HitboxComponent.class)
+        .setAsBox(
+            new Vector2(VISUAL_SIZE * 0.26f, VISUAL_SIZE * 0.32f),
+            new Vector2(VISUAL_SIZE * 0.50f, VISUAL_SIZE * 0.73f));
 
     BaseEntityConfig conf = configs.cerberus;
 
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
+    CerberusLayeredRenderComponent renderer =
+        new CerberusLayeredRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
-
-    animator.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("idle", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("lunge", 0.1f, Animation.PlayMode.NORMAL);
 
     mainHead
         .addComponent(new CombatStatsComponent(conf.health, conf.baseAttack))
-        .addComponent(animator)
+        .addComponent(renderer)
         .addComponent(new ChainRestrictionComponent(anchorPoint, 3f))
-        .addComponent(new CerberusAnimationController())
         .addComponent(new EnemyStatDisplay(2.0f));
 
-    Entity leftHead =
-        createCerberusSideHead(mainHead, new Vector2(-0.55f, 0.15f), conf.health / 2, skin);
+    Vector2 leftOffset =
+        new Vector2(
+            VISUAL_SIZE * 0.28125f - SIDE_HEAD_WIDTH / 2f,
+            VISUAL_SIZE * 0.65f - SIDE_HEAD_HEIGHT / 2f);
 
-    Entity rightHead =
-        createCerberusSideHead(mainHead, new Vector2(0.55f, 0.15f), conf.health / 2, skin);
+    Vector2 rightOffset =
+        new Vector2(
+            VISUAL_SIZE * 0.71875f - SIDE_HEAD_WIDTH / 2f,
+            VISUAL_SIZE * 0.65f - SIDE_HEAD_HEIGHT / 2f);
+
+    Entity leftHead = createCerberusSideHead(mainHead, leftOffset, conf.health / 2);
+
+    Entity rightHead = createCerberusSideHead(mainHead, rightOffset, conf.health / 2);
+
+    leftHead.setPosition(mainHead.getPosition().cpy().add(leftOffset));
+    rightHead.setPosition(mainHead.getPosition().cpy().add(rightOffset));
+    renderer.bindHeads(leftHead, mainHead, rightHead);
+
+    mainHead
+        .getEvents()
+        .addListener(
+            "attackStart",
+            () -> {
+              renderer.play(Part.BODY, Action.LUNGE);
+              renderer.play(Part.MIDDLE, Action.LUNGE);
+            });
+
+    mainHead
+        .getEvents()
+        .addListener(
+            "default",
+            () -> {
+              renderer.play(Part.BODY, Action.IDLE);
+              renderer.play(Part.MIDDLE, Action.IDLE);
+            });
+
+    mainHead
+        .getEvents()
+        .addListener(
+            "entityDied",
+            () -> {
+              renderer.setPartVisible(Part.MIDDLE, false);
+              renderer.play(Part.BODY, Action.IDLE);
+            });
 
     CerberusPhaseComponent phase = new CerberusPhaseComponent(leftHead, rightHead);
 
@@ -163,8 +195,6 @@ public class CerberusFactory {
 
     sideHeadSpawner.accept(leftHead);
     sideHeadSpawner.accept(rightHead);
-
-    animator.startAnimation("idle");
 
     return mainHead;
   }

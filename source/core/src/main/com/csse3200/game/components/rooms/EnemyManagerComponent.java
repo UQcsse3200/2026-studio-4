@@ -219,7 +219,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             target,
             anchorPoint,
             head -> spawnAndTrackCerberusHead(head, spawn.type.name()),
-            "images/cerberus.atlas");
+            "images/cerberus/cerberus-modular.atlas");
       case DRAGON:
         return DragonFactory.createDragon(target, this::spawnEntity);
       case SLEIPNIR:
