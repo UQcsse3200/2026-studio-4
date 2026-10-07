@@ -27,31 +27,37 @@ damage-over-time system, following the same reuse pattern Yuri used for the Free
   exempt or resistant, the way some effects already distinguish boss behaviour? Flagging for
   agreement rather than assuming.
 - **Visual feedback:** reuses the existing white-flash render-service cue Freeze Bomb uses on
-  cast. No dedicated burn VFX yet — coordinate with Jeremy (HUD/visual effects owner) if a
-  flame overlay on burning enemies is wanted.
+  cast, plus a short orange flame icon above the player's head (`BurnVialFeedbackComponent`),
+  added so the effect is actually visible when played, not just mechanically correct. No
+  per-enemy burn VFX yet — coordinate with Jeremy (HUD/visual effects owner) if a flame
+  overlay on the burning enemies themselves is wanted.
 
 ## Implementation
 
 - `BurnVial.java` (`source/core/src/main/com/csse3200/game/items/consumables/`) — extends
   `ConsumableItem`, same shape as `FreezeBomb`.
 - Registered as `ItemIds.BURN_VIAL` in `ItemCatalog`.
-- Placeholder texture (`images/burn_vial_pixel.png`, currently a copy of the Freeze Bomb art)
-  preloaded via `RoomAssets.ITEM_TEXTURES` so the existing
-  `ConsumableRoomAssetsIntegrationTest` continues to pass. Needs real art — not something I can
-  produce myself; flagging for whoever owns item art.
+- Placeholder texture (`images/burn_vial_pixel.png`) preloaded via `RoomAssets.ITEM_TEXTURES`
+  so the existing `ConsumableRoomAssetsIntegrationTest` continues to pass. Currently a
+  recolored (orange/red) copy of the Freeze Bomb art, so it's at least visually distinct — but
+  it is still a placeholder, not real art; flagging for whoever owns item art.
 - Unit test `BurnVialTest.java` covers: catalog registration, `canUse()` failing without a
   camera/entity service, and that only on-screen enemies receive a `Burning` stack of the
   configured duration (off-screen enemies are left untouched), matching the existing
   `FreezeBombUseTest` pattern.
 
+## Done, but flagged for review
+
+- **Hotbar slot.** `ConsumableSelectionComponent.SLOTS` now includes `ItemIds.BURN_VIAL` as a
+  6th slot; `ConsumableHotbarDisplay` already sized itself dynamically off this list, so no UI
+  code changes were needed. This list is shared by every player, so flagging for Yuri/Jeremy to
+  review rather than assuming a 6th slot is uncontested — happy to revert to 5 if the team
+  wants a different item to take the slot instead.
+- Verified in a live playthrough: pick up/grant via the `burnvial` debug terminal command,
+  select via Tab, use via Q — damages on-screen enemies and shows the flame feedback correctly.
+
 ## Explicitly NOT done yet (needs team agreement first)
 
-- **Hotbar slot.** `ConsumableSelectionComponent` and `ConsumableHotbarDisplay` currently support
-  exactly five consumable types (Health, Shield, Speed, Strength, Freeze Bomb) and the hotbar is
-  already full. Adding Burn Vial as a sixth playable consumable means either expanding the
-  hotbar or swapping/rotating a slot — both are shared-UI decisions that belong to whoever owns
-  the hotbar (Jeremy) and the overall item selection (Yuri), not something I should silently
-  wire in.
 - **Loot table drop weights.** Not added to `default-item-drops.json`. Per the Sprint 3 plan,
   which item(s) actually get implemented/dropped is a C2 "select and formalize" decision the
   team makes after reviewing design briefs, not something to pre-empt alone.
