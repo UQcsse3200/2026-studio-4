@@ -19,6 +19,7 @@ import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.entities.factories.NarrativeFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.files.FileLoader;
@@ -36,6 +37,8 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.ui.terminal.commands.AbilityCommand;
+import com.csse3200.game.ui.terminal.commands.CutsceneCommand;
+import com.csse3200.game.ui.terminal.commands.DialogueCommand;
 import com.csse3200.game.ui.terminal.commands.SpellCommand;
 import com.csse3200.game.ui.terminal.commands.StatusEffectCommand;
 import com.csse3200.game.ui.terminal.commands.UpgradeCommand;
@@ -59,6 +62,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final Terminal terminal;
   private final RoomAssets roomAssets = new RoomAssets();
   private final RunTimer runTimer;
+  private boolean worldFrozen;
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
@@ -101,11 +105,24 @@ public class MainGameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    physicsEngine.update();
+    // A dialogue or cutscene freezes the world: no physics, room logic or run timer.
+    boolean frozen = ServiceLocator.getEntityService().isFrozen();
+    if (frozen != worldFrozen) {
+      worldFrozen = frozen;
+      // Scaled time also stops sprite animations, status effects and other timers
+      ServiceLocator.getTimeSource().setTimeScale(frozen ? 0f : 1f);
+    }
+    if (!frozen) {
+      physicsEngine.update();
+    }
     ServiceLocator.getEntityService().update();
-    roomManager.update();
+    if (!frozen) {
+      roomManager.update();
+    }
     renderer.render();
-    runTimer.update();
+    if (!frozen) {
+      runTimer.update();
+    }
   }
 
   @Override
@@ -166,6 +183,9 @@ public class MainGameScreen extends ScreenAdapter {
     terminal.addCommand("upgrade", new UpgradeCommand(player));
     terminal.addCommand("spell", new SpellCommand(player));
     terminal.addCommand("room", new RoomCommand(roomManager));
+    // QA for the dialogue and cutscene systems, e.g. "dialogue demo" / "cutscene demovideo"
+    terminal.addCommand("dialogue", new DialogueCommand(player));
+    terminal.addCommand("cutscene", new CutsceneCommand(player));
 
     InventoryDisplay inventoryDisplay =
         new InventoryDisplay(player.getComponent(InventoryComponent.class));
@@ -190,7 +210,13 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(consumableHotbarDisplay)
         .addComponent(inventoryActions);
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
+    // The HUD keeps working while a dialogue or cutscene has the world frozen
+    ui.setUpdatesWhilePaused(true);
     ServiceLocator.getEntityService().register(ui);
+
+    // Dialogue and cutscene systems (events are sent on the player)
+    ServiceLocator.getEntityService()
+        .register(NarrativeFactory.createNarrative(player, terminal::isOpen));
   }
 
   /* Schedule the death screen to be shown */

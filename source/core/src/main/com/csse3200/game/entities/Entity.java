@@ -33,6 +33,7 @@ public class Entity {
   private final IntMap<Component> components;
   private final EventHandler eventHandler;
   private boolean enabled = true;
+  private boolean updatesWhilePaused = false;
   private boolean created = false;
   private Vector2 position = Vector2.Zero.cpy();
   private Vector2 scale = new Vector2(1, 1);
@@ -56,6 +57,23 @@ public class Entity {
   public void setEnabled(boolean enabled) {
     logger.debug("Setting enabled={} on entity {}", enabled, this);
     this.enabled = enabled;
+  }
+
+  /**
+   * Whether this entity keeps updating while the {@link EntityService} is paused (e.g. during a
+   * dialogue or cutscene). Everything is frozen by default; only UI and cutscene entities opt in.
+   *
+   * @param updatesWhilePaused true to keep updating while the game is paused.
+   */
+  public void setUpdatesWhilePaused(boolean updatesWhilePaused) {
+    this.updatesWhilePaused = updatesWhilePaused;
+  }
+
+  /**
+   * @return true if this entity keeps updating while the game is paused.
+   */
+  public boolean updatesWhilePaused() {
+    return updatesWhilePaused;
   }
 
   /**
