@@ -1,76 +1,75 @@
 package com.csse3200.game.components.achievements;
 
-import com.csse3200.game.entities.Entity;
+import java.util.function.Predicate;
 
-/** A single instance of achievement. */
+/**
+ * A single achievement: a name, a condition checked on update, and a shared progress value some
+ * conditions use to track a running count or measurement between updates.
+ */
 public class Achievement {
-  private final int maxProgression;
-  private int currentProgression;
-  private final String progression;
-  private final String name;
   private boolean unlocked = false;
-  private Entity room;
+  private final String name;
+  private Predicate<AchievementContext> condition;
+  private float progress;
+  private float target; // 0 means no numeric target to show
 
-  /**
-   * Constructs the new achievement.
-   *
-   * @param room The room entity in which to start this achievement.
-   * @param progression The event that should progress this achievement.
-   * @param maxProgression The number of progressions required to complete this achievement. If this
-   *     achievement is doing 1 thing, the maxProgression should be 1.
-   * @param name The name to display of this achievement.
-   */
-  public Achievement(Entity room, String progression, int maxProgression, String name) {
-    this.progression = progression;
+  /** Creates an achievement with its condition fixed at construction. */
+  public Achievement(String name, Predicate<AchievementContext> condition) {
     this.name = name;
-    this.maxProgression = maxProgression;
-    newRoom(room); // sets the room and adds the listener
+    this.condition = condition;
+  }
+
+  /** Creates an achievement whose condition is attached afterward via {@link #setCondition}. */
+  public Achievement(String name) {
+    this.name = name;
   }
 
   /**
-   * @return The name of the achievement
+   * Sets this achievement's condition. Used by conditions that need to close over {@code this} (to
+   * call {@link #addProgress} or {@link #setProgress}), which isn't possible while still inside the
+   * constructor call that would otherwise take the condition as an argument.
    */
-  public String getName() {
-    return name;
+  public void setCondition(Predicate<AchievementContext> condition) {
+    this.condition = condition;
   }
 
-  /**
-   * Moves this achievement to a new room.
-   *
-   * @param room the room to move to.
-   */
-  public void newRoom(Entity room) {
-    this.room = room;
-    room.getEvents().addListener(progression, this::progress);
-  }
-
-  /** Progresses the achievement by 1. */
-  private void progress() {
+  /** Checks this achievement's condition against what just happened. */
+  public boolean update(AchievementContext context) {
     if (unlocked) {
-      return;
+      return false;
     }
-    currentProgression++;
-    if (currentProgression >= maxProgression) {
+    if (condition.test(context)) {
       unlocked = true;
-      room.getEvents().trigger("achievementUnlocked", name);
+      return true;
     }
+    return false;
   }
 
-  /**
-   * @return the maximum number of progressions for this room to work.
-   */
-  public int getMaxProgression() {
-    return maxProgression;
+  public float getProgress() {
+    return progress;
   }
 
-  /**
-   * @return the current progressions for this room.
-   */
-  public int getCurrentProgression() {
-    return currentProgression;
+  public void setProgress(float progress) {
+    this.progress = progress;
+  }
+
+  public void addProgress(float amount) {
+    this.progress += amount;
+  }
+
+  public float getTarget() {
+    return target;
+  }
+
+  public void setTarget(float target) {
+    this.target = target;
   }
 
   public boolean isUnlocked() {
     return unlocked;
+  }
+
+  public String getName() {
+    return name;
   }
 }
