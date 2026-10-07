@@ -116,6 +116,31 @@ class AchievementsFactoryTest {
     }
 
     @Test
+    void build_everyKnownType_startsWithZeroProgress() {
+      AchievementConfig dungeon = config("dungeonClear");
+      dungeon.dungeonId = "d";
+      AchievementConfig reached = config("dungeonReached");
+      reached.dungeonId = "d";
+      AchievementConfig set = config("enemySet");
+      set.enemyTypes = List.of(EnemyType.KNIGHT);
+
+      assertEquals(0f, AchievementsFactory.build(dungeon).getProgress());
+      assertEquals(0f, AchievementsFactory.build(reached).getProgress());
+      assertEquals(0f, AchievementsFactory.build(config("gold")).getProgress());
+      assertEquals(0f, AchievementsFactory.build(config("enemyKillCount")).getProgress());
+      assertEquals(0f, AchievementsFactory.build(config("killStreak")).getProgress());
+      assertEquals(0f, AchievementsFactory.build(set).getProgress());
+    }
+
+    @Test
+    void build_speedRun_startsWithNoTimeRecordedSentinel() {
+      AchievementConfig speed = config("speedRun");
+      speed.dungeonId = "d";
+
+      assertEquals(Float.MAX_VALUE, AchievementsFactory.build(speed).getProgress());
+    }
+
+    @Test
     void constructor_isPrivateAndThrowsIllegalStateException() throws Exception {
       Constructor<AchievementsFactory> constructor =
           AchievementsFactory.class.getDeclaredConstructor();
@@ -177,6 +202,15 @@ class AchievementsFactoryTest {
       a.update(completed("desert"));
 
       assertTrue(a.isUnlocked());
+    }
+
+    @Test
+    void update_doesNotUseProgress_staysZeroRegardlessOfUnlock() {
+      Achievement a = build("forest");
+
+      a.update(completed("forest"));
+
+      assertEquals(0f, a.getProgress());
     }
   }
 
@@ -267,6 +301,18 @@ class AchievementsFactoryTest {
       assertFalse(a.update(gold(40)));
       assertFalse(a.update(gold(80)));
       assertTrue(a.update(gold(120)));
+    }
+
+    @Test
+    void update_readsGoldTotalDirectly_doesNotAccumulateIntoProgress() {
+      Achievement a = build(100);
+
+      a.update(gold(40));
+      a.update(gold(80));
+
+      // gold's condition reads ctx.goldTotal directly rather than tracking via addProgress,
+      // so the shared progress field is untouched.
+      assertEquals(0f, a.getProgress());
     }
   }
 
@@ -359,6 +405,37 @@ class AchievementsFactoryTest {
       assertTrue(first.isUnlocked());
       assertFalse(second.update(kill(EnemyType.ZOMBIE)));
       assertFalse(second.isUnlocked());
+    }
+
+    @Test
+    void update_eachMatchingKill_incrementsProgressByOne() {
+      Achievement a = build(5, null);
+
+      a.update(kill(EnemyType.ZOMBIE));
+      assertEquals(1f, a.getProgress());
+
+      a.update(kill(EnemyType.KNIGHT));
+      assertEquals(2f, a.getProgress());
+    }
+
+    @Test
+    void update_nonMatchingKills_doNotIncrementProgress() {
+      Achievement a = build(5, EnemyType.ZOMBIE);
+
+      a.update(kill(EnemyType.KNIGHT));
+      a.update(kill(EnemyType.SNAKE_MINI_BOSS));
+
+      assertEquals(0f, a.getProgress());
+    }
+
+    @Test
+    void update_progressStopsIncrementingOnceUnlocked() {
+      Achievement a = build(1, null);
+
+      a.update(kill(EnemyType.ZOMBIE)); // unlocks here
+      a.update(kill(EnemyType.KNIGHT)); // should be a no-op: already unlocked
+
+      assertEquals(1f, a.getProgress());
     }
   }
 
@@ -456,6 +533,40 @@ class AchievementsFactoryTest {
 
       assertTrue(first.isUnlocked());
       assertFalse(second.update(kill(EnemyType.ZOMBIE)));
+    }
+
+    @Test
+    void update_eachKillInStreak_incrementsProgress() {
+      Achievement a = build(5);
+
+      a.update(kill(EnemyType.ZOMBIE));
+      assertEquals(1f, a.getProgress());
+
+      a.update(kill(EnemyType.KNIGHT));
+      assertEquals(2f, a.getProgress());
+    }
+
+    @Test
+    void update_playerDamaged_resetsProgressToZero() {
+      Achievement a = build(5);
+
+      a.update(kill(EnemyType.ZOMBIE));
+      a.update(kill(EnemyType.ZOMBIE));
+      a.update(damaged());
+
+      assertEquals(0f, a.getProgress());
+    }
+
+    @Test
+    void update_progressRebuildsAfterReset() {
+      Achievement a = build(5);
+
+      a.update(kill(EnemyType.ZOMBIE));
+      a.update(damaged());
+      a.update(kill(EnemyType.ZOMBIE));
+      a.update(kill(EnemyType.ZOMBIE));
+
+      assertEquals(2f, a.getProgress());
     }
   }
 
@@ -606,6 +717,36 @@ class AchievementsFactoryTest {
       assertTrue(first.update(completed("forest")));
       assertFalse(second.update(completed("forest")));
     }
+
+    @Test
+    void update_timingReading_isStoredInProgress() {
+      Achievement a = build("forest", 60f);
+
+      a.update(timing("forest", 37f));
+
+      assertEquals(37f, a.getProgress());
+    }
+
+    @Test
+    void update_laterReadingOverwritesProgress() {
+      Achievement a = build("forest", 60f);
+
+      a.update(timing("forest", 20f));
+      a.update(timing("forest", 90f));
+
+      assertEquals(90f, a.getProgress());
+    }
+
+    @Test
+    void update_zeroOrNegativeReadings_doNotOverwriteProgress() {
+      Achievement a = build("forest", 60f);
+
+      a.update(timing("forest", 25f));
+      a.update(timing("forest", 0f));
+      a.update(timing("forest", -5f));
+
+      assertEquals(25f, a.getProgress());
+    }
   }
 
   // ---------- enemySet ----------
@@ -706,6 +847,17 @@ class AchievementsFactoryTest {
       assertTrue(first.isUnlocked());
       assertFalse(second.update(kill(EnemyType.KNIGHT)));
       assertFalse(second.isUnlocked());
+    }
+
+    @Test
+    void update_tracksSeenTypesViaItsOwnSet_notTheSharedProgressField() {
+      Achievement a = build(EnemyType.ZOMBIE, EnemyType.KNIGHT);
+
+      a.update(kill(EnemyType.ZOMBIE));
+      a.update(kill(EnemyType.KNIGHT));
+
+      // enemySet tracks seen types in its own closure-local Set, not via addProgress.
+      assertEquals(0f, a.getProgress());
     }
   }
 }

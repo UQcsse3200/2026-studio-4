@@ -28,28 +28,30 @@ public class AchievementsFactory {
   }
 
   private static Achievement enemyKillCount(AchievementConfig c) {
-    int[] count = {0};
-    return new Achievement(
-        c.name,
+    Achievement a = new Achievement(c.name);
+    a.setCondition(
         ctx -> {
           if (ctx.enemyKilled == null) return false;
           if (c.enemyType != null && ctx.enemyKilled != c.enemyType) return false;
-          return ++count[0] >= c.target;
+          a.addProgress(1);
+          return a.getProgress() >= c.target;
         });
+    return a;
   }
 
   private static Achievement killStreak(AchievementConfig c) {
-    int[] streak = {0};
-    return new Achievement(
-        c.name,
+    Achievement a = new Achievement(c.name);
+    a.setCondition(
         ctx -> {
           if (ctx.playerDamaged) {
-            streak[0] = 0;
+            a.setProgress(0);
             return false;
           }
           if (ctx.enemyKilled == null) return false;
-          return ++streak[0] >= c.target;
+          a.addProgress(1);
+          return a.getProgress() >= c.target;
         });
+    return a;
   }
 
   private static Achievement dungeonReached(AchievementConfig c) {
@@ -57,15 +59,17 @@ public class AchievementsFactory {
   }
 
   private static Achievement speedRun(AchievementConfig c) {
-    float[] lastKnownTime = {Float.MAX_VALUE};
-    return new Achievement(
-        c.name,
+    Achievement a = new Achievement(c.name);
+    a.setProgress(
+        Float.MAX_VALUE); // no time recorded yet; never beats the limit until a real reading lands
+    a.setCondition(
         ctx -> {
           if (c.dungeonId.equals(ctx.dungeonId) && ctx.dungeonSeconds > 0f) {
-            lastKnownTime[0] = ctx.dungeonSeconds;
+            a.setProgress(ctx.dungeonSeconds);
           }
-          return c.dungeonId.equals(ctx.dungeonCompletedId) && lastKnownTime[0] <= c.maxSeconds;
+          return c.dungeonId.equals(ctx.dungeonCompletedId) && a.getProgress() <= c.maxSeconds;
         });
+    return a;
   }
 
   private static Achievement enemySet(AchievementConfig c) {

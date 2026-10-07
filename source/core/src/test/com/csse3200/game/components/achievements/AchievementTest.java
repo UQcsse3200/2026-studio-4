@@ -105,4 +105,19 @@ class AchievementTest {
     assertTrue(achievement.update(now));
     assertTrue(achievement.isUnlocked());
   }
+
+  @Test
+  void getProgress_startsAtZero() {
+    Achievement achievement = new Achievement("Counter");
+    assertEquals(0f, achievement.getProgress());
+  }
+
+  @Test
+  void addProgress_accumulatesAcrossCalls() {
+    Achievement achievement = new Achievement("Counter");
+    achievement.setCondition(ctx -> false);
+    achievement.addProgress(2f);
+    achievement.addProgress(3f);
+    assertEquals(5f, achievement.getProgress());
+  }
 }
