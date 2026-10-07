@@ -116,6 +116,9 @@ public class InventoryComponent extends Component {
       gold += goldPrice;
       return WeaponUpgradePurchaseResult.INVALID_WEAPON;
     }
+    // The balance is already committed; retain the shared achievement notification without
+    // publishing an early goldChanged event before the weapon upgrade exists.
+    setGold(gold);
     if (entity != null) {
       entity.getEvents().trigger("goldChanged", gold);
     }

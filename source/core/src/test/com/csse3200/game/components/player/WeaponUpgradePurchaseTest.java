@@ -2,6 +2,7 @@ package com.csse3200.game.components.player;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.csse3200.game.components.achievements.Achievement;
 import com.csse3200.game.components.weapons.BowWeaponComponent;
 import com.csse3200.game.components.weapons.KnifeWeaponComponent;
 import com.csse3200.game.components.weapons.SwordWeaponComponent;
@@ -9,6 +10,8 @@ import com.csse3200.game.components.weapons.WeaponComponent;
 import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.services.AchievementService;
+import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +20,31 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class WeaponUpgradePurchaseTest {
+  @Test
+  void achievementObserversReceiveCommittedUpgradeAndRejectsStaySilent() {
+    InventoryComponent inventory = new InventoryComponent(100);
+    WeaponUpgradeComponent upgrades = new WeaponUpgradeComponent();
+    new Entity().addComponent(inventory).addComponent(upgrades);
+    List<Integer> balances = new ArrayList<>();
+    AchievementService achievements = new AchievementService();
+    achievements.register(
+        new Achievement(
+            "observe weapon purchase",
+            context -> {
+              assertTrue(upgrades.isUpgraded(SwordWeaponComponent.class));
+              assertEquals(40, inventory.getGold());
+              balances.add(context.goldTotal);
+              return false;
+            }));
+    ServiceLocator.registerAchievementService(achievements);
+    assertEquals("SUCCESS", purchase(inventory, upgrades, SwordWeaponComponent.class, 60));
+    assertEquals(List.of(40), balances);
+    assertEquals("ALREADY_UPGRADED", purchase(inventory, upgrades, SwordWeaponComponent.class, 60));
+    assertEquals(
+        "INSUFFICIENT_GOLD", purchase(inventory, upgrades, KnifeWeaponComponent.class, 60));
+    assertEquals(List.of(40), balances);
+  }
+
   @Test
   void observersSeePaidUpgradeFromBothNotifications() {
     InventoryComponent inventory = new InventoryComponent(100);

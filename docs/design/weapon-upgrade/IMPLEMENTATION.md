@@ -33,3 +33,13 @@ At implementation start, only main appears in the branch analysis API. Neither s
 Discord Team 5 and Team 3 checked on October 7; Team 5 visible latest September 18, Team 3 latest October 7 confirms dialogue PR #231 and planned tutorial work, without an upgrade purchase delivery. Public PR requests also checked. No WhatsApp access or outgoing message performed for this turn.
 
 Baseline dependency checks also inspected the specific unresolved lists for PR #198 (head `1c9ad811`, analysis 2026-10-05 09:57:53 UTC) and PR #231 (head `525cc0d0`, analysis 2026-10-07 02:14:16 UTC): both gate OK, zero unresolved issues. End-of-feature main/branch checks still show the same 37 main findings and no task scan.
+
+## Final dependency sync and verification
+
+While this task was in progress, another local workflow advanced items to `9e70da4d` and shop to `809a4e2f`. Feature commit `cce6dfd7` was preserved, and merge `c88d33be` incorporated that already-committed shop dependency into this task without conflicts. This task is based on the current items/main version and contains shop `809a4e2f`; it did not move either branch reference.
+
+The only new adaptation for that dependency is in the task-owned weapon-purchase method: after successful upgrade, `setGold(gold)` preserves the existing achievement notification, then the explicit gold event is published. Since the setter receives the already-committed balance, it does not emit an early or duplicate gold event. A real AchievementService observer regression failed before this adaptation and passes afterward; rejected/repeated purchases remain silent. No achievement implementation or configuration was edited.
+
+Final `./gradlew spotlessApply core:test spotlessCheck desktop:classes core:jar` succeeds: **2156 tests, 0 failures, 0 errors, 0 skipped**. The actual LWJGL UI was rendered again on the synchronized dependency at all three window sizes and after purchase; exit 0. [Final 960-wide actual UI](implemented-a.png). Full-world NPC manual playthrough remains outside this isolated rendering check.
+
+Final audit: user-requested Team 5 shop work, reuses existing upgrades, no duplicate combat implementation, test harness/demo gold outside repo, no new edits to another team's code/config/Wiki. Independent review accepted callback disposal, purchase messaging and achievement notification fixes. Branch kept local; no push, PR, review request, issue or message sent. SonarCloud new scan remains unverified; exact task-head gate and new issue count are unavailable.

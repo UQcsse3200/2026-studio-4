@@ -1,6 +1,6 @@
 # Weapon upgrade purchase page — design review
 
-Status: Yuezhou Wang selected **A** on 2026-10-07. Implementation is in progress on `task/weapon-upgrade-page`. Candidate B is retained only as design history.
+Status: Yuezhou Wang selected **A** on 2026-10-07. Implemented and locally verified on `task/weapon-upgrade-page`; see [implementation record](IMPLEMENTATION.md). Candidate B is retained only as design history.
 
 Yuezhou Wang requested an isolated local task branch and immediate visual design on 2026-10-07. The task branch `task/weapon-upgrade-page` starts at clean local `items` commit `7aba55d93f62086d6ff1ab8a3d61d42f64dea3d8`. The initial design step changed no game code. After A was selected, local `shop` at `9c427652` was merged into this task to reuse its merchant modal and purchase boundary. Existing dependency files are preserved; `items` and `shop` remain unchanged by this task.
 
