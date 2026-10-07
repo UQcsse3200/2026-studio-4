@@ -5,8 +5,14 @@ import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Graphics.Monitor;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.GdxGame;
@@ -36,8 +42,13 @@ public class SettingsMenuDisplay extends UIComponent {
   private Slider uiScaleSlider;
   private SelectBox<StringDecorator<DisplayMode>> displayModeSelect;
   private CheckBox showTimerCheck;
-  private CheckBox showVictoryStatsCheck;
-  private Label progressLabel;
+  private CheckBox showFpsCheck;
+  private Slider musicSlider;
+  private Slider soundSlider;
+  private Label lastRunLabel;
+  private Label bestRunLabel;
+  private Label achievementLabel;
+  private Label resetStatusLabel;
 
   public SettingsMenuDisplay(GdxGame game) {
     super();
@@ -52,17 +63,21 @@ public class SettingsMenuDisplay extends UIComponent {
 
   private void addActors() {
     Label title = new Label("Settings", skin, "title");
+    Label hint = new Label("Apply saves these options. Exit leaves them unchanged.", skin);
     Table settingsTable = makeSettingsTable();
+    ScrollPane pane = new ScrollPane(settingsTable, skin);
+    pane.setFadeScrollBars(false);
+    pane.setScrollingDisabled(true, false);
     Table menuBtns = makeMenuBtns();
 
     rootTable = new Table();
     rootTable.setFillParent(true);
 
-    rootTable.add(title).expandX().top().padTop(20f);
-
-    rootTable.row().padTop(30f);
-    rootTable.add(settingsTable).expandX().expandY();
-
+    rootTable.add(title).expandX().top().padTop(16f);
+    rootTable.row().padTop(6f);
+    rootTable.add(hint).expandX().top();
+    rootTable.row().padTop(12f);
+    rootTable.add(pane).grow().pad(8f, 48f, 8f, 48f);
     rootTable.row();
     rootTable.add(menuBtns).fillX();
 
@@ -70,90 +85,68 @@ public class SettingsMenuDisplay extends UIComponent {
   }
 
   private Table makeSettingsTable() {
-    // Get current values
     UserSettings.Settings settings = UserSettings.get();
+    SettingsForm form = new SettingsForm(skin);
 
-    // Create components
-    Label fpsLabel = new Label("FPS Cap:", skin);
     fpsText = new TextField(Integer.toString(settings.fps), skin);
-
-    Label fullScreenLabel = new Label("Fullscreen:", skin);
     fullScreenCheck = new CheckBox("", skin);
     fullScreenCheck.setChecked(settings.fullscreen);
-
-    Label vsyncLabel = new Label("VSync:", skin);
     vsyncCheck = new CheckBox("", skin);
     vsyncCheck.setChecked(settings.vsync);
-
-    Label uiScaleLabel = new Label("ui Scale (Unused):", skin);
     uiScaleSlider = new Slider(0.2f, 2f, 0.1f, false, skin);
     uiScaleSlider.setValue(settings.uiScale);
-    Label uiScaleValue = new Label(String.format("%.2fx", settings.uiScale), skin);
-
-    Label displayModeLabel = new Label("Resolution:", skin);
     displayModeSelect = new SelectBox<>(skin);
     Monitor selectedMonitor = Gdx.graphics.getMonitor();
     displayModeSelect.setItems(getDisplayModes(selectedMonitor));
     displayModeSelect.setSelected(getActiveMode(displayModeSelect.getItems()));
 
-    // Position Components on table
-    Table table = new Table();
+    form.section("Display");
+    form.row("FPS cap", fpsText);
+    form.row("Fullscreen", fullScreenCheck);
+    form.row("VSync", vsyncCheck);
+    form.slider("UI scale", uiScaleSlider, "%.2fx");
+    form.row("Resolution", displayModeSelect);
 
-    table.add(fpsLabel).right().padRight(15f);
-    table.add(fpsText).width(100).left();
+    musicSlider = new Slider(0f, 1f, 0.05f, false, skin);
+    musicSlider.setValue(settings.musicVolume);
+    soundSlider = new Slider(0f, 1f, 0.05f, false, skin);
+    soundSlider.setValue(settings.soundVolume);
+    form.section("Audio");
+    form.percent("Music", musicSlider);
+    form.percent("Effects", soundSlider);
 
-    table.row().padTop(10f);
-    table.add(fullScreenLabel).right().padRight(15f);
-    table.add(fullScreenCheck).left();
-
-    table.row().padTop(10f);
-    table.add(vsyncLabel).right().padRight(15f);
-    table.add(vsyncCheck).left();
-
-    table.row().padTop(10f);
-    Table uiScaleTable = new Table();
-    uiScaleTable.add(uiScaleSlider).width(100).left();
-    uiScaleTable.add(uiScaleValue).left().padLeft(5f).expandX();
-
-    table.add(uiScaleLabel).right().padRight(15f);
-    table.add(uiScaleTable).left();
-
-    table.row().padTop(10f);
-    table.add(displayModeLabel).right().padRight(15f);
-    table.add(displayModeSelect).left();
-
-    table.row().padTop(20f);
-    Label gameplayTitle = new Label("Gameplay", skin);
-    table.add(gameplayTitle).right().padRight(15f);
-    table.add().left();
-
-    table.row().padTop(10f);
-    Label timerLabel = new Label("Show run timer:", skin);
     showTimerCheck = new CheckBox("", skin);
     showTimerCheck.setChecked(settings.showTimer);
-    table.add(timerLabel).right().padRight(15f);
-    table.add(showTimerCheck).left();
+    showFpsCheck = new CheckBox("", skin);
+    showFpsCheck.setChecked(settings.showFps);
+    form.section("Gameplay");
+    form.row("Show run timer", showTimerCheck);
+    form.row("Show FPS", showFpsCheck);
 
-    table.row().padTop(10f);
-    Label victoryLabel = new Label("Show victory stats:", skin);
-    showVictoryStatsCheck = new CheckBox("", skin);
-    showVictoryStatsCheck.setChecked(settings.showVictoryStats);
-    table.add(victoryLabel).right().padRight(15f);
-    table.add(showVictoryStatsCheck).left();
+    SaveData save = GameProgress.get();
+    lastRunLabel = new Label(GameProgress.formatTime(save.lastRunMs), skin);
+    bestRunLabel = new Label(GameProgress.formatTime(save.bestRunMs), skin);
+    achievementLabel = new Label(Integer.toString(save.achievements.size()), skin);
+    resetStatusLabel = new Label("", skin);
+    form.section("Run history");
+    form.row("Last run", lastRunLabel);
+    form.row("Best run", bestRunLabel);
+    form.row("Achievements", achievementLabel);
+    form.row("Saved on this computer", resetStatusLabel);
+    form.row("", resetButtons());
 
-    table.row().padTop(10f);
-    progressLabel = new Label(progressText(), skin);
-    table.add(new Label("Save / achievements:", skin)).right().padRight(15f);
-    table.add(progressLabel).left();
+    return form.table();
+  }
 
-    table.row().padTop(10f);
-    TextButton resetSaveBtn = new TextButton("Reset save", skin);
+  private Table resetButtons() {
+    TextButton resetSaveBtn = new TextButton("Reset times", skin);
     resetSaveBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             GameProgress.clearSave();
             refreshProgressLabel();
+            resetStatusLabel.setText("Run times cleared.");
           }
         });
     TextButton resetAchievementsBtn = new TextButton("Reset achievements", skin);
@@ -163,23 +156,13 @@ public class SettingsMenuDisplay extends UIComponent {
           public void changed(ChangeEvent changeEvent, Actor actor) {
             GameProgress.clearAchievements();
             refreshProgressLabel();
+            resetStatusLabel.setText("Achievements cleared.");
           }
         });
-    Table progressBtns = new Table();
-    progressBtns.add(resetSaveBtn).padRight(10f);
-    progressBtns.add(resetAchievementsBtn);
-    table.add().right().padRight(15f);
-    table.add(progressBtns).left();
-
-    // Events on inputs
-    uiScaleSlider.addListener(
-        (Event event) -> {
-          float value = uiScaleSlider.getValue();
-          uiScaleValue.setText(String.format("%.2fx", value));
-          return true;
-        });
-
-    return table;
+    Table buttons = new Table();
+    buttons.add(resetSaveBtn).padRight(10f);
+    buttons.add(resetAchievementsBtn);
+    return buttons;
   }
 
   private StringDecorator<DisplayMode> getActiveMode(Array<StringDecorator<DisplayMode>> modes) {
@@ -248,27 +231,41 @@ public class SettingsMenuDisplay extends UIComponent {
     }
     settings.fullscreen = fullScreenCheck.isChecked();
     settings.uiScale = uiScaleSlider.getValue();
-    settings.displayMode = new DisplaySettings(displayModeSelect.getSelected().object);
+    DisplaySettings chosen = chosenDisplaySettings(displayModeSelect.getSelected());
+    if (chosen != null) {
+      settings.displayMode = chosen;
+    }
     settings.vsync = vsyncCheck.isChecked();
     settings.showTimer = showTimerCheck.isChecked();
-    settings.showVictoryStats = showVictoryStatsCheck.isChecked();
+    settings.showFps = showFpsCheck.isChecked();
+    settings.musicVolume = musicSlider.getValue();
+    settings.soundVolume = soundSlider.getValue();
 
     UserSettings.set(settings, true);
   }
 
-  private void refreshProgressLabel() {
-    if (progressLabel != null) {
-      progressLabel.setText(progressText());
+  /**
+   * Resolution to save, or null when the dropdown has no selection. A missing selection keeps the
+   * display mode already stored in settings.
+   */
+  static DisplaySettings chosenDisplaySettings(StringDecorator<DisplayMode> selected) {
+    if (selected == null || selected.object == null) {
+      return null;
     }
+    return new DisplaySettings(selected.object);
   }
 
-  private static String progressText() {
+  private void refreshProgressLabel() {
     SaveData save = GameProgress.get();
-    return String.format(
-        "Last %s  Best %s  Achievements %d",
-        GameProgress.formatTime(save.lastRunMs),
-        GameProgress.formatTime(save.bestRunMs),
-        save.achievements.size());
+    if (lastRunLabel != null) {
+      lastRunLabel.setText(GameProgress.formatTime(save.lastRunMs));
+    }
+    if (bestRunLabel != null) {
+      bestRunLabel.setText(GameProgress.formatTime(save.bestRunMs));
+    }
+    if (achievementLabel != null) {
+      achievementLabel.setText(Integer.toString(save.achievements.size()));
+    }
   }
 
   private void exitMenu() {

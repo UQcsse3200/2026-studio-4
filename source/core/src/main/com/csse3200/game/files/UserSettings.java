@@ -89,8 +89,14 @@ public class UserSettings {
     /** When true, the in-run HUD shows the game timer. */
     public boolean showTimer = true;
 
-    /** When true, the victory screen lists last/best time and achievement count. */
-    public boolean showVictoryStats = true;
+    /** When true, a small FPS counter is drawn during a run. */
+    public boolean showFps = false;
+
+    /** Background music volume, from 0 to 1. */
+    public float musicVolume = 0.3f;
+
+    /** Effect volume, from 0 to 1. */
+    public float soundVolume = 1f;
 
     public DisplaySettings displayMode = null;
   }

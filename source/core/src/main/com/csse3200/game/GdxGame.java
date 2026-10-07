@@ -12,7 +12,6 @@ import com.csse3200.game.screens.LoadGameScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsScreen;
-import com.csse3200.game.screens.VictoryScreen;
 import com.csse3200.game.screens.WinScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,8 +102,6 @@ public class GdxGame extends Game {
         return new SettingsScreen(this);
       case DEATH_SCREEN:
         return new DeathScreen(this);
-      case VICTORY:
-        return new VictoryScreen(this);
       case WIN_SCREEN:
         return new WinScreen(this);
       default:
@@ -118,7 +115,6 @@ public class GdxGame extends Game {
     MAIN_GAME,
     SETTINGS,
     DEATH_SCREEN,
-    VICTORY,
     WIN_SCREEN
   }
 

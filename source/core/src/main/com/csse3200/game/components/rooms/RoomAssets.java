@@ -11,6 +11,7 @@ import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.traps.FireTrapRenderComponent;
 import com.csse3200.game.components.traps.IceTrapRenderComponent;
+import com.csse3200.game.files.AudioLevels;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Arrays;
@@ -126,7 +127,7 @@ public class RoomAssets implements Disposable {
   private void startMusic() {
     Music music = ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class);
     music.setLooping(true);
-    music.setVolume(0.3f);
+    music.setVolume(AudioLevels.music());
     music.play();
   }
 

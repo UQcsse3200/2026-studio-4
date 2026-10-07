@@ -1,5 +1,6 @@
 package com.csse3200.game.files;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -59,7 +60,9 @@ class UserSettingsTest {
   void gameplayOptionsDefaultToVisible() {
     Settings settings = new Settings();
     assertTrue(settings.showTimer);
-    assertTrue(settings.showVictoryStats);
+    assertFalse(settings.showFps);
+    assertEquals(0.3f, settings.musicVolume);
+    assertEquals(1f, settings.soundVolume);
   }
 
   @Test
@@ -72,13 +75,17 @@ class UserSettingsTest {
     updated.uiScale = original.uiScale;
     updated.displayMode = original.displayMode;
     updated.showTimer = false;
-    updated.showVictoryStats = false;
+    updated.showFps = true;
+    updated.musicVolume = 0.4f;
+    updated.soundVolume = 0.2f;
 
     try {
       UserSettings.set(updated, false);
       Settings loaded = UserSettings.get();
       assertFalse(loaded.showTimer);
-      assertFalse(loaded.showVictoryStats);
+      assertTrue(loaded.showFps);
+      assertEquals(0.4f, loaded.musicVolume);
+      assertEquals(0.2f, loaded.soundVolume);
     } finally {
       UserSettings.set(original, false);
     }

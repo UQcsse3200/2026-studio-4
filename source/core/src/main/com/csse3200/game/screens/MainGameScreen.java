@@ -7,6 +7,7 @@ import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.achievements.AchievementConfig;
 import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.achievements.AchievementsFactory;
+import com.csse3200.game.components.gamearea.FpsOverlay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.gamearea.TimerDisplay;
 import com.csse3200.game.components.maingame.*;
@@ -282,6 +283,7 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(new TerminalDisplay())
         .addComponent(timerDisplay)
         .addComponent(new TimerDisplay.ToggleInput(timerDisplay))
+        .addComponent(new FpsOverlay())
         .addComponent(inventoryDisplay)
         .addComponent(hotbarDisplay)
         .addComponent(consumableHotbarDisplay)

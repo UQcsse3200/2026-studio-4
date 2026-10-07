@@ -170,7 +170,9 @@ class TimerDisplayTest {
     hidden.uiScale = original.uiScale;
     hidden.displayMode = original.displayMode;
     hidden.showTimer = false;
-    hidden.showVictoryStats = original.showVictoryStats;
+    hidden.showFps = original.showFps;
+    hidden.musicVolume = original.musicVolume;
+    hidden.soundVolume = original.soundVolume;
 
     try {
       UserSettings.set(hidden, false);
