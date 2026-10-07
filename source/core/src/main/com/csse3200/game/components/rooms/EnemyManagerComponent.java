@@ -142,6 +142,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         return jotunn;
 
       // Egyptian
+      case SANDEYE:
+        return NPCFactory.createChaseEnemy(target, false, "images/sandeye.atlas");
       case BEETLE:
         Entity beetle = NPCFactory.createBombEnemy(target, "images/beetle.atlas", 2f);
         beetle.setScale(0.75f, 0.75f);
@@ -181,6 +183,10 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         }
         return snake;
       // Greek
+      case MINOTAUR:
+        Entity minotaur = NPCFactory.createChaseEnemy(target, false, "images/minotaur.atlas");
+        minotaur.setScale(1.5f, 1.5f);
+        return minotaur;
       case GOLEM:
         Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
         golem.setScale(0.9F, 0.7F);
