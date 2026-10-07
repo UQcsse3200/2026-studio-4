@@ -1,0 +1,9 @@
+{
+  "speakers": [
+    { "id": "merchant", "name": "Travelling Merchant", "atlas": "images/shopkeeper.atlas", "animation": "default" }
+  ],
+  "lines": [
+    { "speaker": "merchant", "text": "Welcome, welcome! Only the finest wares for brave adventurers." },
+    { "speaker": "merchant", "text": "Take a look around. Everything has a price, but nothing is too dear for a hero." }
+  ]
+}
