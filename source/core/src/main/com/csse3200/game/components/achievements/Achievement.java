@@ -11,6 +11,7 @@ public class Achievement {
   private final String name;
   private Predicate<AchievementContext> condition;
   private float progress;
+  private float target; // 0 means no numeric target to show
 
   /** Creates an achievement with its condition fixed at construction. */
   public Achievement(String name, Predicate<AchievementContext> condition) {
@@ -54,6 +55,14 @@ public class Achievement {
 
   public void addProgress(float amount) {
     this.progress += amount;
+  }
+
+  public float getTarget() {
+    return target;
+  }
+
+  public void setTarget(float target) {
+    this.target = target;
   }
 
   public boolean isUnlocked() {

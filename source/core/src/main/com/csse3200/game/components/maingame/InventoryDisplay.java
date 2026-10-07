@@ -187,6 +187,13 @@ public class InventoryDisplay extends UIComponent {
   private Table achievementsCreate() {
     Table pagesContainer = new Table();
     pagesContainer.pad(40, 50, 40, 50);
+    pagesContainer.setFillParent(true);
+    pagesContainer
+        .add(new Label("Achievements", skin, INVENTORY_STYLE))
+        .colspan(2)
+        .center()
+        .padBottom(10f)
+        .row();
 
     List<Achievement> all = new ArrayList<>();
     AchievementService achievementService = ServiceLocator.getAchievementService();
@@ -198,14 +205,16 @@ public class InventoryDisplay extends UIComponent {
     List<Achievement> unlocked = all.stream().filter(Achievement::isUnlocked).toList();
 
     Table leftPage = new Table().background(inventory.getDrawable(LEFT_PAGE)).top();
-    leftPage.add(new Label("Locked", skin, INVENTORY_STYLE)).top().pad(25f).row();
+    leftPage.pad(10, 15, 20, 15);
+    leftPage.add(new Label("Locked", skin, INVENTORY_STYLE)).top().pad(15f).row();
     leftPage.add(achievementList(locked, false)).grow();
-    pagesContainer.add(leftPage).size(365, 500);
+    pagesContainer.add(leftPage).size(365, 475);
 
     Table rightPage = new Table().background(inventory.getDrawable(RIGHT_PAGE)).top();
-    rightPage.add(new Label("Unlocked", skin, INVENTORY_STYLE)).top().pad(25f).row();
+    rightPage.pad(10, 15, 20, 15);
+    rightPage.add(new Label("Unlocked", skin, INVENTORY_STYLE)).top().pad(15f).row();
     rightPage.add(achievementList(unlocked, true)).grow();
-    pagesContainer.add(rightPage).size(365, 500);
+    pagesContainer.add(rightPage).size(365, 475);
 
     return pagesContainer;
   }
@@ -215,9 +224,19 @@ public class InventoryDisplay extends UIComponent {
     Table list = new Table();
     list.top();
     for (Achievement a : achievements) {
-      Label name = new Label(a.getName(), skin, INVENTORY_STYLE);
+      Label name = new Label(a.getName(), skin, "inventory");
       name.setColor(unlockedStyle ? Color.GOLD : Color.GRAY);
-      list.add(name).left().pad(6).row();
+
+      name.setWrap(true);
+      list.add(name).left().width(280f).pad(6).row();
+      //      list.add(name).left().pad(6).row();
+
+      if (!unlockedStyle && a.getTarget() > 0) {
+        int shown = (int) Math.min(a.getProgress(), a.getTarget());
+        Label progress = new Label(shown + " / " + (int) a.getTarget(), skin);
+        progress.setColor(Color.BLUE);
+        list.add(progress).left().padLeft(6).padBottom(20).row();
+      }
     }
     ScrollPane scrollPane = new ScrollPane(list, skin);
     scrollPane.setScrollingDisabled(true, false);

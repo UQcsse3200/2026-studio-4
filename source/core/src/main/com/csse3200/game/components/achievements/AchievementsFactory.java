@@ -24,11 +24,15 @@ public class AchievementsFactory {
   }
 
   private static Achievement gold(AchievementConfig c) {
-    return new Achievement(c.name, ctx -> ctx.goldTotal != null && ctx.goldTotal >= c.target);
+    Achievement a =
+        new Achievement(c.name, ctx -> ctx.goldTotal != null && ctx.goldTotal >= c.target);
+    a.setTarget(c.target);
+    return a;
   }
 
   private static Achievement enemyKillCount(AchievementConfig c) {
     Achievement a = new Achievement(c.name);
+    a.setTarget(c.target);
     a.setCondition(
         ctx -> {
           if (ctx.enemyKilled == null) return false;
@@ -41,6 +45,7 @@ public class AchievementsFactory {
 
   private static Achievement killStreak(AchievementConfig c) {
     Achievement a = new Achievement(c.name);
+    a.setTarget(c.target);
     a.setCondition(
         ctx -> {
           if (ctx.playerDamaged) {
