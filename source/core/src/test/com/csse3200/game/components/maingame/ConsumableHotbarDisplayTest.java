@@ -74,7 +74,7 @@ class ConsumableHotbarDisplayTest {
           "images/consumable-slot-idle.png", "images/consumable-slot-selected.png",
           "images/health_potion_pixel.png", "images/shield_consumable_pixel.png",
           "images/speed_potion_pixel.png", "images/strength_potion_pixel.png",
-          "images/burn_vial_pixel.png"
+          "images/burn_vial_pixel.png", "images/magnet_potion_pixel.png"
         });
     resources.loadAll();
     inventory = new InventoryComponent(0);
@@ -126,6 +126,30 @@ class ConsumableHotbarDisplayTest {
     assertFalse(count("2").isVisible());
     input.keyDown(Keys.Q);
     assertEquals(0, inventory.getConsumableCount(ItemIds.BURN_VIAL));
+  }
+
+  @Test
+  void magnetUsesCatalogIconInFourthSlotAndQRefreshesItsCount() {
+    inventory.addConsumable(ItemIds.HEALTH_POTION);
+    inventory.addConsumable(ItemIds.SHIELD);
+    inventory.addConsumable(ItemIds.BURN_VIAL);
+    ItemCatalog.create(ItemIds.MAGNET_POTION, 2).pickUp(player);
+    Image icon = actor("consumable-icon-4");
+    assertSame(
+        resources.getAsset("images/magnet_potion_pixel.png", Texture.class),
+        ((TextureRegionDrawable) icon.getDrawable()).getRegion().getTexture());
+    assertEquals("2", count("4").getText().toString());
+    for (int i = 0; i < 3; i++) input.keyDown(Keys.TAB);
+    input.keyDown(Keys.Q);
+    assertEquals("1", count("4").getText().toString());
+    assertEquals(
+        10000,
+        player.getComponent(ConsumableEffectComponent.class).getRemainingMs(ItemIds.MAGNET_POTION));
+    input.keyDown(Keys.Q);
+    assertFalse(icon.isVisible());
+    assertFalse(count("4").isVisible());
+    assertNull(inventory.getConsumableSlot(3));
+    assertEquals(1, inventory.getConsumableCount(ItemIds.BURN_VIAL));
   }
 
   @Test
