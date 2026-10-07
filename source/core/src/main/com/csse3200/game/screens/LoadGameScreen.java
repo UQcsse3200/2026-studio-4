@@ -334,42 +334,42 @@ public class LoadGameScreen extends ScreenAdapter {
     game.startGame(save, slot);
   }
 
-  private void goBack() {
-    game.setScreen(GdxGame.ScreenType.MAIN_MENU);
-  }
-
-  private void moveSelection(int amount) {
-    selectedIndex = (selectedIndex + amount + SLOT_COUNT) % SLOT_COUNT;
-    confirmingDelete = false;
-    updateSelection();
-    if (saves[selectedIndex] == null) {
-      footer.setText(
-          saveFiles[selectedIndex]
-              ? "Unreadable record     F  Delete"
-              : "Empty slot     ENTER  Begin a new journey here");
-    } else {
-      footer.setText("ENTER  Load selected record     F  Delete     ESC  Back");
-    }
-  }
-
-  private void deleteSelectedSlot() {
-    if (!saveFiles[selectedIndex]) {
-      footer.setText("This slot is already empty");
-      confirmingDelete = false;
-      return;
-    }
-    if (!confirmingDelete) {
-      confirmingDelete = true;
-      footer.setText("Press F again to delete this slot and its map preview");
-      return;
-    }
-    FileLoader.deleteSaveSlot(selectedIndex + 1);
-    game.setScreen(GdxGame.ScreenType.LOAD_GAME);
-  }
-
   private class SaveListControls extends InputComponent {
     private SaveListControls() {
       super(20);
+    }
+
+    private void goBack() {
+      game.setScreen(GdxGame.ScreenType.MAIN_MENU);
+    }
+
+    private void moveSelection(int amount) {
+      selectedIndex = (selectedIndex + amount + SLOT_COUNT) % SLOT_COUNT;
+      confirmingDelete = false;
+      updateSelection();
+      if (saves[selectedIndex] == null) {
+        footer.setText(
+            saveFiles[selectedIndex]
+                ? "Unreadable record     F  Delete"
+                : "Empty slot     ENTER  Begin a new journey here");
+      } else {
+        footer.setText("ENTER  Load selected record     F  Delete     ESC  Back");
+      }
+    }
+
+    private void deleteSelectedSlot() {
+      if (!saveFiles[selectedIndex]) {
+        footer.setText("This slot is already empty");
+        confirmingDelete = false;
+        return;
+      }
+      if (!confirmingDelete) {
+        confirmingDelete = true;
+        footer.setText("Press F again to delete this slot and its map preview");
+        return;
+      }
+      FileLoader.deleteSaveSlot(selectedIndex + 1);
+      game.setScreen(GdxGame.ScreenType.LOAD_GAME);
     }
 
     @Override
