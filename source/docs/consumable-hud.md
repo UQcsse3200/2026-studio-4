@@ -13,8 +13,14 @@ Related feature: #197. The HUD uses main's `ItemIds`, `ItemCatalog`,
   the selected item through the existing effect component. Empty slots and
   rejected uses consume nothing. Freeze Bomb and healing potion variants use
   their existing catalog/effect implementations.
-- **I** opens the existing inventory book. Its arrow switches between Charms
-  and Consumables. The left page shows equipment; the right shows stored items.
+- **I** opens the existing travel book. **Q / E** move backward / forward through
+  Charms, Consumables and Achievements; the category tabs also jump directly.
+  On item pages, **WASD / arrow keys** select equipment or stored items, and
+  **Space** equips or unequips the selection. **I / Esc** closes the book.
+  These inventory keys are captured while the book is open, so Q does not use
+  a potion and movement keys do not move the player. Achievements retain main's
+  locked / unlocked lists and numeric progress; item actions do nothing there.
+- The left item page shows equipment; the right shows stored items and details.
   Clicking equips/unequips; dragging can choose a consumable slot or swap two
   occupied slots without losing stock. Dropping outside a target changes nothing.
 - Charms still equip automatically on pickup. Unequipping keeps the charm in
@@ -28,7 +34,8 @@ Related feature: #197. The HUD uses main's `ItemIds`, `ItemCatalog`,
   their existing constructor. No separate UI text registry is maintained.
 - The existing `nextPage`, `moveActiveToInactiveItem` and
   `moveInactiveToActiveItem` events are handled by `InventoryActions`. An
-  additional `moveActiveItem` event handles rearranging equipped consumables.
+  `previousPage` supports reverse navigation; `moveActiveItem` handles
+  rearranging equipped consumables.
   The display binds item data and emits requests; it does not apply effects.
 - Counts use `consumableInventoryChanged(String, count)`. Empty slots hide their
   icon, count and Q hint. Gold follows the actual inventory balance. The Speed
@@ -55,7 +62,7 @@ restores SpriteBatch color and blend state, including when drawing throws.
 
 The shared `RotatingTextureRenderComponent` remains identical to main. The
 specialized drop renderer keeps deformation out of weapon rendering. The inventory retains main's
-book cover, two page-building methods, slot grid, tooltips and action/event
+book cover, parchment pages, achievement service, slot grid, tooltips and action/event
 structure, with data binding, four consumable slots and bounded scrolling added.
 
 ## Verification
@@ -255,3 +262,27 @@ SonarCloud PR #221 still reports gate OK and zero concrete unresolved issues for
 `ed8ba209` analysis on 4 October 2026 at 17:37:01 Brisbane time. That scan does not cover Jeremy's
 new head or this combined local integration. Local integration/validation are complete; the new
 SonarCloud scan is unverified. No remote write or source-uploading scan is performed.
+
+## Main compatibility (2026-10-07)
+
+This branch integrates main at `9e70da4d`. The narrative commands and input guards,
+achievement page, and save/load flow are retained. Inventory rendering changes stay
+inside the book; item actions reuse the existing inventory and effect interfaces.
+
+Version 1 saves now include optional `consumableSlots` and `charmEquipped` fields.
+New saves preserve all four slot positions (including gaps), backpack-only items,
+and each individual charm's equipped state. Legacy saves without these fields
+retain main's original restore behavior. Duplicate charm copies are restored
+individually so their effects are neither lost nor applied twice.
+
+Before review, manually check all three book categories, keyboard and mouse
+equipment changes, save/load after rearranging slots and unequipping a charm,
+and inventory input alongside NPC dialogue and the exit/save dialog. Automated
+coverage does not establish final visual appearance or frame-time performance.
+
+Adaptation verification: `./gradlew test :desktop:classes :core:jar` passed
+**2,180 tests across 275 suites, with zero failures, errors or skipped tests**.
+`./gradlew spotlessCheck` passed. The new coverage includes all three book
+categories, reverse navigation, achievement progress, item input isolation on the
+achievements page, and actual JSON save/load round trips for slot and charm state.
+No game was launched during this adaptation; the manual checks above remain open.

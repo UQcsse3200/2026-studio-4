@@ -168,6 +168,83 @@ class InventoryDisplayTest {
   }
 
   @Test
+  void achievementPageRetainsMainProgressAndBothPageDirections() {
+    var service = new com.csse3200.game.services.AchievementService();
+    var locked =
+        new com.csse3200.game.components.achievements.Achievement("Locked test", c -> false);
+    locked.setTarget(10);
+    locked.setProgress(4);
+    var unlocked =
+        new com.csse3200.game.components.achievements.Achievement("Unlocked test", c -> true);
+    unlocked.update(null);
+    service.register(locked);
+    service.register(unlocked);
+    ServiceLocator.registerAchievementService(service);
+    var charm = new com.csse3200.game.items.charms.StrengthCharm();
+    charm.pickUp(player);
+    inventory.addConsumable(com.csse3200.game.items.ItemIds.HEALTH_POTION, 3);
+    display.setVisible(true);
+
+    stage.keyDown(com.badlogic.gdx.Input.Keys.Q);
+    Table left = stage.getRoot().findActor("inventory-page-left");
+    Table right = stage.getRoot().findActor("inventory-page-right");
+    assertNotNull(left.findActor("achievement-Locked test"));
+    assertNotNull(right.findActor("achievement-Unlocked test"));
+    var label =
+        (com.badlogic.gdx.scenes.scene2d.ui.Label) left.findActor("achievement-Locked test");
+    var entries = (Table) label.getParent();
+    assertEquals(
+        "4 / 10",
+        ((com.badlogic.gdx.scenes.scene2d.ui.Label) entries.getChildren().get(1))
+            .getText()
+            .toString());
+    assertTrue(display.getPageItems(true).isEmpty());
+    for (int key :
+        new int[] {
+          com.badlogic.gdx.Input.Keys.W,
+          com.badlogic.gdx.Input.Keys.A,
+          com.badlogic.gdx.Input.Keys.S,
+          com.badlogic.gdx.Input.Keys.D,
+          com.badlogic.gdx.Input.Keys.SPACE
+        }) {
+      assertTrue(stage.keyDown(key));
+    }
+    assertTrue(charm.isEquipped());
+    assertEquals(com.csse3200.game.items.ItemIds.HEALTH_POTION, inventory.getConsumableSlot(0));
+    assertEquals(3, inventory.getConsumableCount(com.csse3200.game.items.ItemIds.HEALTH_POTION));
+    stage.keyDown(com.badlogic.gdx.Input.Keys.E);
+    assertNotNull(stage.getRoot().findActor("charms-equipped"));
+    stage.keyDown(com.badlogic.gdx.Input.Keys.E);
+    assertNotNull(stage.getRoot().findActor("consumables-equipped"));
+    stage.keyDown(com.badlogic.gdx.Input.Keys.E);
+    assertNotNull(stage.getRoot().findActor("achievement-Locked test"));
+    display.refreshPage();
+    assertNotNull(stage.getRoot().findActor("achievement-Locked test"));
+    stage.keyDown(com.badlogic.gdx.Input.Keys.Q);
+    assertNotNull(stage.getRoot().findActor("consumables-equipped"));
+  }
+
+  @Test
+  void categoryTabsJumpDirectlyAcrossAllThreePages() {
+    display.setVisible(true);
+    stage
+        .getRoot()
+        .findActor("inventory-tab-achievements")
+        .fire(new com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent());
+    assertTrue(display.getPageItems(true).isEmpty());
+    stage
+        .getRoot()
+        .findActor("inventory-tab-charms")
+        .fire(new com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent());
+    assertNotNull(stage.getRoot().findActor("charms-equipped"));
+    stage
+        .getRoot()
+        .findActor("inventory-tab-consumables")
+        .fire(new com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent());
+    assertNotNull(stage.getRoot().findActor("consumables-equipped"));
+  }
+
+  @Test
   void capturedReleasesAreHandledAfterClosingButEarlierMovementReleasesPassThrough() {
     display.setVisible(true);
     assertFalse(stage.keyUp(com.badlogic.gdx.Input.Keys.W));
@@ -279,7 +356,10 @@ class InventoryDisplayTest {
           assertTrue(content.getY() + content.getHeight() <= page.getHeight() + 1f);
         }
       }
-      for (String tabName : new String[] {"inventory-tab-charms", "inventory-tab-consumables"}) {
+      for (String tabName :
+          new String[] {
+            "inventory-tab-charms", "inventory-tab-consumables", "inventory-tab-achievements"
+          }) {
         var tab = (com.badlogic.gdx.scenes.scene2d.ui.TextButton) book.findActor(tabName);
         assertNotNull(tab);
         assertTrue(
@@ -288,12 +368,14 @@ class InventoryDisplayTest {
       }
       var details =
           (com.badlogic.gdx.scenes.scene2d.ui.Label) book.findActor("inventory-selection-details");
-      var ink = details.getStyle().fontColor;
-      assertTrue(
-          details.getColor().r * ink.r < 0.6f
-              && details.getColor().g * ink.g < 0.6f
-              && details.getColor().b * ink.b < 0.6f,
-          "Parchment requires dark readable ink");
+      if (details != null) {
+        var ink = details.getStyle().fontColor;
+        assertTrue(
+            details.getColor().r * ink.r < 0.6f
+                && details.getColor().g * ink.g < 0.6f
+                && details.getColor().b * ink.b < 0.6f,
+            "Parchment requires dark readable ink");
+      }
       display.changePage();
     }
   }

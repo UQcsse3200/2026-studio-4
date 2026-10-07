@@ -15,10 +15,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Payload;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Source;
 import com.badlogic.gdx.utils.Scaling;
+import com.csse3200.game.components.achievements.Achievement;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemCatalog;
+import com.csse3200.game.services.AchievementService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.ItemTooltip;
 import com.csse3200.game.ui.UIComponent;
@@ -28,10 +30,19 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-/** Displays the inventory book and its charms and consumables pages. */
+/** Displays the inventory book and its charms, consumables and achievements pages. */
 public class InventoryDisplay extends UIComponent {
   private static final float Z_INDEX = 2f;
-  private boolean charmsPage = true;
+  private static final String LEFT_PAGE = "UI_TravelBook_BookPageLeft01a";
+  private static final String RIGHT_PAGE = "UI_TravelBook_BookPageRight01a";
+
+  private enum Page {
+    CHARMS,
+    CONSUMABLES,
+    ACHIEVEMENTS
+  }
+
+  private Page currentPage = Page.CHARMS;
   private Table table;
   private final List<Stack> equippedSlots = new ArrayList<>();
   private final List<Stack> storedSlots = new ArrayList<>();
@@ -46,18 +57,21 @@ public class InventoryDisplay extends UIComponent {
           if (!isVisible() || keycode == Keys.I || keycode == Keys.F1) return false;
           capturedKeys.add(keycode);
           switch (keycode) {
-            case Keys.Q, Keys.E -> entity.getEvents().trigger("nextPage");
+            case Keys.Q -> entity.getEvents().trigger("previousPage");
+            case Keys.E -> entity.getEvents().trigger("nextPage");
             case Keys.W, Keys.UP -> moveSelection(0, -1);
             case Keys.S, Keys.DOWN -> moveSelection(0, 1);
             case Keys.A, Keys.LEFT -> moveSelection(-1, 0);
             case Keys.D, Keys.RIGHT -> moveSelection(1, 0);
-            case Keys.SPACE ->
+            case Keys.SPACE -> {
+              if (currentPage != Page.ACHIEVEMENTS)
                 entity
                     .getEvents()
                     .trigger(
                         selectedEquipped ? "moveActiveToInactiveItem" : "moveInactiveToActiveItem",
                         selectedIndex,
                         -1);
+            }
             case Keys.ESCAPE -> inventoryComponent.toggleDisplay();
             default -> {}
           }
@@ -135,7 +149,12 @@ public class InventoryDisplay extends UIComponent {
     bookCover.setScaling(Scaling.fill);
     bookStack.add(bookCover);
 
-    Table pagesContainer = charmsPage ? charmsCreate() : consumableCreate();
+    Table pagesContainer =
+        switch (currentPage) {
+          case CHARMS -> charmsCreate();
+          case CONSUMABLES -> consumableCreate();
+          case ACHIEVEMENTS -> achievementsCreate();
+        };
     bookStack.add(pagesContainer);
 
     table.add(bookStack).size(800, 560).center();
@@ -145,9 +164,20 @@ public class InventoryDisplay extends UIComponent {
     table.setVisible(true);
   }
 
-  /** Changes the current page to the other inactive page and sets the flag */
+  /** Advances to the next book category, including main's achievements page. */
   public void changePage() {
-    charmsPage = !charmsPage;
+    showPage(Page.values()[(currentPage.ordinal() + 1) % Page.values().length]);
+  }
+
+  /** Returns to the previous book category. */
+  public void previousPage() {
+    showPage(
+        Page.values()[(currentPage.ordinal() + Page.values().length - 1) % Page.values().length]);
+  }
+
+  private void showPage(Page page) {
+    if (currentPage == page) return;
+    currentPage = page;
     selectedIndex = 0;
     refreshPage();
   }
@@ -163,7 +193,8 @@ public class InventoryDisplay extends UIComponent {
 
   /** Item snapshot used by the grids and the existing action component. */
   public List<? extends Item> getPageItems(boolean equipped) {
-    if (charmsPage) {
+    if (currentPage == Page.ACHIEVEMENTS) return List.of();
+    if (currentPage == Page.CHARMS) {
       return inventoryComponent.getCharms().stream()
           .filter(charm -> charm.isEquipped() == equipped)
           .toList();
@@ -210,10 +241,7 @@ public class InventoryDisplay extends UIComponent {
     leftPage.setName("inventory-page-left");
     leftPage.pad(20);
 
-    Table tabs = new Table();
-    addPageTab(tabs, "Q  CHARMS", true);
-    addPageTab(tabs, "CONSUMABLES  E", false);
-    leftPage.add(tabs).padBottom(10).growX().row();
+    leftPage.add(pageTabs()).padBottom(10).growX().row();
 
     leftPage.add(createDarkLabel("Equipped")).row();
 
@@ -267,10 +295,7 @@ public class InventoryDisplay extends UIComponent {
     leftPage.setName("inventory-page-left");
     leftPage.pad(20);
 
-    Table tabs = new Table();
-    addPageTab(tabs, "Q  CHARMS", true);
-    addPageTab(tabs, "CONSUMABLES  E", false);
-    leftPage.add(tabs).padBottom(10).growX().row();
+    leftPage.add(pageTabs()).padBottom(10).growX().row();
 
     leftPage.add(createDarkLabel("Equipped")).row();
 
@@ -307,6 +332,65 @@ public class InventoryDisplay extends UIComponent {
     return pagesContainer;
   }
 
+  private Table achievementsCreate() {
+    Table pagesContainer = new Table();
+    pagesContainer.pad(30, 40, 30, 40);
+
+    List<Achievement> all = new ArrayList<>();
+    AchievementService achievementService = ServiceLocator.getAchievementService();
+    if (achievementService != null) {
+      all.addAll(achievementService.getAchievements());
+    }
+
+    List<Achievement> locked = all.stream().filter(a -> !a.isUnlocked()).toList();
+    List<Achievement> unlocked = all.stream().filter(Achievement::isUnlocked).toList();
+
+    Table leftPage = new Table().background(inventory.getDrawable(LEFT_PAGE)).top();
+    leftPage.setName("inventory-page-left");
+    leftPage.pad(20);
+    leftPage.add(pageTabs()).padBottom(10).growX().row();
+    leftPage.add(createDarkLabel("Locked achievements")).top().pad(15f).row();
+    leftPage.add(achievementList(locked, false)).grow();
+    leftPage.row();
+    Label hints = createDarkLabel("Q / E : Category    I / Esc : Close");
+    hints.setFontScale(0.8f);
+    leftPage.add(hints).padTop(10);
+    pagesContainer.add(leftPage).size(350, 500).padRight(20);
+
+    Table rightPage = new Table().background(inventory.getDrawable(RIGHT_PAGE)).top();
+    rightPage.setName("inventory-page-right");
+    rightPage.pad(20);
+    rightPage.add(createDarkLabel("Unlocked achievements")).top().pad(15f).row();
+    rightPage.add(achievementList(unlocked, true)).grow();
+    pagesContainer.add(rightPage).size(350, 500);
+
+    return pagesContainer;
+  }
+
+  /** Builds a scrollable column of achievement names, styled for locked or unlocked. */
+  private ScrollPane achievementList(List<Achievement> achievements, boolean unlockedStyle) {
+    Table list = new Table();
+    list.top();
+    for (Achievement a : achievements) {
+      Label name = createDarkLabel("> " + a.getName());
+
+      name.setName("achievement-" + a.getName());
+      name.setWrap(true);
+      list.add(name).left().width(280f).pad(6).row();
+
+      if (!unlockedStyle && a.getTarget() > 0) {
+        int shown = (int) Math.min(a.getProgress(), a.getTarget());
+        Label progress = new Label(shown + " / " + (int) a.getTarget(), skin, "achievements_lock");
+        progress.setColor(Color.valueOf("3a2618ff"));
+        list.add(progress).left().padLeft(6).padBottom(20).row();
+      }
+    }
+    ScrollPane scrollPane = new ScrollPane(list, skin);
+    scrollPane.setScrollingDisabled(true, false);
+    scrollPane.setFadeScrollBars(false);
+    return scrollPane;
+  }
+
   /**
    * draws an item grid from a list of items
    *
@@ -328,7 +412,9 @@ public class InventoryDisplay extends UIComponent {
       ImageButton slotBackground = new ImageButton(inventory, "inventory-box");
       slotBackground.setUserObject((equipped ? "active:" : "inactive:") + i);
       slotStack.setName(
-          (charmsPage ? "charm" : "consumable") + (equipped ? "-equipped-" : "-stored-") + i);
+          (currentPage == Page.CHARMS ? "charm" : "consumable")
+              + (equipped ? "-equipped-" : "-stored-")
+              + i);
       slotStack.add(slotBackground);
       (equipped ? equippedSlots : storedSlots).add(slotStack);
       final int slotIndex = i;
@@ -391,26 +477,34 @@ public class InventoryDisplay extends UIComponent {
     return grid;
   }
 
-  private void addPageTab(Table tabs, String text, boolean charms) {
+  private Table pageTabs() {
+    Table tabs = new Table();
+    addPageTab(tabs, "CHARMS", Page.CHARMS);
+    addPageTab(tabs, "CONSUMABLES", Page.CONSUMABLES);
+    addPageTab(tabs, "ACHIEVEMENTS", Page.ACHIEVEMENTS);
+    return tabs;
+  }
+
+  private void addPageTab(Table tabs, String text, Page page) {
     TextButton.TextButtonStyle style =
         new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
     style.up = null;
     style.down = null;
     style.over = null;
     style.checked = null;
-    style.fontColor = charmsPage == charms ? Color.valueOf("8b0000ff") : Color.valueOf("3a2618ff");
+    style.fontColor = currentPage == page ? Color.valueOf("8b0000ff") : Color.valueOf("3a2618ff");
     style.overFontColor = style.fontColor;
     style.downFontColor = style.fontColor;
 
     TextButton tab = new TextButton(text, style);
-    tab.setName(charms ? "inventory-tab-charms" : "inventory-tab-consumables");
+    tab.setName("inventory-tab-" + page.name().toLowerCase(java.util.Locale.ROOT));
     tab.setColor(Color.WHITE);
-    tab.getLabel().setFontScale(0.8f);
+    tab.getLabel().setFontScale(0.65f);
     tab.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
-            if (charmsPage != charms) entity.getEvents().trigger("nextPage");
+            showPage(page);
           }
         });
     tabs.add(tab).expandX().fillX().height(38).pad(2);
@@ -425,6 +519,7 @@ public class InventoryDisplay extends UIComponent {
   }
 
   private void moveSelection(int dx, int dy) {
+    if (selectedSlots().isEmpty()) return;
     tooltipManager.hideAll();
     int columns = selectedEquipped ? 3 : 4;
     int column = selectedIndex % columns;
@@ -458,6 +553,7 @@ public class InventoryDisplay extends UIComponent {
   }
 
   private void updateSelection() {
+    if (selectedSlots().isEmpty()) return;
     selectedIndex = Math.max(0, Math.min(selectedIndex, selectedSlots().size() - 1));
     for (Stack slot : equippedSlots) slot.getChildren().first().setColor(Color.WHITE);
     for (Stack slot : storedSlots) slot.getChildren().first().setColor(Color.WHITE);

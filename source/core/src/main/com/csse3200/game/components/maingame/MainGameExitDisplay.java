@@ -13,7 +13,17 @@ import org.slf4j.LoggerFactory;
 public class MainGameExitDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(MainGameExitDisplay.class);
   private static final float Z_INDEX = 2f;
+  private final Runnable saveAndExit;
+  private final Runnable deleteSaveAndExit;
+  private final Runnable stopMovement;
   private Table table;
+
+  public MainGameExitDisplay(
+      Runnable saveAndExit, Runnable deleteSaveAndExit, Runnable stopMovement) {
+    this.saveAndExit = saveAndExit;
+    this.deleteSaveAndExit = deleteSaveAndExit;
+    this.stopMovement = stopMovement;
+  }
 
   @Override
   public void create() {
@@ -28,19 +38,24 @@ public class MainGameExitDisplay extends UIComponent {
 
     TextButton mainMenuBtn = new TextButton("Exit", skin);
 
-    // Triggers an event when the button is pressed.
     mainMenuBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Exit button clicked");
-            entity.getEvents().trigger("exit");
+            showExitDialog();
           }
         });
 
     table.add(mainMenuBtn).padTop(10f).padRight(10f);
 
     stage.addActor(table);
+  }
+
+  private void showExitDialog() {
+    stopMovement.run();
+    ExitSaveDialog dialog = new ExitSaveDialog(skin, saveAndExit, deleteSaveAndExit);
+    dialog.show(stage);
   }
 
   @Override

@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
-import com.csse3200.game.components.friendlynpc.PlaceholderNarrativeComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.BurnVialFeedbackComponent;
@@ -54,9 +53,6 @@ import com.csse3200.game.services.ServiceLocator;
 public class PlayerFactory {
   /** How far a spell reaches from the player, in world units; the screen is 20 units wide. */
   private static final float SPELL_RADIUS = 3f;
-
-  /** How long the placeholder dialogue/cutscene stand-in keeps an interaction running */
-  private static final float PLACEHOLDER_SECONDS = 2.5f;
 
   private static final PlayerConfig stats =
       FileLoader.readClass(PlayerConfig.class, "configs/player.json");
@@ -108,10 +104,6 @@ public class PlayerFactory {
             .addComponent(new ItemPickupComponent())
             // Runs friendly NPC interactions and remembers which have been completed
             .addComponent(new NpcInteractorComponent())
-            // TEMPORARY: fakes the dialogue/cutscene systems until they exist.
-            // Without it, talking to an NPC locks the player's controls forever
-            // remove when cutscenes/dialogue is implemented
-            .addComponent(new PlaceholderNarrativeComponent(PLACEHOLDER_SECONDS))
             .addComponent(inputComponent)
             .addComponent(new PlayerAnimationController())
             .addComponent(new PlayerStatsDisplay())

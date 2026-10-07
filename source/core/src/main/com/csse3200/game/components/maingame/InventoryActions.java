@@ -20,6 +20,7 @@ public class InventoryActions extends Component {
   @Override
   public void create() {
     entity.getEvents().addListener("nextPage", this::nextPage);
+    entity.getEvents().addListener("previousPage", inventoryDisplay::previousPage);
     entity.getEvents().addListener("moveActiveToInactiveItem", this::moveActiveToInactiveItem);
     entity.getEvents().addListener("moveInactiveToActiveItem", this::moveInactiveToActiveItem);
     entity.getEvents().addListener("moveActiveItem", this::moveActiveItem);

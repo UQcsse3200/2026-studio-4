@@ -92,6 +92,7 @@ public class FinalBossEndingDialogueComponent extends UIComponent {
       showing = false;
       panel.setVisible(false);
       lock(false);
+      target.getEvents().trigger("winScreenRequested");
     }
   }
 

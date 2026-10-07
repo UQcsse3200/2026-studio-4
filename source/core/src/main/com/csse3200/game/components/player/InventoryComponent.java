@@ -1,6 +1,7 @@
 package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.maingame.InventoryDisplay;
 import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.ItemCatalog;
@@ -44,6 +45,11 @@ public class InventoryComponent extends Component {
   public void setGold(int gold) {
     this.gold = Math.max(gold, 0);
     logger.debug("Setting gold to {}", this.gold);
+    if (ServiceLocator.getAchievementService() != null) {
+      AchievementContext ctx = new AchievementContext();
+      ctx.goldTotal = this.gold;
+      ServiceLocator.getAchievementService().update(ctx);
+    }
   }
 
   /** Adds to the player's Gold. The amount may be negative. */
@@ -208,5 +214,9 @@ public class InventoryComponent extends Component {
       displayed = true;
     }
     ServiceLocator.getEntityService().toggleUpdate();
+  }
+
+  public Map<String, Integer> getConsumables() {
+    return Map.copyOf(consumables);
   }
 }

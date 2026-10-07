@@ -1,7 +1,9 @@
 package com.csse3200.game.components.npc;
 
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -13,6 +15,7 @@ import com.csse3200.game.services.ServiceLocator;
 public class EnemyAnimationController extends Component {
   private AnimationRenderComponent animator;
   private boolean dying = false;
+  private boolean followPlayer = false; // used by enemies to follow player
 
   @Override
   public void create() {
@@ -26,6 +29,36 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener("rangedAttack", this::animateAttack);
     entity.getEvents().addListener("fuseStarted", this::animateFuse);
     entity.getEvents().addListener("default", this::animatePause);
+    entity.getEvents().addListener("moving", this::animateMove);
+  }
+
+  private void animateMove(Vector2 dir) {
+    followPlayer = false;
+    float x = dir.x;
+    float y = dir.y;
+    if (x > 0) {
+      if (y > 0) {
+        animator.startAnimation("move_NE");
+      } else if (y < 0) {
+        animator.startAnimation("move_SE");
+      } else {
+        animator.startAnimation("move_right");
+      }
+    } else if (x < 0) {
+      if (y > 0) {
+        animator.startAnimation("move_NW");
+      } else if (y < 0) {
+        animator.startAnimation("move_SW");
+      } else {
+        animator.startAnimation("move_left");
+      }
+    } else {
+      if (y > 0) {
+        animator.startAnimation("move_up");
+      } else {
+        animator.startAnimation("move_down");
+      }
+    }
   }
 
   private void animateDie() {
@@ -41,6 +74,8 @@ public class EnemyAnimationController extends Component {
 
   @Override
   public void update() {
+    updateFacingDirection(followPlayer);
+
     if (dying && animator.isFinished()) {
       dying = false;
       ServiceLocator.getEntityService().scheduleDisposal(entity);
@@ -50,11 +85,29 @@ public class EnemyAnimationController extends Component {
     }
   }
 
+  /** flip animation to face player - used by enemies */
+  private void updateFacingDirection(boolean followPlayer) {
+    if (!followPlayer) {
+      return;
+    }
+    PhysicsComponent physics = entity.getComponent(PhysicsComponent.class);
+    if (physics == null) {
+      return;
+    }
+
+    float velocityX = physics.getBody().getLinearVelocity().x;
+    if (Math.abs(velocityX) > 0.01f) {
+      animator.setFlipX(velocityX < 0f);
+    }
+  }
+
   private void animateWander() {
+    followPlayer = true;
     animator.startAnimation("move");
   }
 
   private void animateChase() {
+    followPlayer = false;
     animator.startAnimation("chase");
   }
 
@@ -67,6 +120,7 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animatePatrol() {
+    followPlayer = false;
     if (!dying) {
       animator.startAnimation("move");
     }

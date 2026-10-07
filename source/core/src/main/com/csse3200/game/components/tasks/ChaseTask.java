@@ -82,11 +82,6 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
     return getInactivePriority();
   }
 
-  @Override
-  public void setPriority(int status) {
-    this.priority = status;
-  }
-
   private float getDistanceToTarget() {
     return owner.getEntity().getPosition().dst(target.getPosition());
   }

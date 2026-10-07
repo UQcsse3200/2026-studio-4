@@ -62,6 +62,7 @@ allprojects {
         junit5Version = '5.9.3'
         mockitoVersion = '5.2.0'
         gdxUtilsVersion = '0.13.4'
+        jcodecVersion = '0.2.5'
         slf4jVersion = '1.7.36'
     }
 
@@ -113,6 +114,9 @@ project(":core") {
         api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         api "net.dermetfan.libgdx-utils:libgdx-utils:$gdxUtilsVersion"
         api "net.dermetfan.libgdx-utils:libgdx-utils-box2d:$gdxUtilsVersion"
+
+        // Pure-Java mp4 (H.264) decoding for video cutscenes; works the same on every OS.
+        implementation "org.jcodec:jcodec:$jcodecVersion"
 
         // Logging
         api "org.slf4j:slf4j-api:$slf4jVersion"
