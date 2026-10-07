@@ -169,7 +169,9 @@ public class SettingsMenuDisplay extends UIComponent {
     lastRunLabel = new Label(GameProgress.formatTime(save.lastRunMs), skin);
     bestRunLabel = new Label(GameProgress.formatTime(save.bestRunMs), skin);
     resetStatusLabel = new Label("", skin);
-    form.section("Run history", "Last and best time on this computer. Achievements stay with save and load.");
+    form.section(
+        "Run history",
+        "Last and best time on this computer. Achievements stay with save and load.");
     form.row("Last run", lastRunLabel);
     form.row("Best run", bestRunLabel);
     form.row("Saved on this computer", resetStatusLabel);
