@@ -61,12 +61,10 @@ public class MainGameScreen extends ScreenAdapter {
   private final int saveSlot;
   private final GameSaveData loadedSave;
   private boolean runSaved;
-  private boolean winScreenShortcutPressed;
   private final RoomAssets roomAssets = new RoomAssets();
   private final RunTimer runTimer;
   private boolean winScreenRequested;
   private boolean saveOnDispose = true;
-  private boolean worldFrozen;
 
   public MainGameScreen(GdxGame game) {
     this(game, null, 1);
