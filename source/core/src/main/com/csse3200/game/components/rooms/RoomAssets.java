@@ -21,8 +21,11 @@ import java.util.stream.Stream;
 /** Loads the terrain, fixtures, audio, and enemy assets used by a room. */
 public class RoomAssets implements Disposable {
   private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
+
+  /** Plays in the hub, which is any room that is not part of a dungeon. */
+  private static final String LOBBY_MUSIC = "sounds/lobby_music.mp3";
   private static final String IMPACT_SOUND = "sounds/Impact4.ogg";
-  private static final String[] MUSIC = {BACKGROUND_MUSIC};
+  private static final String[] MUSIC = {BACKGROUND_MUSIC, LOBBY_MUSIC};
   private static final String[] SOUNDS = {IMPACT_SOUND};
 
   private static final String[] ENEMY_TEXTURES = {
@@ -132,29 +135,60 @@ public class RoomAssets implements Disposable {
     resourceService.loadMusic(MUSIC);
     resourceService.loadSounds(SOUNDS);
     resourceService.loadAll();
-
-    startMusic();
   }
 
-  private void startMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class);
-    music.setLooping(true);
-    music.setVolume(AudioLevels.music());
-    music.play();
+  /**
+   * Switches to the track that belongs to the room the player just entered, and does nothing if
+   * that track is already playing, so walking between rooms of one dungeon never restarts it.
+   *
+   * @param dungeonId the dungeon the room belongs to, or null for the hub
+   */
+  public void playMusicFor(String dungeonId) {
+    String wanted = dungeonId == null ? LOBBY_MUSIC : BACKGROUND_MUSIC;
+    Music track = music(wanted);
+    if (track == null || track.isPlaying()) {
+      return;
+    }
+    stopAllBut(wanted);
+    track.setLooping(true);
+    track.setVolume(AudioLevels.music());
+    track.play();
   }
 
   /** Keeps the playing track on the saved volume, including mute-when-unfocused. */
   public void applyMusicVolume() {
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    if (resourceService == null || !resourceService.containsAsset(BACKGROUND_MUSIC, Music.class)) {
-      return;
+    for (String name : MUSIC) {
+      Music track = music(name);
+      if (track != null) {
+        track.setVolume(AudioLevels.music());
+      }
     }
-    resourceService.getAsset(BACKGROUND_MUSIC, Music.class).setVolume(AudioLevels.music());
   }
 
   private void stopMusic() {
+    stopAllBut(null);
+  }
+
+  /** Silences every track except the one about to take over, which may be null to stop them all. */
+  private void stopAllBut(String keep) {
+    for (String name : MUSIC) {
+      if (name.equals(keep)) {
+        continue;
+      }
+      Music track = music(name);
+      if (track != null) {
+        track.stop();
+      }
+    }
+  }
+
+  /** Null rather than throwing, so a track that is not loaded cannot take the game down. */
+  private Music music(String name) {
     ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.getAsset(BACKGROUND_MUSIC, Music.class).stop();
+    if (resourceService == null || !resourceService.containsAsset(name, Music.class)) {
+      return null;
+    }
+    return resourceService.getAsset(name, Music.class);
   }
 
   @Override

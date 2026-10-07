@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,14 +36,39 @@ public class RoomAssetsTest {
   }
 
   @Test
-  void shouldStartMusicAfterLoad() {
+  void shouldNotStartMusicUntilARoomAsksForIt() {
+    RoomAssets roomAssets = new RoomAssets();
+
+    roomAssets.loadAll();
+
+    // Which track plays depends on the room, so loading alone must not even reach for one.
+    verify(resourceService, never()).getAsset(anyString(), any());
+  }
+
+  @Test
+  void shouldStartTheTrackTheRoomAsksFor() {
     RoomAssets roomAssets = new RoomAssets();
     Music music = mock(Music.class);
     when(resourceService.getAsset(anyString(), any())).thenReturn(music);
 
-    roomAssets.loadAll();
+    roomAssets.playMusicFor(null);
 
+    verify(music).setLooping(true);
     verify(music).play();
+  }
+
+  @Test
+  void shouldNotRestartATrackThatIsAlreadyPlaying() {
+    RoomAssets roomAssets = new RoomAssets();
+    Music music = mock(Music.class);
+    when(resourceService.getAsset(anyString(), any())).thenReturn(music);
+    when(music.isPlaying()).thenReturn(true);
+
+    // Walking between rooms of one dungeon must not restart its music.
+    roomAssets.playMusicFor("dungeonOne");
+    roomAssets.playMusicFor("dungeonOne");
+
+    verify(music, never()).play();
   }
 
   /**
@@ -52,8 +78,6 @@ public class RoomAssetsTest {
   @Test
   void shouldLoadAssets() {
     RoomAssets roomAssets = new RoomAssets();
-    Music music = mock(Music.class);
-    when(resourceService.getAsset(anyString(), any())).thenReturn(music);
 
     roomAssets.loadAll();
 
@@ -80,7 +104,8 @@ public class RoomAssetsTest {
     when(resourceService.getAsset(anyString(), any())).thenReturn(music);
 
     roomAssets.dispose();
-    verify(music).stop();
+    // Both tracks are stopped: the hub's and the dungeons'.
+    verify(music, times(2)).stop();
     verify(resourceService, times(4)).unloadAssets(any());
     verify(resourceService)
         .unloadAssets(

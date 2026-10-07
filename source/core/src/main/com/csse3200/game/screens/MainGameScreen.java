@@ -122,6 +122,12 @@ public class MainGameScreen extends ScreenAdapter {
     world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     // trigger win screen via entity win event
     player.getEvents().addListener("winScreenRequested", () -> winScreenRequested = true);
+    // The hub and the dungeons have their own music; rooms announce which one they want.
+    player
+        .getEvents()
+        .addListener(
+            RoomManager.ROOM_ENTERED,
+            (String roomId, String dungeonId) -> roomAssets.playMusicFor(dungeonId));
     // notify damage
     player
         .getEvents()

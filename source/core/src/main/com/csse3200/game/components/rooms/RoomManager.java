@@ -29,6 +29,9 @@ import java.util.Set;
 
 /** Owns the active room and applies the room graph specified by {@link WorldConfig}. */
 public class RoomManager {
+  /** Triggered on the player with the room id and its dungeon id, which is null for the hub. */
+  public static final String ROOM_ENTERED = "roomEntered";
+
   private static final float INTERACTION_RANGE = 1f;
   private static final int ARRIVAL_OFFSET_TILES = 3;
 
@@ -209,6 +212,7 @@ public class RoomManager {
   private void start(Vector2 worldPosition) {
     currentRoom.getEvents().addListener("roomCleared", this::onRoomCleared);
     currentRoom.getEvents().trigger("RoomCreated", player);
+    announceRoom();
     scaleRoom(currentRoom);
     player.setPosition(worldPosition);
   }
@@ -217,6 +221,7 @@ public class RoomManager {
   void start(PositionConfig entryPoint) {
     currentRoom.getEvents().addListener("roomCleared", this::onRoomCleared);
     currentRoom.getEvents().trigger("RoomCreated", player);
+    announceRoom();
     scaleRoom(currentRoom);
     Vector2 position =
         currentRoom
@@ -324,6 +329,17 @@ public class RoomManager {
     }
     showStatus(reason);
     return true;
+  }
+
+  /**
+   * Tells anything outside the rooms which room the player is now standing in. Fired on the player
+   * because the player outlives rooms.
+   */
+  private void announceRoom() {
+    if (player == null || currentConfig == null) {
+      return;
+    }
+    player.getEvents().trigger(ROOM_ENTERED, currentConfig.id, currentConfig.dungeonId);
   }
 
   /** Requests that the current room's enemies be cleared at the next safe update point. */
