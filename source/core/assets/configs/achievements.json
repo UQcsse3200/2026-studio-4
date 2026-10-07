@@ -1,0 +1,24 @@
+[
+  { "type": "dungeonClear", "dungeonId": "dungeonOne", "name": "First Steps" },
+  { "type": "dungeonClear", "dungeonId": "dungeonTwo", "name": "Into the Depths" },
+  { "type": "dungeonClear", "dungeonId": "dungeonThree", "name": "Sanctum of Shadows" },
+  { "type": "dungeonReached", "dungeonId": "finalDungeon", "name": "The Final Showdown" },
+
+
+  { "type": "enemyKillCount", "enemyType": "FINAL_BOSS", "target": 1, "name": "Vanquisher" },
+  { "type": "enemyKillCount", "enemyType": "MEDUSA", "target": 3, "name": "You killed 3 Medusa" },
+
+  {"type":  "enemyKillCount", "target": 5, "name": "Ah! Boy You killed 5 enemies"},
+  { "type": "enemyKillCount", "target": 100, "name": "Exterminator" },
+
+
+
+  { "type": "speedRun", "dungeonId": "dungeonOne", "maxSeconds": 60, "name": "Hermes" },
+
+  { "type": "killStreak", "target": 5, "name": "On a Roll" },
+
+  { "type": "enemySet", "enemyTypes": ["BEETLE", "CRAB", "WASP", "MUMMY", "SNAKE_MINI_BOSS"], "name": "Monster Hunter: Dungeon Two" },
+
+  { "type": "gold", "target": 60, "name": "Hoarder" }
+
+]

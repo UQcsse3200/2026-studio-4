@@ -1,18 +1,15 @@
 package com.csse3200.game.screens;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
+import com.csse3200.game.components.achievements.AchievementConfig;
+import com.csse3200.game.components.achievements.AchievementContext;
+import com.csse3200.game.components.achievements.AchievementsFactory;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.gamearea.TimerDisplay;
-import com.csse3200.game.components.maingame.ConsumableHotbarDisplay;
-import com.csse3200.game.components.maingame.HotbarDisplay;
-import com.csse3200.game.components.maingame.InventoryActions;
-import com.csse3200.game.components.maingame.InventoryDisplay;
-import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.components.maingame.*;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.rooms.RoomAssets;
 import com.csse3200.game.components.rooms.RoomCommand;
@@ -34,10 +31,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
-import com.csse3200.game.services.GameTime;
-import com.csse3200.game.services.ResourceService;
-import com.csse3200.game.services.RunTimer;
-import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.*;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.ui.terminal.commands.AbilityCommand;
@@ -67,12 +61,10 @@ public class MainGameScreen extends ScreenAdapter {
   private final int saveSlot;
   private final GameSaveData loadedSave;
   private boolean runSaved;
-  private boolean winScreenShortcutPressed;
   private final RoomAssets roomAssets = new RoomAssets();
   private final RunTimer runTimer;
   private boolean winScreenRequested;
   private boolean saveOnDispose = true;
-  private boolean worldFrozen;
 
   public MainGameScreen(GdxGame game) {
     this(game, null, 1);
@@ -111,6 +103,8 @@ public class MainGameScreen extends ScreenAdapter {
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
     ServiceLocator.registerRunTimer(runTimer);
 
+    ServiceLocator.registerAchievementService(createAchievementService());
+
     loadAssets();
 
     player = PlayerFactory.createPlayer();
@@ -118,6 +112,16 @@ public class MainGameScreen extends ScreenAdapter {
     player.getEvents().addListener("entityDied", this::scheduleDeathScreen);
     // trigger win screen via entity win event
     player.getEvents().addListener("winScreenRequested", () -> winScreenRequested = true);
+    // notify damage
+    player
+        .getEvents()
+        .addListener(
+            "damageTaken",
+            (Entity attacker, Integer lost, Integer remaining) -> {
+              AchievementContext ctx = new AchievementContext();
+              ctx.playerDamaged = true;
+              ServiceLocator.getAchievementService().update(ctx);
+            });
 
     WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     if (world == null) {
@@ -140,45 +144,11 @@ public class MainGameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    boolean winScreenShortcutDown =
-        (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)
-                || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT))
-            && (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
-                || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT))
-            && Gdx.input.isKeyPressed(Input.Keys.W);
-    if (winScreenShortcutDown && !winScreenShortcutPressed) {
-      winScreenShortcutPressed = true;
-      game.setScreen(ScreenType.WIN_SCREEN);
-      return;
-    }
-    winScreenShortcutPressed = winScreenShortcutDown;
-
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
-    if (winScreenRequested) {
-      winScreenRequested = false;
-      game.setScreen(ScreenType.WIN_SCREEN);
-      return;
-    }
     roomManager.update();
-    // A dialogue or cutscene freezes the world: no physics, room logic or run timer.
-    boolean frozen = ServiceLocator.getEntityService().isFrozen();
-    if (frozen != worldFrozen) {
-      worldFrozen = frozen;
-      // Scaled time also stops sprite animations, status effects and other timers
-      ServiceLocator.getTimeSource().setTimeScale(frozen ? 0f : 1f);
-    }
-    if (!frozen) {
-      physicsEngine.update();
-    }
-    ServiceLocator.getEntityService().update();
-    if (!frozen) {
-      roomManager.update();
-    }
     renderer.render();
-    if (!frozen) {
-      runTimer.update();
-    }
+    runTimer.update();
   }
 
   @Override
@@ -290,6 +260,7 @@ public class MainGameScreen extends ScreenAdapter {
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
+        .addComponent(new MainGameActions(this.game))
         .addComponent(
             new MainGameExitDisplay(
                 this::saveAndExit,
@@ -325,5 +296,18 @@ public class MainGameScreen extends ScreenAdapter {
   private void scheduleDeathScreen() {
     runTimer.stopRun();
     ServiceLocator.getEntityService().schedule(() -> game.setScreen(ScreenType.DEATH_SCREEN));
+  }
+
+  private AchievementService createAchievementService() {
+    AchievementConfig[] configs =
+        FileLoader.readClass(AchievementConfig[].class, "configs/achievements.json");
+    if (configs == null) {
+      throw new IllegalStateException("Unable to load configs/achievements.json");
+    }
+    AchievementService achievementService = new AchievementService();
+    for (AchievementConfig c : configs) {
+      achievementService.register(AchievementsFactory.build(c));
+    }
+    return achievementService;
   }
 }
