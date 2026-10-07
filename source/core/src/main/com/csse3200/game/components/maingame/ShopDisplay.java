@@ -64,10 +64,11 @@ public class ShopDisplay extends UIComponent {
       stage.addActor(table);
     }
 
-    // No background drawable is set here: "window-w" in the shared skin JSON has no matching
-    // atlas region (only "window" does), so calling skin.getDrawable("window-w") would throw.
-    // Whoever adopts this into the final shop UI should pick real styling with the HUD owner.
+    // "window-w" is a dark-brown tinted variant of the shared "window" atlas region, defined
+    // in flat-earth-ui.json. It's not used anywhere else yet, so this is the first real test of
+    // it; swap for different styling if the HUD owner wants something else for the final shop UI.
     Table panel = new Table();
+    panel.setBackground(skin.getDrawable("window-w"));
     panel.pad(20f);
 
     panel.add(new Label("Shop", skin)).colspan(3).padBottom(12f);
