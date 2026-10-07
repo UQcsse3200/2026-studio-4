@@ -12,6 +12,7 @@ public final class ItemIds {
   public static final String SPEED_POTION = "SPEED_POTION";
   public static final String STRENGTH_POTION = "STRENGTH_POTION";
   public static final String FREEZE_BOMB = "FREEZE_BOMB";
+  public static final String BURN_VIAL = "BURN_VIAL";
   public static final String GOLD_COIN = "GOLD_COIN";
 
   private ItemIds() {

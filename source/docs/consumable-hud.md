@@ -189,3 +189,21 @@ Final local verification on 2026-10-07 passed 82 relevant tests (zero failures,
 errors or skips), desktop compilation, core JAR assembly and Spotless checks.
 Yuri confirmed the floating numbers and the subsequent red colour in windowed
 gameplay. A final gameplay recording has not been supplied.
+
+## Burn Vial remote adaptation on 2026-10-07
+
+Integrated `consumable-items` through `e456c69b`, preserving Aarash's original
+Burn Vial history and the upstream four-slot QA and enemy-flame refinements.
+Burn Vial reuses the existing Burning implementation, affects onscreen enemies,
+and supplies player feedback, enemy-attached flame pulses and a warm screen flash.
+The original item, command and rendering changes are retained. Our existing
+healing icons/red numbers, shield visuals and fountain-drop animation are retained.
+
+The only merge conflict was the hotbar test's texture fixture list; both the three
+healing textures and the Burn Vial texture are loaded. No equipment-slot rewrite
+or additional loot chance change was needed. Use `burnvial give` to exercise the
+existing pickup and Tab/Q path, or the upstream `burnvial` QA command for its demo.
+
+Full local verification passed 1964 tests with zero failures, errors or skips,
+desktop compilation, core JAR assembly and Spotless checks. This adaptation has
+not been launched for manual gameplay verification or pushed to a remote branch.
