@@ -328,4 +328,107 @@ class ShopFactoryTest {
     shop.getComponent(ShopSessionComponent.class).close();
     assertSame(background, stage.getScrollFocus());
   }
+
+  @Test
+  void itemDrawSettlesOnceAndHiddenGamesCannotCharge() {
+    open();
+    TextButton casino = stage.getRoot().findActor("shop-casino");
+    casino.fire(new ChangeEvent());
+    TextButton select = stage.getRoot().findActor("casino-select-item");
+    assertNotNull(select);
+    select.fire(new ChangeEvent());
+    TextButton draw = stage.getRoot().findActor("item-draw-button");
+    assertNotNull(draw);
+    draw.fire(new ChangeEvent());
+    assertEquals(15, inventory.getGold());
+    draw.fire(new ChangeEvent());
+    assertEquals(15, inventory.getGold());
+    TextButton coin = stage.getRoot().findActor("casino-select-coin");
+    coin.fire(new ChangeEvent());
+    draw.fire(new ChangeEvent());
+    assertEquals(15, inventory.getGold());
+    assertFalse(stage.getRoot().findActor("item-draw-panel").isVisible());
+    casino.fire(new ChangeEvent());
+    assertFalse(stage.getRoot().findActor("coin-flip-panel").isVisible());
+  }
+
+  @Test
+  void itemDrawRequiresItsFullConfiguredPrice() {
+    inventory.setGold(5);
+    open();
+    ((TextButton) stage.getRoot().findActor("shop-casino")).fire(new ChangeEvent());
+    TextButton select = stage.getRoot().findActor("casino-select-item");
+    assertNotNull(select);
+    select.fire(new ChangeEvent());
+    TextButton draw = stage.getRoot().findActor("item-draw-button");
+    assertTrue(draw.isDisabled());
+    draw.fire(new ChangeEvent());
+    assertEquals(5, inventory.getGold());
+    inventory.setGold(10);
+    assertFalse(draw.isDisabled());
+    draw.fire(new ChangeEvent());
+    assertEquals(0, inventory.getGold());
+    assertTrue(draw.isDisabled());
+  }
+
+  @Test
+  void itemDrawRewardEventMatchesAtomicInventoryAndMayCloseSession() {
+    int[] resolved = {0};
+    shop.getEvents()
+        .addListener(
+            "itemGambleResolved",
+            (com.csse3200.game.shop.GambleResult outcome) -> {
+              resolved[0]++;
+              assertEquals(15, inventory.getGold());
+              if (outcome.entry().isBust()) {
+                assertEquals(com.csse3200.game.shop.GambleResult.Status.BUST, outcome.status());
+              } else {
+                assertEquals(
+                    outcome.entry().quantity(),
+                    inventory.getConsumableCount(outcome.entry().itemId()));
+              }
+              shop.getComponent(ShopSessionComponent.class).close();
+            });
+    open();
+    ((TextButton) stage.getRoot().findActor("shop-casino")).fire(new ChangeEvent());
+    ((TextButton) stage.getRoot().findActor("casino-select-item")).fire(new ChangeEvent());
+    TextButton draw = stage.getRoot().findActor("item-draw-button");
+    draw.fire(new ChangeEvent());
+    stage.act(1f);
+    draw.fire(new ChangeEvent());
+    assertEquals(1, resolved[0]);
+    assertEquals(15, inventory.getGold());
+    assertFalse(ServiceLocator.getEntityService().isFrozen());
+  }
+
+  @Test
+  void itemDrawReflowsAndScrollsWithoutHorizontalOverflow() {
+    open();
+    ((TextButton) stage.getRoot().findActor("shop-casino")).fire(new ChangeEvent());
+    ((TextButton) stage.getRoot().findActor("casino-select-item")).fire(new ChangeEvent());
+    Table root = stage.getRoot().findActor("shop-root");
+    for (int[] size : new int[][] {{1280, 800}, {906, 706}, {640, 480}}) {
+      stage.getViewport().update(size[0], size[1], true);
+      root.invalidateHierarchy();
+      root.validate();
+      com.badlogic.gdx.scenes.scene2d.ui.ScrollPane scroll =
+          stage.getRoot().findActor("item-draw-scroll");
+      scroll.validate();
+      assertEquals(0f, scroll.getMaxX(), 0.01f);
+      Actor last = stage.getRoot().findActor("item-draw-odds-bust");
+      Vector2 location = last.localToAscendantCoordinates(scroll.getActor(), new Vector2());
+      scroll.scrollTo(location.x, location.y, last.getWidth(), last.getHeight());
+      scroll.updateVisualScroll();
+      scroll.act(0f);
+      // ScrollPane applies its widget translation during drawing. Verify its visible content
+      // interval here rather than using the stale pre-draw stage transform.
+      float top = scroll.getActor().getHeight() - scroll.getScrollY();
+      assertTrue(location.y >= top - scroll.getScrollHeight() - 0.01f);
+      assertTrue(location.y + last.getHeight() <= top + 0.01f);
+      Actor selector = stage.getRoot().findActor("casino-select-item");
+      Vector2 corner = selector.localToStageCoordinates(new Vector2());
+      assertTrue(corner.x >= 0 && corner.x + selector.getWidth() <= stage.getWidth());
+      assertTrue(corner.y >= 0 && corner.y + selector.getHeight() <= stage.getHeight());
+    }
+  }
 }
