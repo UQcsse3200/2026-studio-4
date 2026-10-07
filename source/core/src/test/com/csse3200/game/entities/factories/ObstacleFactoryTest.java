@@ -84,7 +84,7 @@ class ObstacleFactoryTest {
 
   @Test
   void barrelIsRenderedStaticObstacleWithBoxCollider() {
-    Entity barrel = created(ObstacleFactory.createBarrel());
+    Entity barrel = created(ObstacleFactory.createBarrel("images/dungeons/tileSet0"));
     assertNotNull(barrel.getComponent(TextureRenderComponent.class));
     assertStaticObstacle(barrel);
     assertEquals(4, shapeOf(barrel).getVertexCount());
@@ -92,7 +92,7 @@ class ObstacleFactoryTest {
 
   @Test
   void swordIsRenderedStaticObstacleWithBoxCollider() {
-    Entity sword = created(ObstacleFactory.createSword());
+    Entity sword = created(ObstacleFactory.createSword("images/dungeons/tileSet0"));
     assertNotNull(sword.getComponent(TextureRenderComponent.class));
     assertStaticObstacle(sword);
     assertEquals(4, shapeOf(sword).getVertexCount());
@@ -104,7 +104,7 @@ class ObstacleFactoryTest {
   void wallIsStaticObstacleWithEightVertexColliderCase1() {
     Entity tile =
         created(
-            Objects.requireNonNull(ObstacleFactory.createWallFor(EnumSet.of(Direction.UP), false)));
+            Objects.requireNonNull(ObstacleFactory.createWallFor(EnumSet.of(Direction.UP), false, "images/dungeons/tileSet0")));
     assertStaticObstacle(tile);
     assertEquals(8, shapeOf(tile).getVertexCount());
   }
@@ -114,7 +114,7 @@ class ObstacleFactoryTest {
     Entity tile =
         created(
             Objects.requireNonNull(
-                ObstacleFactory.createWallFor(EnumSet.of(Direction.LEFT), false)));
+                ObstacleFactory.createWallFor(EnumSet.of(Direction.LEFT), false, "images/dungeons/tileSet0")));
     assertStaticObstacle(tile);
     assertEquals(8, shapeOf(tile).getVertexCount());
   }
@@ -124,7 +124,7 @@ class ObstacleFactoryTest {
     Entity tile =
         created(
             Objects.requireNonNull(
-                ObstacleFactory.createWallFor(EnumSet.of(Direction.RIGHT), false)));
+                ObstacleFactory.createWallFor(EnumSet.of(Direction.RIGHT), false, "images/dungeons/tileSet0")));
     assertStaticObstacle(tile);
     assertEquals(8, shapeOf(tile).getVertexCount());
   }
@@ -134,7 +134,7 @@ class ObstacleFactoryTest {
     Entity tile =
         created(
             Objects.requireNonNull(
-                ObstacleFactory.createWallFor(EnumSet.of(Direction.DOWN), false)));
+                ObstacleFactory.createWallFor(EnumSet.of(Direction.DOWN), false, "images/dungeons/tileSet0")));
     assertStaticObstacle(tile);
     assertEquals(8, shapeOf(tile).getVertexCount());
   }
@@ -144,7 +144,7 @@ class ObstacleFactoryTest {
     Entity tile =
         created(
             Objects.requireNonNull(
-                ObstacleFactory.createWallFor(EnumSet.of(Direction.DOWN_RIGHT), false)));
+                ObstacleFactory.createWallFor(EnumSet.of(Direction.DOWN_RIGHT), false, "images/dungeons/tileSet0")));
     assertStaticObstacle(tile);
     assertEquals(8, shapeOf(tile).getVertexCount());
   }
@@ -154,7 +154,7 @@ class ObstacleFactoryTest {
     Entity tile =
         created(
             Objects.requireNonNull(
-                ObstacleFactory.createWallFor(EnumSet.of(Direction.DOWN_LEFT), false)));
+                ObstacleFactory.createWallFor(EnumSet.of(Direction.DOWN_LEFT), false, "images/dungeons/tileSet0")));
     assertStaticObstacle(tile);
     assertEquals(8, shapeOf(tile).getVertexCount());
   }
@@ -164,7 +164,7 @@ class ObstacleFactoryTest {
     Entity tile =
         created(
             Objects.requireNonNull(
-                ObstacleFactory.createWallFor(EnumSet.of(Direction.UP_RIGHT), false)));
+                ObstacleFactory.createWallFor(EnumSet.of(Direction.UP_RIGHT), false, "images/dungeons/tileSet0")));
     assertStaticObstacle(tile);
     assertEquals(8, shapeOf(tile).getVertexCount());
   }
@@ -174,14 +174,14 @@ class ObstacleFactoryTest {
     Entity tile =
         created(
             Objects.requireNonNull(
-                ObstacleFactory.createWallFor(EnumSet.of(Direction.UP_LEFT), false)));
+                ObstacleFactory.createWallFor(EnumSet.of(Direction.UP_LEFT), false, "images/dungeons/tileSet0")));
     assertStaticObstacle(tile);
     assertEquals(8, shapeOf(tile).getVertexCount());
   }
 
   @Test
   void wallIsStaticObstacleWithEightVertexColliderCase9() {
-    Entity tile = ObstacleFactory.createWallFor(EnumSet.noneOf(Direction.class), false);
+    Entity tile = ObstacleFactory.createWallFor(EnumSet.noneOf(Direction.class), false, "images/dungeons/tileSet0");
     assert tile == null;
   }
 
@@ -190,7 +190,7 @@ class ObstacleFactoryTest {
     Entity tile =
         created(
             Objects.requireNonNull(
-                ObstacleFactory.createWallFor(EnumSet.of(Direction.DOWN), false)));
+                ObstacleFactory.createWallFor(EnumSet.of(Direction.DOWN), false, "images/dungeons/tileSet0")));
     float[] b = bounds(shapeOf(tile));
     Vector2 scale = tile.getScale();
 
@@ -205,7 +205,7 @@ class ObstacleFactoryTest {
   void tallWallColliderIsHalfTileAndBottomAligned() {
     Entity tile =
         created(
-            Objects.requireNonNull(ObstacleFactory.createWallFor(EnumSet.of(Direction.UP), false)));
+            Objects.requireNonNull(ObstacleFactory.createWallFor(EnumSet.of(Direction.UP), false, "images/dungeons/tileSet0")));
     float[] b = bounds(shapeOf(tile));
     Vector2 scale = tile.getScale();
 
@@ -224,7 +224,7 @@ class ObstacleFactoryTest {
         shapeOf(
             created(
                 Objects.requireNonNull(
-                    ObstacleFactory.createWallFor(EnumSet.of(Direction.DOWN), false))));
+                    ObstacleFactory.createWallFor(EnumSet.of(Direction.DOWN), false, "images/dungeons/tileSet0"))));
     float[] b = bounds(shape);
     Vector2 v = new Vector2();
     for (int i = 0; i < shape.getVertexCount(); i++) {

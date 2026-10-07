@@ -35,7 +35,8 @@ public class RoomFactory {
    * @param tileset The tileset location
    * @return The room entity.
    */
-  public static Entity createRoom(RoomConfig room, CameraComponent camera, boolean cleared, String tileset) {
+  public static Entity createRoom(
+      RoomConfig room, CameraComponent camera, boolean cleared, String tileset) {
     GridPoint2 mapSize = new GridPoint2(room.mapWidth, room.mapHeight);
     TerrainBuilder terrainBuilder = new TerrainBuilder(camera, mapSize, tileset);
     spawnMap(room, terrainBuilder);

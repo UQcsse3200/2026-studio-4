@@ -50,7 +50,6 @@ public class RoomManager {
   private static final String DUNGEON4_TILESET = "images/dungeons/tileSet4.png";
   private static final String DUNGEON5_TILESET = "images/dungeons/tileSet5.png";
 
-
   /** Creates the JSON-driven room manager. Call {@link #create()} to register the initial room. */
   public RoomManager(WorldConfig world, Entity player, CameraComponent camera) {
     world.validate();
@@ -61,7 +60,7 @@ public class RoomManager {
     currentConfig = world.getRoom(world.startRoomId);
     initialEntryPoint = currentConfig.getEntryPoint(world.startEntryPointId);
     String tileset = DEFAULT_TILESET;
-    if (currentConfig.dungeonId!= null){
+    if (currentConfig.dungeonId != null) {
       tileset = getTileset(currentConfig.dungeonId);
     }
     currentRoom = RoomFactory.createRoom(currentConfig, camera, false, tileset);
@@ -238,11 +237,12 @@ public class RoomManager {
   void switchToRoom(RoomConfig destination, PositionConfig arrivalPosition) {
     String previousDungeonId = currentConfig.dungeonId;
     String tileset = DEFAULT_TILESET;
-    if (destination.dungeonId!= null){
+    if (destination.dungeonId != null) {
       tileset = getTileset(destination.dungeonId);
     }
     Entity nextRoom =
-        RoomFactory.createRoom(destination, camera, clearedRoomIds.contains(destination.id), tileset);
+        RoomFactory.createRoom(
+            destination, camera, clearedRoomIds.contains(destination.id), tileset);
     currentRoom.dispose();
     currentConfig = destination;
     currentRoom = nextRoom;
