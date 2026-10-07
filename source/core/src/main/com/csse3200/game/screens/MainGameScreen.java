@@ -37,6 +37,7 @@ import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.ui.terminal.commands.AbilityCommand;
 import com.csse3200.game.ui.terminal.commands.BurnVialCommand;
+import com.csse3200.game.ui.terminal.commands.ConsumableCommand;
 import com.csse3200.game.ui.terminal.commands.SpellCommand;
 import com.csse3200.game.ui.terminal.commands.StatusEffectCommand;
 import com.csse3200.game.ui.terminal.commands.UpgradeCommand;
@@ -164,6 +165,7 @@ public class MainGameScreen extends ScreenAdapter {
     terminal.addCommand("weapon", new WeaponCommand(player));
     terminal.addCommand("ability", new AbilityCommand(player));
     terminal.addCommand("burnvial", new BurnVialCommand(player));
+    terminal.addCommand("con", new ConsumableCommand(player));
     terminal.addCommand("effect", new StatusEffectCommand(player));
     terminal.addCommand("upgrade", new UpgradeCommand(player));
     terminal.addCommand("spell", new SpellCommand(player));
