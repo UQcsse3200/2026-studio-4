@@ -3,6 +3,6 @@
   "baseAttack": 10,
   "movementSpeed": 3.0,
   "attackSpeed": 1.0,
-  "gold": 50,
+  "gold": 1000,
   "favouriteColour": "peach"
 }

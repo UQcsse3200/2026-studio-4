@@ -43,3 +43,21 @@ The only new adaptation for that dependency is in the task-owned weapon-purchase
 Final `./gradlew spotlessApply core:test spotlessCheck desktop:classes core:jar` succeeds: **2156 tests, 0 failures, 0 errors, 0 skipped**. The actual LWJGL UI was rendered again on the synchronized dependency at all three window sizes and after purchase; exit 0. [Final 960-wide actual UI](implemented-a.png). Full-world NPC manual playthrough remains outside this isolated rendering check.
 
 Final audit: user-requested Team 5 shop work, reuses existing upgrades, no duplicate combat implementation, test harness/demo gold outside repo, no new edits to another team's code/config/Wiki. Independent review accepted callback disposal, purchase messaging and achievement notification fixes. Branch kept local; no push, PR, review request, issue or message sent. SonarCloud new scan remains unverified; exact task-head gate and new issue count are unavailable.
+
+## 1000-gold demonstration and combat verification
+
+Yuezhou explicitly requested 1000 gold when starting a game to demonstrate and try upgrades, and asked whether purchases actually improve damage. `configs/player.json` changes only the requested initial gold value, 50 -> 1000, plus its final newline. The old gold line originates in the initial project scaffold (`5704ffa9`, Jackson Trenerry); this is the user's specific new-run currency request, not a rebalance of the neighbouring shared health, attack or movement settings. Keep this demonstration budget local pending a separate final-economy decision. PlayerFactory loads the value into InventoryComponent. MainGameScreen/GameSaveMapper still restore existing-save gold; no save file was changed.
+
+New Team 5 `ShopWeaponCombatIntegrationTest` covers the complete purchase-to-combat path with real shop, inventory, upgrade, weapon selection, weapon components, hitbox entities, collision damage and enemy health. With base attack 10, weapon multiplier 1 and attack speed 1:
+
+| Weapon | J before/after purchase | K after purchase | K cooldown |
+| --- | --- | --- | --- |
+| Sword | 10 -> 12 | 360-degree sweep, 14 damage after rounding | 1.0 s |
+| Knife | 10 -> 12 | Two 6-damage slashes, then a 12-damage finishing stab | 1.5 s |
+| Throwing Knife (Bow component) | 10 -> 12 | Three projectiles, 10 each; 30 total only if all connect | 1.0 s |
+
+J retains its 0.5-second cooldown. K is locked before purchase. Tests assert enemy health loss for each actual attack hitbox as well as prevention of attacks during shared cooldown. Heavy attacks have different shapes and longer cooldowns, so they do not imply universally higher sustained single-target DPS. Existing Team 3 damage/balance code was unchanged.
+
+Final `./gradlew spotlessApply core:test spotlessCheck desktop:classes core:jar` passed: **2162 tests, 0 failures/errors/skips**, including all six new combat integration cases. A separate windowed LWJGL probe constructs a player with the actual PlayerFactory, reads 1000 gold (no inventory fixture override), buys all three upgrades through the actual ShopDisplay, and asserts 820 gold remains. Process exit 0; log `logs/demo-runtime.log`, images `demo-*.png` under `/Users/yuri/CSSE3200/output/weapon-upgrade-design-20261007`. This isolated runtime verification does not claim a complete manual world/NPC walkthrough.
+
+Discord Team 5 and relevant Team 3 updates were checked again; no changed weapon/shop contract appeared. SonarCloud start/end checks still contain only main branch analysis at `9e70da4d`, 2026-10-07 08:21:02 UTC, gate OK with 37 unresolved historical findings (36 code smells, 1 bug, 0 vulnerabilities). The task has no exact-head remote scan; new scan unverified and no remote state/source upload performed. New work is limited to the requested configuration value, Team 5 integration tests and this documentation.

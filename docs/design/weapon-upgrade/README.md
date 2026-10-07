@@ -20,7 +20,7 @@ At the merchant, choose one of the existing weapons, understand the light-attack
 - J is light attack; K is heavy attack. Heavy attacks are unavailable before upgrading.
 - The current Bow component uses `throwing_knife.png` and `throwing_knife_upgraded.png`; mockup wording does not rename the game item.
 - The local items baseline attaches all three weapon components and starts with Sword selected. Do not infer new weapon ownership rules from visual concepts.
-- The concepts use illustrative 60-gold prices and a 90-gold balance. Implementation now has a separate upgrade catalogue with provisional 60-gold defaults and uses the real player balance. The game baseline starts with 50 gold; no sample balance is injected.
+- The concepts use illustrative 60-gold prices and a 90-gold balance. Implementation now has a separate upgrade catalogue with provisional 60-gold defaults and uses the real player balance. Yuezhou subsequently requested 1000 starting gold for local upgrade demonstrations; this task now sets new-run gold to 1000. Existing saves retain their saved balance. See the demonstration verification in IMPLEMENTATION.md.
 - `setUpgraded(..., true)` is idempotent and returns success for an already-upgraded weapon. A later real transaction must reject repeat purchase before charging.
 - The implementation reuses the locally completed consumable shop and its existing session. It introduces a separate Team 5 upgrade catalogue; the concept's 60-gold price is a provisional local default, not an approved final economy balance. The real inventory supplies the balance; the concept's sample 90 gold is never injected into gameplay.
 
