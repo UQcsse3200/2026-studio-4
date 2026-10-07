@@ -224,7 +224,7 @@ public class InventoryDisplay extends UIComponent {
     Table list = new Table();
     list.top();
     for (Achievement a : achievements) {
-      Label name = new Label(a.getName(), skin, "inventory");
+      Label name = new Label(a.getName(), skin, INVENTORY_STYLE);
       name.setColor(unlockedStyle ? Color.GOLD : Color.GRAY);
 
       name.setWrap(true);
