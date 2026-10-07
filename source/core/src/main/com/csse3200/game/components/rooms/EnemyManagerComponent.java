@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoArenaComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
@@ -13,11 +14,7 @@ import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.CerberusFactory;
-import com.csse3200.game.entities.factories.DragonFactory;
-import com.csse3200.game.entities.factories.FinalBossFactory;
-import com.csse3200.game.entities.factories.ItemFactory;
-import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.entities.factories.*;
 import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.physics.PhysicsUtils;
@@ -35,7 +32,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   private final ItemFactory itemFactory;
   private boolean disposed;
   private CameraComponent camera;
-  private Entity finalBoss;
 
   /** Creates an empty manager for tests and rooms with no enemies. */
   public EnemyManagerComponent() {
@@ -67,6 +63,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     for (EnemySpawnConfig spawn : spawnConfigs) {
       Entity enemy = createEnemy(spawn, target);
       track(enemy, spawn.type.name());
+      enemy.addComponent(new EnemyTypeComponent(spawn.type)); // before spawnEntityAt registers it
       spawnEntityAt(enemy, new GridPoint2(spawn.x, spawn.y), true, true);
     }
   }
@@ -77,6 +74,10 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     Vector2 leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);
     Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
     Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
+
+    Vector2 leftBottom = new Vector2(0, 0);
+    Vector2 size = new Vector2(10, 10);
+    Vector2[] mapBounds = (new Vector2[] {leftBottom, size});
 
     switch (spawn.type) {
       // Chinese
@@ -218,6 +219,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             "images/cerberus.atlas");
       case DRAGON:
         return DragonFactory.createDragon(target, this::spawnEntity);
+      case SLEIPNIR:
+        return NPCFactory.createSleipnir(target, mapBounds);
       case FINAL_BOSS:
         Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnEntity);
         if (camera != null) {
@@ -225,7 +228,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
           boss.getComponent(FinalBossStageTwoArenaComponent.class)
               .setCamera(camera.getCamera(), entity.getComponent(FollowingCameraComponent.class));
         }
-        finalBoss = boss;
         return boss;
       default:
         throw new IllegalArgumentException("Unsupported enemy type: " + spawn.type);
@@ -262,9 +264,11 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       return;
     }
 
-    // Tell the room (where achievements listen), not the enemy.
-    if (enemy == finalBoss) {
-      entity.getEvents().trigger("FinalBossDefeated");
+    EnemyTypeComponent typeComponent = enemy.getComponent(EnemyTypeComponent.class);
+    if (typeComponent != null && ServiceLocator.getAchievementService() != null) {
+      AchievementContext ctx = new AchievementContext();
+      ctx.enemyKilled = typeComponent.getType();
+      ServiceLocator.getAchievementService().update(ctx);
     }
 
     // Capture before deferred disposal or room changes can move/remove the enemy.

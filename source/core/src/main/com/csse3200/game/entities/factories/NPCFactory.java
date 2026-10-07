@@ -13,6 +13,7 @@ import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
+import com.csse3200.game.components.tasks.*;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
 import com.csse3200.game.components.tasks.PatrolTask;
@@ -56,7 +57,7 @@ public class NPCFactory {
     GiantEnemyConfig config = configs.giantEnemy;
 
     AITaskComponent aiComponent =
-        new AITaskComponent(target)
+        new AITaskComponent()
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new ChaseTask(target, 10, 3f, 10f));
 
@@ -94,7 +95,7 @@ public class NPCFactory {
     BombEnemyConfig config = configs.bombEnemy;
 
     AITaskComponent aiComponent =
-        new AITaskComponent(target)
+        new AITaskComponent()
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new ChaseTask(target, 10, 3f, 10f));
 
@@ -134,7 +135,7 @@ public class NPCFactory {
     ChaseEnemyConfig config = configs.chaseEnemy;
 
     AITaskComponent aiComponent =
-        new AITaskComponent(target)
+        new AITaskComponent()
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new ChaseTask(target, 10, 3f, 10f))
             .addTask(new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy));
@@ -256,8 +257,8 @@ public class NPCFactory {
     FloatingDemonConfig config = configs.floatingDemon;
 
     AITaskComponent aiComponent =
-        new AITaskComponent(target)
-            .addTask(new PatrolTask(leftPoint, topPoint, rightPoint, 1))
+        new AITaskComponent()
+            .addTask(new PatrolTask(new Vector2[] {leftPoint, topPoint, rightPoint}))
             .addTask(new RangedAttackTask(target, 5, config.baseAttack, projectileSpawner));
 
     AnimationRenderComponent animator =
@@ -267,10 +268,7 @@ public class NPCFactory {
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
-    // Longer frame duration so the (currently single-frame) death pose is actually
-    // visible before the entity is removed, instead of disappearing in one-tenth of a
-    // second.
-    animator.addAnimation(DIE_ANIMATION, 1.2f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     Entity demon = createBaseNPC();
@@ -289,6 +287,55 @@ public class NPCFactory {
     demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
 
     return demon;
+  }
+
+  public static Entity createSleipnir(Entity target, Vector2[] mapBounds) {
+    Entity sleipnir = createBaseNPC();
+    BaseEntityConfig config = configs.sleipnir;
+
+    AITaskComponent aiComponent =
+        new AITaskComponent()
+            .addTask(new PatrolTask(mapBounds))
+            .addTask(new StampedeTask(target, sleipnir))
+            .addTask(new EarthquakeAttackTask(target, 5f, sleipnir))
+            .addTask(new OneAttackTask(target, 2f, mapBounds[1].x / 2f, new Vector2(8f, 8f)));
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset("images/horse.atlas", TextureAtlas.class));
+    animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
+    animator.addAnimation("attack", 0.09f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_up", 1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_down", 1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_right", 1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_left", 1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_NE", 1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_NW", 1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_SE", 1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_SW", 1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+
+    sleipnir
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(aiComponent)
+        .addComponent(new EnemyDeathComponent(true, true))
+        .addComponent(animator)
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f))
+        .addComponent(new BossPhaseComponent());
+    sleipnir.getComponent(AnimationRenderComponent.class).scaleEntity();
+    animator.startAnimation(MOVE);
+    sleipnir.setScale(3f, 3f);
+    sleipnir
+        .getComponent(HitboxComponent.class)
+        .setAsBox(new Vector2(2f, 2f), sleipnir.getCenterPosition());
+    PhysicsUtils.setScaledCollider(sleipnir, 0.3f, 0.3f);
+
+    sleipnir.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(8f, 8f));
+
+    return sleipnir;
   }
 
   /**

@@ -33,5 +33,10 @@
       "x": 2,
       "y": 2
     }
+  },
+
+  "sleipnir": {
+    "health": 250,
+    "baseAttack": 20
   }
 }
