@@ -260,7 +260,7 @@ class AchievementsFactoryTest {
   @Nested
   class Gold {
 
-    private Achievement build(int target) {
+    private Achievement build(float target) {
       AchievementConfig c = config("gold");
       c.target = target;
       return AchievementsFactory.build(c);
