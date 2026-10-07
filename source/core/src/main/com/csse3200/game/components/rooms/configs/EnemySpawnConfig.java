@@ -18,6 +18,8 @@ public class EnemySpawnConfig extends PositionConfig {
     LONGWEI,
     BUG,
     KNIGHT,
+    MINOTAUR,
+    SANDEYE,
     DARK_ELVES,
     JOTUNN,
     CYCLOPS,

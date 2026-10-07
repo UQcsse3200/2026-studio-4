@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.achievements.AchievementsManager;
+import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.friendlynpc.NpcInteractableComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
@@ -46,7 +46,7 @@ public class RoomManager {
   private PositionConfig pendingArrivalPosition;
   private boolean clearRequested;
   private final RunTimer runTimer;
-  private final AchievementsManager achievements;
+  private String pendingDungeonCompletion;
 
   /** Creates the JSON-driven room manager. Call {@link #create()} to register the initial room. */
   public RoomManager(WorldConfig world, Entity player, CameraComponent camera) {
@@ -69,12 +69,18 @@ public class RoomManager {
     checkpointPosition.x = initialEntryPoint.x;
     checkpointPosition.y = initialEntryPoint.y;
     currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
-    achievements = new AchievementsManager(currentRoom);
+
     player.getEvents().addListener("interact", this::interact);
     FollowingCameraComponent cameraFollowingComponent =
         currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
+
+    if (ServiceLocator.getAchievementService() != null) {
+      ServiceLocator.getAchievementService()
+          .getEvents()
+          .addListener("achievementUnlocked", this::onAchievementUnlocked);
+    }
   }
 
   /** Package private constructer to create empty room manager for testing */
@@ -84,7 +90,6 @@ public class RoomManager {
     this.world = null;
     this.camera = null;
     this.initialEntryPoint = null;
-    achievements = new AchievementsManager(new Entity());
   }
 
   /** Call after construction and before create() when starting from a save. */
@@ -179,7 +184,6 @@ public class RoomManager {
   /** Package private for testing */
   void start(PositionConfig entryPoint) {
     currentRoom.getEvents().addListener("roomCleared", this::onRoomCleared);
-    currentRoom.getEvents().addListener("achievementUnlocked", this::onAchievementUnlocked);
     currentRoom.getEvents().trigger("RoomCreated", player);
     scaleRoom(currentRoom);
     Vector2 position =
@@ -248,6 +252,7 @@ public class RoomManager {
     }
     if (exit.completesDungeon) {
       completedDungeonIds.add(currentConfig.dungeonId);
+      completeDungeon();
     }
     pendingDestination = destination;
     if (exit.destinationExitId != null) {
@@ -255,6 +260,18 @@ public class RoomManager {
     } else {
       pendingArrivalPosition = destination.getEntryPoint(exit.destinationEntryPointId);
     }
+  }
+
+  /** Records the current dungeon as completed and reports its clear time for achievements. */
+  private void completeDungeon() {
+    completedDungeonIds.add(currentConfig.dungeonId);
+    if (runTimer != null && ServiceLocator.getAchievementService() != null) {
+      AchievementContext ctx = new AchievementContext();
+      ctx.dungeonId = currentConfig.dungeonId;
+      ctx.dungeonSeconds = runTimer.getDungeonTime();
+      ServiceLocator.getAchievementService().update(ctx);
+    }
+    pendingDungeonCompletion = currentConfig.dungeonId; // defer the toast
   }
 
   private boolean interactWithNpc() {
@@ -310,7 +327,6 @@ public class RoomManager {
     currentRoom.dispose();
     currentConfig = destination;
     currentRoom = nextRoom;
-    achievements.newRoom(currentRoom); // move here, before start()
     if (runTimer != null && !Objects.equals(previousDungeonId, destination.dungeonId)) {
       runTimer.stopDungeon();
       if (destination.dungeonId != null) {
@@ -318,12 +334,28 @@ public class RoomManager {
       }
     }
     ServiceLocator.getEntityService().register(currentRoom);
+
+    if (pendingDungeonCompletion != null && ServiceLocator.getAchievementService() != null) {
+      AchievementContext ctx = new AchievementContext();
+      ctx.dungeonCompletedId = pendingDungeonCompletion;
+      ServiceLocator.getAchievementService().update(ctx);
+      pendingDungeonCompletion = null;
+    }
+
     start(arrivalPosition);
     rememberCheckpoint(arrivalPosition, null);
     FollowingCameraComponent cameraFollowingComponent =
         currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
+    if (runTimer != null
+        && destination.dungeonId != null
+        && !Objects.equals(previousDungeonId, destination.dungeonId)
+        && ServiceLocator.getAchievementService() != null) {
+      AchievementContext ctx = new AchievementContext();
+      ctx.dungeonEnteredId = destination.dungeonId;
+      ServiceLocator.getAchievementService().update(ctx);
+    }
   }
 
   private PositionConfig arrivalInsideDoor(ExitConfig door) {

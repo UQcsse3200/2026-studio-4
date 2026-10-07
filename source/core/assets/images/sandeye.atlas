@@ -1,0 +1,27 @@
+sandeye.png
+size: 96, 96
+repeat:none
+default
+index: 0
+bounds: 0, 0, 96, 96
+move
+index: 1
+bounds: 0, 5, 96, 96
+move
+index: 2
+bounds: 0, 0, 96, 96
+move
+index: 3
+bounds: 0, 5, 96, 96
+chase
+index: 1
+bounds: 0, 5, 96, 96
+chase
+index: 2
+bounds: 0, 0, 96, 96
+chase
+index: 3
+bounds: 0, 5, 96, 96
+dieAnimation
+index: 0
+bounds: 0, 0, 96, 96

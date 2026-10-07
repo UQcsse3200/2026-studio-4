@@ -5,6 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.csse3200.game.ui.UIComponent;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 /** Displays the name of the current game area. */
 public class GameAreaDisplay extends UIComponent {
@@ -17,6 +19,7 @@ public class GameAreaDisplay extends UIComponent {
   private Label achievement;
   private Table achievementTable;
   private long achievementExpiryMillis;
+  private final Queue<String> achievementQueue = new ArrayDeque<>();
 
   private Table titleTable;
 
@@ -62,8 +65,18 @@ public class GameAreaDisplay extends UIComponent {
 
   /** Shows an achievement-unlocked toast below the status message. */
   public void showAchievement(String name) {
-    achievement.setText("Achievement Unlocked: " + name);
-    achievementExpiryMillis = TimeUtils.millis() + 4000;
+    achievementQueue.add(name);
+    if (achievementExpiryMillis == 0) {
+      showNextAchievement();
+    }
+  }
+
+  private void showNextAchievement() {
+    String next = achievementQueue.poll();
+    if (next != null) {
+      achievement.setText("Achievement Unlocked: " + next);
+      achievementExpiryMillis = TimeUtils.millis() + 2000;
+    }
   }
 
   @Override
@@ -75,12 +88,14 @@ public class GameAreaDisplay extends UIComponent {
     if (achievementExpiryMillis > 0 && TimeUtils.millis() >= achievementExpiryMillis) {
       achievement.setText("");
       achievementExpiryMillis = 0;
+      showNextAchievement(); // immediately start the next queued toast, if any
     }
   }
 
   @Override
   public void dispose() {
     super.dispose();
+    achievementQueue.clear();
     titleTable.remove();
     statusTable.remove();
     achievementTable.remove();
