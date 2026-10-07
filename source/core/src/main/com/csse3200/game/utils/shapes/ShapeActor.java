@@ -54,7 +54,7 @@ public abstract class ShapeActor extends Actor {
   /**
    * Different shapes should call different methods on {@link #shape}
    *
-   * @see {@link ShapeRenderer}
+   * @see ShapeRenderer
    */
   protected abstract void drawShape();
 }
