@@ -43,6 +43,14 @@ public class RoomManager {
   private final RunTimer runTimer;
   private final AchievementsManager achievements;
 
+  private static final String DEFAULT_TILESET = "images/dungeons/tileSet0.png";
+  private static final String DUNGEON1_TILESET = "images/dungeons/tileSet1.png";
+  private static final String DUNGEON2_TILESET = "images/dungeons/tileSet2.png";
+  private static final String DUNGEON3_TILESET = "images/dungeons/tileSet3.png";
+  private static final String DUNGEON4_TILESET = "images/dungeons/tileSet4.png";
+  private static final String DUNGEON5_TILESET = "images/dungeons/tileSet5.png";
+
+
   /** Creates the JSON-driven room manager. Call {@link #create()} to register the initial room. */
   public RoomManager(WorldConfig world, Entity player, CameraComponent camera) {
     world.validate();
@@ -52,13 +60,31 @@ public class RoomManager {
     this.runTimer = ServiceLocator.getRunTimer();
     currentConfig = world.getRoom(world.startRoomId);
     initialEntryPoint = currentConfig.getEntryPoint(world.startEntryPointId);
-    currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
+    String tileset = DEFAULT_TILESET;
+    if (currentConfig.dungeonId!= null){
+      tileset = getTileset(currentConfig.dungeonId);
+    }
+    currentRoom = RoomFactory.createRoom(currentConfig, camera, false, tileset);
     achievements = new AchievementsManager(currentRoom);
     player.getEvents().addListener("interact", this::interact);
     FollowingCameraComponent cameraFollowingComponent =
         currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
+  }
+
+  private String getTileset(String tilesetConfig) {
+    if (tilesetConfig == null) {
+      return DEFAULT_TILESET;
+    }
+    return switch (tilesetConfig) {
+      case "dungeonOne" -> DUNGEON1_TILESET;
+      case "dungeonTwo" -> DUNGEON2_TILESET;
+      case "dungeonThree" -> DUNGEON3_TILESET;
+      case "dungeonFour" -> DUNGEON4_TILESET;
+      case "finalDungeon" -> DUNGEON5_TILESET;
+      default -> DEFAULT_TILESET;
+    };
   }
 
   /** Package private constructer to create empty room manager for testing */
@@ -211,8 +237,12 @@ public class RoomManager {
 
   void switchToRoom(RoomConfig destination, PositionConfig arrivalPosition) {
     String previousDungeonId = currentConfig.dungeonId;
+    String tileset = DEFAULT_TILESET;
+    if (destination.dungeonId!= null){
+      tileset = getTileset(destination.dungeonId);
+    }
     Entity nextRoom =
-        RoomFactory.createRoom(destination, camera, clearedRoomIds.contains(destination.id));
+        RoomFactory.createRoom(destination, camera, clearedRoomIds.contains(destination.id), tileset);
     currentRoom.dispose();
     currentConfig = destination;
     currentRoom = nextRoom;

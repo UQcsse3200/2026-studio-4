@@ -32,18 +32,19 @@ public class RoomFactory {
    * @param room The rooms declarative definition.
    * @param camera The camera for the room.
    * @param cleared Whether the room has been cleared.
+   * @param tileset The tileset location
    * @return The room entity.
    */
-  public static Entity createRoom(RoomConfig room, CameraComponent camera, boolean cleared) {
+  public static Entity createRoom(RoomConfig room, CameraComponent camera, boolean cleared, String tileset) {
     GridPoint2 mapSize = new GridPoint2(room.mapWidth, room.mapHeight);
-    TerrainBuilder terrainBuilder = new TerrainBuilder(camera, mapSize);
+    TerrainBuilder terrainBuilder = new TerrainBuilder(camera, mapSize, tileset);
     spawnMap(room, terrainBuilder);
     return new Entity()
         .addComponent(new GameAreaDisplay(room.title))
         .addComponent(terrainBuilder.getTerrain())
         .addComponent(new WallComponent())
         .addComponent(new FollowingCameraComponent())
-        .addComponent(new ObstacleComponent(room))
+        .addComponent(new ObstacleComponent(room, tileset))
         .addComponent(new TrapManagerComponent(room.trapSpawns))
         .addComponent(new ExitComponent(room.exits))
         .addComponent(
