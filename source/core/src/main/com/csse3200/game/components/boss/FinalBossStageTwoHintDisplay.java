@@ -35,7 +35,7 @@ public class FinalBossStageTwoHintDisplay extends UIComponent {
     bossStats = entity.getComponent(CombatStatsComponent.class);
     if (stage == null) return;
 
-    Label.LabelStyle style = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
+    Label.LabelStyle style = new Label.LabelStyle(skin.get("small", Label.LabelStyle.class));
     style.fontColor = Color.valueOf("123F7A");
     Label hint =
         new Label(HINT, style) {
@@ -55,26 +55,21 @@ public class FinalBossStageTwoHintDisplay extends UIComponent {
     hint.setAlignment(Align.center);
     hint.setWrap(true);
 
-    Table panel = new Table();
-    panel.setBackground(skin.newDrawable("white", new Color(0.93f, 0.97f, 1f, 0.92f)));
-    panel.pad(10f, 16f, 10f, 16f);
-    panel.add(hint).growX();
-
     root = new Table();
     root.setName("final-boss-stage-two-hint");
     root.setFillParent(true);
     root.setTouchable(Touchable.disabled);
-    root.bottom().padBottom(170f);
-    root.add(panel)
+    // Match the Stage 3 SPACE hint's top-centre position and padding.
+    root.top().padTop(24f);
+    root.add(hint)
         .width(
             new Value() {
               @Override
               public float get(Actor context) {
-                // Reserve the side HUD space; narrow windows wrap the sentence into more lines.
-                float available = Math.max(1f, stage.getWidth() - 48f);
-                return Math.min(available, Math.max(200f, Math.min(700f, stage.getWidth() - 600f)));
+                return Math.max(1f, Math.min(760f, stage.getWidth() - 32f));
               }
-            });
+            })
+        .pad(8f);
     root.setVisible(false);
     stage.addActor(root);
     entity.getEvents().addListener(FinalBossEvents.PHASE_CHANGED, this::phaseChanged);
