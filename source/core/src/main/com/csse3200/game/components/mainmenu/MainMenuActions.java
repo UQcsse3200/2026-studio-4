@@ -28,12 +28,13 @@ public class MainMenuActions extends Component {
   /** Swaps to the Main Game screen. */
   private void onStart() {
     logger.info("Start game");
-    game.setScreen(GdxGame.ScreenType.MAIN_GAME);
+    game.startGame(null, 1);
   }
 
-  /** Intended for loading a saved game state. Load functionality is not actually implemented. */
+  /** Opens the save-slot list. */
   private void onLoad() {
-    logger.info("Load game");
+    logger.info("Opening save-slot list");
+    game.setScreen(GdxGame.ScreenType.LOAD_GAME);
   }
 
   /** Exits the game. */

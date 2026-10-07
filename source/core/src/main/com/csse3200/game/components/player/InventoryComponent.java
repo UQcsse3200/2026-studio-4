@@ -148,4 +148,8 @@ public class InventoryComponent extends Component {
     }
     ServiceLocator.getEntityService().toggleUpdate();
   }
+
+  public Map<String, Integer> getConsumables() {
+    return Map.copyOf(consumables);
+  }
 }
