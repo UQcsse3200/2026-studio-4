@@ -32,7 +32,14 @@ public class RunTimer {
   }
 
   public Map<String, Float> getDungeonTimes() {
-    return new LinkedHashMap<>(dungeonTimes);
+    Map<String, Float> times = new LinkedHashMap<>(dungeonTimes);
+
+    // Include the dungeon currently being timed when creating a save.
+    if (dungeonRunning && currentDungeonId != null) {
+      times.put(currentDungeonId, dungeonTime);
+    }
+
+    return times;
   }
 
   /** Restores an elapsed run and continues counting from that time. */
@@ -74,20 +81,22 @@ public class RunTimer {
   }
 
   public void startDungeon(String dungeonId) {
-    if (!dungeonRunning) {
-      dungeonRunning = true;
-      currentDungeonId = dungeonId;
-      dungeonStartTotal = totalTime;
-      dungeonTime = 0f;
-      dungeonSyncedTime = 0f;
-    }
-    if (Objects.equals(currentDungeonId, dungeonId)) {
+    if (dungeonRunning && Objects.equals(currentDungeonId, dungeonId)) {
       return;
     }
-    stopDungeon();
+
+    if (dungeonRunning) {
+      stopDungeon();
+    }
+
     registerDungeon(dungeonId);
+
+    // Continue from the previously saved time for this dungeon.
+    float savedTime = dungeonTimes.getOrDefault(dungeonId, 0f);
     currentDungeonId = dungeonId;
-    dungeonTime = dungeonTimes.get(dungeonId);
+    dungeonTime = savedTime;
+    dungeonStartTotal = totalTime - savedTime;
+    dungeonSyncedTime = ((float) (int) totalTime) - (int) dungeonStartTotal;
     dungeonRunning = true;
   }
 
