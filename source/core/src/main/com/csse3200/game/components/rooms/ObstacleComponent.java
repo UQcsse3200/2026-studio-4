@@ -4,7 +4,9 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 /** Spawns the fixed obstacles declared for a room. */
 public class ObstacleComponent extends EntityManagerComponent {
@@ -21,77 +23,61 @@ public class ObstacleComponent extends EntityManagerComponent {
 
   @Override
   public void create() {
-    // Gets the list of obstacles from the spawnConfig
     List<String> spawnConfig = room.obstacles.spawns;
 
-    // Loops through the spawn config
     for (int y = 0; y < spawnConfig.size(); y++) {
       String row = spawnConfig.get(y);
-
       for (int x = 0; x < row.length(); x++) {
-        char spawnType = row.charAt(x);
-        // Otherwise check for the obstacle that is wanted.
-        int spawny = y;
-        boolean centreY = true;
-        Entity entity = null;
-        switch (spawnType) {
-          case '#':
-          case '%':
-            boolean up = isVoid(spawnConfig, x, y + 1);
-            boolean right = isVoid(spawnConfig, x + 1, y);
-            boolean down = isVoid(spawnConfig, x, y - 1);
-            boolean left = isVoid(spawnConfig, x - 1, y);
-            boolean upRight = isVoid(spawnConfig, x + 1, y + 1);
-            boolean upLeft = isVoid(spawnConfig, x - 1, y + 1);
-            boolean downRight = isVoid(spawnConfig, x + 1, y - 1);
-            boolean downLeft = isVoid(spawnConfig, x - 1, y - 1);
-
-            boolean shift = spawnType == '#';
-            entity =
-                ObstacleFactory.createWallFor(
-                    up, right, down, left, upRight, upLeft, downRight, downLeft, shift);
-
-            if (entity == null) {
-              continue; // no art for this combination
-            }
-
-            if (isTopFace(up, right, down, left, upRight, upLeft)) {
-              spawny = spawny - 1;
-              centreY = false;
-            }
-            break;
-
-          case 'S':
-            entity = ObstacleFactory.createSword();
-            centreY = false;
-            break;
-
-          case 'B':
-            entity = ObstacleFactory.createBox();
-            centreY = false;
-            break;
-        }
-        if (entity != null) {
-          spawnEntityAt(entity, new GridPoint2(x, spawny), true, centreY);
-        }
+        spawnObstacle(spawnConfig, row.charAt(x), x, y);
       }
     }
   }
 
+  /** Decides what, if anything, belongs at this grid cell. */
+  private void spawnObstacle(List<String> spawnConfig, char spawnType, int x, int y) {
+    switch (spawnType) {
+      case '#', '%' -> spawnWall(spawnConfig, x, y, spawnType == '#');
+      case 'S' -> spawnProp(ObstacleFactory.createSword(), x, y);
+      case 'B' -> spawnProp(ObstacleFactory.createBox(), x, y);
+      default -> {} // nothing to spawn
+    }
+  }
+
+  /** Props are placed on the cell's bottom edge, not centred vertically. */
+  private void spawnProp(Entity prop, int x, int y) {
+    spawnEntityAt(prop, new GridPoint2(x, y), true, false);
+  }
+
+  /** Walls pick their art from which neighbouring cells are void. */
+  private void spawnWall(List<String> spawnConfig, int x, int y, boolean shift) {
+    Set<Direction> voids = EnumSet.noneOf(Direction.class);
+    for (Direction d : Direction.values()) {
+      if (isVoid(spawnConfig, x + d.dx, y + d.dy)) {
+        voids.add(d);
+      }
+    }
+
+    Entity wall = ObstacleFactory.createWallFor(voids, shift);
+    if (wall == null) {
+      return; // no art for this combination
+    }
+
+    boolean topFace = isTopFace(voids);
+    spawnEntityAt(wall, new GridPoint2(x, topFace ? y - 1 : y), true, !topFace);
+  }
+
   /**
-   * Checks if the given config is a top face.
+   * Checks if the given config should be a top face.
    *
-   * @param up Whether void above
-   * @param right Whether void right
-   * @param down Whether void below
-   * @param left Whether void left
-   * @param upRight Whether void up to the right
-   * @param upLeft Whether void up to the left
+   * @param voids direction where the neighbouring tile is void.
    * @return If the config is a top face.
    */
-  private static boolean isTopFace(
-      boolean up, boolean right, boolean down, boolean left, boolean upRight, boolean upLeft) {
-    return !left && !right && (up || ((upLeft || upRight) && !down));
+  private static boolean isTopFace(Set<Direction> voids) {
+    return !voids.contains(Direction.LEFT)
+        && !voids.contains(Direction.RIGHT)
+        && (voids.contains(Direction.UP)
+            || ((voids.contains(Direction.UP_LEFT) || voids.contains(Direction.UP_RIGHT))
+                && !voids.contains(Direction.DOWN)));
   }
 
   /**

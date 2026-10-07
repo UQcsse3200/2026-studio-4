@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.csse3200.game.areas.terrain.DreamlandTile;
 import com.csse3200.game.areas.terrain.TileSheet;
+import com.csse3200.game.components.rooms.Direction;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
@@ -14,6 +15,7 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.Set;
 
 /**
  * Factory to create obstacle entities.
@@ -22,7 +24,7 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public class ObstacleFactory {
   private static final String DUNGEON_TILESET = "images/dungeons/fantasy_dreamland_16.png";
-  private static final int WallTileTextureShift = 8;
+  private static final int WALL_TILE_TEXTURE_SHIFT = 8;
   private static final float TILE_BEVEL_X = 0.04f;
   private static final float TILE_BEVEL_Y = 0.02f;
 
@@ -36,27 +38,19 @@ public class ObstacleFactory {
   /**
    * Creates a wall for the given configuration.
    *
-   * @param up If there is a void above the tile.
-   * @param right If there is a void to the right of the tile.
-   * @param down If there is a void below the tile.
-   * @param left If there is a void to the left of the tile.
-   * @param upRight If there is a void top right of the tile.
-   * @param upLeft If there is a void top left of the tile.
-   * @param downRight If there is a void bottom right of the tile.
-   * @param downLeft If there is a void bottom left of the tile.
+   * @param voids A set of directions where the neighbouring tile is void.
    * @param shift Shift the given texture by a constant to use a different wall texture.
    * @return The wall entity, with bevelled edges of the given config.
    */
-  public static Entity createWallFor(
-      boolean up,
-      boolean right,
-      boolean down,
-      boolean left,
-      boolean upRight,
-      boolean upLeft,
-      boolean downRight,
-      boolean downLeft,
-      boolean shift) {
+  public static Entity createWallFor(Set<Direction> voids, boolean shift) {
+    boolean up = voids.contains(Direction.UP);
+    boolean right = voids.contains(Direction.RIGHT);
+    boolean down = voids.contains(Direction.DOWN);
+    boolean left = voids.contains(Direction.LEFT);
+    boolean upRight = voids.contains(Direction.UP_RIGHT);
+    boolean upLeft = voids.contains(Direction.UP_LEFT);
+    boolean downRight = voids.contains(Direction.DOWN_RIGHT);
+    boolean downLeft = voids.contains(Direction.DOWN_LEFT);
     Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
 
     float colliderHeight = 0.5f;
@@ -87,13 +81,13 @@ public class ObstacleFactory {
     } else {
       return null;
     }
-    int x_shift = 0;
+    int xShift = 0;
     if (shift) {
-      x_shift = WallTileTextureShift;
+      xShift = WALL_TILE_TEXTURE_SHIFT;
     }
     Entity wall =
         createRenderedObstacle(
-            tile.region(new TileSheet(texture, 16), x_shift, 0), 0.5f, colliderHeight);
+            tile.region(new TileSheet(texture, 16), xShift, 0), 0.5f, colliderHeight);
     setBevelledCollider(wall, 0.5f, colliderHeight);
     return wall;
   }
