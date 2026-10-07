@@ -139,13 +139,13 @@ public class Minimap extends UIComponent {
     }
   }
 
-  private enum RoomType {
+  enum RoomType {
     DEFAULT,
     CLEARED,
     HOME
   }
 
-  private RoomType determineRoomType(String roomId) {
+  RoomType determineRoomType(String roomId) {
     if (roomId == null) return RoomType.DEFAULT;
 
     if (roomId.equals(startingRoomId)) return RoomType.HOME;
@@ -188,7 +188,7 @@ public class Minimap extends UIComponent {
    * @param table The container to attach children
    * @param type The room type to add
    */
-  private void attachRoom(Table table, RoomType type) {
+  void attachRoom(Table table, RoomType type) {
     Actor icon =
         switch (type) {
           case DEFAULT -> new Rectangle(ROOM_COLOR);
