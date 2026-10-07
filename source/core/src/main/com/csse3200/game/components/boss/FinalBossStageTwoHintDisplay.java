@@ -66,7 +66,7 @@ public class FinalBossStageTwoHintDisplay extends UIComponent {
             new Value() {
               @Override
               public float get(Actor context) {
-                return Math.max(1f, Math.min(760f, stage.getWidth() - 32f));
+                return Math.clamp(stage.getWidth() - 32f, 1f, 760f);
               }
             })
         .pad(8f);

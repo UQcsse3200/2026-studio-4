@@ -114,8 +114,11 @@ final class FinalBossStageTwoWallCollision {
     if (Math.abs(movement) < EPSILON) return start >= min && start <= max;
     float first = (min - start) / movement;
     float second = (max - start) / movement;
-    interval[0] = Math.max(interval[0], Math.min(first, second));
-    interval[1] = Math.min(interval[1], Math.max(first, second));
+    float entry = Math.min(first, second);
+    float exit = Math.max(first, second);
+    // Intersect the intervals, preserving an empty result when they do not overlap.
+    interval[0] = Math.max(interval[0], entry);
+    interval[1] = Math.min(interval[1], exit);
     return interval[0] <= interval[1];
   }
 
