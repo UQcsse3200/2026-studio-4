@@ -3,7 +3,7 @@ package com.csse3200.game.components.miniboss.cerberus;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.FloatingDemonProjectileFactory;
+import com.csse3200.game.entities.factories.CerberusProjectileFactory;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.function.Consumer;
 
@@ -92,7 +92,7 @@ public class CerberusProjectileComponent extends Component {
       }
 
       Entity projectile =
-          FloatingDemonProjectileFactory.createHomingProjectile(
+          CerberusProjectileFactory.createHomingProjectile(
               entity.getCenterPosition().sub(0.4f, 0.4f), target, stats.getBaseAttack());
 
       projectileSpawner.accept(projectile);
