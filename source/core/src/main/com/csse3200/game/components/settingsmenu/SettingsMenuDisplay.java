@@ -19,8 +19,10 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.files.GameProgress;
 import com.csse3200.game.files.GameProgress.SaveData;
+import com.csse3200.game.files.PlayMode;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.files.UserSettings.DisplaySettings;
+import com.csse3200.game.files.WindowSize;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.utils.StringDecorator;
@@ -41,10 +43,15 @@ public class SettingsMenuDisplay extends UIComponent {
   private CheckBox vsyncCheck;
   private Slider uiScaleSlider;
   private SelectBox<StringDecorator<DisplayMode>> displayModeSelect;
+  private SelectBox<WindowSize.Preset> windowSizeSelect;
   private CheckBox showTimerCheck;
   private CheckBox showFpsCheck;
+  private CheckBox onlineCheck;
+  private CheckBox muteUnfocusedCheck;
+  private TextField nameField;
   private Slider musicSlider;
   private Slider soundSlider;
+  private Label sessionLabel;
   private Label lastRunLabel;
   private Label bestRunLabel;
   private Label achievementLabel;
@@ -63,7 +70,8 @@ public class SettingsMenuDisplay extends UIComponent {
 
   private void addActors() {
     Label title = new Label("Settings", skin, "title");
-    Label hint = new Label("Apply saves these options. Exit leaves them unchanged.", skin);
+    Label hint =
+        new Label("Apply saves these options. Exit leaves them unchanged.", skin, "caption");
     Table settingsTable = makeSettingsTable();
     ScrollPane pane = new ScrollPane(settingsTable, skin);
     pane.setFadeScrollBars(false);
@@ -100,35 +108,70 @@ public class SettingsMenuDisplay extends UIComponent {
     displayModeSelect.setItems(getDisplayModes(selectedMonitor));
     displayModeSelect.setSelected(getActiveMode(displayModeSelect.getItems()));
 
-    form.section("Display");
+    windowSizeSelect = new SelectBox<>(skin);
+    windowSizeSelect.setItems(new Array<>(WindowSize.presets()));
+    windowSizeSelect.setSelected(WindowSize.matching(settings.windowWidth, settings.windowHeight));
+
+    form.section("Display", "Window size is used when fullscreen is off.");
     form.row("FPS cap", fpsText);
     form.row("Fullscreen", fullScreenCheck);
     form.row("VSync", vsyncCheck);
     form.slider("UI scale", uiScaleSlider, "%.2fx");
     form.row("Resolution", displayModeSelect);
+    form.row("Window size", windowSizeSelect);
 
     musicSlider = new Slider(0f, 1f, 0.05f, false, skin);
     musicSlider.setValue(settings.musicVolume);
     soundSlider = new Slider(0f, 1f, 0.05f, false, skin);
     soundSlider.setValue(settings.soundVolume);
-    form.section("Audio");
+    muteUnfocusedCheck = new CheckBox("", skin);
+    muteUnfocusedCheck.setChecked(settings.muteUnfocused);
+    form.section("Audio", "Effects follow the slider. Music follows it on the next track.");
     form.percent("Music", musicSlider);
     form.percent("Effects", soundSlider);
+    form.row("Mute in background", muteUnfocusedCheck);
 
     showTimerCheck = new CheckBox("", skin);
     showTimerCheck.setChecked(settings.showTimer);
     showFpsCheck = new CheckBox("", skin);
     showFpsCheck.setChecked(settings.showFps);
-    form.section("Gameplay");
+    form.section("Gameplay", "Timer and FPS appear on the run HUD.");
     form.row("Show run timer", showTimerCheck);
     form.row("Show FPS", showFpsCheck);
+
+    onlineCheck = new CheckBox("", skin);
+    onlineCheck.setChecked(settings.onlinePlay);
+    nameField = new TextField(settings.displayName == null ? "" : settings.displayName, skin);
+    nameField.setMaxLength(PlayMode.NAME_LIMIT);
+    nameField.setMessageText(PlayMode.DEFAULT_NAME);
+    sessionLabel = new Label("", skin, "caption");
+    sessionLabel.setWrap(true);
+    onlineCheck.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            refreshSessionLabel();
+          }
+        });
+    nameField.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            refreshSessionLabel();
+          }
+        });
+    form.section("Session", "Saved on this computer. This menu does not start a match.");
+    form.row("Play online", onlineCheck);
+    form.row("Display name", nameField);
+    form.row("", sessionLabel);
+    refreshSessionLabel();
 
     SaveData save = GameProgress.get();
     lastRunLabel = new Label(GameProgress.formatTime(save.lastRunMs), skin);
     bestRunLabel = new Label(GameProgress.formatTime(save.bestRunMs), skin);
     achievementLabel = new Label(Integer.toString(save.achievements.size()), skin);
     resetStatusLabel = new Label("", skin);
-    form.section("Run history");
+    form.section("Run history", "Times and achievements stored on this computer.");
     form.row("Last run", lastRunLabel);
     form.row("Best run", bestRunLabel);
     form.row("Achievements", achievementLabel);
@@ -236,12 +279,22 @@ public class SettingsMenuDisplay extends UIComponent {
       settings.displayMode = chosen;
     }
     settings.vsync = vsyncCheck.isChecked();
+    WindowSize.Preset window = windowSizeSelect.getSelected();
+    if (window != null) {
+      settings.windowWidth = window.width;
+      settings.windowHeight = window.height;
+    }
     settings.showTimer = showTimerCheck.isChecked();
     settings.showFps = showFpsCheck.isChecked();
     settings.musicVolume = musicSlider.getValue();
     settings.soundVolume = soundSlider.getValue();
+    settings.muteUnfocused = muteUnfocusedCheck.isChecked();
+    settings.onlinePlay = onlineCheck.isChecked();
+    settings.displayName = PlayMode.cleanName(nameField.getText());
+    nameField.setText(settings.displayName);
 
     UserSettings.set(settings, true);
+    refreshSessionLabel();
   }
 
   /**
@@ -253,6 +306,13 @@ public class SettingsMenuDisplay extends UIComponent {
       return null;
     }
     return new DisplaySettings(selected.object);
+  }
+
+  private void refreshSessionLabel() {
+    if (sessionLabel == null || onlineCheck == null || nameField == null) {
+      return;
+    }
+    sessionLabel.setText(PlayMode.summary(onlineCheck.isChecked(), nameField.getText()));
   }
 
   private void refreshProgressLabel() {

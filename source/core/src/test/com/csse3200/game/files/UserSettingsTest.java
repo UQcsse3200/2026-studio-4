@@ -37,6 +37,32 @@ class UserSettingsTest {
   }
 
   @Test
+  void usesSavedWindowSizeWhenNotFullscreen() {
+    Gdx.graphics = mock(Graphics.class);
+    Settings settings = new Settings();
+    settings.fullscreen = false;
+    settings.windowWidth = 1600;
+    settings.windowHeight = 900;
+
+    UserSettings.applySettings(settings);
+
+    verify(Gdx.graphics).setWindowedMode(1600, 900);
+  }
+
+  @Test
+  void keepsDefaultWindowWhenSizeIsMissing() {
+    Gdx.graphics = mock(Graphics.class);
+    Settings settings = new Settings();
+    settings.fullscreen = false;
+    settings.windowWidth = 0;
+    settings.windowHeight = 0;
+
+    UserSettings.applySettings(settings);
+
+    verify(Gdx.graphics).setWindowedMode(WindowSize.DEFAULT_WIDTH, WindowSize.DEFAULT_HEIGHT);
+  }
+
+  @Test
   void shouldFindMatchingDisplay() {
     Gdx.graphics = mock(Graphics.class);
     DisplayMode correctMode = new CustomDisplayMode(200, 100, 60, 0);
@@ -63,6 +89,11 @@ class UserSettingsTest {
     assertFalse(settings.showFps);
     assertEquals(0.3f, settings.musicVolume);
     assertEquals(1f, settings.soundVolume);
+    assertEquals(WindowSize.DEFAULT_WIDTH, settings.windowWidth);
+    assertEquals(WindowSize.DEFAULT_HEIGHT, settings.windowHeight);
+    assertFalse(settings.onlinePlay);
+    assertEquals(PlayMode.DEFAULT_NAME, settings.displayName);
+    assertFalse(settings.muteUnfocused);
   }
 
   @Test
@@ -78,6 +109,11 @@ class UserSettingsTest {
     updated.showFps = true;
     updated.musicVolume = 0.4f;
     updated.soundVolume = 0.2f;
+    updated.windowWidth = 1600;
+    updated.windowHeight = 900;
+    updated.onlinePlay = true;
+    updated.displayName = "Ada";
+    updated.muteUnfocused = true;
 
     try {
       UserSettings.set(updated, false);
@@ -86,6 +122,11 @@ class UserSettingsTest {
       assertTrue(loaded.showFps);
       assertEquals(0.4f, loaded.musicVolume);
       assertEquals(0.2f, loaded.soundVolume);
+      assertEquals(1600, loaded.windowWidth);
+      assertEquals(900, loaded.windowHeight);
+      assertTrue(loaded.onlinePlay);
+      assertEquals("Ada", loaded.displayName);
+      assertTrue(loaded.muteUnfocused);
     } finally {
       UserSettings.set(original, false);
     }

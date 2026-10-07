@@ -2,7 +2,7 @@
 
 Players open Settings from the main menu, change display and gameplay options, then press Apply or Exit. Apply writes `settings.json` through `UserSettings` and applies the display options immediately. Exit returns to the main menu and drops unsaved edits.
 
-The menu has Display, Audio, Gameplay and Run history sections. Gameplay controls the in-run timer and a small FPS counter. Audio stores music and effects volume. Run history lists last run, best run and achievement count on this settings page, and can reset those values separately. The win screen is not part of this menu.
+The menu has Display, Audio, Gameplay, Session and Run history sections. Display includes the fullscreen resolution and the window size used when fullscreen is off. Gameplay controls the in-run timer and a small FPS counter. Audio stores music and effects volume, and can mute both while the window is in the background. Session stores an online preference and a display name on this computer; it does not open a match. Run history lists last run, best run and achievement count on this settings page, and can reset those values separately. The win screen is not part of this menu.
 
 ## Class diagram
 
@@ -27,7 +27,21 @@ classDiagram
     +boolean showFps
     +float musicVolume
     +float soundVolume
+    +int windowWidth
+    +int windowHeight
+    +boolean onlinePlay
+    +String displayName
+    +boolean muteUnfocused
     +DisplaySettings displayMode
+  }
+  class WindowSize {
+    +matching(int, int) Preset
+    +width(int) int
+    +height(int) int
+  }
+  class PlayMode {
+    +cleanName(String) String
+    +summary(boolean, String) String
   }
   class GameProgress {
     +get() SaveData
@@ -57,7 +71,10 @@ classDiagram
   }
 
   SettingsMenuDisplay --> UserSettings : read and apply
+  SettingsMenuDisplay --> WindowSize : window size list
+  SettingsMenuDisplay --> PlayMode : name and online status
   SettingsMenuDisplay --> GameProgress : summary and reset
+  UserSettings --> WindowSize : windowed mode size
   UserSettings --> Settings : persists settings.json
   GameProgress --> SaveData : persists game-save.json
   MainGameScreen --> RunTimer : starts and reads the run
@@ -121,13 +138,15 @@ sequenceDiagram
 
 JUnit coverage lives next to the code:
 
-- `UserSettingsTest` checks the gameplay options default to on and round-trip through `settings.json` without touching the display.
+- `UserSettingsTest` checks the gameplay options default to on, window size is applied when fullscreen is off, and the new options round-trip through `settings.json` without touching the display.
+- `WindowSizeTest` checks listed sizes, the default window, and clamping.
+- `PlayModeTest` checks the display name and the online status line.
 - `GameProgressTest` checks time formatting, best-run updates, one-time achievement unlocks, and that the two reset actions do not clear each other's data.
 - `TimerDisplayTest` checks the HUD panel stays hidden when Show run timer is off.
-- `AudioLevelsTest` checks music and effects volumes stay inside 0 to 1.
+- `AudioLevelsTest` checks music and effects volumes stay inside 0 to 1, and that mute-in-background silences an unfocused window.
 
 From `source/`:
 
 ```sh
-./gradlew test --tests com.csse3200.game.files.UserSettingsTest --tests com.csse3200.game.files.GameProgressTest --tests com.csse3200.game.files.AudioLevelsTest --tests com.csse3200.game.components.gamearea.TimerDisplayTest
+./gradlew test --tests com.csse3200.game.files.UserSettingsTest --tests com.csse3200.game.files.WindowSizeTest --tests com.csse3200.game.files.PlayModeTest --tests com.csse3200.game.files.GameProgressTest --tests com.csse3200.game.files.AudioLevelsTest --tests com.csse3200.game.components.gamearea.TimerDisplayTest
 ```

@@ -16,11 +16,23 @@ public final class AudioLevels {
   }
 
   public static float music() {
-    return clamp(UserSettings.get().musicVolume);
+    UserSettings.Settings settings = UserSettings.get();
+    return audible(settings.musicVolume, settings.muteUnfocused, WindowFocus.focused());
   }
 
   public static float effects() {
-    return clamp(UserSettings.get().soundVolume);
+    UserSettings.Settings settings = UserSettings.get();
+    return audible(settings.soundVolume, settings.muteUnfocused, WindowFocus.focused());
+  }
+
+  /**
+   * Volume after the mute-when-unfocused rule. An unfocused window with that option on is silent.
+   */
+  public static float audible(float volume, boolean muteWhenUnfocused, boolean windowFocused) {
+    if (muteWhenUnfocused && !windowFocused) {
+      return 0f;
+    }
+    return clamp(volume);
   }
 
   /** Plays a sound at the saved effects volume. A missing sound is ignored. */

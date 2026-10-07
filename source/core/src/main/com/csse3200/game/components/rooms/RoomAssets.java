@@ -131,6 +131,15 @@ public class RoomAssets implements Disposable {
     music.play();
   }
 
+  /** Keeps the playing track on the saved volume, including mute-when-unfocused. */
+  public void applyMusicVolume() {
+    ResourceService resourceService = ServiceLocator.getResourceService();
+    if (resourceService == null || !resourceService.containsAsset(BACKGROUND_MUSIC, Music.class)) {
+      return;
+    }
+    resourceService.getAsset(BACKGROUND_MUSIC, Music.class).setVolume(AudioLevels.music());
+  }
+
   private void stopMusic() {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.getAsset(BACKGROUND_MUSIC, Music.class).stop();

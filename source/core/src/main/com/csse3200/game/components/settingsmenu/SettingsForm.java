@@ -7,32 +7,46 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import java.util.function.Function;
 
-/** Builds the labelled rows inside the settings menu. */
+/** Builds the labelled cards inside the settings menu. */
 public class SettingsForm {
   private final Skin skin;
-  private final Table table;
+  private final Table root;
+  private Table card;
 
   public SettingsForm(Skin skin) {
     this.skin = skin;
-    table = new Table();
+    root = new Table();
   }
 
   public Table table() {
-    return table;
+    return root;
   }
 
-  /** Adds a section heading. The title style is scaled down so it sits above the rows. */
-  public void section(String title) {
+  /** Adds a titled card. Later rows are added to this card until the next section. */
+  public void section(String title, String caption) {
+    card = new Table();
+    card.pad(12f, 18f, 14f, 18f);
+    card.setBackground(skin.getDrawable("window-w"));
+
     Label heading = new Label(title, skin, "title");
-    heading.setFontScale(0.45f);
-    table.row().padTop(22f);
-    table.add(heading).left().colspan(2).padBottom(6f);
+    heading.setFontScale(0.42f);
+    card.add(heading).left().colspan(2).padBottom(2f);
+
+    if (caption != null && !caption.isEmpty()) {
+      card.row();
+      Label note = new Label(caption, skin, "caption");
+      note.setWrap(true);
+      card.add(note).left().growX().colspan(2).width(560f).padBottom(6f);
+    }
+
+    root.row().padTop(14f);
+    root.add(card).growX().pad(0f, 8f, 0f, 8f);
   }
 
   public void row(String name, Actor control) {
-    table.row().padTop(8f);
-    table.add(new Label(name, skin)).right().padRight(18f);
-    table.add(control).left().growX();
+    card.row().padTop(8f);
+    card.add(new Label(name, skin)).right().padRight(18f).top();
+    card.add(control).left().growX();
   }
 
   /** Slider plus a live value label. The listener does not consume the drag event. */
@@ -48,8 +62,8 @@ public class SettingsForm {
   private Label slider(String name, Slider slider, Function<Float, String> format) {
     Label value = new Label(format.apply(slider.getValue()), skin);
     Table line = new Table();
-    line.add(slider).width(200f);
-    line.add(value).padLeft(10f);
+    line.add(slider).width(220f);
+    line.add(value).padLeft(12f).width(72f);
     slider.addListener(
         event -> {
           value.setText(format.apply(slider.getValue()));
