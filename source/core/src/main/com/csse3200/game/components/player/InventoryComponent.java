@@ -40,8 +40,47 @@ public class InventoryComponent extends Component {
 
   /** Sets the player's Gold, with a minimum value of zero. */
   public void setGold(int gold) {
+    int previous = this.gold;
     this.gold = Math.max(gold, 0);
     logger.debug("Setting gold to {}", this.gold);
+    if (previous != this.gold && entity != null) {
+      entity.getEvents().trigger("goldChanged", this.gold);
+    }
+  }
+
+  /**
+   * Buys one existing consumable. All expected rejections happen before mutation; notifications are
+   * published only after both the balance and quantity have been committed.
+   */
+  public ConsumablePurchaseResult tryPurchaseConsumable(String itemId, int goldPrice) {
+    return tryPurchaseConsumable(itemId, goldPrice, 1);
+  }
+
+  /** Commits a paid consumable reward and its quantity before publishing inventory events. */
+  public ConsumablePurchaseResult tryPurchaseConsumable(
+      String itemId, int goldPrice, int quantity) {
+    if (quantity <= 0) throw new IllegalArgumentException("Quantity must be positive");
+    if (!isConsumable(itemId)) {
+      return ConsumablePurchaseResult.INVALID_ITEM;
+    }
+    if (goldPrice <= 0) {
+      return ConsumablePurchaseResult.INVALID_PRICE;
+    }
+    if (gold < goldPrice) {
+      return ConsumablePurchaseResult.INSUFFICIENT_GOLD;
+    }
+    int count = getConsumableCount(itemId);
+    if (count > Integer.MAX_VALUE - quantity) {
+      return ConsumablePurchaseResult.QUANTITY_LIMIT;
+    }
+    gold -= goldPrice;
+    consumables.put(itemId, count + quantity);
+    if (entity != null) {
+      entity.getEvents().trigger("goldChanged", gold);
+      // A gold listener may synchronously add/remove items; publish the current final quantity.
+      entity.getEvents().trigger("consumableInventoryChanged", itemId, getConsumableCount(itemId));
+    }
+    return ConsumablePurchaseResult.SUCCESS;
   }
 
   /** Adds to the player's Gold. The amount may be negative. */
