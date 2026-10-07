@@ -60,8 +60,7 @@ public final class BurnVial extends ConsumableItem {
           enemy.getComponent(StatusEffectsControllerComponent.class);
       CombatStatsComponent enemyStats = enemy.getComponent(CombatStatsComponent.class);
       if (effects != null && !effects.isDisposed() && enemyStats != null) {
-        effects.addStatusEffect(
-            new Burning(BURN_DAMAGE, BURN_COOLDOWN_MS, durationMs, enemyStats));
+        effects.addStatusEffect(new Burning(BURN_DAMAGE, BURN_COOLDOWN_MS, durationMs, enemyStats));
       }
     }
     if (ServiceLocator.getRenderService() != null) {

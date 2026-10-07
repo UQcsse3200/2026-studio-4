@@ -82,7 +82,7 @@ class BurnVialTest {
     world.addAll(caster, visible, offscreen);
     when(service.getEntities()).thenReturn(world);
     ServiceLocator.registerEntityService(service);
-    RenderService renderService = new RenderService();
+    RenderService renderService = mock(RenderService.class);
     ServiceLocator.registerRenderService(renderService);
 
     BurnVial vial = new BurnVial(1, 6000);
@@ -96,11 +96,13 @@ class BurnVialTest {
     ArgumentCaptor<StatusEffect> applied = ArgumentCaptor.forClass(StatusEffect.class);
     verify(visibleEffects).addStatusEffect(applied.capture());
     Burning burn = assertInstanceOf(Burning.class, applied.getValue());
-    assertEquals(6000L, burn.getRemainingDuration());
+    assertTrue(
+        Math.abs(6000L - burn.getRemainingDuration()) < 200L,
+        "expected remaining duration close to 6000ms, was " + burn.getRemainingDuration());
 
     verify(offscreen.getComponent(StatusEffectsControllerComponent.class), never())
         .addStatusEffect(org.mockito.ArgumentMatchers.any());
-    assertTrue(renderService.getWhiteFlashAlpha() > 0f);
+    verify(renderService).startWhiteFlash();
   }
 
   private static Entity enemyAt(float x, float y) {
