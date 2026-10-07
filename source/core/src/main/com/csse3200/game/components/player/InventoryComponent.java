@@ -43,9 +43,11 @@ public class InventoryComponent extends Component {
   public void setGold(int gold) {
     this.gold = Math.max(gold, 0);
     logger.debug("Setting gold to {}", this.gold);
-    AchievementContext ctx = new AchievementContext();
-    ctx.goldTotal = this.gold;
-    ServiceLocator.getAchievementService().update(ctx);
+    if (ServiceLocator.getAchievementService() != null) {
+      AchievementContext ctx = new AchievementContext();
+      ctx.goldTotal = this.gold;
+      ServiceLocator.getAchievementService().update(ctx);
+    }
   }
 
   /** Adds to the player's Gold. The amount may be negative. */

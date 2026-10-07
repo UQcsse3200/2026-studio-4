@@ -113,6 +113,13 @@ class AchievementTest {
   }
 
   @Test
+  void getTarget_returnsTarget() {
+    Achievement achievement = new Achievement("Slayer");
+
+    assertEquals(0, achievement.getTarget());
+  }
+
+  @Test
   void addProgress_accumulatesAcrossCalls() {
     Achievement achievement = new Achievement("Counter");
     achievement.setCondition(ctx -> false);

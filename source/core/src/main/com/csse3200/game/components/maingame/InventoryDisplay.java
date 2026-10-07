@@ -1,6 +1,5 @@
 package com.csse3200.game.components.maingame;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -232,7 +231,7 @@ public class InventoryDisplay extends UIComponent {
       if (!unlockedStyle && a.getTarget() > 0) {
         int shown = (int) Math.min(a.getProgress(), a.getTarget());
         Label progress = new Label(shown + " / " + (int) a.getTarget(), skin, "achievements_lock");
-//        progress.setColor(Color.BLUE);
+        //        progress.setColor(Color.BLUE);
         list.add(progress).left().padLeft(6).padBottom(20).row();
       }
     }

@@ -59,9 +59,11 @@ public class RoomManager {
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
 
-    ServiceLocator.getAchievementService()
-        .getEvents()
-        .addListener("achievementUnlocked", this::onAchievementUnlocked);
+    if (ServiceLocator.getAchievementService() != null) {
+      ServiceLocator.getAchievementService()
+          .getEvents()
+          .addListener("achievementUnlocked", this::onAchievementUnlocked);
+    }
   }
 
   /** Package private constructer to create empty room manager for testing */
@@ -168,7 +170,7 @@ public class RoomManager {
   /** Records the current dungeon as completed and reports its clear time for achievements. */
   private void completeDungeon() {
     completedDungeonIds.add(currentConfig.dungeonId);
-    if (runTimer != null) {
+    if (runTimer != null && ServiceLocator.getAchievementService() != null) {
       AchievementContext ctx = new AchievementContext();
       ctx.dungeonId = currentConfig.dungeonId;
       ctx.dungeonSeconds = runTimer.getDungeonTime();
@@ -238,7 +240,7 @@ public class RoomManager {
     }
     ServiceLocator.getEntityService().register(currentRoom);
 
-    if (pendingDungeonCompletion != null) {
+    if (pendingDungeonCompletion != null && ServiceLocator.getAchievementService() != null) {
       AchievementContext ctx = new AchievementContext();
       ctx.dungeonCompletedId = pendingDungeonCompletion;
       ServiceLocator.getAchievementService().update(ctx);
@@ -252,7 +254,8 @@ public class RoomManager {
     cameraFollowingComponent.setTarget(player);
     if (runTimer != null
         && destination.dungeonId != null
-        && !Objects.equals(previousDungeonId, destination.dungeonId)) {
+        && !Objects.equals(previousDungeonId, destination.dungeonId)
+        && ServiceLocator.getAchievementService() != null) {
       AchievementContext ctx = new AchievementContext();
       ctx.dungeonEnteredId = destination.dungeonId;
       ServiceLocator.getAchievementService().update(ctx);
