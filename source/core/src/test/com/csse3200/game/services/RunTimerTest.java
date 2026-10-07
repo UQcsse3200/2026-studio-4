@@ -150,7 +150,7 @@ class RunTimerTest {
   void pauseStopsTimeFromAdvancing() {
     timer.startRun();
     advance(5f);
-    timer.pause();
+    timer.toggleUpdate();
     advance(10f); // should have no effect
     assertEquals(5f, timer.getTotalTime(), 0.01f);
   }
@@ -159,9 +159,9 @@ class RunTimerTest {
   void resumeContinuesFromWhereItLeftOff() {
     timer.startRun();
     advance(5f);
-    timer.pause();
+    timer.toggleUpdate();
     advance(10f);
-    timer.resume();
+    timer.toggleUpdate();
     advance(3f);
     assertEquals(8f, timer.getTotalTime(), 0.01f);
   }

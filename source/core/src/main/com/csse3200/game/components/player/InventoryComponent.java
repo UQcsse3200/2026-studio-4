@@ -148,12 +148,11 @@ public class InventoryComponent extends Component {
     if (displayed) {
       this.display.setVisible(false);
       displayed = false;
-      ServiceLocator.getRunTimer().resume();
     } else {
       this.display.setVisible(true);
       displayed = true;
-      ServiceLocator.getRunTimer().pause();
     }
+    ServiceLocator.getRunTimer().toggleUpdate();
     ServiceLocator.getEntityService().toggleUpdate();
   }
 

@@ -152,15 +152,23 @@ public class RunTimer {
     return String.format("%02d:%02d", minutes, secs);
   }
 
-  public void pause() {
+  private void pause() {
     paused = true;
   }
 
-  public void resume() {
+  private void resume() {
     paused = false;
   }
 
-  public boolean isPaused() {
+  private boolean isPaused() {
     return paused;
+  }
+
+  public void toggleUpdate() {
+    if (isPaused()) {
+      resume();
+    } else {
+      pause();
+    }
   }
 }

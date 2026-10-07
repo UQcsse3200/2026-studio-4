@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,14 +16,13 @@ public class MainGameExitDisplay extends UIComponent {
   private static final float Z_INDEX = 2f;
   private final Runnable saveAndExit;
   private final Runnable deleteSaveAndExit;
-  private final Runnable stopMovement;
+  private final Runnable cancel;
   private Table table;
 
-  public MainGameExitDisplay(
-      Runnable saveAndExit, Runnable deleteSaveAndExit, Runnable stopMovement) {
+  public MainGameExitDisplay(Runnable saveAndExit, Runnable deleteSaveAndExit, Runnable cancel) {
     this.saveAndExit = saveAndExit;
     this.deleteSaveAndExit = deleteSaveAndExit;
-    this.stopMovement = stopMovement;
+    this.cancel = cancel;
   }
 
   @Override
@@ -53,8 +53,10 @@ public class MainGameExitDisplay extends UIComponent {
   }
 
   private void showExitDialog() {
-    stopMovement.run();
+    cancel.run();
     ExitSaveDialog dialog = new ExitSaveDialog(skin, saveAndExit, deleteSaveAndExit);
+    ServiceLocator.getRunTimer().toggleUpdate();
+    ServiceLocator.getEntityService().toggleUpdate();
     dialog.show(stage);
   }
 
