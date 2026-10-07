@@ -28,11 +28,12 @@ public class Minimap extends UIComponent {
 
   private static final Color ROOM_COLOR = Color.WHITE;
   private static final Color VISITED_COLOR = Color.GRAY;
-  private static final Color BG_COLOR = new Color(0, 0, 0, 0.4f);
+  private static final Color BG_COLOR = new Color(0xa1a658ff);
 
   public static final String ROOM_CHANGE_EVENT = "RoomChanged";
   public static final String PLAYER_HEAD_PATH = "images/player_head.png";
 
+  private String startingRoomId;
   private RoomConfig currentRoom;
   private Set<String> clearedRooms;
 
@@ -47,10 +48,15 @@ public class Minimap extends UIComponent {
     entity.getEvents().addListener(ROOM_CHANGE_EVENT, this::onRoomChanged);
   }
 
-  public Minimap(RoomConfig currentRoom, Set<String> clearedRooms) {
-    logger.debug("Created with RoomConfig: {}", currentRoom.id);
+  public Minimap(RoomConfig currentRoom, Set<String> clearedRooms, String startingRoomId) {
+    logger.debug("Created with RoomConfig: {}, startingRoomId: {}", currentRoom.id, startingRoomId);
     this.currentRoom = currentRoom;
     this.clearedRooms = clearedRooms;
+    this.startingRoomId = startingRoomId;
+  }
+
+  public Minimap(RoomConfig currentRoom, Set<String> clearedRooms) {
+    this(currentRoom, clearedRooms, "selection");
   }
 
   /** pacakge private constructor for testing */
@@ -111,21 +117,44 @@ public class Minimap extends UIComponent {
     left.clearChildren();
 
     for (var exits : currentRoom.exits) {
+      logger.trace("building exit: {}, destination: {}", exits.id, exits.destinationRoomId);
+      RoomType type = determineRoomType(exits.destinationRoomId);
+
+      logger.trace("Determined roomtype: {}", type);
+
       if (exits.side == null) {
         // Fallback to right if side is not set
-        logger.debug("roomid {}: side field not set, falling back to right", exits.id);
-        attachRoom(right, true, clearedRooms.contains(exits.destinationRoomId));
+        logger.warn("roomid {}: side field not set, falling back to right", exits.id);
+        attachRoom(right, type);
         continue;
       }
 
       if (exits.side.equals("LEFT")) {
-        attachRoom(left, true, clearedRooms.contains(exits.destinationRoomId));
+        attachRoom(left, type);
       } else if (exits.side.equals("RIGHT")) {
-        attachRoom(right, true, clearedRooms.contains(exits.destinationRoomId));
+        attachRoom(right, type);
       } else {
         logger.error("roomid {}: skipping unknown side field", exits.id);
       }
     }
+  }
+
+  private enum RoomType {
+    DEFAULT,
+    CLEARED,
+    HOME
+  }
+
+  private RoomType determineRoomType(String roomId) {
+    if (roomId == null) return RoomType.DEFAULT;
+
+    if (roomId.equals(startingRoomId)) return RoomType.HOME;
+
+    if (clearedRooms.contains(roomId)) {
+      return RoomType.CLEARED;
+    }
+
+    return RoomType.DEFAULT;
   }
 
   public void setCurrentRoom(RoomConfig newRoom) {
@@ -148,44 +177,29 @@ public class Minimap extends UIComponent {
   /** Create the minimap container */
   private static Table buildMapContainer() {
     Table map = new Table();
+    // This can be set to use a texture instead later on.
     setTableBackground(map, BG_COLOR);
     return map;
   }
 
   /**
-   * Helper method to attach x amount of exits to given table
+   * Helper method to attach a room to the give table
    *
    * @param table The container to attach children
-   * @param count Number of exits to attach
+   * @param type The room type to add
    */
-  private static void attachRooms(Table table, int count) {
-    logger.debug("attaching {} rooms", count);
-    for (int i = 0; i < count; i++) {
-      table.add(createRoomIcon()).expand();
-      table.row();
-    }
-  }
+  private void attachRoom(Table table, RoomType type) {
+    Actor icon =
+        switch (type) {
+          case DEFAULT -> new Rectangle(ROOM_COLOR);
+          case CLEARED -> new Rectangle(VISITED_COLOR);
+          case HOME -> new Rectangle(Color.BROWN);
+        };
 
-  private void attachRoom(Table table, boolean fill, boolean visited) {
-    table.add(createRoomIcon(fill, visited)).expand();
+    icon.setSize(ROOM_W, ROOM_H);
+
+    table.add(icon).expand();
     table.row();
-  }
-
-  /**
-   * @return Returns the room icon to be added to a table
-   * @param fill Whether to fill the icon or not
-   * @param visited Whether the room has been visited, will change color of icon.
-   */
-  private static Actor createRoomIcon(boolean fill, boolean visited) {
-    Color color = visited ? VISITED_COLOR : ROOM_COLOR;
-    var room = new Rectangle(color, fill);
-
-    room.setSize(ROOM_W, ROOM_H);
-    return room;
-  }
-
-  private static Actor createRoomIcon() {
-    return createRoomIcon(true, false);
   }
 
   /**
