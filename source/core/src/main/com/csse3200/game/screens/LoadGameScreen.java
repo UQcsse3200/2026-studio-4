@@ -381,15 +381,13 @@ public class LoadGameScreen extends ScreenAdapter {
         case Input.Keys.DOWN:
           moveSelection(1);
           return true;
-        case Input.Keys.ENTER:
-        case Input.Keys.NUMPAD_ENTER:
+        case Input.Keys.ENTER, Input.Keys.NUMPAD_ENTER:
           loadSelectedSlot();
           return true;
         case Input.Keys.F:
           deleteSelectedSlot();
           return true;
-        case Input.Keys.ESCAPE:
-        case Input.Keys.Q:
+        case Input.Keys.ESCAPE, Input.Keys.Q:
           goBack();
           return true;
         default:
