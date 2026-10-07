@@ -2,6 +2,10 @@
 
 Date: 2026-10-07 (Australia/Brisbane). Authorized by Yuezhou Wang to adapt only the shop portion into local shop.
 
+## Current implementation update
+
+Yuezhou subsequently chose to retain the quick-open command and restore the original direct-service purchase path. The event-based purchase component and its five dedicated tests have been removed. ShopDisplay is restored exactly to baseline 8bb124d1; ShopCommand, its factory/terminal registration and two real integration tests remain. The sections below describe the earlier adaptation and its historical validation, not the current purchase architecture. Aarash's retained contribution is the adapted debug shop command. Current validation: ./gradlew core:test spotlessCheck desktop:classes passed with 1983 tests, 0 failures, 0 errors and 0 skipped; log: /Users/yuri/CSSE3200/output/shop-direct-purchase-validation.log. Start/end SonarCloud checks still show no shop branch/PR analysis, so this local head's Quality Gate and warning count are unverified. Team 5 Discord was rechecked and its latest visible messages remain September 18.
+
 ## Source and attribution
 
 - Existing shop baseline: 8bb124d1f5a70102adff81582328c8187b828cfa.

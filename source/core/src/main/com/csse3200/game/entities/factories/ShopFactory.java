@@ -6,7 +6,6 @@ import com.csse3200.game.components.shop.ShopCatalog;
 import com.csse3200.game.components.shop.ShopDisplay;
 import com.csse3200.game.components.shop.ShopInputComponent;
 import com.csse3200.game.components.shop.ShopProductKind;
-import com.csse3200.game.components.shop.ShopPurchaseComponent;
 import com.csse3200.game.components.shop.ShopService;
 import com.csse3200.game.components.shop.ShopSessionComponent;
 import com.csse3200.game.entities.Entity;
@@ -25,13 +24,12 @@ public final class ShopFactory {
     ShopService service =
         new ShopService(
             inventory, catalog, Map.of(ShopProductKind.CONSUMABLE, new ConsumablePurchaseEffect()));
-    ShopDisplay display = new ShopDisplay(inventory, catalog);
+    ShopDisplay display = new ShopDisplay(inventory, catalog, service);
     ShopSessionComponent session = new ShopSessionComponent(player, display);
     Entity shop =
         new Entity()
             .addComponent(display)
             .addComponent(session)
-            .addComponent(new ShopPurchaseComponent(session, service))
             .addComponent(
                 new ShopInputComponent(session, ServiceLocator.getRenderService().getStage()));
     shop.setUpdatesWhilePaused(true);
