@@ -14,6 +14,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.ChainRestrictionComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.HeadAttachmentComponent;
+import com.csse3200.game.components.miniboss.cerberus.CerberusChainComponent;
+import com.csse3200.game.components.miniboss.cerberus.CerberusChainRenderComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusLayeredRenderComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusLayeredRenderComponent.Action;
 import com.csse3200.game.components.miniboss.cerberus.CerberusLayeredRenderComponent.Part;
@@ -159,5 +161,43 @@ class CerberusTest {
     assertEquals(6.4375f, heads.get(1).getCenterPosition().x, 0.001f);
     assertEquals(8.30f, heads.get(0).getCenterPosition().y, 0.001f);
     assertEquals(8.30f, heads.get(1).getCenterPosition().y, 0.001f);
+  }
+
+  @Test
+  void shouldAttachChainToBodyAndKeepWallAnchorFixed() {
+    when(textureAtlas.findRegion("chain")).thenReturn(mock(TextureAtlas.AtlasRegion.class));
+
+    Vector2 wallAnchor = new Vector2(4f, 8f);
+
+    Entity cerberus =
+        CerberusFactory.createCerberus(
+            null,
+            new Vector2(5f, 5f),
+            wallAnchor,
+            entityService::register,
+            "images/cerberus/cerberus-modular.atlas");
+
+    CerberusChainComponent chain = cerberus.getComponent(CerberusChainComponent.class);
+    CerberusChainRenderComponent renderer =
+        cerberus.getComponent(CerberusChainRenderComponent.class);
+
+    assertNotNull(chain);
+    assertNotNull(renderer);
+
+    renderer.create();
+    try {
+      cerberus.setPosition(6f, 5f);
+
+      Vector2[] points = renderer.getChainPoints();
+
+      assertEquals(new Vector2(4f, 8f), points[0]);
+      assertEquals(chain.getBodyAttachment(), points[points.length - 1]);
+
+      // Changing the caller's vector must not move the wall attachment.
+      wallAnchor.setZero();
+      assertEquals(new Vector2(4f, 8f), chain.getWallAnchor());
+    } finally {
+      renderer.dispose();
+    }
   }
 }

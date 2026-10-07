@@ -5,6 +5,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.*;
 import com.csse3200.game.components.miniboss.cerberus.CerberusAttackCoordinator;
 import com.csse3200.game.components.miniboss.cerberus.CerberusBiteComponent;
+import com.csse3200.game.components.miniboss.cerberus.CerberusChainComponent;
+import com.csse3200.game.components.miniboss.cerberus.CerberusChainRenderComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusEnrageVisualComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusLayeredRenderComponent;
@@ -25,6 +27,8 @@ import java.util.function.Consumer;
 
 /** Factory for creating Cerberus and its individual heads. */
 public class CerberusFactory {
+  public static final String CHAIN_ATLAS_PATH = "images/cerberus/cerberus-chain.atlas";
+
   private static final float VISUAL_SIZE = 2f;
   private static final float SIDE_HEAD_WIDTH = VISUAL_SIZE * 0.28f;
   private static final float SIDE_HEAD_HEIGHT = VISUAL_SIZE * 0.35f;
@@ -92,6 +96,25 @@ public class CerberusFactory {
 
   public static Entity createCerberus(
       Entity target, Vector2 anchorPoint, Consumer<Entity> sideHeadSpawner, String skin) {
+    return createCerberus(target, anchorPoint, null, sideHeadSpawner, skin);
+  }
+
+  /**
+   * Creates Cerberus with an optional visible chain.
+   *
+   * @param target player targeted by attacks
+   * @param anchorPoint centre of the existing movement restriction
+   * @param wallAnchor fixed chain attachment, or null to omit the visible chain
+   * @param sideHeadSpawner callback for spawning the side heads
+   * @param skin Cerberus animation atlas path
+   * @return Cerberus main entity
+   */
+  public static Entity createCerberus(
+      Entity target,
+      Vector2 anchorPoint,
+      Vector2 wallAnchor,
+      Consumer<Entity> sideHeadSpawner,
+      String skin) {
     Entity mainHead = createBaseCerberusPart();
     mainHead.setScale(VISUAL_SIZE, VISUAL_SIZE);
     mainHead
@@ -191,6 +214,20 @@ public class CerberusFactory {
       leftHead.getComponent(CerberusMistComponent.class).setAttackCoordinator(coordinator);
       mainHead.getComponent(CerberusBiteComponent.class).setAttackCoordinator(coordinator);
       rightHead.getComponent(CerberusProjectileComponent.class).setAttackCoordinator(coordinator);
+    }
+
+    if (wallAnchor != null) {
+      TextureAtlas chainAtlas =
+          ServiceLocator.getResourceService().getAsset(CHAIN_ATLAS_PATH, TextureAtlas.class);
+
+      // Account for the body's attachment offset and existing movement radius.
+      Vector2 attachmentCentre = anchorPoint.cpy().add(VISUAL_SIZE * 0.5f, VISUAL_SIZE * 0.4f);
+      float chainLength = wallAnchor.dst(attachmentCentre) + 3f + 0.1f;
+
+      mainHead
+          .addComponent(new CerberusChainComponent(wallAnchor))
+          .addComponent(
+              new CerberusChainRenderComponent(chainAtlas.findRegion("chain"), chainLength));
     }
 
     sideHeadSpawner.accept(leftHead);
