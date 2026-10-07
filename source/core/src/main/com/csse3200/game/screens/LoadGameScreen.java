@@ -32,6 +32,7 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -289,11 +290,9 @@ public class LoadGameScreen extends ScreenAdapter {
     }
     List<String> dungeonIds = new ArrayList<>(times.keySet());
     dungeonIds.sort(String::compareTo);
-    List<String> entries = new ArrayList<>();
-    for (String dungeonId : dungeonIds) {
-      entries.add(displayRoom(dungeonId) + " " + formatPlayTime(times.get(dungeonId)));
-    }
-    return String.join("  |  ", entries);
+    return dungeonIds.stream()
+        .map(dungeonId -> displayRoom(dungeonId) + " " + formatPlayTime(times.get(dungeonId)))
+        .collect(Collectors.joining("  |  "));
   }
 
   private int count(List<?> values) {

@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 /** Dialog that lets the player save, delete the save, or cancel before exiting. */
+@SuppressWarnings("java:S110")
 public class ExitSaveDialog extends Dialog {
   private final Runnable saveAndExit;
   private final Runnable deleteSaveAndExit;
