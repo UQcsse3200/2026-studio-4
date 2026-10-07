@@ -207,3 +207,16 @@ existing pickup and Tab/Q path, or the upstream `burnvial` QA command for its de
 Full local verification passed 1964 tests with zero failures, errors or skips,
 desktop compilation, core JAR assembly and Spotless checks. This adaptation has
 not been launched for manual gameplay verification or pushed to a remote branch.
+
+At Yuri's request, the player-head three-tile Burn Vial flame was removed locally.
+Enemy-attached flames, damage pulses, the warm flash and actual Burning behavior
+remain unchanged. The player-only timer/event hook and pixel texture were removed
+with that visual. 57 related tests, desktop build and Spotless checks passed.
+
+Yuri approved a distinct olive-green glass Molotov-style bottle with orange-red
+fuel at its base and a cloth wick. Its transparent PNG replaces the Burn Vial
+artwork at the existing asset path; the HUD trims its measured transparent padding.
+Inventory and world drops reuse the existing item texture metadata. Item IDs,
+quantities, damage and burning behavior are unchanged by this artwork update.
+The final bottle-art version passed 61 related tests, desktop compilation, core
+JAR assembly and Spotless checks. Its in-game appearance remains for manual review.
