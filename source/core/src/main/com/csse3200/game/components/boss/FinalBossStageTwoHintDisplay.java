@@ -35,7 +35,7 @@ public class FinalBossStageTwoHintDisplay extends UIComponent {
     bossStats = entity.getComponent(CombatStatsComponent.class);
     if (stage == null) return;
 
-    Label.LabelStyle style = new Label.LabelStyle(skin.get("small", Label.LabelStyle.class));
+    Label.LabelStyle style = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
     style.fontColor = Color.valueOf("123F7A");
     Label hint =
         new Label(HINT, style) {
