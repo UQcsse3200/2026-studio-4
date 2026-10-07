@@ -174,6 +174,7 @@ public class MainGameScreen extends ScreenAdapter {
     if (saveOnDispose && !runSaved && player != null && roomManager != null) {
       runSaved = true;
       try {
+        runTimer.stopDungeon();
         GameSaveData save =
             GameSaveMapper.capture(
                 player, roomManager.getCheckpointData(), roomManager.getResumePositionData());
