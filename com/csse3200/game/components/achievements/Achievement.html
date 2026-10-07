@@ -91,7 +91,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Achievement</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block">A single instance of achievement.</div>
+<div class="block">A single achievement: a name, a condition checked on update, and a shared progress value some
+ conditions use to track a running count or measurement between updates.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -103,12 +104,14 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.entities.Entity,java.lang.String,int,java.lang.String)" class="member-name-link">Achievement</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;room,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;progression,
- int&nbsp;maxProgression,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String)" class="member-name-link">Achievement</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Constructs the new achievement.</div>
+<div class="block">Creates an achievement whose condition is attached afterward via <a href="#setCondition(java.util.function.Predicate)"><code>setCondition(java.util.function.Predicate&lt;com.csse3200.game.components.achievements.AchievementContext&gt;)</code></a>.</div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.lang.String,java.util.function.Predicate)" class="member-name-link">Achievement</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Predicate.html" title="class or interface in java.util.function" class="external-link">Predicate</a>&lt;<a href="AchievementContext.html" title="class in com.csse3200.game.components.achievements">AchievementContext</a>&gt;&nbsp;condition)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Creates an achievement with its condition fixed at construction.</div>
 </div>
 </div>
 </section>
@@ -124,22 +127,36 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCurrentProgression()" class="member-name-link">getCurrentProgression</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMaxProgression()" class="member-name-link">getMaxProgression</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getName()" class="member-name-link">getName</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isUnlocked()" class="member-name-link">isUnlocked</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newRoom(com.csse3200.game.entities.Entity)" class="member-name-link">newRoom</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;room)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addProgress(float)" class="member-name-link">addProgress</a><wbr>(float&nbsp;amount)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getName()" class="member-name-link">getName</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getProgress()" class="member-name-link">getProgress</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTarget()" class="member-name-link">getTarget</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isUnlocked()" class="member-name-link">isUnlocked</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setCondition(java.util.function.Predicate)" class="member-name-link">setCondition</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Predicate.html" title="class or interface in java.util.function" class="external-link">Predicate</a>&lt;<a href="AchievementContext.html" title="class in com.csse3200.game.components.achievements">AchievementContext</a>&gt;&nbsp;condition)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets this achievement's condition.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setProgress(float)" class="member-name-link">setProgress</a><wbr>(float&nbsp;progress)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setTarget(float)" class="member-name-link">setTarget</a><wbr>(float&nbsp;target)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update(com.csse3200.game.components.achievements.AchievementContext)" class="member-name-link">update</a><wbr>(<a href="AchievementContext.html" title="class in com.csse3200.game.components.achievements">AchievementContext</a>&nbsp;context)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Moves this achievement to a new room.</div>
+<div class="block">Checks this achievement's condition against what just happened.</div>
 </div>
 </div>
 </div>
@@ -159,21 +176,18 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(com.csse3200.game.entities.Entity,java.lang.String,int,java.lang.String)">
+<section class="detail" id="&lt;init&gt;(java.lang.String,java.util.function.Predicate)">
 <h3>Achievement</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Achievement</span><wbr><span class="parameters">(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;room,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;progression,
- int&nbsp;maxProgression,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
-<div class="block">Constructs the new achievement.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>room</code> - The room entity in which to start this achievement.</dd>
-<dd><code>progression</code> - The event that should progress this achievement.</dd>
-<dd><code>maxProgression</code> - The number of progressions required to complete this achievement. If this
-     achievement is doing 1 thing, the maxProgression should be 1.</dd>
-<dd><code>name</code> - The name to display of this achievement.</dd>
-</dl>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Achievement</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Predicate.html" title="class or interface in java.util.function" class="external-link">Predicate</a>&lt;<a href="AchievementContext.html" title="class in com.csse3200.game.components.achievements">AchievementContext</a>&gt;&nbsp;condition)</span></div>
+<div class="block">Creates an achievement with its condition fixed at construction.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(java.lang.String)">
+<h3>Achievement</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Achievement</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<div class="block">Creates an achievement whose condition is attached afterward via <a href="#setCondition(java.util.function.Predicate)"><code>setCondition(java.util.function.Predicate&lt;com.csse3200.game.components.achievements.AchievementContext&gt;)</code></a>.</div>
 </section>
 </li>
 </ul>
@@ -185,50 +199,61 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="getName()">
-<h3>getName</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getName</span>()</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>The name of the achievement</dd>
-</dl>
+<section class="detail" id="setCondition(java.util.function.Predicate)">
+<h3>setCondition</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setCondition</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Predicate.html" title="class or interface in java.util.function" class="external-link">Predicate</a>&lt;<a href="AchievementContext.html" title="class in com.csse3200.game.components.achievements">AchievementContext</a>&gt;&nbsp;condition)</span></div>
+<div class="block">Sets this achievement's condition. Used by conditions that need to close over <code>this</code> (to
+ call <a href="#addProgress(float)"><code>addProgress(float)</code></a> or <a href="#setProgress(float)"><code>setProgress(float)</code></a>), which isn't possible while still inside the
+ constructor call that would otherwise take the condition as an argument.</div>
 </section>
 </li>
 <li>
-<section class="detail" id="newRoom(com.csse3200.game.entities.Entity)">
-<h3>newRoom</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">newRoom</span><wbr><span class="parameters">(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;room)</span></div>
-<div class="block">Moves this achievement to a new room.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>room</code> - the room to move to.</dd>
-</dl>
+<section class="detail" id="update(com.csse3200.game.components.achievements.AchievementContext)">
+<h3>update</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">update</span><wbr><span class="parameters">(<a href="AchievementContext.html" title="class in com.csse3200.game.components.achievements">AchievementContext</a>&nbsp;context)</span></div>
+<div class="block">Checks this achievement's condition against what just happened.</div>
 </section>
 </li>
 <li>
-<section class="detail" id="getMaxProgression()">
-<h3>getMaxProgression</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getMaxProgression</span>()</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>the maximum number of progressions for this room to work.</dd>
-</dl>
+<section class="detail" id="getProgress()">
+<h3>getProgress</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getProgress</span>()</div>
 </section>
 </li>
 <li>
-<section class="detail" id="getCurrentProgression()">
-<h3>getCurrentProgression</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getCurrentProgression</span>()</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>the current progressions for this room.</dd>
-</dl>
+<section class="detail" id="setProgress(float)">
+<h3>setProgress</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setProgress</span><wbr><span class="parameters">(float&nbsp;progress)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="addProgress(float)">
+<h3>addProgress</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addProgress</span><wbr><span class="parameters">(float&nbsp;amount)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="getTarget()">
+<h3>getTarget</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getTarget</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setTarget(float)">
+<h3>setTarget</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setTarget</span><wbr><span class="parameters">(float&nbsp;target)</span></div>
 </section>
 </li>
 <li>
 <section class="detail" id="isUnlocked()">
 <h3>isUnlocked</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isUnlocked</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getName()">
+<h3>getName</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getName</span>()</div>
 </section>
 </li>
 </ul>
