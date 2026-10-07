@@ -121,6 +121,183 @@ class InventoryDisplayTest {
     assertNull(stage.getRoot().findActor("charms-equipped"));
   }
 
+  @Test
+  void keyboardConfirmsThroughExistingActionsAndDetailsFollowSelection() {
+    var charm = new com.csse3200.game.items.charms.StrengthCharm();
+    charm.pickUp(player);
+    display.setVisible(true);
+    assertTrue(stage.keyDown(com.badlogic.gdx.Input.Keys.SPACE));
+    assertFalse(charm.isEquipped());
+    for (int i = 0; i < 3; i++) stage.keyDown(com.badlogic.gdx.Input.Keys.D);
+    var details =
+        (com.badlogic.gdx.scenes.scene2d.ui.Label)
+            stage.getRoot().findActor("inventory-selection-details");
+    assertTrue(details.getText().toString().contains(charm.getName()));
+    stage.keyDown(com.badlogic.gdx.Input.Keys.SPACE);
+    assertTrue(charm.isEquipped());
+  }
+
+  @Test
+  void keyboardNavigationReachesFourthConsumableSlotAndStopsAtEdges() {
+    inventory.addConsumable(com.csse3200.game.items.ItemIds.HEALTH_POTION, 3);
+    inventory.equipConsumable(com.csse3200.game.items.ItemIds.HEALTH_POTION, 3);
+    display.setVisible(true);
+    stage.keyDown(com.badlogic.gdx.Input.Keys.E);
+    stage.keyDown(com.badlogic.gdx.Input.Keys.W);
+    stage.keyDown(com.badlogic.gdx.Input.Keys.A);
+    stage.keyDown(com.badlogic.gdx.Input.Keys.D);
+    stage.keyDown(com.badlogic.gdx.Input.Keys.D);
+    stage.keyDown(com.badlogic.gdx.Input.Keys.S);
+    stage.keyDown(com.badlogic.gdx.Input.Keys.SPACE);
+    assertNull(inventory.getConsumableSlot(3));
+    assertEquals(3, inventory.getConsumableCount(com.csse3200.game.items.ItemIds.HEALTH_POTION));
+  }
+
+  @Test
+  void categoryKeysAreHandledOnlyWhileOpenAndDoNotConsumeStock() {
+    inventory.addConsumable(com.csse3200.game.items.ItemIds.HEALTH_POTION, 3);
+    assertFalse(stage.keyDown(com.badlogic.gdx.Input.Keys.Q));
+    display.setVisible(true);
+    assertTrue(stage.keyDown(com.badlogic.gdx.Input.Keys.E));
+    assertNotNull(stage.getRoot().findActor("consumables-equipped"));
+    assertTrue(stage.keyDown(com.badlogic.gdx.Input.Keys.Q));
+    assertNotNull(stage.getRoot().findActor("charms-equipped"));
+    assertEquals(3, inventory.getConsumableCount(com.csse3200.game.items.ItemIds.HEALTH_POTION));
+    assertFalse(stage.keyDown(com.badlogic.gdx.Input.Keys.I));
+    assertFalse(stage.keyDown(com.badlogic.gdx.Input.Keys.F1));
+  }
+
+  @Test
+  void capturedReleasesAreHandledAfterClosingButEarlierMovementReleasesPassThrough() {
+    display.setVisible(true);
+    assertFalse(stage.keyUp(com.badlogic.gdx.Input.Keys.W));
+    assertTrue(stage.keyDown(com.badlogic.gdx.Input.Keys.D));
+    display.setVisible(false);
+    assertTrue(stage.keyUp(com.badlogic.gdx.Input.Keys.D));
+    assertFalse(stage.keyUp(com.badlogic.gdx.Input.Keys.D));
+    assertFalse(stage.keyDown(com.badlogic.gdx.Input.Keys.D));
+  }
+
+  @Test
+  void keyboardSelectionScrollsToCharmsBeyondVisibleRows() {
+    for (int i = 0; i < 20; i++) new com.csse3200.game.items.charms.StrengthCharm().pickUp(player);
+    stage.getViewport().update(1280, 800, true);
+    display.setVisible(true);
+    for (int i = 0; i < 6; i++) stage.keyDown(com.badlogic.gdx.Input.Keys.S);
+    Table grid = stage.getRoot().findActor("charms-equipped");
+    var scroll = (com.badlogic.gdx.scenes.scene2d.ui.ScrollPane) grid.getParent();
+    assertTrue(scroll.getVisualScrollY() > 0f);
+  }
+
+  @Test
+  void openInventoryConsumesKeysBeforeGameplayThroughInputService() {
+    var input = new com.csse3200.game.input.InputService();
+    var gameplay = mock(com.csse3200.game.input.InputComponent.class);
+    org.mockito.Mockito.when(gameplay.getPriority()).thenReturn(5);
+    input.register(gameplay);
+    input.register(new com.csse3200.game.input.InputDecorator(stage, 10));
+    display.setVisible(true);
+    for (int key :
+        new int[] {
+          com.badlogic.gdx.Input.Keys.Q,
+          com.badlogic.gdx.Input.Keys.E,
+          com.badlogic.gdx.Input.Keys.W,
+          com.badlogic.gdx.Input.Keys.J,
+          com.badlogic.gdx.Input.Keys.SPACE
+        }) {
+      assertTrue(input.keyDown(key));
+      org.mockito.Mockito.verify(gameplay, org.mockito.Mockito.never()).keyDown(key);
+    }
+    display.setVisible(false);
+    input.keyDown(com.badlogic.gdx.Input.Keys.Q);
+    org.mockito.Mockito.verify(gameplay).keyDown(com.badlogic.gdx.Input.Keys.Q);
+    input.keyDown(com.badlogic.gdx.Input.Keys.SPACE);
+    org.mockito.Mockito.verify(gameplay).keyDown(com.badlogic.gdx.Input.Keys.SPACE);
+  }
+
+  @Test
+  void escapeClosesThroughTheInventoryToggleAndReopeningWorks() {
+    inventory.setDisplay(display);
+    inventory.toggleDisplay();
+    assertTrue(display.isVisible());
+    assertTrue(stage.keyDown(com.badlogic.gdx.Input.Keys.ESCAPE));
+    assertFalse(display.isVisible());
+    inventory.toggleDisplay();
+    assertTrue(display.isVisible());
+    inventory.toggleDisplay();
+  }
+
+  @Test
+  void bookRetainsOriginalCoverAndParchmentPagesWithReadableInk() {
+    for (int[] size : new int[][] {{906, 706}, {1280, 800}, {1918, 1080}}) {
+      stage.getViewport().update(size[0], size[1], true);
+      display.setVisible(true);
+      Table book = stage.getRoot().findActor("inventory-book");
+      book.validate();
+      var cover = (com.badlogic.gdx.scenes.scene2d.ui.Image) book.findActor("inventory-book-cover");
+      assertNotNull(cover, "Inventory must use the original travel book cover");
+      var coverDrawable =
+          assertInstanceOf(
+              com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable.class,
+              cover.getDrawable());
+      assertEquals(224, coverDrawable.getRegion().getRegionWidth());
+      assertEquals(160, coverDrawable.getRegion().getRegionHeight());
+      var left = (Table) book.findActor("inventory-page-left");
+      var right = (Table) book.findActor("inventory-page-right");
+      assertNotNull(left);
+      assertNotNull(right);
+      var leftDrawable =
+          assertInstanceOf(
+              com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable.class,
+              left.getBackground());
+      var rightDrawable =
+          assertInstanceOf(
+              com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable.class,
+              right.getBackground());
+      assertEquals(1787, leftDrawable.getRegion().getRegionX());
+      assertEquals(1853, leftDrawable.getRegion().getRegionY());
+      assertEquals(1029, rightDrawable.getRegion().getRegionX());
+      assertEquals(612, rightDrawable.getRegion().getRegionY());
+      var coverPos = cover.localToStageCoordinates(new com.badlogic.gdx.math.Vector2());
+      var leftPos = left.localToStageCoordinates(new com.badlogic.gdx.math.Vector2());
+      var rightPos = right.localToStageCoordinates(new com.badlogic.gdx.math.Vector2());
+      assertTrue(coverPos.x >= 0f && coverPos.y >= 0f);
+      assertTrue(coverPos.x + cover.getWidth() <= stage.getWidth() + 1f);
+      assertTrue(coverPos.y + cover.getHeight() <= stage.getHeight() + 1f);
+      assertTrue(leftPos.x >= coverPos.x);
+      assertTrue(leftPos.x + left.getWidth() <= rightPos.x, "Pages must leave the spine visible");
+      assertTrue(rightPos.x + right.getWidth() <= coverPos.x + cover.getWidth() + 1f);
+      for (Table page : new Table[] {left, right}) {
+        var pagePos = page.localToStageCoordinates(new com.badlogic.gdx.math.Vector2());
+        assertTrue(pagePos.y >= coverPos.y);
+        assertTrue(pagePos.y + page.getHeight() <= coverPos.y + cover.getHeight() + 1f);
+        for (Actor content : page.getChildren()) {
+          assertTrue(
+              content.getX() >= -1f && content.getY() >= -1f,
+              content + " position " + content.getX() + "," + content.getY());
+          assertTrue(content.getX() + content.getWidth() <= page.getWidth() + 1f);
+          assertTrue(content.getY() + content.getHeight() <= page.getHeight() + 1f);
+        }
+      }
+      for (String tabName : new String[] {"inventory-tab-charms", "inventory-tab-consumables"}) {
+        var tab = (com.badlogic.gdx.scenes.scene2d.ui.TextButton) book.findActor(tabName);
+        assertNotNull(tab);
+        assertTrue(
+            tab.getColor().a > 0.9f && tab.getLabel().getColor().a > 0.9f,
+            "Category controls must remain visible");
+      }
+      var details =
+          (com.badlogic.gdx.scenes.scene2d.ui.Label) book.findActor("inventory-selection-details");
+      var ink = details.getStyle().fontColor;
+      assertTrue(
+          details.getColor().r * ink.r < 0.6f
+              && details.getColor().g * ink.g < 0.6f
+              && details.getColor().b * ink.b < 0.6f,
+          "Parchment requires dark readable ink");
+      display.changePage();
+    }
+  }
+
   private void clickItem(String slotName) {
     com.badlogic.gdx.scenes.scene2d.ui.Stack slot = stage.getRoot().findActor(slotName);
     slot.getChildren()
