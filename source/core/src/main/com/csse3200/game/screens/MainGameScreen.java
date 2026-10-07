@@ -293,7 +293,10 @@ public class MainGameScreen extends ScreenAdapter {
             new MainGameExitDisplay(
                 this::saveAndExit,
                 this::deleteSaveAndExit,
-                () -> player.getEvents().trigger("walkStop")))
+                () -> {
+                  player.getEvents().trigger("walkStop");
+                  player.getEvents().trigger("resetMovementInput");
+                }))
         .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay())

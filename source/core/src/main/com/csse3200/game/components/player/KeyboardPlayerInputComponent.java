@@ -15,6 +15,7 @@ import com.csse3200.game.utils.math.Vector2Utils;
 public class KeyboardPlayerInputComponent extends InputComponent {
   private static final String EQUIP_WEAPON_EVENT = "equipWeapon";
   private final Vector2 walkDirection = Vector2.Zero.cpy();
+  private boolean ignoreStaleKeyUps;
 
   public KeyboardPlayerInputComponent() {
     super(5);
@@ -23,7 +24,14 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   @Override
   public void create() {
     super.create();
-    entity.getEvents().addListener("walkStop", walkDirection::setZero);
+    entity
+        .getEvents()
+        .addListener(
+            "resetMovementInput",
+            () -> {
+              walkDirection.setZero();
+              ignoreStaleKeyUps = true;
+            });
   }
 
   /**
@@ -45,18 +53,22 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger(EQUIP_WEAPON_EVENT, WeaponType.BOW);
         return true;
       case Keys.W:
+        ignoreStaleKeyUps = false;
         walkDirection.add(Vector2Utils.UP);
         triggerWalkEvent();
         return true;
       case Keys.A:
+        ignoreStaleKeyUps = false;
         walkDirection.add(Vector2Utils.LEFT);
         triggerWalkEvent();
         return true;
       case Keys.S:
+        ignoreStaleKeyUps = false;
         walkDirection.add(Vector2Utils.DOWN);
         triggerWalkEvent();
         return true;
       case Keys.D:
+        ignoreStaleKeyUps = false;
         walkDirection.add(Vector2Utils.RIGHT);
         triggerWalkEvent();
         return true;
@@ -103,21 +115,25 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean keyUp(int keycode) {
+    if (ignoreStaleKeyUps
+        && (keycode == Keys.W || keycode == Keys.A || keycode == Keys.S || keycode == Keys.D)) {
+      return true;
+    }
     switch (keycode) {
       case Keys.W:
-        if (walkDirection.y > 0f) walkDirection.sub(Vector2Utils.UP);
+        walkDirection.sub(Vector2Utils.UP);
         triggerWalkEvent();
         return true;
       case Keys.A:
-        if (walkDirection.x < 0f) walkDirection.sub(Vector2Utils.LEFT);
+        walkDirection.sub(Vector2Utils.LEFT);
         triggerWalkEvent();
         return true;
       case Keys.S:
-        if (walkDirection.y < 0f) walkDirection.sub(Vector2Utils.DOWN);
+        walkDirection.sub(Vector2Utils.DOWN);
         triggerWalkEvent();
         return true;
       case Keys.D:
-        if (walkDirection.x > 0f) walkDirection.sub(Vector2Utils.RIGHT);
+        walkDirection.sub(Vector2Utils.RIGHT);
         triggerWalkEvent();
         return true;
       default:
