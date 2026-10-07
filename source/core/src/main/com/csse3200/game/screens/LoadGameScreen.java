@@ -6,6 +6,7 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -123,8 +124,8 @@ public class LoadGameScreen extends ScreenAdapter {
     divider.setBackground(skin.newDrawable("button-c", GOLD));
     panel.add(divider).height(3f).expandX().fillX().padBottom(16f).row();
 
-    float panelHeight = Math.min(680f, Gdx.graphics.getHeight() - 32f);
-    float rowHeight = Math.max(52f, Math.min(112f, (panelHeight - 213f) / 3f));
+    float panelHeight = MathUtils.clamp(Gdx.graphics.getHeight() - 32f, 0f, 680f);
+    float rowHeight = MathUtils.clamp((panelHeight - 213f) / 3f, 52f, 112f);
     for (int index = 0; index < SLOT_COUNT; index++) {
       Button row = createSlotRow(index, rowHeight);
       slotButtons[index] = row;
@@ -141,8 +142,8 @@ public class LoadGameScreen extends ScreenAdapter {
     panel.add(footer).expandX().fillX().left().padTop(8f);
 
     frame.add(panel).expand().fill().pad(12f);
-    float width = Math.min(1120f, Gdx.graphics.getWidth() - 32f);
-    float height = Math.min(680f, Gdx.graphics.getHeight() - 32f);
+    float width = MathUtils.clamp(Gdx.graphics.getWidth() - 32f, 0f, 1120f);
+    float height = MathUtils.clamp(Gdx.graphics.getHeight() - 32f, 0f, 680f);
     root.add(frame).width(width).height(height).center();
     stage.addActor(root);
     updateSelection();
@@ -214,9 +215,14 @@ public class LoadGameScreen extends ScreenAdapter {
       details.add(label(status, SMALL_FONT, MUTED, 1f)).left();
       return details;
     }
-    String room = save.resumePosition != null
-        ? displayRoom(save.resumePosition.roomId)
-        : (save.checkpoint == null ? "Unknown location" : displayRoom(save.checkpoint.roomId));
+    String room;
+    if (save.resumePosition != null) {
+      room = displayRoom(save.resumePosition.roomId);
+    } else if (save.checkpoint == null) {
+      room = "Unknown location";
+    } else {
+      room = displayRoom(save.checkpoint.roomId);
+    }
     details.add(label(room, "font", TEXT, 1f)).left().row();
     details.add(label("Play Time  " + formatPlayTime(save.playTimeSeconds), SMALL_FONT, TEXT, 1f)).left().row();
     details.add(label(formatDungeonTimes(save.dungeonTimesSeconds), SMALL_FONT, MUTED, 0.9f)).left().row();
