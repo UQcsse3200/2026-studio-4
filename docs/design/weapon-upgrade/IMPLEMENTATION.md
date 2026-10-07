@@ -73,3 +73,9 @@ Fresh full validation on the source branch passed. Final integration validation 
 Discord Team 5 and Team 3 were read. At 21:52-21:55 Brisbane on October 7, Faraj reported an ability selection panel and asked whether to make a separate NPC upgrade selection panel; Ben described the starting NPCs as demonstrations. This signals potential overlapping future work, not a user instruction to modify that implementation. No external message or other-team source change is made here.
 
 SonarCloud start/end API inspection still finds no analysis for shop, the feature branch or the integration task. Main analysis is `9e70da4d` at 2026-10-07 08:21:02 UTC, gate OK, with 37 unresolved historical issues (1 BUG, 36 CODE_SMELL, zero vulnerabilities); the local integration's gate and issue count are unknown. Local validation is complete, new SonarCloud scan unverified. No push, PR creation, reviewer request, issue edit or source-upload scan is performed.
+
+## Release configuration
+
+The release preparation restores new-game starting gold to the existing 50-gold baseline. The 1000-gold value described above was used only for the earlier demonstration; it is not the submitted gameplay configuration. The shop continues to use actual inventory gold and the existing save/load path. The catalog's 60-gold weapon prices and consumable prices remain provisional balancing values.
+
+After this restoration, `./gradlew core:test spotlessCheck desktop:classes --rerun-tasks` passed with 2163 tests, zero failures/errors/skips, and `git diff --check` passed. The complete player configuration matches main when parsed as JSON.
