@@ -6,6 +6,7 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.gamearea.TimerDisplay;
+import com.csse3200.game.components.maingame.CoinFlipDisplay;
 import com.csse3200.game.components.maingame.ConsumableHotbarDisplay;
 import com.csse3200.game.components.maingame.HotbarDisplay;
 import com.csse3200.game.components.maingame.InventoryActions;
@@ -40,6 +41,7 @@ import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.ui.terminal.commands.AbilityCommand;
 import com.csse3200.game.ui.terminal.commands.BurnVialCommand;
+import com.csse3200.game.ui.terminal.commands.CoinFlipCommand;
 import com.csse3200.game.ui.terminal.commands.ShopCommand;
 import com.csse3200.game.ui.terminal.commands.SpellCommand;
 import com.csse3200.game.ui.terminal.commands.StatusEffectCommand;
@@ -193,6 +195,9 @@ public class MainGameScreen extends ScreenAdapter {
                 new ShopEntry(ItemIds.SHIELD, "Shield", 15),
                 new ShopEntry(ItemIds.SPEED_POTION, "Speed Potion", 12)));
 
+    CoinFlipDisplay coinFlipDisplay =
+        new CoinFlipDisplay(player.getComponent(InventoryComponent.class));
+
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
@@ -207,9 +212,11 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(hotbarDisplay)
         .addComponent(consumableHotbarDisplay)
         .addComponent(inventoryActions)
-        .addComponent(shopDisplay);
+        .addComponent(shopDisplay)
+        .addComponent(coinFlipDisplay);
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     terminal.addCommand("shop", new ShopCommand(ui));
+    terminal.addCommand("coinflip", new CoinFlipCommand(ui));
     ServiceLocator.getEntityService().register(ui);
   }
 
