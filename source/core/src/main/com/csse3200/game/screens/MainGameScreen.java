@@ -217,7 +217,7 @@ public class MainGameScreen extends ScreenAdapter {
 
     // Dialogue and cutscene systems (events are sent on the player)
     ServiceLocator.getEntityService().register(NarrativeFactory.createNarrative(player));
-    ServiceLocator.getEntityService().register(ShopFactory.createShop(player));
+    ServiceLocator.getEntityService().register(ShopFactory.createShop(player, terminal));
   }
 
   /* Schedule the death screen to be shown */

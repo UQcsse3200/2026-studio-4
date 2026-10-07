@@ -35,7 +35,6 @@ public class ShopDisplay extends UIComponent implements ShopView {
   private static final String MERCHANT_ATLAS = "images/shopkeeper.atlas";
   private final InventoryComponent inventoryData;
   private final ShopCatalog catalog;
-  private final ShopService service;
   private final Map<ShopOffer, TextButton> buyButtons = new LinkedHashMap<>();
   private final Map<ShopOffer, Label> ownedLabels = new LinkedHashMap<>();
   private final List<Texture> panelTextures = new ArrayList<>();
@@ -51,15 +50,15 @@ public class ShopDisplay extends UIComponent implements ShopView {
   private boolean disposed;
   private boolean assetsLoaded;
 
-  public ShopDisplay(InventoryComponent inventoryData, ShopCatalog catalog, ShopService service) {
+  public ShopDisplay(InventoryComponent inventoryData, ShopCatalog catalog) {
     this.inventoryData = inventoryData;
     this.catalog = catalog;
-    this.service = service;
   }
 
   @Override
   public void create() {
     super.create();
+    entity.getEvents().addListener("shopPurchaseResult", this::purchaseCompleted);
     ResourceService resources = ServiceLocator.getResourceService();
     for (ShopOffer offer : catalog.offers()) {
       if (offer.kind() == ShopProductKind.CONSUMABLE) {
@@ -163,9 +162,10 @@ public class ShopDisplay extends UIComponent implements ShopView {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
               if (!active || buy.isDisabled()) return;
-              ShopPurchaseResult result = service.purchase(offer.offerId());
-              feedback.setText(purchaseMessage(result, item.getName()));
-              refresh();
+              // Adapted from Aarash Mehta's display-only request flow; settlement lives separately.
+              entity
+                  .getEvents()
+                  .trigger("shopPurchaseRequested", offer.offerId(), offer.goldPrice());
             }
           });
       buyButtons.put(offer, buy);
@@ -229,6 +229,14 @@ public class ShopDisplay extends UIComponent implements ShopView {
     pixels.dispose();
     panelTextures.add(texture);
     return new NinePatchDrawable(new NinePatch(texture, edge, edge, edge, edge));
+  }
+
+  private void purchaseCompleted(String offerId, ShopPurchaseResult result) {
+    if (!active || disposed) return;
+    ShopOffer offer = catalog.find(offerId);
+    if (offer == null || offer.kind() != ShopProductKind.CONSUMABLE) return;
+    feedback.setText(purchaseMessage(result, ItemCatalog.create(offer.productId(), 1).getName()));
+    refresh();
   }
 
   private static String purchaseMessage(ShopPurchaseResult result, String name) {

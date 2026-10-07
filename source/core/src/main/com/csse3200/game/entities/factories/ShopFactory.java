@@ -6,10 +6,13 @@ import com.csse3200.game.components.shop.ShopCatalog;
 import com.csse3200.game.components.shop.ShopDisplay;
 import com.csse3200.game.components.shop.ShopInputComponent;
 import com.csse3200.game.components.shop.ShopProductKind;
+import com.csse3200.game.components.shop.ShopPurchaseComponent;
 import com.csse3200.game.components.shop.ShopService;
 import com.csse3200.game.components.shop.ShopSessionComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.terminal.Terminal;
+import com.csse3200.game.ui.terminal.commands.ShopCommand;
 import java.util.Map;
 import java.util.Objects;
 
@@ -22,15 +25,24 @@ public final class ShopFactory {
     ShopService service =
         new ShopService(
             inventory, catalog, Map.of(ShopProductKind.CONSUMABLE, new ConsumablePurchaseEffect()));
-    ShopDisplay display = new ShopDisplay(inventory, catalog, service);
+    ShopDisplay display = new ShopDisplay(inventory, catalog);
     ShopSessionComponent session = new ShopSessionComponent(player, display);
     Entity shop =
         new Entity()
             .addComponent(display)
             .addComponent(session)
+            .addComponent(new ShopPurchaseComponent(session, service))
             .addComponent(
                 new ShopInputComponent(session, ServiceLocator.getRenderService().getStage()));
     shop.setUpdatesWhilePaused(true);
+    return shop;
+  }
+
+  /** Registers Aarash's QA entry on the game's existing terminal and returns the same shop. */
+  public static Entity createShop(Entity player, Terminal terminal) {
+    Objects.requireNonNull(terminal);
+    Entity shop = createShop(player);
+    terminal.addCommand("shop", new ShopCommand(shop));
     return shop;
   }
 
