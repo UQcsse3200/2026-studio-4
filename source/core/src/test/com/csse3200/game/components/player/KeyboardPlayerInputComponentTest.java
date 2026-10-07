@@ -239,6 +239,8 @@ class KeyboardPlayerInputComponentTest {
     }
     assertEquals(ItemIds.FREEZE_BOMB, selection.getSelectedType());
     assertTrue(input.keyDown(Keys.TAB));
+    assertEquals(ItemIds.BURN_VIAL, selection.getSelectedType());
+    assertTrue(input.keyDown(Keys.TAB));
     assertEquals(0, selection.getSelectedIndex());
   }
 }

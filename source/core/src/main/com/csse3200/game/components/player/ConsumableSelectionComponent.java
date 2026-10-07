@@ -16,7 +16,11 @@ public class ConsumableSelectionComponent extends Component {
           ItemIds.SHIELD,
           ItemIds.SPEED_POTION,
           ItemIds.STRENGTH_POTION,
-          ItemIds.FREEZE_BOMB);
+          ItemIds.FREEZE_BOMB,
+          // Added for #197 C1; ConsumableHotbarDisplay sizes itself off this list, so this is
+          // the only change needed to give Burn Vial a 6th slot. Flagging for review since this
+          // list is shared by every player.
+          ItemIds.BURN_VIAL);
 
   private int selectedIndex;
 
