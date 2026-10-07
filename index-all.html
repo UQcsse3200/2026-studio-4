@@ -100,10 +100,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Action a command.</div>
 </dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/CutsceneCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/CutsceneCommand.html" title="class in com.csse3200.game.ui.terminal.commands">CutsceneCommand</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/terminal/commands/DebugCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/DebugCommand.html" title="class in com.csse3200.game.ui.terminal.commands">DebugCommand</a></dt>
 <dd>
 <div class="block">Toggles debug mode on or off if the corresponding argument is received.</div>
 </dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/DialogueCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/DialogueCommand.html" title="class in com.csse3200.game.ui.terminal.commands">DialogueCommand</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/terminal/commands/SpellCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/SpellCommand.html" title="class in com.csse3200.game.ui.terminal.commands">SpellCommand</a></dt>
 <dd>
 <div class="block">Casts the named spell.</div>
@@ -229,6 +233,22 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Leaves a brief green mark at a position travelled while underground.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueDisplay.html#advance()" class="member-name-link">advance()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueDisplay.html" title="class in com.csse3200.game.components.cutscene">DialogueDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html#advance()" class="member-name-link">advance()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.html" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a></dt>
+<dd>
+<div class="block">The player pressed the advance key: finishes revealing the current line, or if it is already
+ fully shown moves to the next line (closing the dialogue after the last one).</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueView.html#advance()" class="member-name-link">advance()</a> - Method in interface com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueView.html" title="interface in com.csse3200.game.components.cutscene">DialogueView</a></dt>
+<dd>
+<div class="block">The player pressed the advance key / clicked.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#advance()" class="member-name-link">advance()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
+<dd>
+<div class="block">The advance key (SPACE / ENTER / click): next dialogue line, otherwise skip the cutscene if it
+ allows it.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/configs/InteractableNpcConfig.CutsceneTiming.html#AFTER_DIALOGUE" class="member-name-link">AFTER_DIALOGUE</a> - Enum constant in enum class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/InteractableNpcConfig.CutsceneTiming.html" title="enum class in com.csse3200.game.entities.configs">InteractableNpcConfig.CutsceneTiming</a></dt>
 <dd>
 <div class="block">Dialogue first, then the cutscene once the dialogue finishes.</div>
@@ -268,6 +288,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/utils/math/Vector2Utils.html#angleTo(com.badlogic.gdx.math.Vector2)" class="member-name-link">angleTo(Vector2)</a> - Static method in class com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/Vector2Utils.html" title="class in com.csse3200.game.utils.math">Vector2Utils</a></dt>
 <dd>
 <div class="block">Calculate the angle in degrees of a vector.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html#animation" class="member-name-link">animation</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html" title="class in com.csse3200.game.components.cutscene">DialogueScript.Speaker</a></dt>
+<dd>
+<div class="block">Looping animation (atlas region name) to play from the atlas.</div>
 </dd>
 <dt><a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html#animation" class="member-name-link">animation</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html" title="class in com.csse3200.game.entities.configs">InteractableNpcConfig</a></dt>
 <dd>
@@ -327,6 +351,22 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/FinalBossStageTwoConfig.html#arenaMargin" class="member-name-link">arenaMargin</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/FinalBossStageTwoConfig.html" title="class in com.csse3200.game.entities.configs">FinalBossStageTwoConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.TimedEvent.html#arg" class="member-name-link">arg</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.TimedEvent.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript.TimedEvent</a></dt>
+<dd>
+<div class="block">Optional string argument; if null the event is triggered with no arguments.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.TimedEvent.html#at" class="member-name-link">at</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.TimedEvent.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript.TimedEvent</a></dt>
+<dd>
+<div class="block">Seconds after the cutscene starts.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.html#at(float,java.lang.String,java.lang.String)" class="member-name-link">at(float, String, String)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript</a></dt>
+<dd>
+<div class="block">Adds a timed event (fluent).</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html#atlas" class="member-name-link">atlas</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html" title="class in com.csse3200.game.components.cutscene">DialogueScript.Speaker</a></dt>
+<dd>
+<div class="block">Texture atlas for an animated portrait.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html#atlas" class="member-name-link">atlas</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html" title="class in com.csse3200.game.entities.configs">InteractableNpcConfig</a></dt>
 <dd>
 <div class="block">Texture atlas for an animated sprite.</div>
@@ -667,6 +707,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/items/ItemCategory.html#CHARM" class="member-name-link">CHARM</a> - Enum constant in enum class com.csse3200.game.items.<a href="com/csse3200/game/items/ItemCategory.html" title="enum class in com.csse3200.game.items">ItemCategory</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html#CHARS_PER_SECOND" class="member-name-link">CHARS_PER_SECOND</a> - Static variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.html" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a></dt>
+<dd>
+<div class="block">Characters revealed per second.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/configs/NPCConfigs.html#chaseEnemy" class="member-name-link">chaseEnemy</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/NPCConfigs.html" title="class in com.csse3200.game.entities.configs">NPCConfigs</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/ChaseEnemyConfig.html" class="type-name-link" title="class in com.csse3200.game.entities.configs">ChaseEnemyConfig</a> - Class in <a href="com/csse3200/game/entities/configs/package-summary.html">com.csse3200.game.entities.configs</a></dt>
@@ -735,6 +779,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Takes every effect off at once, running each removal callback after the list is empty.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueDisplay.html#close()" class="member-name-link">close()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueDisplay.html" title="class in com.csse3200.game.components.cutscene">DialogueDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueView.html#close()" class="member-name-link">close()</a> - Method in interface com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueView.html" title="interface in com.csse3200.game.components.cutscene">DialogueView</a></dt>
+<dd>
+<div class="block">Hides the dialogue UI and releases its resources.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/tasks/CoilAttackTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">CoilAttackTask</a> - Class in <a href="com/csse3200/game/components/tasks/package-summary.html">com.csse3200.game.components.tasks</a></dt>
 <dd>
 <div class="block">Performs a telegraphed coil attack toward a target.</div>
@@ -762,6 +812,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/achievements/package-summary.html">com.csse3200.game.components.achievements</a> - package com.csse3200.game.components.achievements</dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/package-summary.html">com.csse3200.game.components.boss</a> - package com.csse3200.game.components.boss</dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/package-summary.html">com.csse3200.game.components.cutscene</a> - package com.csse3200.game.components.cutscene</dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/package-summary.html">com.csse3200.game.components.friendlynpc</a> - package com.csse3200.game.components.friendlynpc</dt>
 <dd>&nbsp;</dd>
@@ -1004,6 +1056,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Called when the entity is created and registered.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutscenePlayer.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutscenePlayer.html" title="class in com.csse3200.game.components.cutscene">CutscenePlayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueDisplay.html" title="class in com.csse3200.game.components.cutscene">DialogueDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/EnemyDeathComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/EnemyDeathComponent.html" title="class in com.csse3200.game.components">EnemyDeathComponent</a></dt>
 <dd>
 <div class="block">Registers a listener for the entity's event.</div>
@@ -1013,8 +1071,6 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionIndicatorComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionIndicatorComponent.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionIndicatorComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractorComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractorComponent.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractorComponent</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/friendlynpc/PlaceholderNarrativeComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/PlaceholderNarrativeComponent.html" title="class in com.csse3200.game.components.friendlynpc">PlaceholderNarrativeComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/gamearea/GameAreaDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.gamearea.<a href="com/csse3200/game/components/gamearea/GameAreaDisplay.html" title="class in com.csse3200.game.components.gamearea">GameAreaDisplay</a></dt>
 <dd>&nbsp;</dd>
@@ -1377,6 +1433,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a last stand status effect that starts counting down immediately.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/factories/NarrativeFactory.html#createNarrative(com.csse3200.game.entities.Entity,java.util.function.BooleanSupplier)" class="member-name-link">createNarrative(Entity, BooleanSupplier)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/NarrativeFactory.html" title="class in com.csse3200.game.entities.factories">NarrativeFactory</a></dt>
+<dd>
+<div class="block">Creates the narrative entity.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/factories/PlayerFactory.html#createPlayer()" class="member-name-link">createPlayer()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/PlayerFactory.html" title="class in com.csse3200.game.entities.factories">PlayerFactory</a></dt>
 <dd>
 <div class="block">Create a player entity.</div>
@@ -1448,6 +1508,11 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html#CROW" class="member-name-link">CROW</a> - Enum constant in enum class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html" title="enum class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig.EnemyType</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.Line.html#cue" class="member-name-link">cue</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.Line.html" title="class in com.csse3200.game.components.cutscene">DialogueScript.Line</a></dt>
+<dd>
+<div class="block">If true, <a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#DIALOGUE_CUTSCENE_CUE"><code>CutsceneEvents.DIALOGUE_CUTSCENE_CUE</code></a> fires when this line appears, which
+ starts an NPC's DURING_DIALOGUE cutscene.</div>
+</dd>
 <dt><a href="com/csse3200/game/items/ItemCategory.html#CURRENCY" class="member-name-link">CURRENCY</a> - Enum constant in enum class com.csse3200.game.items.<a href="com/csse3200/game/items/ItemCategory.html" title="enum class in com.csse3200.game.items">ItemCategory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/CurrencyItem.html" class="type-name-link" title="class in com.csse3200.game.items">CurrencyItem</a> - Class in <a href="com/csse3200/game/items/package-summary.html">com.csse3200.game.items</a></dt>
@@ -1456,15 +1521,62 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/items/CurrencyItem.html#%3Cinit%3E(int)" class="member-name-link">CurrencyItem(int)</a> - Constructor for class com.csse3200.game.items.<a href="com/csse3200/game/items/CurrencyItem.html" title="class in com.csse3200.game.items">CurrencyItem</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#CUTSCENE_FINISHED" class="member-name-link">CUTSCENE_FINISHED</a> - Static variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block"><code>(String cutsceneId)</code>: the cutscene has ended, however it ended.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionEvents.html#CUTSCENE_FINISHED" class="member-name-link">CUTSCENE_FINISHED</a> - Static variable in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionEvents.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionEvents</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#CUTSCENE_SKIPPED" class="member-name-link">CUTSCENE_SKIPPED</a> - Static variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block"><code>(String cutsceneId)</code>: the player skipped the cutscene.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#CUTSCENE_STARTED" class="member-name-link">CUTSCENE_STARTED</a> - Static variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block"><code>(String cutsceneId)</code>: a cutscene has begun.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/CutsceneCommand.html" class="type-name-link" title="class in com.csse3200.game.ui.terminal.commands">CutsceneCommand</a> - Class in <a href="com/csse3200/game/ui/terminal/commands/package-summary.html">com.csse3200.game.ui.terminal.commands</a></dt>
+<dd>
+<div class="block">QA entry point for the video cutscenes: <code>cutscene &lt;file&gt;</code> plays <code>
+ configs/cutscenes/&lt;file&gt;.json</code>, e.g.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/CutsceneCommand.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">CutsceneCommand(Entity)</a> - Constructor for class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/CutsceneCommand.html" title="class in com.csse3200.game.ui.terminal.commands">CutsceneCommand</a></dt>
+<dd>
+<div class="block">Binds the command to the player whose event handler runs the cutscene.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" class="type-name-link" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a> - Class in <a href="com/csse3200/game/components/cutscene/package-summary.html">com.csse3200.game.components.cutscene</a></dt>
+<dd>
+<div class="block">The public "event handles" of the dialogue and cutscene systems.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html#cutsceneId" class="member-name-link">cutsceneId</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html" title="class in com.csse3200.game.entities.configs">InteractableNpcConfig</a></dt>
 <dd>
 <div class="block">Cutscene to start, or null for an NPC that only has dialogue.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutscenePlayer.html" class="type-name-link" title="class in com.csse3200.game.components.cutscene">CutscenePlayer</a> - Class in <a href="com/csse3200/game/components/cutscene/package-summary.html">com.csse3200.game.components.cutscene</a></dt>
+<dd>
+<div class="block">Plays <a href="com/csse3200/game/components/cutscene/CutsceneScript.html" title="class in com.csse3200.game.components.cutscene"><code>CutsceneScript</code></a>s: an mp4 shown full screen over the game (see <code>Mp4VideoPlayer</code>).</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutscenePlayer.html#%3Cinit%3E()" class="member-name-link">CutscenePlayer()</a> - Constructor for class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutscenePlayer.html" title="class in com.csse3200.game.components.cutscene">CutscenePlayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.html" class="type-name-link" title="class in com.csse3200.game.components.cutscene">CutsceneScript</a> - Class in <a href="com/csse3200/game/components/cutscene/package-summary.html">com.csse3200.game.components.cutscene</a></dt>
+<dd>
+<div class="block">A scripted animation scene: an mp4 played full screen.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.html#%3Cinit%3E()" class="member-name-link">CutsceneScript()</a> - Constructor for class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.html#%3Cinit%3E(java.lang.String)" class="member-name-link">CutsceneScript(String)</a> - Constructor for class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.TimedEvent.html" class="type-name-link" title="class in com.csse3200.game.components.cutscene">CutsceneScript.TimedEvent</a> - Class in <a href="com/csse3200/game/components/cutscene/package-summary.html">com.csse3200.game.components.cutscene</a></dt>
+<dd>
+<div class="block">An event fired on the player's event handler part-way through the cutscene.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html#cutsceneTiming" class="member-name-link">cutsceneTiming</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html" title="class in com.csse3200.game.entities.configs">InteractableNpcConfig</a></dt>
 <dd>
 <div class="block">Ordering used when both dialogueId and cutsceneId are set.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneView.html" class="type-name-link" title="interface in com.csse3200.game.components.cutscene">CutsceneView</a> - Interface in <a href="com/csse3200/game/components/cutscene/package-summary.html">com.csse3200.game.components.cutscene</a></dt>
+<dd>
+<div class="block">What the narrative manager needs from whatever plays animation cutscenes on screen.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/player/ConsumableSelectionComponent.html#cycle()" class="member-name-link">cycle()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumableSelectionComponent.html" title="class in com.csse3200.game.components.player">ConsumableSelectionComponent</a></dt>
 <dd>
@@ -1558,13 +1670,80 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/entities/configs/FinalBossStageThreeConfig.html#dialogue" class="member-name-link">dialogue</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/FinalBossStageThreeConfig.html" title="class in com.csse3200.game.entities.configs">FinalBossStageThreeConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#DIALOGUE_CUTSCENE_CUE" class="member-name-link">DIALOGUE_CUTSCENE_CUE</a> - Static variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block"><code>(String dialogueId)</code>: fired when a line flagged <code>"cue": true</code> is shown, so a
+ cutscene can start part-way through a dialogue.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionEvents.html#DIALOGUE_CUTSCENE_CUE" class="member-name-link">DIALOGUE_CUTSCENE_CUE</a> - Static variable in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionEvents.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionEvents</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#DIALOGUE_FINISHED" class="member-name-link">DIALOGUE_FINISHED</a> - Static variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block"><code>(String dialogueId)</code>: the dialogue has closed.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionEvents.html#DIALOGUE_FINISHED" class="member-name-link">DIALOGUE_FINISHED</a> - Static variable in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionEvents.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionEvents</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#DIALOGUE_LINE_SHOWN" class="member-name-link">DIALOGUE_LINE_SHOWN</a> - Static variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block"><code>(String dialogueId, Integer lineIndex)</code>: a new line is now showing.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#DIALOGUE_SKIPPED" class="member-name-link">DIALOGUE_SKIPPED</a> - Static variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block"><code>(String dialogueId)</code>: the player left the dialogue early.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#DIALOGUE_STARTED" class="member-name-link">DIALOGUE_STARTED</a> - Static variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block"><code>(String dialogueId)</code>: a dialogue has opened.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/DialogueCommand.html" class="type-name-link" title="class in com.csse3200.game.ui.terminal.commands">DialogueCommand</a> - Class in <a href="com/csse3200/game/ui/terminal/commands/package-summary.html">com.csse3200.game.ui.terminal.commands</a></dt>
+<dd>
+<div class="block">QA entry point for the dialogue system: <code>dialogue &lt;file&gt;</code> plays <code>
+ configs/dialogues/&lt;file&gt;.json</code>, e.g.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/DialogueCommand.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">DialogueCommand(Entity)</a> - Constructor for class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/DialogueCommand.html" title="class in com.csse3200.game.ui.terminal.commands">DialogueCommand</a></dt>
+<dd>
+<div class="block">Binds the command to the player whose event handler runs the dialogue.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.cutscene">DialogueDisplay</a> - Class in <a href="com/csse3200/game/components/cutscene/package-summary.html">com.csse3200.game.components.cutscene</a></dt>
+<dd>
+<div class="block">The dialogue box along the bottom of the screen: the words on the left, and on the right a framed
+ portrait of whoever is speaking with their name underneath.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueDisplay.html#%3Cinit%3E()" class="member-name-link">DialogueDisplay()</a> - Constructor for class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueDisplay.html" title="class in com.csse3200.game.components.cutscene">DialogueDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html#dialogueId" class="member-name-link">dialogueId</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html" title="class in com.csse3200.game.entities.configs">InteractableNpcConfig</a></dt>
 <dd>
 <div class="block">Dialogue to start, or null for an NPC that only plays a cutscene.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html" class="type-name-link" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a> - Class in <a href="com/csse3200/game/components/cutscene/package-summary.html">com.csse3200.game.components.cutscene</a></dt>
+<dd>
+<div class="block">Steps through a <a href="com/csse3200/game/components/cutscene/DialogueScript.html" title="class in com.csse3200.game.components.cutscene"><code>DialogueScript</code></a> one line at a time with a typewriter reveal.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html#%3Cinit%3E(com.csse3200.game.components.cutscene.DialogueScript,com.csse3200.game.components.cutscene.DialogueRunner.Listener)" class="member-name-link">DialogueRunner(DialogueScript, DialogueRunner.Listener)</a> - Constructor for class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.html" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.Listener.html" class="type-name-link" title="interface in com.csse3200.game.components.cutscene">DialogueRunner.Listener</a> - Interface in <a href="com/csse3200/game/components/cutscene/package-summary.html">com.csse3200.game.components.cutscene</a></dt>
+<dd>
+<div class="block">Notified as the dialogue progresses.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.html" class="type-name-link" title="class in com.csse3200.game.components.cutscene">DialogueScript</a> - Class in <a href="com/csse3200/game/components/cutscene/package-summary.html">com.csse3200.game.components.cutscene</a></dt>
+<dd>
+<div class="block">A conversation: who is speaking and what they say, line by line.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.html#%3Cinit%3E()" class="member-name-link">DialogueScript()</a> - Constructor for class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.html" title="class in com.csse3200.game.components.cutscene">DialogueScript</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.html#%3Cinit%3E(java.lang.String)" class="member-name-link">DialogueScript(String)</a> - Constructor for class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.html" title="class in com.csse3200.game.components.cutscene">DialogueScript</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.Line.html" class="type-name-link" title="class in com.csse3200.game.components.cutscene">DialogueScript.Line</a> - Class in <a href="com/csse3200/game/components/cutscene/package-summary.html">com.csse3200.game.components.cutscene</a></dt>
+<dd>
+<div class="block">One line of dialogue.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html" class="type-name-link" title="class in com.csse3200.game.components.cutscene">DialogueScript.Speaker</a> - Class in <a href="com/csse3200/game/components/cutscene/package-summary.html">com.csse3200.game.components.cutscene</a></dt>
+<dd>
+<div class="block">Someone who can speak, and how their portrait looks.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueView.html" class="type-name-link" title="interface in com.csse3200.game.components.cutscene">DialogueView</a> - Interface in <a href="com/csse3200/game/components/cutscene/package-summary.html">com.csse3200.game.components.cutscene</a></dt>
+<dd>
+<div class="block">What the narrative manager needs from whatever shows dialogue on screen.</div>
 </dd>
 <dt><a href="com/csse3200/game/physics/raycast/SingleHitCallback.html#didHit" class="member-name-link">didHit</a> - Variable in class com.csse3200.game.physics.raycast.<a href="com/csse3200/game/physics/raycast/SingleHitCallback.html" title="class in com.csse3200.game.physics.raycast">SingleHitCallback</a></dt>
 <dd>&nbsp;</dd>
@@ -1628,6 +1807,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Called when the component is disposed.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutscenePlayer.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutscenePlayer.html" title="class in com.csse3200.game.components.cutscene">CutscenePlayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueDisplay.html" title="class in com.csse3200.game.components.cutscene">DialogueDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/ExplodeComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/ExplodeComponent.html" title="class in com.csse3200.game.components">ExplodeComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionIndicatorComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionIndicatorComponent.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionIndicatorComponent</a></dt>
@@ -1871,6 +2056,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/boss/FinalBossSummonVisualComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossSummonVisualComponent.html" title="class in com.csse3200.game.components.boss">FinalBossSummonVisualComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossVisualComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossVisualComponent.html" title="class in com.csse3200.game.components.boss">FinalBossVisualComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutscenePlayer.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutscenePlayer.html" title="class in com.csse3200.game.components.cutscene">CutscenePlayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueDisplay.html" title="class in com.csse3200.game.components.cutscene">DialogueDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionIndicatorComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionIndicatorComponent.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionIndicatorComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -2181,6 +2370,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Equips an available weapon without changing shared combat stats or cooldown.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.TimedEvent.html#event" class="member-name-link">event</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.TimedEvent.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript.TimedEvent</a></dt>
+<dd>
+<div class="block">Event name triggered on the player's event handler.</div>
+</dd>
 <dt><a href="com/csse3200/game/events/EventHandler.html" class="type-name-link" title="class in com.csse3200.game.events">EventHandler</a> - Class in <a href="com/csse3200/game/events/package-summary.html">com.csse3200.game.events</a></dt>
 <dd>
 <div class="block">Send and receive events between objects.</div>
@@ -2206,6 +2399,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/events/listeners/EventListener3.html" class="type-name-link" title="interface in com.csse3200.game.events.listeners">EventListener3&lt;T0,<wbr>T1,<wbr>T2&gt;</a> - Interface in <a href="com/csse3200/game/events/listeners/package-summary.html">com.csse3200.game.events.listeners</a></dt>
 <dd>
 <div class="block">An event listener with 3 arguments</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.html#events" class="member-name-link">events</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript</a></dt>
+<dd>
+<div class="block">Events to fire at set times.</div>
 </dd>
 <dt><a href="com/csse3200/game/GdxGame.html#exit()" class="member-name-link">exit()</a> - Method in class com.csse3200.game.<a href="com/csse3200/game/GdxGame.html" title="class in com.csse3200.game">GdxGame</a></dt>
 <dd>
@@ -2450,6 +2647,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/rooms/FriendlyNpcManagerComponent.html#findNearestInRange(com.csse3200.game.entities.Entity)" class="member-name-link">findNearestInRange(Entity)</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/FriendlyNpcManagerComponent.html" title="class in com.csse3200.game.components.rooms">FriendlyNpcManagerComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.html#findSpeaker(java.lang.String)" class="member-name-link">findSpeaker(String)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.html" title="class in com.csse3200.game.components.cutscene">DialogueScript</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusAttackCoordinator.html#finish(com.csse3200.game.entities.Entity)" class="member-name-link">finish(Entity)</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusAttackCoordinator.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusAttackCoordinator</a></dt>
 <dd>
 <div class="block">Releases an attack when it ends or is cancelled.</div>
@@ -2574,6 +2773,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/files/UserSettings.Settings.html#fps" class="member-name-link">fps</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.Settings.html" title="class in com.csse3200.game.files">UserSettings.Settings</a></dt>
 <dd>
 <div class="block">FPS cap of the game.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html#frameSeconds" class="member-name-link">frameSeconds</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html" title="class in com.csse3200.game.components.cutscene">DialogueScript.Speaker</a></dt>
+<dd>
+<div class="block">Seconds per frame of the portrait animation.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/TrapSpawnConfig.TrapType.html#FREEZE" class="member-name-link">FREEZE</a> - Enum constant in enum class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/TrapSpawnConfig.TrapType.html" title="enum class in com.csse3200.game.components.rooms.configs">TrapSpawnConfig.TrapType</a></dt>
 <dd>&nbsp;</dd>
@@ -2768,6 +2971,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Current visible frame, for effects that need a snapshot of this animation.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html#getCurrentLine()" class="member-name-link">getCurrentLine()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.html" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossPhaseControllerComponent.html#getCurrentPhase()" class="member-name-link">getCurrentPhase()</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossPhaseControllerComponent.html" title="class in com.csse3200.game.components.boss">FinalBossPhaseControllerComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/BossPhaseComponent.html#getCurrentPhase()" class="member-name-link">getCurrentPhase()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/BossPhaseComponent.html" title="class in com.csse3200.game.components">BossPhaseComponent</a></dt>
@@ -2779,6 +2984,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns the current combat phase, either 1 or 2.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/achievements/Achievement.html#getCurrentProgression()" class="member-name-link">getCurrentProgression()</a> - Method in class com.csse3200.game.components.achievements.<a href="com/csse3200/game/components/achievements/Achievement.html" title="class in com.csse3200.game.components.achievements">Achievement</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html#getCurrentSpeaker()" class="member-name-link">getCurrentSpeaker()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.html" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/Damage.html#getDamage()" class="member-name-link">getDamage()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/Damage.html" title="class in com.csse3200.game.components">Damage</a></dt>
 <dd>&nbsp;</dd>
@@ -2958,6 +3165,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/factories/HitboxSpec.html#getLifetime()" class="member-name-link">getLifetime()</a> - Method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HitboxSpec.html" title="class in com.csse3200.game.entities.factories">HitboxSpec</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html#getLightDamageMultiplier(java.lang.Class)" class="member-name-link">getLightDamageMultiplier(Class&lt;? extends WeaponComponent&gt;)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html#getLineIndex()" class="member-name-link">getLineIndex()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.html" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/weapons/FollowComponent.html#getLocalOffset()" class="member-name-link">getLocalOffset()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/FollowComponent.html" title="class in com.csse3200.game.components.weapons">FollowComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -3319,6 +3528,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/AnimationRenderComponent.html#getVerticalOffset()" class="member-name-link">getVerticalOffset()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html#getVisibleText()" class="member-name-link">getVisibleText()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.html" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/HitboxSpec.html#getVisualOffset()" class="member-name-link">getVisualOffset()</a> - Method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HitboxSpec.html" title="class in com.csse3200.game.entities.factories">HitboxSpec</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/RotatingTextureRenderComponent.html#getVisualOffset()" class="member-name-link">getVisualOffset()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RotatingTextureRenderComponent.html" title="class in com.csse3200.game.rendering">RotatingTextureRenderComponent</a></dt>
@@ -3368,6 +3579,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Draw warning areas before normal entities so that the circle appears on the floor beneath the
  player and enemies.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutscenePlayer.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutscenePlayer.html" title="class in com.csse3200.game.components.cutscene">CutscenePlayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueDisplay.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueDisplay.html" title="class in com.csse3200.game.components.cutscene">DialogueDisplay</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionIndicatorComponent.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionIndicatorComponent.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionIndicatorComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.gamearea.<a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html" title="class in com.csse3200.game.components.gamearea">PerformanceDisplay</a></dt>
@@ -3504,6 +3719,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/weapons/SwordWeaponComponent.html#hasHeavyAttack()" class="member-name-link">hasHeavyAttack()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/SwordWeaponComponent.html" title="class in com.csse3200.game.components.weapons">SwordWeaponComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponComponent.html#hasHeavyAttack()" class="member-name-link">hasHeavyAttack()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.html#hasLines()" class="member-name-link">hasLines()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.html" title="class in com.csse3200.game.components.cutscene">DialogueScript</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/StatusEffectsControllerComponent.html#hasStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)" class="member-name-link">hasStatusEffect(StatusEffect)</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/StatusEffectsControllerComponent.html" title="class in com.csse3200.game.components">StatusEffectsControllerComponent</a></dt>
 <dd>
@@ -3660,6 +3877,18 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/traps/IceTrapRenderComponent.html#%3Cinit%3E()" class="member-name-link">IceTrapRenderComponent()</a> - Constructor for class com.csse3200.game.components.traps.<a href="com/csse3200/game/components/traps/IceTrapRenderComponent.html" title="class in com.csse3200.game.components.traps">IceTrapRenderComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.html#id" class="member-name-link">id</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript</a></dt>
+<dd>
+<div class="block">Set from the file name when loaded.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.html#id" class="member-name-link">id</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.html" title="class in com.csse3200.game.components.cutscene">DialogueScript</a></dt>
+<dd>
+<div class="block">Set from the file name when loaded.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html#id" class="member-name-link">id</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html" title="class in com.csse3200.game.components.cutscene">DialogueScript.Speaker</a></dt>
+<dd>
+<div class="block">Key that lines use to say who is speaking.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/EntryPointConfig.html#id" class="member-name-link">id</a> - Variable in class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/EntryPointConfig.html" title="class in com.csse3200.game.components.rooms.configs">EntryPointConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/ExitConfig.html#id" class="member-name-link">id</a> - Variable in class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/ExitConfig.html" title="class in com.csse3200.game.components.rooms.configs">ExitConfig</a></dt>
@@ -3811,6 +4040,14 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/statuseffects/InvisibilityEffect.html#%3Cinit%3E(com.csse3200.game.services.GameTime,long)" class="member-name-link">InvisibilityEffect(GameTime, long)</a> - Constructor for class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/InvisibilityEffect.html" title="class in com.csse3200.game.components.statuseffects">InvisibilityEffect</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutscenePlayer.html#isActive()" class="member-name-link">isActive()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutscenePlayer.html" title="class in com.csse3200.game.components.cutscene">CutscenePlayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneView.html#isActive()" class="member-name-link">isActive()</a> - Method in interface com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneView.html" title="interface in com.csse3200.game.components.cutscene">CutsceneView</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueDisplay.html#isActive()" class="member-name-link">isActive()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueDisplay.html" title="class in com.csse3200.game.components.cutscene">DialogueDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueView.html#isActive()" class="member-name-link">isActive()</a> - Method in interface com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueView.html" title="interface in com.csse3200.game.components.cutscene">DialogueView</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/snake/SnakeShieldComponent.html#isActive()" class="member-name-link">isActive()</a> - Method in class com.csse3200.game.components.miniboss.snake.<a href="com/csse3200/game/components/miniboss/snake/SnakeShieldComponent.html" title="class in com.csse3200.game.components.miniboss.snake">SnakeShieldComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/Shield.html#isActive()" class="member-name-link">isActive()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/Shield.html" title="class in com.csse3200.game.components.statuseffects">Shield</a></dt>
@@ -3855,12 +4092,16 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns whether hostiles should currently be unable to find, chase or damage the entity.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#isCutsceneActive()" class="member-name-link">isCutsceneActive()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionSequence.html#isCutsceneActive()" class="member-name-link">isCutsceneActive()</a> - Method in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionSequence.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionSequence</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/CombatStatsComponent.html#isDead()" class="member-name-link">isDead()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/CombatStatsComponent.html" title="class in com.csse3200.game.components">CombatStatsComponent</a></dt>
 <dd>
 <div class="block">Returns true if the entity's has 0 health, otherwise false.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#isDialogueActive()" class="member-name-link">isDialogueActive()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionSequence.html#isDialogueActive()" class="member-name-link">isDialogueActive()</a> - Method in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionSequence.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionSequence</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/StatusEffectsControllerComponent.html#isDisposed()" class="member-name-link">isDisposed()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/StatusEffectsControllerComponent.html" title="class in com.csse3200.game.components">StatusEffectsControllerComponent</a></dt>
@@ -3879,6 +4120,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns whether the effect has run its course.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html#isFinished()" class="member-name-link">isFinished()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.html" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionSequence.html#isFinished()" class="member-name-link">isFinished()</a> - Method in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionSequence.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionSequence</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/AnimationRenderComponent.html#isFinished()" class="member-name-link">isFinished()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a></dt>
@@ -3890,6 +4133,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/rendering/AnimationRenderComponent.html#isFlipY()" class="member-name-link">isFlipY()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossStageThreeComponent.html#isFrozen()" class="member-name-link">isFrozen()</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossStageThreeComponent.html" title="class in com.csse3200.game.components.boss">FinalBossStageThreeComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/EntityService.html#isFrozen()" class="member-name-link">isFrozen()</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/EntityService.html" title="class in com.csse3200.game.entities">EntityService</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/consumables/InstantHealingPotion.html#isHealingPotionId(java.lang.String)" class="member-name-link">isHealingPotionId(String)</a> - Static method in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/InstantHealingPotion.html" title="class in com.csse3200.game.items.consumables">InstantHealingPotion</a></dt>
 <dd>&nbsp;</dd>
@@ -3923,6 +4168,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerActions.html#isJumping()" class="member-name-link">isJumping()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerActions.html" title="class in com.csse3200.game.components.player">PlayerActions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html#isLineComplete()" class="member-name-link">isLineComplete()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.html" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html#isMistActive()" class="member-name-link">isMistActive()</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusMistComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerCerberusMistDebuffComponent.html#isMistDebuffed()" class="member-name-link">isMistDebuffed()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerCerberusMistDebuffComponent.html" title="class in com.csse3200.game.components.player">PlayerCerberusMistDebuffComponent</a></dt>
@@ -3930,6 +4177,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns whether this player currently has effects from a Cerberus mist area.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionSequence.html#isMovementLocked()" class="member-name-link">isMovementLocked()</a> - Method in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionSequence.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionSequence</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#isNarrativeActive()" class="member-name-link">isNarrativeActive()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainComponent.TerrainOrientation.html#ISOMETRIC" class="member-name-link">ISOMETRIC</a> - Enum constant in enum class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainComponent.TerrainOrientation.html" title="enum class in com.csse3200.game.areas.terrain">TerrainComponent.TerrainOrientation</a></dt>
 <dd>&nbsp;</dd>
@@ -4125,6 +4374,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossStageTwoIceInput.html#keyDown(int)" class="member-name-link">keyDown(int)</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossStageTwoIceInput.html" title="class in com.csse3200.game.components.boss">FinalBossStageTwoIceInput</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeInputComponent.html#keyDown(int)" class="member-name-link">keyDown(int)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeInputComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeInputComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/gamearea/TimerDisplay.ToggleInput.html#keyDown(int)" class="member-name-link">keyDown(int)</a> - Method in class com.csse3200.game.components.gamearea.<a href="com/csse3200/game/components/gamearea/TimerDisplay.ToggleInput.html" title="class in com.csse3200.game.components.gamearea">TimerDisplay.ToggleInput</a></dt>
 <dd>
 <div class="block">Toggles the display when T is pressed.</div>
@@ -4172,6 +4423,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Handles input if the terminal is open.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossStageTwoIceInput.html#keyUp(int)" class="member-name-link">keyUp(int)</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossStageTwoIceInput.html" title="class in com.csse3200.game.components.boss">FinalBossStageTwoIceInput</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeInputComponent.html#keyUp(int)" class="member-name-link">keyUp(int)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeInputComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeInputComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/KeyboardPlayerInputComponent.html#keyUp(int)" class="member-name-link">keyUp(int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/KeyboardPlayerInputComponent.html" title="class in com.csse3200.game.components.player">KeyboardPlayerInputComponent</a></dt>
 <dd>
@@ -4251,6 +4504,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/raycast/SingleHitCallback.html#layerMask" class="member-name-link">layerMask</a> - Variable in class com.csse3200.game.physics.raycast.<a href="com/csse3200/game/physics/raycast/SingleHitCallback.html" title="class in com.csse3200.game.physics.raycast">SingleHitCallback</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#leave()" class="member-name-link">leave()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
+<dd>
+<div class="block">The escape key: leaves the open dialogue entirely (the remaining lines are not shown), or if no
+ dialogue is open, skips the running cutscene when it allows it.</div>
+</dd>
 <dt><a href="com/csse3200/game/physics/components/PhysicsComponent.AlignX.html#LEFT" class="member-name-link">LEFT</a> - Enum constant in enum class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsComponent.AlignX.html" title="enum class in com.csse3200.game.physics.components">PhysicsComponent.AlignX</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/math/Vector2Utils.html#LEFT" class="member-name-link">LEFT</a> - Static variable in class com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/Vector2Utils.html" title="class in com.csse3200.game.utils.math">Vector2Utils</a></dt>
@@ -4274,10 +4532,28 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/spells/LightningSpellComponent.html#%3Cinit%3E(float,int,long,com.csse3200.game.components.spells.targeting.EnemyTargetingStrategy)" class="member-name-link">LightningSpellComponent(float, int, long, EnemyTargetingStrategy)</a> - Constructor for class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/LightningSpellComponent.html" title="class in com.csse3200.game.components.spells">LightningSpellComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.html#line(java.lang.String,java.lang.String)" class="member-name-link">line(String, String)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.html" title="class in com.csse3200.game.components.cutscene">DialogueScript</a></dt>
+<dd>
+<div class="block">Adds a line (fluent).</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.Line.html#%3Cinit%3E()" class="member-name-link">Line()</a> - Constructor for class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.Line.html" title="class in com.csse3200.game.components.cutscene">DialogueScript.Line</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.Line.html#%3Cinit%3E(java.lang.String,java.lang.String)" class="member-name-link">Line(String, String)</a> - Constructor for class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.Line.html" title="class in com.csse3200.game.components.cutscene">DialogueScript.Line</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.html#lines" class="member-name-link">lines</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.html" title="class in com.csse3200.game.components.cutscene">DialogueScript</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/ItemTooltip.html#lines(com.csse3200.game.items.Item)" class="member-name-link">lines(Item)</a> - Static method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/ItemTooltip.html" title="class in com.csse3200.game.ui">ItemTooltip</a></dt>
 <dd>
 <div class="block">The lines of text shown in an item's tooltip, top to bottom: its name, its effect summary when
  it has one, then its description.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.html#load(java.lang.String)" class="member-name-link">load(String)</a> - Static method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript</a></dt>
+<dd>
+<div class="block">Loads <code>configs/cutscenes/&lt;name&gt;.json</code>.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.html#load(java.lang.String)" class="member-name-link">load(String)</a> - Static method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.html" title="class in com.csse3200.game.components.cutscene">DialogueScript</a></dt>
+<dd>
+<div class="block">Loads <code>configs/dialogues/&lt;name&gt;.json</code>.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/rooms/RoomAssets.html#loadAll()" class="member-name-link">loadAll()</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomAssets.html" title="class in com.csse3200.game.components.rooms">RoomAssets</a></dt>
 <dd>&nbsp;</dd>
@@ -4491,6 +4767,10 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:N">N</h2>
 <dl class="index">
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html#name" class="member-name-link">name</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html" title="class in com.csse3200.game.components.cutscene">DialogueScript.Speaker</a></dt>
+<dd>
+<div class="block">Name shown under the portrait.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html#name" class="member-name-link">name</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html" title="class in com.csse3200.game.entities.configs">InteractableNpcConfig</a></dt>
 <dd>
 <div class="block">Display name shown in the interaction prompt, e.g.</div>
@@ -4503,6 +4783,23 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Name carried by the abilityUsed and abilityEnded events.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/factories/NarrativeFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">NarrativeFactory</a> - Class in <a href="com/csse3200/game/entities/factories/package-summary.html">com.csse3200.game.entities.factories</a></dt>
+<dd>
+<div class="block">Creates the entity that owns the dialogue and cutscene systems.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeInputComponent.html" class="type-name-link" title="class in com.csse3200.game.components.cutscene">NarrativeInputComponent</a> - Class in <a href="com/csse3200/game/components/cutscene/package-summary.html">com.csse3200.game.components.cutscene</a></dt>
+<dd>
+<div class="block">Takes over input while a dialogue or cutscene is on screen so the game cannot be played behind
+ it.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeInputComponent.html#%3Cinit%3E(com.csse3200.game.components.cutscene.NarrativeManagerComponent,java.util.function.BooleanSupplier)" class="member-name-link">NarrativeInputComponent(NarrativeManagerComponent, BooleanSupplier)</a> - Constructor for class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeInputComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeInputComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" class="type-name-link" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a> - Class in <a href="com/csse3200/game/components/cutscene/package-summary.html">com.csse3200.game.components.cutscene</a></dt>
+<dd>
+<div class="block">Runs dialogues and cutscenes.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity,com.csse3200.game.components.cutscene.DialogueView,com.csse3200.game.components.cutscene.CutsceneView)" class="member-name-link">NarrativeManagerComponent(Entity, DialogueView, CutsceneView)</a> - Constructor for class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/achievements/Achievement.html#newRoom(com.csse3200.game.entities.Entity)" class="member-name-link">newRoom(Entity)</a> - Method in class com.csse3200.game.components.achievements.<a href="com/csse3200/game/components/achievements/Achievement.html" title="class in com.csse3200.game.components.achievements">Achievement</a></dt>
 <dd>
 <div class="block">Moves this achievement to a new room.</div>
@@ -4609,6 +4906,18 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/RoomConfig.html#obstacles" class="member-name-link">obstacles</a> - Variable in class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.html#ofVideo(java.lang.String,java.lang.String)" class="member-name-link">ofVideo(String, String)</a> - Static method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript</a></dt>
+<dd>
+<div class="block">A video cutscene (fluent factory).</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.html#once" class="member-name-link">once</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript</a></dt>
+<dd>
+<div class="block">If true, the cutscene plays once per session unless forced.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.html#once" class="member-name-link">once</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.html" title="class in com.csse3200.game.components.cutscene">DialogueScript</a></dt>
+<dd>
+<div class="block">If true, the dialogue plays once per session unless forced.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html#once" class="member-name-link">once</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html" title="class in com.csse3200.game.entities.configs">InteractableNpcConfig</a></dt>
 <dd>
 <div class="block">If true, the interaction can only be completed once per play session.</div>
@@ -4629,6 +4938,10 @@ loadScripts(document, 'script');</script>
  player speed increases</div>
 </dd>
 <dt><a href="com/csse3200/game/components/tasks/OneAttackTask.html#%3Cinit%3E(com.csse3200.game.entities.Entity,float,float,com.badlogic.gdx.math.Vector2)" class="member-name-link">OneAttackTask(Entity, float, float, Vector2)</a> - Constructor for class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/OneAttackTask.html" title="class in com.csse3200.game.components.tasks">OneAttackTask</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.Listener.html#onFinished()" class="member-name-link">onFinished()</a> - Method in interface com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.Listener.html" title="interface in com.csse3200.game.components.cutscene">DialogueRunner.Listener</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.Listener.html#onLineShown(int,com.csse3200.game.components.cutscene.DialogueScript.Line)" class="member-name-link">onLineShown(int, DialogueScript.Line)</a> - Method in interface com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.Listener.html" title="interface in com.csse3200.game.components.cutscene">DialogueRunner.Listener</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/StatusEffect.html#onRemoved()" class="member-name-link">onRemoved()</a> - Method in interface com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></dt>
 <dd>
@@ -4828,15 +5141,47 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/FinalBossFactory.html#PLACEHOLDER_SKIN" class="member-name-link">PLACEHOLDER_SKIN</a> - Static variable in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/FinalBossFactory.html" title="class in com.csse3200.game.entities.factories">FinalBossFactory</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/friendlynpc/PlaceholderNarrativeComponent.html" class="type-name-link" title="class in com.csse3200.game.components.friendlynpc">PlaceholderNarrativeComponent</a> - Class in <a href="com/csse3200/game/components/friendlynpc/package-summary.html">com.csse3200.game.components.friendlynpc</a></dt>
-<dd>
-<div class="block">TEMPORARY stand-in for the dialogue and cutscene systems, which are being built separately.</div>
-</dd>
-<dt><a href="com/csse3200/game/components/friendlynpc/PlaceholderNarrativeComponent.html#%3Cinit%3E(float)" class="member-name-link">PlaceholderNarrativeComponent(float)</a> - Constructor for class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/PlaceholderNarrativeComponent.html" title="class in com.csse3200.game.components.friendlynpc">PlaceholderNarrativeComponent</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/snake/SnakePlayerHitVisualComponent.html#play()" class="member-name-link">play()</a> - Method in class com.csse3200.game.components.miniboss.snake.<a href="com/csse3200/game/components/miniboss/snake/SnakePlayerHitVisualComponent.html" title="class in com.csse3200.game.components.miniboss.snake">SnakePlayerHitVisualComponent</a></dt>
 <dd>
 <div class="block">Restart one impact after damage is confirmed; repeated hits never stack renderers.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutscenePlayer.html#play(com.csse3200.game.components.cutscene.CutsceneScript,java.lang.Runnable)" class="member-name-link">play(CutsceneScript, Runnable)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutscenePlayer.html" title="class in com.csse3200.game.components.cutscene">CutscenePlayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneView.html#play(com.csse3200.game.components.cutscene.CutsceneScript,java.lang.Runnable)" class="member-name-link">play(CutsceneScript, Runnable)</a> - Method in interface com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneView.html" title="interface in com.csse3200.game.components.cutscene">CutsceneView</a></dt>
+<dd>
+<div class="block">Starts the cutscene.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#playCutscene(com.csse3200.game.components.cutscene.CutsceneScript)" class="member-name-link">playCutscene(CutsceneScript)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
+<dd>
+<div class="block">Plays a cutscene.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#playCutscene(com.csse3200.game.entities.Entity,com.csse3200.game.components.cutscene.CutsceneScript)" class="member-name-link">playCutscene(Entity, CutsceneScript)</a> - Static method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block">Plays a cutscene built in code.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#playCutscene(com.csse3200.game.entities.Entity,java.lang.String)" class="member-name-link">playCutscene(Entity, String)</a> - Static method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block">Plays a cutscene from <code>configs/cutscenes/&lt;cutsceneId&gt;.json</code>.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#playCutscene(java.lang.String)" class="member-name-link">playCutscene(String)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
+<dd>
+<div class="block">Plays <code>configs/cutscenes/&lt;id&gt;.json</code>.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#playDialogue(com.csse3200.game.components.cutscene.DialogueScript)" class="member-name-link">playDialogue(DialogueScript)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
+<dd>
+<div class="block">Plays a dialogue.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#playDialogue(com.csse3200.game.entities.Entity,com.csse3200.game.components.cutscene.DialogueScript)" class="member-name-link">playDialogue(Entity, DialogueScript)</a> - Static method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block">Plays a dialogue built in code.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#playDialogue(com.csse3200.game.entities.Entity,java.lang.String)" class="member-name-link">playDialogue(Entity, String)</a> - Static method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block">Plays a dialogue from <code>configs/dialogues/&lt;dialogueId&gt;.json</code>.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#playDialogue(java.lang.String)" class="member-name-link">playDialogue(String)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
+<dd>
+<div class="block">Plays <code>configs/dialogues/&lt;id&gt;.json</code>.</div>
 </dd>
 <dt><a href="com/csse3200/game/physics/PhysicsLayer.html#PLAYER" class="member-name-link">PLAYER</a> - Static variable in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsLayer.html" title="class in com.csse3200.game.physics">PhysicsLayer</a></dt>
 <dd>&nbsp;</dd>
@@ -5254,6 +5599,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Clears a press on phase exit, player death, or other encounter cleanup.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#resetPlayed()" class="member-name-link">resetPlayed()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
+<dd>
+<div class="block">Forgets which once-only dialogues and cutscenes have played (e.g.</div>
+</dd>
 <dt><a href="com/csse3200/game/rendering/Renderer.html#resize(int,int)" class="member-name-link">resize(int, int)</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/Renderer.html" title="class in com.csse3200.game.rendering">Renderer</a></dt>
 <dd>
 <div class="block">Resize the renderer to a new screen size.</div>
@@ -5623,6 +5972,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Set friction.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/EntityService.html#setFrozen(java.lang.Object,boolean)" class="member-name-link">setFrozen(Object, boolean)</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/EntityService.html" title="class in com.csse3200.game.entities">EntityService</a></dt>
+<dd>
+<div class="block">Freezes the whole game world, e.g.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/rooms/FollowingCameraComponent.html#setGoal(com.badlogic.gdx.math.Vector2)" class="member-name-link">setGoal(Vector2)</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/FollowingCameraComponent.html" title="class in com.csse3200.game.components.rooms">FollowingCameraComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/InventoryComponent.html#setGold(int)" class="member-name-link">setGold(int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
@@ -5805,6 +6158,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/screens/SettingsScreen.html#%3Cinit%3E(com.csse3200.game.GdxGame)" class="member-name-link">SettingsScreen(GdxGame)</a> - Constructor for class com.csse3200.game.screens.<a href="com/csse3200/game/screens/SettingsScreen.html" title="class in com.csse3200.game.screens">SettingsScreen</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/Entity.html#setUpdatesWhilePaused(boolean)" class="member-name-link">setUpdatesWhilePaused(boolean)</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
+<dd>
+<div class="block">Whether this entity keeps updating while the <a href="com/csse3200/game/entities/EntityService.html" title="class in com.csse3200.game.entities"><code>EntityService</code></a> is paused (e.g.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html#setUpgraded(java.lang.Class,boolean)" class="member-name-link">setUpgraded(Class&lt;? extends WeaponComponent&gt;, boolean)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeComponent</a></dt>
 <dd>
 <div class="block">Apply or revert a weapon's upgrade.</div>
@@ -5888,6 +6245,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Shows the area a cast just covered.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueDisplay.html#show(com.csse3200.game.components.cutscene.DialogueScript,com.csse3200.game.components.cutscene.DialogueRunner.Listener)" class="member-name-link">show(DialogueScript, DialogueRunner.Listener)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueDisplay.html" title="class in com.csse3200.game.components.cutscene">DialogueDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueView.html#show(com.csse3200.game.components.cutscene.DialogueScript,com.csse3200.game.components.cutscene.DialogueRunner.Listener)" class="member-name-link">show(DialogueScript, DialogueRunner.Listener)</a> - Method in interface com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueView.html" title="interface in com.csse3200.game.components.cutscene">DialogueView</a></dt>
+<dd>
+<div class="block">Opens the dialogue UI and starts running the script.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/gamearea/GameAreaDisplay.html#showAchievement(java.lang.String)" class="member-name-link">showAchievement(String)</a> - Method in class com.csse3200.game.components.gamearea.<a href="com/csse3200/game/components/gamearea/GameAreaDisplay.html" title="class in com.csse3200.game.components.gamearea">GameAreaDisplay</a></dt>
 <dd>
 <div class="block">Shows an achievement-unlocked toast below the status message.</div>
@@ -5920,6 +6283,28 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/UIComponent.html#skin" class="member-name-link">skin</a> - Static variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueDisplay.html#skip()" class="member-name-link">skip()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueDisplay.html" title="class in com.csse3200.game.components.cutscene">DialogueDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueView.html#skip()" class="member-name-link">skip()</a> - Method in interface com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueView.html" title="interface in com.csse3200.game.components.cutscene">DialogueView</a></dt>
+<dd>
+<div class="block">Ends the dialogue now, without showing the remaining lines.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html#skipAll()" class="member-name-link">skipAll()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.html" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a></dt>
+<dd>
+<div class="block">Closes the dialogue immediately without showing the remaining lines.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#skipCutscene()" class="member-name-link">skipCutscene()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
+<dd>
+<div class="block">Skips the running cutscene if it is skippable.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#skipDialogue()" class="member-name-link">skipDialogue()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
+<dd>
+<div class="block">Closes the open dialogue immediately.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.html#skippable" class="member-name-link">skippable</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript</a></dt>
+<dd>
+<div class="block">Whether the player can skip with SPACE / ENTER / ESC.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/configs/NPCConfigs.html#sleipnir" class="member-name-link">sleipnir</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/NPCConfigs.html" title="class in com.csse3200.game.entities.configs">NPCConfigs</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html#SLEIPNIR" class="member-name-link">SLEIPNIR</a> - Enum constant in enum class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html" title="enum class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig.EnemyType</a></dt>
@@ -6046,6 +6431,20 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/RoomSpawnConfig.html#spawns" class="member-name-link">spawns</a> - Variable in class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/RoomSpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomSpawnConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.Line.html#speaker" class="member-name-link">speaker</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.Line.html" title="class in com.csse3200.game.components.cutscene">DialogueScript.Line</a></dt>
+<dd>
+<div class="block">Id of the <a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html" title="class in com.csse3200.game.components.cutscene"><code>DialogueScript.Speaker</code></a> saying this.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.html#speaker(java.lang.String,java.lang.String,java.lang.String,java.lang.String)" class="member-name-link">speaker(String, String, String, String)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.html" title="class in com.csse3200.game.components.cutscene">DialogueScript</a></dt>
+<dd>
+<div class="block">Adds a speaker (fluent).</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html#%3Cinit%3E()" class="member-name-link">Speaker()</a> - Constructor for class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html" title="class in com.csse3200.game.components.cutscene">DialogueScript.Speaker</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html#%3Cinit%3E(java.lang.String,java.lang.String,java.lang.String,java.lang.String)" class="member-name-link">Speaker(String, String, String, String)</a> - Constructor for class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html" title="class in com.csse3200.game.components.cutscene">DialogueScript.Speaker</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.html#speakers" class="member-name-link">speakers</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.html" title="class in com.csse3200.game.components.cutscene">DialogueScript</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/Speed.html" class="type-name-link" title="class in com.csse3200.game.components.statuseffects">Speed</a> - Class in <a href="com/csse3200/game/components/statuseffects/package-summary.html">com.csse3200.game.components.statuseffects</a></dt>
 <dd>
 <div class="block">The object class for the speed status effect.</div>
@@ -6148,6 +6547,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Start running this task.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.html" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a></dt>
+<dd>
+<div class="block">Shows the first line.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionSequence.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionSequence.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionSequence</a></dt>
 <dd>
 <div class="block">Begins the first step.</div>
@@ -6186,10 +6589,26 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/tasks/WanderTask.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/WanderTask.html" title="class in com.csse3200.game.components.tasks">WanderTask</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#START_CUTSCENE" class="member-name-link">START_CUTSCENE</a> - Static variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block"><code>(String cutsceneId, Entity npc)</code>: play a cutscene file.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionEvents.html#START_CUTSCENE" class="member-name-link">START_CUTSCENE</a> - Static variable in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionEvents.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionEvents</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#START_CUTSCENE_SCRIPT" class="member-name-link">START_CUTSCENE_SCRIPT</a> - Static variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block"><code>(CutsceneScript script)</code>: play a cutscene built in code instead of loaded from file.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#START_DIALOGUE" class="member-name-link">START_DIALOGUE</a> - Static variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block"><code>(String dialogueId, Entity npc)</code>: play a dialogue file.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionEvents.html#START_DIALOGUE" class="member-name-link">START_DIALOGUE</a> - Static variable in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionEvents.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionEvents</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#START_DIALOGUE_SCRIPT" class="member-name-link">START_DIALOGUE_SCRIPT</a> - Static variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneEvents.html" title="class in com.csse3200.game.components.cutscene">CutsceneEvents</a></dt>
+<dd>
+<div class="block"><code>(DialogueScript script)</code>: play a dialogue built in code instead of loaded from file.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/traps/FireTrapRenderComponent.html#START_TEXTURE" class="member-name-link">START_TEXTURE</a> - Static variable in class com.csse3200.game.components.traps.<a href="com/csse3200/game/components/traps/FireTrapRenderComponent.html" title="class in com.csse3200.game.components.traps">FireTrapRenderComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/AnimationRenderComponent.html#startAnimation(java.lang.String)" class="member-name-link">startAnimation(String)</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a></dt>
@@ -6296,6 +6715,12 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/ai/tasks/Task.html#stop()" class="member-name-link">stop()</a> - Method in interface com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/Task.html" title="interface in com.csse3200.game.ai.tasks">Task</a></dt>
 <dd>
 <div class="block">Stop the task immediately.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutscenePlayer.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutscenePlayer.html" title="class in com.csse3200.game.components.cutscene">CutscenePlayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneView.html#stop()" class="member-name-link">stop()</a> - Method in interface com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneView.html" title="interface in com.csse3200.game.components.cutscene">CutsceneView</a></dt>
+<dd>
+<div class="block">Ends the running cutscene early, hiding the video.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/miniboss/dragon/DragonAttackCoordinatorComponent.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonAttackCoordinatorComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonAttackCoordinatorComponent</a></dt>
 <dd>
@@ -6549,6 +6974,14 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainTile.html#%3Cinit%3E(com.badlogic.gdx.graphics.g2d.TextureRegion)" class="member-name-link">TerrainTile(TextureRegion)</a> - Constructor for class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainTile.html" title="class in com.csse3200.game.areas.terrain">TerrainTile</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.Line.html#text" class="member-name-link">text</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.Line.html" title="class in com.csse3200.game.components.cutscene">DialogueScript.Line</a></dt>
+<dd>
+<div class="block">What they say.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html#texture" class="member-name-link">texture</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueScript.Speaker.html" title="class in com.csse3200.game.components.cutscene">DialogueScript.Speaker</a></dt>
+<dd>
+<div class="block">Static portrait image, for speakers without an atlas.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html#texture" class="member-name-link">texture</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/InteractableNpcConfig.html" title="class in com.csse3200.game.entities.configs">InteractableNpcConfig</a></dt>
 <dd>
 <div class="block">Static texture for NPCs without an atlas.</div>
@@ -6622,6 +7055,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainComponent.html#tileToWorldPosition(int,int)" class="member-name-link">tileToWorldPosition(int, int)</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainComponent.html#tileToWorldPosition(com.badlogic.gdx.math.GridPoint2)" class="member-name-link">tileToWorldPosition(GridPoint2)</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.TimedEvent.html#%3Cinit%3E()" class="member-name-link">TimedEvent()</a> - Constructor for class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.TimedEvent.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript.TimedEvent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.TimedEvent.html#%3Cinit%3E(float,java.lang.String,java.lang.String)" class="member-name-link">TimedEvent(float, String, String)</a> - Constructor for class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.TimedEvent.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript.TimedEvent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/TimedPlayerAbility.html" class="type-name-link" title="class in com.csse3200.game.components.player">TimedPlayerAbility</a> - Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
 <dd>
@@ -6715,6 +7152,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Iterates over registered input handlers in descending priority and stops as soon as the input
  is processed</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeInputComponent.html#touchDown(int,int,int,int)" class="member-name-link">touchDown(int, int, int, int)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeInputComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeInputComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/TouchPlayerInputComponent.html#touchDown(int,int,int,int)" class="member-name-link">touchDown(int, int, int, int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/TouchPlayerInputComponent.html" title="class in com.csse3200.game.components.player">TouchPlayerInputComponent</a></dt>
 <dd>
 <div class="block">Triggers the player attack.</div>
@@ -6754,6 +7193,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/ui/terminal/TouchTerminalInputComponent.html#%3Cinit%3E()" class="member-name-link">TouchTerminalInputComponent()</a> - Constructor for class com.csse3200.game.ui.terminal.<a href="com/csse3200/game/ui/terminal/TouchTerminalInputComponent.html" title="class in com.csse3200.game.ui.terminal">TouchTerminalInputComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/terminal/TouchTerminalInputComponent.html#%3Cinit%3E(com.csse3200.game.ui.terminal.Terminal)" class="member-name-link">TouchTerminalInputComponent(Terminal)</a> - Constructor for class com.csse3200.game.ui.terminal.<a href="com/csse3200/game/ui/terminal/TouchTerminalInputComponent.html" title="class in com.csse3200.game.ui.terminal">TouchTerminalInputComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeInputComponent.html#touchUp(int,int,int,int)" class="member-name-link">touchUp(int, int, int, int)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeInputComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeInputComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/input/InputComponent.html#touchUp(int,int,int,int)" class="member-name-link">touchUp(int, int, int, int)</a> - Method in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -6979,13 +7420,17 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Called once per frame of the game, and should be used for most component logic.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutscenePlayer.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutscenePlayer.html" title="class in com.csse3200.game.components.cutscene">CutscenePlayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueDisplay.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueDisplay.html" title="class in com.csse3200.game.components.cutscene">DialogueDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/ExplodeComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/ExplodeComponent.html" title="class in com.csse3200.game.components">ExplodeComponent</a></dt>
 <dd>
 <div class="block">Re-checks concealment every frame while the player is physically overlapping.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionIndicatorComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionIndicatorComponent.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionIndicatorComponent</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/friendlynpc/PlaceholderNarrativeComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/PlaceholderNarrativeComponent.html" title="class in com.csse3200.game.components.friendlynpc">PlaceholderNarrativeComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/HeadAttachmentComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/HeadAttachmentComponent.html" title="class in com.csse3200.game.components">HeadAttachmentComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -7174,6 +7619,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Call once per frame.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.html" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a></dt>
+<dd>
+<div class="block">Advances the typewriter reveal.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/HomingProjectileMovementComponent.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/HomingProjectileMovementComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">HomingProjectileMovementComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/dragon/DragonAnimationController.html#update(float)" class="member-name-link">update(float)</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonAnimationController.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonAnimationController</a></dt>
@@ -7256,6 +7705,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Updates the player's strength on the ui.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/Entity.html#updatesWhilePaused()" class="member-name-link">updatesWhilePaused()</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/terminal/commands/UpgradeCommand.html" class="type-name-link" title="class in com.csse3200.game.ui.terminal.commands">UpgradeCommand</a> - Class in <a href="com/csse3200/game/ui/terminal/commands/package-summary.html">com.csse3200.game.ui.terminal.commands</a></dt>
 <dd>
 <div class="block">Terminal command that applies or reverts a weapon upgrade so QA does not need a pickup or shop:
@@ -7553,6 +8004,10 @@ the order they are declared.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/tasks/VenomSpitAttackTask.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">VenomSpitAttackTask(Entity)</a> - Constructor for class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/VenomSpitAttackTask.html" title="class in com.csse3200.game.components.tasks">VenomSpitAttackTask</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.html#video" class="member-name-link">video</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript</a></dt>
+<dd>
+<div class="block">Path of the mp4 inside the assets folder, e.g.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/factories/HitboxSpec.html#visualOffset(com.badlogic.gdx.math.Vector2)" class="member-name-link">visualOffset(Vector2)</a> - Method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HitboxSpec.html" title="class in com.csse3200.game.entities.factories">HitboxSpec</a></dt>
 <dd>
 <div class="block">Shifts the sprite along its facing direction, without moving the hitbox.</div>
