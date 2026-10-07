@@ -18,6 +18,31 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class LootTableTest {
   @Test
+  void everyNormalEnemyCanRollEachHealingPotionSize() {
+    LootTable table = LootTable.defaultTable();
+    for (LootTable.EnemyRule rule : table.enemyRules) {
+      for (String id :
+          List.of(
+              ItemIds.HEALTH_POTION, ItemIds.MEDIUM_HEALTH_POTION, ItemIds.LARGE_HEALTH_POTION)) {
+        int roll = 0;
+        boolean found = false;
+        for (LootTable.Entry entry : rule.table.entries) {
+          if (id.equals(entry.itemId)) {
+            assertTrue(entry.weight > 0, rule.enemyType + ": " + id);
+            found = true;
+            break;
+          }
+          roll += entry.weight;
+        }
+        assertTrue(found, rule.enemyType + ": " + id);
+        RandomGenerator random = mock(RandomGenerator.class);
+        when(random.nextInt(100)).thenReturn(roll);
+        assertEquals(id, table.forEnemy(rule.enemyType).roll(random).get(0).itemId());
+      }
+    }
+  }
+
+  @Test
   void everyConfiguredNormalEnemyCanActuallyRollAShield() {
     LootTable table = LootTable.defaultTable();
     for (LootTable.EnemyRule rule : table.enemyRules) {

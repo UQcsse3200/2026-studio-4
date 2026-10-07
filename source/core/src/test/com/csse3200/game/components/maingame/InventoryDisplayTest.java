@@ -41,6 +41,9 @@ class InventoryDisplayTest {
     resources.loadTextures(
         new String[] {
           "images/health_potion_pixel.png",
+          "images/health_potion_small_pixel.png",
+          "images/health_potion_medium_pixel.png",
+          "images/health_potion_large_pixel.png",
           "images/strength_charm_pixel.png",
           "images/shield_consumable_pixel.png"
         });

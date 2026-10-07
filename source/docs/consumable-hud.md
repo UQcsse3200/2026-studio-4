@@ -137,3 +137,55 @@ for this adaptation; runtime confirmation remains with Yuri.
 Pre-push verification of the combined local version: 1933 tests,
 0 failures, 0 errors and 0 skips.
 Desktop classes, core JAR and Spotless checks passed. No game was launched.
+
+
+## Potion feedback refinement
+
+Small, medium and large instant healing potions now use distinct C-family bottle textures.
+Successful healing enhances the existing HealingPotionFeedbackComponent with a
+fast expanding pink-red pulse, three rising crosses and a bright core on the main
+cross over 1.2 seconds. Potion healing magnitude modestly scales the visuals;
+custom healing IDs use the same path. Failed uses emit no success visuals.
+
+ShieldPotionFeedbackComponent reuses the procedural ring design from the existing
+consumable-world-effects branch. The blue barrier expands over 220 ms, pulses
+with counter-rotating bright arcs, and fades during the last 450 ms. It queries
+the actual ConsumableEffectComponent shield, including refresh, expiry and early
+removal. No independent protection timer or stats changes are introduced.
+PlayerFactory adds one component; inventory, HUD, damage mitigation and shared
+rendering code are unchanged by this refinement. Procedural textures are cached,
+released on disposal and rendering restores batch colour and separate blend state.
+
+
+## C-family healing potion icons
+
+Imagegen-produced transparent PNGs distinguish the built-in tiers by silhouette:
+25 HP uses a small teardrop vial, 50 HP uses a heart-shaped flask with a silver
+stopper, and 100 HP uses a broad crystal flask with a gold crown. The item itself
+selects its texture; inventory and drops reuse that metadata. The HUD trims each
+new icon using its own measured alpha bounds. RoomAssets adds the three resources
+to its existing load/unload list. Custom positive healing amounts retain the
+original generic potion texture. IDs, healing values, quantities and effects are
+unchanged. No existing artwork is overwritten.
+
+## Healing drops and floating numbers
+
+All eight configured normal enemy types can now roll small, medium and large
+healing potions. Existing healing drop weight is divided between the three tiers;
+enemies without a healing entry exchange ten percentage points of coin weight
+for healing drops. Other item weights, drop counts and boss fallback stay intact.
+
+The existing healing feedback listens to `updateHealth` followed by successful
+`itemUsed` and displays the actual gain as a rising, fading pixel-font number.
+Built-in values remain 25, 50 and 100; custom 75 HP potions show +75, while a
+health-capped heal shows only the HP actually restored. The feedback owns and
+disposes its font without changing shared HUD styles or combat/item interfaces.
+World-space font rendering disables integer positions so scaled glyphs retain
+their height instead of rounding down to zero. A regression test exercises the
+real bitmap-font vertex generation at the feedback's world scale.
+
+The floating number uses the same red as the healing crosses, with a black shadow.
+Final local verification on 2026-10-07 passed 82 relevant tests (zero failures,
+errors or skips), desktop compilation, core JAR assembly and Spotless checks.
+Yuri confirmed the floating numbers and the subsequent red colour in windowed
+gameplay. A final gameplay recording has not been supplied.

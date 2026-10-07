@@ -69,9 +69,15 @@ class ConsumableHotbarDisplayTest {
     ServiceLocator.registerResourceService(resources);
     resources.loadTextures(
         new String[] {
-          "images/consumable-slot-idle.png", "images/consumable-slot-selected.png",
-          "images/health_potion_pixel.png", "images/shield_consumable_pixel.png",
-          "images/speed_potion_pixel.png", "images/strength_potion_pixel.png"
+          "images/consumable-slot-idle.png",
+          "images/consumable-slot-selected.png",
+          "images/health_potion_pixel.png",
+          "images/shield_consumable_pixel.png",
+          "images/health_potion_small_pixel.png",
+          "images/health_potion_medium_pixel.png",
+          "images/health_potion_large_pixel.png",
+          "images/speed_potion_pixel.png",
+          "images/strength_potion_pixel.png"
         });
     resources.loadAll();
     inventory = new InventoryComponent(0);
@@ -331,6 +337,26 @@ class ConsumableHotbarDisplayTest {
             .getComponent(ConsumableEffectComponent.class)
             .getRemainingMs(ItemIds.STRENGTH_POTION));
     assertFalse(actor("speed-potion-timer-ring-2").isVisible());
+  }
+
+  @Test
+  void healingSizesShowTheirOwnTexturesWithoutTheOldBottleCrop() {
+    String[] ids = {
+      ItemIds.HEALTH_POTION, ItemIds.MEDIUM_HEALTH_POTION, ItemIds.LARGE_HEALTH_POTION
+    };
+    String[] tiers = {"small", "medium", "large"};
+    int[] widths = {370, 743, 928};
+    int[] heights = {727, 1007, 1024};
+    for (int i = 0; i < ids.length; i++) {
+      inventory.addConsumable(ids[i]);
+      Image icon = actor("consumable-icon-" + (i + 1));
+      var region = ((TextureRegionDrawable) icon.getDrawable()).getRegion();
+      assertSame(
+          resources.getAsset("images/health_potion_" + tiers[i] + "_pixel.png", Texture.class),
+          region.getTexture());
+      assertEquals(widths[i], region.getRegionWidth());
+      assertEquals(heights[i], region.getRegionHeight());
+    }
   }
 
   private <T extends Actor> T actor(String name) {

@@ -65,8 +65,13 @@ public class RoomAssetsTest {
                     Arrays.asList(paths).containsAll(Arrays.asList(SnakePoisonAssets.paths()))
                         && Arrays.asList(paths).contains(SnakeShieldComponent.SHIELD_TEXTURE)
                         && Arrays.asList(paths).contains(SnakeShieldPickupComponent.GEM_TEXTURE)
+                        && Arrays.asList(paths).contains(SnakeShieldPickupComponent.SPAWN_TEXTURE)
                         && Arrays.asList(paths)
-                            .contains(SnakeShieldPickupComponent.SPAWN_TEXTURE)));
+                            .containsAll(
+                                Arrays.asList(
+                                    "images/health_potion_small_pixel.png",
+                                    "images/health_potion_medium_pixel.png",
+                                    "images/health_potion_large_pixel.png"))));
   }
 
   /**
@@ -88,7 +93,12 @@ public class RoomAssetsTest {
                 paths ->
                     Arrays.asList(paths).contains(SnakeShieldComponent.SHIELD_TEXTURE)
                         && Arrays.asList(paths).contains(SnakeShieldPickupComponent.GEM_TEXTURE)
+                        && Arrays.asList(paths).contains(SnakeShieldPickupComponent.SPAWN_TEXTURE)
                         && Arrays.asList(paths)
-                            .contains(SnakeShieldPickupComponent.SPAWN_TEXTURE)));
+                            .containsAll(
+                                Arrays.asList(
+                                    "images/health_potion_small_pixel.png",
+                                    "images/health_potion_medium_pixel.png",
+                                    "images/health_potion_large_pixel.png"))));
   }
 }
