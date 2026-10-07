@@ -28,9 +28,18 @@ public final class InstantHealingPotion extends ConsumableItem {
         idFor(healing),
         nameFor(healing),
         "Restores " + healing + " health when consumed.",
-        "images/health_potion_pixel.png",
+        textureFor(healing),
         quantity);
     this.healing = healing;
+  }
+
+  private static String textureFor(int healing) {
+    return switch (healing) {
+      case 25 -> "images/health_potion_small_pixel.png";
+      case 50 -> "images/health_potion_medium_pixel.png";
+      case 100 -> "images/health_potion_large_pixel.png";
+      default -> "images/health_potion_pixel.png";
+    };
   }
 
   /** The three shipped sizes keep their IDs; other positive amounts receive a stable derived ID. */

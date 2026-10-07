@@ -2,14 +2,8 @@ package com.csse3200.game.components.player;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyFloat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.Camera;
@@ -72,25 +66,19 @@ class BurnVialFeedbackComponentTest {
   }
 
   @Test
-  void burnVialShowsThreeTilesThenFadesAway() {
+  void successfulBurnVialWithoutTargetsDoesNotDrawPlayerFlameOrAllocateTextures() {
     SpriteBatch batch = mock(SpriteBatch.class);
     inventory.addConsumable(ItemIds.BURN_VIAL);
-
     try (MockedConstruction<Pixmap> pixels = mockConstruction(Pixmap.class);
         MockedConstruction<Texture> textures = mockConstruction(Texture.class)) {
       assertTrue(consumables.tryUse(ItemIds.BURN_VIAL));
       feedback.render(batch);
-      Texture pixel = textures.constructed().get(0);
-      verify(batch, times(3)).draw(eq(pixel), anyFloat(), anyFloat(), anyFloat(), anyFloat());
-
-      // DURATION is 1.2s; two 0.7s ticks is more than enough to exhaust it.
       feedback.update();
-      feedback.update();
-      clearInvocations(batch);
       feedback.render(batch);
-      verify(batch, never()).draw(eq(pixel), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+      assertTrue(pixels.constructed().isEmpty());
+      assertTrue(textures.constructed().isEmpty());
+      org.mockito.Mockito.verifyNoInteractions(batch);
       feedback.dispose();
-      verify(pixel).dispose();
     }
   }
 

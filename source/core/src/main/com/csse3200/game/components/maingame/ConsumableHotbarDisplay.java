@@ -150,7 +150,10 @@ public class ConsumableHotbarDisplay extends UIComponent {
   /** Trim transparent padding from the source art without copying or altering its pixels. */
   private static TextureRegion iconRegion(String type, Texture texture) {
     return switch (type) {
-      case ItemIds.HEALTH_POTION -> new TextureRegion(texture, 377, 325, 519, 634);
+      case ItemIds.HEALTH_POTION -> new TextureRegion(texture, 441, 266, 370, 727);
+      case ItemIds.MEDIUM_HEALTH_POTION -> new TextureRegion(texture, 255, 131, 743, 1007);
+      case ItemIds.LARGE_HEALTH_POTION -> new TextureRegion(texture, 163, 122, 928, 1024);
+      case ItemIds.BURN_VIAL -> new TextureRegion(texture, 342, 101, 436, 1345);
       case ItemIds.SHIELD -> new TextureRegion(texture, 310, 322, 633, 653);
       case ItemIds.SPEED_POTION -> new TextureRegion(texture, 393, 220, 481, 784);
       case ItemIds.STRENGTH_POTION -> new TextureRegion(texture, 310, 173, 635, 928);

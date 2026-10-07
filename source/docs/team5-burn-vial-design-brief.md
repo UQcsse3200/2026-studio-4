@@ -81,3 +81,10 @@ damage-over-time system, following the same reuse pattern Yuri used for the Free
   nothing.
 - Existing four Sprint 2 potions and Freeze Bomb continue to work unchanged.
 - Automated test (`BurnVialTest`) and a manual gameplay walkthrough both pass.
+
+## Local HUD refinement — 7 October 2026
+
+The later Jeremy HUD integration replaces the original placeholder art with his distinct bottle
+texture. The player-head three-tile flame described above is removed; enemy-attached flames,
+actual burn damage feedback and the warm flash remain. This section supersedes the original
+player-flame description; no new combat behavior is introduced.

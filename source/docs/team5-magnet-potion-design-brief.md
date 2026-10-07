@@ -52,7 +52,8 @@ combat code owned by other teams.
 - Texture `images/magnet_potion_pixel.png` (pixel-art flask with a magnet), preloaded in
   `RoomAssets.ITEM_TEXTURES`.
 - `magnet` terminal command (`MagnetCommand`) gives the player potions for QA: `magnet` or
-  `magnet 3`.
+  `magnet 3`. Both are compatibility aliases for `con magnet [quantity]`; the shared
+  grant implementation caps each request at 25 and never uses the granted stock.
 
 ## Tests
 
