@@ -260,7 +260,7 @@ class AchievementsFactoryTest {
   @Nested
   class Gold {
 
-    private Achievement build(int target) {
+    private Achievement build(float target) {
       AchievementConfig c = config("gold");
       c.target = target;
       return AchievementsFactory.build(c);
@@ -321,7 +321,7 @@ class AchievementsFactoryTest {
   @Nested
   class EnemyKillCount {
 
-    private Achievement build(int target, EnemyType type) {
+    private Achievement build(float target, EnemyType type) {
       AchievementConfig c = config("enemyKillCount");
       c.target = target;
       c.enemyType = type;
@@ -444,7 +444,7 @@ class AchievementsFactoryTest {
   @Nested
   class KillStreak {
 
-    private Achievement build(int target) {
+    private Achievement build(float target) {
       AchievementConfig c = config("killStreak");
       c.target = target;
       return AchievementsFactory.build(c);
