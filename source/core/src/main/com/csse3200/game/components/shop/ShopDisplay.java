@@ -39,6 +39,12 @@ public class ShopDisplay extends UIComponent implements ShopView {
   private static final Color INK = Color.valueOf("2a1a08");
   private static final Color BRASS = Color.valueOf("c8963e");
   private static final String MERCHANT_ATLAS = "images/shopkeeper.atlas";
+  private static final String GOLD_TEXTURE = "images/gold_coin_pixel.png";
+  private static final String SMALL_FONT = "font_small";
+  private static final String CASINO_LABEL = "CASINO";
+  private static final String SUPPLIES_HELP =
+      "Choose your supplies. Each purchase adds one item to your inventory.";
+  private static final String GOLD_SUFFIX = " gold.";
   private final InventoryComponent inventoryData;
   private final ShopCatalog catalog;
   private final ShopService service;
@@ -100,32 +106,8 @@ public class ShopDisplay extends UIComponent implements ShopView {
   public void create() {
     super.create();
     ResourceService resources = ServiceLocator.getResourceService();
-    for (ShopOffer offer : catalog.offers()) {
-      if (offer.kind() == ShopProductKind.CONSUMABLE) {
-        String texture = ItemCatalog.create(offer.productId(), 1).getTexture();
-        if (!loadedTextures.contains(texture)) loadedTextures.add(texture);
-      }
-    }
     ItemGambleConfig gambleConfig = ItemGambleConfig.load("configs/shops/merchant-gambling.json");
-    for (var entry : gambleConfig.entries()) {
-      if (!entry.isBust()) {
-        String texture = ItemCatalog.create(entry.itemId(), 1).getTexture();
-        if (!loadedTextures.contains(texture)) loadedTextures.add(texture);
-      }
-    }
-    if (upgradeCatalog != null) {
-      for (ShopOffer offer : upgradeCatalog.offers()) {
-        var descriptor = WeaponUpgradeCatalog.describe(offer.productId());
-        for (String texture : new String[] {descriptor.texture(), descriptor.upgradedTexture()}) {
-          if (!loadedTextures.contains(texture)) loadedTextures.add(texture);
-        }
-      }
-    }
-    loadedTextures.add("images/gold_coin_pixel.png");
-    resources.loadTextures(loadedTextures.toArray(new String[0]));
-    resources.loadTextureAtlases(new String[] {MERCHANT_ATLAS});
-    resources.loadAll();
-    assetsLoaded = true;
+    loadAssets(resources, gambleConfig);
 
     Drawable wood = panel(Color.valueOf("3d2314"), BRASS, 3);
     Drawable parchment = panel(Color.valueOf("f5e7c8"), Color.valueOf("804e28"), 2);
@@ -142,7 +124,73 @@ public class ShopDisplay extends UIComponent implements ShopView {
     window.setName("shop-panel");
     window.setBackground(wood);
     window.pad(14f);
+    window.add(createHeader(window, closeStyle)).growX().padBottom(12f);
+    window.row();
 
+    ScrollPane merchantScroll = createMerchant(resources, parchment);
+    productScroll = createOffers(resources, parchment, iconFrame, buyStyle);
+    CoinFlipPanel.Appearance appearance =
+        new CoinFlipPanel.Appearance(
+            new Label.LabelStyle(skin.getFont(SMALL_FONT), INK),
+            new Label.LabelStyle(skin.getFont(SMALL_FONT), BRASS),
+            buttonStyle("3d2314", "2a1a08"),
+            buyStyle,
+            parchment,
+            wood);
+    createCasinoPanels(resources, gambleConfig, appearance);
+    Table body = new Table();
+    body.add(merchantScroll)
+        .width(Value.percentWidth(0.24f, window))
+        .minHeight(0f)
+        .growY()
+        .padRight(16f);
+    body.add(new Stack(productScroll, casinoContent)).minHeight(0f).grow();
+    shopBody = body;
+    addBody(window, body, resources, appearance);
+    window.row();
+    hint = label("One item per purchase  |  Unlimited stock  |  Esc to leave", BRASS);
+    hint.setFontScale(0.85f);
+    window.add(hint).growX().padTop(10f);
+    root.add(window)
+        .width(Value.percentWidth(0.92f, root))
+        .maxWidth(1060f)
+        .height(Value.percentHeight(0.86f, root))
+        .maxHeight(620f);
+    root.setVisible(false);
+    stage.addActor(root);
+  }
+
+  private void loadAssets(ResourceService resources, ItemGambleConfig gambleConfig) {
+    for (ShopOffer offer : catalog.offers()) {
+      if (offer.kind() == ShopProductKind.CONSUMABLE) {
+        addTexture(ItemCatalog.create(offer.productId(), 1).getTexture());
+      }
+    }
+    for (var entry : gambleConfig.entries()) {
+      if (!entry.isBust()) addTexture(ItemCatalog.create(entry.itemId(), 1).getTexture());
+    }
+    collectUpgradeTextures();
+    loadedTextures.add(GOLD_TEXTURE);
+    resources.loadTextures(loadedTextures.toArray(new String[0]));
+    resources.loadTextureAtlases(new String[] {MERCHANT_ATLAS});
+    resources.loadAll();
+    assetsLoaded = true;
+  }
+
+  private void collectUpgradeTextures() {
+    if (upgradeCatalog == null) return;
+    for (ShopOffer offer : upgradeCatalog.offers()) {
+      var descriptor = WeaponUpgradeCatalog.describe(offer.productId());
+      addTexture(descriptor.texture());
+      addTexture(descriptor.upgradedTexture());
+    }
+  }
+
+  private void addTexture(String texture) {
+    if (!loadedTextures.contains(texture)) loadedTextures.add(texture);
+  }
+
+  private Table createHeader(Table window, TextButton.TextButtonStyle closeStyle) {
     Table header = new Table();
     title = label("TRAVELLING MERCHANT", BRASS);
     title.setFontScale(1.2f);
@@ -166,7 +214,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
         .minWidth(64f)
         .maxWidth(120f)
         .padRight(12f);
-    casinoButton = new TextButton("CASINO", buttonStyle("986419", "6b4110"));
+    casinoButton = new TextButton(CASINO_LABEL, buttonStyle("986419", "6b4110"));
     casinoButton.getLabel().setFontScale(.75f);
     casinoButton.getLabel().setWrap(true);
     casinoButton.setName("shop-casino");
@@ -205,9 +253,10 @@ public class ShopDisplay extends UIComponent implements ShopView {
           .padRight(8f);
     }
     header.add(close).width(110f).height(38f);
-    window.add(header).growX().padBottom(12f);
-    window.row();
+    return header;
+  }
 
+  private ScrollPane createMerchant(ResourceService resources, Drawable parchment) {
     Table merchant = new Table();
     merchant.setBackground(parchment);
     merchant.pad(16f);
@@ -222,84 +271,104 @@ public class ShopDisplay extends UIComponent implements ShopView {
     sectionLabel = label("YOUR PURCHASE", INK);
     merchant.add(sectionLabel).growX().padBottom(10f);
     merchant.row();
-    feedback = label("Choose your supplies. Each purchase adds one item to your inventory.", INK);
+    feedback = label(SUPPLIES_HELP, INK);
     feedback.setName("shop-feedback");
     merchant.add(feedback).growX().top();
     merchant.row();
     merchant.add().growY();
 
+    ScrollPane merchantScroll = new ScrollPane(merchant);
+    merchantScroll.setName("shop-merchant-scroll");
+    merchantScroll.setScrollingDisabled(true, false);
+    merchantScroll.setFadeScrollBars(false);
+    return merchantScroll;
+  }
+
+  private ScrollPane createOffers(
+      ResourceService resources,
+      Drawable parchment,
+      Drawable iconFrame,
+      TextButton.TextButtonStyle buyStyle) {
     Table offers = new Table();
     offers.setName("shop-offers");
     offers.top();
     for (ShopOffer offer : catalog.offers()) {
       if (offer.kind() != ShopProductKind.CONSUMABLE) continue;
-      Item item = ItemCatalog.create(offer.productId(), 1);
-      Table row = new Table();
-      row.setBackground(parchment);
-      row.pad(8f);
-      Table frame = new Table();
-      frame.setBackground(iconFrame);
-      frame.add(new Image(resources.getAsset(item.getTexture(), Texture.class))).size(42f).pad(6f);
-      row.add(frame).size(58f).padRight(10f);
-      Table details = new Table();
-      details.add(label(item.getName(), INK)).growX().left();
-      details.row();
-      String description =
-          item.getEffectSummary().isBlank() ? item.getDescription() : item.getEffectSummary();
-      Label effect = label(description, INK);
-      effect.setFontScale(0.85f);
-      details.add(effect).growX().left().padTop(4f);
-      details.row();
-      Label owned = label("", INK);
-      owned.setFontScale(0.8f);
-      owned.setName("shop-owned-" + offer.offerId());
-      ownedLabels.put(offer, owned);
-      details.add(owned).growX().left().padTop(4f);
-      row.add(details).growX().padRight(8f);
-      row.add(label(offer.goldPrice() + " gold", INK)).width(72f).padRight(8f);
-      TextButton buy = new TextButton("BUY", buyStyle);
-      buy.setName("shop-buy-" + offer.offerId());
-      buy.addListener(
-          new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-              if (!active || casino || weapons || buy.isDisabled()) return;
-              ShopPurchaseResult result = service.purchase(offer.offerId());
-              feedback.setText(purchaseMessage(result, item.getName()));
-              refresh();
-            }
-          });
-      buyButtons.put(offer, buy);
-      row.add(buy).width(98f).height(42f);
-      offers.add(row).growX().minHeight(88f).padBottom(8f);
+      offers
+          .add(createOfferRow(offer, resources, parchment, iconFrame, buyStyle))
+          .growX()
+          .minHeight(88f)
+          .padBottom(8f);
       offers.row();
     }
-    productScroll = new ScrollPane(offers);
-    productScroll.setName("shop-product-scroll");
-    productScroll.setScrollingDisabled(true, false);
-    productScroll.setFadeScrollBars(false);
-    ScrollPane merchantScroll = new ScrollPane(merchant);
-    merchantScroll.setName("shop-merchant-scroll");
-    merchantScroll.setScrollingDisabled(true, false);
-    merchantScroll.setFadeScrollBars(false);
-    CoinFlipPanel.Appearance appearance =
-        new CoinFlipPanel.Appearance(
-            new Label.LabelStyle(skin.getFont("font_small"), INK),
-            new Label.LabelStyle(skin.getFont("font_small"), BRASS),
-            buttonStyle("3d2314", "2a1a08"),
-            buyStyle,
-            parchment,
-            wood);
+    ScrollPane scroll = new ScrollPane(offers);
+    scroll.setName("shop-product-scroll");
+    scroll.setScrollingDisabled(true, false);
+    scroll.setFadeScrollBars(false);
+    return scroll;
+  }
+
+  private Table createOfferRow(
+      ShopOffer offer,
+      ResourceService resources,
+      Drawable parchment,
+      Drawable iconFrame,
+      TextButton.TextButtonStyle buyStyle) {
+    Item item = ItemCatalog.create(offer.productId(), 1);
+    Table row = new Table();
+    row.setBackground(parchment);
+    row.pad(8f);
+    Table frame = new Table();
+    frame.setBackground(iconFrame);
+    frame.add(new Image(resources.getAsset(item.getTexture(), Texture.class))).size(42f).pad(6f);
+    row.add(frame).size(58f).padRight(10f);
+    Table details = new Table();
+    details.add(label(item.getName(), INK)).growX().left();
+    details.row();
+    String description =
+        item.getEffectSummary().isBlank() ? item.getDescription() : item.getEffectSummary();
+    Label effect = label(description, INK);
+    effect.setFontScale(0.85f);
+    details.add(effect).growX().left().padTop(4f);
+    details.row();
+    Label owned = label("", INK);
+    owned.setFontScale(0.8f);
+    owned.setName("shop-owned-" + offer.offerId());
+    ownedLabels.put(offer, owned);
+    details.add(owned).growX().left().padTop(4f);
+    row.add(details).growX().padRight(8f);
+    row.add(label(offer.goldPrice() + " gold", INK)).width(72f).padRight(8f);
+    TextButton buy = new TextButton("BUY", buyStyle);
+    buy.setName("shop-buy-" + offer.offerId());
+    buy.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            if (!active || casino || weapons || buy.isDisabled()) return;
+            ShopPurchaseResult result = service.purchase(offer.offerId());
+            feedback.setText(purchaseMessage(result, item.getName()));
+            refresh();
+          }
+        });
+    buyButtons.put(offer, buy);
+    row.add(buy).width(98f).height(42f);
+    return row;
+  }
+
+  private void createCasinoPanels(
+      ResourceService resources,
+      ItemGambleConfig gambleConfig,
+      CoinFlipPanel.Appearance appearance) {
     casinoPanel =
         new CoinFlipPanel(
             new CoinFlipGame(inventoryData, MathUtils::randomBoolean),
-            resources.getAsset("images/gold_coin_pixel.png", Texture.class),
+            resources.getAsset(GOLD_TEXTURE, Texture.class),
             appearance,
             outcome -> {
               feedback.setText(
                   outcome.won()
-                      ? "Won " + outcome.stake() + " gold."
-                      : "Lost " + outcome.stake() + " gold.");
+                      ? "Won " + outcome.stake() + GOLD_SUFFIX
+                      : "Lost " + outcome.stake() + GOLD_SUFFIX);
               entity.getEvents().trigger("coinFlipResolved", outcome.won(), outcome.stake());
               refresh();
             });
@@ -318,7 +387,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
                   switch (outcome.status()) {
                     case WON -> "Reward added to your inventory.";
                     case BUST ->
-                        "No prize this time. The draw cost " + gambleConfig.cost() + " gold.";
+                        "No prize this time. The draw cost " + gambleConfig.cost() + GOLD_SUFFIX;
                     case INSUFFICIENT_FUNDS -> "Not enough gold. Nothing charged.";
                     case QUANTITY_LIMIT -> "Inventory limit. Nothing charged.";
                     case INVALID_REWARD -> "Reward unavailable. Nothing charged.";
@@ -342,24 +411,22 @@ public class ShopDisplay extends UIComponent implements ShopView {
     casinoContent.setVisible(false);
     itemPanel.setVisible(false);
     itemScroll.setVisible(false);
-    Table body = new Table();
-    body.add(merchantScroll)
-        .width(Value.percentWidth(0.24f, window))
-        .minHeight(0f)
-        .growY()
-        .padRight(16f);
-    body.add(new Stack(productScroll, casinoContent)).minHeight(0f).grow();
-    shopBody = body;
+  }
+
+  private void addBody(
+      Table window, Table body, ResourceService resources, CoinFlipPanel.Appearance appearance) {
     if (upgradeCatalog != null) {
+      TextureAtlas atlas = resources.getAsset(MERCHANT_ATLAS, TextureAtlas.class);
       weaponPanel =
           new WeaponUpgradePanel(
               inventoryData,
               upgradeCatalog,
               upgradeService,
               upgrades,
-              resources,
-              atlas.findRegion("default"),
-              resources.getAsset("images/gold_coin_pixel.png", Texture.class),
+              new WeaponUpgradePanel.Assets(
+                  resources,
+                  atlas.findRegion("default"),
+                  resources.getAsset(GOLD_TEXTURE, Texture.class)),
               appearance,
               result -> {
                 entity.getEvents().trigger("weaponUpgradePurchaseResolved", result);
@@ -376,17 +443,6 @@ public class ShopDisplay extends UIComponent implements ShopView {
     } else {
       window.add(body).minHeight(0f).grow();
     }
-    window.row();
-    hint = label("One item per purchase  |  Unlimited stock  |  Esc to leave", BRASS);
-    hint.setFontScale(0.85f);
-    window.add(hint).growX().padTop(10f);
-    root.add(window)
-        .width(Value.percentWidth(0.92f, root))
-        .maxWidth(1060f)
-        .height(Value.percentHeight(0.86f, root))
-        .maxHeight(620f);
-    root.setVisible(false);
-    stage.addActor(root);
   }
 
   private void showCasino(boolean show) {
@@ -400,12 +456,9 @@ public class ShopDisplay extends UIComponent implements ShopView {
     productScroll.setVisible(!show);
     casinoContent.setVisible(show);
     selectGame(false);
-    casinoButton.setText(show ? "Back to Shop" : "CASINO");
+    casinoButton.setText(show ? "Back to Shop" : CASINO_LABEL);
     sectionLabel.setText(show ? "COIN FLIP" : "YOUR PURCHASE");
-    feedback.setText(
-        show
-            ? "A fair 50/50 toss. Win your stake or lose it."
-            : "Choose your supplies. Each purchase adds one item to your inventory.");
+    feedback.setText(show ? "A fair 50/50 toss. Win your stake or lose it." : SUPPLIES_HELP);
     hint.setText(
         show
             ? "Back returns to shop  |  Esc to leave"
@@ -429,7 +482,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
     productScroll.setVisible(false);
     casinoContent.setVisible(false);
     shopBody.setVisible(false);
-    casinoButton.setText("CASINO");
+    casinoButton.setText(CASINO_LABEL);
     weaponsButton.setText("Back to Shop");
     title.setText("WEAPON UPGRADES");
     weaponPanel.open();
@@ -464,27 +517,26 @@ public class ShopDisplay extends UIComponent implements ShopView {
     itemScroll.setVisible(casino && item);
     coinSelector.setText(item ? "Coin Flip" : "[ Coin Flip ]");
     itemSelector.setText(item ? "[ Item Draw ]" : "Item Draw");
-    if (casino) {
-      if (item) itemPanel.open();
-      else casinoPanel.open();
-      sectionLabel.setText(item ? "ITEM DRAW" : "COIN FLIP");
-      feedback.setText(
-          item
-              ? "Spend gold for one random item or no prize. Rewards go straight to your inventory."
-              : "A fair 50/50 toss. Win your stake or lose it.");
-      stage.setScrollFocus(item ? itemScroll : casinoScroll);
-    }
+    if (!casino) return;
+    if (item) itemPanel.open();
+    else casinoPanel.open();
+    sectionLabel.setText(item ? "ITEM DRAW" : "COIN FLIP");
+    feedback.setText(
+        item
+            ? "Spend gold for one random item or no prize. Rewards go straight to your inventory."
+            : "A fair 50/50 toss. Win your stake or lose it.");
+    stage.setScrollFocus(item ? itemScroll : casinoScroll);
   }
 
   private Label label(String text, Color color) {
-    Label label = new Label(text, new Label.LabelStyle(skin.getFont("font_small"), color));
+    Label label = new Label(text, new Label.LabelStyle(skin.getFont(SMALL_FONT), color));
     label.setWrap(true);
     return label;
   }
 
   private TextButton.TextButtonStyle buttonStyle(String up, String down) {
     TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
-    style.font = skin.getFont("font_small");
+    style.font = skin.getFont(SMALL_FONT);
     style.fontColor = Color.WHITE;
     style.disabledFontColor = Color.valueOf("ddd4c2");
     style.up = panel(Color.valueOf(up), Color.valueOf("8bb56b"), 2);
@@ -521,7 +573,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
     if (disposed || root == null) throw new IllegalStateException("Shop view is unavailable");
     this.onClose = onClose;
     active = true;
-    feedback.setText("Choose your supplies. Each purchase adds one item to your inventory.");
+    feedback.setText(SUPPLIES_HELP);
     root.setVisible(true);
     root.toFront();
     previousKeyboardFocus = stage.getKeyboardFocus();

@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 /** A component used by the player to track Gold, charms, and consumable quantities. */
 public class InventoryComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(InventoryComponent.class);
+  private static final String CONSUMABLE_INVENTORY_CHANGED = "consumableInventoryChanged";
   private int gold;
   private final List<Charm> charms;
   private final Map<String, Integer> consumables;
@@ -86,7 +87,7 @@ public class InventoryComponent extends Component {
     setGold(gold - goldPrice);
     if (entity != null) {
       // A gold listener may synchronously add/remove items; publish the current final quantity.
-      entity.getEvents().trigger("consumableInventoryChanged", itemId, getConsumableCount(itemId));
+      entity.getEvents().trigger(CONSUMABLE_INVENTORY_CHANGED, itemId, getConsumableCount(itemId));
     }
     return ConsumablePurchaseResult.SUCCESS;
   }
@@ -184,7 +185,7 @@ public class InventoryComponent extends Component {
     int newCount = getConsumableCount(id) + quantity;
     consumables.put(id, newCount);
     if (entity != null && entity.getEvents() != null) {
-      entity.getEvents().trigger("consumableInventoryChanged", id, newCount);
+      entity.getEvents().trigger(CONSUMABLE_INVENTORY_CHANGED, id, newCount);
     }
   }
 
@@ -204,7 +205,7 @@ public class InventoryComponent extends Component {
       consumables.put(id, newCount);
     }
     if (entity != null && entity.getEvents() != null) {
-      entity.getEvents().trigger("consumableInventoryChanged", id, newCount);
+      entity.getEvents().trigger(CONSUMABLE_INVENTORY_CHANGED, id, newCount);
     }
     return true;
   }

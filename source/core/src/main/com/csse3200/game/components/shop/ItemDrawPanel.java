@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 
 /** Selected A layout: a draw arena beside the configured reward list, stacked on small screens. */
 public final class ItemDrawPanel extends Table {
+  private static final String GOLD_TEXTURE = "images/gold_coin_pixel.png";
   private final InventoryComponent inventory;
   private final ItemGambleConfig config;
   private final GambleService game;
@@ -57,7 +58,7 @@ public final class ItemDrawPanel extends Table {
     top();
     arena.setBackground(appearance.arena());
     arena.pad(10f);
-    reward = new Image(resources.getAsset("images/gold_coin_pixel.png", Texture.class));
+    reward = new Image(resources.getAsset(GOLD_TEXTURE, Texture.class));
     arena.add(reward).size(64f).padBottom(8f);
     arena.row();
     result = new Label("Ready to Draw", appearance.gold());
@@ -140,8 +141,7 @@ public final class ItemDrawPanel extends Table {
     busy = true;
     refresh();
     GambleResult outcome = game.spin();
-    reward.setDrawable(
-        new TextureRegionDrawable(resources.getAsset("images/gold_coin_pixel.png", Texture.class)));
+    reward.setDrawable(new TextureRegionDrawable(resources.getAsset(GOLD_TEXTURE, Texture.class)));
     result.setText("Drawing...");
     onResolved.accept(outcome);
     if (!active) return;
@@ -172,8 +172,7 @@ public final class ItemDrawPanel extends Table {
   public void open() {
     active = true;
     result.setText("Ready to Draw");
-    reward.setDrawable(
-        new TextureRegionDrawable(resources.getAsset("images/gold_coin_pixel.png", Texture.class)));
+    reward.setDrawable(new TextureRegionDrawable(resources.getAsset(GOLD_TEXTURE, Texture.class)));
     refresh();
   }
 

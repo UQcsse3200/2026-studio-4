@@ -41,7 +41,7 @@ class InventoryComponentTest {
     InventoryComponent inventory = new InventoryComponent(25);
     Entity player = new Entity().addComponent(inventory);
     List<Integer> notifications = new ArrayList<>();
-    player.getEvents().addListener("goldChanged", (Integer gold) -> notifications.add(gold));
+    player.getEvents().<Integer>addListener("goldChanged", notifications::add);
     player
         .getEvents()
         .addListener(
@@ -105,7 +105,7 @@ class InventoryComponentTest {
     InventoryComponent inventory = new InventoryComponent(25);
     Entity player = new Entity().addComponent(inventory);
     List<Integer> balances = new ArrayList<>();
-    player.getEvents().addListener("goldChanged", (Integer gold) -> balances.add(gold));
+    player.getEvents().<Integer>addListener("goldChanged", balances::add);
     inventory.setGold(25);
     inventory.setGold(10);
     inventory.addGold(-50);

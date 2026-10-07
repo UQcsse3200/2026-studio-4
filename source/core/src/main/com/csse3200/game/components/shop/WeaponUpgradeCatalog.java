@@ -47,8 +47,11 @@ public class WeaponUpgradeCatalog {
     };
   }
 
+  /** Returns the supported weapon's descriptor, rejecting missing or unknown product IDs. */
   public static Descriptor describe(String productId) {
-    if (productId == null) return null;
+    if (productId == null) {
+      throw new IllegalArgumentException("Weapon product ID must not be null");
+    }
     return switch (productId) {
       case "sword" ->
           new Descriptor(
@@ -68,7 +71,7 @@ public class WeaponUpgradeCatalog {
               BowWeaponComponent.TEXTURE,
               BowWeaponComponent.UPGRADED_TEXTURE,
               "+20% light damage. Unlocks three spread arrows on K. Each heavy arrow deals normal damage; heavy attacks have twice the cooldown.");
-      default -> null;
+      default -> throw new IllegalArgumentException("Unsupported weapon product ID: " + productId);
     };
   }
 

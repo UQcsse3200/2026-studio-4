@@ -22,7 +22,7 @@ public final class CoinFlipGame {
 
   public void adjustStake(int delta) {
     int gold = inventory.getGold();
-    stake = (int) Math.min(Math.max((long) stake + delta, Math.min(10, gold)), gold);
+    stake = Math.clamp((long) stake + delta, Math.min(10, gold), gold);
   }
 
   public void refresh() {

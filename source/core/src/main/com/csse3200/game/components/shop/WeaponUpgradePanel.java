@@ -47,21 +47,23 @@ public final class WeaponUpgradePanel extends Table {
   private boolean active;
   private boolean purchasing;
 
+  /** Loaded visual assets shared by the merchant portrait, weapon previews and payment row. */
+  public record Assets(
+      ResourceService resources, TextureAtlas.AtlasRegion portrait, Texture coin) {}
+
   public WeaponUpgradePanel(
       InventoryComponent inventory,
       WeaponUpgradeCatalog upgradeCatalog,
       ShopService service,
       WeaponUpgradeComponent upgrades,
-      ResourceService resources,
-      TextureAtlas.AtlasRegion portrait,
-      Texture coin,
+      Assets assets,
       CoinFlipPanel.Appearance appearance,
       Consumer<ShopPurchaseResult> onResolved) {
     this.inventory = inventory;
     this.catalog = upgradeCatalog.catalog();
     this.service = service;
     this.upgrades = upgrades;
-    this.resources = resources;
+    this.resources = assets.resources();
     this.onResolved = onResolved;
     selected = catalog.offers().getFirst();
     setName("weapon-upgrade-panel");
@@ -70,7 +72,7 @@ public final class WeaponUpgradePanel extends Table {
     Table merchant = new Table();
     merchant.setBackground(appearance.parchment());
     merchant.pad(10f);
-    merchant.add(new Image(portrait)).size(48f).padRight(8f);
+    merchant.add(new Image(assets.portrait())).size(48f).padRight(8f);
     merchant.add(label("Travelling Merchant\nWeapon Upgrades", appearance.text(), .8f)).growX();
     merchant.row();
     merchant
@@ -193,7 +195,7 @@ public final class WeaponUpgradePanel extends Table {
     Table payment = new Table();
     cost = label("", appearance.gold(), .7f);
     cost.setName("weapon-upgrade-cost");
-    payment.add(new Image(coin)).size(20f).padRight(7f);
+    payment.add(new Image(assets.coin())).size(20f).padRight(7f);
     payment.add(cost).growX().padRight(8f);
     buy = new TextButton("", appearance.flip());
     buy.setName("weapon-upgrade-buy");
@@ -265,22 +267,31 @@ public final class WeaponUpgradePanel extends Table {
     try {
       ShopOffer purchased = selected;
       ShopPurchaseResult result = service.purchase(purchased.offerId());
-      if (result == ShopPurchaseResult.SUCCESS) lastPurchased = purchased;
-      // Inventory callbacks may close or dispose the shop and unload its textures.
-      if (!active) return;
-      purchaseFailure =
-          switch (result) {
-            case SUCCESS, ALREADY_UPGRADED -> null;
-            case INSUFFICIENT_GOLD -> "Not enough gold. Nothing charged.";
-            case INVALID_OFFER, UNSUPPORTED_PRODUCT, QUANTITY_LIMIT ->
-                "Upgrade unavailable. Nothing charged.";
-          };
-      refresh();
-      onResolved.accept(result);
+      showPurchaseResult(purchased, result);
     } finally {
-      purchasing = false;
-      if (active) refresh();
+      finishPurchase();
     }
+  }
+
+  private void showPurchaseResult(ShopOffer purchased, ShopPurchaseResult result) {
+    if (result == ShopPurchaseResult.SUCCESS) lastPurchased = purchased;
+    // Settlement publishes synchronous events. A listener may have closed or disposed this panel
+    // and unloaded its textures before settlement returned, so recheck before refreshing the UI.
+    if (!active) return;
+    purchaseFailure =
+        switch (result) {
+          case SUCCESS, ALREADY_UPGRADED -> null;
+          case INSUFFICIENT_GOLD -> "Not enough gold. Nothing charged.";
+          case INVALID_OFFER, UNSUPPORTED_PRODUCT, QUANTITY_LIMIT ->
+              "Upgrade unavailable. Nothing charged.";
+        };
+    refresh();
+    onResolved.accept(result);
+  }
+
+  private void finishPurchase() {
+    purchasing = false;
+    if (active) refresh();
   }
 
   public void open() {
@@ -302,31 +313,37 @@ public final class WeaponUpgradePanel extends Table {
       buy.setDisabled(true);
       return;
     }
-    selectors.forEach(
-        (offer, button) -> {
-          boolean upgraded =
-              upgrades != null
-                  && upgrades.isUpgraded(WeaponUpgradeCatalog.weaponClass(offer.productId()));
-          states
-              .get(offer)
-              .setText(
-                  upgrades == null
-                      ? "UNAVAILABLE"
-                      : upgraded
-                          ? "UPGRADED"
-                          : inventory.getGold() < offer.goldPrice()
-                              ? "NEED " + (offer.goldPrice() - inventory.getGold()) + " G"
-                              : "READY");
-          var iconDescriptor = WeaponUpgradeCatalog.describe(offer.productId());
-          selectorIcons
-              .get(offer)
-              .setDrawable(
-                  new TextureRegionDrawable(
-                      resources.getAsset(
-                          upgraded ? iconDescriptor.upgradedTexture() : iconDescriptor.texture(),
-                          Texture.class)));
-          button.setChecked(offer.equals(selected));
-        });
+    selectors.forEach(this::refreshSelector);
+    refreshSelectedWeapon();
+    refreshPayment();
+  }
+
+  private boolean isUpgraded(ShopOffer offer) {
+    return upgrades != null
+        && upgrades.isUpgraded(WeaponUpgradeCatalog.weaponClass(offer.productId()));
+  }
+
+  private void refreshSelector(ShopOffer offer, TextButton button) {
+    boolean upgraded = isUpgraded(offer);
+    states.get(offer).setText(selectorState(offer, upgraded));
+    var descriptor = WeaponUpgradeCatalog.describe(offer.productId());
+    String texture = upgraded ? descriptor.upgradedTexture() : descriptor.texture();
+    selectorIcons
+        .get(offer)
+        .setDrawable(new TextureRegionDrawable(resources.getAsset(texture, Texture.class)));
+    button.setChecked(offer.equals(selected));
+  }
+
+  private String selectorState(ShopOffer offer, boolean upgraded) {
+    if (upgrades == null) return "UNAVAILABLE";
+    if (upgraded) return "UPGRADED";
+    if (inventory.getGold() < offer.goldPrice()) {
+      return "NEED " + (offer.goldPrice() - inventory.getGold()) + " G";
+    }
+    return "READY";
+  }
+
+  private void refreshSelectedWeapon() {
     var descriptor = WeaponUpgradeCatalog.describe(selected.productId());
     name.setText(displayName(selected.productId()).toUpperCase());
     base.setDrawable(
@@ -334,37 +351,41 @@ public final class WeaponUpgradePanel extends Table {
     preview.setDrawable(
         new TextureRegionDrawable(resources.getAsset(descriptor.upgradedTexture(), Texture.class)));
     heavy.setText(heavyDescription(selected.productId()));
-    boolean upgraded =
-        upgrades != null
-            && upgrades.isUpgraded(WeaponUpgradeCatalog.weaponClass(selected.productId()));
+  }
+
+  private void refreshPayment() {
+    boolean upgraded = isUpgraded(selected);
     boolean affordable = inventory.getGold() >= selected.goldPrice();
-    boolean available = upgrades != null;
-    status.setText(
-        !available
-            ? "UPGRADE UNAVAILABLE"
-            : upgraded
-                ? "UPGRADED / K UNLOCKED"
-                : affordable ? "BASE / READY" : "BASE / NEED GOLD");
-    buy.setDisabled(!active || purchasing || !available || upgraded || !affordable);
-    buy.setText(
-        !available
-            ? "Upgrade unavailable"
-            : upgraded
-                ? "Already upgraded"
-                : affordable
-                    ? "UPGRADE - " + selected.goldPrice() + " G [U]"
-                    : "Need " + (selected.goldPrice() - inventory.getGold()) + " more gold");
+    status.setText(upgradeStatus(upgraded, affordable));
+    buy.setDisabled(purchasing || upgrades == null || upgraded || !affordable);
+    buy.setText(purchaseCaption(upgraded, affordable));
     cost.setText("Cost: " + selected.goldPrice() + " G\nPurse: " + inventory.getGold() + " G");
-    feedback.setText(
-        upgraded
-            ? (selected.equals(lastPurchased)
-                ? displayName(selected.productId()) + " upgraded. K heavy attack unlocked."
-                : "K heavy attack unlocked. One upgrade per weapon this run.")
-            : purchaseFailure != null
-                ? purchaseFailure
-                : !available
-                    ? "This weapon upgrade is unavailable."
-                    : "One upgrade per weapon this run. Selection does not equip.");
+    feedback.setText(purchaseFeedback(upgraded));
+  }
+
+  private String upgradeStatus(boolean upgraded, boolean affordable) {
+    if (upgrades == null) return "UPGRADE UNAVAILABLE";
+    if (upgraded) return "UPGRADED / K UNLOCKED";
+    return affordable ? "BASE / READY" : "BASE / NEED GOLD";
+  }
+
+  private String purchaseCaption(boolean upgraded, boolean affordable) {
+    if (upgrades == null) return "Upgrade unavailable";
+    if (upgraded) return "Already upgraded";
+    if (affordable) return "UPGRADE - " + selected.goldPrice() + " G [U]";
+    return "Need " + (selected.goldPrice() - inventory.getGold()) + " more gold";
+  }
+
+  private String purchaseFeedback(boolean upgraded) {
+    if (upgraded) {
+      if (selected.equals(lastPurchased)) {
+        return displayName(selected.productId()) + " upgraded. K heavy attack unlocked.";
+      }
+      return "K heavy attack unlocked. One upgrade per weapon this run.";
+    }
+    if (purchaseFailure != null) return purchaseFailure;
+    if (upgrades == null) return "This weapon upgrade is unavailable.";
+    return "One upgrade per weapon this run. Selection does not equip.";
   }
 
   /** Only the selected A's documented shortcuts are handled; Enter never purchases globally. */

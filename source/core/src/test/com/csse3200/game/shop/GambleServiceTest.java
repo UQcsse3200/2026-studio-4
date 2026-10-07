@@ -95,10 +95,11 @@ class GambleServiceTest {
   void nonPositiveCostCannotMintGold() {
     InventoryComponent inventory = new InventoryComponent(50);
     GambleTable table = new GambleTable(List.of(GambleEntry.bust(1)));
+    InventoryGambleWallet wallet = new InventoryGambleWallet(inventory);
+    Random random = fixed(0);
     for (int cost : new int[] {0, -10}) {
       assertThrows(
-          IllegalArgumentException.class,
-          () -> new GambleService(table, new InventoryGambleWallet(inventory), cost, fixed(0)));
+          IllegalArgumentException.class, () -> new GambleService(table, wallet, cost, random));
     }
     assertEquals(50, inventory.getGold());
   }
@@ -113,9 +114,9 @@ class GambleServiceTest {
     assertEquals(bust, table.roll(fixed(2)));
     assertEquals(bust, table.roll(fixed(4)));
     assertEquals(0.4, table.probabilityOf(win), 0.000001);
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> new GambleTable(List.of(GambleEntry.bust(Integer.MAX_VALUE), GambleEntry.bust(1))));
+    List<GambleEntry> overflowingEntries =
+        List.of(GambleEntry.bust(Integer.MAX_VALUE), GambleEntry.bust(1));
+    assertThrows(IllegalArgumentException.class, () -> new GambleTable(overflowingEntries));
   }
 
   @Test

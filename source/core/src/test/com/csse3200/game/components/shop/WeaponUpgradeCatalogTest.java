@@ -10,6 +10,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class WeaponUpgradeCatalogTest {
   @Test
+  void descriptionsRejectMissingAndUnsupportedProductIds() {
+    assertThrows(IllegalArgumentException.class, () -> WeaponUpgradeCatalog.describe(null));
+    assertThrows(IllegalArgumentException.class, () -> WeaponUpgradeCatalog.describe("axe"));
+  }
+
+  @Test
+  void configuredUpgradeOffersHaveCompletePreviewDescriptions() {
+    WeaponUpgradeCatalog catalog =
+        WeaponUpgradeCatalog.load("configs/shops/merchant-upgrades.json");
+    for (ShopOffer offer : catalog.offers()) {
+      WeaponUpgradeCatalog.Descriptor descriptor = WeaponUpgradeCatalog.describe(offer.productId());
+      assertNotNull(descriptor);
+      assertFalse(descriptor.name().isBlank());
+      assertFalse(descriptor.texture().isBlank());
+      assertFalse(descriptor.upgradedTexture().isBlank());
+      assertFalse(descriptor.summary().isBlank());
+    }
+  }
+
+  @Test
   void rejectsUnsupportedUpgradeProduct() {
     ShopCatalog catalog =
         new ShopCatalog(

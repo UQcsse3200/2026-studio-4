@@ -21,22 +21,19 @@ class ItemGambleConfigTest {
 
   @Test
   void rejectsInvalidCatalogRewardsDuplicatesAndNonpositiveCost() {
+    List<GambleEntry> bustEntries = List.of(GambleEntry.bust(1));
+    assertThrows(IllegalArgumentException.class, () -> new ItemGambleConfig(0, bustEntries));
+    List<GambleEntry> invalidRewardEntries = List.of(GambleEntry.of("invalid", 1, 1));
     assertThrows(
-        IllegalArgumentException.class,
-        () -> new ItemGambleConfig(0, List.of(GambleEntry.bust(1))));
+        IllegalArgumentException.class, () -> new ItemGambleConfig(10, invalidRewardEntries));
+    List<GambleEntry> duplicateRewardEntries =
+        List.of(
+            GambleEntry.of(ItemIds.HEALTH_POTION, 1, 1),
+            GambleEntry.of(ItemIds.HEALTH_POTION, 2, 2));
     assertThrows(
-        IllegalArgumentException.class,
-        () -> new ItemGambleConfig(10, List.of(GambleEntry.of("invalid", 1, 1))));
+        IllegalArgumentException.class, () -> new ItemGambleConfig(10, duplicateRewardEntries));
+    List<GambleEntry> invalidBustEntries = List.of(new GambleEntry(null, 1, 1));
     assertThrows(
-        IllegalArgumentException.class,
-        () ->
-            new ItemGambleConfig(
-                10,
-                List.of(
-                    GambleEntry.of(ItemIds.HEALTH_POTION, 1, 1),
-                    GambleEntry.of(ItemIds.HEALTH_POTION, 2, 2))));
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> new ItemGambleConfig(10, List.of(new GambleEntry(null, 1, 1))));
+        IllegalArgumentException.class, () -> new ItemGambleConfig(10, invalidBustEntries));
   }
 }

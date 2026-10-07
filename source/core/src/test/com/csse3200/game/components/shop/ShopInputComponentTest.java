@@ -28,11 +28,13 @@ class ShopInputComponentTest {
         new ShopInputComponent(
             session,
             new InputAdapter() {
+              @Override
               public boolean touchDown(int x, int y, int pointer, int button) {
                 downs++;
                 return true;
               }
 
+              @Override
               public boolean touchUp(int x, int y, int pointer, int button) {
                 ups++;
                 return true;
@@ -80,6 +82,7 @@ class ShopInputComponentTest {
         new ShopInputComponent(
             session,
             new InputAdapter() {
+              @Override
               public boolean touchDown(int x, int y, int pointer, int button) {
                 session.close();
                 return false;
@@ -115,6 +118,7 @@ class ShopInputComponentTest {
     service.register(input);
     service.register(
         new InputComponent(20) {
+          @Override
           public boolean touchDown(int x, int y, int pointer, int button) {
             session.open();
             return true;
