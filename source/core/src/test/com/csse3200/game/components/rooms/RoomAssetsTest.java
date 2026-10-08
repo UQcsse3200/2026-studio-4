@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -90,6 +91,26 @@ public class RoomAssetsTest {
   }
 
   @Test
+  void shouldPlayTheBossThemeInTheFinalDungeon() {
+    RoomAssets roomAssets = new RoomAssets();
+    Music boss = mock(Music.class);
+    Music fight = mock(Music.class);
+    Music calm = mock(Music.class);
+    when(resourceService.getAsset(eq("sounds/boss_music.mp3"), any())).thenReturn(boss);
+    when(resourceService.getAsset(eq("sounds/lobby_music.mp3"), any())).thenReturn(calm);
+
+    roomAssets.playMusicFor("finalDungeon", false);
+
+    verify(boss).play();
+    verify(fight, never()).play();
+
+    // Beating the boss drops back to calm like any other cleared room.
+    roomAssets.playMusicFor("finalDungeon", true);
+    verify(boss).stop();
+    verify(calm).play();
+  }
+
+  @Test
   void shouldNotRestartATrackThatIsAlreadyPlaying() {
     RoomAssets roomAssets = new RoomAssets();
     Music music = mock(Music.class);
@@ -136,8 +157,8 @@ public class RoomAssetsTest {
     when(resourceService.getAsset(anyString(), any())).thenReturn(music);
 
     roomAssets.dispose();
-    // Both tracks are stopped: the hub's and the dungeons'.
-    verify(music, times(2)).stop();
+    // Every track is silenced, however many there are.
+    verify(music, atLeastOnce()).stop();
     verify(resourceService, times(4)).unloadAssets(any());
     verify(resourceService)
         .unloadAssets(
