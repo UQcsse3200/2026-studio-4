@@ -111,22 +111,65 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code><a href="UserSettings.DisplaySettings.html" title="class in com.csse3200.game.files">UserSettings.DisplaySettings</a></code></div>
 <div class="col-second even-row-color"><code><a href="#displayMode" class="member-name-link">displayMode</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>int</code></div>
-<div class="col-second odd-row-color"><code><a href="#fps" class="member-name-link">fps</a></code></div>
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#displayName" class="member-name-link">displayName</a></code></div>
 <div class="col-last odd-row-color">
+<div class="block">Name shown next to the online preference.</div>
+</div>
+<div class="col-first even-row-color"><code>int</code></div>
+<div class="col-second even-row-color"><code><a href="#fps" class="member-name-link">fps</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">FPS cap of the game.</div>
 </div>
-<div class="col-first even-row-color"><code>boolean</code></div>
-<div class="col-second even-row-color"><code><a href="#fullscreen" class="member-name-link">fullscreen</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>float</code></div>
-<div class="col-second odd-row-color"><code><a href="#uiScale" class="member-name-link">uiScale</a></code></div>
+<div class="col-first odd-row-color"><code>boolean</code></div>
+<div class="col-second odd-row-color"><code><a href="#fullscreen" class="member-name-link">fullscreen</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>float</code></div>
+<div class="col-second even-row-color"><code><a href="#musicVolume" class="member-name-link">musicVolume</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Background music volume, from 0 to 1.</div>
+</div>
+<div class="col-first odd-row-color"><code>boolean</code></div>
+<div class="col-second odd-row-color"><code><a href="#muteUnfocused" class="member-name-link">muteUnfocused</a></code></div>
 <div class="col-last odd-row-color">
-<div class="block">ui Scale.</div>
+<div class="block">When true, music and effects are silent while the window is in the background.</div>
 </div>
 <div class="col-first even-row-color"><code>boolean</code></div>
-<div class="col-second even-row-color"><code><a href="#vsync" class="member-name-link">vsync</a></code></div>
+<div class="col-second even-row-color"><code><a href="#onlinePlay" class="member-name-link">onlinePlay</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Saved preference.</div>
+</div>
+<div class="col-first odd-row-color"><code>boolean</code></div>
+<div class="col-second odd-row-color"><code><a href="#showFps" class="member-name-link">showFps</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">When true, a small FPS counter is drawn during a run.</div>
+</div>
+<div class="col-first even-row-color"><code>boolean</code></div>
+<div class="col-second even-row-color"><code><a href="#showTimer" class="member-name-link">showTimer</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">When true, the in-run HUD shows the game timer.</div>
+</div>
+<div class="col-first odd-row-color"><code>float</code></div>
+<div class="col-second odd-row-color"><code><a href="#soundVolume" class="member-name-link">soundVolume</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Effect volume, from 0 to 1.</div>
+</div>
+<div class="col-first even-row-color"><code>float</code></div>
+<div class="col-second even-row-color"><code><a href="#uiScale" class="member-name-link">uiScale</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Scales the settings page immediately and the in-game HUD after Apply.</div>
+</div>
+<div class="col-first odd-row-color"><code>boolean</code></div>
+<div class="col-second odd-row-color"><code><a href="#vsync" class="member-name-link">vsync</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>int</code></div>
+<div class="col-second even-row-color"><code><a href="#windowHeight" class="member-name-link">windowHeight</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>int</code></div>
+<div class="col-second odd-row-color"><code><a href="#windowWidth" class="member-name-link">windowWidth</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Window size used when fullscreen is off.</div>
+</div>
 </div>
 </section>
 </li>
@@ -184,7 +227,69 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="uiScale">
 <h3>uiScale</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">uiScale</span></div>
-<div class="block">ui Scale. Currently unused, but can be implemented.</div>
+<div class="block">Scales the settings page immediately and the in-game HUD after Apply.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="showTimer">
+<h3>showTimer</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">showTimer</span></div>
+<div class="block">When true, the in-run HUD shows the game timer.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="showFps">
+<h3>showFps</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">showFps</span></div>
+<div class="block">When true, a small FPS counter is drawn during a run.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="musicVolume">
+<h3>musicVolume</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">musicVolume</span></div>
+<div class="block">Background music volume, from 0 to 1.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="soundVolume">
+<h3>soundVolume</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">soundVolume</span></div>
+<div class="block">Effect volume, from 0 to 1.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="windowWidth">
+<h3>windowWidth</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">windowWidth</span></div>
+<div class="block">Window size used when fullscreen is off. Zero means the default 1280 x 800.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="windowHeight">
+<h3>windowHeight</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">windowHeight</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="onlinePlay">
+<h3>onlinePlay</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">onlinePlay</span></div>
+<div class="block">Saved preference. The game does not open a network connection from this flag.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="displayName">
+<h3>displayName</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">displayName</span></div>
+<div class="block">Name shown next to the online preference.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="muteUnfocused">
+<h3>muteUnfocused</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">muteUnfocused</span></div>
+<div class="block">When true, music and effects are silent while the window is in the background.</div>
 </section>
 </li>
 <li>
