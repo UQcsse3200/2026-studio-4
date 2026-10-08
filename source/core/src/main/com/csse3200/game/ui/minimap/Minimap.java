@@ -79,7 +79,7 @@ public class Minimap extends UIComponent {
     this.left = left;
     this.right = right;
     this.center = center;
-    this.shapeRenderer = null;
+    this.shapeRenderer = shapeRenderer;
   }
 
   /**
