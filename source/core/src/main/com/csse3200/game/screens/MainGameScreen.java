@@ -7,6 +7,7 @@ import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.achievements.AchievementConfig;
 import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.achievements.AchievementsFactory;
+import com.csse3200.game.components.gamearea.FpsOverlay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.gamearea.TimerDisplay;
 import com.csse3200.game.components.maingame.*;
@@ -15,14 +16,18 @@ import com.csse3200.game.components.rooms.RoomAssets;
 import com.csse3200.game.components.rooms.RoomCommand;
 import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.components.rooms.configs.WorldConfig;
+import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.NarrativeFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.entities.factories.ShopFactory;
 import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.files.GameProgress;
 import com.csse3200.game.files.GameSaveData;
 import com.csse3200.game.files.GameSaveMapper;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
@@ -32,6 +37,7 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.*;
+import com.csse3200.game.ui.UiScale;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.ui.terminal.commands.AbilityCommand;
@@ -69,6 +75,7 @@ public class MainGameScreen extends ScreenAdapter {
   private boolean winScreenRequested;
   private boolean winTransitionStarted; // add this
   private boolean saveOnDispose = true;
+  private boolean worldFrozen;
 
   public MainGameScreen(GdxGame game) {
     this(game, null, 1);
@@ -118,6 +125,13 @@ public class MainGameScreen extends ScreenAdapter {
     world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     // trigger win screen via entity win event
     player.getEvents().addListener("winScreenRequested", () -> winScreenRequested = true);
+    // The hub and the dungeons have their own music; rooms announce which one they want.
+    player
+        .getEvents()
+        .addListener(
+            RoomManager.ROOM_ENTERED,
+            (String roomId, String dungeonId, Boolean cleared) ->
+                roomAssets.playMusicFor(dungeonId, Boolean.TRUE.equals(cleared)));
     // notify damage
     player
         .getEvents()
@@ -146,11 +160,25 @@ public class MainGameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    physicsEngine.update();
+    // A dialogue, cutscene, or the settings menu freezes the world.
+    boolean frozen = ServiceLocator.getEntityService().isFrozen();
+    if (frozen != worldFrozen) {
+      worldFrozen = frozen;
+      // Scaled time also stops sprite animations, status effects and other timers
+      ServiceLocator.getTimeSource().setTimeScale(frozen ? 0f : 1f);
+    }
+    if (!frozen) {
+      physicsEngine.update();
+    }
     ServiceLocator.getEntityService().update();
-    roomManager.update();
+    if (!frozen) {
+      roomManager.update();
+    }
+    roomAssets.applyMusicVolume();
     renderer.render();
-    runTimer.update();
+    if (!frozen) {
+      runTimer.update();
+    }
     if (winScreenRequested && !winTransitionStarted) {
       winTransitionStarted = true;
       scheduleWinScreen();
@@ -160,6 +188,7 @@ public class MainGameScreen extends ScreenAdapter {
   @Override
   public void resize(int width, int height) {
     renderer.resize(width, height);
+    UiScale.applyToStage(renderer.getStage(), UserSettings.get().uiScale);
     logger.trace("Resized renderer: ({} x {})", width, height);
   }
 
@@ -176,6 +205,9 @@ public class MainGameScreen extends ScreenAdapter {
   @Override
   public void dispose() {
     logger.debug("Disposing main game screen");
+    if (runTimer != null) {
+      GameProgress.recordRun((long) (runTimer.getTotalTime() * 1000f));
+    }
 
     if (saveOnDispose && !runSaved && player != null && roomManager != null) {
       runSaved = true;
@@ -267,6 +299,10 @@ public class MainGameScreen extends ScreenAdapter {
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
     TimerDisplay timerDisplay = new TimerDisplay();
 
+    SettingsMenuDisplay settingsMenu = new SettingsMenuDisplay(this.game, () -> {}, true);
+    // Opens itself when Hecate's interaction finishes; nothing else has to know about it.
+    AbilityMenu abilityMenu = new AbilityMenu(player);
+
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
@@ -275,23 +311,25 @@ public class MainGameScreen extends ScreenAdapter {
             new MainGameExitDisplay(
                 this::saveAndExit,
                 this::deleteSaveAndExit,
+                this::stopPlayerMovement,
                 () -> {
-                  player.getEvents().trigger("walkStop");
-                  player.getEvents().trigger("resetMovementInput");
-                  PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
-                  if (physics != null && physics.getBody() != null) {
-                    physics.getBody().setLinearVelocity(0f, 0f);
-                  }
+                  stopPlayerMovement();
+                  settingsMenu.open();
                 }))
         .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay())
         .addComponent(timerDisplay)
         .addComponent(new TimerDisplay.ToggleInput(timerDisplay))
+        .addComponent(new FpsOverlay())
         .addComponent(inventoryDisplay)
         .addComponent(hotbarDisplay)
         .addComponent(consumableHotbarDisplay)
-        .addComponent(inventoryActions);
+        .addComponent(inventoryActions)
+        .addComponent(settingsMenu)
+        .addComponent(abilityMenu)
+        .addComponent(new KeyboardAbilityMenuInputComponent())
+        .addComponent(new AbilityMenuDisplay(abilityMenu));
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     // The HUD keeps working while a dialogue or cutscene has the world frozen
     ui.setUpdatesWhilePaused(true);
@@ -300,6 +338,17 @@ public class MainGameScreen extends ScreenAdapter {
     // Dialogue and cutscene systems (events are sent on the player)
     ServiceLocator.getEntityService()
         .register(NarrativeFactory.createNarrative(player, terminal::isOpen));
+    ServiceLocator.getEntityService().register(ShopFactory.createShop(player, terminal));
+    UiScale.applyToStage(stage, UserSettings.get().uiScale);
+  }
+
+  private void stopPlayerMovement() {
+    player.getEvents().trigger("walkStop");
+    player.getEvents().trigger("resetMovementInput");
+    PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
+    if (physics != null && physics.getBody() != null) {
+      physics.getBody().setLinearVelocity(0f, 0f);
+    }
   }
 
   /* Schedule the death screen to be shown */

@@ -61,12 +61,22 @@ class NarrativeInputComponentTest {
   }
 
   @Test
-  void spaceEnterAndLeftClickAdvance() {
+  void spaceEnterJAndLeftClickAdvance() {
     active = true;
     assertTrue(input.keyDown(Input.Keys.SPACE));
     assertTrue(input.keyDown(Input.Keys.ENTER));
+    assertTrue(input.keyDown(Input.Keys.J));
     assertTrue(input.touchDown(0, 0, 0, Input.Buttons.LEFT));
-    assertEquals(3, advances);
+    assertEquals(4, advances);
+  }
+
+  @Test
+  void jDoesNotAdvanceWhenNoNarrativeIsOnScreen() {
+    active = false;
+
+    // J is the light attack, so outside a dialogue it must reach the player untouched.
+    assertFalse(input.keyDown(Input.Keys.J));
+    assertEquals(0, advances);
   }
 
   @Test
@@ -90,6 +100,7 @@ class NarrativeInputComponentTest {
 
     assertFalse(input.keyDown(Input.Keys.SPACE), "the terminal needs the space key");
     assertFalse(input.keyDown(Input.Keys.ENTER));
+    assertFalse(input.keyDown(Input.Keys.J), "the terminal needs the j key for typing commands");
     assertFalse(input.keyDown(Input.Keys.ESCAPE));
     assertFalse(input.keyDown(Input.Keys.S));
     assertFalse(input.touchDown(0, 0, 0, Input.Buttons.LEFT));
@@ -122,7 +133,8 @@ class NarrativeInputComponentTest {
   void gameplayKeysAreSwallowedAndF1StillOpensTheTerminal() {
     active = true;
     assertTrue(input.keyDown(Input.Keys.W));
-    assertTrue(input.keyDown(Input.Keys.J));
+    // K is the heavy attack. J is deliberately not used here: it advances the dialogue.
+    assertTrue(input.keyDown(Input.Keys.K));
     assertFalse(input.keyDown(Input.Keys.F1));
     assertEquals(0, advances);
   }

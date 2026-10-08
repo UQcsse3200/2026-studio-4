@@ -11,6 +11,7 @@ import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InteractionPrompt;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.components.rooms.configs.PositionConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
@@ -28,6 +29,12 @@ import java.util.Set;
 
 /** Owns the active room and applies the room graph specified by {@link WorldConfig}. */
 public class RoomManager {
+  /**
+   * Triggered on the player with the room id, its dungeon id (null for the hub) and whether the
+   * room has no enemies left. Also re-fired when the room is cleared, so the state is never stale.
+   */
+  public static final String ROOM_ENTERED = "roomEntered";
+
   private static final float INTERACTION_RANGE = 1f;
   private static final int ARRIVAL_OFFSET_TILES = 3;
 
@@ -49,6 +56,13 @@ public class RoomManager {
   private final RunTimer runTimer;
   private String pendingDungeonCompletion;
 
+  public static final String DEFAULT_TILESET = "images/dungeons/tileSet0.png";
+  public static final String DUNGEON1_TILESET = "images/dungeons/tileSet1.png";
+  public static final String DUNGEON2_TILESET = "images/dungeons/tileSet2.png";
+  public static final String DUNGEON3_TILESET = "images/dungeons/tileSet3.png";
+  public static final String DUNGEON4_TILESET = "images/dungeons/tileSet4.png";
+  public static final String DUNGEON5_TILESET = "images/dungeons/tileSet5.png";
+
   /** Creates the JSON-driven room manager. Call {@link #create()} to register the initial room. */
   public RoomManager(WorldConfig world, Entity player, CameraComponent camera) {
     world.validate();
@@ -58,6 +72,11 @@ public class RoomManager {
     this.runTimer = ServiceLocator.getRunTimer();
     currentConfig = world.getRoom(world.startRoomId);
     initialEntryPoint = currentConfig.getEntryPoint(world.startEntryPointId);
+    String tileset = DEFAULT_TILESET;
+    if (currentConfig.dungeonId != null) {
+      tileset = getTileset(currentConfig.dungeonId);
+    }
+    currentRoom = RoomFactory.createRoom(currentConfig, camera, false, tileset);
     currentConfig = world.getRoom(world.startRoomId);
     for (RoomConfig room : world.rooms) {
       if (room.dungeonId != null) {
@@ -69,7 +88,6 @@ public class RoomManager {
     checkpointPosition = new PositionConfig();
     checkpointPosition.x = initialEntryPoint.x;
     checkpointPosition.y = initialEntryPoint.y;
-    currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
 
     player.getEvents().addListener("interact", this::interact);
     FollowingCameraComponent cameraFollowingComponent =
@@ -83,6 +101,21 @@ public class RoomManager {
           .getEvents()
           .addListener("achievementUnlocked", this::onAchievementUnlocked);
     }
+  }
+
+  /** Pass in DungeonID to get tileset for the dungeon. deafult tileset as fallback */
+  private String getTileset(String tilesetConfig) {
+    if (tilesetConfig == null) {
+      return DEFAULT_TILESET;
+    }
+    return switch (tilesetConfig) {
+      case "dungeonOne" -> DUNGEON1_TILESET;
+      case "dungeonTwo" -> DUNGEON2_TILESET;
+      case "dungeonThree" -> DUNGEON3_TILESET;
+      case "dungeonFour" -> DUNGEON4_TILESET;
+      case "finalDungeon" -> DUNGEON5_TILESET;
+      default -> DEFAULT_TILESET;
+    };
   }
 
   /** Package private constructer to create empty room manager for testing */
@@ -116,7 +149,8 @@ public class RoomManager {
 
     currentRoom.dispose();
     currentConfig = savedRoom;
-    currentRoom = RoomFactory.createRoom(savedRoom, camera, false);
+    currentRoom =
+        RoomFactory.createRoom(savedRoom, camera, false, getTileset(currentConfig.dungeonId));
     initialEntryPoint = spawn;
     initialWorldPosition = null;
 
@@ -147,7 +181,8 @@ public class RoomManager {
 
     currentRoom.dispose();
     currentConfig = resumeRoom;
-    currentRoom = RoomFactory.createRoom(resumeRoom, camera, false);
+    currentRoom =
+        RoomFactory.createRoom(resumeRoom, camera, false, getTileset(resumeRoom.dungeonId));
     initialEntryPoint = null;
     initialWorldPosition = new Vector2(resume.x, resume.y);
 
@@ -158,7 +193,8 @@ public class RoomManager {
 
   /** Registers the active room and player, then positions the player at its entry point. */
   public void create() {
-    currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
+    currentRoom =
+        RoomFactory.createRoom(currentConfig, camera, false, getTileset(currentConfig.dungeonId));
     FollowingCameraComponent following = currentRoom.getComponent(FollowingCameraComponent.class);
     following.setCamera(camera);
     following.setTarget(player);
@@ -179,6 +215,7 @@ public class RoomManager {
   private void start(Vector2 worldPosition) {
     currentRoom.getEvents().addListener("roomCleared", this::onRoomCleared);
     currentRoom.getEvents().trigger("RoomCreated", player);
+    announceRoom();
     scaleRoom(currentRoom);
     player.setPosition(worldPosition);
   }
@@ -187,6 +224,7 @@ public class RoomManager {
   void start(PositionConfig entryPoint) {
     currentRoom.getEvents().addListener("roomCleared", this::onRoomCleared);
     currentRoom.getEvents().trigger("RoomCreated", player);
+    announceRoom();
     scaleRoom(currentRoom);
     Vector2 position =
         currentRoom
@@ -296,6 +334,20 @@ public class RoomManager {
     return true;
   }
 
+  /**
+   * Tells anything outside the rooms which room the player is now standing in. Fired on the player
+   * because the player outlives rooms.
+   */
+  private void announceRoom() {
+    if (player == null || currentConfig == null) {
+      return;
+    }
+    EnemyManagerComponent enemies =
+        currentRoom == null ? null : currentRoom.getComponent(EnemyManagerComponent.class);
+    boolean cleared = enemies == null || enemies.isCleared();
+    player.getEvents().trigger(ROOM_ENTERED, currentConfig.id, currentConfig.dungeonId, cleared);
+  }
+
   /** Requests that the current room's enemies be cleared at the next safe update point. */
   public void clearCurrentRoom() {
     clearRequested = true;
@@ -305,6 +357,8 @@ public class RoomManager {
     if (clearedRoomIds.add(currentConfig.id)) {
       showStatus("Room cleared.");
     }
+    // The fight is over, so whatever was reacting to the room's state hears about it again.
+    announceRoom();
   }
 
   private ExitConfig findNearestExit() {
@@ -324,8 +378,13 @@ public class RoomManager {
 
   void switchToRoom(RoomConfig destination, PositionConfig arrivalPosition) {
     String previousDungeonId = currentConfig.dungeonId;
+    String tileset = DEFAULT_TILESET;
+    if (destination.dungeonId != null) {
+      tileset = getTileset(destination.dungeonId);
+    }
     Entity nextRoom =
-        RoomFactory.createRoom(destination, camera, clearedRoomIds.contains(destination.id));
+        RoomFactory.createRoom(
+            destination, camera, clearedRoomIds.contains(destination.id), tileset);
     currentRoom.dispose();
     currentConfig = destination;
     currentRoom = nextRoom;
@@ -384,17 +443,31 @@ public class RoomManager {
     return arrival;
   }
 
-  private void refreshInteractionPrompt() {
+  /** Package private for unit testing */
+  void refreshInteractionPrompt() {
     InteractionPromptDisplay display = player.getComponent(InteractionPromptDisplay.class);
     if (display == null) {
       return;
     }
-    NpcInteractorComponent interactor = player.getComponent(NpcInteractorComponent.class);
-    if (interactor != null && interactor.isInteracting()) {
+    if (cannotAct()) {
       display.clearPrompt();
       return;
     }
     display.setPrompt(InteractionPrompt.resolve(getNpcPrompt(), getItemPrompt(), getExitPrompt()));
+  }
+
+  /**
+   * Whether offering the player an interaction would be a lie. An NPC interaction is one case, but
+   * so is anything else holding their controls: Hecate's menu, a boss sequence, an ending dialogue.
+   * Each takes a lock of its own, so asking about the lock covers all of them.
+   */
+  private boolean cannotAct() {
+    NpcInteractorComponent interactor = player.getComponent(NpcInteractorComponent.class);
+    if (interactor != null && interactor.isInteracting()) {
+      return true;
+    }
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    return actions != null && actions.areControlsLocked();
   }
 
   private String getNpcPrompt() {

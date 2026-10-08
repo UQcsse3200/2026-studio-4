@@ -1,0 +1,11 @@
+{
+  "cost": 10,
+  "entries": [
+    {"itemId": "HEALTH_POTION", "quantity": 1, "weight": 1},
+    {"itemId": "SHIELD", "quantity": 1, "weight": 1},
+    {"itemId": "SPEED_POTION", "quantity": 1, "weight": 1},
+    {"itemId": "STRENGTH_POTION", "quantity": 1, "weight": 1},
+    {"itemId": "FREEZE_BOMB", "quantity": 1, "weight": 1},
+    {"quantity": 0, "weight": 1}
+  ]
+}

@@ -3,6 +3,8 @@ package com.csse3200.game.components.player;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.maingame.InventoryDisplay;
+import com.csse3200.game.components.weapons.WeaponComponent;
+import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
 import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.charms.Charm;
@@ -44,6 +46,7 @@ public class InventoryComponent extends Component {
 
   /** Sets the player's Gold, with a minimum value of zero. */
   public void setGold(int gold) {
+    int previous = this.gold;
     this.gold = Math.max(gold, 0);
     logger.debug("Setting gold to {}", this.gold);
     if (ServiceLocator.getAchievementService() != null) {
@@ -51,6 +54,78 @@ public class InventoryComponent extends Component {
       ctx.goldTotal = this.gold;
       ServiceLocator.getAchievementService().update(ctx);
     }
+    if (previous != this.gold && entity != null) {
+      entity.getEvents().trigger("goldChanged", this.gold);
+    }
+  }
+
+  /**
+   * Buys one existing consumable. All expected rejections happen before mutation; notifications are
+   * published only after both the balance and quantity have been committed.
+   */
+  public ConsumablePurchaseResult tryPurchaseConsumable(String itemId, int goldPrice) {
+    return tryPurchaseConsumable(itemId, goldPrice, 1);
+  }
+
+  /** Commits a paid consumable reward and its quantity before publishing inventory events. */
+  public ConsumablePurchaseResult tryPurchaseConsumable(
+      String itemId, int goldPrice, int quantity) {
+    if (quantity <= 0) throw new IllegalArgumentException("Quantity must be positive");
+    if (!isConsumable(itemId)) {
+      return ConsumablePurchaseResult.INVALID_ITEM;
+    }
+    if (goldPrice <= 0) {
+      return ConsumablePurchaseResult.INVALID_PRICE;
+    }
+    if (gold < goldPrice) {
+      return ConsumablePurchaseResult.INSUFFICIENT_GOLD;
+    }
+    int count = getConsumableCount(itemId);
+    if (count > Integer.MAX_VALUE - quantity) {
+      return ConsumablePurchaseResult.QUANTITY_LIMIT;
+    }
+    consumables.put(itemId, count + quantity);
+    // Commit stock first so both achievement and gold observers see the complete transaction.
+    setGold(gold - goldPrice);
+    if (entity != null) {
+      // A gold listener may synchronously add/remove items; publish the current final quantity.
+      entity.getEvents().trigger(CONSUMABLE_INVENTORY_CHANGED, itemId, getConsumableCount(itemId));
+    }
+    return ConsumablePurchaseResult.SUCCESS;
+  }
+
+  /**
+   * Buys a weapon's existing upgrade once. Payment is committed before the upgrade component
+   * publishes its event, so both upgrade and gold observers see the completed transaction.
+   * Unsupported upgrades restore the balance without publishing a gold event. As with consumable
+   * purchases, arbitrary exceptions from event subscribers are outside the rejection guarantee.
+   */
+  public WeaponUpgradePurchaseResult tryPurchaseWeaponUpgrade(
+      WeaponUpgradeComponent upgrades, Class<? extends WeaponComponent> weapon, int goldPrice) {
+    if (upgrades == null || weapon == null) {
+      return WeaponUpgradePurchaseResult.INVALID_WEAPON;
+    }
+    if (goldPrice <= 0) {
+      return WeaponUpgradePurchaseResult.INVALID_PRICE;
+    }
+    if (upgrades.isUpgraded(weapon)) {
+      return WeaponUpgradePurchaseResult.ALREADY_UPGRADED;
+    }
+    if (gold < goldPrice) {
+      return WeaponUpgradePurchaseResult.INSUFFICIENT_GOLD;
+    }
+    gold -= goldPrice;
+    if (!upgrades.setUpgraded(weapon, true)) {
+      gold += goldPrice;
+      return WeaponUpgradePurchaseResult.INVALID_WEAPON;
+    }
+    // The balance is already committed; retain the shared achievement notification without
+    // publishing an early goldChanged event before the weapon upgrade exists.
+    setGold(gold);
+    if (entity != null) {
+      entity.getEvents().trigger("goldChanged", gold);
+    }
+    return WeaponUpgradePurchaseResult.SUCCESS;
   }
 
   /** Adds to the player's Gold. The amount may be negative. */

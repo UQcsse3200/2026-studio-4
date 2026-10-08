@@ -13,7 +13,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Spawns the visible door and bookshelf forms of a room's configured exits. */
 public class ExitComponent extends EntityManagerComponent {
-  private static final String FANTASY_DUNGEON_TILESET = "images/dungeons/fantasy_dreamland_16.png";
+  private static final String FANTASY_DUNGEON_TILESET = "images/dungeons/tileSet0.png";
   private static final String FANTASY_DUNGEON_DOOR = "images/dungeons/fantasy_dreamland_door.png";
   private static final int TILE_SIZE = 16;
   private static final int DOOR_FRAME_SIZE = 32;

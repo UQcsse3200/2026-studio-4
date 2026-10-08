@@ -17,6 +17,7 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -554,6 +555,90 @@ class PlayerAbilitiesComponentTest {
     when(time.getTime()).thenReturn(START + 8_000);
     assertTrue(abilities.tryActivate(InstantAbility.class));
     assertEquals(2, instant.starts);
+  }
+
+  @Test
+  void shouldLockARegisteredAbilityAndReportUnlockState() {
+    assertTrue(abilities.isUnlocked(Invisibility.class), "Invisibility starts unlocked");
+    assertFalse(abilities.isUnlocked(LastStand.class), "Last Stand starts locked");
+
+    assertTrue(abilities.lock(Invisibility.class));
+    assertFalse(abilities.isUnlocked(Invisibility.class));
+    assertFalse(abilities.tryActivate(Invisibility.class));
+    assertEquals(List.of("invisibility:Ability is locked"), failed);
+
+    assertTrue(abilities.unlock(Invisibility.class));
+    assertTrue(abilities.isUnlocked(Invisibility.class));
+    assertTrue(abilities.tryActivate(Invisibility.class));
+  }
+
+  @Test
+  void shouldReportUnknownAbilitiesAsNeitherLockableNorUnlocked() {
+    assertFalse(abilities.lock(InstantAbility.class));
+    assertFalse(abilities.isUnlocked(InstantAbility.class));
+  }
+
+  @Test
+  void shouldEndARunningAbilityWhenItIsLocked() {
+    assertTrue(abilities.tryActivate(Invisibility.class));
+    assertTrue(abilities.isActive(Invisibility.class));
+
+    assertTrue(abilities.lock(Invisibility.class));
+    assertFalse(abilities.isActive(Invisibility.class));
+    assertEquals(List.of("invisibility"), ended);
+    // Locking revokes the ability but does not forgive the cooldown it already paid.
+    assertEquals(45_000, abilities.getCooldownRemainingMs(Invisibility.class));
+  }
+
+  @Test
+  void shouldExposeRegisteredAbilitiesInRegistrationOrderAsReadOnly() {
+    List<String> names =
+        abilities.getRegisteredAbilities().stream().map(PlayerAbility::getName).toList();
+    assertEquals(List.of(Invisibility.NAME, LastStand.NAME), names);
+
+    Collection<PlayerAbility> view = abilities.getRegisteredAbilities();
+    assertThrows(
+        UnsupportedOperationException.class,
+        view::clear,
+        "The view must not let callers unregister abilities");
+
+    // The view is live, so a menu built from it sees later registrations.
+    abilities.register(new InstantAbility());
+    assertEquals(3, abilities.getRegisteredAbilities().size());
+  }
+
+  @Test
+  void shouldLockAnAbilityThatStartsUnlockedAndRestoreItOnRelock() {
+    InstantAbility instant = new InstantAbility();
+    assertTrue(instant.isUnlocked(), "InstantAbility starts unlocked");
+
+    // relock cannot take away an ability that starts unlocked, which is why lock exists.
+    instant.relock();
+    assertTrue(instant.isUnlocked());
+
+    instant.lock();
+    assertFalse(instant.isUnlocked());
+
+    // relock still means "back to the starting state", not "stay locked".
+    instant.relock();
+    assertTrue(instant.isUnlocked());
+  }
+
+  @Test
+  void shouldRefuseToActivateALockedAbility() {
+    InstantAbility instant = new InstantAbility();
+    abilities.register(instant);
+    instant.lock();
+
+    assertFalse(abilities.tryActivate(InstantAbility.class));
+    assertEquals(0, instant.starts);
+    assertEquals(List.of("instant:Ability is locked"), failed);
+    // A refused cast leaves the cooldown untouched.
+    assertEquals(0, abilities.getCooldownRemainingMs(InstantAbility.class));
+
+    instant.unlock();
+    assertTrue(abilities.tryActivate(InstantAbility.class));
+    assertEquals(1, instant.starts);
   }
 
   /**

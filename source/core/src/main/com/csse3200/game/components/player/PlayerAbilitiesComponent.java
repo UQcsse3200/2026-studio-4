@@ -8,6 +8,8 @@ import com.csse3200.game.components.player.abilities.LastStand;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -119,6 +121,44 @@ public class PlayerAbilitiesComponent extends Component {
     }
     ability.unlock();
     return true;
+  }
+
+  /**
+   * Takes an ability away, ending it first if it is running. Unlike {@link #unlock}, this works
+   * whatever state the player is in: revoking is the safe direction, and something that hands out
+   * abilities has to be able to revoke them before the player is fully set up.
+   *
+   * <p>The cooldown is left alone, so locking and unlocking an ability does not make it castable
+   * any sooner than it already was.
+   *
+   * @return whether the ability is registered, and so is now locked
+   */
+  public boolean lock(Class<? extends PlayerAbility> type) {
+    PlayerAbility ability = abilities.get(type);
+    if (ability == null) {
+      return false;
+    }
+    stop(type);
+    ability.lock();
+    return true;
+  }
+
+  /**
+   * @return whether the ability is registered and the player may currently start it
+   */
+  public boolean isUnlocked(Class<? extends PlayerAbility> type) {
+    PlayerAbility ability = abilities.get(type);
+    return ability != null && ability.isUnlocked();
+  }
+
+  /**
+   * Every ability this player has, in registration order, so a menu can list them and read their
+   * names and cooldowns rather than hardcoding which abilities exist.
+   *
+   * @return read-only view, which changes as abilities are registered
+   */
+  public Collection<PlayerAbility> getRegisteredAbilities() {
+    return Collections.unmodifiableCollection(abilities.values());
   }
 
   /** Starts a cast ability only when alive, unlocked and ready; a rejected cast changes nothing. */

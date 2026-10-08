@@ -8,9 +8,11 @@ import java.util.function.BooleanSupplier;
 
 /**
  * Takes over input while a dialogue or cutscene is on screen so the game cannot be played behind
- * it. SPACE, ENTER or a click advance the dialogue (or skip a skippable cutscene) and ESC leaves
- * the dialogue, or skips the cutscene if no dialogue is open. F1 still opens the debug terminal,
- * and while the terminal is open all input is left to it.
+ * it. SPACE, ENTER, J or a click advance the dialogue (or skip a skippable cutscene) and ESC leaves
+ * the dialogue, or skips the cutscene if no dialogue is open. J is also the light attack key, which
+ * costs nothing here because every gameplay key is swallowed while a dialogue is up, and it keeps
+ * the player's hand where it already rests. F1 still opens the debug terminal, and while the
+ * terminal is open all input is left to it.
  *
  * <p>Releasing a key that was already held when the dialogue opened is still passed through, so the
  * player's walk direction bookkeeping stays balanced.
@@ -46,7 +48,7 @@ public class NarrativeInputComponent extends InputComponent {
     }
     swallowedKeys.add(keycode);
     switch (keycode) {
-      case Input.Keys.SPACE, Input.Keys.ENTER -> manager.advance();
+      case Input.Keys.SPACE, Input.Keys.ENTER, Input.Keys.J -> manager.advance();
       case Input.Keys.ESCAPE -> manager.leave();
       default -> {
         // swallowed: gameplay keys do nothing while a dialogue or cutscene is on screen
