@@ -52,6 +52,8 @@ public class RoomAssetsTest {
     RoomAssets roomAssets = new RoomAssets();
     Music music = mock(Music.class);
     when(resourceService.getAsset(anyString(), any())).thenReturn(music);
+    // RoomAssets only reaches for a track it knows is loaded.
+    when(resourceService.containsAsset(anyString(), any())).thenReturn(true);
 
     roomAssets.playMusicFor(null, true);
 
@@ -66,6 +68,8 @@ public class RoomAssetsTest {
     Music fight = mock(Music.class);
     when(resourceService.getAsset(eq("sounds/lobby_music.mp3"), any())).thenReturn(calm);
     when(resourceService.getAsset(eq("sounds/fight_music.mp3"), any())).thenReturn(fight);
+    // RoomAssets only reaches for a track it knows is loaded.
+    when(resourceService.containsAsset(anyString(), any())).thenReturn(true);
 
     roomAssets.playMusicFor("dungeonOne", false);
     verify(fight).play();
@@ -83,6 +87,8 @@ public class RoomAssetsTest {
     Music calm = mock(Music.class);
     Music fight = mock(Music.class);
     when(resourceService.getAsset(eq("sounds/lobby_music.mp3"), any())).thenReturn(calm);
+    // RoomAssets only reaches for a track it knows is loaded.
+    when(resourceService.containsAsset(anyString(), any())).thenReturn(true);
 
     roomAssets.playMusicFor(null, false);
 
@@ -98,6 +104,8 @@ public class RoomAssetsTest {
     Music calm = mock(Music.class);
     when(resourceService.getAsset(eq("sounds/boss_music.mp3"), any())).thenReturn(boss);
     when(resourceService.getAsset(eq("sounds/lobby_music.mp3"), any())).thenReturn(calm);
+    // RoomAssets only reaches for a track it knows is loaded.
+    when(resourceService.containsAsset(anyString(), any())).thenReturn(true);
 
     roomAssets.playMusicFor("finalDungeon", false);
 
@@ -115,6 +123,8 @@ public class RoomAssetsTest {
     RoomAssets roomAssets = new RoomAssets();
     Music music = mock(Music.class);
     when(resourceService.getAsset(anyString(), any())).thenReturn(music);
+    // RoomAssets only reaches for a track it knows is loaded.
+    when(resourceService.containsAsset(anyString(), any())).thenReturn(true);
     when(music.isPlaying()).thenReturn(true);
 
     // Walking between rooms of one dungeon must not restart its music.
@@ -155,6 +165,8 @@ public class RoomAssetsTest {
     RoomAssets roomAssets = new RoomAssets();
     Music music = mock(Music.class);
     when(resourceService.getAsset(anyString(), any())).thenReturn(music);
+    // RoomAssets only reaches for a track it knows is loaded.
+    when(resourceService.containsAsset(anyString(), any())).thenReturn(true);
 
     roomAssets.dispose();
     // Every track is silenced, however many there are.

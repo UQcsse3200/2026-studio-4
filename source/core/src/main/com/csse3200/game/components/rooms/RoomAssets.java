@@ -22,8 +22,8 @@ import java.util.stream.Stream;
 /**
  * Loads the terrain, fixtures, audio, and enemy assets used by a room.
  *
- * <p>Music provenance and the credit the boss theme's licence requires are recorded in
- * {@code assets/licenses/AUDIO-ATTRIBUTION.md}.
+ * <p>Music provenance and the credit the boss theme's licence requires are recorded in {@code
+ * assets/licenses/AUDIO-ATTRIBUTION.md}.
  */
 public class RoomAssets implements Disposable {
   /** Plays in the hub, and in any dungeon room once nothing is left alive in it. */
@@ -40,6 +40,7 @@ public class RoomAssets implements Disposable {
    * #FIGHT_MUSIC}, so giving a dungeon its own track is one entry rather than a new branch.
    */
   private static final Map<String, String> DUNGEON_MUSIC = Map.of("finalDungeon", BOSS_MUSIC);
+
   private static final String IMPACT_SOUND = "sounds/Impact4.ogg";
   private static final String[] MUSIC = {CALM_MUSIC, FIGHT_MUSIC, BOSS_MUSIC};
   private static final String[] SOUNDS = {IMPACT_SOUND};
