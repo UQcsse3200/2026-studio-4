@@ -23,7 +23,7 @@ public class FpsOverlay extends UIComponent {
     label = new Label("FPS 0", skin, "caption");
     table = new Table();
     table.setFillParent(true);
-    table.top().right().padTop(64f).padRight(16f);
+    table.bottom().right().padBottom(16f).padRight(16f);
     table.add(label);
     stage.addActor(table);
   }

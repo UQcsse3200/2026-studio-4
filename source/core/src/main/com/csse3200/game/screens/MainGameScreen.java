@@ -25,6 +25,7 @@ import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.files.GameProgress;
 import com.csse3200.game.files.GameSaveData;
 import com.csse3200.game.files.GameSaveMapper;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
@@ -34,6 +35,7 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.*;
+import com.csse3200.game.ui.UiScale;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.ui.terminal.commands.AbilityCommand;
@@ -157,6 +159,7 @@ public class MainGameScreen extends ScreenAdapter {
   @Override
   public void resize(int width, int height) {
     renderer.resize(width, height);
+    UiScale.applyToStage(renderer.getStage(), UserSettings.get().uiScale);
     logger.trace("Resized renderer: ({} x {})", width, height);
   }
 
@@ -297,6 +300,7 @@ public class MainGameScreen extends ScreenAdapter {
     // Dialogue and cutscene systems (events are sent on the player)
     ServiceLocator.getEntityService()
         .register(NarrativeFactory.createNarrative(player, terminal::isOpen));
+    UiScale.applyToStage(stage, UserSettings.get().uiScale);
   }
 
   /* Schedule the death screen to be shown */

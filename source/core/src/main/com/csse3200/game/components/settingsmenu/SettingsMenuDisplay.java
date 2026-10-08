@@ -19,12 +19,12 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.files.GameProgress;
 import com.csse3200.game.files.GameProgress.SaveData;
-import com.csse3200.game.files.PlayMode;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.files.UserSettings.DisplaySettings;
 import com.csse3200.game.files.WindowSize;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+import com.csse3200.game.ui.UiScale;
 import com.csse3200.game.utils.StringDecorator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,12 +46,9 @@ public class SettingsMenuDisplay extends UIComponent {
   private SelectBox<WindowSize.Preset> windowSizeSelect;
   private CheckBox showTimerCheck;
   private CheckBox showFpsCheck;
-  private CheckBox onlineCheck;
   private CheckBox muteUnfocusedCheck;
-  private TextField nameField;
   private Slider musicSlider;
   private Slider soundSlider;
-  private Label sessionLabel;
   private Label lastRunLabel;
   private Label bestRunLabel;
   private Label resetStatusLabel;
@@ -89,6 +86,7 @@ public class SettingsMenuDisplay extends UIComponent {
     rootTable.add(menuBtns).fillX();
 
     stage.addActor(rootTable);
+    applyUiScale(uiScaleSlider.getValue());
   }
 
   private Table makeSettingsTable() {
@@ -116,6 +114,13 @@ public class SettingsMenuDisplay extends UIComponent {
     form.row("Fullscreen", fullScreenCheck);
     form.row("VSync", vsyncCheck);
     form.slider("UI scale", uiScaleSlider, "%.2fx");
+    uiScaleSlider.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            applyUiScale(uiScaleSlider.getValue());
+          }
+        });
     form.row("Resolution", displayModeSelect);
     form.row("Window size", windowSizeSelect);
 
@@ -137,33 +142,6 @@ public class SettingsMenuDisplay extends UIComponent {
     form.section("Gameplay", "Timer and FPS appear on the run HUD.");
     form.row("Show run timer", showTimerCheck);
     form.row("Show FPS", showFpsCheck);
-
-    onlineCheck = new CheckBox("", skin);
-    onlineCheck.setChecked(settings.onlinePlay);
-    nameField = new TextField(settings.displayName == null ? "" : settings.displayName, skin);
-    nameField.setMaxLength(PlayMode.NAME_LIMIT);
-    nameField.setMessageText(PlayMode.DEFAULT_NAME);
-    sessionLabel = new Label("", skin, "caption");
-    sessionLabel.setWrap(true);
-    onlineCheck.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent changeEvent, Actor actor) {
-            refreshSessionLabel();
-          }
-        });
-    nameField.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent changeEvent, Actor actor) {
-            refreshSessionLabel();
-          }
-        });
-    form.section("Session", "Saved on this computer. This menu does not start a match.");
-    form.row("Play online", onlineCheck);
-    form.row("Display name", nameField);
-    form.row("", sessionLabel);
-    refreshSessionLabel();
 
     SaveData save = GameProgress.get();
     lastRunLabel = new Label(GameProgress.formatTime(save.lastRunMs), skin);
@@ -259,7 +237,6 @@ public class SettingsMenuDisplay extends UIComponent {
       settings.fps = fpsVal;
     }
     settings.fullscreen = fullScreenCheck.isChecked();
-    settings.uiScale = uiScaleSlider.getValue();
     DisplaySettings chosen = chosenDisplaySettings(displayModeSelect.getSelected());
     if (chosen != null) {
       settings.displayMode = chosen;
@@ -275,12 +252,10 @@ public class SettingsMenuDisplay extends UIComponent {
     settings.musicVolume = musicSlider.getValue();
     settings.soundVolume = soundSlider.getValue();
     settings.muteUnfocused = muteUnfocusedCheck.isChecked();
-    settings.onlinePlay = onlineCheck.isChecked();
-    settings.displayName = PlayMode.cleanName(nameField.getText());
-    nameField.setText(settings.displayName);
+    settings.uiScale = UiScale.clamp(uiScaleSlider.getValue());
 
     UserSettings.set(settings, true);
-    refreshSessionLabel();
+    applyUiScale(settings.uiScale);
   }
 
   /**
@@ -294,11 +269,8 @@ public class SettingsMenuDisplay extends UIComponent {
     return new DisplaySettings(selected.object);
   }
 
-  private void refreshSessionLabel() {
-    if (sessionLabel == null || onlineCheck == null || nameField == null) {
-      return;
-    }
-    sessionLabel.setText(PlayMode.summary(onlineCheck.isChecked(), nameField.getText()));
+  private void applyUiScale(float scale) {
+    UiScale.apply(rootTable, scale);
   }
 
   private void refreshProgressLabel() {
@@ -331,6 +303,9 @@ public class SettingsMenuDisplay extends UIComponent {
   @Override
   public void update() {
     stage.act(ServiceLocator.getTimeSource().getDeltaTime());
+    if (uiScaleSlider != null) {
+      applyUiScale(uiScaleSlider.getValue());
+    }
   }
 
   @Override

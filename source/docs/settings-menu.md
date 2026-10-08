@@ -2,7 +2,7 @@
 
 Players open Settings from the main menu, change display and gameplay options, then press Apply or Exit. Apply writes `settings.json` through `UserSettings` and applies the display options immediately. Exit returns to the main menu and drops unsaved edits.
 
-The menu has Display, Audio, Gameplay, Session and Run history sections. Display includes the fullscreen resolution and the window size used when fullscreen is off. Gameplay controls the in-run timer and a small FPS counter. Audio stores music and effects volume, and can mute both while the window is in the background. Session stores an online preference and a display name on this computer; it does not open a match. Run history lists last run and best run on this settings page, and can reset those times. Achievements and the win screen are not part of this menu.
+The menu has Display, Audio, Gameplay and Run history sections. Display includes the fullscreen resolution, the window size used when fullscreen is off, and a UI scale. Dragging UI scale resizes this menu immediately. Apply stores it and the in-game HUD uses it on the next run. Gameplay controls the in-run timer and a small FPS counter in the bottom-right corner. Audio stores music and effects volume, and can mute both while the window is in the background. Run history lists last run and best run on this settings page, and can reset those times. Achievements, online play and the win screen are not part of this menu.
 
 ## Class diagram
 
@@ -72,7 +72,6 @@ classDiagram
 
   SettingsMenuDisplay --> UserSettings : read and apply
   SettingsMenuDisplay --> WindowSize : window size list
-  SettingsMenuDisplay --> PlayMode : name and online status
   SettingsMenuDisplay --> GameProgress : summary and reset
   UserSettings --> WindowSize : windowed mode size
   UserSettings --> Settings : persists settings.json

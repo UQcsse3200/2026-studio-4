@@ -81,7 +81,7 @@ public class UserSettings {
     public boolean fullscreen = true;
     public boolean vsync = true;
 
-    /** ui Scale. Currently unused, but can be implemented. */
+    /** Scales the settings page immediately and the in-game HUD after Apply. */
     public float uiScale = 1f;
 
     /** When true, the in-run HUD shows the game timer. */
