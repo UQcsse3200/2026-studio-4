@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.components.player.AbilityAttunementComponent;
 import com.csse3200.game.components.player.PlayerAbilitiesComponent;
 import com.csse3200.game.components.player.abilities.Invisibility;
 import com.csse3200.game.components.player.abilities.LastStand;
@@ -60,8 +61,45 @@ class PlayerFactoryTest {
     secondAbilities.create();
     assertFalse(firstAbilities.isActive(Invisibility.class));
     assertFalse(firstAbilities.isActive(LastStand.class));
+
+    // A factory-built player has earned nothing yet, so every ability is locked.
+    AbilityAttunementComponent firstAttunement =
+        first.getComponent(AbilityAttunementComponent.class);
+    AbilityAttunementComponent secondAttunement =
+        second.getComponent(AbilityAttunementComponent.class);
+    assertNotNull(firstAttunement);
+    assertNotNull(secondAttunement);
+    assertNotSame(firstAttunement, secondAttunement);
+    firstAttunement.create();
+    secondAttunement.create();
+    assertNull(firstAttunement.getAttuned());
+    assertFalse(firstAbilities.isUnlocked(Invisibility.class));
+    assertFalse(firstAbilities.tryActivate(Invisibility.class));
+
+    assertTrue(firstAttunement.attune(Invisibility.class));
     assertTrue(firstAbilities.tryActivate(Invisibility.class));
     assertTrue(firstAbilities.isActive(Invisibility.class));
+    // Attuning one player leaves the other untouched.
     assertFalse(secondAbilities.isActive(Invisibility.class));
+    assertFalse(secondAbilities.isUnlocked(Invisibility.class));
+  }
+
+  @Test
+  void shouldTakeBackTheAttunedAbilityWhenThePlayerDies() {
+    Entity player = PlayerFactory.createPlayer();
+    PlayerAbilitiesComponent abilities = player.getComponent(PlayerAbilitiesComponent.class);
+    AbilityAttunementComponent attunement = player.getComponent(AbilityAttunementComponent.class);
+    abilities.create();
+    attunement.create();
+    assertTrue(attunement.attune(Invisibility.class));
+
+    // PlayerAbilitiesComponent relocks to each ability's default on death, which would hand back
+    // an ability that starts unlocked. Attunement has to survive that.
+    player.getEvents().trigger("entityDied");
+    attunement.update();
+
+    assertNull(attunement.getAttuned());
+    assertFalse(abilities.isUnlocked(Invisibility.class));
+    assertFalse(abilities.isUnlocked(LastStand.class));
   }
 }

@@ -7,6 +7,7 @@ import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
+import com.csse3200.game.components.player.AbilityAttunementComponent;
 import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.ConsumableSelectionComponent;
 import com.csse3200.game.components.player.HealingPotionFeedbackComponent;
@@ -92,6 +93,8 @@ public class PlayerFactory {
                 new CombatStatsComponent(
                     stats.health, stats.baseAttack, stats.movementSpeed, stats.attackSpeed))
             .addComponent(new PlayerAbilitiesComponent())
+            // Abilities are earned from Hecate, so none of them start available.
+            .addComponent(new AbilityAttunementComponent())
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(new ConsumableSelectionComponent())
             .addComponent(new ConsumableEffectComponent())

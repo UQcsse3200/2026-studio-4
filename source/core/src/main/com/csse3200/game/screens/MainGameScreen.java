@@ -122,6 +122,13 @@ public class MainGameScreen extends ScreenAdapter {
     world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     // trigger win screen via entity win event
     player.getEvents().addListener("winScreenRequested", () -> winScreenRequested = true);
+    // The hub and the dungeons have their own music; rooms announce which one they want.
+    player
+        .getEvents()
+        .addListener(
+            RoomManager.ROOM_ENTERED,
+            (String roomId, String dungeonId, Boolean cleared) ->
+                roomAssets.playMusicFor(dungeonId, Boolean.TRUE.equals(cleared)));
     // notify damage
     player
         .getEvents()
@@ -287,6 +294,9 @@ public class MainGameScreen extends ScreenAdapter {
     TimerDisplay timerDisplay = new TimerDisplay();
 
     SettingsMenuDisplay settingsMenu = new SettingsMenuDisplay(this.game, () -> {}, true);
+    // Opens itself when Hecate's interaction finishes; nothing else has to know about it.
+    AbilityMenu abilityMenu = new AbilityMenu(player);
+
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
@@ -310,7 +320,10 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(hotbarDisplay)
         .addComponent(consumableHotbarDisplay)
         .addComponent(inventoryActions)
-        .addComponent(settingsMenu);
+        .addComponent(settingsMenu)
+        .addComponent(abilityMenu)
+        .addComponent(new KeyboardAbilityMenuInputComponent())
+        .addComponent(new AbilityMenuDisplay(abilityMenu));
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     // The HUD keeps working while a dialogue or cutscene has the world frozen
     ui.setUpdatesWhilePaused(true);
