@@ -13,8 +13,11 @@ import java.util.WeakHashMap;
  * left at normal size so it cannot leave the screen.
  */
 public final class UiScale {
+  public static final float MIN = 0.5f;
+  public static final float MAX = 2f;
   public static final String SETTINGS_CONTENT = "settings-content";
   public static final String SETTINGS_ACTIONS = "settings-actions";
+  public static final String SETTINGS_BACKDROP = "settings-backdrop";
 
   private static final Map<Actor, Float> baseScale = new WeakHashMap<>();
 
@@ -26,7 +29,7 @@ public final class UiScale {
     if (!Float.isFinite(value)) {
       return 1f;
     }
-    return Math.clamp(value, 0.2f, 2f);
+    return Math.clamp(value, MIN, MAX);
   }
 
   /** Scales one group downward from its top edge. */
@@ -63,7 +66,7 @@ public final class UiScale {
       if (!(actor instanceof Group group)) {
         continue;
       }
-      if (SETTINGS_ACTIONS.equals(group.getName())) {
+      if (SETTINGS_ACTIONS.equals(group.getName()) || SETTINGS_BACKDROP.equals(group.getName())) {
         apply(group, 1f, Align.bottom);
       } else if (SETTINGS_CONTENT.equals(group.getName())) {
         apply(group, factor, Align.top);

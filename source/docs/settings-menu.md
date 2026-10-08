@@ -1,17 +1,65 @@
 # Settings menu
 
-Players open Settings from the main menu, or from the Settings button beside Exit during a run. Apply writes `settings.json` through `UserSettings` and applies the display options immediately. Exit on the main-menu page returns to the main menu. Exit during a run closes the menu and returns to the same run. Either Exit drops unsaved edits. The run pauses while the in-game menu is open.
+Players can change display, audio, and gameplay options from the main menu, or from the Settings button beside Exit during a run. Apply saves the options and applies the display settings immediately. Exit throws away unsaved edits. From the main menu, Exit returns to the main menu. During a run, Exit closes the menu and returns to the same run. The run pauses while that menu is open.
 
-The menu has Display, Audio, Gameplay and Run history sections. Display includes the fullscreen resolution, the window size used when fullscreen is off, and a UI scale. The UI scale slider stays on the bottom bar, next to Apply and Exit, so those controls stay on screen at any size. Dragging it resizes the rest of this menu from the top. During a run each HUD panel grows from the edge it sits on, instead of the whole screen scaling around the centre. Apply stores it. Gameplay controls the in-run timer and a small FPS counter in the bottom-right corner. Audio stores music and effects volume, and can mute both while the window is in the background. Run history lists last run and best run on this settings page, and can reset those times. Achievements, online play and the win screen are not part of this menu.
+The page has four sections: Display, Audio, Gameplay, and Run history. Achievements, online play, and the win screen are not part of this menu.
+
+Saved options are written to `DECO2800Game/settings.json` under the home directory. Run times are written to `DECO2800Game/game-save.json`.
+
+## How to use it
+
+### From the main menu
+
+1. On the main menu, press **Settings**.
+2. Change the options you want.
+3. Press **Apply** to save them, or **Exit** to leave them unchanged and return to the main menu.
+
+### During a run
+
+1. Press **Settings**, to the left of **Exit**.
+2. The run pauses. Enemies and the run timer stop.
+3. The game HUD is hidden while this menu is open. Change the options. **UI scale** is in the Display section. Dragging it resizes the menu immediately, and each HUD panel grows or shrinks from the edge it sits on. The smallest scale is 0.5×.
+4. Press **Apply** to keep the changes, or **Exit** to drop them and continue the same run.
+
+### What each control does
+
+| Control | What it does |
+| --- | --- |
+| FPS cap | Limits how many frames the game draws per second. |
+| Fullscreen | Turns fullscreen on or off. The resolution list is used only while fullscreen is on. |
+| VSync | Matches the frame rate to the monitor. |
+| Resolution | Fullscreen size and refresh rate. If nothing is selected, Apply keeps the current display mode. |
+| Window size | Size of the window when fullscreen is off. Choices are 960×540, 1280×720, 1280×800, 1600×900, and 1920×1080. |
+| UI scale | In the Display section, from 0.5× to 2×. It cannot be set to zero. |
+| Music | Background music volume. |
+| Effects | Sound effect volume. |
+| Mute in background | Silences music and effects while the window is not focused. |
+| Show run timer | Shows or hides the run timer on the HUD. |
+| Show FPS | Shows or hides the FPS counter in the bottom-right corner. Turn it on, press Apply, then start or return to a run. |
+| Last run / Best run | Times stored on this computer. |
+| Reset times | Clears last run and best run. It does not clear achievements. |
 
 ## Class diagram
 
 ```mermaid
 classDiagram
+  class MainMenuActions {
+    +onSettings()
+  }
+  class SettingsScreen {
+    +render()
+  }
+  class MainGameExitDisplay {
+    +showExitDialog()
+  }
+  class MainGameScreen {
+    +render()
+    +resize()
+  }
   class SettingsMenuDisplay {
+    +open()
     +applyChanges()
     +exitMenu()
-    -refreshProgressLabel()
   }
   class UserSettings {
     +get() Settings
@@ -29,8 +77,6 @@ classDiagram
     +float soundVolume
     +int windowWidth
     +int windowHeight
-    +boolean onlinePlay
-    +String displayName
     +boolean muteUnfocused
     +DisplaySettings displayMode
   }
@@ -39,109 +85,111 @@ classDiagram
     +width(int) int
     +height(int) int
   }
-  class PlayMode {
-    +cleanName(String) String
-    +summary(boolean, String) String
+  class UiScale {
+    +clamp(float) float
+    +apply(Group, float)
+    +applyToStage(Stage, float)
+  }
+  class AudioLevels {
+    +music() float
+    +effects() float
+    +audible() boolean
   }
   class GameProgress {
     +get() SaveData
     +recordRun(long)
     +clearSave()
-    +clearAchievements()
     +formatTime(long) String
-  }
-  class SaveData {
-    +long lastRunMs
-    +long bestRunMs
-    +List achievements
-  }
-  class MainGameScreen {
-    +dispose()
   }
   class TimerDisplay {
     +create()
-    +toggle()
-  }
-  class RunTimer {
-    +startRun()
-    +getTotalTime() float
   }
   class FpsOverlay {
     +create()
   }
 
-  SettingsMenuDisplay --> UserSettings : read and apply
+  MainMenuActions --> SettingsScreen : open from the main menu
+  SettingsScreen --> SettingsMenuDisplay : creates the page
+  MainGameExitDisplay --> SettingsMenuDisplay : open during a run
+  MainGameScreen --> SettingsMenuDisplay : pauses while the menu is open
+  SettingsMenuDisplay --> UserSettings : read and save
   SettingsMenuDisplay --> WindowSize : window size list
-  SettingsMenuDisplay --> GameProgress : summary and reset
-  UserSettings --> WindowSize : windowed mode size
-  UserSettings --> Settings : persists settings.json
-  GameProgress --> SaveData : persists game-save.json
-  MainGameScreen --> RunTimer : starts and reads the run
-  MainGameScreen --> TimerDisplay : adds the HUD
-  MainGameScreen --> GameProgress : recordRun on dispose
+  SettingsMenuDisplay --> UiScale : scale the page and the HUD
+  SettingsMenuDisplay --> GameProgress : last run, best run, reset
+  UserSettings --> Settings : settings.json
+  UserSettings --> WindowSize : windowed size
+  MainGameScreen --> UiScale : scale the HUD
+  MainGameScreen --> TimerDisplay : run timer
+  MainGameScreen --> FpsOverlay : FPS counter
   TimerDisplay --> UserSettings : showTimer
-  TimerDisplay --> RunTimer : label text
   FpsOverlay --> UserSettings : showFps
-  MainGameScreen --> FpsOverlay : adds the counter
+  AudioLevels --> UserSettings : music, effects, mute
 ```
 
 ## Sequence diagram
 
-Apply, then a finished run:
+Open from the main menu and save:
 
 ```mermaid
 sequenceDiagram
   participant Player
-  participant Menu as SettingsMenuDisplay
+  participant Main as MainMenuActions
+  participant Page as SettingsMenuDisplay
   participant Settings as UserSettings
-  participant Run as MainGameScreen
-  participant Timer as TimerDisplay
-  participant Clock as RunTimer
-  participant Save as GameProgress
 
-  Player->>Menu: Apply
-  Menu->>Settings: set(settings, true)
-  Settings->>Settings: write settings.json and apply display options
-  Player->>Run: start a run
-  Run->>Clock: startRun
-  Run->>Timer: create
-  Timer->>Settings: read showTimer
-  Timer->>Timer: show or hide the panel
-  Run->>Clock: update each frame
-  Run->>Save: dispose records total time
-  Save->>Save: write last and best to game-save.json
-  Player->>Menu: open Settings
-  Menu->>Save: read last and best
-  Menu->>Player: show them in Run history
+  Player->>Main: Settings
+  Main->>Page: show the settings screen
+  Player->>Page: change options
+  Player->>Page: Apply
+  Page->>Settings: set(settings, true)
+  Settings->>Settings: write settings.json
+  Settings->>Settings: apply FPS, VSync, and fullscreen or window size
+  Player->>Page: Exit
+  Page->>Main: return to the main menu
 ```
 
-Reset from the settings menu:
+Open during a run. Exit keeps the run:
 
 ```mermaid
 sequenceDiagram
   participant Player
-  participant Menu as SettingsMenuDisplay
+  participant Exit as MainGameExitDisplay
+  participant Run as MainGameScreen
+  participant Page as SettingsMenuDisplay
+  participant Scale as UiScale
+  participant Settings as UserSettings
+
+  Player->>Exit: Settings
+  Exit->>Run: pause physics, rooms, and the run timer
+  Exit->>Page: open
+  Player->>Page: drag UI scale
+  Page->>Scale: resize the menu and each HUD panel from its own edge
+  Player->>Page: Exit without Apply
+  Page->>Settings: read the saved scale
+  Page->>Scale: restore it
+  Page->>Run: close the menu and resume the run
+```
+
+Reset the stored times:
+
+```mermaid
+sequenceDiagram
+  participant Player
+  participant Page as SettingsMenuDisplay
   participant Save as GameProgress
 
-  Player->>Menu: Reset times
-  Menu->>Save: clearSave
-  Save->>Save: zero last and best
-  Menu->>Player: refresh summary
+  Player->>Page: Reset times
+  Page->>Save: clearSave
+  Save->>Save: set last run and best run to zero
+  Page->>Player: show 0:00
 ```
 
 ## Tests
 
-JUnit coverage lives next to the code:
-
-- `UserSettingsTest` checks the gameplay options default to on, window size is applied when fullscreen is off, and the new options round-trip through `settings.json` without touching the display.
-- `WindowSizeTest` checks listed sizes, the default window, and clamping.
-- `PlayModeTest` checks the display name and the online status line.
-- `GameProgressTest` checks time formatting and best-run updates. The settings page does not list or reset achievements.
-- `TimerDisplayTest` checks the HUD panel stays hidden when Show run timer is off.
-- `AudioLevelsTest` checks music and effects volumes stay inside 0 to 1, and that mute-in-background silences an unfocused window.
-
 From `source/`:
 
 ```sh
-./gradlew test --tests com.csse3200.game.files.UserSettingsTest --tests com.csse3200.game.files.WindowSizeTest --tests com.csse3200.game.files.PlayModeTest --tests com.csse3200.game.files.GameProgressTest --tests com.csse3200.game.files.AudioLevelsTest --tests com.csse3200.game.components.gamearea.TimerDisplayTest
+./gradlew test --tests com.csse3200.game.components.settingsmenu.InGameSettingsTest --tests com.csse3200.game.components.settingsmenu.SettingsMenuDisplayTest --tests com.csse3200.game.ui.UiScaleTest --tests com.csse3200.game.files.UserSettingsTest --tests com.csse3200.game.files.WindowSizeTest --tests com.csse3200.game.files.AudioLevelsTest --tests com.csse3200.game.files.GameProgressTest --tests com.csse3200.game.components.gamearea.TimerDisplayTest
 ```
+
+`InGameSettingsTest` checks that the in-game Settings button opens the menu, the world stops updating while it is open, UI scale changes the menu, and Apply and Exit stay at normal size.

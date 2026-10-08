@@ -5,6 +5,7 @@ import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Graphics.Monitor;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -42,6 +43,8 @@ public class SettingsMenuDisplay extends UIComponent {
 
   private Table rootTable;
   private Table actionsTable;
+  private Table backdrop;
+  private final Array<Actor> hiddenHud = new Array<>();
   private TextField fpsText;
   private CheckBox fullScreenCheck;
   private CheckBox vsyncCheck;
@@ -78,6 +81,9 @@ public class SettingsMenuDisplay extends UIComponent {
     loadFromSavedSettings();
     menuOpen = true;
     setMenuVisible(true);
+    if (scaleStage) {
+      hideGameUi();
+    }
     ServiceLocator.getEntityService().setFrozen(this, true);
     if (uiScaleSlider != null) {
       applyUiScale(uiScaleSlider.getValue());
@@ -100,6 +106,12 @@ public class SettingsMenuDisplay extends UIComponent {
     pane.setScrollingDisabled(true, false);
     Table menuBtns = makeMenuBtns();
 
+    backdrop = new Table();
+    backdrop.setName(UiScale.SETTINGS_BACKDROP);
+    backdrop.setFillParent(true);
+    backdrop.setBackground(skin.getDrawable("window-w"));
+    backdrop.setTouchable(Touchable.enabled);
+
     rootTable = new Table();
     rootTable.setName(UiScale.SETTINGS_CONTENT);
     rootTable.setFillParent(true);
@@ -109,13 +121,14 @@ public class SettingsMenuDisplay extends UIComponent {
     rootTable.row().padTop(6f);
     rootTable.add(hint).expandX().top();
     rootTable.row().padTop(12f);
-    rootTable.add(pane).grow().pad(8f, 48f, 8f, 48f);
+    rootTable.add(pane).grow().pad(8f, 48f, 72f, 48f);
 
     actionsTable = menuBtns;
     actionsTable.setName(UiScale.SETTINGS_ACTIONS);
     actionsTable.setFillParent(true);
     actionsTable.bottom();
 
+    stage.addActor(backdrop);
     stage.addActor(rootTable);
     stage.addActor(actionsTable);
     if (menuOpen) {
@@ -127,8 +140,17 @@ public class SettingsMenuDisplay extends UIComponent {
   }
 
   private void setMenuVisible(boolean visible) {
+    if (backdrop != null) {
+      backdrop.setVisible(visible);
+      if (visible) {
+        backdrop.toFront();
+      }
+    }
     if (rootTable != null) {
       rootTable.setVisible(visible);
+      if (visible) {
+        rootTable.toFront();
+      }
     }
     if (actionsTable != null) {
       actionsTable.setVisible(visible);
@@ -147,8 +169,8 @@ public class SettingsMenuDisplay extends UIComponent {
     fullScreenCheck.setChecked(settings.fullscreen);
     vsyncCheck = new CheckBox("", skin);
     vsyncCheck.setChecked(settings.vsync);
-    uiScaleSlider = new Slider(0.2f, 2f, 0.1f, false, skin);
-    uiScaleSlider.setValue(settings.uiScale);
+    uiScaleSlider = new Slider(UiScale.MIN, UiScale.MAX, 0.1f, false, skin);
+    uiScaleSlider.setValue(UiScale.clamp(settings.uiScale));
     displayModeSelect = new SelectBox<>(skin);
     Monitor selectedMonitor = Gdx.graphics.getMonitor();
     displayModeSelect.setItems(getDisplayModes(selectedMonitor));
@@ -162,6 +184,7 @@ public class SettingsMenuDisplay extends UIComponent {
     form.row("FPS cap", fpsText);
     form.row("Fullscreen", fullScreenCheck);
     form.row("VSync", vsyncCheck);
+    form.slider("UI scale", uiScaleSlider, "%.2fx");
     uiScaleSlider.addListener(
         new ChangeListener() {
           @Override
@@ -271,22 +294,31 @@ public class SettingsMenuDisplay extends UIComponent {
           }
         });
 
-    Label scaleValue = new Label(String.format("%.2fx", uiScaleSlider.getValue()), skin);
-    uiScaleSlider.addListener(
-        event -> {
-          scaleValue.setText(String.format("%.2fx", uiScaleSlider.getValue()));
-          return false;
-        });
-    Table scaleLine = new Table();
-    scaleLine.add(new Label("UI scale", skin)).padRight(12f);
-    scaleLine.add(uiScaleSlider).width(220f);
-    scaleLine.add(scaleValue).padLeft(12f).width(72f);
-
     Table table = new Table();
-    table.add(scaleLine).left().pad(0f, 15f, 15f, 0f);
-    table.add(exitBtn).expandX().right().pad(0f, 15f, 15f, 8f);
-    table.add(applyBtn).right().pad(0f, 0f, 15f, 15f);
+    table.add(exitBtn).expandX().left().pad(0f, 15f, 15f, 0f);
+    table.add(applyBtn).expandX().right().pad(0f, 0f, 15f, 15f);
     return table;
+  }
+
+  /** Hides the run HUD so the settings page can be read. */
+  private void hideGameUi() {
+    if (stage == null) {
+      return;
+    }
+    for (Actor actor : stage.getActors()) {
+      if (actor == backdrop || actor == rootTable || actor == actionsTable || !actor.isVisible()) {
+        continue;
+      }
+      actor.setVisible(false);
+      hiddenHud.add(actor);
+    }
+  }
+
+  private void showGameUi() {
+    for (Actor actor : hiddenHud) {
+      actor.setVisible(true);
+    }
+    hiddenHud.clear();
   }
 
   private void applyChanges() {
@@ -345,7 +377,7 @@ public class SettingsMenuDisplay extends UIComponent {
     fpsText.setText(Integer.toString(settings.fps));
     fullScreenCheck.setChecked(settings.fullscreen);
     vsyncCheck.setChecked(settings.vsync);
-    uiScaleSlider.setValue(settings.uiScale);
+    uiScaleSlider.setValue(UiScale.clamp(settings.uiScale));
     displayModeSelect.setSelected(getActiveMode(displayModeSelect.getItems()));
     windowSizeSelect.setSelected(WindowSize.matching(settings.windowWidth, settings.windowHeight));
     showTimerCheck.setChecked(settings.showTimer);
@@ -370,6 +402,7 @@ public class SettingsMenuDisplay extends UIComponent {
       menuOpen = false;
       if (scaleStage) {
         UiScale.applyToStage(stage, UserSettings.get().uiScale);
+        showGameUi();
       }
       setMenuVisible(false);
       ServiceLocator.getEntityService().setFrozen(this, false);
@@ -409,6 +442,10 @@ public class SettingsMenuDisplay extends UIComponent {
   public void dispose() {
     if (ServiceLocator.getEntityService() != null) {
       ServiceLocator.getEntityService().setFrozen(this, false);
+    }
+    showGameUi();
+    if (backdrop != null) {
+      backdrop.clear();
     }
     if (rootTable != null) {
       rootTable.clear();
