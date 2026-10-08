@@ -45,28 +45,34 @@ public class InventoryActions extends Component {
   }
 
   private void setEquipped(boolean fromEquipped, int fromIndex, boolean equipped, int toIndex) {
-    List<? extends Item> items = inventoryDisplay.getPageItems(fromEquipped);
+    List<Item> items = inventoryDisplay.getPageItems(fromEquipped);
     if (fromIndex < 0 || fromIndex >= items.size() || items.get(fromIndex) == null) return;
     Item item = items.get(fromIndex);
     InventoryComponent inventory = inventoryDisplay.getInventoryComponent();
     if (item instanceof Charm charm) {
       inventory.setCharmEquipped(charm, equipped);
     } else if (item instanceof ConsumableItem) {
-      if (equipped) {
-        if (toIndex < 0) {
-          for (int i = 0; i < InventoryComponent.CONSUMABLE_SLOT_COUNT; i++) {
-            if (inventory.getConsumableSlot(i) == null) {
-              toIndex = i;
-              break;
-            }
-          }
-        }
-        if (toIndex < 0 || toIndex >= InventoryComponent.CONSUMABLE_SLOT_COUNT) return;
-        inventory.equipConsumable(item.getId(), toIndex);
-      } else {
-        inventory.unequipConsumable(fromIndex);
-      }
+      if (!setConsumableEquipped(inventory, item, fromIndex, equipped, toIndex)) return;
     }
     inventoryDisplay.refreshPage();
+  }
+
+  private boolean setConsumableEquipped(
+      InventoryComponent inventory, Item item, int fromIndex, boolean equipped, int toIndex) {
+    if (!equipped) {
+      inventory.unequipConsumable(fromIndex);
+      return true;
+    }
+    int slot = toIndex < 0 ? firstEmptyConsumableSlot(inventory) : toIndex;
+    if (slot < 0 || slot >= InventoryComponent.CONSUMABLE_SLOT_COUNT) return false;
+    inventory.equipConsumable(item.getId(), slot);
+    return true;
+  }
+
+  private int firstEmptyConsumableSlot(InventoryComponent inventory) {
+    for (int i = 0; i < InventoryComponent.CONSUMABLE_SLOT_COUNT; i++) {
+      if (inventory.getConsumableSlot(i) == null) return i;
+    }
+    return -1;
   }
 }

@@ -51,7 +51,7 @@ public class ConsumableCommand implements Command {
     int quantity = 1;
     if (args.size() == itemIndex + 2) {
       String value = args.get(itemIndex + 1);
-      if (!value.matches("[0-9]+")) {
+      if (!value.matches("\\d+")) {
         return false;
       }
       quantity = 0;

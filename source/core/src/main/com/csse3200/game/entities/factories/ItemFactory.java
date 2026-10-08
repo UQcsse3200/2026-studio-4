@@ -46,37 +46,43 @@ public final class ItemFactory {
     }
     float angle = ThreadLocalRandom.current().nextFloat() * 360f;
     for (int i = 0; i < drops.size(); i++) {
-      Entity drop = drops.get(i);
-      drop.setPosition(position.cpy().sub(drop.getScale().scl(0.5f)));
-      float direction = angle + i * 360f / drops.size();
-      float speed = (float) ThreadLocalRandom.current().nextDouble(4.5, 7.0);
-      Vector2 velocity = new Vector2(speed, 0f).rotateDeg(direction);
-      var body = drop.getComponent(PhysicsComponent.class).getBody();
-      // Sensor-only items must stop short of terrain instead of flying through a wall.
-      Vector2 size = drop.getScale();
-      Vector2 centre = drop.getCenterPosition();
-      float distance = speed / body.getLinearDamping();
-      float allowedTravel = distance;
-      RaycastHit hit = new RaycastHit();
-      // Sweep the centre and all four sprite corners, including diagonal wall approaches.
-      for (int sample = 0; sample < 5; sample++) {
-        Vector2 from = centre.cpy();
-        if (sample > 0) {
-          from.add(
-              (sample <= 2 ? -0.5f : 0.5f) * size.x, (sample % 2 == 0 ? -0.5f : 0.5f) * size.y);
-        }
-        Vector2 to = from.cpy().mulAdd(velocity, 1f / body.getLinearDamping());
-        if (ServiceLocator.getPhysicsService()
-            .getPhysics()
-            .raycast(from, to, PhysicsLayer.OBSTACLE, hit)) {
-          allowedTravel = Math.min(allowedTravel, Math.max(0f, from.dst(hit.point) - 0.05f));
-        }
-      }
-      velocity.scl(allowedTravel / distance);
-      body.setLinearVelocity(velocity);
-      drop.getComponent(ItemDropAnimationComponent.class).launchFrom(position);
+      launchDrop(drops.get(i), position, angle + i * 360f / drops.size());
     }
     return drops;
+  }
+
+  private static void launchDrop(Entity drop, Vector2 position, float direction) {
+    drop.setPosition(position.cpy().sub(drop.getScale().scl(0.5f)));
+    float speed = (float) ThreadLocalRandom.current().nextDouble(4.5, 7.0);
+    Vector2 velocity = new Vector2(speed, 0f).rotateDeg(direction);
+    var body = drop.getComponent(PhysicsComponent.class).getBody();
+    float distance = speed / body.getLinearDamping();
+    float allowedTravel = allowedTravel(drop, velocity, body.getLinearDamping(), distance);
+    velocity.scl(allowedTravel / distance);
+    body.setLinearVelocity(velocity);
+    drop.getComponent(ItemDropAnimationComponent.class).launchFrom(position);
+  }
+
+  /** Sensor-only drops stop short of terrain instead of flying through a wall. */
+  private static float allowedTravel(Entity drop, Vector2 velocity, float damping, float distance) {
+    Vector2 size = drop.getScale();
+    Vector2 centre = drop.getCenterPosition();
+    float allowedTravel = distance;
+    RaycastHit hit = new RaycastHit();
+    // Sweep the centre and all four sprite corners, including diagonal wall approaches.
+    for (int sample = 0; sample < 5; sample++) {
+      Vector2 from = centre.cpy();
+      if (sample > 0) {
+        from.add((sample <= 2 ? -0.5f : 0.5f) * size.x, (sample % 2 == 0 ? -0.5f : 0.5f) * size.y);
+      }
+      Vector2 to = from.cpy().mulAdd(velocity, 1f / damping);
+      if (ServiceLocator.getPhysicsService()
+          .getPhysics()
+          .raycast(from, to, PhysicsLayer.OBSTACLE, hit)) {
+        allowedTravel = Math.clamp(from.dst(hit.point) - 0.05f, 0f, allowedTravel);
+      }
+    }
+    return allowedTravel;
   }
 
   /** Creates one world entity for an already constructed item. */

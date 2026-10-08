@@ -29,12 +29,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Displays the inventory book and its charms, consumables and achievements pages. */
 public class InventoryDisplay extends UIComponent {
   private static final float Z_INDEX = 2f;
   private static final String LEFT_PAGE = "UI_TravelBook_BookPageLeft01a";
   private static final String RIGHT_PAGE = "UI_TravelBook_BookPageRight01a";
+
+  private static final String MOVE_INACTIVE_TO_ACTIVE = "moveInactiveToActiveItem";
+  private static final String MOVE_ACTIVE_TO_INACTIVE = "moveActiveToInactiveItem";
+  private static final String DARK_TEXT_COLOR = "3a2618ff";
+  private static final String LEFT_PAGE_NAME = "inventory-page-left";
+  private static final String RIGHT_PAGE_NAME = "inventory-page-right";
+  private static final String ACTIVE_SLOT = "active";
 
   private enum Page {
     CHARMS,
@@ -63,19 +71,68 @@ public class InventoryDisplay extends UIComponent {
             case Keys.S, Keys.DOWN -> moveSelection(0, 1);
             case Keys.A, Keys.LEFT -> moveSelection(-1, 0);
             case Keys.D, Keys.RIGHT -> moveSelection(1, 0);
-            case Keys.SPACE -> {
-              if (currentPage != Page.ACHIEVEMENTS)
-                entity
-                    .getEvents()
-                    .trigger(
-                        selectedEquipped ? "moveActiveToInactiveItem" : "moveInactiveToActiveItem",
-                        selectedIndex,
-                        -1);
-            }
+            case Keys.SPACE -> toggleSelectedEquipment();
             case Keys.ESCAPE -> inventoryComponent.toggleDisplay();
-            default -> {}
+            default -> {
+              // Capture unrelated keys while the book is open to prevent player actions.
+            }
           }
           return true;
+        }
+
+        private void toggleSelectedEquipment() {
+          if (currentPage == Page.ACHIEVEMENTS) return;
+          entity
+              .getEvents()
+              .trigger(
+                  selectedEquipped ? MOVE_ACTIVE_TO_INACTIVE : MOVE_INACTIVE_TO_ACTIVE,
+                  selectedIndex,
+                  -1);
+        }
+
+        private void moveSelection(int dx, int dy) {
+          if (selectedSlots().isEmpty()) return;
+          tooltipManager.hideAll();
+          int columns = selectedEquipped ? 3 : 4;
+          if (crossesPageEdge(dx, columns)) {
+            int row = selectedIndex / columns;
+            selectedEquipped = !selectedEquipped;
+            int newColumns = selectedEquipped ? 3 : 4;
+            selectedIndex =
+                Math.min(
+                    row * newColumns + (selectedEquipped ? newColumns - 1 : 0),
+                    selectedSlots().size() - 1);
+          } else {
+            moveWithinGrid(dx, dy, columns);
+          }
+          updateSelection();
+          table.validate();
+          Stack selected = selectedSlots().get(selectedIndex);
+          if (selected.getParent().getParent() instanceof ScrollPane scroll) {
+            scroll.scrollTo(
+                selected.getX(), selected.getY(), selected.getWidth(), selected.getHeight());
+            scroll.updateVisualScroll();
+          }
+        }
+
+        private boolean crossesPageEdge(int dx, int columns) {
+          int column = selectedIndex % columns;
+          if (selectedEquipped) {
+            return dx > 0 && (column == columns - 1 || selectedIndex == selectedSlots().size() - 1);
+          }
+          return dx < 0 && column == 0;
+        }
+
+        private void moveWithinGrid(int dx, int dy, int columns) {
+          int candidate = selectedIndex + dx + dy * columns;
+          if (dy > 0 && (selectedIndex / columns + 1) * columns < selectedSlots().size()) {
+            candidate = Math.min(candidate, selectedSlots().size() - 1);
+          }
+          if (candidate >= 0
+              && candidate < selectedSlots().size()
+              && (dx == 0 || candidate / columns == selectedIndex / columns)) {
+            selectedIndex = candidate;
+          }
         }
 
         @Override
@@ -84,6 +141,7 @@ public class InventoryDisplay extends UIComponent {
           return capturedKeys.remove(keycode);
         }
       };
+  private final Supplier<DragAndDrop> dragAndDropFactory;
   private DragAndDrop dragAndDrop;
   private InventoryComponent inventoryComponent;
   private final TooltipManager tooltipManager =
@@ -103,7 +161,13 @@ public class InventoryDisplay extends UIComponent {
       };
 
   public InventoryDisplay(InventoryComponent inventoryComponent) {
+    this(inventoryComponent, DragAndDrop::new);
+  }
+
+  InventoryDisplay(
+      InventoryComponent inventoryComponent, Supplier<DragAndDrop> dragAndDropFactory) {
     this.inventoryComponent = inventoryComponent;
+    this.dragAndDropFactory = dragAndDropFactory;
   }
 
   @Override
@@ -122,7 +186,7 @@ public class InventoryDisplay extends UIComponent {
 
   private Label createDarkLabel(String text) {
     Label label = new Label(text, skin);
-    label.setColor(Color.valueOf("3a2618ff"));
+    label.setColor(Color.valueOf(DARK_TEXT_COLOR));
     return label;
   }
 
@@ -131,7 +195,7 @@ public class InventoryDisplay extends UIComponent {
     // Create main table
     table = new Table();
     table.setName("inventory-book");
-    this.dragAndDrop = new DragAndDrop();
+    this.dragAndDrop = dragAndDropFactory.get();
     table.setFillParent(true);
     stage.addActor(table);
     equippedSlots.clear();
@@ -140,7 +204,7 @@ public class InventoryDisplay extends UIComponent {
     selectionDetails = new Label("", skin);
     selectionDetails.setName("inventory-selection-details");
     selectionDetails.setWrap(true);
-    selectionDetails.setColor(Color.valueOf("3a2618ff"));
+    selectionDetails.setColor(Color.valueOf(DARK_TEXT_COLOR));
 
     Stack bookStack = new Stack();
 
@@ -192,11 +256,12 @@ public class InventoryDisplay extends UIComponent {
   }
 
   /** Item snapshot used by the grids and the existing action component. */
-  public List<? extends Item> getPageItems(boolean equipped) {
+  public List<Item> getPageItems(boolean equipped) {
     if (currentPage == Page.ACHIEVEMENTS) return List.of();
     if (currentPage == Page.CHARMS) {
       return inventoryComponent.getCharms().stream()
           .filter(charm -> charm.isEquipped() == equipped)
+          .<Item>map(charm -> charm)
           .toList();
     }
     List<Item> items = new ArrayList<>();
@@ -206,7 +271,7 @@ public class InventoryDisplay extends UIComponent {
         items.add(id == null ? null : ItemCatalog.create(id, 1));
       }
     } else {
-      List<? extends Item> assignedItems = getPageItems(true);
+      List<Item> assignedItems = getPageItems(true);
       for (String id : inventoryComponent.getConsumableIds()) {
         boolean assigned =
             assignedItems.stream().anyMatch(item -> item != null && id.equals(item.getId()));
@@ -236,9 +301,8 @@ public class InventoryDisplay extends UIComponent {
     Table pagesContainer = new Table();
     pagesContainer.pad(30, 40, 30, 40);
 
-    Table leftPage =
-        new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a")).top();
-    leftPage.setName("inventory-page-left");
+    Table leftPage = new Table().background(inventory.getDrawable(LEFT_PAGE)).top();
+    leftPage.setName(LEFT_PAGE_NAME);
     leftPage.pad(20);
 
     leftPage.add(pageTabs()).padBottom(10).growX().row();
@@ -260,14 +324,13 @@ public class InventoryDisplay extends UIComponent {
 
     pagesContainer.add(leftPage).size(350, 500).padRight(20);
 
-    Table rightPage =
-        new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a")).top();
-    rightPage.setName("inventory-page-right");
+    Table rightPage = new Table().background(inventory.getDrawable(RIGHT_PAGE)).top();
+    rightPage.setName(RIGHT_PAGE_NAME);
     rightPage.pad(20);
 
     rightPage.add(createDarkLabel("Backpack")).padBottom(10).row();
 
-    List<? extends Item> stored = getPageItems(false);
+    List<Item> stored = getPageItems(false);
     Table rightGrid = drawItemGrid(4, Math.max(20, stored.size()), 64, stored, true, false);
 
     rightPage.add(scrollGrid(rightGrid)).size(310, 250).center().padBottom(10).row();
@@ -290,16 +353,15 @@ public class InventoryDisplay extends UIComponent {
     Table pagesContainer = new Table();
     pagesContainer.pad(30, 40, 30, 40);
 
-    Table leftPage =
-        new Table().background(inventory.getDrawable("UI_TravelBook_BookPageLeft01a")).top();
-    leftPage.setName("inventory-page-left");
+    Table leftPage = new Table().background(inventory.getDrawable(LEFT_PAGE)).top();
+    leftPage.setName(LEFT_PAGE_NAME);
     leftPage.pad(20);
 
     leftPage.add(pageTabs()).padBottom(10).growX().row();
 
     leftPage.add(createDarkLabel("Equipped")).row();
 
-    List<? extends Item> equipped = getPageItems(true);
+    List<Item> equipped = getPageItems(true);
     Table leftGrid = drawItemGrid(3, Math.max(5, equipped.size()), 72, equipped, true, true);
     leftGrid.setName("charms-equipped");
     leftPage.add(scrollGrid(leftGrid)).size(250, 300).row();
@@ -311,14 +373,13 @@ public class InventoryDisplay extends UIComponent {
 
     pagesContainer.add(leftPage).size(350, 500).padRight(20);
 
-    Table rightPage =
-        new Table().background(inventory.getDrawable("UI_TravelBook_BookPageRight01a")).top();
-    rightPage.setName("inventory-page-right");
+    Table rightPage = new Table().background(inventory.getDrawable(RIGHT_PAGE)).top();
+    rightPage.setName(RIGHT_PAGE_NAME);
     rightPage.pad(20);
 
     rightPage.add(createDarkLabel("Backpack")).padBottom(10).row();
 
-    List<? extends Item> stored = getPageItems(false);
+    List<Item> stored = getPageItems(false);
     Table rightGrid = drawItemGrid(4, Math.max(20, stored.size()), 64, stored, true, false);
 
     rightPage.add(scrollGrid(rightGrid)).size(310, 250).center().padBottom(10).row();
@@ -346,7 +407,7 @@ public class InventoryDisplay extends UIComponent {
     List<Achievement> unlocked = all.stream().filter(Achievement::isUnlocked).toList();
 
     Table leftPage = new Table().background(inventory.getDrawable(LEFT_PAGE)).top();
-    leftPage.setName("inventory-page-left");
+    leftPage.setName(LEFT_PAGE_NAME);
     leftPage.pad(20);
     leftPage.add(pageTabs()).padBottom(10).growX().row();
     leftPage.add(createDarkLabel("Locked achievements")).top().pad(15f).row();
@@ -358,7 +419,7 @@ public class InventoryDisplay extends UIComponent {
     pagesContainer.add(leftPage).size(350, 500).padRight(20);
 
     Table rightPage = new Table().background(inventory.getDrawable(RIGHT_PAGE)).top();
-    rightPage.setName("inventory-page-right");
+    rightPage.setName(RIGHT_PAGE_NAME);
     rightPage.pad(20);
     rightPage.add(createDarkLabel("Unlocked achievements")).top().pad(15f).row();
     rightPage.add(achievementList(unlocked, true)).grow();
@@ -381,7 +442,7 @@ public class InventoryDisplay extends UIComponent {
       if (!unlockedStyle && a.getTarget() > 0) {
         int shown = (int) Math.min(a.getProgress(), a.getTarget());
         Label progress = new Label(shown + " / " + (int) a.getTarget(), skin, "achievements_lock");
-        progress.setColor(Color.valueOf("3a2618ff"));
+        progress.setColor(Color.valueOf(DARK_TEXT_COLOR));
         list.add(progress).left().padLeft(6).padBottom(20).row();
       }
     }
@@ -401,7 +462,7 @@ public class InventoryDisplay extends UIComponent {
       int columns,
       int totalSlots,
       int slotSize,
-      List<? extends Item> items,
+      List<Item> items,
       boolean enableDrag,
       boolean equipped) {
     Table grid = new Table();
@@ -431,40 +492,7 @@ public class InventoryDisplay extends UIComponent {
       if (enableDrag) registerDropTarget(slotStack);
 
       if (i < items.size() && items.get(i) != null) {
-        Item currentItem = items.get(i);
-        // create an image with the items texture then extract the Drawable to draw the button
-        ImageButton itemButton = new ImageButton(new Image(getTexture(currentItem)).getDrawable());
-        itemButton.addListener(ItemTooltip.forItem(currentItem, skin, tooltipManager));
-        itemButton.setUserObject(slotBackground);
-        if (enableDrag) {
-          registerDragSource(itemButton);
-          final int index = i;
-          itemButton.addListener(
-              new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                  entity
-                      .getEvents()
-                      .trigger(
-                          equipped ? "moveActiveToInactiveItem" : "moveInactiveToActiveItem",
-                          index,
-                          -1);
-                }
-              });
-        }
-        slotStack.add(itemButton);
-        if (currentItem instanceof ConsumableItem) {
-          Table count = new Table();
-          count.bottom().right();
-          Label countLabel =
-              new Label(
-                  Integer.toString(inventoryComponent.getConsumableCount(currentItem.getId())),
-                  skin);
-          countLabel.setColor(Color.valueOf("3a2618ff"));
-          count.add(countLabel).pad(4);
-          count.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
-          slotStack.add(count);
-        }
+        addSlotItem(slotStack, slotBackground, items.get(i), enableDrag, equipped, i);
       }
 
       grid.add(slotStack).size(slotSize).pad(3);
@@ -475,6 +503,46 @@ public class InventoryDisplay extends UIComponent {
     }
 
     return grid;
+  }
+
+  private void addSlotItem(
+      Stack slotStack,
+      ImageButton slotBackground,
+      Item currentItem,
+      boolean enableDrag,
+      boolean equipped,
+      int slotIndex) {
+    // create an image with the items texture then extract the Drawable to draw the button
+    ImageButton itemButton = new ImageButton(new Image(getTexture(currentItem)).getDrawable());
+    itemButton.addListener(ItemTooltip.forItem(currentItem, skin, tooltipManager));
+    itemButton.setUserObject(slotBackground);
+    if (enableDrag) {
+      registerDragSource(itemButton);
+      final int index = slotIndex;
+      itemButton.addListener(
+          new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+              entity
+                  .getEvents()
+                  .trigger(equipped ? MOVE_ACTIVE_TO_INACTIVE : MOVE_INACTIVE_TO_ACTIVE, index, -1);
+            }
+          });
+    }
+    slotStack.add(itemButton);
+    if (currentItem instanceof ConsumableItem) addConsumableCount(slotStack, currentItem);
+  }
+
+  private void addConsumableCount(Stack slotStack, Item currentItem) {
+    Table count = new Table();
+    count.bottom().right();
+    Label countLabel =
+        new Label(
+            Integer.toString(inventoryComponent.getConsumableCount(currentItem.getId())), skin);
+    countLabel.setColor(Color.valueOf(DARK_TEXT_COLOR));
+    count.add(countLabel).pad(4);
+    count.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
+    slotStack.add(count);
   }
 
   private Table pageTabs() {
@@ -492,7 +560,7 @@ public class InventoryDisplay extends UIComponent {
     style.down = null;
     style.over = null;
     style.checked = null;
-    style.fontColor = currentPage == page ? Color.valueOf("8b0000ff") : Color.valueOf("3a2618ff");
+    style.fontColor = Color.valueOf(currentPage == page ? "8b0000ff" : DARK_TEXT_COLOR);
     style.overFontColor = style.fontColor;
     style.downFontColor = style.fontColor;
 
@@ -518,47 +586,13 @@ public class InventoryDisplay extends UIComponent {
     return selectedEquipped ? equippedSlots : storedSlots;
   }
 
-  private void moveSelection(int dx, int dy) {
-    if (selectedSlots().isEmpty()) return;
-    tooltipManager.hideAll();
-    int columns = selectedEquipped ? 3 : 4;
-    int column = selectedIndex % columns;
-    if ((dx < 0 && column == 0 && !selectedEquipped)
-        || (dx > 0
-            && (column == columns - 1 || selectedIndex == selectedSlots().size() - 1)
-            && selectedEquipped)) {
-      int row = selectedIndex / columns;
-      selectedEquipped = !selectedEquipped;
-      int newColumns = selectedEquipped ? 3 : 4;
-      selectedIndex =
-          Math.min(
-              row * newColumns + (selectedEquipped ? newColumns - 1 : 0),
-              selectedSlots().size() - 1);
-    } else {
-      int candidate = selectedIndex + dx + dy * columns;
-      if (dy > 0 && (selectedIndex / columns + 1) * columns < selectedSlots().size()) {
-        candidate = Math.min(candidate, selectedSlots().size() - 1);
-      }
-      if (candidate >= 0
-          && candidate < selectedSlots().size()
-          && (dx == 0 || candidate / columns == selectedIndex / columns)) selectedIndex = candidate;
-    }
-    updateSelection();
-    table.validate();
-    Stack selected = selectedSlots().get(selectedIndex);
-    if (selected.getParent().getParent() instanceof ScrollPane scroll) {
-      scroll.scrollTo(selected.getX(), selected.getY(), selected.getWidth(), selected.getHeight());
-      scroll.updateVisualScroll();
-    }
-  }
-
   private void updateSelection() {
     if (selectedSlots().isEmpty()) return;
-    selectedIndex = Math.max(0, Math.min(selectedIndex, selectedSlots().size() - 1));
+    selectedIndex = Math.clamp(selectedIndex, 0, selectedSlots().size() - 1);
     for (Stack slot : equippedSlots) slot.getChildren().first().setColor(Color.WHITE);
     for (Stack slot : storedSlots) slot.getChildren().first().setColor(Color.WHITE);
     selectedSlots().get(selectedIndex).getChildren().first().setColor(Color.valueOf("d4af37ff"));
-    List<? extends Item> items = getPageItems(selectedEquipped);
+    List<Item> items = getPageItems(selectedEquipped);
     Item item = selectedIndex < items.size() ? items.get(selectedIndex) : null;
     if (item == null) {
       selectionDetails.setText("Empty slot\nSelect an item with WASD or the mouse.");
@@ -595,19 +629,21 @@ public class InventoryDisplay extends UIComponent {
             // Parse original source slot details
             ImageButton previousSlot = (ImageButton) draggedGroup.getUserObject();
             String[] fromData = ((String) previousSlot.getUserObject()).split(":");
-            String fromType = fromData[0]; // "active" or "inactive"
+            String fromType = fromData[0]; // ACTIVE_SLOT or "inactive"
             int fromIndex = Integer.parseInt(fromData[1]);
 
             // Parse destination target slot details
             String[] toData = ((String) currentTargetSlot.getUserObject()).split(":");
-            String toType = toData[0]; // "active" or "inactive"
+            String toType = toData[0]; // ACTIVE_SLOT or "inactive"
             int toIndex = Integer.parseInt(toData[1]);
 
-            if (Objects.equals(fromType, "active") && Objects.equals(toType, "inactive")) {
-              entity.getEvents().trigger("moveActiveToInactiveItem", fromIndex, toIndex);
-            } else if (Objects.equals(fromType, "inactive") && Objects.equals(toType, "active")) {
-              entity.getEvents().trigger("moveInactiveToActiveItem", fromIndex, toIndex);
-            } else if (Objects.equals(fromType, "active") && Objects.equals(toType, "active")) {
+            if (Objects.equals(fromType, ACTIVE_SLOT) && Objects.equals(toType, "inactive")) {
+              entity.getEvents().trigger(MOVE_ACTIVE_TO_INACTIVE, fromIndex, toIndex);
+            } else if (Objects.equals(fromType, "inactive")
+                && Objects.equals(toType, ACTIVE_SLOT)) {
+              entity.getEvents().trigger(MOVE_INACTIVE_TO_ACTIVE, fromIndex, toIndex);
+            } else if (Objects.equals(fromType, ACTIVE_SLOT)
+                && Objects.equals(toType, ACTIVE_SLOT)) {
               entity.getEvents().trigger("moveActiveItem", fromIndex, toIndex);
             }
           }

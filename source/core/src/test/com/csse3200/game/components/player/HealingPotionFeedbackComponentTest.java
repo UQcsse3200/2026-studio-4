@@ -1,5 +1,6 @@
 package com.csse3200.game.components.player;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -264,7 +265,7 @@ class HealingPotionFeedbackComponentTest {
       crosses.clear();
       feedback.render(batch);
       assertTrue(crosses.get(2)[1] > smallWidth);
-      assertTrue(textures.constructed().size() == 1);
+      assertEquals(1, textures.constructed().size());
       stats.setHealth(0);
       crosses.clear();
       feedback.render(batch);
@@ -313,7 +314,8 @@ class HealingPotionFeedbackComponentTest {
     return mockConstruction(
         BitmapFont.class,
         (font, context) -> {
-          when(font.getData()).thenReturn(mock(BitmapFont.BitmapFontData.class));
+          BitmapFont.BitmapFontData fontData = mock(BitmapFont.BitmapFontData.class);
+          when(font.getData()).thenReturn(fontData);
           when(font.getCapHeight()).thenReturn(16f);
         });
   }

@@ -68,8 +68,10 @@ public class ShieldPotionFeedbackComponent extends RenderComponent {
     float pulse = 0.64f + 0.12f * (float) Math.sin(elapsed / 260d);
     float flash = (1f - opening) * 0.25f;
     float colour = batch.getPackedColor();
-    int source = batch.getBlendSrcFunc(), destination = batch.getBlendDstFunc();
-    int sourceAlpha = batch.getBlendSrcFuncAlpha(), destinationAlpha = batch.getBlendDstFuncAlpha();
+    int source = batch.getBlendSrcFunc();
+    int destination = batch.getBlendDstFunc();
+    int sourceAlpha = batch.getBlendSrcFuncAlpha();
+    int destinationAlpha = batch.getBlendDstFuncAlpha();
     try {
       batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
       batch.setColor(0.25f, 0.8f, 1f, (pulse + flash) * fade);

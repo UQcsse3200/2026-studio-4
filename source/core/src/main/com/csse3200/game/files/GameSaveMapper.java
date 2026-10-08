@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public final class GameSaveMapper {
@@ -77,27 +78,34 @@ public final class GameSaveMapper {
       throw new IllegalArgumentException("Invalid or unsupported save data");
     }
     GameSaveData.PlayerData data = save.playerData;
-    if (data.consumableSlots != null) {
-      if (data.consumableSlots.size() != InventoryComponent.CONSUMABLE_SLOT_COUNT) {
-        throw new IllegalArgumentException("Saved consumable slots must contain four positions");
-      }
-      Set<String> assigned = new HashSet<>();
-      for (String id : data.consumableSlots) {
-        if (id == null) continue;
-        Integer count = data.inventory == null ? null : data.inventory.get(id);
-        if (count == null
-            || count <= 0
-            || !ItemCatalog.contains(id)
-            || !(ItemCatalog.create(id, 1) instanceof ConsumableItem)
-            || !assigned.add(id)) {
-          throw new IllegalArgumentException("Invalid saved consumable slot: " + id);
-        }
+    validateConsumableSlots(data);
+    validateCharmEquipment(data);
+  }
+
+  private static void validateConsumableSlots(GameSaveData.PlayerData data) {
+    if (data.consumableSlots == null) return;
+    if (data.consumableSlots.size() != InventoryComponent.CONSUMABLE_SLOT_COUNT) {
+      throw new IllegalArgumentException("Saved consumable slots must contain four positions");
+    }
+    Set<String> assigned = new HashSet<>();
+    for (String id : data.consumableSlots) {
+      if (id == null) continue;
+      Integer count = data.inventory == null ? null : data.inventory.get(id);
+      if (count == null
+          || count <= 0
+          || !ItemCatalog.contains(id)
+          || !(ItemCatalog.create(id, 1) instanceof ConsumableItem)
+          || !assigned.add(id)) {
+        throw new IllegalArgumentException("Invalid saved consumable slot: " + id);
       }
     }
+  }
+
+  private static void validateCharmEquipment(GameSaveData.PlayerData data) {
     if (data.charmEquipped != null
         && (data.charms == null
             || data.charmEquipped.size() != data.charms.size()
-            || data.charmEquipped.stream().anyMatch(equipped -> equipped == null))) {
+            || data.charmEquipped.stream().anyMatch(Objects::isNull))) {
       throw new IllegalArgumentException("Saved charm equipment must match each owned charm");
     }
   }

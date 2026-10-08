@@ -91,29 +91,32 @@ public class MagnetEffect extends TimedStatusEffect {
     Array<Entity> entities = entityService.getEntities();
     // Index loop: this runs inside EntityService's own iteration over the same array.
     for (int i = 0; i < entities.size; i++) {
-      Entity entity = entities.get(i);
-      if (entity == null || entity == owner || collected.contains(entity)) {
-        continue;
+      pullItem(entities.get(i), target, step, entityService);
+    }
+  }
+
+  private void pullItem(Entity entity, Vector2 target, float step, EntityService entityService) {
+    if (entity == null || entity == owner || collected.contains(entity)) {
+      return;
+    }
+    ItemComponent itemComponent = entity.getComponent(ItemComponent.class);
+    if (itemComponent == null || !isMagnetic(itemComponent.getItem())) {
+      return;
+    }
+    Vector2 offset = target.cpy().sub(entity.getCenterPosition());
+    float distance = offset.len();
+    if (distance > radius) {
+      return;
+    }
+    if (distance <= collectDistance || distance <= step) {
+      collect(entity, itemComponent.getItem(), entityService);
+    } else {
+      // The magnet owns movement now; fountain-drop momentum must not add a second step.
+      PhysicsComponent physics = entity.getComponent(PhysicsComponent.class);
+      if (physics != null) {
+        physics.getBody().setLinearVelocity(Vector2.Zero);
       }
-      ItemComponent itemComponent = entity.getComponent(ItemComponent.class);
-      if (itemComponent == null || !isMagnetic(itemComponent.getItem())) {
-        continue;
-      }
-      Vector2 offset = target.cpy().sub(entity.getCenterPosition());
-      float distance = offset.len();
-      if (distance > radius) {
-        continue;
-      }
-      if (distance <= collectDistance || distance <= step) {
-        collect(entity, itemComponent.getItem(), entityService);
-      } else {
-        // The magnet owns movement now; fountain-drop momentum must not add a second step.
-        PhysicsComponent physics = entity.getComponent(PhysicsComponent.class);
-        if (physics != null) {
-          physics.getBody().setLinearVelocity(Vector2.Zero);
-        }
-        entity.setPosition(entity.getPosition().cpy().add(offset.scl(step / distance)));
-      }
+      entity.setPosition(entity.getPosition().cpy().add(offset.scl(step / distance)));
     }
   }
 

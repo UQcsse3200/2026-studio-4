@@ -2,11 +2,15 @@ package com.csse3200.game.components.maingame;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.entities.Entity;
@@ -54,7 +58,7 @@ class InventoryDisplayTest {
             .addComponent(inventory)
             .addComponent(new com.csse3200.game.components.CombatStatsComponent(100, 10));
     player.create();
-    display = new InventoryDisplay(inventory);
+    display = new InventoryDisplay(inventory, InventoryDisplayTest::immediateDragAndDrop);
     ui = new Entity().addComponent(display).addComponent(new InventoryActions(display));
     ServiceLocator.getEntityService().register(ui);
   }
@@ -270,7 +274,7 @@ class InventoryDisplayTest {
   void openInventoryConsumesKeysBeforeGameplayThroughInputService() {
     var input = new com.csse3200.game.input.InputService();
     var gameplay = mock(com.csse3200.game.input.InputComponent.class);
-    org.mockito.Mockito.when(gameplay.getPriority()).thenReturn(5);
+    when(gameplay.getPriority()).thenReturn(5);
     input.register(gameplay);
     input.register(new com.csse3200.game.input.InputDecorator(stage, 10));
     display.setVisible(true);
@@ -283,13 +287,13 @@ class InventoryDisplayTest {
           com.badlogic.gdx.Input.Keys.SPACE
         }) {
       assertTrue(input.keyDown(key));
-      org.mockito.Mockito.verify(gameplay, org.mockito.Mockito.never()).keyDown(key);
+      verify(gameplay, never()).keyDown(key);
     }
     display.setVisible(false);
     input.keyDown(com.badlogic.gdx.Input.Keys.Q);
-    org.mockito.Mockito.verify(gameplay).keyDown(com.badlogic.gdx.Input.Keys.Q);
+    verify(gameplay).keyDown(com.badlogic.gdx.Input.Keys.Q);
     input.keyDown(com.badlogic.gdx.Input.Keys.SPACE);
-    org.mockito.Mockito.verify(gameplay).keyDown(com.badlogic.gdx.Input.Keys.SPACE);
+    verify(gameplay).keyDown(com.badlogic.gdx.Input.Keys.SPACE);
   }
 
   @Test
@@ -305,7 +309,7 @@ class InventoryDisplayTest {
   }
 
   @Test
-  void bookRetainsOriginalCoverAndParchmentPagesWithReadableInk() {
+  void bookRetainsOriginalCoverAndParchmentTextures() {
     for (int[] size : new int[][] {{906, 706}, {1280, 800}, {1918, 1080}}) {
       stage.getViewport().update(size[0], size[1], true);
       display.setVisible(true);
@@ -335,6 +339,20 @@ class InventoryDisplayTest {
       assertEquals(1853, leftDrawable.getRegion().getRegionY());
       assertEquals(1029, rightDrawable.getRegion().getRegionX());
       assertEquals(612, rightDrawable.getRegion().getRegionY());
+      display.changePage();
+    }
+  }
+
+  @Test
+  void bookPagesAndContentsFitInsideCoverAtEachViewportSize() {
+    for (int[] size : new int[][] {{906, 706}, {1280, 800}, {1918, 1080}}) {
+      stage.getViewport().update(size[0], size[1], true);
+      display.setVisible(true);
+      Table book = stage.getRoot().findActor("inventory-book");
+      book.validate();
+      var cover = (com.badlogic.gdx.scenes.scene2d.ui.Image) book.findActor("inventory-book-cover");
+      var left = (Table) book.findActor("inventory-page-left");
+      var right = (Table) book.findActor("inventory-page-right");
       var coverPos = cover.localToStageCoordinates(new com.badlogic.gdx.math.Vector2());
       var leftPos = left.localToStageCoordinates(new com.badlogic.gdx.math.Vector2());
       var rightPos = right.localToStageCoordinates(new com.badlogic.gdx.math.Vector2());
@@ -356,6 +374,17 @@ class InventoryDisplayTest {
           assertTrue(content.getY() + content.getHeight() <= page.getHeight() + 1f);
         }
       }
+      display.changePage();
+    }
+  }
+
+  @Test
+  void bookCategoryControlsAndParchmentInkRemainReadable() {
+    for (int[] size : new int[][] {{906, 706}, {1280, 800}, {1918, 1080}}) {
+      stage.getViewport().update(size[0], size[1], true);
+      display.setVisible(true);
+      Table book = stage.getRoot().findActor("inventory-book");
+      book.validate();
       for (String tabName :
           new String[] {
             "inventory-tab-charms", "inventory-tab-consumables", "inventory-tab-achievements"
@@ -400,7 +429,7 @@ class InventoryDisplayTest {
       shared.subsequentTime = 0.55f;
       shared.resetTime = 0.65f;
       ui.dispose();
-      display = new InventoryDisplay(inventory);
+      display = new InventoryDisplay(inventory, InventoryDisplayTest::immediateDragAndDrop);
       ui = new Entity().addComponent(display).addComponent(new InventoryActions(display));
       ui.create();
       var charm = new com.csse3200.game.items.charms.StrengthCharm();
@@ -515,11 +544,18 @@ class InventoryDisplayTest {
     assertNotNull(stage.getRoot().findActor("charm-equipped-19"));
   }
 
-  private void dragItem(String fromSlot, String toSlot) throws InterruptedException {
+  private static DragAndDrop immediateDragAndDrop() {
+    DragAndDrop dragAndDrop = new DragAndDrop();
+    // Keep real stage gestures and drop validation without the wall-clock acceptance delay.
+    dragAndDrop.setDragTime(0);
+    return dragAndDrop;
+  }
+
+  private void dragItem(String fromSlot, String toSlot) {
     var graphics = com.badlogic.gdx.Gdx.graphics;
-    var sized = org.mockito.Mockito.mock(com.badlogic.gdx.Graphics.class);
-    org.mockito.Mockito.when(sized.getWidth()).thenReturn(1280);
-    org.mockito.Mockito.when(sized.getHeight()).thenReturn(800);
+    var sized = mock(com.badlogic.gdx.Graphics.class);
+    when(sized.getWidth()).thenReturn(1280);
+    when(sized.getHeight()).thenReturn(800);
     com.badlogic.gdx.Gdx.graphics = sized;
     try {
       stage.getViewport().update(1280, 800, true);
@@ -542,8 +578,6 @@ class InventoryDisplayTest {
       stage.touchDown(
           Math.round(start.x), Math.round(start.y), 0, com.badlogic.gdx.Input.Buttons.LEFT);
       stage.touchDragged(Math.round(end.x), Math.round(end.y), 0);
-      // DragAndDrop deliberately waits 250ms before accepting a drop.
-      Thread.sleep(300);
       stage.touchUp(Math.round(end.x), Math.round(end.y), 0, com.badlogic.gdx.Input.Buttons.LEFT);
     } finally {
       com.badlogic.gdx.Gdx.graphics = graphics;
@@ -551,7 +585,7 @@ class InventoryDisplayTest {
   }
 
   @Test
-  void realDragMovesConsumableIntoFourthSlotThroughInventoryActions() throws InterruptedException {
+  void realDragMovesConsumableIntoFourthSlotThroughInventoryActions() {
     inventory.addConsumable(com.csse3200.game.items.ItemIds.HEALTH_POTION, 3);
     display.setVisible(true);
     display.changePage();
@@ -562,7 +596,7 @@ class InventoryDisplayTest {
   }
 
   @Test
-  void realDragOntoOccupiedSlotSwapsAssignmentsWithoutLosingStock() throws InterruptedException {
+  void realDragOntoOccupiedSlotSwapsAssignmentsWithoutLosingStock() {
     inventory.addConsumable(com.csse3200.game.items.ItemIds.HEALTH_POTION, 3);
     inventory.addConsumable(com.csse3200.game.items.ItemIds.SHIELD, 2);
     display.setVisible(true);
@@ -575,7 +609,7 @@ class InventoryDisplayTest {
   }
 
   @Test
-  void realCharmDragUnequipsAndReequipsThroughExistingActionEvents() throws InterruptedException {
+  void realCharmDragUnequipsAndReequipsThroughExistingActionEvents() {
     var charm = new com.csse3200.game.items.charms.StrengthCharm();
     charm.pickUp(player);
     display.setVisible(true);
@@ -597,7 +631,7 @@ class InventoryDisplayTest {
   }
 
   @Test
-  void rejectedDropLeavesOriginalSlotAndQuantityIntact() throws InterruptedException {
+  void rejectedDropLeavesOriginalSlotAndQuantityIntact() {
     inventory.addConsumable(com.csse3200.game.items.ItemIds.HEALTH_POTION, 3);
     display.setVisible(true);
     display.changePage();

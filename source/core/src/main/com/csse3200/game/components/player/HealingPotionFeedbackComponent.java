@@ -76,8 +76,10 @@ public class HealingPotionFeedbackComponent extends RenderComponent {
     Vector2 centre = entity.getCenterPosition();
     float size = Math.max(entity.getScale().x, entity.getScale().y);
     float originalColour = batch.getPackedColor();
-    int source = batch.getBlendSrcFunc(), destination = batch.getBlendDstFunc();
-    int sourceAlpha = batch.getBlendSrcFuncAlpha(), destinationAlpha = batch.getBlendDstFuncAlpha();
+    int source = batch.getBlendSrcFunc();
+    int destination = batch.getBlendDstFunc();
+    int sourceAlpha = batch.getBlendSrcFuncAlpha();
+    int destinationAlpha = batch.getBlendDstFuncAlpha();
     try {
       batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
       // A fast outward pulse supplies the impact; the slower crosses carry the recovery.

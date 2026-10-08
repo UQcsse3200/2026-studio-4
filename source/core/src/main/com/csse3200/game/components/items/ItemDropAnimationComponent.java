@@ -31,7 +31,6 @@ public class ItemDropAnimationComponent extends RenderComponent {
   private float hopDuration = 0.48f;
   private float hopHeight = 0.35f;
   private float elapsed;
-  private float swayAngle;
   private float swayCos = 1f;
   private float swaySin;
   private boolean landed;
@@ -87,6 +86,7 @@ public class ItemDropAnimationComponent extends RenderComponent {
   }
 
   private void updatePose() {
+    float swayAngle;
     if (elapsed < hopDuration) {
       float progress = elapsed / hopDuration;
       offset.set(spawnOffset).scl(1f - progress);
@@ -122,16 +122,22 @@ public class ItemDropAnimationComponent extends RenderComponent {
     Vector2 size = entity.getScale();
     float left = centre.x - size.x / 2f;
     float bottom = centre.y - size.y / 2f;
+    Vector2 pivot = centre.set(left + size.x / 2f, bottom);
     // Base texture and reflection share a rigid rotation about the bottom centre.
     for (int y = 0; y < CELLS; y++) {
-      drawQuad(batch, strips[y], left, bottom, size, 0f, 1f, y);
+      drawQuad(batch, strips[y], pivot, size, 0f, 1f, y);
     }
     float phase = elapsed % GLINT_PERIOD;
     if (phase > GLINT_DURATION) return;
     Color color = batch.getColor();
-    float r = color.r, g = color.g, b = color.b, a = color.a;
-    int source = batch.getBlendSrcFunc(), destination = batch.getBlendDstFunc();
-    int sourceAlpha = batch.getBlendSrcFuncAlpha(), destinationAlpha = batch.getBlendDstFuncAlpha();
+    float r = color.r;
+    float g = color.g;
+    float b = color.b;
+    float a = color.a;
+    int source = batch.getBlendSrcFunc();
+    int destination = batch.getBlendDstFunc();
+    int sourceAlpha = batch.getBlendSrcFuncAlpha();
+    int destinationAlpha = batch.getBlendDstFuncAlpha();
     try {
       batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
       for (int y = 0; y < CELLS; y++) {
@@ -139,11 +145,10 @@ public class ItemDropAnimationComponent extends RenderComponent {
           float distance = Math.abs((x + y) / (float) (CELLS * 2 - 2) - phase / GLINT_DURATION);
           if (distance > GLINT_WIDTH) continue;
           batch.setColor(0.85f * r, 0.95f * g, b, a * (1f - distance / GLINT_WIDTH) * 0.45f);
-          drawQuad(batch, tiles[y][x], left, bottom, size, x / (float) CELLS, (x + 1f) / CELLS, y);
+          drawQuad(batch, tiles[y][x], pivot, size, x / (float) CELLS, (x + 1f) / CELLS, y);
           if (distance < GLINT_CORE_WIDTH) {
             batch.setColor(r, g, b, a * (1f - distance / GLINT_CORE_WIDTH) * 0.9f);
-            drawQuad(
-                batch, tiles[y][x], left, bottom, size, x / (float) CELLS, (x + 1f) / CELLS, y);
+            drawQuad(batch, tiles[y][x], pivot, size, x / (float) CELLS, (x + 1f) / CELLS, y);
           }
         }
       }
@@ -156,52 +161,24 @@ public class ItemDropAnimationComponent extends RenderComponent {
   private void drawQuad(
       SpriteBatch batch,
       TextureRegion region,
-      float left,
-      float bottom,
+      Vector2 pivot,
       Vector2 size,
       float x0,
       float x1,
       int row) {
     float y0 = (CELLS - 1f - row) / CELLS;
     float y1 = (CELLS - (float) row) / CELLS;
-    float pivotX = left + size.x / 2f;
     float packed = batch.getPackedColor();
-    vertex(
-        0,
-        pivotX,
-        bottom,
-        size.x * (x0 - 0.5f),
-        size.y * y0,
-        packed,
-        region.getU(),
-        region.getV2());
-    vertex(
-        5, pivotX, bottom, size.x * (x0 - 0.5f), size.y * y1, packed, region.getU(), region.getV());
-    vertex(
-        10,
-        pivotX,
-        bottom,
-        size.x * (x1 - 0.5f),
-        size.y * y1,
-        packed,
-        region.getU2(),
-        region.getV());
-    vertex(
-        15,
-        pivotX,
-        bottom,
-        size.x * (x1 - 0.5f),
-        size.y * y0,
-        packed,
-        region.getU2(),
-        region.getV2());
+    vertex(0, pivot, size.x * (x0 - 0.5f), size.y * y0, packed, region.getU(), region.getV2());
+    vertex(5, pivot, size.x * (x0 - 0.5f), size.y * y1, packed, region.getU(), region.getV());
+    vertex(10, pivot, size.x * (x1 - 0.5f), size.y * y1, packed, region.getU2(), region.getV());
+    vertex(15, pivot, size.x * (x1 - 0.5f), size.y * y0, packed, region.getU2(), region.getV2());
     batch.draw(region.getTexture(), vertices, 0, vertices.length);
   }
 
-  private void vertex(
-      int index, float pivotX, float pivotY, float x, float y, float color, float u, float v) {
-    vertices[index] = pivotX + x * swayCos + y * swaySin;
-    vertices[index + 1] = pivotY - x * swaySin + y * swayCos;
+  private void vertex(int index, Vector2 pivot, float x, float y, float color, float u, float v) {
+    vertices[index] = pivot.x + x * swayCos + y * swaySin;
+    vertices[index + 1] = pivot.y - x * swaySin + y * swayCos;
     vertices[index + 2] = color;
     vertices[index + 3] = u;
     vertices[index + 4] = v;

@@ -11,6 +11,7 @@ import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.ItemIds;
+import com.csse3200.game.items.charms.Charm;
 import com.csse3200.game.items.charms.StrengthCharm;
 import java.util.Arrays;
 import java.util.List;
@@ -98,7 +99,7 @@ class GameSaveMapperTest {
     assertEquals(2, inventory.getConsumableCount(ItemIds.SHIELD));
     assertEquals(ItemIds.SHIELD, inventory.getConsumableSlot(0));
     assertEquals(2, inventory.getCharmCount());
-    assertTrue(inventory.getCharms().stream().allMatch(charm -> charm.isEquipped()));
+    assertTrue(inventory.getCharms().stream().allMatch(Charm::isEquipped));
     assertEquals(30, restored.getComponent(CombatStatsComponent.class).getBaseAttack());
   }
 
@@ -145,9 +146,12 @@ class GameSaveMapperTest {
     GameSaveData save = new GameSaveData();
     save.playerData.charms = List.of("strength", "strength");
     save.playerData.charmEquipped = List.of(false);
-    assertThrows(IllegalArgumentException.class, () -> GameSaveMapper.restore(player(), save));
+    Entity restored = player();
+    assertThrows(IllegalArgumentException.class, () -> GameSaveMapper.restore(restored, save));
     save.playerData.charmEquipped = Arrays.asList(true, null);
-    assertThrows(IllegalArgumentException.class, () -> GameSaveMapper.restore(player(), save));
+    Entity restoredWithNullState = player();
+    assertThrows(
+        IllegalArgumentException.class, () -> GameSaveMapper.restore(restoredWithNullState, save));
   }
 
   private static Entity player() {
