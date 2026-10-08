@@ -192,13 +192,6 @@ public class SettingsMenuDisplay extends UIComponent {
     form.row("Fullscreen", fullScreenCheck);
     form.row("VSync", vsyncCheck);
     form.slider("UI scale", uiScaleSlider, "%.2fx");
-    uiScaleSlider.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent changeEvent, Actor actor) {
-            applyUiScale(uiScaleSlider.getValue());
-          }
-        });
     form.row("Resolution", displayModeSelect);
     form.row("Window size", windowSizeSelect);
 
@@ -397,12 +390,11 @@ public class SettingsMenuDisplay extends UIComponent {
     return new DisplaySettings(selected.object);
   }
 
+  /** Scales the run HUD only. The settings page itself stays at normal size. */
   private void applyUiScale(float scale) {
     if (scaleStage) {
       UiScale.applyToStage(stage, scale);
-      return;
     }
-    UiScale.apply(rootTable, scale);
   }
 
   private void loadFromSavedSettings() {
@@ -472,9 +464,6 @@ public class SettingsMenuDisplay extends UIComponent {
     }
     if (!scaleStage) {
       stage.act(ServiceLocator.getTimeSource().getDeltaTime());
-    }
-    if (uiScaleSlider != null) {
-      applyUiScale(uiScaleSlider.getValue());
     }
   }
 

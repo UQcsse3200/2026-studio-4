@@ -66,10 +66,10 @@ public final class UiScale {
       if (!(actor instanceof Group group)) {
         continue;
       }
-      if (SETTINGS_ACTIONS.equals(group.getName()) || SETTINGS_BACKDROP.equals(group.getName())) {
+      if (SETTINGS_ACTIONS.equals(group.getName())
+          || SETTINGS_BACKDROP.equals(group.getName())
+          || SETTINGS_CONTENT.equals(group.getName())) {
         apply(group, 1f, Align.bottom);
-      } else if (SETTINGS_CONTENT.equals(group.getName())) {
-        apply(group, factor, Align.top);
       } else {
         apply(group, factor, anchor(group));
       }

@@ -18,7 +18,7 @@ Saved options are written to `DECO2800Game/settings.json` under the home directo
 
 1. Press **Settings**, to the left of **Exit**.
 2. The run pauses. Enemies and the run timer stop.
-3. The game HUD is hidden while this menu is open. Change the options. **UI scale** is in the Display section. Dragging it resizes the menu immediately, and each HUD panel grows or shrinks from the edge it sits on. The smallest scale is 0.5×.
+3. The game HUD is hidden while this menu is open. Change the options. **UI scale** is in the Display section and does not resize this menu. Press **Apply** and the HUD panels grow or shrink from the edge each one sits on. The smallest scale is 0.5×.
 4. Press **Apply** to keep the changes, or **Exit** to drop them and continue the same run.
 
 ### What each control does
@@ -30,7 +30,7 @@ Saved options are written to `DECO2800Game/settings.json` under the home directo
 | VSync | Matches the frame rate to the monitor. |
 | Resolution | Fullscreen size and refresh rate. If nothing is selected, Apply keeps the current display mode. |
 | Window size | Size of the window when fullscreen is off. Choices are 960×540, 1280×720, 1280×800, 1600×900, and 1920×1080. |
-| UI scale | In the Display section, from 0.5× to 2×. It cannot be set to zero. |
+| UI scale | In the Display section, from 0.5× to 2×. The settings page stays the same size. The HUD changes after Apply. |
 | Music | Background music volume. |
 | Effects | Sound effect volume. |
 | Mute in background | Silences music and effects while the window is not focused. |
@@ -163,8 +163,9 @@ sequenceDiagram
   Exit->>Run: pause physics, rooms, and the run timer
   Exit->>Page: open
   Player->>Page: drag UI scale
-  Page->>Scale: resize the menu and each HUD panel from its own edge
-  Player->>Page: Exit without Apply
+  Player->>Page: Apply
+  Page->>Scale: resize each HUD panel from its own edge
+  Player->>Page: Exit
   Page->>Settings: read the saved scale
   Page->>Scale: restore it
   Page->>Run: close the menu and resume the run

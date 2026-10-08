@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -105,6 +106,10 @@ class InGameSettingsTest {
                 });
     ServiceLocator.getEntityService().register(world);
 
+    Table hud = new Table();
+    hud.setSize(40f, 20f);
+    stage.addActor(hud);
+
     boolean[] closed = {false};
     SettingsMenuDisplay menu =
         new SettingsMenuDisplay(mock(GdxGame.class), () -> closed[0] = true, true);
@@ -133,15 +138,17 @@ class InGameSettingsTest {
 
     Slider scaleSlider = findSlider(stage.getRoot());
     assertNotNull(scaleSlider);
-    float changed = Math.abs(originalSettings.uiScale - 1.4f) < 0.05f ? 0.6f : 1.4f;
+    float saved = UiScale.clamp(originalSettings.uiScale);
+    float changed = Math.abs(saved - 1.4f) < 0.05f ? 0.6f : 1.4f;
     scaleSlider.setValue(changed);
     menu.update();
-    assertEquals(1f, stage.getRoot().getScaleX(), 0.001f);
-    assertEquals(changed, menuRoot.getScaleX(), 0.001f);
-    assertEquals(1f, actions.getScaleX(), 0.001f);
+    assertEquals(1f, menuRoot.getScaleX(), 0.001f);
+    assertEquals(saved, hud.getScaleX(), 0.001f);
 
     findButton(stage.getRoot(), "Apply").fire(new ChangeListener.ChangeEvent());
     assertEquals(changed, UserSettings.get().uiScale, 0.001f);
+    assertEquals(1f, menuRoot.getScaleX(), 0.001f);
+    assertEquals(changed, hud.getScaleX(), 0.001f);
     assertTrue(ServiceLocator.getEntityService().isFrozen());
 
     TextField fpsField = findTextField(stage.getRoot());
