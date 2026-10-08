@@ -48,12 +48,12 @@ public class RoomManager {
   private final RunTimer runTimer;
   private String pendingDungeonCompletion;
 
-  private static final String DEFAULT_TILESET = "images/dungeons/tileSet0.png";
-  private static final String DUNGEON1_TILESET = "images/dungeons/tileSet1.png";
-  private static final String DUNGEON2_TILESET = "images/dungeons/tileSet2.png";
-  private static final String DUNGEON3_TILESET = "images/dungeons/tileSet3.png";
-  private static final String DUNGEON4_TILESET = "images/dungeons/tileSet4.png";
-  private static final String DUNGEON5_TILESET = "images/dungeons/tileSet5.png";
+  public static final String DEFAULT_TILESET = "images/dungeons/tileSet0.png";
+  public static final String DUNGEON1_TILESET = "images/dungeons/tileSet1.png";
+  public static final String DUNGEON2_TILESET = "images/dungeons/tileSet2.png";
+  public static final String DUNGEON3_TILESET = "images/dungeons/tileSet3.png";
+  public static final String DUNGEON4_TILESET = "images/dungeons/tileSet4.png";
+  public static final String DUNGEON5_TILESET = "images/dungeons/tileSet5.png";
 
   /** Creates the JSON-driven room manager. Call {@link #create()} to register the initial room. */
   public RoomManager(WorldConfig world, Entity player, CameraComponent camera) {
@@ -69,7 +69,6 @@ public class RoomManager {
       tileset = getTileset(currentConfig.dungeonId);
     }
     currentRoom = RoomFactory.createRoom(currentConfig, camera, false, tileset);
-    achievements = new AchievementsManager(currentRoom);
     currentConfig = world.getRoom(world.startRoomId);
     for (RoomConfig room : world.rooms) {
       if (room.dungeonId != null) {
@@ -81,7 +80,6 @@ public class RoomManager {
     checkpointPosition = new PositionConfig();
     checkpointPosition.x = initialEntryPoint.x;
     checkpointPosition.y = initialEntryPoint.y;
-    currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
 
     player.getEvents().addListener("interact", this::interact);
     FollowingCameraComponent cameraFollowingComponent =
@@ -96,6 +94,7 @@ public class RoomManager {
     }
   }
 
+  /** Pass in DungeonID to get tileset for the dungeon. deafult tileset as fallback */
   private String getTileset(String tilesetConfig) {
     if (tilesetConfig == null) {
       return DEFAULT_TILESET;
@@ -141,7 +140,8 @@ public class RoomManager {
 
     currentRoom.dispose();
     currentConfig = savedRoom;
-    currentRoom = RoomFactory.createRoom(savedRoom, camera, false);
+    currentRoom =
+        RoomFactory.createRoom(savedRoom, camera, false, getTileset(currentConfig.dungeonId));
     initialEntryPoint = spawn;
     initialWorldPosition = null;
 
@@ -172,7 +172,8 @@ public class RoomManager {
 
     currentRoom.dispose();
     currentConfig = resumeRoom;
-    currentRoom = RoomFactory.createRoom(resumeRoom, camera, false);
+    currentRoom =
+        RoomFactory.createRoom(resumeRoom, camera, false, getTileset(resumeRoom.dungeonId));
     initialEntryPoint = null;
     initialWorldPosition = new Vector2(resume.x, resume.y);
 
@@ -183,7 +184,8 @@ public class RoomManager {
 
   /** Registers the active room and player, then positions the player at its entry point. */
   public void create() {
-    currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
+    currentRoom =
+        RoomFactory.createRoom(currentConfig, camera, false, getTileset(currentConfig.dungeonId));
     FollowingCameraComponent following = currentRoom.getComponent(FollowingCameraComponent.class);
     following.setCamera(camera);
     following.setTarget(player);

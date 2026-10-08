@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
@@ -781,7 +782,7 @@ class FinalBossStageTwoFireIntegrationTest {
     when(texture.getWidth()).thenReturn(512);
     when(texture.getHeight()).thenReturn(512);
     ResourceService resources = mock(ResourceService.class);
-    when(resources.getAsset("images/dungeons/fantasy_dreamland_16.png", Texture.class))
+    when(resources.getAsset(anyString(), eq(Texture.class)))
         .thenReturn(texture);
     ServiceLocator.registerResourceService(resources);
     ServiceLocator.registerRenderService(mock(RenderService.class));

@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.csse3200.game.areas.terrain.DreamlandTile;
 import com.csse3200.game.areas.terrain.TileSheet;
 import com.csse3200.game.components.rooms.Direction;
+import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
@@ -34,11 +35,16 @@ public class ObstacleFactory {
     return createRenderedObstacle(new TextureRegion(texture), 0.6f, 0.7f);
   }
 
+  public static Entity createWallFor(Set<Direction> voids, boolean shift) {
+    return createWallFor(voids, shift, RoomManager.DEFAULT_TILESET);
+  }
+
   /**
    * Creates a wall for the given configuration.
    *
    * @param voids A set of directions where the neighbouring tile is void.
    * @param shift Shift the given texture by a constant to use a different wall texture.
+   * @param tileset The tileset to draw the wall
    * @return The wall entity, with bevelled edges of the given config.
    */
   public static Entity createWallFor(Set<Direction> voids, boolean shift, String tileset) {
