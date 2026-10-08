@@ -78,6 +78,7 @@ public class AbilityMenu extends Component {
     selected = Math.max(0, indexOfAttuned());
     open = true;
     setControlsLocked(true);
+    stopPlayerWalking();
     entity.getEvents().trigger(MENU_OPENED);
     return true;
   }
@@ -176,6 +177,16 @@ public class AbilityMenu extends Component {
       }
     }
     return 0;
+  }
+
+  /**
+   * Drops any walk that was in progress when the menu opened. The menu swallows key releases while
+   * it is open, so a movement key let go behind it never reaches the player's input, and without
+   * this the player would carry on walking once the menu closed (#266).
+   */
+  private void stopPlayerWalking() {
+    player.getEvents().trigger("walkStop");
+    player.getEvents().trigger("resetMovementInput");
   }
 
   private void setControlsLocked(boolean locked) {
