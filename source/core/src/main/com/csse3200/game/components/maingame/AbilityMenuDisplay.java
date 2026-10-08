@@ -38,6 +38,9 @@ public class AbilityMenuDisplay extends UIComponent {
   /** Skin {@code pressed}, darkened a little so it reads on the highlight too. */
   private static final Color CARRIED_TEXT = Color.valueOf("9c6b18");
 
+  /** Skin style for the small supporting text under and beside each ability name. */
+  private static final String CAPTION_STYLE = "caption";
+
   /** The bitmap font has no arrow glyphs, so name the letter keys instead. */
   private static final String HINT = "W/S choose     ENTER attune     ESC leave";
 
@@ -85,7 +88,7 @@ public class AbilityMenuDisplay extends UIComponent {
     title.setColor(0.75f, 0.6f, 0.35f, 1f);
     panel.add(title).padBottom(4f).row();
 
-    Label subtitle = new Label("You may carry only one.", skin, "caption");
+    Label subtitle = new Label("You may carry only one.", skin, CAPTION_STYLE);
     subtitle.setAlignment(Align.center);
     subtitle.setColor(BODY_TEXT);
     panel.add(subtitle).padBottom(18f).row();
@@ -94,7 +97,7 @@ public class AbilityMenuDisplay extends UIComponent {
     rowHolder.setName("ability-menu-rows");
     panel.add(rowHolder).growX().row();
 
-    Label hint = new Label(HINT, skin, "caption");
+    Label hint = new Label(HINT, skin, CAPTION_STYLE);
     hint.setAlignment(Align.center);
     hint.setColor(UNSELECTED_TEXT);
     panel.add(hint).padTop(18f);
@@ -185,21 +188,21 @@ public class AbilityMenuDisplay extends UIComponent {
       table.add(name).left().expandX();
 
       if (carried) {
-        Label carriedLabel = new Label("carried", skin, "caption");
+        Label carriedLabel = new Label("carried", skin, CAPTION_STYLE);
         carriedLabel.setColor(CARRIED_TEXT);
         table.add(carriedLabel).right();
       } else {
-        table.add(new Label("", skin, "caption")).right();
+        table.add(new Label("", skin, CAPTION_STYLE)).right();
       }
       table.row();
 
-      Label blurb = new Label(BLURBS.getOrDefault(ability.getName(), ""), skin, "caption");
+      Label blurb = new Label(BLURBS.getOrDefault(ability.getName(), ""), skin, CAPTION_STYLE);
       blurb.setColor(BODY_TEXT);
       blurb.setWrap(true);
       table.add(blurb).colspan(2).left().width(420f).padTop(4f).row();
 
       Label cooldown =
-          new Label("Cooldown " + (ability.getCooldown() / 1000) + "s", skin, "caption");
+          new Label("Cooldown " + (ability.getCooldown() / 1000) + "s", skin, CAPTION_STYLE);
       cooldown.setColor(BODY_TEXT);
       table.add(cooldown).colspan(2).left().padTop(2f);
     }

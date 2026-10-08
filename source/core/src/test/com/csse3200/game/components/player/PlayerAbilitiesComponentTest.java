@@ -17,6 +17,7 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -595,9 +596,10 @@ class PlayerAbilitiesComponentTest {
         abilities.getRegisteredAbilities().stream().map(PlayerAbility::getName).toList();
     assertEquals(List.of(Invisibility.NAME, LastStand.NAME), names);
 
+    Collection<PlayerAbility> view = abilities.getRegisteredAbilities();
     assertThrows(
         UnsupportedOperationException.class,
-        () -> abilities.getRegisteredAbilities().clear(),
+        view::clear,
         "The view must not let callers unregister abilities");
 
     // The view is live, so a menu built from it sees later registrations.

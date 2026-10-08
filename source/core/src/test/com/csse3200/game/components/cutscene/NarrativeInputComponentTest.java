@@ -100,6 +100,7 @@ class NarrativeInputComponentTest {
 
     assertFalse(input.keyDown(Input.Keys.SPACE), "the terminal needs the space key");
     assertFalse(input.keyDown(Input.Keys.ENTER));
+    assertFalse(input.keyDown(Input.Keys.J), "the terminal needs the j key for typing commands");
     assertFalse(input.keyDown(Input.Keys.ESCAPE));
     assertFalse(input.keyDown(Input.Keys.S));
     assertFalse(input.touchDown(0, 0, 0, Input.Buttons.LEFT));

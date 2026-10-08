@@ -29,7 +29,10 @@ public class AbilityAttunementComponent extends Component {
   private Class<? extends PlayerAbility> attuned;
 
   /** Starts the player with nothing attuned; abilities are earned, never given. */
-  public AbilityAttunementComponent() {}
+  public AbilityAttunementComponent() {
+    // Nothing to set up here. The attuned ability starts empty, and create() and update() take
+    // away whatever the abilities component would otherwise hand the player for free.
+  }
 
   @Override
   public void create() {
