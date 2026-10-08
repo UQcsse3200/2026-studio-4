@@ -9,10 +9,7 @@
       "width": 1.0,
       "interactionRange": 1.5,
       "dialogueId": "merchant_greeting",
-      "cutsceneId": "merchant_opens_shop",
-      "cutsceneTiming": "AFTER_DIALOGUE",
-      "lockMovementDuringDialogue": true,
-      "lockMovementDuringCutscene": true
+      "lockMovementDuringDialogue": true
     },
     {
       "id": "wanderingSpirit",
