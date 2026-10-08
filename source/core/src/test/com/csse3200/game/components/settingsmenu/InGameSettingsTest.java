@@ -3,6 +3,7 @@ package com.csse3200.game.components.settingsmenu;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -11,12 +12,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Graphics.Monitor;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.GdxGame;
@@ -27,6 +30,7 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.files.UserSettings.Settings;
+import com.csse3200.game.input.InputService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UiScale;
@@ -68,6 +72,7 @@ class InGameSettingsTest {
     renderer.setStage(stage);
     ServiceLocator.registerRenderService(renderer);
     ServiceLocator.registerEntityService(new EntityService());
+    ServiceLocator.registerInputService(new InputService());
   }
 
   @AfterEach
@@ -122,6 +127,7 @@ class InGameSettingsTest {
     assertTrue(menuRoot.isVisible());
     assertTrue(actions.isVisible());
     assertTrue(ServiceLocator.getEntityService().isFrozen());
+    assertTrue(ServiceLocator.getInputService().keyDown(Keys.Q));
     ServiceLocator.getEntityService().update();
     assertEquals(1, ticks[0]);
 
@@ -138,8 +144,13 @@ class InGameSettingsTest {
     assertEquals(changed, UserSettings.get().uiScale, 0.001f);
     assertTrue(ServiceLocator.getEntityService().isFrozen());
 
+    TextField fpsField = findTextField(stage.getRoot());
+    assertNotNull(fpsField);
+    stage.setKeyboardFocus(fpsField);
     findButton(stage.getRoot(), "Exit").fire(new ChangeListener.ChangeEvent());
     assertTrue(closed[0]);
+    assertNull(stage.getKeyboardFocus());
+    assertFalse(ServiceLocator.getInputService().keyDown(Keys.Q));
     assertFalse(menuRoot.isVisible());
     assertFalse(ServiceLocator.getEntityService().isFrozen());
     ServiceLocator.getEntityService().update();
@@ -167,6 +178,21 @@ class InGameSettingsTest {
     if (actor instanceof Group group) {
       for (Actor child : group.getChildren()) {
         Slider found = findSlider(child);
+        if (found != null) {
+          return found;
+        }
+      }
+    }
+    return null;
+  }
+
+  private static TextField findTextField(Actor actor) {
+    if (actor instanceof TextField field) {
+      return field;
+    }
+    if (actor instanceof Group group) {
+      for (Actor child : group.getChildren()) {
+        TextField found = findTextField(child);
         if (found != null) {
           return found;
         }

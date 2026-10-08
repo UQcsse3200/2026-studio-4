@@ -23,6 +23,7 @@ import com.csse3200.game.files.GameProgress.SaveData;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.files.UserSettings.DisplaySettings;
 import com.csse3200.game.files.WindowSize;
+import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.ui.UiScale;
@@ -45,6 +46,7 @@ public class SettingsMenuDisplay extends UIComponent {
   private Table actionsTable;
   private Table backdrop;
   private final Array<Actor> hiddenHud = new Array<>();
+  private InputComponent gameplayKeys;
   private TextField fpsText;
   private CheckBox fullScreenCheck;
   private CheckBox vsyncCheck;
@@ -94,6 +96,11 @@ public class SettingsMenuDisplay extends UIComponent {
   public void create() {
     super.create();
     addActors();
+    if (scaleStage) {
+      gameplayKeys = new GameplayKeyBlocker();
+      gameplayKeys.setEntity(entity);
+      gameplayKeys.create();
+    }
   }
 
   private void addActors() {
@@ -321,6 +328,35 @@ public class SettingsMenuDisplay extends UIComponent {
     hiddenHud.clear();
   }
 
+  /**
+   * Eats gameplay keys while the in-game menu is open. The stage still receives keys first, so the
+   * FPS field can be typed in. Keys the field does not use, such as Q, stop here.
+   */
+  private final class GameplayKeyBlocker extends InputComponent {
+    private GameplayKeyBlocker() {
+      super(9);
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+      return blocksGameplayKeys();
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+      return blocksGameplayKeys();
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+      return blocksGameplayKeys();
+    }
+  }
+
+  private boolean blocksGameplayKeys() {
+    return scaleStage && menuOpen;
+  }
+
   private void applyChanges() {
     UserSettings.Settings settings = UserSettings.get();
 
@@ -404,6 +440,10 @@ public class SettingsMenuDisplay extends UIComponent {
         UiScale.applyToStage(stage, UserSettings.get().uiScale);
         showGameUi();
       }
+      if (stage != null) {
+        stage.setKeyboardFocus(null);
+        stage.setScrollFocus(null);
+      }
       setMenuVisible(false);
       ServiceLocator.getEntityService().setFrozen(this, false);
       onClose.run();
@@ -444,6 +484,9 @@ public class SettingsMenuDisplay extends UIComponent {
       ServiceLocator.getEntityService().setFrozen(this, false);
     }
     showGameUi();
+    if (gameplayKeys != null && ServiceLocator.getInputService() != null) {
+      gameplayKeys.dispose();
+    }
     if (backdrop != null) {
       backdrop.clear();
     }
