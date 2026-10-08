@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
@@ -59,6 +60,8 @@ public class TimerDisplay extends UIComponent {
     rootTable.setTransform(true);
     rootTable.setScale(0.9f);
 
+    visible = UserSettings.get().showTimer;
+    rootTable.setVisible(visible);
     stage.addActor(rootTable);
     rootTable.toFront();
   }
