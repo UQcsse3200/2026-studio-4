@@ -22,6 +22,7 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.NarrativeFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.entities.factories.ShopFactory;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.files.GameProgress;
 import com.csse3200.game.files.GameSaveData;
@@ -71,7 +72,7 @@ public class MainGameScreen extends ScreenAdapter {
   private boolean winScreenRequested;
   private boolean winTransitionStarted; // add this
   private boolean saveOnDispose = true;
-  private boolean settingsOpen;
+  private boolean worldFrozen;
 
   public MainGameScreen(GdxGame game) {
     this(game, null, 1);
@@ -149,14 +150,25 @@ public class MainGameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    if (!settingsOpen) {
+    // A dialogue, cutscene, or the settings menu freezes the world.
+    boolean frozen = ServiceLocator.getEntityService().isFrozen();
+    if (frozen != worldFrozen) {
+      worldFrozen = frozen;
+      // Scaled time also stops sprite animations, status effects and other timers
+      ServiceLocator.getTimeSource().setTimeScale(frozen ? 0f : 1f);
+    }
+    if (!frozen) {
       physicsEngine.update();
-      roomManager.update();
-      runTimer.update();
     }
     ServiceLocator.getEntityService().update();
+    if (!frozen) {
+      roomManager.update();
+    }
     roomAssets.applyMusicVolume();
     renderer.render();
+    if (!frozen) {
+      runTimer.update();
+    }
     if (winScreenRequested && !winTransitionStarted) {
       winTransitionStarted = true;
       scheduleWinScreen();
@@ -274,8 +286,7 @@ public class MainGameScreen extends ScreenAdapter {
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
     TimerDisplay timerDisplay = new TimerDisplay();
 
-    SettingsMenuDisplay settingsMenu =
-        new SettingsMenuDisplay(this.game, () -> settingsOpen = false, true);
+    SettingsMenuDisplay settingsMenu = new SettingsMenuDisplay(this.game, () -> {}, true);
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
@@ -287,7 +298,6 @@ public class MainGameScreen extends ScreenAdapter {
                 this::stopPlayerMovement,
                 () -> {
                   stopPlayerMovement();
-                  settingsOpen = true;
                   settingsMenu.open();
                 }))
         .addComponent(terminal)
@@ -309,6 +319,7 @@ public class MainGameScreen extends ScreenAdapter {
     // Dialogue and cutscene systems (events are sent on the player)
     ServiceLocator.getEntityService()
         .register(NarrativeFactory.createNarrative(player, terminal::isOpen));
+    ServiceLocator.getEntityService().register(ShopFactory.createShop(player, terminal));
     UiScale.applyToStage(stage, UserSettings.get().uiScale);
   }
 
