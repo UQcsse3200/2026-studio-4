@@ -9,6 +9,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageThreeConfig;
@@ -28,6 +30,7 @@ public class FinalBossStageThreeComponent extends Component {
   public static final String STATE_CHANGED = "finalBossStageThreeState";
   private static final float STATUE_SPACING_BUFFER = 0.35f;
   private static final float GRANDPA_RETURN_SIZE = 2.4f;
+  static final float TORNADO_HIT_DURATION = 0.24f;
   private final Entity target;
   private final Consumer<Entity> spawner;
   final FinalBossStageThreeConfig config;
@@ -59,6 +62,11 @@ public class FinalBossStageThreeComponent extends Component {
   float castRemaining;
   float hitRemaining;
   float playerHitRemaining;
+  float tornadoHitRemaining;
+  private float tornadoContactElapsed;
+  private double tornadoDamageRemainder;
+  private double shieldTornadoDamageRemainder;
+  private boolean tornadoDamageInProgress;
   float freezeElapsed;
   float thawRemaining;
   float shieldHitRemaining;
@@ -112,16 +120,15 @@ public class FinalBossStageThreeComponent extends Component {
 
   @Override
   public void update() {
-    if (disposed) return;
-    if (phases.getCurrentPhase() == FinalBossPhase.STAGE_ONE
-        || phases.getCurrentPhase() == FinalBossPhase.STAGE_TWO) {
-      if (state != FinalBossStageThreeState.INACTIVE) tornadoes.clear();
-      return;
-    }
+    if (disposed || tornadoDamageInProgress || !prepareEncounterUpdate()) return;
     if (ServiceLocator.getTimeSource() == null) return;
     float delta = ServiceLocator.getTimeSource().getDeltaTime();
     if (!Float.isFinite(delta) || delta <= 0f) return;
     refreshStatuePositions();
+    if (state == FinalBossStageThreeState.WAVE_TWO) {
+      PhysicsComponent playerPhysics = target.getComponent(PhysicsComponent.class);
+      if (playerPhysics != null) playerPhysics.earlyUpdate();
+    }
     updateEffects(delta);
     if (state == FinalBossStageThreeState.INACTIVE && !phases.isTransitioning()) startWaveOne();
     if (state == FinalBossStageThreeState.INACTIVE) return;
@@ -130,7 +137,7 @@ public class FinalBossStageThreeComponent extends Component {
     switch (state) {
       case WAVE_ONE -> updateWaveOne(delta);
       case CHARGING -> updateCharge();
-      case WAVE_TWO -> updateStatues(delta);
+      case WAVE_TWO -> updateWaveTwo(delta);
       case ENDING -> updateEnding();
       default -> {
         // Inactive and peaceful states have no combat behaviour to advance.
@@ -138,11 +145,40 @@ public class FinalBossStageThreeComponent extends Component {
     }
   }
 
+  private boolean prepareEncounterUpdate() {
+    if (phases.getCurrentPhase() == FinalBossPhase.STAGE_ONE
+        || phases.getCurrentPhase() == FinalBossPhase.STAGE_TWO) {
+      if (state != FinalBossStageThreeState.INACTIVE) tornadoes.clear();
+      clearTornadoDamage();
+      return false;
+    }
+    if (stats.isDead()) {
+      tornadoes.clear();
+      clearStatueCombat();
+      return false;
+    }
+    if (phases.getCurrentPhase() == FinalBossPhase.DEFEATED) {
+      tornadoes.clear();
+      clearTornadoDamage();
+    }
+    return true;
+  }
+
+  private void updateWaveTwo(float delta) {
+    updateTornadoDamage(delta);
+    if (!disposed
+        && !stats.isDead()
+        && state == FinalBossStageThreeState.WAVE_TWO
+        && phases.getCurrentPhase() == FinalBossPhase.STAGE_THREE
+        && !stopIfPlayerDefeated()) updateStatues(delta);
+  }
+
   private boolean stopIfPlayerDefeated() {
     CombatStatsComponent playerStats = target.getComponent(CombatStatsComponent.class);
     if (playerStats == null || !playerStats.isDead()) return false;
     if (!playerDefeated) {
       playerDefeated = true;
+      tornadoes.clear();
       clearFreeze();
       bolts.clear();
       clearStatueCombat();
@@ -228,10 +264,14 @@ public class FinalBossStageThreeComponent extends Component {
   }
 
   private void updateEffects(float delta) {
-    tornadoes.update(delta, state == FinalBossStageThreeState.WAVE_TWO && !playerDefeated);
+    if (!isPlayerShieldActive()) shieldTornadoDamageRemainder = 0d;
+    tornadoes.update(
+        delta,
+        state == FinalBossStageThreeState.WAVE_TWO && !playerDefeated && !phases.isTransitioning());
     castRemaining = Math.max(0f, castRemaining - delta);
     hitRemaining = Math.max(0f, hitRemaining - delta);
     playerHitRemaining = Math.max(0f, playerHitRemaining - delta);
+    tornadoHitRemaining = Math.max(0f, tornadoHitRemaining - delta);
     shieldHitRemaining = Math.max(0f, shieldHitRemaining - delta);
     thawRemaining = Math.max(0f, thawRemaining - delta);
     for (Burst burst : bursts) burst.elapsed += delta;
@@ -1020,6 +1060,7 @@ public class FinalBossStageThreeComponent extends Component {
   }
 
   private void clearStatueCombat() {
+    clearTornadoDamage();
     shockwaves.clear();
     setJumpEnabled(false);
     if (ServiceLocator.getRenderService() != null)
@@ -1039,6 +1080,90 @@ public class FinalBossStageThreeComponent extends Component {
     int before = playerStats.getHealth();
     playerStats.takeDamage(damage, entity);
     if (playerStats.getHealth() < before) playerHitRemaining = 0.24f;
+  }
+
+  /**
+   * One shared contact clock prevents overlapping tornadoes or stalled frames from burst damage.
+   */
+  private void updateTornadoDamage(float delta) {
+    if (phases.isTransitioning()
+        || phases.getCurrentPhase() != FinalBossPhase.STAGE_THREE
+        || stats.isDead()
+        || !tornadoes.canDamagePlayer(config.tornadoDamageRadius)) {
+      tornadoContactElapsed = 0f;
+      return;
+    }
+    CombatStatsComponent playerStats = target.getComponent(CombatStatsComponent.class);
+    if (playerStats == null || playerStats.isDead()) {
+      clearTornadoDamage();
+      return;
+    }
+    tornadoContactElapsed += delta;
+    if (tornadoContactElapsed + 0.000001f < config.tornadoDamageInterval) return;
+    // Preserve fractional time at normal frame rates, but never replay missed ticks after a stall.
+    tornadoContactElapsed =
+        Math.max(0f, tornadoContactElapsed - config.tornadoDamageInterval)
+            % config.tornadoDamageInterval;
+    applyTornadoDamageTick(playerStats);
+  }
+
+  /** Keeps half-point contact ticks distinct from the integer health and shield counters. */
+  private void applyTornadoDamageTick(CombatStatsComponent playerStats) {
+    ConsumableEffectComponent consumables = target.getComponent(ConsumableEffectComponent.class);
+    float damage = config.tornadoDamage;
+    if (tornadoDamageInProgress
+        || !Float.isFinite(damage)
+        || damage <= 0f
+        || playerStats.isInvulnerable()
+        || playerStats.getIncomingDamageMultiplier() <= 0f
+        || playerStats.getHealth() <= playerStats.getMinimumHealth()
+        || StatusEffectsControllerComponent.isConcealed(target)
+        || StatusEffectsControllerComponent.isImmobilised(entity)
+        || (consumables != null && consumables.isShielded())) return;
+    boolean shieldActive = isPlayerShieldActive();
+    if (!shieldActive) shieldTornadoDamageRemainder = 0d;
+    double accumulated =
+        (shieldActive ? shieldTornadoDamageRemainder : tornadoDamageRemainder) + damage;
+    double wholeDamage = Math.floor(accumulated);
+    // Consume before dispatch; synchronous cleanup must never restore an old remainder.
+    if (shieldActive) shieldTornadoDamageRemainder = accumulated - wholeDamage;
+    else tornadoDamageRemainder = accumulated - wholeDamage;
+    if (wholeDamage < 1d) {
+      // A valid half-point contact is still an attack, even before the integer HP counter changes.
+      if (!shieldActive) tornadoHitRemaining = TORNADO_HIT_DURATION;
+      return;
+    }
+    int before = playerStats.getHealth();
+    tornadoDamageInProgress = true;
+    try {
+      playerStats.takeDamage((int) Math.min(wholeDamage, Integer.MAX_VALUE), entity);
+    } finally {
+      tornadoDamageInProgress = false;
+      if (stats.isDead()) {
+        tornadoes.clear();
+        clearStatueCombat();
+      }
+    }
+    if (!disposed
+        && !stats.isDead()
+        && state == FinalBossStageThreeState.WAVE_TWO
+        && phases.getCurrentPhase() == FinalBossPhase.STAGE_THREE
+        && !phases.isTransitioning()
+        && playerStats.getHealth() < before
+        && !playerStats.isDead()) tornadoHitRemaining = TORNADO_HIT_DURATION;
+  }
+
+  private boolean isPlayerShieldActive() {
+    StatusEffectsControllerComponent effects =
+        target.getComponent(StatusEffectsControllerComponent.class);
+    return effects != null && effects.isShieldActive();
+  }
+
+  private void clearTornadoDamage() {
+    tornadoContactElapsed = 0f;
+    tornadoHitRemaining = 0f;
+    tornadoDamageRemainder = 0d;
+    shieldTornadoDamageRemainder = 0d;
   }
 
   private void finishEncounter() {

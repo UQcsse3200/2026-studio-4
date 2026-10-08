@@ -7,5 +7,6 @@ public class NPCConfigs {
   public ChaseEnemyConfig chaseEnemy = new ChaseEnemyConfig();
   public FloatingDemonConfig floatingDemon = new FloatingDemonConfig();
   public BaseEntityConfig cerberus = new BaseEntityConfig();
+  public BaseEntityConfig sleipnir = new BaseEntityConfig();
   public SnakeMiniBossConfig snakeMiniBoss = new SnakeMiniBossConfig();
 }

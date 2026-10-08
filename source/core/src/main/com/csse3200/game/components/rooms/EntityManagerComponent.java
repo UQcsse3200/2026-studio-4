@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 public abstract class EntityManagerComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(EntityManagerComponent.class);
 
-  private final List<Entity> entities = new ArrayList<>();
+  protected final List<Entity> entities = new ArrayList<>();
 
   @Override
   public void dispose() {
@@ -27,8 +27,27 @@ public abstract class EntityManagerComponent extends Component {
 
   /** Registers and records an entity that belongs to this room. */
   protected void spawnEntity(Entity spawnedEntity) {
+    if (isOutOfBounds(spawnedEntity)) {
+      logger.warn("Attempt to spawn out of bounds entity at {}", spawnedEntity.getPosition());
+      return; // oob guard
+    }
+
+    logger.debug("Spawning entity ({}) at {}", spawnedEntity, spawnedEntity.getPosition());
     entities.add(spawnedEntity);
     ServiceLocator.getEntityService().register(spawnedEntity);
+  }
+
+  /** Asserts if a entity is out of the world bounds */
+  boolean isOutOfBounds(Entity checkEntity) {
+    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+    Vector2 bounds = terrain.tileToWorldPosition(terrain.getMapBounds(0));
+    Vector2 entityPos = checkEntity.getPosition();
+
+    // oob -> out of bounds
+    boolean oobX = entityPos.x < 0 || entityPos.x > bounds.x;
+    boolean oobY = entityPos.y < 0 || entityPos.y > bounds.y;
+
+    return oobX || oobY;
   }
 
   /** Places, registers, and records an entity at a terrain tile. */

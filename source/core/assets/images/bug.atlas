@@ -1,0 +1,68 @@
+bug.png
+size: 228, 152
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+default
+  rotate: false
+  xy: 0, 0
+  size: 38, 38
+  orig: 38, 38
+  offset: 0, 0
+  index: 0
+move
+  rotate: false
+  xy: 38, 0
+  size: 38, 38
+  orig: 38, 38
+  offset: 0, 0
+  index: 1
+move
+  rotate: false
+  xy: 76, 0
+  size: 38, 38
+  orig: 38, 38
+  offset: 0, 0
+  index: 2
+move
+  rotate: false
+  xy: 114, 0
+  size: 38, 38
+  orig: 38, 38
+  offset: 0, 0
+  index: 3
+chase
+  rotate: false
+  xy: 38, 0
+  size: 38, 38
+  orig: 38, 38
+  offset: 0, 0
+  index: 1
+chase
+  rotate: false
+  xy: 76, 0
+  size: 38, 38
+  orig: 38, 38
+  offset: 0, 0
+  index: 2
+chase
+  rotate: false
+  xy: 114, 0
+  size: 38, 38
+  orig: 38, 38
+  offset: 0, 0
+  index: 3
+dieAnimation
+  rotate: false
+  xy: 152, 0
+  size: 38, 38
+  orig: 38, 38
+  offset: 0, 0
+  index: 1
+dieAnimation
+  rotate: false
+  xy: 190, 0
+  size: 38, 38
+  orig: 38, 38
+  offset: 0, 0
+  index: 2

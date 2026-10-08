@@ -25,6 +25,8 @@ public class ServiceLocator {
   private static InputService inputService;
   private static ResourceService resourceService;
   private static Camera worldCamera;
+  private static RunTimer runTimer;
+  private static AchievementService achievementService;
 
   public static EntityService getEntityService() {
     return entityService;
@@ -52,6 +54,14 @@ public class ServiceLocator {
 
   public static Camera getWorldCamera() {
     return worldCamera;
+  }
+
+  public static RunTimer getRunTimer() {
+    return runTimer;
+  }
+
+  public static AchievementService getAchievementService() {
+    return achievementService;
   }
 
   public static void registerEntityService(EntityService service) {
@@ -89,6 +99,16 @@ public class ServiceLocator {
     worldCamera = camera;
   }
 
+  public static void registerRunTimer(RunTimer timer) {
+    logger.debug("Registering RunTimer service {}", timer);
+    runTimer = timer;
+  }
+
+  public static void registerAchievementService(AchievementService source) {
+    logger.debug("Registering Achievement service {}", source);
+    achievementService = source;
+  }
+
   public static void clear() {
     entityService = null;
     renderService = null;
@@ -97,6 +117,8 @@ public class ServiceLocator {
     inputService = null;
     resourceService = null;
     worldCamera = null;
+    runTimer = null;
+    achievementService = null;
   }
 
   private ServiceLocator() {
