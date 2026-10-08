@@ -1,0 +1,8 @@
+{
+  "id": "merchant-upgrades",
+  "offers": [
+    {"offerId": "sword", "kind": "WEAPON_UPGRADE", "productId": "sword", "goldPrice": 60},
+    {"offerId": "knife", "kind": "WEAPON_UPGRADE", "productId": "knife", "goldPrice": 60},
+    {"offerId": "bow", "kind": "WEAPON_UPGRADE", "productId": "bow", "goldPrice": 60}
+  ]
+}

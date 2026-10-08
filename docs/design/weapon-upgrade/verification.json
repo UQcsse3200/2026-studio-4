@@ -1,0 +1,246 @@
+[
+  {
+    "candidate": "a",
+    "width": 1280,
+    "height": 800,
+    "errors": [],
+    "viewport": [
+      1280,
+      800
+    ],
+    "page": [
+      1280,
+      800
+    ],
+    "brokenImages": [],
+    "buttons": [
+      {
+        "text": "LEAVE\nEsc",
+        "disabled": false,
+        "visible": true,
+        "bounds": [
+          1090.96875,
+          48,
+          125.03125,
+          33
+        ]
+      },
+      {
+        "text": "UPGRADE WEAPON \u2014 60 G\n[U]",
+        "disabled": false,
+        "visible": true,
+        "bounds": [
+          891.75,
+          675,
+          284.25,
+          46
+        ]
+      }
+    ]
+  },
+  {
+    "candidate": "a",
+    "width": 960,
+    "height": 600,
+    "errors": [],
+    "viewport": [
+      960,
+      600
+    ],
+    "page": [
+      960,
+      600
+    ],
+    "brokenImages": [],
+    "buttons": [
+      {
+        "text": "LEAVE\nEsc",
+        "disabled": false,
+        "visible": true,
+        "bounds": [
+          797.765625,
+          35,
+          125.03125,
+          33
+        ]
+      },
+      {
+        "text": "UPGRADE WEAPON \u2014 60 G\n[U]",
+        "disabled": false,
+        "visible": true,
+        "bounds": [
+          701.96875,
+          505,
+          202.828125,
+          40
+        ]
+      }
+    ]
+  },
+  {
+    "candidate": "b",
+    "width": 1280,
+    "height": 800,
+    "errors": [],
+    "viewport": [
+      1280,
+      800
+    ],
+    "page": [
+      1280,
+      800
+    ],
+    "brokenImages": [],
+    "buttons": [
+      {
+        "text": "Leave Esc",
+        "disabled": false,
+        "visible": true,
+        "bounds": [
+          1065.171875,
+          78,
+          119.828125,
+          40
+        ]
+      },
+      {
+        "text": "Sword\n01\n\u2192\nBASE\nUPGRADED\nJ \u00b7 +20% light damage\nK\n360\u00b0 Sweep\n\nStrike around you in a full circle.\n\nReady to upgrade\n60",
+        "disabled": false,
+        "visible": true,
+        "bounds": [
+          95,
+          210,
+          354,
+          340
+        ]
+      },
+      {
+        "text": "Knife\n02\n\u2192\nBASE\nUPGRADED\nJ \u00b7 +20% light damage\nK\nThree-hit Flurry\n\nTwo fast slashes, then a finishing stab.\n\nReady to upgrade\n60",
+        "disabled": false,
+        "visible": true,
+        "bounds": [
+          463,
+          210,
+          354,
+          340
+        ]
+      },
+      {
+        "text": "Throwing Knife\n03\n\u2192\nBASE\nUPGRADED\nJ \u00b7 +20% light damage\nK\nTriple Fan Shot\n\nThree projectiles spread across your aim.\n\nReady to upgrade\n60",
+        "disabled": false,
+        "visible": true,
+        "bounds": [
+          831,
+          210,
+          354,
+          340
+        ]
+      },
+      {
+        "text": "Upgrade Sword",
+        "disabled": false,
+        "visible": true,
+        "bounds": [
+          940,
+          600,
+          223,
+          44
+        ]
+      },
+      {
+        "text": "Return to merchant",
+        "disabled": false,
+        "visible": false,
+        "bounds": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  {
+    "candidate": "b",
+    "width": 960,
+    "height": 600,
+    "errors": [],
+    "viewport": [
+      960,
+      600
+    ],
+    "page": [
+      960,
+      600
+    ],
+    "brokenImages": [],
+    "buttons": [
+      {
+        "text": "Leave Esc",
+        "disabled": false,
+        "visible": true,
+        "bounds": [
+          793.359375,
+          41,
+          119.828125,
+          40
+        ]
+      },
+      {
+        "text": "Sword\n01\n\u2192\nBASE\nUPGRADED\nJ \u00b7 +20% light damage\nK\n360\u00b0 Sweep\n\nStrike around you in a full circle.\n\nReady to upgrade\n60",
+        "disabled": false,
+        "visible": true,
+        "bounds": [
+          46.796875,
+          153,
+          282.125,
+          253
+        ]
+      },
+      {
+        "text": "Knife\n02\n\u2192\nBASE\nUPGRADED\nJ \u00b7 +20% light damage\nK\nThree-hit Flurry\n\nTwo fast slashes, then a finishing stab.\n\nReady to upgrade\n60",
+        "disabled": false,
+        "visible": true,
+        "bounds": [
+          338.921875,
+          153,
+          282.125,
+          253
+        ]
+      },
+      {
+        "text": "Throwing Knife\n03\n\u2192\nBASE\nUPGRADED\nJ \u00b7 +20% light damage\nK\nTriple Fan Shot\n\nThree projectiles spread across your aim.\n\nReady to upgrade\n60",
+        "disabled": false,
+        "visible": true,
+        "bounds": [
+          631.046875,
+          153,
+          282.140625,
+          253
+        ]
+      },
+      {
+        "text": "Upgrade Sword",
+        "disabled": false,
+        "visible": true,
+        "bounds": [
+          696.1875,
+          446,
+          199,
+          44
+        ]
+      },
+      {
+        "text": "Return to merchant",
+        "disabled": false,
+        "visible": false,
+        "bounds": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  }
+]

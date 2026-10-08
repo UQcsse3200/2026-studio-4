@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Candidate A: Weaponsmith's Crucible & Ledger</title>
+  <style>
+    /* Reset & Base Setup */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #0d0906;
+      background-image:
+        radial-gradient(circle at 50% 30%, rgba(68, 36, 14, 0.45) 0%, rgba(13, 9, 6, 0.95) 75%),
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 2px, transparent 2px, transparent 4px);
+      color: #e8d7b8;
+      font-family: "Courier New", Courier, monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    /* Pixel art rendering */
+    .pixelated {
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+    }
+
+    /* Modal Container: Target 1280x800, fits 960x600 */
+    .modal-frame {
+      width: 1200px;
+      max-width: 96vw;
+      height: 740px;
+      max-height: 94vh;
+      background: #23150b;
+      border: 4px solid #caa055;
+      box-shadow:
+        0 0 0 2px #120a05,
+        0 0 0 6px #5a3818,
+        0 0 0 8px #120a05,
+        0 20px 50px rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      border-radius: 2px;
+    }
+
+    /* Window Header */
+    .modal-header {
+      height: 64px;
+      background: linear-gradient(180deg, #382010 0%, #221309 100%);
+      border-bottom: 3px solid #6c4620;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      position: relative;
+    }
+
+    .modal-header::after {
+      content: "";
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #caa055;
+      opacity: 0.6;
+    }
+
+    .header-branding {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-icon-box {
+      width: 38px;
+      height: 38px;
+      background: #170d06;
+      border: 2px solid #caa055;
+      box-shadow: inset 0 0 4px rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header-icon-box svg {
+      width: 22px;
+      height: 22px;
+      fill: #e6b85c;
+    }
+
+    .header-title-block h1 {
+      font-size: 19px;
+      letter-spacing: 2px;
+      color: #ffd875;
+      text-transform: uppercase;
+      font-weight: 900;
+      text-shadow: 2px 2px 0px #120904;
+    }
+
+    .header-title-block p {
+      font-size: 11px;
+      color: #ab9072;
+      letter-spacing: 0.5px;
+    }
+
+    .header-stats {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .gold-purse {
+      background: #150d06;
+      border: 2px solid #b6873c;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.8);
+    }
+
+    .gold-coin-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ffe680 0%, #e5a729 60%, #996208 100%);
+      border: 1.5px solid #fff2a8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      color: #4b2b00;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    }
+
+    .gold-amount {
+      font-size: 17px;
+      font-weight: bold;
+      color: #ffde7a;
+      letter-spacing: 1px;
+    }
+
+    .gold-label {
+      font-size: 10px;
+      color: #a48259;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .btn-leave {
+      background: linear-gradient(180deg, #531c17 0%, #30100d 100%);
+      border: 2px solid #8e3830;
+      color: #f7b7b2;
+      padding: 7px 18px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      transition: all 0.1s ease;
+    }
+
+    .btn-leave:hover {
+      background: linear-gradient(180deg, #6b241e 0%, #421612 100%);
+      border-color: #b9483e;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .btn-leave .keycap {
+      background: #1f0b09;
+      border: 1px solid #752922;
+      color: #d88983;
+      padding: 1px 5px;
+      font-size: 10px;
+      border-radius: 2px;
+    }
+
+    /* Modal Main Body: Dual-Pane Layout */
+    .modal-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 16px;
+      padding: 16px 20px;
+      overflow: hidden;
+      background: #1b1008;
+    }
+
+    /* LEFT COLUMN: Blacksmith & Weapon Selector */
+    .left-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    /* Merchant Profile Card */
+    .merchant-card {
+      background: #f1e2c3;
+      border: 3px solid #5d3b1b;
+      box-shadow: inset 0 0 0 1px #8f6032, 0 4px 10px rgba(0,0,0,0.5);
+      padding: 12px;
+      color: #2c1a0e;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .merchant-top {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .merchant-frame {
+      width: 64px;
+      height: 64px;
+      background: #2b170c;
+      border: 2px solid #8e612f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .merchant-portrait-sprite {
+      width: 32px;
+      height: 32px;
+      transform: scale(2);
+      transform-origin: center;
+      background-image: url('../references/rogues.png');
+      background-repeat: no-repeat;
+      background-position: -64px -192px;
+      background-size: 224px 224px;
+    }
+
+    .merchant-info h2 {
+      font-size: 15px;
+      color: #3b1b06;
+      letter-spacing: 0.5px;
+      font-weight: 900;
+    }
+
+    .merchant-info .merchant-role {
+      font-size: 10px;
+      font-style: italic;
+      color: #7a5433;
+      margin-bottom: 4px;
+    }
+
+    .merchant-badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: bold;
+      background: #d8c39d;
+      border: 1px solid #9e7f53;
+      padding: 1px 6px;
+      color: #43240e;
+    }
+
+    .merchant-quote {
+      font-size: 11px;
+      line-height: 1.35;
+      font-style: italic;
+      background: rgba(255, 255, 255, 0.4);
+      padding: 8px 10px;
+      border-left: 3px solid #9e7f53;
+      color: #3b2515;
+    }
+
+    /* Weapon Selector Ledger */
+    .ledger-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #25160d;
+      border: 2px solid #583719;
+      padding: 10px;
+      gap: 8px;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: #e5b967;
+      text-transform: uppercase;
+      font-weight: bold;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #4d3016;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-title span.hint {
+      font-size: 9px;
+      color: #8c7255;
+      letter-spacing: 0;
+    }
+
+    .weapon-item-card {
+      background: #2f1d11;
+      border: 2px solid #4b2f16;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.12s ease;
+    }
+
+    .weapon-item-card:hover {
+      background: #3c2415;
+      border-color: #8a5828;
+    }
+
+    .weapon-item-card.selected {
+      background: #472915;
+      border-color: #f1b747;
+      box-shadow: 0 0 0 1px #f1b747, inset 0 0 8px rgba(241, 183, 71, 0.25);
+    }
+
+    .weapon-item-card.selected::before {
+      content: "▶";
+      position: absolute;
+      left: -9px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 10px;
+      color: #f1b747;
+    }
+
+    .item-icon-box {
+      width: 44px;
+      height: 44px;
+      background: #1a0f07;
+      border: 2px solid #533519;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .item-icon-box img {
+      width: 32px;
+      height: 32px;
+    }
+
+    .item-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .item-name-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .item-name {
+      font-size: 12px;
+      font-weight: bold;
+      color: #f3dfb9;
+    }
+
+    .item-slot-tag {
+      font-size: 9px;
+      color: #9c8065;
+    }
+
+    .item-status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2px;
+    }
+
+    .status-badge {
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 2px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.ready {
+      background: #1c3d20;
+      color: #6edb7d;
+      border: 1px solid #2e6935;
+    }
+
+    .status-badge.upgraded {
+      background: #42300b;
+      color: #ffd857;
+      border: 1px solid #8e681c;
+    }
+
+    .status-badge.equipped {
+      background: #1d2c3e;
+      color: #72b2ff;
+      border: 1px solid #284c75;
+    }
+
+    .item-price-tag {
+      font-size: 11px;
+      font-weight: bold;
+      color: #f5c85d;
+    }
+
+    /* RIGHT COLUMN: The Crucible / Inspection & Tempering */
+    .right-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #25160c;
+      border: 2px solid #5a3818;
+      padding: 16px 20px;
+      overflow: hidden;
+    }
+
+    .crucible-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 2px solid #503115;
+      padding-bottom: 10px;
+    }
+
+    .weapon-headline h2 {
+      font-size: 20px;
+      color: #ffd875;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: bold;
+      text-shadow: 1px 1px 0px #000;
+    }
+
+    .weapon-headline .type-detail {
+      font-size: 11px;
+      color: #ad8f6c;
+      margin-top: 2px;
+    }
+
+    .weapon-status-banner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tier-badge {
+      background: #130c06;
+      border: 2px solid #caa055;
+      color: #ffe082;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .tier-badge.is-upgraded {
+      background: #3d2c0b;
+      border-color: #ffd700;
+      color: #fff1a8;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    /* Transformation Inspection Stage (Before / After Cards) */
+    .transformation-stage {
+      display: grid;
+      grid-template-columns: 1fr 64px 1fr;
+      align-items: center;
+      gap: 12px;
+      background: #180d06;
+      border: 2px solid #462a12;
+      padding: 14px 16px;
+    }
+
+    .forge-pedestal {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      background: #23140a;
+      border: 1px solid #4a2d14;
+      position: relative;
+    }
+
+    .forge-pedestal.upgraded-pedestal {
+      background: #2b1a0d;
+      border: 1px solid #caa055;
+      box-shadow: inset 0 0 12px rgba(202, 160, 85, 0.2);
+    }
+
+    .pedestal-stage-label {
+      font-size: 10px;
+      color: #a48259;
+      letter-spacing: 1.5px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .upgraded-pedestal .pedestal-stage-label {
+      color: #f7ca62;
+    }
+
+    .sprite-display-box {
+      width: 72px;
+      height: 72px;
+      background: #110803;
+      border: 2px solid #3c2411;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .upgraded-pedestal .sprite-display-box {
+      border-color: #b5883a;
+      box-shadow: 0 0 12px rgba(245, 196, 92, 0.35);
+    }
+
+    .sprite-display-box img {
+      width: 48px;
+      height: 48px;
+      transition: transform 0.2s ease;
+    }
+
+    .sprite-display-box:hover img {
+      transform: scale(1.15);
+    }
+
+    .pedestal-stat-line {
+      font-size: 11px;
+      color: #d1bda2;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .pedestal-stat-line.boosted {
+      color: #72e086;
+    }
+
+    /* Chevron separator */
+    .forge-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .connector-arrow {
+      font-size: 28px;
+      color: #e5b967;
+      text-shadow: 0 0 8px rgba(229, 185, 103, 0.6);
+    }
+
+    .connector-label {
+      font-size: 9px;
+      color: #8c7153;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    /* Technique Scroll / Combat Ledger */
+    .technique-scroll {
+      flex: 1;
+      background: #f1e2c3;
+      border: 3px solid #5d3b1b;
+      box-shadow: inset 0 0 0 1px #8f6032, 0 4px 12px rgba(0,0,0,0.4);
+      padding: 14px 18px;
+      color: #2b180d;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+
+    .scroll-title {
+      font-size: 12px;
+      font-weight: 900;
+      color: #4b260c;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border-bottom: 2px dashed #9f8263;
+      padding-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .scroll-title .run-policy {
+      font-size: 9px;
+      color: #7b5839;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      background: #e2ccaa;
+      padding: 2px 6px;
+      border: 1px solid #b89b72;
+    }
+
+    .technique-cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .technique-row {
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid #bf9d73;
+      padding: 8px 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .technique-row.unlocked-k {
+      background: #fff8e8;
+      border: 2px solid #b9812e;
+      box-shadow: inset 0 0 8px rgba(204, 148, 48, 0.2);
+    }
+
+    .key-badge {
+      width: 28px;
+      height: 28px;
+      background: #2b170c;
+      border: 2px solid #8e612f;
+      color: #ffe28a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      flex-shrink: 0;
+    }
+
+    .technique-row.unlocked-k .key-badge {
+      background: #501d0a;
+      border-color: #d88922;
+      color: #ffd95c;
+    }
+
+    .technique-details {
+      flex: 1;
+    }
+
+    .technique-name-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 3px;
+    }
+
+    .technique-name {
+      font-size: 13px;
+      font-weight: 900;
+      color: #3b1b06;
+      letter-spacing: 0.5px;
+    }
+
+    .technique-meta {
+      font-size: 10px;
+      font-weight: bold;
+      color: #8c521f;
+    }
+
+    .technique-desc {
+      font-size: 11px;
+      color: #4a2e19;
+      line-height: 1.4;
+    }
+
+    .highlight-fact {
+      font-weight: bold;
+      color: #245828;
+    }
+
+    .highlight-k-fact {
+      font-weight: bold;
+      color: #82270d;
+    }
+
+    /* ACTION BAR / FOOTER */
+    .crucible-footer {
+      height: 68px;
+      background: #170d06;
+      border: 2px solid #4a2d14;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+
+    .cost-summary {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .cost-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .cost-item .label {
+      font-size: 9px;
+      color: #8d7055;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .cost-item .val {
+      font-size: 15px;
+      font-weight: bold;
+      color: #ffd875;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .action-button-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Action button states */
+    .btn-action {
+      min-width: 240px;
+      padding: 12px 24px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    }
+
+    /* Purchase Ready */
+    .btn-action.ready {
+      background: linear-gradient(180deg, #2b7a3e 0%, #174b24 100%);
+      border: 2px solid #54bf6d;
+      color: #ffffff;
+      text-shadow: 1px 1px 2px #09210e;
+    }
+
+    .btn-action.ready:hover {
+      background: linear-gradient(180deg, #35944d 0%, #1f6230 100%);
+      border-color: #72e086;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(43, 122, 62, 0.4);
+    }
+
+    .btn-action.ready:active {
+      transform: translateY(0);
+    }
+
+    /* Already Upgraded */
+    .btn-action.upgraded {
+      background: linear-gradient(180deg, #443210 0%, #291e0a 100%);
+      border: 2px solid #9c7b2b;
+      color: #f7d674;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    /* Insufficient Funds */
+    .btn-action.insufficient {
+      background: linear-gradient(180deg, #2b231c 0%, #1c1611 100%);
+      border: 2px solid #48392d;
+      color: #8c7360;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-action .shortcut-hint {
+      background: rgba(0,0,0,0.3);
+      padding: 2px 6px;
+      font-size: 11px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 2px;
+    }
+
+    /* Toast Notification (Immediate Confirmation) */
+    .toast-overlay {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: #17381b;
+      border: 2px solid #54bf6d;
+      color: #bbf7c7;
+      padding: 10px 24px;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      z-index: 99;
+    }
+
+    .toast-overlay.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Subtle bottom notice */
+    .footer-note {
+      position: absolute;
+      bottom: -28px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #856a4b;
+      padding: 0 4px;
+    }
+
+    .footer-note kbd {
+      background: #25160d;
+      border: 1px solid #4a2d14;
+      padding: 1px 5px;
+      color: #caa055;
+      font-family: inherit;
+    }
+  button:disabled{cursor:default}.gold-coin-icon{object-fit:contain;border:0;background:none;box-shadow:none} .weapon-item-card:focus-visible{outline:3px solid #ffdf86;outline-offset:3px} .merchant-info h2{font-size:15px!important}
+
+.modal-header{flex-shrink:0}.modal-body{min-height:0}.right-column{min-height:0}.crucible-footer{flex-shrink:0}.technique-scroll{min-height:0}.merchant-quote{font-style:normal}.gold-coin-icon{border-radius:0}.btn-action{letter-spacing:.5px}
+@media(max-width:1000px),(max-height:650px){body{padding:14px}.modal-frame{width:928px;max-width:96vw;height:560px;max-height:93vh}.modal-header{height:56px;padding:0 14px}.header-title-block h1{font-size:17px;letter-spacing:1px}.modal-body{grid-template-columns:240px 1fr;padding:10px;gap:10px}.merchant-card{padding:8px;gap:6px}.merchant-frame{width:48px;height:48px}.merchant-portrait-sprite{transform:scale(1.5)}.merchant-quote{font-size:10px;padding:6px}.merchant-badge{font-size:8px}.merchant-info h2{font-size:13px!important}.left-column{gap:8px}.ledger-section{padding:8px;gap:6px}.weapon-item-card{padding:6px;gap:7px}.item-name{font-size:12px}.item-icon-box{width:36px;height:36px}.item-icon-box img{width:28px;height:28px}.right-column{padding:10px;gap:8px}.crucible-header{padding-bottom:6px}.weapon-headline h2{font-size:16px}.weapon-headline .type-detail{font-size:9px}.tier-badge{font-size:9px;letter-spacing:0;padding:4px 5px}.transformation-stage{padding:6px;gap:6px;grid-template-columns:1fr 40px 1fr;flex-shrink:0}.forge-pedestal{padding:6px;gap:3px}.sprite-display-box{width:44px;height:44px}.sprite-display-box img{width:32px;height:32px}.pedestal-stage-label{font-size:8px}.pedestal-stat-line{font-size:8px}.connector-arrow{font-size:22px}.technique-scroll{padding:8px;gap:6px}.scroll-title{font-size:9px;letter-spacing:0;padding-bottom:4px}.scroll-title .run-policy{font-size:8px}.technique-cards-grid{gap:5px}.technique-row{padding:5px 7px;gap:7px}.key-badge{width:23px;height:23px;font-size:11px}.technique-name{font-size:11px;letter-spacing:0}.technique-meta{font-size:8px}.technique-desc{font-size:10px;line-height:1.3}.crucible-footer{height:56px;padding:8px;gap:8px}.cost-summary{gap:8px}.cost-item .label{font-size:8px;letter-spacing:0}.cost-item .val{font-size:12px}.btn-action{min-width:195px;padding:10px;font-size:11px;letter-spacing:0}.btn-action .shortcut-hint{font-size:9px}.gold-purse{padding:5px 10px}.header-stats{gap:10px}.section-title{font-size:10px;letter-spacing:.5px}.technique-row:first-child .technique-desc{font-size:9px}}
+
+@media(max-width:1000px),(max-height:650px){.item-slot-tag{display:none}}
+</style>
+</head>
+<body>
+
+  <!-- Modal Frame (1200x740 within 1280x800) -->
+  <div class="modal-frame" id="modalFrame" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+    <!-- Top Header -->
+    <header class="modal-header">
+      <div class="header-branding">
+        <div class="header-icon-box" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M22,15V17H19V19H17V17H11V19H9V17H2V15H4V13H2V11H4V9H6V7H8V5H10V7H12V9H14V11H16V13H18V15H22M14,13V11H12V9H10V7H8V9H6V11H4V13H14M16,15H6V17H16V15Z"/>
+          </svg>
+        </div>
+        <div class="header-title-block">
+          <h1 id="modalTitle">WEAPON UPGRADES</h1>
+          <p>Sharpen your weapon • Unlock a K heavy attack</p>
+        </div>
+      </div>
+
+      <div class="header-stats">
+        <div class="gold-purse" title="Your current inventory gold">
+          <img class="gold-coin-icon pixelated" src="../references/gold_coin_pixel.png" alt="Gold">
+          <span class="gold-amount" id="purseDisplay">90</span>
+          <span class="gold-label">GOLD</span>
+        </div>
+
+        <button class="btn-leave" id="btnLeave" title="Close upgrade menu (Esc)">
+          <span>LEAVE</span>
+          <span class="keycap">Esc</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Modal Body: Two-Column Workspace -->
+    <main class="modal-body">
+
+      <!-- LEFT COLUMN: Merchant & Weapon Arsenal Ledger -->
+      <aside class="left-column">
+        <!-- Merchant Profile -->
+        <div class="merchant-card">
+          <div class="merchant-top">
+            <div class="merchant-frame" title="Travelling Merchant">
+              <div class="merchant-portrait-sprite pixelated"></div>
+            </div>
+            <div class="merchant-info">
+              <h2>Travelling Merchant</h2>
+              <div class="merchant-role">Weapon Upgrades</div>
+              <span class="merchant-badge">ONE UPGRADE PER WEAPON</span>
+            </div>
+          </div>
+          <div class="merchant-quote">
+            "A sharper edge and a new heavy attack. Choose a weapon to upgrade."
+          </div>
+        </div>
+
+        <!-- Arsenal Selector -->
+        <div class="ledger-section" id="weaponList">
+          <div class="section-title">
+            <span>SELECT WEAPON</span>
+            <span class="hint">[Keys 1 - 3]</span>
+          </div>
+
+          <!-- Weapon Card: Sword -->
+          <div class="weapon-item-card selected" data-id="sword" tabindex="0" role="button">
+            <div class="item-icon-box">
+              <img src="../references/weapons/sword.png" alt="Sword Sprite" class="pixelated" id="itemThumbSword">
+            </div>
+            <div class="item-text">
+              <div class="item-name-row">
+                <span class="item-name">Sword</span>
+                <span class="item-slot-tag">Equipped</span>
+              </div>
+              <div class="item-status-row">
+                <span class="status-badge ready" id="badgeSword">READY</span>
+                <span class="item-price-tag" id="priceTagSword">60 G</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weapon Card: Knife -->
+          <div class="weapon-item-card" data-id="knife" tabindex="0" role="button">
+            <div class="item-icon-box">
+              <img src="../references/weapons/knife.png" alt="Knife Sprite" class="pixelated" id="itemThumbKnife">
+            </div>
+            <div class="item-text">
+              <div class="item-name-row">
+                <span class="item-name">Knife</span>
+                <span class="item-slot-tag">In Pack</span>
+              </div>
+              <div class="item-status-row">
+                <span class="status-badge ready" id="badgeKnife">READY</span>
+                <span class="item-price-tag" id="priceTagKnife">60 G</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weapon Card: Throwing Knife -->
+          <div class="weapon-item-card" data-id="throwing_knife" tabindex="0" role="button">
+            <div class="item-icon-box">
+              <img src="../references/weapons/throwing_knife.png" alt="Throwing Knife Sprite" class="pixelated" id="itemThumbThrowingKnife">
+            </div>
+            <div class="item-text">
+              <div class="item-name-row">
+                <span class="item-name">Throwing Knife</span>
+                <span class="item-slot-tag">Ranged Slot</span>
+              </div>
+              <div class="item-status-row">
+                <span class="status-badge ready" id="badgeThrowingKnife">READY</span>
+                <span class="item-price-tag" id="priceTagThrowingKnife">60 G</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT COLUMN: Inspection Crucible & Combat Contract -->
+      <section class="right-column">
+
+        <!-- Weapon Headline -->
+        <div class="crucible-header">
+          <div class="weapon-headline">
+            <h2 id="activeWeaponName">BROADSWORD</h2>
+            <div class="type-detail" id="activeWeaponSub">Melee weapon • Full-circle heavy attack</div>
+          </div>
+          <div class="weapon-status-banner">
+            <div class="tier-badge" id="activeTierBadge">TIER: BASE</div>
+          </div>
+        </div>
+
+        <!-- Before & After Comparison Stage -->
+        <div class="transformation-stage">
+          <!-- Base Pedestal -->
+          <div class="forge-pedestal">
+            <span class="pedestal-stage-label">Current Form</span>
+            <div class="sprite-display-box">
+              <img id="baseSpriteImg" src="../references/weapons/sword.png" alt="Base Weapon" class="pixelated">
+            </div>
+            <div class="pedestal-stat-line" id="baseStatSummary">100% Light Strike [J]</div>
+          </div>
+
+          <!-- Connector Arrow -->
+          <div class="forge-connector">
+            <span class="connector-arrow">➔</span>
+            <span class="connector-label">UPGRADE</span>
+          </div>
+
+          <!-- Upgraded Pedestal -->
+          <div class="forge-pedestal upgraded-pedestal">
+            <span class="pedestal-stage-label">Masterwork Form</span>
+            <div class="sprite-display-box">
+              <img id="upgradedSpriteImg" src="../references/weapons/sword_upgraded.png" alt="Upgraded Weapon" class="pixelated">
+            </div>
+            <div class="pedestal-stat-line boosted" id="upgradedStatSummary">+20% Damage & [K] Skill</div>
+          </div>
+        </div>
+
+        <!-- Technique Scroll -->
+        <div class="technique-scroll">
+          <div class="scroll-title">
+            <span>Combat Technique Ledger</span>
+            <span class="run-policy">Once per run • One upgrade per weapon</span>
+          </div>
+
+          <div class="technique-cards-grid">
+            <!-- Light Attack Row -->
+            <div class="technique-row">
+              <div class="key-badge">J</div>
+              <div class="technique-details">
+                <div class="technique-name-row">
+                  <span class="technique-name">Light Attack</span>
+                  <span class="technique-meta">+20% Damage</span>
+                </div>
+                <div class="technique-desc">
+                  Tempering enhances striking edge: deals <span class="highlight-fact">+20% damage</span> on every light attack.
+                </div>
+              </div>
+            </div>
+
+            <!-- Heavy Attack Row (Unlocked) -->
+            <div class="technique-row unlocked-k">
+              <div class="key-badge">K</div>
+              <div class="technique-details">
+                <div class="technique-name-row">
+                  <span class="technique-name" id="heavyTechName">Whirlwind Cleave</span>
+                  <span class="technique-meta" id="heavyTechMeta">Cooldown: 2x Normal</span>
+                </div>
+                <div class="technique-desc" id="heavyTechDesc">
+                  Unlocks a full <span class="highlight-k-fact">360-degree sweep</span> dealing <span class="highlight-k-fact">1.35x base damage</span> to all surrounding foes. Twice standard light attack cooldown.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Action Bar -->
+        <div class="crucible-footer">
+          <div class="cost-summary">
+            <div class="cost-item">
+              <span class="label">Upgrade Cost</span>
+              <span class="val"><img class="gold-coin-icon pixelated" style="width:14px;height:14px" src="../references/gold_coin_pixel.png" alt=""> 60</span>
+            </div>
+            <div class="cost-item">
+              <span class="label">Purse Balance</span>
+              <span class="val" id="footerPurseVal">90 G</span>
+            </div>
+            <div class="cost-item" id="needMoreBox" style="display:none;">
+              <span class="label" style="color:#d87364;">Shortfall</span>
+              <span class="val" style="color:#ff897a;">Need 30G More</span>
+            </div>
+          </div>
+
+          <div class="action-button-group">
+            <button class="btn-action ready" id="btnUpgrade">
+              <span id="btnUpgradeText">UPGRADE WEAPON</span>
+              <span class="shortcut-hint">[U]</span>
+            </button>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast-overlay" id="toastBox">
+      <span>★ UPGRADE COMPLETE! [K] HEAVY TECHNIQUE UNLOCKED.</span>
+    </div>
+
+    <!-- Outer Helper Note -->
+
+  </div>
+
+  <script>
+    // Exact gameplay contract data
+    const WEAPONS = {
+      sword: {
+        id: 'sword',
+        name: 'Sword',
+        sub: 'Melee weapon • Full-circle heavy attack',
+        slot: 'Equipped',
+        baseSprite: '../references/weapons/sword.png',
+        upgradedSprite: '../references/weapons/sword_upgraded.png',
+        heavyName: 'Whirlwind Cleave',
+        heavyMeta: 'Cooldown: 2x Normal',
+        heavyDesc: 'Unlocks a devastating <span class="highlight-k-fact">360-degree sweep</span> dealing <span class="highlight-k-fact">1.35x base damage</span> to all surrounding foes. Cooldown is twice normal light attack.',
+        price: 60,
+        upgraded: false
+      },
+      knife: {
+        id: 'knife',
+        name: 'Knife',
+        sub: 'Melee weapon • Three-hit heavy attack',
+        slot: 'In Pack',
+        baseSprite: '../references/weapons/knife.png',
+        upgradedSprite: '../references/weapons/knife_upgraded.png',
+        heavyName: 'Flurry & Skewer',
+        heavyMeta: 'Cooldown: 3x Normal',
+        heavyDesc: 'Executes <span class="highlight-k-fact">two rapid slashes (0.6x each)</span> followed by a lethal <span class="highlight-k-fact">finishing stab (1.2x)</span>. Cooldown is triple normal light attack.',
+        price: 60,
+        upgraded: false
+      },
+      throwing_knife: {
+        id: 'throwing_knife',
+        name: 'Throwing Knife',
+        sub: 'Ranged weapon • Three-projectile heavy attack',
+        slot: 'Ranged Slot',
+        baseSprite: '../references/weapons/throwing_knife.png',
+        upgradedSprite: '../references/weapons/throwing_knife_upgraded.png',
+        heavyName: 'Triple Fan Shot',
+        heavyMeta: 'Cooldown: 2x Normal',
+        heavyDesc: 'Hurls <span class="highlight-k-fact">three projectiles in a ±15° fan spread</span>, each dealing <span class="highlight-k-fact">base shot damage (1.0x)</span>. Cooldown is twice normal light attack.',
+        price: 60,
+        upgraded: false
+      }
+    };
+
+    // State Variables
+    let purseGold = 90;
+    let selectedWeaponId = 'sword';
+
+    // Parse URL Params for Testing States (?state=poor, ?state=upgraded, ?gold=30)
+    const urlParams = new URLSearchParams(window.location.search);
+    const stateParam = urlParams.get('state');
+    const goldParam = urlParams.get('gold');
+
+    if (stateParam === 'poor') {
+      purseGold = 30;
+    } else if (stateParam === 'upgraded') {
+      purseGold = 30;
+      WEAPONS.sword.upgraded = true;
+    } else if (goldParam) {
+      purseGold = Math.max(0, parseInt(goldParam, 10) || 0);
+    }
+
+    // DOM Elements
+    const purseDisplay = document.getElementById('purseDisplay');
+    const footerPurseVal = document.getElementById('footerPurseVal');
+    const needMoreBox = document.getElementById('needMoreBox');
+    const btnUpgrade = document.getElementById('btnUpgrade');
+    const btnUpgradeText = document.getElementById('btnUpgradeText');
+    const activeWeaponName = document.getElementById('activeWeaponName');
+    const activeWeaponSub = document.getElementById('activeWeaponSub');
+    const activeTierBadge = document.getElementById('activeTierBadge');
+    const baseSpriteImg = document.getElementById('baseSpriteImg');
+    const upgradedSpriteImg = document.getElementById('upgradedSpriteImg');
+    const heavyTechName = document.getElementById('heavyTechName');
+    const heavyTechMeta = document.getElementById('heavyTechMeta');
+    const heavyTechDesc = document.getElementById('heavyTechDesc');
+    const toastBox = document.getElementById('toastBox');
+    const btnLeave = document.getElementById('btnLeave');
+
+    function renderUI() {
+      const active = WEAPONS[selectedWeaponId];
+      btnUpgrade.disabled = active.upgraded || purseGold < active.price;
+      needMoreBox.querySelector('.val').textContent = 'Need ' + Math.max(0, active.price - purseGold) + 'G more';
+
+      // Update Header & Purse
+      purseDisplay.textContent = purseGold;
+      footerPurseVal.textContent = purseGold + ' G';
+
+      // Update Inspector Headline
+      activeWeaponName.textContent = active.name.toUpperCase();
+      activeWeaponSub.textContent = active.sub;
+
+      // Update Sprites
+      baseSpriteImg.src = active.baseSprite;
+      upgradedSpriteImg.src = active.upgradedSprite;
+
+      // Update Heavy Technique Text
+      heavyTechName.textContent = active.heavyName;
+      heavyTechMeta.textContent = active.heavyMeta;
+      heavyTechDesc.innerHTML = active.heavyDesc;
+
+      // Update Weapon Selector Cards
+      Object.keys(WEAPONS).forEach(key => {
+        const item = WEAPONS[key];
+        const card = document.querySelector(`.weapon-item-card[data-id="${key}"]`);
+        const badge = document.getElementById(`badge${key === 'throwing_knife' ? 'ThrowingKnife' : key.charAt(0).toUpperCase() + key.slice(1)}`);
+        const thumb = document.getElementById(`itemThumb${key === 'throwing_knife' ? 'ThrowingKnife' : key.charAt(0).toUpperCase() + key.slice(1)}`);
+        const priceTag = document.getElementById(`priceTag${key === 'throwing_knife' ? 'ThrowingKnife' : key.charAt(0).toUpperCase() + key.slice(1)}`);
+
+        if (card) {
+          if (key === selectedWeaponId) {
+            card.classList.add('selected');
+          } else {
+            card.classList.remove('selected');
+          }
+        }
+
+        if (item.upgraded) {
+          thumb.src = item.upgradedSprite;
+          badge.className = 'status-badge upgraded';
+          badge.textContent = '★ UPGRADED';
+          priceTag.textContent = 'DONE';
+          priceTag.style.color = '#ffd857';
+        } else {
+          thumb.src = item.baseSprite;
+          if (purseGold < item.price) {
+            badge.className = 'status-badge ready';
+            badge.textContent = 'NEED ' + (item.price - purseGold) + 'G';
+            badge.style.color = '#e08375';
+            badge.style.borderColor = '#753229';
+            badge.style.background = '#321915';
+          } else {
+            badge.className = 'status-badge ready';
+            badge.textContent = 'READY';
+            badge.style.color = '#6edb7d';
+            badge.style.borderColor = '#2e6935';
+            badge.style.background = '#1c3d20';
+          }
+          priceTag.textContent = item.price + ' G';
+          priceTag.style.color = '#f5c85d';
+        }
+      });
+
+      // Update Action Button & Tier Badge
+      if (active.upgraded) {
+        activeTierBadge.className = 'tier-badge is-upgraded';
+        activeTierBadge.textContent = 'UPGRADED • K UNLOCKED';
+        btnUpgrade.className = 'btn-action upgraded';
+        btnUpgradeText.textContent = '✓ ALREADY UPGRADED';
+        needMoreBox.style.display = 'none';
+      } else if (purseGold < active.price) {
+        activeTierBadge.className = 'tier-badge';
+        activeTierBadge.textContent = 'BASE • NOT ENOUGH GOLD';
+        btnUpgrade.className = 'btn-action insufficient';
+        btnUpgradeText.textContent = 'NEED ' + (active.price - purseGold) + ' MORE GOLD';
+        needMoreBox.style.display = 'flex';
+      } else {
+        activeTierBadge.className = 'tier-badge';
+        activeTierBadge.textContent = 'BASE • READY TO UPGRADE';
+        btnUpgrade.className = 'btn-action ready';
+        btnUpgradeText.textContent = 'UPGRADE WEAPON — 60 G';
+        needMoreBox.style.display = 'none';
+      }
+    }
+
+    function triggerUpgrade() {
+      const active = WEAPONS[selectedWeaponId];
+      if(document.querySelector('.modal-frame').style.display === 'none') return;
+      if (active.upgraded) return;
+      if (purseGold < active.price) return;
+
+      // Apply Upgrade
+      purseGold -= active.price;
+      active.upgraded = true;
+
+      // Show Toast Notification
+      toastBox.innerHTML = `★ <strong>${active.name.toUpperCase()}</strong> UPGRADED! [K] TECHNIQUE UNLOCKED.`;
+      toastBox.classList.add('show');
+      setTimeout(() => {
+        toastBox.classList.remove('show');
+      }, 2500);
+
+      renderUI();
+    }
+
+    function selectWeapon(id) {
+      if (!WEAPONS[id]) return;
+      selectedWeaponId = id;
+      renderUI();
+    }
+
+    function resetDemo() {
+      purseGold = 90;
+      Object.keys(WEAPONS).forEach(k => WEAPONS[k].upgraded = false);
+      selectedWeaponId = 'sword';
+      renderUI();
+    }
+
+    // Event Listeners
+    document.querySelectorAll('.weapon-item-card').forEach(card => {
+      card.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); selectWeapon(card.getAttribute('data-id')); } });
+      card.addEventListener('click', () => {
+        selectWeapon(card.getAttribute('data-id'));
+      });
+    });
+
+    btnUpgrade.addEventListener('click', triggerUpgrade);
+
+    btnLeave.addEventListener('click', () => {
+      document.querySelector('.modal-frame').style.display = 'none'; let closedPanel = document.getElementById('closedPanel'); if(!closedPanel) { closedPanel = document.createElement('section'); closedPanel.id='closedPanel'; closedPanel.style='text-align:center;color:#e8d7b8'; closedPanel.innerHTML='<h2>Ready for the dungeon.</h2><p>Your upgrades are ready.</p><button class="btn-leave" style="margin:20px auto">Return to merchant</button>'; closedPanel.querySelector('button').onclick=()=>{document.querySelector('.modal-frame').style.display='flex'; closedPanel.style.display='none';}; document.body.appendChild(closedPanel); } closedPanel.style.display='block';
+    });
+
+    // Keyboard Navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '1') selectWeapon('sword');
+      if (e.key === '2') selectWeapon('knife');
+      if (e.key === '3') selectWeapon('throwing_knife');
+      if (['1','2','3','u','U','Escape','j','J','k','K'].includes(e.key)) { e.preventDefault(); e.stopPropagation(); }
+      if ((e.key === 'u' || e.key === 'U') && !e.repeat) triggerUpgrade();
+      if (e.key === 'r' || e.key === 'R') resetDemo();
+      if (e.key === 'Escape') btnLeave.click();
+    });
+
+    // Initial render
+    renderUI();
+  </script>
+</body>
+</html>
