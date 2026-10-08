@@ -96,7 +96,10 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">RoomAssets</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements com.badlogic.gdx.utils.Disposable</span></div>
-<div class="block">Loads the terrain, fixtures, audio, and enemy assets used by a room.</div>
+<div class="block">Loads the terrain, fixtures, audio, and enemy assets used by a room.
+
+ <p>Music provenance and the credit the boss theme's licence requires are recorded in <code>
+ assets/licenses/AUDIO-ATTRIBUTION.md</code>.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -135,6 +138,14 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadAll()" class="member-name-link">loadAll</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#playMusicFor(java.lang.String,boolean)" class="member-name-link">playMusicFor</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;dungeonId,
+ boolean&nbsp;cleared)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Switches to the track the player's situation calls for: the calm hub track whenever there is
+ nothing left to fight, and otherwise whatever the dungeon fights to, which is the boss theme in
+ the final dungeon and the ordinary fight theme everywhere else.</div>
+</div>
 </div>
 </div>
 </div>
@@ -170,6 +181,24 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <section class="detail" id="loadAll()">
 <h3>loadAll</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">loadAll</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="playMusicFor(java.lang.String,boolean)">
+<h3>playMusicFor</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">playMusicFor</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;dungeonId,
+ boolean&nbsp;cleared)</span></div>
+<div class="block">Switches to the track the player's situation calls for: the calm hub track whenever there is
+ nothing left to fight, and otherwise whatever the dungeon fights to, which is the boss theme in
+ the final dungeon and the ordinary fight theme everywhere else.
+
+ <p>Does nothing when the wanted track is already playing, so crossing rooms of one dungeon, or
+ re-entering a room already cleared, never restarts it from the top.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>dungeonId</code> - the dungeon the room belongs to, or null for the hub</dd>
+<dd><code>cleared</code> - whether the room has no enemies left</dd>
+</dl>
 </section>
 </li>
 <li>

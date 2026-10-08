@@ -175,39 +175,53 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the wait until the ability may start again, including its active period, in ms.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRemainingMs(java.lang.Class)" class="member-name-link">getRemainingMs</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;&nbsp;type)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a><wbr>&lt;<a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRegisteredAbilities()" class="member-name-link">getRegisteredAbilities</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Every ability this player has, in registration order, so a menu can list them and read their
+ names and cooldowns rather than hardcoding which abilities exist.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRemainingMs(java.lang.Class)" class="member-name-link">getRemainingMs</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;&nbsp;type)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns how much longer the ability runs, in milliseconds.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isActive(java.lang.Class)" class="member-name-link">isActive</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;&nbsp;type)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isActive(java.lang.Class)" class="member-name-link">isActive</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;&nbsp;type)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns whether the ability is running, refreshing expiry first.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#register(com.csse3200.game.components.player.PlayerAbility)" class="member-name-link">register</a><wbr>(<a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&nbsp;ability)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isUnlocked(java.lang.Class)" class="member-name-link">isUnlocked</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;&nbsp;type)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lock(java.lang.Class)" class="member-name-link">lock</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;&nbsp;type)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Adds an ability to this player, before or after create.</div>
+<div class="block">Takes an ability away, ending it first if it is running.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stop(java.lang.Class)" class="member-name-link">stop</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;&nbsp;type)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#register(com.csse3200.game.components.player.PlayerAbility)" class="member-name-link">register</a><wbr>(<a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&nbsp;ability)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Ends an ability early without touching its cooldown.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tryActivate(java.lang.Class)" class="member-name-link">tryActivate</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;&nbsp;type)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Starts a cast ability only when alive, unlocked and ready; a rejected cast changes nothing.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unlock(java.lang.Class)" class="member-name-link">unlock</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;&nbsp;type)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Unlocks an ability once; repeated calls never start it or reset its cooldown.</div>
+<div class="block">Adds an ability to this player, before or after create.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stop(java.lang.Class)" class="member-name-link">stop</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;&nbsp;type)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Ends an ability early without touching its cooldown.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tryActivate(java.lang.Class)" class="member-name-link">tryActivate</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;&nbsp;type)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Starts a cast ability only when alive, unlocked and ready; a rejected cast changes nothing.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unlock(java.lang.Class)" class="member-name-link">unlock</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;&nbsp;type)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Unlocks an ability once; repeated calls never start it or reset its cooldown.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Nothing to do while alive: the controller expires effects itself.</div>
 </div>
 </div>
@@ -362,6 +376,44 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>whether the ability is now unlocked, which is false when the player is not alive</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="lock(java.lang.Class)">
+<h3>lock</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">lock</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;&nbsp;type)</span></div>
+<div class="block">Takes an ability away, ending it first if it is running. Unlike <a href="#unlock(java.lang.Class)"><code>unlock(java.lang.Class&lt;? extends com.csse3200.game.components.player.PlayerAbility&gt;)</code></a>, this works
+ whatever state the player is in: revoking is the safe direction, and something that hands out
+ abilities has to be able to revoke them before the player is fully set up.
+
+ <p>The cooldown is left alone, so locking and unlocking an ability does not make it castable
+ any sooner than it already was.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>whether the ability is registered, and so is now locked</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="isUnlocked(java.lang.Class)">
+<h3>isUnlocked</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isUnlocked</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;&nbsp;type)</span></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>whether the ability is registered and the player may currently start it</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getRegisteredAbilities()">
+<h3>getRegisteredAbilities</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a>&gt;</span>&nbsp;<span class="element-name">getRegisteredAbilities</span>()</div>
+<div class="block">Every ability this player has, in registration order, so a menu can list them and read their
+ names and cooldowns rather than hardcoding which abilities exist.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>read-only view, which changes as abilities are registered</dd>
 </dl>
 </section>
 </li>

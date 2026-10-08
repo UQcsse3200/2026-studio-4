@@ -122,6 +122,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#DUNGEON5_TILESET" class="member-name-link">DUNGEON5_TILESET</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#ROOM_ENTERED" class="member-name-link">ROOM_ENTERED</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Triggered on the player with the room id, its dungeon id (null for the hub) and whether the
+ room has no enemies left.</div>
+</div>
 </div>
 </section>
 </li>
@@ -210,6 +216,22 @@ loadScripts(document, 'script');</script>
 <section class="field-details" id="field-detail">
 <h2>Field Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="ROOM_ENTERED">
+<h3>ROOM_ENTERED</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">ROOM_ENTERED</span></div>
+<div class="block">Triggered on the player with the room id, its dungeon id (null for the hub) and whether the
+ room has no enemies left. Also re-fired when the room is cleared, so the state is never stale.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.components.rooms.RoomManager.ROOM_ENTERED">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
 <li>
 <section class="detail" id="DEFAULT_TILESET">
 <h3>DEFAULT_TILESET</h3>
