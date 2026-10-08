@@ -20,6 +20,7 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.files.AudioLevels;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.rendering.RenderService;
@@ -71,6 +72,7 @@ public class WinScreen extends ScreenAdapter {
 
     winMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/win_music.mp3"));
     winMusic.setLooping(true);
+    winMusic.setVolume(AudioLevels.music());
     winMusic.play();
 
     renderer = RenderFactory.createRenderer();
@@ -260,6 +262,7 @@ public class WinScreen extends ScreenAdapter {
   /** Advances the GIF animation and renders the victory screen. */
   @Override
   public void render(float delta) {
+    winMusic.setVolume(AudioLevels.music());
     frameElapsed += delta;
     while (frameElapsed >= frames.get(currentFrame).duration) {
       frameElapsed -= frames.get(currentFrame).duration;
