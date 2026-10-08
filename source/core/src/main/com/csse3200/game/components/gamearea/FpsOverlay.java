@@ -3,11 +3,13 @@ package com.csse3200.game.components.gamearea;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.ui.UIComponent;
 
 /** Small FPS readout. Hidden unless Settings → Show FPS is on. */
 public class FpsOverlay extends UIComponent {
+  private Table table;
   private Label label;
   private boolean showReadout;
 
@@ -18,9 +20,12 @@ public class FpsOverlay extends UIComponent {
     if (!showReadout || stage == null) {
       return;
     }
-    label = new Label("FPS 0", skin, "small");
-    label.setPosition(16f, stage.getViewport().getScreenHeight() - 28f);
-    stage.addActor(label);
+    label = new Label("FPS 0", skin, "caption");
+    table = new Table();
+    table.setFillParent(true);
+    table.top().right().padTop(64f).padRight(16f);
+    table.add(label);
+    stage.addActor(table);
   }
 
   @Override
@@ -38,8 +43,8 @@ public class FpsOverlay extends UIComponent {
 
   @Override
   public void dispose() {
-    if (label != null) {
-      label.remove();
+    if (table != null) {
+      table.remove();
     }
     super.dispose();
   }
