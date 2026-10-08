@@ -16,13 +16,18 @@ public class MainGameExitDisplay extends UIComponent {
   private final Runnable saveAndExit;
   private final Runnable deleteSaveAndExit;
   private final Runnable stopMovement;
+  private final Runnable openSettings;
   private Table table;
 
   public MainGameExitDisplay(
-      Runnable saveAndExit, Runnable deleteSaveAndExit, Runnable stopMovement) {
+      Runnable saveAndExit,
+      Runnable deleteSaveAndExit,
+      Runnable stopMovement,
+      Runnable openSettings) {
     this.saveAndExit = saveAndExit;
     this.deleteSaveAndExit = deleteSaveAndExit;
     this.stopMovement = stopMovement;
+    this.openSettings = openSettings;
   }
 
   @Override
@@ -36,7 +41,17 @@ public class MainGameExitDisplay extends UIComponent {
     table.top().right();
     table.setFillParent(true);
 
+    TextButton settingsBtn = new TextButton("Settings", skin);
     TextButton mainMenuBtn = new TextButton("Exit", skin);
+
+    settingsBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            logger.debug("Settings button clicked");
+            openSettings.run();
+          }
+        });
 
     mainMenuBtn.addListener(
         new ChangeListener() {
@@ -47,6 +62,7 @@ public class MainGameExitDisplay extends UIComponent {
           }
         });
 
+    table.add(settingsBtn).padTop(10f).padRight(8f);
     table.add(mainMenuBtn).padTop(10f).padRight(10f);
 
     stage.addActor(table);

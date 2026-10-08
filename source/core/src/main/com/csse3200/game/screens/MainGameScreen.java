@@ -16,6 +16,7 @@ import com.csse3200.game.components.rooms.RoomAssets;
 import com.csse3200.game.components.rooms.RoomCommand;
 import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.components.rooms.configs.WorldConfig;
+import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.NarrativeFactory;
@@ -69,6 +70,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final RunTimer runTimer;
   private boolean winScreenRequested;
   private boolean saveOnDispose = true;
+  private boolean settingsOpen;
 
   public MainGameScreen(GdxGame game) {
     this(game, null, 1);
@@ -148,12 +150,14 @@ public class MainGameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    physicsEngine.update();
+    if (!settingsOpen) {
+      physicsEngine.update();
+      roomManager.update();
+      runTimer.update();
+    }
     ServiceLocator.getEntityService().update();
-    roomManager.update();
     roomAssets.applyMusicVolume();
     renderer.render();
-    runTimer.update();
   }
 
   @Override
@@ -266,6 +270,8 @@ public class MainGameScreen extends ScreenAdapter {
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
     TimerDisplay timerDisplay = new TimerDisplay();
 
+    SettingsMenuDisplay settingsMenu =
+        new SettingsMenuDisplay(this.game, () -> settingsOpen = false, true);
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
@@ -274,13 +280,11 @@ public class MainGameScreen extends ScreenAdapter {
             new MainGameExitDisplay(
                 this::saveAndExit,
                 this::deleteSaveAndExit,
+                this::stopPlayerMovement,
                 () -> {
-                  player.getEvents().trigger("walkStop");
-                  player.getEvents().trigger("resetMovementInput");
-                  PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
-                  if (physics != null && physics.getBody() != null) {
-                    physics.getBody().setLinearVelocity(0f, 0f);
-                  }
+                  stopPlayerMovement();
+                  settingsOpen = true;
+                  settingsMenu.open();
                 }))
         .addComponent(terminal)
         .addComponent(inputComponent)
@@ -291,7 +295,8 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(inventoryDisplay)
         .addComponent(hotbarDisplay)
         .addComponent(consumableHotbarDisplay)
-        .addComponent(inventoryActions);
+        .addComponent(inventoryActions)
+        .addComponent(settingsMenu);
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     // The HUD keeps working while a dialogue or cutscene has the world frozen
     ui.setUpdatesWhilePaused(true);
@@ -301,6 +306,15 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.getEntityService()
         .register(NarrativeFactory.createNarrative(player, terminal::isOpen));
     UiScale.applyToStage(stage, UserSettings.get().uiScale);
+  }
+
+  private void stopPlayerMovement() {
+    player.getEvents().trigger("walkStop");
+    player.getEvents().trigger("resetMovementInput");
+    PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
+    if (physics != null && physics.getBody() != null) {
+      physics.getBody().setLinearVelocity(0f, 0f);
+    }
   }
 
   /* Schedule the death screen to be shown */

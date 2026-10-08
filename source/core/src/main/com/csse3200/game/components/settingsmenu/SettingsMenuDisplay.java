@@ -36,6 +36,9 @@ import org.slf4j.LoggerFactory;
 public class SettingsMenuDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(SettingsMenuDisplay.class);
   private final GdxGame game;
+  private final Runnable onClose;
+  private final boolean scaleStage;
+  private boolean menuOpen;
 
   private Table rootTable;
   private TextField fpsText;
@@ -54,8 +57,33 @@ public class SettingsMenuDisplay extends UIComponent {
   private Label resetStatusLabel;
 
   public SettingsMenuDisplay(GdxGame game) {
+    this(game, null, false);
+  }
+
+  /**
+   * @param onClose runs instead of leaving for the main menu. Used by the in-game overlay.
+   * @param scaleStage when true, the slider scales the whole stage so the in-game HUD follows it
+   */
+  public SettingsMenuDisplay(GdxGame game, Runnable onClose, boolean scaleStage) {
     super();
     this.game = game;
+    this.onClose = onClose;
+    this.scaleStage = scaleStage;
+    this.menuOpen = onClose == null;
+  }
+
+  /** Shows the menu over the current screen and pauses the world. */
+  public void open() {
+    loadFromSavedSettings();
+    menuOpen = true;
+    if (rootTable != null) {
+      rootTable.setVisible(true);
+      rootTable.toFront();
+    }
+    ServiceLocator.getEntityService().setFrozen(this, true);
+    if (uiScaleSlider != null) {
+      applyUiScale(uiScaleSlider.getValue());
+    }
   }
 
   @Override
@@ -86,7 +114,11 @@ public class SettingsMenuDisplay extends UIComponent {
     rootTable.add(menuBtns).fillX();
 
     stage.addActor(rootTable);
-    applyUiScale(uiScaleSlider.getValue());
+    if (menuOpen) {
+      applyUiScale(uiScaleSlider.getValue());
+    } else {
+      rootTable.setVisible(false);
+    }
   }
 
   private Table makeSettingsTable() {
@@ -270,7 +302,29 @@ public class SettingsMenuDisplay extends UIComponent {
   }
 
   private void applyUiScale(float scale) {
+    if (scaleStage) {
+      UiScale.applyToStage(stage, scale);
+      return;
+    }
     UiScale.apply(rootTable, scale);
+  }
+
+  private void loadFromSavedSettings() {
+    if (fpsText == null) {
+      return;
+    }
+    UserSettings.Settings settings = UserSettings.get();
+    fpsText.setText(Integer.toString(settings.fps));
+    fullScreenCheck.setChecked(settings.fullscreen);
+    vsyncCheck.setChecked(settings.vsync);
+    uiScaleSlider.setValue(settings.uiScale);
+    displayModeSelect.setSelected(getActiveMode(displayModeSelect.getItems()));
+    windowSizeSelect.setSelected(WindowSize.matching(settings.windowWidth, settings.windowHeight));
+    showTimerCheck.setChecked(settings.showTimer);
+    showFpsCheck.setChecked(settings.showFps);
+    musicSlider.setValue(settings.musicVolume);
+    soundSlider.setValue(settings.soundVolume);
+    muteUnfocusedCheck.setChecked(settings.muteUnfocused);
   }
 
   private void refreshProgressLabel() {
@@ -284,6 +338,18 @@ public class SettingsMenuDisplay extends UIComponent {
   }
 
   private void exitMenu() {
+    if (onClose != null) {
+      menuOpen = false;
+      if (scaleStage) {
+        UiScale.applyToStage(stage, UserSettings.get().uiScale);
+      }
+      if (rootTable != null) {
+        rootTable.setVisible(false);
+      }
+      ServiceLocator.getEntityService().setFrozen(this, false);
+      onClose.run();
+      return;
+    }
     game.setScreen(ScreenType.MAIN_MENU);
   }
 
@@ -302,7 +368,12 @@ public class SettingsMenuDisplay extends UIComponent {
 
   @Override
   public void update() {
-    stage.act(ServiceLocator.getTimeSource().getDeltaTime());
+    if (!menuOpen) {
+      return;
+    }
+    if (!scaleStage) {
+      stage.act(ServiceLocator.getTimeSource().getDeltaTime());
+    }
     if (uiScaleSlider != null) {
       applyUiScale(uiScaleSlider.getValue());
     }
@@ -310,6 +381,9 @@ public class SettingsMenuDisplay extends UIComponent {
 
   @Override
   public void dispose() {
+    if (ServiceLocator.getEntityService() != null) {
+      ServiceLocator.getEntityService().setFrozen(this, false);
+    }
     rootTable.clear();
     super.dispose();
   }

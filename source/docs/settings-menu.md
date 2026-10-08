@@ -1,8 +1,8 @@
 # Settings menu
 
-Players open Settings from the main menu, change display and gameplay options, then press Apply or Exit. Apply writes `settings.json` through `UserSettings` and applies the display options immediately. Exit returns to the main menu and drops unsaved edits.
+Players open Settings from the main menu, or from the Settings button beside Exit during a run. Apply writes `settings.json` through `UserSettings` and applies the display options immediately. Exit on the main-menu page returns to the main menu. Exit during a run closes the menu and returns to the same run. Either Exit drops unsaved edits. The run pauses while the in-game menu is open.
 
-The menu has Display, Audio, Gameplay and Run history sections. Display includes the fullscreen resolution, the window size used when fullscreen is off, and a UI scale. Dragging UI scale resizes this menu immediately. Apply stores it and the in-game HUD uses it on the next run. Gameplay controls the in-run timer and a small FPS counter in the bottom-right corner. Audio stores music and effects volume, and can mute both while the window is in the background. Run history lists last run and best run on this settings page, and can reset those times. Achievements, online play and the win screen are not part of this menu.
+The menu has Display, Audio, Gameplay and Run history sections. Display includes the fullscreen resolution, the window size used when fullscreen is off, and a UI scale. Dragging UI scale resizes this menu immediately. During a run it also resizes the HUD while the menu is open. Apply stores it. Gameplay controls the in-run timer and a small FPS counter in the bottom-right corner. Audio stores music and effects volume, and can mute both while the window is in the background. Run history lists last run and best run on this settings page, and can reset those times. Achievements, online play and the win screen are not part of this menu.
 
 ## Class diagram
 
