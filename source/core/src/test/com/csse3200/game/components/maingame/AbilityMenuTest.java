@@ -4,7 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
@@ -151,6 +156,46 @@ class AbilityMenuTest {
     menu.close();
     assertFalse(actions.areControlsLocked());
     assertEquals(List.of("opened", "closed"), events);
+  }
+
+  @Test
+  void shouldStopThePlayerWalkingWhenItOpens() {
+    List<String> movement = new ArrayList<>();
+    player.getEvents().addListener("walkStop", () -> movement.add("walkStop"));
+    player.getEvents().addListener("resetMovementInput", () -> movement.add("resetMovementInput"));
+    player.getEvents().trigger("walk", new Vector2(0f, 1f));
+
+    assertTrue(menu.open());
+
+    assertEquals(List.of("walkStop", "resetMovementInput"), movement);
+  }
+
+  @Test
+  void shouldNotResetMovementWhenAlreadyOpen() {
+    assertTrue(menu.open());
+    List<String> movement = new ArrayList<>();
+    player.getEvents().addListener("walkStop", () -> movement.add("walkStop"));
+
+    assertFalse(menu.open());
+
+    assertTrue(movement.isEmpty(), "a refused open must not touch the player's movement");
+  }
+
+  @Test
+  void shouldNotKeepWalkingAfterClosingIfTheKeyWasReleasedBehindIt() {
+    // Issue #266: hold W, open the menu, let go of W while it is open, then close it.
+    Body body = player.getComponent(PhysicsComponent.class).getBody();
+    player.getEvents().trigger("walk", new Vector2(0f, 1f));
+    actions.update();
+    verify(body).applyLinearImpulse(any(), any(), anyBoolean());
+
+    assertTrue(menu.open());
+    // The menu swallows the release of W, so no walkStop arrives from the keyboard here.
+    menu.close();
+    clearInvocations(body);
+    actions.update();
+
+    verify(body, never()).applyLinearImpulse(any(), any(), anyBoolean());
   }
 
   @Test
