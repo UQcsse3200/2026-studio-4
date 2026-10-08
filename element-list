@@ -21,6 +21,7 @@ com.csse3200.game.components.player.abilities
 com.csse3200.game.components.rooms
 com.csse3200.game.components.rooms.configs
 com.csse3200.game.components.settingsmenu
+com.csse3200.game.components.shop
 com.csse3200.game.components.spells
 com.csse3200.game.components.spells.targeting
 com.csse3200.game.components.statuseffects
@@ -44,6 +45,7 @@ com.csse3200.game.physics.raycast
 com.csse3200.game.rendering
 com.csse3200.game.screens
 com.csse3200.game.services
+com.csse3200.game.shop
 com.csse3200.game.ui
 com.csse3200.game.ui.minimap
 com.csse3200.game.ui.terminal

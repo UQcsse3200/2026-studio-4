@@ -198,6 +198,26 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toggleDisplay()" class="member-name-link">toggleDisplay</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ConsumablePurchaseResult.html" title="enum class in com.csse3200.game.components.player">ConsumablePurchaseResult</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tryPurchaseConsumable(java.lang.String,int)" class="member-name-link">tryPurchaseConsumable</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId,
+ int&nbsp;goldPrice)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Buys one existing consumable.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ConsumablePurchaseResult.html" title="enum class in com.csse3200.game.components.player">ConsumablePurchaseResult</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tryPurchaseConsumable(java.lang.String,int,int)" class="member-name-link">tryPurchaseConsumable</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId,
+ int&nbsp;goldPrice,
+ int&nbsp;quantity)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Commits a paid consumable reward and its quantity before publishing inventory events.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="WeaponUpgradePurchaseResult.html" title="enum class in com.csse3200.game.components.player">WeaponUpgradePurchaseResult</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tryPurchaseWeaponUpgrade(com.csse3200.game.components.weapons.WeaponUpgradeComponent,java.lang.Class,int)" class="member-name-link">tryPurchaseWeaponUpgrade</a><wbr>(<a href="../weapons/WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeComponent</a>&nbsp;upgrades,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="../weapons/WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a>&gt;&nbsp;weapon,
+ int&nbsp;goldPrice)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Buys a weapon's existing upgrade once.</div>
+</div>
 </div>
 </div>
 </div>
@@ -249,6 +269,36 @@ loadScripts(document, 'script');</script>
 <h3>setGold</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setGold</span><wbr><span class="parameters">(int&nbsp;gold)</span></div>
 <div class="block">Sets the player's Gold, with a minimum value of zero.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="tryPurchaseConsumable(java.lang.String,int)">
+<h3>tryPurchaseConsumable</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ConsumablePurchaseResult.html" title="enum class in com.csse3200.game.components.player">ConsumablePurchaseResult</a></span>&nbsp;<span class="element-name">tryPurchaseConsumable</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId,
+ int&nbsp;goldPrice)</span></div>
+<div class="block">Buys one existing consumable. All expected rejections happen before mutation; notifications are
+ published only after both the balance and quantity have been committed.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="tryPurchaseConsumable(java.lang.String,int,int)">
+<h3>tryPurchaseConsumable</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ConsumablePurchaseResult.html" title="enum class in com.csse3200.game.components.player">ConsumablePurchaseResult</a></span>&nbsp;<span class="element-name">tryPurchaseConsumable</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId,
+ int&nbsp;goldPrice,
+ int&nbsp;quantity)</span></div>
+<div class="block">Commits a paid consumable reward and its quantity before publishing inventory events.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="tryPurchaseWeaponUpgrade(com.csse3200.game.components.weapons.WeaponUpgradeComponent,java.lang.Class,int)">
+<h3>tryPurchaseWeaponUpgrade</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="WeaponUpgradePurchaseResult.html" title="enum class in com.csse3200.game.components.player">WeaponUpgradePurchaseResult</a></span>&nbsp;<span class="element-name">tryPurchaseWeaponUpgrade</span><wbr><span class="parameters">(<a href="../weapons/WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeComponent</a>&nbsp;upgrades,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="../weapons/WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a>&gt;&nbsp;weapon,
+ int&nbsp;goldPrice)</span></div>
+<div class="block">Buys a weapon's existing upgrade once. Payment is committed before the upgrade component
+ publishes its event, so both upgrade and gold observers see the completed transaction.
+ Unsupported upgrades restore the balance without publishing a gold event. As with consumable
+ purchases, arbitrary exceptions from event subscribers are outside the rejection guarantee.</div>
 </section>
 </li>
 <li>
