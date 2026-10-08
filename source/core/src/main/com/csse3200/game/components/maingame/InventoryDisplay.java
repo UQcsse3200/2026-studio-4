@@ -468,33 +468,8 @@ public class InventoryDisplay extends UIComponent {
     Table grid = new Table();
 
     for (int i = 0; i < totalSlots; i++) {
-
-      Stack slotStack = new Stack();
-      ImageButton slotBackground = new ImageButton(inventory, "inventory-box");
-      slotBackground.setUserObject((equipped ? "active:" : "inactive:") + i);
-      slotStack.setName(
-          (currentPage == Page.CHARMS ? "charm" : "consumable")
-              + (equipped ? "-equipped-" : "-stored-")
-              + i);
-      slotStack.add(slotBackground);
-      (equipped ? equippedSlots : storedSlots).add(slotStack);
-      final int slotIndex = i;
-      slotStack.addListener(
-          new InputListener() {
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-              if (pointer != -1) return;
-              selectedEquipped = equipped;
-              selectedIndex = slotIndex;
-              updateSelection();
-            }
-          });
-      if (enableDrag) registerDropTarget(slotStack);
-
-      if (i < items.size() && items.get(i) != null) {
-        addSlotItem(slotStack, slotBackground, items.get(i), enableDrag, equipped, i);
-      }
-
+      Item item = i < items.size() ? items.get(i) : null;
+      Stack slotStack = createItemSlot(i, item, enableDrag, equipped);
       grid.add(slotStack).size(slotSize).pad(3);
       // Break to a new row after reaching the column limit
       if ((i + 1) % columns == 0) {
@@ -503,6 +478,33 @@ public class InventoryDisplay extends UIComponent {
     }
 
     return grid;
+  }
+
+  private Stack createItemSlot(int index, Item item, boolean enableDrag, boolean equipped) {
+    Stack slotStack = new Stack();
+    ImageButton slotBackground = new ImageButton(inventory, "inventory-box");
+    slotBackground.setUserObject((equipped ? "active:" : "inactive:") + index);
+    slotStack.setName(
+        (currentPage == Page.CHARMS ? "charm" : "consumable")
+            + (equipped ? "-equipped-" : "-stored-")
+            + index);
+    slotStack.add(slotBackground);
+    (equipped ? equippedSlots : storedSlots).add(slotStack);
+    slotStack.addListener(
+        new InputListener() {
+          @Override
+          public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+            if (pointer != -1) return;
+            selectedEquipped = equipped;
+            selectedIndex = index;
+            updateSelection();
+          }
+        });
+    if (enableDrag) registerDropTarget(slotStack);
+    if (item != null) {
+      addSlotItem(slotStack, slotBackground, item, enableDrag, equipped, index);
+    }
+    return slotStack;
   }
 
   private void addSlotItem(

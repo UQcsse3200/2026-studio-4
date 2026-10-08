@@ -51,8 +51,9 @@ public class InventoryActions extends Component {
     InventoryComponent inventory = inventoryDisplay.getInventoryComponent();
     if (item instanceof Charm charm) {
       inventory.setCharmEquipped(charm, equipped);
-    } else if (item instanceof ConsumableItem) {
-      if (!setConsumableEquipped(inventory, item, fromIndex, equipped, toIndex)) return;
+    } else if (item instanceof ConsumableItem
+        && !setConsumableEquipped(inventory, item, fromIndex, equipped, toIndex)) {
+      return;
     }
     inventoryDisplay.refreshPage();
   }
