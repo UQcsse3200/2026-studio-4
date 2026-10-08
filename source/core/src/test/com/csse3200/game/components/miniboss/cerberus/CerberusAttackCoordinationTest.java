@@ -15,7 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.entities.factories.FloatingDemonProjectileFactory;
+import com.csse3200.game.entities.factories.CerberusProjectileFactory;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
@@ -46,7 +46,7 @@ class CerberusAttackCoordinationTest {
 
   private final Queue<Runnable> pending = new ArrayDeque<>();
   private final List<Entity> spawned = new ArrayList<>();
-  private MockedStatic<FloatingDemonProjectileFactory> projectileFactory;
+  private MockedStatic<CerberusProjectileFactory> projectileFactory;
 
   @BeforeEach
   void setUp() {
@@ -98,11 +98,11 @@ class CerberusAttackCoordinationTest {
     right.create();
     middle.create();
 
-    projectileFactory = mockStatic(FloatingDemonProjectileFactory.class);
+    projectileFactory = mockStatic(CerberusProjectileFactory.class);
     projectileFactory
         .when(
             () ->
-                FloatingDemonProjectileFactory.createHomingProjectile(
+                CerberusProjectileFactory.createHomingProjectile(
                     any(Vector2.class), same(player), eq(10)))
         .thenAnswer(invocation -> new Entity());
   }

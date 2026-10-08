@@ -29,6 +29,7 @@ import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.files.UserSettings.Settings;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.UiScale;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -106,8 +107,12 @@ class InGameSettingsTest {
     ui.setUpdatesWhilePaused(true);
     ServiceLocator.getEntityService().register(ui);
 
-    Actor menuRoot = stage.getActors().first();
+    Actor menuRoot = stage.getRoot().findActor(UiScale.SETTINGS_CONTENT);
+    Actor actions = stage.getRoot().findActor(UiScale.SETTINGS_ACTIONS);
+    assertNotNull(menuRoot);
+    assertNotNull(actions);
     assertFalse(menuRoot.isVisible());
+    assertFalse(actions.isVisible());
     assertFalse(ServiceLocator.getEntityService().isFrozen());
 
     ServiceLocator.getEntityService().update();
@@ -115,6 +120,7 @@ class InGameSettingsTest {
 
     menu.open();
     assertTrue(menuRoot.isVisible());
+    assertTrue(actions.isVisible());
     assertTrue(ServiceLocator.getEntityService().isFrozen());
     ServiceLocator.getEntityService().update();
     assertEquals(1, ticks[0]);
@@ -124,7 +130,9 @@ class InGameSettingsTest {
     float changed = Math.abs(originalSettings.uiScale - 1.4f) < 0.05f ? 0.6f : 1.4f;
     scaleSlider.setValue(changed);
     menu.update();
-    assertEquals(changed, stage.getRoot().getScaleX(), 0.001f);
+    assertEquals(1f, stage.getRoot().getScaleX(), 0.001f);
+    assertEquals(changed, menuRoot.getScaleX(), 0.001f);
+    assertEquals(1f, actions.getScaleX(), 0.001f);
 
     findButton(stage.getRoot(), "Apply").fire(new ChangeListener.ChangeEvent());
     assertEquals(changed, UserSettings.get().uiScale, 0.001f);

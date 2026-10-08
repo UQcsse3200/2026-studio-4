@@ -142,6 +142,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         return jotunn;
 
       // Egyptian
+      case SANDEYE:
+        return NPCFactory.createChaseEnemy(target, false, "images/sandeye.atlas");
       case BEETLE:
         Entity beetle = NPCFactory.createBombEnemy(target, "images/beetle.atlas", 2f);
         beetle.setScale(0.75f, 0.75f);
@@ -181,6 +183,10 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         }
         return snake;
       // Greek
+      case MINOTAUR:
+        Entity minotaur = NPCFactory.createChaseEnemy(target, false, "images/minotaur.atlas");
+        minotaur.setScale(1.5f, 1.5f);
+        return minotaur;
       case GOLEM:
         Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);
         golem.setScale(0.9F, 0.7F);
@@ -212,11 +218,14 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case CERBERUS:
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
+        Vector2 wallAnchor = cerberusTerrain.tileToWorldPosition(26, 50);
+        wallAnchor.add(cerberusTerrain.getTileSize() / 2f, 0f);
         return CerberusFactory.createCerberus(
             target,
             anchorPoint,
+            wallAnchor,
             head -> spawnAndTrackCerberusHead(head, spawn.type.name()),
-            "images/cerberus.atlas");
+            "images/cerberus/cerberus-modular.atlas");
       case DRAGON:
         return DragonFactory.createDragon(target, this::spawnEntity);
       case SLEIPNIR:

@@ -41,6 +41,7 @@ public class SettingsMenuDisplay extends UIComponent {
   private boolean menuOpen;
 
   private Table rootTable;
+  private Table actionsTable;
   private TextField fpsText;
   private CheckBox fullScreenCheck;
   private CheckBox vsyncCheck;
@@ -76,10 +77,7 @@ public class SettingsMenuDisplay extends UIComponent {
   public void open() {
     loadFromSavedSettings();
     menuOpen = true;
-    if (rootTable != null) {
-      rootTable.setVisible(true);
-      rootTable.toFront();
-    }
+    setMenuVisible(true);
     ServiceLocator.getEntityService().setFrozen(this, true);
     if (uiScaleSlider != null) {
       applyUiScale(uiScaleSlider.getValue());
@@ -103,21 +101,40 @@ public class SettingsMenuDisplay extends UIComponent {
     Table menuBtns = makeMenuBtns();
 
     rootTable = new Table();
+    rootTable.setName(UiScale.SETTINGS_CONTENT);
     rootTable.setFillParent(true);
+    rootTable.top();
 
     rootTable.add(title).expandX().top().padTop(16f);
     rootTable.row().padTop(6f);
     rootTable.add(hint).expandX().top();
     rootTable.row().padTop(12f);
     rootTable.add(pane).grow().pad(8f, 48f, 8f, 48f);
-    rootTable.row();
-    rootTable.add(menuBtns).fillX();
+
+    actionsTable = menuBtns;
+    actionsTable.setName(UiScale.SETTINGS_ACTIONS);
+    actionsTable.setFillParent(true);
+    actionsTable.bottom();
 
     stage.addActor(rootTable);
+    stage.addActor(actionsTable);
     if (menuOpen) {
       applyUiScale(uiScaleSlider.getValue());
+      actionsTable.toFront();
     } else {
-      rootTable.setVisible(false);
+      setMenuVisible(false);
+    }
+  }
+
+  private void setMenuVisible(boolean visible) {
+    if (rootTable != null) {
+      rootTable.setVisible(visible);
+    }
+    if (actionsTable != null) {
+      actionsTable.setVisible(visible);
+      if (visible) {
+        actionsTable.toFront();
+      }
     }
   }
 
@@ -145,7 +162,6 @@ public class SettingsMenuDisplay extends UIComponent {
     form.row("FPS cap", fpsText);
     form.row("Fullscreen", fullScreenCheck);
     form.row("VSync", vsyncCheck);
-    form.slider("UI scale", uiScaleSlider, "%.2fx");
     uiScaleSlider.addListener(
         new ChangeListener() {
           @Override
@@ -255,9 +271,21 @@ public class SettingsMenuDisplay extends UIComponent {
           }
         });
 
+    Label scaleValue = new Label(String.format("%.2fx", uiScaleSlider.getValue()), skin);
+    uiScaleSlider.addListener(
+        event -> {
+          scaleValue.setText(String.format("%.2fx", uiScaleSlider.getValue()));
+          return false;
+        });
+    Table scaleLine = new Table();
+    scaleLine.add(new Label("UI scale", skin)).padRight(12f);
+    scaleLine.add(uiScaleSlider).width(220f);
+    scaleLine.add(scaleValue).padLeft(12f).width(72f);
+
     Table table = new Table();
-    table.add(exitBtn).expandX().left().pad(0f, 15f, 15f, 0f);
-    table.add(applyBtn).expandX().right().pad(0f, 0f, 15f, 15f);
+    table.add(scaleLine).left().pad(0f, 15f, 15f, 0f);
+    table.add(exitBtn).expandX().right().pad(0f, 15f, 15f, 8f);
+    table.add(applyBtn).right().pad(0f, 0f, 15f, 15f);
     return table;
   }
 
@@ -343,9 +371,7 @@ public class SettingsMenuDisplay extends UIComponent {
       if (scaleStage) {
         UiScale.applyToStage(stage, UserSettings.get().uiScale);
       }
-      if (rootTable != null) {
-        rootTable.setVisible(false);
-      }
+      setMenuVisible(false);
       ServiceLocator.getEntityService().setFrozen(this, false);
       onClose.run();
       return;
@@ -384,7 +410,12 @@ public class SettingsMenuDisplay extends UIComponent {
     if (ServiceLocator.getEntityService() != null) {
       ServiceLocator.getEntityService().setFrozen(this, false);
     }
-    rootTable.clear();
+    if (rootTable != null) {
+      rootTable.clear();
+    }
+    if (actionsTable != null) {
+      actionsTable.clear();
+    }
     super.dispose();
   }
 }

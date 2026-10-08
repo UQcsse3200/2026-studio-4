@@ -1,0 +1,41 @@
+Tiny Creatures 16px — 200 Pixel Monsters — Asset License
+
+This is a NON-EXCLUSIVE license. The same assets are sold to other buyers.
+
+
+YOU MAY
+  - Use these assets in unlimited personal and commercial projects
+    (games, apps, videos, prototypes, game jams), with no royalty.
+  - Modify, recolor, resize, and re-animate the assets for your project.
+  - Use them in projects you sell or monetize.
+  - Use them in client work, provided the assets remain embedded in the
+    delivered project.
+
+YOU MAY NOT
+  - Resell, redistribute, sublicense, or give away the assets as assets,
+    modified or not — including in asset packs, templates, or bundles.
+  - Mint, sell, or distribute the assets as NFTs or other blockchain tokens.
+  - Use the assets as training data for machine learning models.
+  - Claim authorship of the assets themselves.
+  - Use the assets in projects that are illegal, or that depict hate speech
+    or sexual content involving minors.
+
+CREDIT
+  Not required, but appreciated:  Assets by blueberry — https://blueberry-assets.itch.io
+
+AI DISCLOSURE
+  These are AI-generated sprites. They are sold under this license, which
+  grants you the right to USE them. Because the copyright status of
+  AI-generated output varies by jurisdiction, no claim of exclusive
+  ownership is made.
+
+NO WARRANTY
+  The assets are provided "as is", without warranty of any kind. The author
+  is not liable for any damages arising from their use.
+
+REFUNDS
+  Digital goods. Contact sonjungwoo9@gmail.com if the files are broken or do not
+  match the store page, and it will be sorted out.
+
+Contact: sonjungwoo9@gmail.com
+Version 1.0

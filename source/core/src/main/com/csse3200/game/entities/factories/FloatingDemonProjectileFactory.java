@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.miniboss.cerberus.HomingProjectileMovementComponent;
 import com.csse3200.game.components.npc.ProjectileMovementComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -22,13 +21,6 @@ public class FloatingDemonProjectileFactory {
         position,
         damage,
         new ProjectileMovementComponent(direction, PROJECTILE_SPEED, PROJECTILE_RANGE));
-  }
-
-  public static Entity createHomingProjectile(Vector2 position, Entity target, int damage) {
-    return createProjectileWithMovement(
-        position,
-        damage,
-        new HomingProjectileMovementComponent(target, PROJECTILE_SPEED, PROJECTILE_RANGE));
   }
 
   private static Entity createProjectileWithMovement(
