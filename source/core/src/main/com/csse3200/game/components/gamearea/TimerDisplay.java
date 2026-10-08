@@ -89,6 +89,7 @@ public class TimerDisplay extends UIComponent {
       case "dungeonOne" -> "1";
       case "dungeonTwo" -> "2";
       case "dungeonThree" -> "3";
+      case "dungeonFour" -> "4";
       case "finalDungeon" -> "END";
       default -> "";
     };
