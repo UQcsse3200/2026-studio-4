@@ -92,9 +92,17 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Normal gameplay entry point: <code>ability invisibility|laststand</code>, with no cooldown bypass.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="Command.html" title="interface in com.csse3200.game.ui.terminal.commands">Command</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="BurnVialCommand.html" title="class in com.csse3200.game.ui.terminal.commands">BurnVialCommand</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">Terminal command that grants the player one Burn Vial and immediately consumes it.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="Command.html" title="interface in com.csse3200.game.ui.terminal.commands">Command</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">A generic command class.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="ConsumableCommand.html" title="class in com.csse3200.game.ui.terminal.commands">ConsumableCommand</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">Grants consumables through the existing inventory: <code>con &lt;item&gt; [quantity]</code>.</div>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="CutsceneCommand.html" title="class in com.csse3200.game.ui.terminal.commands">CutsceneCommand</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
@@ -110,26 +118,30 @@ loadScripts(document, 'script');</script>
 <div class="block">QA entry point for the dialogue system: <code>dialogue &lt;file&gt;</code> plays <code>
  configs/dialogues/&lt;file&gt;.json</code>, e.g.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="ShopCommand.html" title="class in com.csse3200.game.ui.terminal.commands">ShopCommand</a></div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="MagnetCommand.html" title="class in com.csse3200.game.ui.terminal.commands">MagnetCommand</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">Compatibility alias for <code>con magnet [quantity]</code>.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="ShopCommand.html" title="class in com.csse3200.game.ui.terminal.commands">ShopCommand</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Terminal command that opens or closes the shop session so QA does not need a Merchant NPC: <code>
  shop open</code> or <code>shop close</code>.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="SpellCommand.html" title="class in com.csse3200.game.ui.terminal.commands">SpellCommand</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SpellCommand.html" title="class in com.csse3200.game.ui.terminal.commands">SpellCommand</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Terminal command that casts one of the player's spells: <code>spell lightning|freeze</code>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="StatusEffectCommand.html" title="class in com.csse3200.game.ui.terminal.commands">StatusEffectCommand</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="StatusEffectCommand.html" title="class in com.csse3200.game.ui.terminal.commands">StatusEffectCommand</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Terminal command that applies one of the player's status effects.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="UpgradeCommand.html" title="class in com.csse3200.game.ui.terminal.commands">UpgradeCommand</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="UpgradeCommand.html" title="class in com.csse3200.game.ui.terminal.commands">UpgradeCommand</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Terminal command that applies or reverts a weapon upgrade so QA does not need a pickup or shop:
  <code>upgrade sword|knife|bow</code>, or <code>upgrade sword|knife|bow off</code> to revert.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="WeaponCommand.html" title="class in com.csse3200.game.ui.terminal.commands">WeaponCommand</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="WeaponCommand.html" title="class in com.csse3200.game.ui.terminal.commands">WeaponCommand</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Terminal command that equips one of the player's weapons: <code>weapon knife|sword|bow</code>.</div>
 </div>
 </div>

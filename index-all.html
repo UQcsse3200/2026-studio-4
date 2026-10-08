@@ -143,10 +143,16 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Casts invisibility or idempotently enables Last Stand; never directly triggers the passive.</div>
 </dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/BurnVialCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/BurnVialCommand.html" title="class in com.csse3200.game.ui.terminal.commands">BurnVialCommand</a></dt>
+<dd>
+<div class="block">Grants one Burn Vial, optionally leaving it in inventory for normal selection and use.</div>
+</dd>
 <dt><a href="com/csse3200/game/ui/terminal/commands/Command.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in interface com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/Command.html" title="interface in com.csse3200.game.ui.terminal.commands">Command</a></dt>
 <dd>
 <div class="block">Action a command.</div>
 </dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/ConsumableCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/ConsumableCommand.html" title="class in com.csse3200.game.ui.terminal.commands">ConsumableCommand</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/terminal/commands/CutsceneCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/CutsceneCommand.html" title="class in com.csse3200.game.ui.terminal.commands">CutsceneCommand</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/terminal/commands/DebugCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/DebugCommand.html" title="class in com.csse3200.game.ui.terminal.commands">DebugCommand</a></dt>
@@ -154,6 +160,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Toggles debug mode on or off if the corresponding argument is received.</div>
 </dd>
 <dt><a href="com/csse3200/game/ui/terminal/commands/DialogueCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/DialogueCommand.html" title="class in com.csse3200.game.ui.terminal.commands">DialogueCommand</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/MagnetCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/MagnetCommand.html" title="class in com.csse3200.game.ui.terminal.commands">MagnetCommand</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/terminal/commands/ShopCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/ShopCommand.html" title="class in com.csse3200.game.ui.terminal.commands">ShopCommand</a></dt>
 <dd>
@@ -683,6 +691,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/TrapSpawnConfig.TrapType.html#BURN" class="member-name-link">BURN</a> - Enum constant in enum class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/TrapSpawnConfig.TrapType.html" title="enum class in com.csse3200.game.components.rooms.configs">TrapSpawnConfig.TrapType</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/ItemIds.html#BURN_VIAL" class="member-name-link">BURN_VIAL</a> - Static variable in class com.csse3200.game.items.<a href="com/csse3200/game/items/ItemIds.html" title="class in com.csse3200.game.items">ItemIds</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/Burning.html" class="type-name-link" title="class in com.csse3200.game.components.statuseffects">Burning</a> - Class in <a href="com/csse3200/game/components/statuseffects/package-summary.html">com.csse3200.game.components.statuseffects</a></dt>
 <dd>
 <div class="block">The object class for the burning status effect.</div>
@@ -696,6 +706,26 @@ loadScripts(document, 'script');</script>
 <div class="block">Applies the standard burning status effect when its trap is stepped on.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/traps/BurnTrapEffectComponent.html#%3Cinit%3E()" class="member-name-link">BurnTrapEffectComponent()</a> - Constructor for class com.csse3200.game.components.traps.<a href="com/csse3200/game/components/traps/BurnTrapEffectComponent.html" title="class in com.csse3200.game.components.traps">BurnTrapEffectComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/consumables/BurnVial.html" class="type-name-link" title="class in com.csse3200.game.items.consumables">BurnVial</a> - Class in <a href="com/csse3200/game/items/consumables/package-summary.html">com.csse3200.game.items.consumables</a></dt>
+<dd>
+<div class="block">Sets enemies visible through the current world camera alight when consumed.</div>
+</dd>
+<dt><a href="com/csse3200/game/items/consumables/BurnVial.html#%3Cinit%3E(int)" class="member-name-link">BurnVial(int)</a> - Constructor for class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/BurnVial.html" title="class in com.csse3200.game.items.consumables">BurnVial</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/consumables/BurnVial.html#%3Cinit%3E(int,long)" class="member-name-link">BurnVial(int, long)</a> - Constructor for class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/BurnVial.html" title="class in com.csse3200.game.items.consumables">BurnVial</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/BurnVialCommand.html" class="type-name-link" title="class in com.csse3200.game.ui.terminal.commands">BurnVialCommand</a> - Class in <a href="com/csse3200/game/ui/terminal/commands/package-summary.html">com.csse3200.game.ui.terminal.commands</a></dt>
+<dd>
+<div class="block">Terminal command that grants the player one Burn Vial and immediately consumes it.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/BurnVialCommand.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">BurnVialCommand(Entity)</a> - Constructor for class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/BurnVialCommand.html" title="class in com.csse3200.game.ui.terminal.commands">BurnVialCommand</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/BurnVialFeedbackComponent.html" class="type-name-link" title="class in com.csse3200.game.components.player">BurnVialFeedbackComponent</a> - Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
+<dd>
+<div class="block">Animated flames following enemies affected by a Burn Vial.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/player/BurnVialFeedbackComponent.html#%3Cinit%3E()" class="member-name-link">BurnVialFeedbackComponent()</a> - Constructor for class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/BurnVialFeedbackComponent.html" title="class in com.csse3200.game.components.player">BurnVialFeedbackComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/SnakeMiniBossConfig.html#burrowAttackRadius" class="member-name-link">burrowAttackRadius</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/SnakeMiniBossConfig.html" title="class in com.csse3200.game.entities.configs">SnakeMiniBossConfig</a></dt>
 <dd>&nbsp;</dd>
@@ -754,9 +784,13 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Whether this item can be consumed with the player's current state.</div>
 </dd>
+<dt><a href="com/csse3200/game/items/consumables/BurnVial.html#canUse(com.csse3200.game.components.CombatStatsComponent,com.csse3200.game.components.StatusEffectsControllerComponent,com.csse3200.game.services.GameTime)" class="member-name-link">canUse(CombatStatsComponent, StatusEffectsControllerComponent, GameTime)</a> - Method in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/BurnVial.html" title="class in com.csse3200.game.items.consumables">BurnVial</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/consumables/FreezeBomb.html#canUse(com.csse3200.game.components.CombatStatsComponent,com.csse3200.game.components.StatusEffectsControllerComponent,com.csse3200.game.services.GameTime)" class="member-name-link">canUse(CombatStatsComponent, StatusEffectsControllerComponent, GameTime)</a> - Method in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/FreezeBomb.html" title="class in com.csse3200.game.items.consumables">FreezeBomb</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/consumables/InstantHealingPotion.html#canUse(com.csse3200.game.components.CombatStatsComponent,com.csse3200.game.components.StatusEffectsControllerComponent,com.csse3200.game.services.GameTime)" class="member-name-link">canUse(CombatStatsComponent, StatusEffectsControllerComponent, GameTime)</a> - Method in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/InstantHealingPotion.html" title="class in com.csse3200.game.items.consumables">InstantHealingPotion</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/consumables/MagnetPotion.html#canUse(com.csse3200.game.components.CombatStatsComponent,com.csse3200.game.components.StatusEffectsControllerComponent,com.csse3200.game.services.GameTime)" class="member-name-link">canUse(CombatStatsComponent, StatusEffectsControllerComponent, GameTime)</a> - Method in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/MagnetPotion.html" title="class in com.csse3200.game.items.consumables">MagnetPotion</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/consumables/RegenerationPotion.html#canUse(com.csse3200.game.components.CombatStatsComponent,com.csse3200.game.components.StatusEffectsControllerComponent,com.csse3200.game.services.GameTime)" class="member-name-link">canUse(CombatStatsComponent, StatusEffectsControllerComponent, GameTime)</a> - Method in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/RegenerationPotion.html" title="class in com.csse3200.game.items.consumables">RegenerationPotion</a></dt>
 <dd>&nbsp;</dd>
@@ -870,7 +904,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html#changePage()" class="member-name-link">changePage()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a></dt>
 <dd>
-<div class="block">Changes the current page to the other inactive page and sets the flag</div>
+<div class="block">Advances to the next book category, including main's achievements page.</div>
 </dd>
 <dt><a href="com/csse3200/game/entities/configs/FinalBossStageThreeConfig.html#chargeDuration" class="member-name-link">chargeDuration</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/FinalBossStageThreeConfig.html" title="class in com.csse3200.game.entities.configs">FinalBossStageThreeConfig</a></dt>
 <dd>&nbsp;</dd>
@@ -884,6 +918,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/ItemCategory.html#CHARM" class="member-name-link">CHARM</a> - Enum constant in enum class com.csse3200.game.items.<a href="com/csse3200/game/items/ItemCategory.html" title="enum class in com.csse3200.game.items">ItemCategory</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/files/GameSaveData.PlayerData.html#charmEquipped" class="member-name-link">charmEquipped</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/GameSaveData.PlayerData.html" title="class in com.csse3200.game.files">GameSaveData.PlayerData</a></dt>
+<dd>
+<div class="block">Null in legacy saves; otherwise one equipped flag per charm, including duplicates.</div>
+</dd>
 <dt><a href="com/csse3200/game/files/GameSaveData.PlayerData.html#charms" class="member-name-link">charms</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/GameSaveData.PlayerData.html" title="class in com.csse3200.game.files">GameSaveData.PlayerData</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html#CHARS_PER_SECOND" class="member-name-link">CHARS_PER_SECOND</a> - Static variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.html" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a></dt>
@@ -1035,6 +1073,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/shop/CoinFlipPanel.html#%3Cinit%3E(com.csse3200.game.components.shop.CoinFlipGame,com.badlogic.gdx.graphics.Texture,com.csse3200.game.components.shop.CoinFlipPanel.Appearance,java.util.function.Consumer)" class="member-name-link">CoinFlipPanel(CoinFlipGame, Texture, CoinFlipPanel.Appearance, Consumer&lt;CoinFlipGame.Outcome&gt;)</a> - Constructor for class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/CoinFlipPanel.html" title="class in com.csse3200.game.components.shop">CoinFlipPanel</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/CoinFlipPanel.Appearance.html" class="type-name-link" title="class in com.csse3200.game.components.shop">CoinFlipPanel.Appearance</a> - Record Class in <a href="com/csse3200/game/components/shop/package-summary.html">com.csse3200.game.components.shop</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/consumables/MagnetPotion.html#COLLECT_DISTANCE" class="member-name-link">COLLECT_DISTANCE</a> - Static variable in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/MagnetPotion.html" title="class in com.csse3200.game.items.consumables">MagnetPotion</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/components/ColliderComponent.html" class="type-name-link" title="class in com.csse3200.game.physics.components">ColliderComponent</a> - Class in <a href="com/csse3200/game/physics/components/package-summary.html">com.csse3200.game.physics.components</a></dt>
 <dd>
@@ -1216,6 +1256,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/ItemCategory.html#CONSUMABLE" class="member-name-link">CONSUMABLE</a> - Enum constant in enum class com.csse3200.game.items.<a href="com/csse3200/game/items/ItemCategory.html" title="enum class in com.csse3200.game.items">ItemCategory</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/InventoryComponent.html#CONSUMABLE_SLOT_COUNT" class="member-name-link">CONSUMABLE_SLOT_COUNT</a> - Static variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/ConsumableCommand.html" class="type-name-link" title="class in com.csse3200.game.ui.terminal.commands">ConsumableCommand</a> - Class in <a href="com/csse3200/game/ui/terminal/commands/package-summary.html">com.csse3200.game.ui.terminal.commands</a></dt>
+<dd>
+<div class="block">Grants consumables through the existing inventory: <code>con &lt;item&gt; [quantity]</code>.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/ConsumableCommand.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">ConsumableCommand(Entity)</a> - Constructor for class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/ConsumableCommand.html" title="class in com.csse3200.game.ui.terminal.commands">ConsumableCommand</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/ConsumableEffectComponent.html" class="type-name-link" title="class in com.csse3200.game.components.player">ConsumableEffectComponent</a> - Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
 <dd>
 <div class="block">Owns consumable use: validates, removes exactly one item, applies its effect, then emits
@@ -1247,10 +1295,14 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/player/ConsumableSelectionComponent.html" class="type-name-link" title="class in com.csse3200.game.components.player">ConsumableSelectionComponent</a> - Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
 <dd>
-<div class="block">Owns the fixed consumable slots and the currently selected slot.</div>
+<div class="block">Selects an existing consumable for the hotbar without owning stock or effect rules.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/player/ConsumableSelectionComponent.html#%3Cinit%3E()" class="member-name-link">ConsumableSelectionComponent()</a> - Constructor for class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumableSelectionComponent.html" title="class in com.csse3200.game.components.player">ConsumableSelectionComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/files/GameSaveData.PlayerData.html#consumableSlots" class="member-name-link">consumableSlots</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/GameSaveData.PlayerData.html" title="class in com.csse3200.game.files">GameSaveData.PlayerData</a></dt>
+<dd>
+<div class="block">Null in legacy saves; otherwise four ordered slots, with null for empty positions.</div>
+</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsLayer.html#contains(short,short)" class="member-name-link">contains(short, short)</a> - Static method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsLayer.html" title="class in com.csse3200.game.physics">PhysicsLayer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/ItemCatalog.html#contains(java.lang.String)" class="member-name-link">contains(String)</a> - Static method in class com.csse3200.game.items.<a href="com/csse3200/game/items/ItemCatalog.html" title="class in com.csse3200.game.items">ItemCatalog</a></dt>
@@ -1361,6 +1413,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Builds the HUD panel and adds it to the shared UI stage.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/items/ItemDropAnimationComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/ItemDropAnimationComponent.html" title="class in com.csse3200.game.components.items">ItemDropAnimationComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/items/ItemPickupComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/ItemPickupComponent.html" title="class in com.csse3200.game.components.items">ItemPickupComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/items/ItemSpinComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/ItemSpinComponent.html" title="class in com.csse3200.game.components.items">ItemSpinComponent</a></dt>
@@ -1480,6 +1534,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates reusable ui styles and adds actors to the stage.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/player/ShieldPotionFeedbackComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ShieldPotionFeedbackComponent.html" title="class in com.csse3200.game.components.player">ShieldPotionFeedbackComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/SpeedPotionAfterimageComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/SpeedPotionAfterimageComponent.html" title="class in com.csse3200.game.components.player">SpeedPotionAfterimageComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/EnemyManagerComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/EnemyManagerComponent.html" title="class in com.csse3200.game.components.rooms">EnemyManagerComponent</a></dt>
@@ -1640,7 +1696,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/ItemFactory.html#createEnemyDrops(java.lang.String,com.badlogic.gdx.math.Vector2)" class="member-name-link">createEnemyDrops(String, Vector2)</a> - Method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ItemFactory.html" title="class in com.csse3200.game.entities.factories">ItemFactory</a></dt>
 <dd>
-<div class="block">Creates the items selected by an enemy's loot rules without registering them.</div>
+<div class="block">Creates unregistered enemy rewards around one common visual centre.</div>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/FinalBossFactory.html#createExplosiveSummon(com.csse3200.game.entities.Entity,com.csse3200.game.entities.configs.FinalBossStageOneConfig,float,float)" class="member-name-link">createExplosiveSummon(Entity, FinalBossStageOneConfig, float, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/FinalBossFactory.html" title="class in com.csse3200.game.entities.factories">FinalBossFactory</a></dt>
 <dd>
@@ -1888,7 +1944,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/player/ConsumableSelectionComponent.html#cycle()" class="member-name-link">cycle()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumableSelectionComponent.html" title="class in com.csse3200.game.components.player">ConsumableSelectionComponent</a></dt>
 <dd>
-<div class="block">Advances one slot and wraps after the last.</div>
+<div class="block">Cycle every slot, including empty slots, and wrap back to the first.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/player/ConsumableSelectionComponent.html#CYCLE_REQUEST" class="member-name-link">CYCLE_REQUEST</a> - Static variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumableSelectionComponent.html" title="class in com.csse3200.game.components.player">ConsumableSelectionComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -1948,6 +2004,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/rendering/DebugRenderer.html#%3Cinit%3E(com.badlogic.gdx.physics.box2d.Box2DDebugRenderer,com.badlogic.gdx.graphics.glutils.ShapeRenderer)" class="member-name-link">DebugRenderer(Box2DDebugRenderer, ShapeRenderer)</a> - Constructor for class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/DebugRenderer.html" title="class in com.csse3200.game.rendering">DebugRenderer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsLayer.html#DEFAULT" class="member-name-link">DEFAULT</a> - Static variable in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsLayer.html" title="class in com.csse3200.game.physics">PhysicsLayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/consumables/MagnetPotion.html#DEFAULT_DURATION_MS" class="member-name-link">DEFAULT_DURATION_MS</a> - Static variable in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/MagnetPotion.html" title="class in com.csse3200.game.items.consumables">MagnetPotion</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/WindowSize.html#DEFAULT_HEIGHT" class="member-name-link">DEFAULT_HEIGHT</a> - Static variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/WindowSize.html" title="class in com.csse3200.game.files">WindowSize</a></dt>
 <dd>&nbsp;</dd>
@@ -2221,6 +2279,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/npc/EnemyStatDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/EnemyStatDisplay.html" title="class in com.csse3200.game.components.npc">EnemyStatDisplay</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/BurnVialFeedbackComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/BurnVialFeedbackComponent.html" title="class in com.csse3200.game.components.player">BurnVialFeedbackComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/ConsumableEffectComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumableEffectComponent.html" title="class in com.csse3200.game.components.player">ConsumableEffectComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/HealingPotionFeedbackComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/HealingPotionFeedbackComponent.html" title="class in com.csse3200.game.components.player">HealingPotionFeedbackComponent</a></dt>
@@ -2236,6 +2296,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/player/PlayerPetrificationComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerPetrificationComponent.html" title="class in com.csse3200.game.components.player">PlayerPetrificationComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerStatsDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/ShieldPotionFeedbackComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ShieldPotionFeedbackComponent.html" title="class in com.csse3200.game.components.player">ShieldPotionFeedbackComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/SpeedPotionAfterimageComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/SpeedPotionAfterimageComponent.html" title="class in com.csse3200.game.components.player">SpeedPotionAfterimageComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -2439,6 +2501,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Refreshes the time text and accent animation every frame.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/items/ItemDropAnimationComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/ItemDropAnimationComponent.html" title="class in com.csse3200.game.components.items">ItemDropAnimationComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/AbilityMenuDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/AbilityMenuDisplay.html" title="class in com.csse3200.game.components.maingame">AbilityMenuDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/ConsumableHotbarDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/ConsumableHotbarDisplay.html" title="class in com.csse3200.game.components.maingame">ConsumableHotbarDisplay</a></dt>
@@ -2481,9 +2545,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/npc/EnemyStatDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/EnemyStatDisplay.html" title="class in com.csse3200.game.components.npc">EnemyStatDisplay</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/BurnVialFeedbackComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/BurnVialFeedbackComponent.html" title="class in com.csse3200.game.components.player">BurnVialFeedbackComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/HealingPotionFeedbackComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/HealingPotionFeedbackComponent.html" title="class in com.csse3200.game.components.player">HealingPotionFeedbackComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerStatsDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/ShieldPotionFeedbackComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ShieldPotionFeedbackComponent.html" title="class in com.csse3200.game.components.player">ShieldPotionFeedbackComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/SpeedPotionAfterimageComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/SpeedPotionAfterimageComponent.html" title="class in com.csse3200.game.components.player">SpeedPotionAfterimageComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -2851,6 +2919,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html#equip(com.csse3200.game.items.WeaponItem.WeaponType)" class="member-name-link">equip(WeaponItem.WeaponType)</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html" title="class in com.csse3200.game.components.weapons">WeaponSelectionComponent</a></dt>
 <dd>
 <div class="block">Equips an available weapon without changing shared combat stats or cooldown.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/player/InventoryComponent.html#equipConsumable(java.lang.String,int)" class="member-name-link">equipConsumable(String, int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
+<dd>
+<div class="block">Assigns owned stock to a HUD slot, swapping any previous assignment.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.TimedEvent.html#event" class="member-name-link">event</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.TimedEvent.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript.TimedEvent</a></dt>
 <dd>
@@ -3265,6 +3337,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Builds a hover tooltip for an item.</div>
 </dd>
+<dt><a href="com/csse3200/game/ui/ItemTooltip.html#forItem(com.csse3200.game.items.Item,com.badlogic.gdx.scenes.scene2d.ui.Skin,com.badlogic.gdx.scenes.scene2d.ui.TooltipManager)" class="member-name-link">forItem(Item, Skin, TooltipManager)</a> - Static method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/ItemTooltip.html" title="class in com.csse3200.game.ui">ItemTooltip</a></dt>
+<dd>
+<div class="block">Builds the same item hint using caller-owned timing and animation settings.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/player/InteractionPrompt.html#forItem(java.lang.String)" class="member-name-link">forItem(String)</a> - Static method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InteractionPrompt.html" title="class in com.csse3200.game.components.player">InteractionPrompt</a></dt>
 <dd>
 <div class="block">Prompt while standing in range of a pick-upable item.</div>
@@ -3549,8 +3625,16 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the stored quantity for a consumable type.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/player/InventoryComponent.html#getConsumableIds()" class="member-name-link">getConsumableIds()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
+<dd>
+<div class="block">Owned IDs, including custom healing potions, for the inventory book.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/player/InventoryComponent.html#getConsumables()" class="member-name-link">getConsumables()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/InventoryComponent.html#getConsumableSlot(int)" class="member-name-link">getConsumableSlot(int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
+<dd>
+<div class="block">Returns the item currently assigned to a physical HUD slot, or null when empty.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerAbility.html#getCooldown()" class="member-name-link">getCooldown()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a></dt>
 <dd>
 <div class="block">Returns the wait before the ability may start again, measured from the start, in ms.</div>
@@ -3677,11 +3761,17 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/components/ColliderComponent.html#getFixture()" class="member-name-link">getFixture()</a> - Method in class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/ColliderComponent.html" title="class in com.csse3200.game.physics.components">ColliderComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/rendering/RenderService.html#getFlashColour()" class="member-name-link">getFlashColour()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RenderService.html" title="class in com.csse3200.game.rendering">RenderService</a></dt>
+<dd>
+<div class="block">Current overlay colour; read only.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/ComponentType.html#getFrom(java.lang.Class)" class="member-name-link">getFrom(Class&lt;? extends Component&gt;)</a> - Static method in class com.csse3200.game.components.<a href="com/csse3200/game/components/ComponentType.html" title="class in com.csse3200.game.components">ComponentType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/FlashEffect.html#getGlow()" class="member-name-link">getGlow()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/FlashEffect.html" title="class in com.csse3200.game.components.statuseffects">FlashEffect</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/FrozenEffect.html#getGlow()" class="member-name-link">getGlow()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/FrozenEffect.html" title="class in com.csse3200.game.components.statuseffects">FrozenEffect</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/MagnetEffect.html#getGlow()" class="member-name-link">getGlow()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/MagnetEffect.html" title="class in com.csse3200.game.components.statuseffects">MagnetEffect</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/StatusEffect.html#getGlow()" class="member-name-link">getGlow()</a> - Method in interface com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></dt>
 <dd>
@@ -3692,6 +3782,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the combined glow of running effects, or null when none glows.</div>
 </dd>
+<dt><a href="com/csse3200/game/items/consumables/VialBurning.html#getGlow()" class="member-name-link">getGlow()</a> - Method in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/VialBurning.html" title="class in com.csse3200.game.items.consumables">VialBurning</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/StatusEffectsControllerComponent.html#getGlow(com.csse3200.game.entities.Entity)" class="member-name-link">getGlow(Entity)</a> - Static method in class com.csse3200.game.components.<a href="com/csse3200/game/components/StatusEffectsControllerComponent.html" title="class in com.csse3200.game.components">StatusEffectsControllerComponent</a></dt>
 <dd>
 <div class="block">Returns the combined glow of the entity's active effects, or null when nothing glows.</div>
@@ -3740,6 +3832,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/services/ServiceLocator.html#getInputService()" class="member-name-link">getInputService()</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html#getInventoryComponent()" class="member-name-link">getInventoryComponent()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/items/ItemComponent.html#getItem()" class="member-name-link">getItem()</a> - Method in class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/ItemComponent.html" title="class in com.csse3200.game.components.items">ItemComponent</a></dt>
 <dd>
 <div class="block">Returns the item represented by the entity.</div>
@@ -3759,6 +3853,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/TouchAttackComponent.html#getKnockbackForce()" class="member-name-link">getKnockbackForce()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/TouchAttackComponent.html" title="class in com.csse3200.game.components">TouchAttackComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainComponent.html#getLayer()" class="member-name-link">getLayer()</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/BurnVialFeedbackComponent.html#getLayer()" class="member-name-link">getLayer()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/BurnVialFeedbackComponent.html" title="class in com.csse3200.game.components.player">BurnVialFeedbackComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/traps/FireTrapRenderComponent.html#getLayer()" class="member-name-link">getLayer()</a> - Method in class com.csse3200.game.components.traps.<a href="com/csse3200/game/components/traps/FireTrapRenderComponent.html" title="class in com.csse3200.game.components.traps">FireTrapRenderComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -3858,6 +3954,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/HitboxSpec.html#getOwner()" class="member-name-link">getOwner()</a> - Method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HitboxSpec.html" title="class in com.csse3200.game.entities.factories">HitboxSpec</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html#getPageItems(boolean)" class="member-name-link">getPageItems(boolean)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a></dt>
+<dd>
+<div class="block">Item snapshot used by the grids and the existing action component.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/miniboss/snake/SnakeBurrowVisualComponent.html#getParticleCount()" class="member-name-link">getParticleCount()</a> - Method in class com.csse3200.game.components.miniboss.snake.<a href="com/csse3200/game/components/miniboss/snake/SnakeBurrowVisualComponent.html" title="class in com.csse3200.game.components.miniboss.snake">SnakeBurrowVisualComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsService.html#getPhysics()" class="member-name-link">getPhysics()</a> - Method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsService.html" title="class in com.csse3200.game.physics">PhysicsService</a></dt>
@@ -3930,6 +4030,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html#getPuffCount()" class="member-name-link">getPuffCount()</a> - Method in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonCloudDashVisualComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonCloudDashVisualComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/consumables/VialBurning.html#getPulseStrength()" class="member-name-link">getPulseStrength()</a> - Method in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/VialBurning.html" title="class in com.csse3200.game.items.consumables">VialBurning</a></dt>
+<dd>
+<div class="block">Strength of the brief surge following an actual burn health loss.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/items/ItemComponent.html#getQuantity()" class="member-name-link">getQuantity()</a> - Method in class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/ItemComponent.html" title="class in com.csse3200.game.components.items">ItemComponent</a></dt>
 <dd>
 <div class="block">Returns the positive quantity represented by this world entity.</div>
@@ -4207,7 +4311,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/RenderService.html#getWhiteFlashAlpha()" class="member-name-link">getWhiteFlashAlpha()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RenderService.html" title="class in com.csse3200.game.rendering">RenderService</a></dt>
 <dd>
-<div class="block">Advance one frame and return the white overlay's opacity.</div>
+<div class="block">Advance one frame and return the overlay opacity (the original white-flash API).</div>
 </dd>
 <dt><a href="com/csse3200/game/physics/PhysicsEngine.html#getWorld()" class="member-name-link">getWorld()</a> - Method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsEngine.html" title="class in com.csse3200.game.physics">PhysicsEngine</a></dt>
 <dd>&nbsp;</dd>
@@ -4270,7 +4374,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/snake/SnakeShieldPickupComponent.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.miniboss.snake.<a href="com/csse3200/game/components/miniboss/snake/SnakeShieldPickupComponent.html" title="class in com.csse3200.game.components.miniboss.snake">SnakeShieldPickupComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/BurnVialFeedbackComponent.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/BurnVialFeedbackComponent.html" title="class in com.csse3200.game.components.player">BurnVialFeedbackComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/HealingPotionFeedbackComponent.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/HealingPotionFeedbackComponent.html" title="class in com.csse3200.game.components.player">HealingPotionFeedbackComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/ShieldPotionFeedbackComponent.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ShieldPotionFeedbackComponent.html" title="class in com.csse3200.game.components.player">ShieldPotionFeedbackComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/SpeedPotionAfterimageComponent.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/SpeedPotionAfterimageComponent.html" title="class in com.csse3200.game.components.player">SpeedPotionAfterimageComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -4439,7 +4547,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/player/HealingPotionFeedbackComponent.html" class="type-name-link" title="class in com.csse3200.game.components.player">HealingPotionFeedbackComponent</a> - Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
 <dd>
-<div class="block">A short rising red cross when an instant healing potion succeeds.</div>
+<div class="block">Expanding pulse and rising crosses when an instant healing potion succeeds.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/player/HealingPotionFeedbackComponent.html#%3Cinit%3E()" class="member-name-link">HealingPotionFeedbackComponent()</a> - Constructor for class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/HealingPotionFeedbackComponent.html" title="class in com.csse3200.game.components.player">HealingPotionFeedbackComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -4769,7 +4877,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a> - Class in <a href="com/csse3200/game/components/maingame/package-summary.html">com.csse3200.game.components.maingame</a></dt>
 <dd>
-<div class="block">Displays the inventory book and its charms and consumables pages.</div>
+<div class="block">Displays the inventory book and its charms, consumables and achievements pages.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html#%3Cinit%3E(com.csse3200.game.components.player.InventoryComponent)" class="member-name-link">InventoryDisplay(InventoryComponent)</a> - Constructor for class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a></dt>
 <dd>&nbsp;</dd>
@@ -4875,6 +4983,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns whether the dragon has entered phase two.</div>
 </dd>
+<dt><a href="com/csse3200/game/items/charms/Charm.html#isEquipped()" class="member-name-link">isEquipped()</a> - Method in class com.csse3200.game.items.charms.<a href="com/csse3200/game/items/charms/Charm.html" title="class in com.csse3200.game.items.charms">Charm</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/StatusEffect.html#isExpired()" class="member-name-link">isExpired()</a> - Method in interface com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></dt>
 <dd>
 <div class="block">Returns whether the effect has run its course.</div>
@@ -4929,6 +5039,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html#isLineComplete()" class="member-name-link">isLineComplete()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.html" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/MagnetEffect.html#isMagnetic(com.csse3200.game.items.Item)" class="member-name-link">isMagnetic(Item)</a> - Static method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/MagnetEffect.html" title="class in com.csse3200.game.components.statuseffects">MagnetEffect</a></dt>
+<dd>
+<div class="block">Returns whether the magnet would pull this item (Gold and consumables only).</div>
+</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html#isMistActive()" class="member-name-link">isMistActive()</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusMistComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusMistComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerCerberusMistDebuffComponent.html#isMistDebuffed()" class="member-name-link">isMistDebuffed()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerCerberusMistDebuffComponent.html" title="class in com.csse3200.game.components.player">PlayerCerberusMistDebuffComponent</a></dt>
@@ -5015,6 +5129,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractionIndicatorComponent.html#isVisible()" class="member-name-link">isVisible()</a> - Method in class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractionIndicatorComponent.html" title="class in com.csse3200.game.components.friendlynpc">NpcInteractionIndicatorComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html#isVisible()" class="member-name-link">isVisible()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossExplosiveSummonComponent.html#isWarningActive()" class="member-name-link">isWarningActive()</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossExplosiveSummonComponent.html" title="class in com.csse3200.game.components.boss">FinalBossExplosiveSummonComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossPetrificationComponent.html#isWarningActive()" class="member-name-link">isWarningActive()</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossPetrificationComponent.html" title="class in com.csse3200.game.components.boss">FinalBossPetrificationComponent</a></dt>
@@ -5064,6 +5180,12 @@ loadScripts(document, 'script');</script>
 <div class="block">Selected A layout: a draw arena beside the configured reward list, stacked on small screens.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/shop/ItemDrawPanel.html#%3Cinit%3E(com.csse3200.game.components.player.InventoryComponent,com.csse3200.game.shop.ItemGambleConfig,com.csse3200.game.services.ResourceService,com.csse3200.game.components.shop.CoinFlipPanel.Appearance,java.util.function.Consumer)" class="member-name-link">ItemDrawPanel(InventoryComponent, ItemGambleConfig, ResourceService, CoinFlipPanel.Appearance, Consumer&lt;GambleResult&gt;)</a> - Constructor for class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ItemDrawPanel.html" title="class in com.csse3200.game.components.shop">ItemDrawPanel</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/items/ItemDropAnimationComponent.html" class="type-name-link" title="class in com.csse3200.game.components.items">ItemDropAnimationComponent</a> - Class in <a href="com/csse3200/game/components/items/package-summary.html">com.csse3200.game.components.items</a></dt>
+<dd>
+<div class="block">Drop-only fountain arc, bottom-pivot rocking and glass reflection.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/items/ItemDropAnimationComponent.html#%3Cinit%3E()" class="member-name-link">ItemDropAnimationComponent()</a> - Constructor for class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/ItemDropAnimationComponent.html" title="class in com.csse3200.game.components.items">ItemDropAnimationComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/ItemDropSpec.html" class="type-name-link" title="class in com.csse3200.game.items">ItemDropSpec</a> - Record Class in <a href="com/csse3200/game/items/package-summary.html">com.csse3200.game.items</a></dt>
 <dd>
@@ -5326,6 +5448,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Launch an asynchronous job which may be run on a separate thread.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/items/ItemDropAnimationComponent.html#launchFrom(com.badlogic.gdx.math.Vector2)" class="member-name-link">launchFrom(Vector2)</a> - Method in class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/ItemDropAnimationComponent.html" title="class in com.csse3200.game.components.items">ItemDropAnimationComponent</a></dt>
+<dd>
+<div class="block">Makes different-sized drops start visually at the same point during their outward flight.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/factories/HitboxSpec.html#layer(short)" class="member-name-link">layer(short)</a> - Method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HitboxSpec.html" title="class in com.csse3200.game.entities.factories">HitboxSpec</a></dt>
 <dd>
 <div class="block">Physics category of this sensor.</div>
@@ -5502,6 +5628,28 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:M">M</h2>
 <dl class="index">
+<dt><a href="com/csse3200/game/items/ItemIds.html#MAGNET_POTION" class="member-name-link">MAGNET_POTION</a> - Static variable in class com.csse3200.game.items.<a href="com/csse3200/game/items/ItemIds.html" title="class in com.csse3200.game.items">ItemIds</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/MagnetCommand.html" class="type-name-link" title="class in com.csse3200.game.ui.terminal.commands">MagnetCommand</a> - Class in <a href="com/csse3200/game/ui/terminal/commands/package-summary.html">com.csse3200.game.ui.terminal.commands</a></dt>
+<dd>
+<div class="block">Compatibility alias for <code>con magnet [quantity]</code>.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/MagnetCommand.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">MagnetCommand(Entity)</a> - Constructor for class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/MagnetCommand.html" title="class in com.csse3200.game.ui.terminal.commands">MagnetCommand</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/MagnetEffect.html" class="type-name-link" title="class in com.csse3200.game.components.statuseffects">MagnetEffect</a> - Class in <a href="com/csse3200/game/components/statuseffects/package-summary.html">com.csse3200.game.components.statuseffects</a></dt>
+<dd>
+<div class="block">The condition the Magnet Potion puts on the player.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/statuseffects/MagnetEffect.html#%3Cinit%3E(com.csse3200.game.services.GameTime,long,com.csse3200.game.entities.Entity,float,float,float)" class="member-name-link">MagnetEffect(GameTime, long, Entity, float, float, float)</a> - Constructor for class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/MagnetEffect.html" title="class in com.csse3200.game.components.statuseffects">MagnetEffect</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/consumables/MagnetPotion.html" class="type-name-link" title="class in com.csse3200.game.items.consumables">MagnetPotion</a> - Class in <a href="com/csse3200/game/items/consumables/package-summary.html">com.csse3200.game.items.consumables</a></dt>
+<dd>
+<div class="block">Pulls nearby Gold and consumables towards the player for a short time when consumed.</div>
+</dd>
+<dt><a href="com/csse3200/game/items/consumables/MagnetPotion.html#%3Cinit%3E(int)" class="member-name-link">MagnetPotion(int)</a> - Constructor for class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/MagnetPotion.html" title="class in com.csse3200.game.items.consumables">MagnetPotion</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/consumables/MagnetPotion.html#%3Cinit%3E(int,long)" class="member-name-link">MagnetPotion(int, long)</a> - Constructor for class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/MagnetPotion.html" title="class in com.csse3200.game.items.consumables">MagnetPotion</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/GdxGame.ScreenType.html#MAIN_GAME" class="member-name-link">MAIN_GAME</a> - Enum constant in enum class com.csse3200.game.<a href="com/csse3200/game/GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/GdxGame.ScreenType.html#MAIN_MENU" class="member-name-link">MAIN_MENU</a> - Enum constant in enum class com.csse3200.game.<a href="com/csse3200/game/GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a></dt>
@@ -5894,6 +6042,8 @@ loadScripts(document, 'script');</script>
  expired, was removed early, or the entity died or was disposed.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/statuseffects/TimedStatusEffect.html#onRemoved()" class="member-name-link">onRemoved()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/consumables/VialBurning.html#onRemoved()" class="member-name-link">onRemoved()</a> - Method in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/VialBurning.html" title="class in com.csse3200.game.items.consumables">VialBurning</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/minimap/Minimap.html#onRoomChanged(com.csse3200.game.components.rooms.configs.RoomConfig)" class="member-name-link">onRoomChanged(RoomConfig)</a> - Method in class com.csse3200.game.ui.minimap.<a href="com/csse3200/game/ui/minimap/Minimap.html" title="class in com.csse3200.game.ui.minimap">Minimap</a></dt>
 <dd>
@@ -6305,6 +6455,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsContactListener.html#preSolve(com.badlogic.gdx.physics.box2d.Contact,com.badlogic.gdx.physics.box2d.Manifold)" class="member-name-link">preSolve(Contact, Manifold)</a> - Method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsContactListener.html" title="class in com.csse3200.game.physics">PhysicsContactListener</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html#previousPage()" class="member-name-link">previousPage()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a></dt>
+<dd>
+<div class="block">Returns to the previous book category.</div>
+</dd>
 <dt><a href="com/csse3200/game/utils/StringDecorator.html#printFn" class="member-name-link">printFn</a> - Variable in class com.csse3200.game.utils.<a href="com/csse3200/game/utils/StringDecorator.html" title="class in com.csse3200.game.utils">StringDecorator</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/input/InputComponent.html#priority" class="member-name-link">priority</a> - Variable in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></dt>
@@ -6352,6 +6506,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/configs/FinalBossStageOneConfig.html#proximityDamageInterval" class="member-name-link">proximityDamageInterval</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/FinalBossStageOneConfig.html" title="class in com.csse3200.game.entities.configs">FinalBossStageOneConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/FinalBossStageOneConfig.html#proximityDamageRadius" class="member-name-link">proximityDamageRadius</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/FinalBossStageOneConfig.html" title="class in com.csse3200.game.entities.configs">FinalBossStageOneConfig</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/consumables/MagnetPotion.html#PULL_SPEED" class="member-name-link">PULL_SPEED</a> - Static variable in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/MagnetPotion.html" title="class in com.csse3200.game.items.consumables">MagnetPotion</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/ConsumablePurchaseEffect.html#purchase(com.csse3200.game.components.player.InventoryComponent,java.lang.String,int)" class="member-name-link">purchase(InventoryComponent, String, int)</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ConsumablePurchaseEffect.html" title="class in com.csse3200.game.components.shop">ConsumablePurchaseEffect</a></dt>
 <dd>&nbsp;</dd>
@@ -6401,6 +6557,8 @@ loadScripts(document, 'script');</script>
 <div class="block">The alpha of a pixel at a distance from the centre, where 0 is the centre and 1 the edge.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html#RADIUS" class="member-name-link">RADIUS</a> - Static variable in class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/consumables/MagnetPotion.html#RADIUS" class="member-name-link">RADIUS</a> - Static variable in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/MagnetPotion.html" title="class in com.csse3200.game.items.consumables">MagnetPotion</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/math/RandomUtils.html#random(com.badlogic.gdx.math.GridPoint2,com.badlogic.gdx.math.GridPoint2)" class="member-name-link">random(GridPoint2, GridPoint2)</a> - Static method in class com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/RandomUtils.html" title="class in com.csse3200.game.utils.math">RandomUtils</a></dt>
 <dd>&nbsp;</dd>
@@ -6491,6 +6649,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/shop/WeaponUpgradePanel.html#refresh()" class="member-name-link">refresh()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/WeaponUpgradePanel.html" title="class in com.csse3200.game.components.shop">WeaponUpgradePanel</a></dt>
 <dd>
 <div class="block">Resolves current availability, gold and upgrade state without changing equipment.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/maingame/InventoryDisplay.html#refreshPage()" class="member-name-link">refreshPage()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/InventoryDisplay.html" title="class in com.csse3200.game.components.maingame">InventoryDisplay</a></dt>
+<dd>
+<div class="block">Refreshes the current page after an inventory action without changing pages.</div>
 </dd>
 <dt><a href="com/csse3200/game/files/UserSettings.DisplaySettings.html#refreshRate" class="member-name-link">refreshRate</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.DisplaySettings.html" title="class in com.csse3200.game.files">UserSettings.DisplaySettings</a></dt>
 <dd>&nbsp;</dd>
@@ -6615,6 +6777,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/miniboss/snake/SnakeShieldComponent.html#render(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">render(SpriteBatch)</a> - Method in class com.csse3200.game.components.miniboss.snake.<a href="com/csse3200/game/components/miniboss/snake/SnakeShieldComponent.html" title="class in com.csse3200.game.components.miniboss.snake">SnakeShieldComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/snake/SnakeShieldPickupComponent.html#render(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">render(SpriteBatch)</a> - Method in class com.csse3200.game.components.miniboss.snake.<a href="com/csse3200/game/components/miniboss/snake/SnakeShieldPickupComponent.html" title="class in com.csse3200.game.components.miniboss.snake">SnakeShieldPickupComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/ShieldPotionFeedbackComponent.html#render(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">render(SpriteBatch)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ShieldPotionFeedbackComponent.html" title="class in com.csse3200.game.components.player">ShieldPotionFeedbackComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/Renderable.html#render(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">render(SpriteBatch)</a> - Method in interface com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/Renderable.html" title="interface in com.csse3200.game.rendering">Renderable</a></dt>
 <dd>
@@ -7066,6 +7230,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Sets the camera that follows this entity.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/player/InventoryComponent.html#setCharmEquipped(com.csse3200.game.items.charms.Charm,boolean)" class="member-name-link">setCharmEquipped(Charm, boolean)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
+<dd>
+<div class="block">Changes a charm's equipment state and applies/removes its effect on the owning player.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/SplitComponent.html#setChildHealthRatio(float)" class="member-name-link">setChildHealthRatio(float)</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/SplitComponent.html" title="class in com.csse3200.game.components">SplitComponent</a></dt>
 <dd>
 <div class="block">Sets each child's health as a fraction of the parent's maximum health.</div>
@@ -7127,6 +7295,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/Component.html#setEntity(com.csse3200.game.entities.Entity)" class="member-name-link">setEntity(Entity)</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/Component.html" title="class in com.csse3200.game.components">Component</a></dt>
 <dd>
 <div class="block">Set the entity to which this component belongs.</div>
+</dd>
+<dt><a href="com/csse3200/game/items/charms/Charm.html#setEquipped(com.csse3200.game.entities.Entity,boolean)" class="member-name-link">setEquipped(Entity, boolean)</a> - Method in class com.csse3200.game.items.charms.<a href="com/csse3200/game/items/charms/Charm.html" title="class in com.csse3200.game.items.charms">Charm</a></dt>
+<dd>
+<div class="block">Applies each equipment transition once; unequipped charms remain in inventory.</div>
 </dd>
 <dt><a href="com/csse3200/game/rendering/AnimationRenderComponent.html#setFlipX(boolean)" class="member-name-link">setFlipX(boolean)</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a></dt>
 <dd>
@@ -7447,6 +7619,12 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/consumables/ShieldPotion.html#%3Cinit%3E(int,long)" class="member-name-link">ShieldPotion(int, long)</a> - Constructor for class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/ShieldPotion.html" title="class in com.csse3200.game.items.consumables">ShieldPotion</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/ShieldPotionFeedbackComponent.html" class="type-name-link" title="class in com.csse3200.game.components.player">ShieldPotionFeedbackComponent</a> - Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
+<dd>
+<div class="block">Consumable-only shield appearance; protection and expiry remain owned by the effect component.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/player/ShieldPotionFeedbackComponent.html#%3Cinit%3E()" class="member-name-link">ShieldPotionFeedbackComponent()</a> - Constructor for class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ShieldPotionFeedbackComponent.html" title="class in com.csse3200.game.components.player">ShieldPotionFeedbackComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/FinalBossStageThreeConfig.html#shockwaveDamage" class="member-name-link">shockwaveDamage</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/FinalBossStageThreeConfig.html" title="class in com.csse3200.game.entities.configs">FinalBossStageThreeConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/FinalBossStageThreeConfig.html#shockwaveSpeed" class="member-name-link">shockwaveSpeed</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/FinalBossStageThreeConfig.html" title="class in com.csse3200.game.entities.configs">FinalBossStageThreeConfig</a></dt>
@@ -7619,8 +7797,6 @@ loadScripts(document, 'script');</script>
 <div class="block">Slider plus a live value label.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html#SLOT_WEAPONS" class="member-name-link">SLOT_WEAPONS</a> - Static variable in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponSelectionComponent.html" title="class in com.csse3200.game.components.weapons">WeaponSelectionComponent</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/player/ConsumableSelectionComponent.html#SLOTS" class="member-name-link">SLOTS</a> - Static variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumableSelectionComponent.html" title="class in com.csse3200.game.components.player">ConsumableSelectionComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/Slow.html" class="type-name-link" title="class in com.csse3200.game.components.statuseffects">Slow</a> - Class in <a href="com/csse3200/game/components/statuseffects/package-summary.html">com.csse3200.game.components.statuseffects</a></dt>
 <dd>
@@ -7960,6 +8136,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/WorldConfig.html#startEntryPointId" class="member-name-link">startEntryPointId</a> - Variable in class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/WorldConfig.html" title="class in com.csse3200.game.components.rooms.configs">WorldConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/rendering/RenderService.html#startFireFlash()" class="member-name-link">startFireFlash()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RenderService.html" title="class in com.csse3200.game.rendering">RenderService</a></dt>
+<dd>
+<div class="block">Start a warm, translucent ignition flash once per fire bomb, using the existing overlay.</div>
+</dd>
 <dt><a href="com/csse3200/game/GdxGame.html#startGame(com.csse3200.game.files.GameSaveData,int)" class="member-name-link">startGame(GameSaveData, int)</a> - Method in class com.csse3200.game.<a href="com/csse3200/game/GdxGame.html" title="class in com.csse3200.game">GdxGame</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/GdxGame.html#startGameAtCheckpoint(com.csse3200.game.files.GameSaveData,int)" class="member-name-link">startGameAtCheckpoint(GameSaveData, int)</a> - Method in class com.csse3200.game.<a href="com/csse3200/game/GdxGame.html" title="class in com.csse3200.game">GdxGame</a></dt>
@@ -8654,6 +8834,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Iterates over registered input handlers in descending priority and stops as soon as the input
  is processed</div>
 </dd>
+<dt><a href="com/csse3200/game/components/player/BurnVialFeedbackComponent.html#trackBurn(com.csse3200.game.entities.Entity,com.csse3200.game.items.consumables.VialBurning)" class="member-name-link">trackBurn(Entity, VialBurning)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/BurnVialFeedbackComponent.html" title="class in com.csse3200.game.components.player">BurnVialFeedbackComponent</a></dt>
+<dd>
+<div class="block">Track only an effect actually applied by the item, without adding live enemy components.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossVisualAssets.html#TRANSFORM" class="member-name-link">TRANSFORM</a> - Enum constant in enum class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossVisualAssets.html" title="enum class in com.csse3200.game.components.boss">FinalBossVisualAssets</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossStageOneState.html#TRANSFORMING" class="member-name-link">TRANSFORMING</a> - Enum constant in enum class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossStageOneState.html" title="enum class in com.csse3200.game.components.boss">FinalBossStageOneState</a></dt>
@@ -8807,6 +8991,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/SnakeMiniBossConfig.html#undergroundDuration" class="member-name-link">undergroundDuration</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/SnakeMiniBossConfig.html" title="class in com.csse3200.game.entities.configs">SnakeMiniBossConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/InventoryComponent.html#unequipConsumable(int)" class="member-name-link">unequipConsumable(int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
+<dd>
+<div class="block">Removes a slot assignment while retaining the item quantity in the backpack.</div>
+</dd>
 <dt><a href="com/csse3200/game/services/ResourceService.html#unloadAssets(java.lang.String%5B%5D)" class="member-name-link">unloadAssets(String[])</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ResourceService.html" title="class in com.csse3200.game.services">ResourceService</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerAbility.html#unlock()" class="member-name-link">unlock()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a></dt>
@@ -8919,9 +9107,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/HeadAttachmentComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/HeadAttachmentComponent.html" title="class in com.csse3200.game.components">HeadAttachmentComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/items/ItemDropAnimationComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/ItemDropAnimationComponent.html" title="class in com.csse3200.game.components.items">ItemDropAnimationComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/items/ItemSpinComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.items.<a href="com/csse3200/game/components/items/ItemSpinComponent.html" title="class in com.csse3200.game.components.items">ItemSpinComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/AbilityMenuDisplay.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/AbilityMenuDisplay.html" title="class in com.csse3200.game.components.maingame">AbilityMenuDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/ConsumableHotbarDisplay.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/ConsumableHotbarDisplay.html" title="class in com.csse3200.game.components.maingame">ConsumableHotbarDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusBiteComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusBiteComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusBiteComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -8981,6 +9173,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Re-asserts the invariant rather than trusting that nothing else touched the locks.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/player/BurnVialFeedbackComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/BurnVialFeedbackComponent.html" title="class in com.csse3200.game.components.player">BurnVialFeedbackComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/HealingPotionFeedbackComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/HealingPotionFeedbackComponent.html" title="class in com.csse3200.game.components.player">HealingPotionFeedbackComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerAbilitiesComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAbilitiesComponent.html" title="class in com.csse3200.game.components.player">PlayerAbilitiesComponent</a></dt>
@@ -9011,6 +9205,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Updates the burn.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/statuseffects/MagnetEffect.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/MagnetEffect.html" title="class in com.csse3200.game.components.statuseffects">MagnetEffect</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/Regeneration.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/Regeneration.html" title="class in com.csse3200.game.components.statuseffects">Regeneration</a></dt>
 <dd>
 <div class="block">Updates the regeneration.</div>
@@ -9102,6 +9298,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Update all registered entities.</div>
 </dd>
+<dt><a href="com/csse3200/game/items/consumables/VialBurning.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/VialBurning.html" title="class in com.csse3200.game.items.consumables">VialBurning</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/components/PhysicsMovementComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsMovementComponent.html" title="class in com.csse3200.game.physics.components">PhysicsMovementComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsEngine.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsEngine.html" title="class in com.csse3200.game.physics">PhysicsEngine</a></dt>
@@ -9237,9 +9435,13 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Applies the item's effect; timed effects are registered by the use component.</div>
 </dd>
+<dt><a href="com/csse3200/game/items/consumables/BurnVial.html#use(com.csse3200.game.components.CombatStatsComponent,com.csse3200.game.services.GameTime)" class="member-name-link">use(CombatStatsComponent, GameTime)</a> - Method in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/BurnVial.html" title="class in com.csse3200.game.items.consumables">BurnVial</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/consumables/FreezeBomb.html#use(com.csse3200.game.components.CombatStatsComponent,com.csse3200.game.services.GameTime)" class="member-name-link">use(CombatStatsComponent, GameTime)</a> - Method in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/FreezeBomb.html" title="class in com.csse3200.game.items.consumables">FreezeBomb</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/consumables/InstantHealingPotion.html#use(com.csse3200.game.components.CombatStatsComponent,com.csse3200.game.services.GameTime)" class="member-name-link">use(CombatStatsComponent, GameTime)</a> - Method in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/InstantHealingPotion.html" title="class in com.csse3200.game.items.consumables">InstantHealingPotion</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/consumables/MagnetPotion.html#use(com.csse3200.game.components.CombatStatsComponent,com.csse3200.game.services.GameTime)" class="member-name-link">use(CombatStatsComponent, GameTime)</a> - Method in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/MagnetPotion.html" title="class in com.csse3200.game.items.consumables">MagnetPotion</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/consumables/RegenerationPotion.html#use(com.csse3200.game.components.CombatStatsComponent,com.csse3200.game.services.GameTime)" class="member-name-link">use(CombatStatsComponent, GameTime)</a> - Method in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/RegenerationPotion.html" title="class in com.csse3200.game.items.consumables">RegenerationPotion</a></dt>
 <dd>&nbsp;</dd>
@@ -9273,7 +9475,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/player/ConsumableSelectionComponent.html#useSelected()" class="member-name-link">useSelected()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumableSelectionComponent.html" title="class in com.csse3200.game.components.player">ConsumableSelectionComponent</a></dt>
 <dd>
-<div class="block">The effect component validates inventory and whether the selected item can be used.</div>
+<div class="block">The existing effect component validates stock and consumes only a successful use.</div>
 </dd>
 </dl>
 <h2 class="title" id="I:V">V</h2>
@@ -9579,6 +9781,12 @@ the order they are declared.</div>
 <dt><a href="com/csse3200/game/components/tasks/VenomSpitAttackTask.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">VenomSpitAttackTask(Entity)</a> - Constructor for class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/VenomSpitAttackTask.html" title="class in com.csse3200.game.components.tasks">VenomSpitAttackTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/GameSaveData.html#version" class="member-name-link">version</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/GameSaveData.html" title="class in com.csse3200.game.files">GameSaveData</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/items/consumables/VialBurning.html" class="type-name-link" title="class in com.csse3200.game.items.consumables">VialBurning</a> - Class in <a href="com/csse3200/game/items/consumables/package-summary.html">com.csse3200.game.items.consumables</a></dt>
+<dd>
+<div class="block">Item-specific appearance around the existing Burning tick; damage and cadence stay in Burning.</div>
+</dd>
+<dt><a href="com/csse3200/game/items/consumables/VialBurning.html#%3Cinit%3E(int,long,long,com.csse3200.game.components.CombatStatsComponent)" class="member-name-link">VialBurning(int, long, long, CombatStatsComponent)</a> - Constructor for class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/VialBurning.html" title="class in com.csse3200.game.items.consumables">VialBurning</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.html#video" class="member-name-link">video</a> - Variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript</a></dt>
 <dd>

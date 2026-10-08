@@ -130,9 +130,16 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Builds a hover tooltip for an item.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#lines(com.csse3200.game.items.Item)" class="member-name-link">lines</a><wbr>(<a href="../items/Item.html" title="class in com.csse3200.game.items">Item</a>&nbsp;item)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static com.badlogic.gdx.scenes.scene2d.ui.Tooltip<wbr>&lt;com.badlogic.gdx.scenes.scene2d.ui.Table&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#forItem(com.csse3200.game.items.Item,com.badlogic.gdx.scenes.scene2d.ui.Skin,com.badlogic.gdx.scenes.scene2d.ui.TooltipManager)" class="member-name-link">forItem</a><wbr>(<a href="../items/Item.html" title="class in com.csse3200.game.items">Item</a>&nbsp;item,
+ com.badlogic.gdx.scenes.scene2d.ui.Skin&nbsp;skin,
+ com.badlogic.gdx.scenes.scene2d.ui.TooltipManager&nbsp;manager)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Builds the same item hint using caller-owned timing and animation settings.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#lines(com.csse3200.game.items.Item)" class="member-name-link">lines</a><wbr>(<a href="../items/Item.html" title="class in com.csse3200.game.items">Item</a>&nbsp;item)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">The lines of text shown in an item's tooltip, top to bottom: its name, its effect summary when
  it has one, then its description.</div>
 </div>
@@ -197,6 +204,15 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>a tooltip listener for the item's actor</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="forItem(com.csse3200.game.items.Item,com.badlogic.gdx.scenes.scene2d.ui.Skin,com.badlogic.gdx.scenes.scene2d.ui.TooltipManager)">
+<h3>forItem</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.ui.Tooltip&lt;com.badlogic.gdx.scenes.scene2d.ui.Table&gt;</span>&nbsp;<span class="element-name">forItem</span><wbr><span class="parameters">(<a href="../items/Item.html" title="class in com.csse3200.game.items">Item</a>&nbsp;item,
+ com.badlogic.gdx.scenes.scene2d.ui.Skin&nbsp;skin,
+ com.badlogic.gdx.scenes.scene2d.ui.TooltipManager&nbsp;manager)</span></div>
+<div class="block">Builds the same item hint using caller-owned timing and animation settings.</div>
 </section>
 </li>
 <li>
