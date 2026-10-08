@@ -23,6 +23,8 @@ public class InventoryComponent extends Component {
   private int gold;
   private final List<Charm> charms;
   private final Map<String, Integer> consumables;
+  public static final int CONSUMABLE_SLOT_COUNT = 4;
+  private final String[] consumableSlots = new String[CONSUMABLE_SLOT_COUNT];
 
   private InventoryDisplay display;
 
@@ -168,6 +170,51 @@ public class InventoryComponent extends Component {
     return consumables.getOrDefault(id, 0);
   }
 
+  /** Returns the item currently assigned to a physical HUD slot, or null when empty. */
+  public String getConsumableSlot(int index) {
+    if (index < 0 || index >= CONSUMABLE_SLOT_COUNT) {
+      throw new IllegalArgumentException(
+          "Slot must be between 0 and " + (CONSUMABLE_SLOT_COUNT - 1));
+    }
+    return consumableSlots[index];
+  }
+
+  /** Assigns owned stock to a HUD slot, swapping any previous assignment. */
+  public void equipConsumable(String type, int index) {
+    getConsumableSlot(index);
+    if (!hasConsumable(type)) return;
+    int previous = -1;
+    for (int i = 0; i < consumableSlots.length; i++) {
+      if (type.equals(consumableSlots[i])) previous = i;
+    }
+    if (previous >= 0) consumableSlots[previous] = consumableSlots[index];
+    consumableSlots[index] = type;
+    notifyConsumableChanged(type);
+  }
+
+  /** Removes a slot assignment while retaining the item quantity in the backpack. */
+  public void unequipConsumable(int index) {
+    String type = getConsumableSlot(index);
+    consumableSlots[index] = null;
+    if (type != null) notifyConsumableChanged(type);
+  }
+
+  private void notifyConsumableChanged(String type) {
+    if (entity != null) {
+      entity.getEvents().trigger(CONSUMABLE_INVENTORY_CHANGED, type, getConsumableCount(type));
+    }
+  }
+
+  /** Changes a charm's equipment state and applies/removes its effect on the owning player. */
+  public void setCharmEquipped(Charm charm, boolean equipped) {
+    if (entity != null && hasCharm(charm)) charm.setEquipped(entity, equipped);
+  }
+
+  /** Owned IDs, including custom healing potions, for the inventory book. */
+  public List<String> getConsumableIds() {
+    return consumables.keySet().stream().sorted().toList();
+  }
+
   public boolean hasConsumable(String id) {
     return getConsumableCount(id) > 0;
   }
@@ -181,6 +228,14 @@ public class InventoryComponent extends Component {
   public void addConsumable(String id, int quantity) {
     if (!isConsumable(id) || quantity <= 0) {
       return;
+    }
+    if (!hasConsumable(id)) {
+      for (int i = 0; i < consumableSlots.length; i++) {
+        if (consumableSlots[i] == null) {
+          consumableSlots[i] = id;
+          break;
+        }
+      }
     }
     int newCount = getConsumableCount(id) + quantity;
     consumables.put(id, newCount);
@@ -201,6 +256,12 @@ public class InventoryComponent extends Component {
     int newCount = currentCount - 1;
     if (newCount == 0) {
       consumables.remove(id);
+      for (int i = 0; i < consumableSlots.length; i++) {
+        if (id.equals(consumableSlots[i])) {
+          consumableSlots[i] = null;
+          break;
+        }
+      }
     } else {
       consumables.put(id, newCount);
     }

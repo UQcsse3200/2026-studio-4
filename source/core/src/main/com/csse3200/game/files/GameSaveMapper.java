@@ -11,8 +11,12 @@ import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.items.charms.*;
 import com.csse3200.game.services.AchievementService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public final class GameSaveMapper {
   private GameSaveMapper() {}
@@ -33,9 +37,15 @@ public final class GameSaveMapper {
     GameSaveData.PlayerData data = save.playerData;
     data.gold = inventory.getGold();
     data.inventory.putAll(inventory.getConsumables());
+    data.consumableSlots = new ArrayList<>();
+    for (int i = 0; i < InventoryComponent.CONSUMABLE_SLOT_COUNT; i++) {
+      data.consumableSlots.add(inventory.getConsumableSlot(i));
+    }
 
+    data.charmEquipped = new ArrayList<>();
     for (Charm charm : inventory.getCharms()) {
       data.charms.add(charmId(charm));
+      data.charmEquipped.add(charm.isEquipped());
     }
 
     WeaponUpgradeComponent upgrades = required(player, WeaponUpgradeComponent.class);
@@ -67,7 +77,8 @@ public final class GameSaveMapper {
 
     inventory.setGold(data.gold);
     restoreConsumables(data.inventory, inventory);
-    restoreCharms(player, data.charms);
+    restoreConsumableSlots(data.consumableSlots, inventory);
+    restoreCharms(player, data.charms, data.charmEquipped);
     restoreSelectedWeapon(player, data.selectedWeapon);
     restoreUpgrades(player, data.upgradedWeapons);
     restorePlayerHealth(player);
@@ -76,6 +87,37 @@ public final class GameSaveMapper {
   private static void validateSave(GameSaveData save) {
     if (save == null || save.version != 1 || save.playerData == null) {
       throw new IllegalArgumentException("Invalid or unsupported save data");
+    }
+    GameSaveData.PlayerData data = save.playerData;
+    validateConsumableSlots(data);
+    validateCharmEquipment(data);
+  }
+
+  private static void validateConsumableSlots(GameSaveData.PlayerData data) {
+    if (data.consumableSlots == null) return;
+    if (data.consumableSlots.size() != InventoryComponent.CONSUMABLE_SLOT_COUNT) {
+      throw new IllegalArgumentException("Saved consumable slots must contain four positions");
+    }
+    Set<String> assigned = new HashSet<>();
+    for (String id : data.consumableSlots) {
+      if (id == null) continue;
+      Integer count = data.inventory == null ? null : data.inventory.get(id);
+      if (count == null
+          || count <= 0
+          || !ItemCatalog.contains(id)
+          || !(ItemCatalog.create(id, 1) instanceof ConsumableItem)
+          || !assigned.add(id)) {
+        throw new IllegalArgumentException("Invalid saved consumable slot: " + id);
+      }
+    }
+  }
+
+  private static void validateCharmEquipment(GameSaveData.PlayerData data) {
+    if (data.charmEquipped != null
+        && (data.charms == null
+            || data.charmEquipped.size() != data.charms.size()
+            || data.charmEquipped.stream().anyMatch(Objects::isNull))) {
+      throw new IllegalArgumentException("Saved charm equipment must match each owned charm");
     }
   }
 
@@ -102,13 +144,33 @@ public final class GameSaveMapper {
     }
   }
 
-  private static void restoreCharms(Entity player, List<String> savedCharms) {
+  private static void restoreConsumableSlots(
+      List<String> savedSlots, InventoryComponent inventory) {
+    if (savedSlots == null) return;
+    for (int i = 0; i < InventoryComponent.CONSUMABLE_SLOT_COUNT; i++) {
+      inventory.unequipConsumable(i);
+    }
+    for (int i = 0; i < savedSlots.size(); i++) {
+      String id = savedSlots.get(i);
+      if (id != null) inventory.equipConsumable(id, i);
+    }
+  }
+
+  private static void restoreCharms(
+      Entity player, List<String> savedCharms, List<Boolean> savedEquipment) {
     if (savedCharms == null) {
       return;
     }
 
-    for (String id : savedCharms) {
-      charmFromId(id).pickUp(player);
+    InventoryComponent inventory = required(player, InventoryComponent.class);
+    for (int i = 0; i < savedCharms.size(); i++) {
+      Charm charm = charmFromId(savedCharms.get(i));
+      if (savedEquipment == null) {
+        charm.pickUp(player);
+      } else {
+        inventory.addCharm(charm);
+        inventory.setCharmEquipped(charm, savedEquipment.get(i));
+      }
     }
   }
 
