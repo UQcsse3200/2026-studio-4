@@ -107,9 +107,10 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createRoom(com.csse3200.game.components.rooms.configs.RoomConfig,com.csse3200.game.components.CameraComponent,boolean)" class="member-name-link">createRoom</a><wbr>(<a href="../../components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createRoom(com.csse3200.game.components.rooms.configs.RoomConfig,com.csse3200.game.components.CameraComponent,boolean,java.lang.String)" class="member-name-link">createRoom</a><wbr>(<a href="../../components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room,
  <a href="../../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera,
- boolean&nbsp;cleared)</code></div>
+ boolean&nbsp;cleared,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;tileset)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates a room from its declarative definition, camera component and the boolean value of its
  cleared state.</div>
@@ -138,11 +139,12 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="createRoom(com.csse3200.game.components.rooms.configs.RoomConfig,com.csse3200.game.components.CameraComponent,boolean)">
+<section class="detail" id="createRoom(com.csse3200.game.components.rooms.configs.RoomConfig,com.csse3200.game.components.CameraComponent,boolean,java.lang.String)">
 <h3>createRoom</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createRoom</span><wbr><span class="parameters">(<a href="../../components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room,
  <a href="../../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera,
- boolean&nbsp;cleared)</span></div>
+ boolean&nbsp;cleared,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;tileset)</span></div>
 <div class="block">Creates a room from its declarative definition, camera component and the boolean value of its
  cleared state.</div>
 <dl class="notes">
@@ -150,6 +152,7 @@ loadScripts(document, 'script');</script>
 <dd><code>room</code> - The rooms declarative definition.</dd>
 <dd><code>camera</code> - The camera for the room.</dd>
 <dd><code>cleared</code> - Whether the room has been cleared.</dd>
+<dd><code>tileset</code> - The tileset location</dd>
 <dt>Returns:</dt>
 <dd>The room entity.</dd>
 </dl>
