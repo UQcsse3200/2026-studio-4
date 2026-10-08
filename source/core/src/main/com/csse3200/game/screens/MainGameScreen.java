@@ -64,6 +64,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final RoomAssets roomAssets = new RoomAssets();
   private final RunTimer runTimer;
   private boolean winScreenRequested;
+  private boolean winTransitionStarted; // add this
   private boolean saveOnDispose = true;
 
   public MainGameScreen(GdxGame game) {
@@ -147,6 +148,10 @@ public class MainGameScreen extends ScreenAdapter {
     roomManager.update();
     renderer.render();
     runTimer.update();
+    if (winScreenRequested && !winTransitionStarted) {
+      winTransitionStarted = true;
+      scheduleWinScreen();
+    }
   }
 
   @Override
@@ -295,6 +300,14 @@ public class MainGameScreen extends ScreenAdapter {
   private void scheduleDeathScreen() {
     runTimer.stopRun();
     ServiceLocator.getEntityService().schedule(() -> game.setScreen(ScreenType.DEATH_SCREEN));
+  }
+
+  /* Schedule the win screen to be shown */
+  private void scheduleWinScreen() {
+    runTimer.stopRun();
+    saveOnDispose = false; // a finished run shouldn't become a resumable save
+    runSaved = true;
+    ServiceLocator.getEntityService().schedule(() -> game.setScreen(ScreenType.WIN_SCREEN));
   }
 
   private AchievementService createAchievementService() {
