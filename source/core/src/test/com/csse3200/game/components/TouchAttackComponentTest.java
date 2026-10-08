@@ -51,10 +51,10 @@ class TouchAttackComponentTest {
   @Test
   void existingConstructorsRemainEntryOnly() {
     for (TouchAttackComponent attack :
-            new TouchAttackComponent[] {
-                    new TouchAttackComponent(PhysicsLayer.PLAYER),
-                    new TouchAttackComponent(PhysicsLayer.PLAYER, 0f)
-            }) {
+        new TouchAttackComponent[] {
+          new TouchAttackComponent(PhysicsLayer.PLAYER),
+          new TouchAttackComponent(PhysicsLayer.PLAYER, 0f)
+        }) {
       Entity attacker = attackerWith(attack);
       Entity target = durableTarget();
       contact(attacker, target, "collisionStart");
@@ -102,8 +102,8 @@ class TouchAttackComponentTest {
     Entity attacker = repeatingAttacker();
     Entity target = durableTarget();
     target
-            .getComponent(StatusEffectsControllerComponent.class)
-            .addStatusEffect(StatusEffectsFactory.createFrozen(time, 5000));
+        .getComponent(StatusEffectsControllerComponent.class)
+        .addStatusEffect(StatusEffectsFactory.createFrozen(time, 5000));
     contact(attacker, target, "collisionStart");
     tick(attacker, 1f);
     assertEquals(80, health(target));
@@ -114,7 +114,7 @@ class TouchAttackComponentTest {
     Entity attacker = repeatingAttacker();
     Entity target = durableTarget();
     StatusEffectsControllerComponent effects =
-            attacker.getComponent(StatusEffectsControllerComponent.class);
+        attacker.getComponent(StatusEffectsControllerComponent.class);
     effects.addStatusEffect(StatusEffectsFactory.createFrozen(time, 5000));
     contact(attacker, target, "collisionStart");
     tick(attacker, 1f);
@@ -129,7 +129,7 @@ class TouchAttackComponentTest {
     Entity attacker = repeatingAttacker();
     Entity target = durableTarget();
     StatusEffectsControllerComponent effects =
-            target.getComponent(StatusEffectsControllerComponent.class);
+        target.getComponent(StatusEffectsControllerComponent.class);
     effects.addStatusEffect(StatusEffectsFactory.createInvisibility(time, 5000));
     contact(attacker, target, "collisionStart");
     tick(attacker, 1f);
@@ -158,8 +158,8 @@ class TouchAttackComponentTest {
   void rejectsInvalidRepeatIntervals() {
     for (float interval : new float[] {0f, -1f, Float.NaN, Float.POSITIVE_INFINITY}) {
       assertThrows(
-              IllegalArgumentException.class,
-              () -> new TouchAttackComponent(PhysicsLayer.PLAYER, 0f, interval));
+          IllegalArgumentException.class,
+          () -> new TouchAttackComponent(PhysicsLayer.PLAYER, 0f, interval));
     }
   }
 
@@ -169,24 +169,24 @@ class TouchAttackComponentTest {
 
   private Entity attackerWith(TouchAttackComponent attack) {
     Entity attacker =
-            new Entity()
-                    .addComponent(attack)
-                    .addComponent(new StatusEffectsControllerComponent())
-                    .addComponent(new CombatStatsComponent(100, 10))
-                    .addComponent(new PhysicsComponent())
-                    .addComponent(new HitboxComponent());
+        new Entity()
+            .addComponent(attack)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent());
     attacker.create();
     return attacker;
   }
 
   private Entity durableTarget() {
     Entity target =
-            new Entity()
-                    .addComponent(new StatusEffectsControllerComponent())
-                    .addComponent(new CombatStatsComponent(100, 0))
-                    .addComponent(new PhysicsComponent())
-                    .addComponent(new ColliderComponent().setLayer(PhysicsLayer.PLAYER))
-                    .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER));
+        new Entity()
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(new CombatStatsComponent(100, 0))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.PLAYER))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER));
     target.create();
     return target;
   }
@@ -197,11 +197,11 @@ class TouchAttackComponentTest {
 
   private void contact(Entity attacker, Entity target, String event) {
     attacker
-            .getEvents()
-            .trigger(
-                    event,
-                    attacker.getComponent(HitboxComponent.class).getFixture(),
-                    target.getComponent(HitboxComponent.class).getFixture());
+        .getEvents()
+        .trigger(
+            event,
+            attacker.getComponent(HitboxComponent.class).getFixture(),
+            target.getComponent(HitboxComponent.class).getFixture());
   }
 
   private void tick(Entity attacker, float delta) {
@@ -242,9 +242,9 @@ class TouchAttackComponentTest {
     Entity entity = createAttacker(targetLayer);
     // Target does not have a combat component
     Entity target =
-            new Entity()
-                    .addComponent(new PhysicsComponent())
-                    .addComponent(new HitboxComponent().setLayer(targetLayer));
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(targetLayer));
     target.create();
 
     Fixture entityFixture = entity.getComponent(HitboxComponent.class).getFixture();
@@ -256,11 +256,11 @@ class TouchAttackComponentTest {
 
   Entity createAttacker(short targetLayer) {
     Entity entity =
-            new Entity()
-                    .addComponent(new TouchAttackComponent(targetLayer))
-                    .addComponent(new CombatStatsComponent(100, 10))
-                    .addComponent(new PhysicsComponent())
-                    .addComponent(new HitboxComponent());
+        new Entity()
+            .addComponent(new TouchAttackComponent(targetLayer))
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent());
     entity.create();
     return entity;
   }
@@ -271,10 +271,10 @@ class TouchAttackComponentTest {
 
   Entity createTarget(short layer, int health) {
     Entity target =
-            new Entity()
-                    .addComponent(new CombatStatsComponent(health, 0))
-                    .addComponent(new PhysicsComponent())
-                    .addComponent(new HitboxComponent().setLayer(layer));
+        new Entity()
+            .addComponent(new CombatStatsComponent(health, 0))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(layer));
     target.create();
     return target;
   }
