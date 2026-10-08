@@ -3,11 +3,11 @@ package com.csse3200.game.components.boss;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.*;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
@@ -782,8 +782,7 @@ class FinalBossStageTwoFireIntegrationTest {
     when(texture.getWidth()).thenReturn(512);
     when(texture.getHeight()).thenReturn(512);
     ResourceService resources = mock(ResourceService.class);
-    when(resources.getAsset(anyString(), eq(Texture.class)))
-        .thenReturn(texture);
+    when(resources.getAsset(anyString(), eq(Texture.class))).thenReturn(texture);
     ServiceLocator.registerResourceService(resources);
     ServiceLocator.registerRenderService(mock(RenderService.class));
     Entity wall = ObstacleFactory.createWallFor(EnumSet.of(direction), false);
