@@ -50,6 +50,30 @@ public class FinalBossStageTwoComponent extends Component {
   private FinalBossStageTwoPickupController pickups;
   private FinalBossStageTwoPlayerIceController playerIce;
   private FinalBossStageTwoIceInput iceInput;
+  private final FinalBossStageTwoFireController.WallQuery fireWalls =
+      new FinalBossStageTwoFireController.WallQuery() {
+        @Override
+        public float firstHitFraction(Vector2 from, Vector2 to) {
+          return findWall(from, to).fraction();
+        }
+
+        @Override
+        public void onHit(Vector2 from, Vector2 to) {
+          FinalBossStageTwoWallCollision.Hit hit = findWall(from, to);
+          if (ice != null && hit.fixture() != null) ice.hitByFire(hit.fixture());
+        }
+
+        private FinalBossStageTwoWallCollision.Hit findWall(Vector2 from, Vector2 to) {
+          PhysicsService physics = ServiceLocator.getPhysicsService();
+          return FinalBossStageTwoWallCollision.firstHit(
+              physics == null ? null : physics.getPhysics().getWorld(),
+              from,
+              to,
+              stageTwoConfig.fireballRadius);
+        }
+      };
+
+  // Player ice projectiles retain their existing point-based wall collision.
   private final FinalBossStageTwoFireController.WallQuery walls =
       new FinalBossStageTwoFireController.WallQuery() {
         @Override
@@ -255,7 +279,7 @@ public class FinalBossStageTwoComponent extends Component {
           spawnRadius,
           new FinalBossStageTwoProjectileTarget(from, to, radius, this::hitPlayer),
           bounds,
-          walls);
+          fireWalls);
       if (!canContinueFire()) {
         clearEffects();
         stopRoaming();
@@ -278,7 +302,7 @@ public class FinalBossStageTwoComponent extends Component {
               radius,
               this::hitPlayer),
           bounds,
-          walls);
+          fireWalls);
       if (!canContinueFire()) clearEffects();
     }
     return true;

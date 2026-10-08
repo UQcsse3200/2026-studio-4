@@ -84,15 +84,14 @@ class RunTimerTest {
   }
 
   @Test
-  void startDungeonIsANoOpWhileAlreadyRunning() {
+  void startDungeonSwitchesAndSavesPreviousDungeonWhileAlreadyRunning() {
     timer.startRun();
     advance(1f);
     timer.startDungeon("dungeonOne");
     advance(2f);
-    timer.startDungeon("dungeonTwo"); // must be ignored; dungeon already active
-    advance(1f);
-    assertEquals("dungeonOne", timer.getCurrentDungeonId());
-    assertEquals(3f, timer.getDungeonTime(), 0.01f);
+    timer.startDungeon("dungeonTwo");
+    assertEquals("dungeonTwo", timer.getCurrentDungeonId());
+    assertEquals(2f, timer.getDungeonTimes().get("dungeonOne"), 0.01f);
   }
 
   @Test

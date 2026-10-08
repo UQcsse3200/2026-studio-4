@@ -1,0 +1,12 @@
+cerberus-chain.png
+size: 16, 16
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+chain
+  rotate: false
+  xy: 2, 2
+  size: 4, 8
+  orig: 4, 8
+  offset: 0, 0
+  index: -1

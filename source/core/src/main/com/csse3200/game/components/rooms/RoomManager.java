@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.achievements.AchievementsManager;
+import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.friendlynpc.NpcInteractableComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
@@ -18,6 +18,7 @@ import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RoomFactory;
+import com.csse3200.game.files.GameSaveData;
 import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.HashSet;
@@ -36,12 +37,16 @@ public class RoomManager {
   private final Set<String> clearedRoomIds = new HashSet<>();
   private final Set<String> completedDungeonIds = new HashSet<>();
   private RoomConfig currentConfig;
-  private final PositionConfig initialEntryPoint;
+  private String checkpointRoomId;
+  private String checkpointEntryPointId;
+  private PositionConfig checkpointPosition;
+  private PositionConfig initialEntryPoint;
+  private Vector2 initialWorldPosition;
   private RoomConfig pendingDestination;
   private PositionConfig pendingArrivalPosition;
   private boolean clearRequested;
   private final RunTimer runTimer;
-  private final AchievementsManager achievements;
+  private String pendingDungeonCompletion;
 
   private static final String DEFAULT_TILESET = "images/dungeons/tileSet0.png";
   private static final String DUNGEON1_TILESET = "images/dungeons/tileSet1.png";
@@ -65,11 +70,30 @@ public class RoomManager {
     }
     currentRoom = RoomFactory.createRoom(currentConfig, camera, false, tileset);
     achievements = new AchievementsManager(currentRoom);
+    currentConfig = world.getRoom(world.startRoomId);
+    for (RoomConfig room : world.rooms) {
+      if (room.dungeonId != null) {
+        runTimer.registerDungeon(room.dungeonId);
+      }
+    }
+    checkpointRoomId = currentConfig.id;
+    checkpointEntryPointId = world.startEntryPointId;
+    checkpointPosition = new PositionConfig();
+    checkpointPosition.x = initialEntryPoint.x;
+    checkpointPosition.y = initialEntryPoint.y;
+    currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
+
     player.getEvents().addListener("interact", this::interact);
     FollowingCameraComponent cameraFollowingComponent =
         currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
+
+    if (ServiceLocator.getAchievementService() != null) {
+      ServiceLocator.getAchievementService()
+          .getEvents()
+          .addListener("achievementUnlocked", this::onAchievementUnlocked);
+    }
   }
 
   private String getTileset(String tilesetConfig) {
@@ -93,24 +117,100 @@ public class RoomManager {
     this.world = null;
     this.camera = null;
     this.initialEntryPoint = null;
-    achievements = new AchievementsManager(new Entity());
+  }
+
+  /** Call after construction and before create() when starting from a save. */
+  public void initializeFromCheckpoint(GameSaveData.Checkpoint checkpoint) {
+    if (checkpoint == null) {
+      throw new IllegalArgumentException("Checkpoint is required");
+    }
+
+    RoomConfig savedRoom = world.getRoom(checkpoint.roomId);
+    if (savedRoom == null) {
+      throw new IllegalArgumentException("Unknown checkpoint room: " + checkpoint.roomId);
+    }
+
+    PositionConfig spawn = new PositionConfig();
+    spawn.x = checkpoint.tileX;
+    spawn.y = checkpoint.tileY;
+
+    if (checkpoint.entryPointId != null
+        && savedRoom.getEntryPoint(checkpoint.entryPointId) == null) {
+      throw new IllegalArgumentException("Unknown checkpoint entry: " + checkpoint.entryPointId);
+    }
+
+    currentRoom.dispose();
+    currentConfig = savedRoom;
+    currentRoom = RoomFactory.createRoom(savedRoom, camera, false);
+    initialEntryPoint = spawn;
+    initialWorldPosition = null;
+
+    checkpointRoomId = savedRoom.id;
+    checkpointEntryPointId = checkpoint.entryPointId;
+    checkpointPosition = spawn;
+
+    FollowingCameraComponent following = currentRoom.getComponent(FollowingCameraComponent.class);
+    following.setCamera(camera);
+    following.setTarget(player);
+  }
+
+  /** Starts at the last quit position, while retaining the saved death checkpoint. */
+  public void initializeFromSavedRun(GameSaveData save, boolean atCheckpoint) {
+    if (save == null || save.checkpoint == null) {
+      throw new IllegalArgumentException("Save data and checkpoint are required");
+    }
+    initializeFromCheckpoint(save.checkpoint);
+    if (atCheckpoint || save.resumePosition == null) {
+      return;
+    }
+
+    GameSaveData.ResumePosition resume = save.resumePosition;
+    RoomConfig resumeRoom = world.getRoom(resume.roomId);
+    if (resumeRoom == null || !Float.isFinite(resume.x) || !Float.isFinite(resume.y)) {
+      throw new IllegalArgumentException("Invalid saved resume position");
+    }
+
+    currentRoom.dispose();
+    currentConfig = resumeRoom;
+    currentRoom = RoomFactory.createRoom(resumeRoom, camera, false);
+    initialEntryPoint = null;
+    initialWorldPosition = new Vector2(resume.x, resume.y);
+
+    FollowingCameraComponent following = currentRoom.getComponent(FollowingCameraComponent.class);
+    following.setCamera(camera);
+    following.setTarget(player);
   }
 
   /** Registers the active room and player, then positions the player at its entry point. */
   public void create() {
+    currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
+    FollowingCameraComponent following = currentRoom.getComponent(FollowingCameraComponent.class);
+    following.setCamera(camera);
+    following.setTarget(player);
+
     EntityService entityService = ServiceLocator.getEntityService();
     entityService.register(currentRoom);
     entityService.register(player);
-    start(initialEntryPoint);
-    if (runTimer != null && currentConfig.dungeonId != null) {
+    if (initialWorldPosition == null) {
+      start(initialEntryPoint);
+    } else {
+      start(initialWorldPosition);
+    }
+    if (runTimer != null) {
       runTimer.startDungeon(currentConfig.dungeonId);
     }
+  }
+
+  private void start(Vector2 worldPosition) {
+    currentRoom.getEvents().addListener("roomCleared", this::onRoomCleared);
+    currentRoom.getEvents().trigger("RoomCreated", player);
+    scaleRoom(currentRoom);
+    player.setPosition(worldPosition);
   }
 
   /** Package private for testing */
   void start(PositionConfig entryPoint) {
     currentRoom.getEvents().addListener("roomCleared", this::onRoomCleared);
-    currentRoom.getEvents().addListener("achievementUnlocked", this::onAchievementUnlocked);
     currentRoom.getEvents().trigger("RoomCreated", player);
     scaleRoom(currentRoom);
     Vector2 position =
@@ -179,6 +279,7 @@ public class RoomManager {
     }
     if (exit.completesDungeon) {
       completedDungeonIds.add(currentConfig.dungeonId);
+      completeDungeon();
     }
     pendingDestination = destination;
     if (exit.destinationExitId != null) {
@@ -186,6 +287,18 @@ public class RoomManager {
     } else {
       pendingArrivalPosition = destination.getEntryPoint(exit.destinationEntryPointId);
     }
+  }
+
+  /** Records the current dungeon as completed and reports its clear time for achievements. */
+  private void completeDungeon() {
+    completedDungeonIds.add(currentConfig.dungeonId);
+    if (runTimer != null && ServiceLocator.getAchievementService() != null) {
+      AchievementContext ctx = new AchievementContext();
+      ctx.dungeonId = currentConfig.dungeonId;
+      ctx.dungeonSeconds = runTimer.getDungeonTime();
+      ServiceLocator.getAchievementService().update(ctx);
+    }
+    pendingDungeonCompletion = currentConfig.dungeonId; // defer the toast
   }
 
   private boolean interactWithNpc() {
@@ -246,7 +359,6 @@ public class RoomManager {
     currentRoom.dispose();
     currentConfig = destination;
     currentRoom = nextRoom;
-    achievements.newRoom(currentRoom); // move here, before start()
     if (runTimer != null && !Objects.equals(previousDungeonId, destination.dungeonId)) {
       runTimer.stopDungeon();
       if (destination.dungeonId != null) {
@@ -254,11 +366,28 @@ public class RoomManager {
       }
     }
     ServiceLocator.getEntityService().register(currentRoom);
+
+    if (pendingDungeonCompletion != null && ServiceLocator.getAchievementService() != null) {
+      AchievementContext ctx = new AchievementContext();
+      ctx.dungeonCompletedId = pendingDungeonCompletion;
+      ServiceLocator.getAchievementService().update(ctx);
+      pendingDungeonCompletion = null;
+    }
+
     start(arrivalPosition);
+    rememberCheckpoint(arrivalPosition, null);
     FollowingCameraComponent cameraFollowingComponent =
         currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
+    if (runTimer != null
+        && destination.dungeonId != null
+        && !Objects.equals(previousDungeonId, destination.dungeonId)
+        && ServiceLocator.getAchievementService() != null) {
+      AchievementContext ctx = new AchievementContext();
+      ctx.dungeonEnteredId = destination.dungeonId;
+      ServiceLocator.getAchievementService().update(ctx);
+    }
   }
 
   private PositionConfig arrivalInsideDoor(ExitConfig door) {
@@ -342,6 +471,40 @@ public class RoomManager {
     this.currentRoom = room;
   }
 
+  public void activateCheckpoint(String entryPointId) {
+    PositionConfig entry = currentConfig.getEntryPoint(entryPointId);
+    if (entry == null) {
+      throw new IllegalArgumentException("Unknown checkpoint entry: " + entryPointId);
+    }
+    rememberCheckpoint(entry, entryPointId);
+  }
+
+  private void rememberCheckpoint(PositionConfig position, String entryPointId) {
+    checkpointRoomId = currentConfig.id;
+    checkpointEntryPointId = entryPointId;
+    checkpointPosition = new PositionConfig();
+    checkpointPosition.x = position.x;
+    checkpointPosition.y = position.y;
+  }
+
+  public GameSaveData.Checkpoint getCheckpointData() {
+    GameSaveData.Checkpoint checkpoint = new GameSaveData.Checkpoint();
+    checkpoint.roomId = checkpointRoomId;
+    checkpoint.entryPointId = checkpointEntryPointId;
+    checkpoint.tileX = checkpointPosition.x;
+    checkpoint.tileY = checkpointPosition.y;
+    return checkpoint;
+  }
+
+  public GameSaveData.ResumePosition getResumePositionData() {
+    GameSaveData.ResumePosition position = new GameSaveData.ResumePosition();
+    Vector2 playerPosition = player.getPosition();
+    position.roomId = currentConfig.id;
+    position.x = playerPosition.x;
+    position.y = playerPosition.y;
+    return position;
+  }
+
   /** debug function for RoomCommand */
   WorldConfig getWorld() {
     return world;
@@ -350,6 +513,18 @@ public class RoomManager {
   /** debug function for RoomCommand */
   void debugSwitchRoom(RoomConfig destination) {
     pendingDestination = destination;
-    pendingArrivalPosition = destination.exits[0];
+
+    // sets either the first exit of the room or first exit as destination pos
+    if (destination.exits.length < 1 && destination.entryPoints.length > 0) {
+      pendingArrivalPosition = destination.entryPoints[0];
+    } else if (destination.exits.length >= 1) {
+      pendingArrivalPosition = destination.exits[0];
+    } else {
+      // fallback if no entries or exits. Should ideally never happen
+      // could end up spawning in a wall
+      pendingArrivalPosition = new PositionConfig();
+      pendingArrivalPosition.x = 5;
+      pendingArrivalPosition.y = 5;
+    }
   }
 }
