@@ -31,12 +31,12 @@ Saved options are written to `DECO2800Game/settings.json` under the home directo
 | Resolution | Fullscreen size and refresh rate. If nothing is selected, Apply keeps the current display mode. |
 | Window size | Size of the window when fullscreen is off. Choices are 960×540, 1280×720, 1280×800, 1600×900, and 1920×1080. |
 | UI scale | In the Display section, from 0.5× to 2×. The settings page stays the same size. The HUD changes after Apply. |
-| Music | Background music volume. |
-| Effects | Sound effect volume. |
+| Music | Background music volume, including the victory music. |
+| Effects | Sound effect volume, including the death sound. |
 | Mute in background | Silences music and effects while the window is not focused. |
-| Show run timer | Shows or hides the run timer on the HUD. |
-| Show FPS | Shows or hides the FPS counter in the bottom-right corner. Turn it on, press Apply, then start or return to a run. |
-| Last run / Best run | Times stored on this computer. |
+| Show run timer | Shows or hides the run timer on the HUD. Apply updates the timer in the current run. |
+| Show FPS | Shows or hides the FPS counter in the bottom-right corner. Apply updates it in the current run. |
+| Last run / Best run | Times stored on this computer. Best changes only when a run is won. Saving and leaving does not replace it. |
 | Reset times | Clears last run and best run. It does not clear achievements. |
 
 ## Class diagram

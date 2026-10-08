@@ -206,7 +206,7 @@ public class MainGameScreen extends ScreenAdapter {
   public void dispose() {
     logger.debug("Disposing main game screen");
     if (runTimer != null) {
-      GameProgress.recordRun((long) (runTimer.getTotalTime() * 1000f));
+      GameProgress.recordRun((long) (runTimer.getTotalTime() * 1000f), winTransitionStarted);
     }
 
     if (saveOnDispose && !runSaved && player != null && roomManager != null) {

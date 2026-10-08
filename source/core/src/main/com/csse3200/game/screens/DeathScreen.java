@@ -15,6 +15,7 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.files.AudioLevels;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.files.GameSaveData;
 import com.csse3200.game.input.InputDecorator;
@@ -56,7 +57,7 @@ public class DeathScreen extends ScreenAdapter {
   private void playDeathSound() {
     ResourceService resourceService = ServiceLocator.getResourceService();
     if (resourceService != null && resourceService.containsAsset(DEATH_SOUND_C, Sound.class)) {
-      resourceService.getAsset(DEATH_SOUND_C, Sound.class).play();
+      AudioLevels.play(resourceService.getAsset(DEATH_SOUND_C, Sound.class));
     }
   }
 

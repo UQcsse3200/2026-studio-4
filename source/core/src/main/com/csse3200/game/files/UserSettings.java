@@ -2,6 +2,7 @@ package com.csse3200.game.files;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
+import com.badlogic.gdx.files.FileHandle;
 import com.csse3200.game.files.FileLoader.Location;
 import java.io.File;
 
@@ -10,16 +11,62 @@ public class UserSettings {
   private static final String ROOT_DIR = "DECO2800Game";
   private static final String SETTINGS_FILE = "settings.json";
 
+  private static Settings cached;
+
   /**
-   * Get the stored user settings
+   * How many times the settings file was opened. Repeated {@link #get()} calls do not add to it.
+   */
+  static int diskReads;
+
+  /**
+   * Get the stored user settings. The file is read once and kept in memory until {@link #set}.
    *
    * @return Copy of the current settings
    */
   public static Settings get() {
+    if (cached == null) {
+      cached = readStored();
+    }
+    return copy(cached);
+  }
+
+  private static Settings readStored() {
+    diskReads++;
     String path = ROOT_DIR + File.separator + SETTINGS_FILE;
+    FileHandle file = Gdx.files.external(path);
+    if (file == null || !file.exists()) {
+      return new Settings();
+    }
     Settings fileSettings = FileLoader.readClass(Settings.class, path, Location.EXTERNAL);
-    // Use default values if file doesn't exist
     return fileSettings != null ? fileSettings : new Settings();
+  }
+
+  private static Settings copy(Settings source) {
+    Settings copy = new Settings();
+    if (source == null) {
+      return copy;
+    }
+    copy.fps = source.fps;
+    copy.fullscreen = source.fullscreen;
+    copy.vsync = source.vsync;
+    copy.uiScale = source.uiScale;
+    copy.showTimer = source.showTimer;
+    copy.showFps = source.showFps;
+    copy.musicVolume = source.musicVolume;
+    copy.soundVolume = source.soundVolume;
+    copy.windowWidth = source.windowWidth;
+    copy.windowHeight = source.windowHeight;
+    copy.onlinePlay = source.onlinePlay;
+    copy.displayName = source.displayName;
+    copy.muteUnfocused = source.muteUnfocused;
+    if (source.displayMode != null) {
+      DisplaySettings mode = new DisplaySettings();
+      mode.width = source.displayMode.width;
+      mode.height = source.displayMode.height;
+      mode.refreshRate = source.displayMode.refreshRate;
+      copy.displayMode = mode;
+    }
+    return copy;
   }
 
   /**
@@ -29,11 +76,12 @@ public class UserSettings {
    * @param applyImmediate true to immediately apply new settings.
    */
   public static void set(Settings settings, boolean applyImmediate) {
+    cached = copy(settings);
     String path = ROOT_DIR + File.separator + SETTINGS_FILE;
-    FileLoader.writeClass(settings, path, Location.EXTERNAL);
+    FileLoader.writeClass(cached, path, Location.EXTERNAL);
 
     if (applyImmediate) {
-      applySettings(settings);
+      applySettings(cached);
     }
   }
 
