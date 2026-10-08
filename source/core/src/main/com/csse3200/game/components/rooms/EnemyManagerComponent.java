@@ -8,6 +8,7 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
+import com.csse3200.game.components.boss.FinalBossStageThreeComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoArenaComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
@@ -336,6 +337,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   /** Defeats all living enemies for temporary transition testing. */
   public void clear() {
     for (Entity enemy : new ArrayList<>(activeEnemies)) {
+      FinalBossStageThreeComponent stageThree =
+          enemy.getComponent(FinalBossStageThreeComponent.class);
+      if (stageThree != null) {
+        stageThree.skipToEnding();
+        continue;
+      }
       CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
       if (stats != null && !stats.isDead()) {
         stats.setHealth(0);

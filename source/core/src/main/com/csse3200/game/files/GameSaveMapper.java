@@ -9,6 +9,8 @@ import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.items.charms.*;
+import com.csse3200.game.services.AchievementService;
+import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +47,15 @@ public final class GameSaveMapper {
     if (selection.getSelectedWeapon() != null) {
       data.selectedWeapon = selection.getSelectedWeapon().name();
     }
+
+    AchievementService achievementService = ServiceLocator.getAchievementService();
+
+    if (achievementService != null) {
+      save.unlockedAchievements.addAll(achievementService.getUnlockedAchievementNames());
+
+      save.achievementProgress.putAll(achievementService.getAchievementProgress());
+    }
+
     return save;
   }
 
@@ -133,6 +144,18 @@ public final class GameSaveMapper {
     CombatStatsComponent stats = required(player, CombatStatsComponent.class);
     // Death restores the player alive at the checkpoint.
     stats.setHealth(stats.getMaxHealth());
+  }
+
+  public static void restoreAchievements(GameSaveData save) {
+    if (save == null) {
+      return;
+    }
+
+    AchievementService achievementService = ServiceLocator.getAchievementService();
+
+    if (achievementService != null) {
+      achievementService.restoreState(save.unlockedAchievements, save.achievementProgress);
+    }
   }
 
   private static String charmId(Charm charm) {

@@ -69,6 +69,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final RoomAssets roomAssets = new RoomAssets();
   private final RunTimer runTimer;
   private boolean winScreenRequested;
+  private boolean winTransitionStarted; // add this
   private boolean saveOnDispose = true;
   private boolean settingsOpen;
 
@@ -138,6 +139,7 @@ public class MainGameScreen extends ScreenAdapter {
 
     if (loadedSave != null) {
       GameSaveMapper.restore(player, loadedSave);
+      GameSaveMapper.restoreAchievements(loadedSave);
     }
     RoomCommand roomCommand = new RoomCommand(roomManager);
     terminal.addCommand("room", roomCommand);
@@ -155,6 +157,10 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.getEntityService().update();
     roomAssets.applyMusicVolume();
     renderer.render();
+    if (winScreenRequested && !winTransitionStarted) {
+      winTransitionStarted = true;
+      scheduleWinScreen();
+    }
   }
 
   @Override
@@ -184,6 +190,7 @@ public class MainGameScreen extends ScreenAdapter {
     if (saveOnDispose && !runSaved && player != null && roomManager != null) {
       runSaved = true;
       try {
+        runTimer.stopDungeon();
         GameSaveData save =
             GameSaveMapper.capture(
                 player, roomManager.getCheckpointData(), roomManager.getResumePositionData());
@@ -318,6 +325,14 @@ public class MainGameScreen extends ScreenAdapter {
   private void scheduleDeathScreen() {
     runTimer.stopRun();
     ServiceLocator.getEntityService().schedule(() -> game.setScreen(ScreenType.DEATH_SCREEN));
+  }
+
+  /* Schedule the win screen to be shown */
+  private void scheduleWinScreen() {
+    runTimer.stopRun();
+    saveOnDispose = false; // a finished run shouldn't become a resumable save
+    runSaved = true;
+    ServiceLocator.getEntityService().schedule(() -> game.setScreen(ScreenType.WIN_SCREEN));
   }
 
   private AchievementService createAchievementService() {

@@ -1,8 +1,6 @@
 package com.csse3200.game.services;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class RunTimer {
   private final GameTime gameTime;
@@ -14,6 +12,7 @@ public class RunTimer {
   private boolean dungeonRunning;
   private float dungeonSyncedTime; // whole seconds, flips with the run clock
   private float dungeonStartTotal; // totalTime when the dungeon began
+  private boolean paused = false;
   private static final float MAX_DELTA =
       0.25f; // ignore anything beyond a one quarter-second hiccup
 
@@ -33,7 +32,14 @@ public class RunTimer {
   }
 
   public Map<String, Float> getDungeonTimes() {
-    return new LinkedHashMap<>(dungeonTimes);
+    Map<String, Float> times = new LinkedHashMap<>(dungeonTimes);
+
+    // Include the dungeon currently being timed when creating a save.
+    if (dungeonRunning && currentDungeonId != null) {
+      times.put(currentDungeonId, dungeonTime);
+    }
+
+    return times;
   }
 
   /** Restores an elapsed run and continues counting from that time. */
@@ -75,25 +81,30 @@ public class RunTimer {
   }
 
   public void startDungeon(String dungeonId) {
-    if (!dungeonRunning) {
-      dungeonRunning = true;
-      currentDungeonId = dungeonId;
-      dungeonStartTotal = totalTime;
-      dungeonTime = 0f;
-      dungeonSyncedTime = 0f;
-    }
-    if (Objects.equals(currentDungeonId, dungeonId)) {
+    if (dungeonRunning && Objects.equals(currentDungeonId, dungeonId)) {
       return;
     }
-    stopDungeon();
+
+    if (dungeonRunning) {
+      stopDungeon();
+    }
+
     registerDungeon(dungeonId);
+
+    // Continue from the previously saved time for this dungeon.
+    float savedTime = dungeonTimes.getOrDefault(dungeonId, 0f);
     currentDungeonId = dungeonId;
-    dungeonTime = dungeonTimes.get(dungeonId);
+    dungeonTime = savedTime;
+    dungeonStartTotal = totalTime - savedTime;
+    dungeonSyncedTime = ((float) (int) totalTime) - (int) dungeonStartTotal;
     dungeonRunning = true;
   }
 
   /** Call once per frame. Uses scaled delta so pausing via timeScale pauses the timers. */
   public void update() {
+    if (isPaused()) {
+      return;
+    }
     float delta = Math.min(gameTime.getDeltaTime(), MAX_DELTA);
     if (runRunning) totalTime += delta;
     if (dungeonRunning) {
@@ -146,5 +157,21 @@ public class RunTimer {
     int minutes = totalSeconds / 60;
     int secs = totalSeconds % 60;
     return String.format("%02d:%02d", minutes, secs);
+  }
+
+  /**
+   * Requests that time stop advancing. Each owner's request is independent; call requestResume with
+   * the same owner to release it.
+   */
+  public void requestPause() {
+    paused = true;
+  }
+
+  public void requestResume() {
+    paused = false;
+  }
+
+  public boolean isPaused() {
+    return paused;
   }
 }

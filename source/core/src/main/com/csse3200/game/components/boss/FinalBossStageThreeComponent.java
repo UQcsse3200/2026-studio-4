@@ -1421,4 +1421,30 @@ public class FinalBossStageThreeComponent extends Component {
       this.grey = grey;
     }
   }
+
+  /** Testing shortcut: skips straight to the peaceful ending as if every statue were broken. */
+  public void skipToEnding() {
+    if (disposed
+        || state == FinalBossStageThreeState.ENDING
+        || state == FinalBossStageThreeState.PEACEFUL
+        || phases.getCurrentPhase() == FinalBossPhase.DEFEATED) {
+      return;
+    }
+    while (phases.getCurrentPhase() == FinalBossPhase.STAGE_ONE
+        || phases.getCurrentPhase() == FinalBossPhase.STAGE_TWO) {
+      phases.completeStage(phases.getCurrentPhase());
+    }
+    tornadoes.clear();
+    clearFreeze();
+    bolts.clear();
+    for (Statue statue : statues) {
+      if (statue.broken) continue;
+      statue.broken = true;
+      stop(statue.entity);
+      ServiceLocator.getEntityService().scheduleDisposal(statue.entity);
+    }
+    clearStatueCombat();
+    entity.getComponent(PhysicsComponent.class).getBody().setActive(true);
+    changeState(FinalBossStageThreeState.ENDING);
+  }
 }
