@@ -114,11 +114,11 @@ public class Renderer implements Disposable {
 
     float flashAlpha = renderService.getWhiteFlashAlpha();
     if (flashAlpha > 0f) {
-      drawWhiteFlash(flashAlpha);
+      drawScreenFlash(flashAlpha);
     }
   }
 
-  private void drawWhiteFlash(float alpha) {
+  private void drawScreenFlash(float alpha) {
     if (whitePixel == null) {
       Pixmap pixel = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
       pixel.setColor(Color.WHITE);
@@ -130,7 +130,8 @@ public class Renderer implements Disposable {
     batch.setProjectionMatrix(stage.getCamera().combined);
     float originalColour = batch.getPackedColor();
     batch.begin();
-    batch.setColor(1f, 1f, 1f, alpha);
+    Color colour = renderService.getFlashColour();
+    batch.setColor(colour.r, colour.g, colour.b, alpha);
     batch.draw(whitePixel, 0f, 0f, stage.getWidth(), stage.getHeight());
     batch.setPackedColor(originalColour);
     batch.end();

@@ -282,7 +282,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     }
 
     // Capture before deferred disposal or room changes can move/remove the enemy.
-    Vector2 position = enemy.getPosition().cpy();
+    Vector2 position = enemy.getCenterPosition();
     spawnEnemyDrops(enemyType, position);
     if (activeEnemies.isEmpty()) {
       entity.getEvents().trigger("roomCleared");

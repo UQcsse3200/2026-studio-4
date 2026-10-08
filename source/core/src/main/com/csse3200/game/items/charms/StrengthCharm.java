@@ -9,7 +9,11 @@ public class StrengthCharm extends Charm {
   public static final String TEXTURE = "images/strength_charm_pixel.png";
 
   public StrengthCharm() {
-    super(ItemIds.STRENGTH_CHARM, "Strength Charm", "You feel yourself getting stronger.", TEXTURE);
+    super(
+        ItemIds.STRENGTH_CHARM,
+        "Strength Charm",
+        "You feel yourself getting stronger.\n\nIncreases attack while equipped.",
+        TEXTURE);
   }
 
   @Override

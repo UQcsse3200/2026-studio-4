@@ -142,7 +142,7 @@ class EnemyManagerComponentTest {
   }
 
   @Test
-  void shouldSpawnRegisteredItemAtEnemyDeathPositionAfterUpdate() {
+  void shouldSpawnRegisteredItemAtEnemyCentreAfterUpdate() {
     Entity enemy = new Entity();
     Vector2 deathPosition = new Vector2(3f, 4f);
     enemy.setPosition(deathPosition);
@@ -156,7 +156,7 @@ class EnemyManagerComponentTest {
     assertEquals(1, entityService.getEntities().size);
     Entity drop = entityService.getEntities().first();
     assertNotNull(drop.getComponent(ItemComponent.class));
-    assertEquals(deathPosition, drop.getPosition());
+    assertEquals(enemy.getCenterPosition(), drop.getCenterPosition());
     verify(entityService).register(drop);
   }
 
@@ -373,7 +373,7 @@ class EnemyManagerComponentTest {
     Entity enemy = mock(Entity.class);
     when(enemy.getEvents()).thenReturn(new EventHandler());
     when(enemy.getPosition()).thenReturn(new Vector2());
-    when(enemy.getCenterPosition()).thenReturn(new Vector2());
+    when(enemy.getCenterPosition()).thenReturn(new Vector2(0.5f, 0.5f));
     return enemy;
   }
 }

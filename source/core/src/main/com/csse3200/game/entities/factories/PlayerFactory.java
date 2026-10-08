@@ -7,6 +7,7 @@ import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
+import com.csse3200.game.components.player.BurnVialFeedbackComponent;
 import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.ConsumableSelectionComponent;
 import com.csse3200.game.components.player.HealingPotionFeedbackComponent;
@@ -18,6 +19,7 @@ import com.csse3200.game.components.player.PlayerCerberusMistDebuffComponent;
 import com.csse3200.game.components.player.PlayerDamageFlashComponent;
 import com.csse3200.game.components.player.PlayerPetrificationComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
+import com.csse3200.game.components.player.ShieldPotionFeedbackComponent;
 import com.csse3200.game.components.player.SpeedPotionAfterimageComponent;
 import com.csse3200.game.components.spells.FreezeSpellComponent;
 import com.csse3200.game.components.spells.LightningSpellComponent;
@@ -96,7 +98,9 @@ public class PlayerFactory {
             .addComponent(new ConsumableSelectionComponent())
             .addComponent(new ConsumableEffectComponent())
             .addComponent(new HealingPotionFeedbackComponent())
+            .addComponent(new ShieldPotionFeedbackComponent())
             .addComponent(new SpeedPotionAfterimageComponent())
+            .addComponent(new BurnVialFeedbackComponent())
             .addComponent(new ItemPickupComponent())
             // Runs friendly NPC interactions and remembers which have been completed
             .addComponent(new NpcInteractorComponent())
