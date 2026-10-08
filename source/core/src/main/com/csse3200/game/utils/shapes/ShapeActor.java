@@ -13,21 +13,10 @@ public abstract class ShapeActor extends Actor {
   protected final Color shapeColor;
   protected boolean fill;
 
-  /** Package private constructor for testing */
-  ShapeActor(Color color, boolean fill, ShapeRenderer renderer) {
+  protected ShapeActor(Color color, boolean fill, ShapeRenderer renderer) {
     this.shape = renderer;
     this.shapeColor = color;
     this.fill = fill;
-  }
-
-  protected ShapeActor(Color color, boolean fill) {
-    this.shape = new ShapeRenderer();
-    this.shapeColor = color;
-    this.fill = fill;
-  }
-
-  protected ShapeActor(Color color) {
-    this(color, true);
   }
 
   @Override

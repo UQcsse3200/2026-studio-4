@@ -1,15 +1,12 @@
 package com.csse3200.game.utils.shapes;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 /** Rectangle */
 public class Rectangle extends ShapeActor {
-  public Rectangle(Color color) {
-    super(color);
-  }
-
-  public Rectangle(Color color, boolean fill) {
-    super(color, fill);
+  public Rectangle(Color color, boolean fill, ShapeRenderer shapeRenderer) {
+    super(color, fill, shapeRenderer);
   }
 
   @Override

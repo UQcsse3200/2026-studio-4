@@ -1,11 +1,12 @@
 package com.csse3200.game.utils.shapes;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 /** Circle */
 public class Circle extends ShapeActor {
-  public Circle(Color color) {
-    super(color);
+  public Circle(Color color, boolean fill, ShapeRenderer shapeRenderer) {
+    super(color, fill, shapeRenderer);
   }
 
   @Override

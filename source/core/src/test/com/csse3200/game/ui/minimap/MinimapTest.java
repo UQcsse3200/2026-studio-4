@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -39,6 +40,7 @@ public class MinimapTest {
   @Mock private EventHandler events;
   @Mock private RenderService renderService;
   @Mock private ResourceService resourceService;
+  @Mock private ShapeRenderer shapeRenderer;
 
   private Set<String> clearedIds = new HashSet<>();
   private RoomConfig roomConfig;
@@ -50,7 +52,7 @@ public class MinimapTest {
     roomConfig.id = "room";
     roomConfig.exits = new ExitConfig[] {};
 
-    minimapSpy = spy(new Minimap(roomConfig, clearedIds, left, right, center));
+    minimapSpy = spy(new Minimap(roomConfig, clearedIds, left, right, center, shapeRenderer));
     minimapSpy.setEntity(player);
     ServiceLocator.registerRenderService(renderService);
     ServiceLocator.registerResourceService(resourceService);
@@ -67,7 +69,7 @@ public class MinimapTest {
     String startRoomId = "startRoom";
     clearedIds.add(clearedRoomId);
 
-    var minimap = new Minimap(roomConfig, clearedIds, startRoomId);
+    var minimap = new Minimap(roomConfig, clearedIds, startRoomId, shapeRenderer);
     assertEquals(RoomType.CLEARED, minimap.determineRoomType(clearedRoomId));
     assertEquals(RoomType.HOME, minimap.determineRoomType(startRoomId));
     assertEquals(RoomType.DEFAULT, minimap.determineRoomType("Random room"));
@@ -77,7 +79,7 @@ public class MinimapTest {
   @Test
   void shouldClearTablesWhenRebuilding() {
     var minimap =
-        new Minimap(roomConfig, clearedIds, left, right, center) {
+        new Minimap(roomConfig, clearedIds, left, right, center, shapeRenderer) {
           @Override
           void attachRoom(Table table, RoomType type) {
             // causes shader errors when shape in constructed.
@@ -136,7 +138,7 @@ public class MinimapTest {
   @Test
   void attachesListenerOnCreate() {
     var minimap =
-        new Minimap(roomConfig, clearedIds, left, right, center) {
+        new Minimap(roomConfig, clearedIds, left, right, center, shapeRenderer) {
           @Override
           void attachRoom(Table table, RoomType type) {
             // causes shader errors when shape in constructed.

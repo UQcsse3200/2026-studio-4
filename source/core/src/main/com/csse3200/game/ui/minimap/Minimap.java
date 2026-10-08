@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -37,6 +38,7 @@ public class Minimap extends UIComponent {
   private RoomConfig currentRoom;
   private Set<String> clearedRooms;
 
+  private final ShapeRenderer shapeRenderer;
   private Table left;
   private Table center;
   private Table right;
@@ -48,24 +50,36 @@ public class Minimap extends UIComponent {
     entity.getEvents().addListener(ROOM_CHANGE_EVENT, this::onRoomChanged);
   }
 
-  public Minimap(RoomConfig currentRoom, Set<String> clearedRooms, String startingRoomId) {
+  public Minimap(
+      RoomConfig currentRoom,
+      Set<String> clearedRooms,
+      String startingRoomId,
+      ShapeRenderer shapeRenderer) {
     logger.debug("Created with RoomConfig: {}, startingRoomId: {}", currentRoom.id, startingRoomId);
     this.currentRoom = currentRoom;
     this.clearedRooms = clearedRooms;
     this.startingRoomId = startingRoomId;
+    this.shapeRenderer = shapeRenderer;
   }
 
   public Minimap(RoomConfig currentRoom, Set<String> clearedRooms) {
-    this(currentRoom, clearedRooms, "selection");
+    this(currentRoom, clearedRooms, "selection", new ShapeRenderer());
   }
 
   /** pacakge private constructor for testing */
-  Minimap(RoomConfig roomConfig, Set<String> clearedSet, Table left, Table right, Table center) {
+  Minimap(
+      RoomConfig roomConfig,
+      Set<String> clearedSet,
+      Table left,
+      Table right,
+      Table center,
+      ShapeRenderer shapeRenderer) {
     this.currentRoom = roomConfig;
     this.clearedRooms = clearedSet;
     this.left = left;
     this.right = right;
     this.center = center;
+    this.shapeRenderer = null;
   }
 
   /**
@@ -191,9 +205,9 @@ public class Minimap extends UIComponent {
   void attachRoom(Table table, RoomType type) {
     Actor icon =
         switch (type) {
-          case DEFAULT -> new Rectangle(ROOM_COLOR);
-          case CLEARED -> new Rectangle(VISITED_COLOR);
-          case HOME -> new Rectangle(Color.BROWN);
+          case DEFAULT -> new Rectangle(ROOM_COLOR, true, shapeRenderer);
+          case CLEARED -> new Rectangle(VISITED_COLOR, true, shapeRenderer);
+          case HOME -> new Rectangle(Color.BROWN, true, shapeRenderer);
         };
 
     icon.setSize(ROOM_W, ROOM_H);
@@ -220,5 +234,11 @@ public class Minimap extends UIComponent {
   @Override
   protected void draw(SpriteBatch batch) {
     // Drawing is handled by the stage
+  }
+
+  @Override
+  public void dispose() {
+    super.dispose();
+    shapeRenderer.dispose();
   }
 }
