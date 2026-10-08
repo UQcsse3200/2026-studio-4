@@ -11,14 +11,16 @@ import java.util.Set;
 /** Spawns the fixed obstacles declared for a room. */
 public class ObstacleComponent extends EntityManagerComponent {
   private final RoomConfig room;
+  private final String tileset;
 
   /**
    * Create an obstacle component with the room config given
    *
    * @param room A room config.
    */
-  public ObstacleComponent(RoomConfig room) {
+  public ObstacleComponent(RoomConfig room, String tileset) {
     this.room = room;
+    this.tileset = tileset;
   }
 
   @Override
@@ -37,8 +39,8 @@ public class ObstacleComponent extends EntityManagerComponent {
   private void spawnObstacle(List<String> spawnConfig, char spawnType, int x, int y) {
     switch (spawnType) {
       case '#', '%' -> spawnWall(spawnConfig, x, y, spawnType == '#');
-      case 'S' -> spawnProp(ObstacleFactory.createSword(), x, y);
-      case 'B' -> spawnProp(ObstacleFactory.createBox(), x, y);
+      case 'S' -> spawnProp(ObstacleFactory.createSword(this.tileset), x, y);
+      case 'B' -> spawnProp(ObstacleFactory.createBox(this.tileset), x, y);
       default -> {
         // Every other character is a floor tile or void (' ', '2', '3', '8' and so on).
         // Floors are drawn by the terrain layer and void is intentionally empty,
@@ -61,7 +63,7 @@ public class ObstacleComponent extends EntityManagerComponent {
       }
     }
 
-    Entity wall = ObstacleFactory.createWallFor(voids, shift);
+    Entity wall = ObstacleFactory.createWallFor(voids, shift, this.tileset);
     if (wall == null) {
       return; // no art for this combination
     }

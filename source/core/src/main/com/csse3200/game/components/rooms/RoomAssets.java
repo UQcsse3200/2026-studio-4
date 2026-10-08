@@ -70,9 +70,13 @@ public class RoomAssets implements Disposable {
   private static final String[] PLAYER_TEXTURES = {Minimap.PLAYER_HEAD_PATH};
 
   private static final String[] DUNGEON_TEXTURES = {
-    "images/dungeons/fantasy_dreamland_16.png", // tile set texture Greek Theme
-    "images/dungeons/Desert_Dungeon.png", // tile set texture Egyptian Theme
-    "images/dungeons/fantasy_dreamland_door.png" // door texture
+    "images/dungeons/tileSet0.png",
+    "images/dungeons/tileSet1.png",
+    "images/dungeons/tileSet2.png",
+    "images/dungeons/tileSet3.png",
+    "images/dungeons/tileSet4.png",
+    "images/dungeons/tileSet5.png",
+    "images/dungeons/fantasy_dreamland_door.png"
   };
 
   private static final String[] OBSTACLE_TEXTURES = {

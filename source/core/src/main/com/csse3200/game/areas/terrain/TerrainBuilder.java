@@ -15,7 +15,6 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Factory for creating game terrains. */
 public class TerrainBuilder {
-  private static final String FANTASY_DUNGEON_TILESET = "images/dungeons/fantasy_dreamland_16.png";
   private static final int DUNGEON_TILE_SIZE = 16;
   private final OrthographicCamera camera;
 
@@ -31,11 +30,11 @@ public class TerrainBuilder {
    * @param cameraComponent Camera to render terrains to. Must be orthographic.
    * @param mapSize The size of the map to render terrain to.
    */
-  public TerrainBuilder(CameraComponent cameraComponent, GridPoint2 mapSize) {
+  public TerrainBuilder(CameraComponent cameraComponent, GridPoint2 mapSize, String tileSet) {
     this.camera = (OrthographicCamera) cameraComponent.getCamera();
     this.layer = new TiledMapTileLayer(mapSize.x, mapSize.y, DUNGEON_TILE_SIZE, DUNGEON_TILE_SIZE);
     ResourceService resourceService = ServiceLocator.getResourceService();
-    Texture texture = resourceService.getAsset(FANTASY_DUNGEON_TILESET, Texture.class);
+    Texture texture = resourceService.getAsset(tileSet, Texture.class);
     texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
     this.tileSheet = new TileSheet(texture, DUNGEON_TILE_SIZE);

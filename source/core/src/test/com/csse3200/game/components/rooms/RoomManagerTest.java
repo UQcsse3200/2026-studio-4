@@ -54,11 +54,15 @@ class RoomManagerTest {
 
     try (MockedStatic<RoomFactory> roomFactory = mockStatic(RoomFactory.class)) {
       roomFactory
-          .when(() -> RoomFactory.createRoom(entrance, camera, false))
+          .when(
+              () -> RoomFactory.createRoom(entrance, camera, false, "images/dungeons/tileSet1.png"))
           .thenReturn(firstEntrance);
-      roomFactory.when(() -> RoomFactory.createRoom(side, camera, false)).thenReturn(sideRoom);
       roomFactory
-          .when(() -> RoomFactory.createRoom(entrance, camera, true))
+          .when(() -> RoomFactory.createRoom(side, camera, false, "images/dungeons/tileSet1.png"))
+          .thenReturn(sideRoom);
+      roomFactory
+          .when(
+              () -> RoomFactory.createRoom(entrance, camera, true, "images/dungeons/tileSet1.png"))
           .thenReturn(revisitedEntrance);
 
       RoomManager manager =
@@ -80,7 +84,8 @@ class RoomManagerTest {
       manager.update();
 
       // Entrance was cleared, so it is rebuilt as a revisit
-      roomFactory.verify(() -> RoomFactory.createRoom(entrance, camera, true));
+      roomFactory.verify(
+          () -> RoomFactory.createRoom(entrance, camera, true, "images/dungeons/tileSet1.png"));
 
       // Arrive back at the entrance's sideDoor (53, 52, RIGHT)
       verify(player).setPosition(new Vector2(52, 50));

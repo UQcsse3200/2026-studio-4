@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.csse3200.game.areas.terrain.DreamlandTile;
 import com.csse3200.game.areas.terrain.TileSheet;
 import com.csse3200.game.components.rooms.Direction;
+import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
@@ -23,7 +24,6 @@ import java.util.Set;
  * <p>Each obstacle entity type should have a creation method that returns a corresponding entity.
  */
 public class ObstacleFactory {
-  private static final String DUNGEON_TILESET = "images/dungeons/fantasy_dreamland_16.png";
   private static final int WALL_TILE_TEXTURE_SHIFT = 8;
   private static final float TILE_BEVEL_X = 0.04f;
   private static final float TILE_BEVEL_Y = 0.02f;
@@ -35,14 +35,19 @@ public class ObstacleFactory {
     return createRenderedObstacle(new TextureRegion(texture), 0.6f, 0.7f);
   }
 
+  public static Entity createWallFor(Set<Direction> voids, boolean shift) {
+    return createWallFor(voids, shift, RoomManager.DEFAULT_TILESET);
+  }
+
   /**
    * Creates a wall for the given configuration.
    *
    * @param voids A set of directions where the neighbouring tile is void.
    * @param shift Shift the given texture by a constant to use a different wall texture.
+   * @param tileset The tileset to draw the wall
    * @return The wall entity, with bevelled edges of the given config.
    */
-  public static Entity createWallFor(Set<Direction> voids, boolean shift) {
+  public static Entity createWallFor(Set<Direction> voids, boolean shift, String tileset) {
     boolean up = voids.contains(Direction.UP);
     boolean right = voids.contains(Direction.RIGHT);
     boolean down = voids.contains(Direction.DOWN);
@@ -51,7 +56,7 @@ public class ObstacleFactory {
     boolean upLeft = voids.contains(Direction.UP_LEFT);
     boolean downRight = voids.contains(Direction.DOWN_RIGHT);
     boolean downLeft = voids.contains(Direction.DOWN_LEFT);
-    Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
+    Texture texture = ServiceLocator.getResourceService().getAsset(tileset, Texture.class);
 
     float colliderHeight = 0.5f;
     DreamlandTile tile;
@@ -93,8 +98,8 @@ public class ObstacleFactory {
   }
 
   /** Creates a barrel obstacle. */
-  public static Entity createBarrel() {
-    Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
+  public static Entity createBarrel(String tileset) {
+    Texture texture = ServiceLocator.getResourceService().getAsset(tileset, Texture.class);
     return createRenderedObstacle(
         DreamlandTile.OPEN_BARREL.region(new TileSheet(texture, 16)), 0.7f, 0.9f);
   }
@@ -104,8 +109,8 @@ public class ObstacleFactory {
    *
    * @return The sword obstacle
    */
-  public static Entity createSword() {
-    Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
+  public static Entity createSword(String tileset) {
+    Texture texture = ServiceLocator.getResourceService().getAsset(tileset, Texture.class);
     return createRenderedObstacle(
         DreamlandTile.randomOfId('s', 0.1f).region(new TileSheet(texture, 16)), 0.7f, 0.9f);
   }
@@ -115,8 +120,8 @@ public class ObstacleFactory {
    *
    * @return A box obstacle
    */
-  public static Entity createBox() {
-    Texture texture = ServiceLocator.getResourceService().getAsset(DUNGEON_TILESET, Texture.class);
+  public static Entity createBox(String tileset) {
+    Texture texture = ServiceLocator.getResourceService().getAsset(tileset, Texture.class);
     return createRenderedObstacle(
         DreamlandTile.randomOfId('B', 0.1f).region(new TileSheet(texture, 16)), 0.5f, 0.5f);
   }
