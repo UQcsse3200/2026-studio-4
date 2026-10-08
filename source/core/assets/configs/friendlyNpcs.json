@@ -1,6 +1,17 @@
 {
   "npcs": [
     {
+      "id": "tutorialGuide",
+      "name": "Old Sage",
+      "promptVerb": "Talk to",
+      "atlas": "images/tutorial_guide.atlas",
+      "animation": "default",
+      "width": 1.0,
+      "interactionRange": 1.5,
+      "dialogueId": "tutorial_guide",
+      "lockMovementDuringDialogue": true
+    },
+    {
       "id": "merchant",
       "name": "Travelling Merchant",
       "promptVerb": "Talk to",
