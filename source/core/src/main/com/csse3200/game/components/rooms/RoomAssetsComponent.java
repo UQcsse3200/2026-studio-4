@@ -34,6 +34,7 @@ public class RoomAssetsComponent extends Component {
     "images/harpy.atlas",
     "images/wizard.atlas",
     "images/confusion-wizard/confusion-wizard.atlas",
+    "images/swap-eye/swap-eye.atlas",
     "images/cerberus.atlas",
   };
 

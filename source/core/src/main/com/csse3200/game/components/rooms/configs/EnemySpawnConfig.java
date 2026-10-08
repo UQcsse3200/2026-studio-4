@@ -17,6 +17,9 @@ public class EnemySpawnConfig extends PositionConfig {
     FINAL_BOSS,
     SNAKE_MINI_BOSS,
     WIZARD,
-    CONFUSION_WIZARD
+    CONFUSION_WIZARD,
+    SWAP_EYE,
+    OIL_CHASER,
+    FIRE_ENEMY
   }
 }

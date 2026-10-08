@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
+import com.csse3200.game.components.npc.OilChaserComponent;
 import com.csse3200.game.components.npc.WizardPullEffectComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -43,7 +44,8 @@ class NPCFactoryTest {
           "images/mummy.atlas",
           "images/snake.atlas",
           "images/wizard.atlas",
-          "images/confusion-wizard/confusion-wizard.atlas"
+          "images/confusion-wizard/confusion-wizard.atlas",
+          "images/swap-eye/swap-eye.atlas"
         });
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
@@ -104,6 +106,31 @@ class NPCFactoryTest {
             .getAsset("images/confusion-wizard/confusion-wizard.atlas", TextureAtlas.class);
     assertEquals(10, atlas.findRegions("default").size);
     assertEquals(6, atlas.findRegions("attack").size);
+  }
+
+  @Test
+  void swapEyeHasHealthBarAndAnimations() {
+    Entity enemy = NPCFactory.createSwapEye(new Entity());
+    assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
+    TextureAtlas atlas =
+        ServiceLocator.getResourceService()
+            .getAsset("images/swap-eye/swap-eye.atlas", TextureAtlas.class);
+    assertEquals(4, atlas.findRegions("default").size);
+    assertEquals(4, atlas.findRegions("attack").size);
+    assertEquals(4, atlas.findRegions("dieAnimation").size);
+  }
+
+  @Test
+  void oilChaserHasOilBurstAndHealthBar() {
+    Entity enemy = NPCFactory.createOilChaser(new Entity(), puddle -> {});
+    assertNotNull(enemy.getComponent(OilChaserComponent.class));
+    assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
+  }
+
+  @Test
+  void fireEnemyHasHealthBar() {
+    Entity enemy = NPCFactory.createFireEnemy(new Entity(), projectile -> {});
+    assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
   }
 
   @Test

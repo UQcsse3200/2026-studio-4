@@ -19,6 +19,11 @@ public class StatusEffectsFactory {
     return new Burning(1, 1000, 10000, combatStats);
   }
 
+  /** Creates the shorter, stronger burn caused by ignited oil. */
+  public static StatusEffect createOilFireBurn(CombatStatsComponent combatStats) {
+    return new Burning(2, 750, 4000, combatStats);
+  }
+
   /**
    * Creates a rechargeable shield status effect with the default shield configuration.
    *

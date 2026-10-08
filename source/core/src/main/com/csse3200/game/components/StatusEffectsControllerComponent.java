@@ -2,11 +2,13 @@ package com.csse3200.game.components;
 
 import com.badlogic.gdx.graphics.Color;
 import com.csse3200.game.components.statuseffects.Damageable;
+import com.csse3200.game.components.statuseffects.OiledEffect;
 import com.csse3200.game.components.statuseffects.Shield;
 import com.csse3200.game.components.statuseffects.Stat;
 import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +82,12 @@ public class StatusEffectsControllerComponent extends Component {
     return effects != null && effects.isControlsConfused();
   }
 
+  /** Returns whether the entity is currently covered in flammable oil. */
+  public static boolean isOiled(Entity entity) {
+    StatusEffectsControllerComponent effects = findOn(entity);
+    return effects != null && effects.isOiled();
+  }
+
   /**
    * Returns the combined glow of the entity's active effects, or null when nothing glows.
    *
@@ -132,6 +140,28 @@ public class StatusEffectsControllerComponent extends Component {
       }
     }
     return false;
+  }
+
+  /** Returns true if a live oiled effect is present. */
+  public boolean isOiled() {
+    for (StatusEffect effect : statusEffects) {
+      if (!effect.isExpired() && effect.isOiled()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** Applies oil, replacing an older oil timer so entering a puddle refreshes its duration. */
+  public void applyOiled(long duration) {
+    List<StatusEffect> replaced = new ArrayList<>();
+    for (StatusEffect effect : new ArrayList<>(statusEffects)) {
+      if (effect.isOiled() && statusEffects.remove(effect)) {
+        replaced.add(effect);
+      }
+    }
+    notifyRemoved(replaced);
+    addStatusEffect(new OiledEffect(ServiceLocator.getTimeSource(), duration));
   }
 
   /**

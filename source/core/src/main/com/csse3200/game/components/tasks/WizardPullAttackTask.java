@@ -16,7 +16,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Wizard pull player to itself and spin attack if player become close. */
 public class WizardPullAttackTask extends DefaultTask implements PriorityTask {
-  static final float PULL_RANGE = 8f;
+  static final float PULL_RANGE = 6f;
   static final float MELEE_RANGE = 1.8f;
   static final float PULL_SPEED = 2.4f;
   static final long PULL_TIME = 2500L;

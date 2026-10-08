@@ -102,6 +102,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         return NPCFactory.createWizard(target, this::spawnEntity);
       case CONFUSION_WIZARD:
         return NPCFactory.createConfusionWizard(target, this::spawnEntity);
+      case SWAP_EYE:
+        return NPCFactory.createSwapEye(target);
+      case OIL_CHASER:
+        return NPCFactory.createOilChaser(target, this::spawnEntity);
+      case FIRE_ENEMY:
+        return NPCFactory.createFireEnemy(target, this::spawnEntity);
       // Greek
       case GOLEM:
         Entity golem = NPCFactory.createBombEnemy(target, "images/golem.atlas", 2f);

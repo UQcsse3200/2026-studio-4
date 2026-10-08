@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.miniboss.cerberus.HomingProjectileMovementComponent;
 import com.csse3200.game.components.npc.ConfusionProjectileEffectComponent;
+import com.csse3200.game.components.npc.FireHitEffectComponent;
 import com.csse3200.game.components.npc.ProjectileMovementComponent;
 import com.csse3200.game.components.npc.WizardProjectileEffectComponent;
 import com.csse3200.game.entities.Entity;
@@ -37,6 +38,13 @@ public class FloatingDemonProjectileFactory {
   public static Entity createConfusionProjectile(Vector2 position, Vector2 direction, int damage) {
     Entity projectile = createProjectile(position, direction, damage);
     projectile.addComponent(new ConfusionProjectileEffectComponent());
+    return projectile;
+  }
+
+  /** Creates a projectile that can ignite oil and burn an oiled player. */
+  public static Entity createFireProjectile(Vector2 position, Vector2 direction, int damage) {
+    Entity projectile = createProjectile(position, direction, damage);
+    projectile.addComponent(new FireHitEffectComponent());
     return projectile;
   }
 

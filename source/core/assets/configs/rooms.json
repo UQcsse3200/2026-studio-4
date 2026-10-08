@@ -874,7 +874,10 @@
       ],
       "enemySpawns": [
         { "type": "WIZARD", "x": 10, "y": 18 },
-        { "type": "CONFUSION_WIZARD", "x": 18, "y": 18 }
+        { "type": "CONFUSION_WIZARD", "x": 18, "y": 18 },
+        { "type": "SWAP_EYE", "x": 14, "y": 22 },
+        { "type": "OIL_CHASER", "x": 8, "y": 14 },
+        { "type": "FIRE_ENEMY", "x": 20, "y": 14 }
       ],
       "obstacles": {
         "spawns": [

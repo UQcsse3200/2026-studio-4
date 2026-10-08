@@ -7,6 +7,7 @@ import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.*;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
+import com.csse3200.game.components.npc.OilChaserComponent;
 import com.csse3200.game.components.npc.WizardAnimationController;
 import com.csse3200.game.components.npc.WizardPullEffectComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -14,6 +15,7 @@ import com.csse3200.game.components.tasks.CoilAttackTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
 import com.csse3200.game.components.tasks.PatrolTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
+import com.csse3200.game.components.tasks.SwapAttackTask;
 import com.csse3200.game.components.tasks.VenomSpitAttackTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.components.tasks.WizardPullAttackTask;
@@ -382,6 +384,110 @@ public class NPCFactory {
     wizard.setScale(1.2f, 1.2f);
     wizard.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
     return wizard;
+  }
+
+  /** Creates a floating eye that periodically swaps places with the player. */
+  public static Entity createSwapEye(Entity target) {
+    WizardConfig config = configs.confusionWizard;
+    Entity eye = createBaseNPC();
+    AITaskComponent aiComponent =
+        new AITaskComponent(target)
+            .addTask(new WanderTask(config.movement, 1f))
+            .addTask(new SwapAttackTask(target));
+
+    TextureAtlas atlas =
+        ServiceLocator.getResourceService()
+            .getAsset("images/swap-eye/swap-eye.atlas", TextureAtlas.class);
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    animator.addAnimation(DEFAULT_ANIMATION, 0.15f, Animation.PlayMode.LOOP);
+    animator.addAnimation(MOVE, 0.12f, Animation.PlayMode.LOOP);
+    animator.addAnimation("attack", 0.2f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DIE_ANIMATION, 0.15f, Animation.PlayMode.NORMAL);
+
+    eye.addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(aiComponent)
+        .addComponent(animator)
+        .addComponent(new EnemyDeathComponent(true, true))
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f));
+
+    animator.scaleEntity();
+    animator.startAnimation(DEFAULT_ANIMATION);
+    eye.setScale(1.1f, 1.1f);
+    eye.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
+    return eye;
+  }
+
+  /** Creates a fast enemy that bursts into a harmless oil puddle on player contact. */
+  public static Entity createOilChaser(Entity target, Consumer<Entity> puddleSpawner) {
+    BombEnemyConfig config = configs.bombEnemy;
+    Entity chaser = createBaseNPC();
+    AITaskComponent aiComponent =
+        new AITaskComponent(target)
+            .addTask(new WanderTask(config.movement, 1f))
+            .addTask(new ChaseTask(target, 10, 8f, 14f));
+
+    TextureAtlas atlas =
+        ServiceLocator.getResourceService().getAsset("images/beetle.atlas", TextureAtlas.class);
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(MOVE, 0.12f, Animation.PlayMode.LOOP);
+    animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
+    animator.addAnimation(DIE_ANIMATION, 0.25f, Animation.PlayMode.NORMAL);
+
+    chaser
+        .addComponent(new CombatStatsComponent(config.health, 1))
+        .addComponent(aiComponent)
+        .addComponent(animator)
+        .addComponent(new OilChaserComponent(puddleSpawner))
+        .addComponent(new EnemyDeathComponent(true, true))
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f));
+
+    animator.scaleEntity();
+    animator.startAnimation(DEFAULT_ANIMATION);
+    chaser.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(3.2f, 3.2f));
+    return chaser;
+  }
+
+  /** Creates a slow ranged enemy whose shots ignite oil. */
+  public static Entity createFireEnemy(Entity target, Consumer<Entity> projectileSpawner) {
+    FloatingDemonConfig config = configs.floatingDemon;
+    Entity fireEnemy = createBaseNPC();
+    AITaskComponent aiComponent =
+        new AITaskComponent(target)
+            .addTask(new WanderTask(new Vector2(0.8f, 0.8f), 1f))
+            .addTask(new ChaseTask(target, 4, 10f, 14f))
+            .addTask(
+                new RangedAttackTask(
+                    target,
+                    10,
+                    config.baseAttack,
+                    projectileSpawner,
+                    FloatingDemonProjectileFactory::createFireProjectile));
+
+    TextureAtlas atlas =
+        ServiceLocator.getResourceService()
+            .getAsset("images/floatingDemon.atlas", TextureAtlas.class);
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(MOVE, 0.15f, Animation.PlayMode.LOOP);
+    animator.addAnimation(CHASE_ANIMATION, 0.12f, Animation.PlayMode.LOOP);
+    animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
+
+    fireEnemy
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(aiComponent)
+        .addComponent(animator)
+        .addComponent(new EnemyDeathComponent(true, true))
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f));
+
+    animator.scaleEntity();
+    animator.startAnimation(DEFAULT_ANIMATION);
+    fireEnemy.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(0.8f, 0.8f));
+    return fireEnemy;
   }
 
   /**
