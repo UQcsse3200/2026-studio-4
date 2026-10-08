@@ -45,12 +45,16 @@ public class RoomAssets implements Disposable {
     "images/wasp.atlas",
     "images/floatingDemon.atlas",
     "images/harpy.atlas",
-    "images/cerberus.atlas",
+    "images/cerberus/cerberus-modular.atlas",
+    "images/cerberus/cerberus-fireball.atlas",
+    "images/cerberus/cerberus-chain.atlas",
     "images/dragon/dragon.atlas",
     "images/dragon/thunder-orb.atlas",
     "images/wolf.atlas",
     "images/horse.atlas",
     "images/crow.atlas",
+    "images/minotaur.atlas",
+    "images/sandeye.atlas",
     "images/dark_elves.atlas",
     "images/jingwei.atlas",
     "images/zombie.atlas",
@@ -65,8 +69,9 @@ public class RoomAssets implements Disposable {
   private static final String[] PLAYER_TEXTURES = {Minimap.PLAYER_HEAD_PATH};
 
   private static final String[] DUNGEON_TEXTURES = {
-    "images/dungeons/fantasy_dreamland_16.png", // tile set texture
-    "images/dungeons/fantasy_dreamland_door.png", // door texture
+    "images/dungeons/fantasy_dreamland_16.png", // tile set texture Greek Theme
+    "images/dungeons/Desert_Dungeon.png", // tile set texture Egyptian Theme
+    "images/dungeons/fantasy_dreamland_door.png" // door texture
   };
 
   private static final String[] OBSTACLE_TEXTURES = {

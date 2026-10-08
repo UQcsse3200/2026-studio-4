@@ -191,7 +191,7 @@ public class RoomManager {
     Vector2 position =
         currentRoom
             .getComponent(TerrainComponent.class)
-            .tileToWorldPosition(new GridPoint2(entryPoint.x, entryPoint.y));
+            .tileToWorldPosition(new GridPoint2(entryPoint.x + 2, entryPoint.y - 2));
     player.setPosition(position);
   }
 

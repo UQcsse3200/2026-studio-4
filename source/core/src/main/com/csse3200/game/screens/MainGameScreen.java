@@ -110,6 +110,8 @@ public class MainGameScreen extends ScreenAdapter {
     player = PlayerFactory.createPlayer();
     // trigger death screen via entity died event
     player.getEvents().addListener("entityDied", this::scheduleDeathScreen);
+    WorldConfig world = null;
+    world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     // trigger win screen via entity win event
     player.getEvents().addListener("winScreenRequested", () -> winScreenRequested = true);
     // notify damage
@@ -122,11 +124,6 @@ public class MainGameScreen extends ScreenAdapter {
               ctx.playerDamaged = true;
               ServiceLocator.getAchievementService().update(ctx);
             });
-
-    WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
-    if (world == null) {
-      throw new IllegalStateException("Unable to load configs/rooms.json");
-    }
     roomManager = new RoomManager(world, player, renderer.getCamera());
     if (loadedSave != null) {
       roomManager.initializeFromSavedRun(loadedSave, loadAtCheckpoint);

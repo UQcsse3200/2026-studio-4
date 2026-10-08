@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -18,15 +19,20 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.rooms.Direction;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageTwoConfig;
+import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -262,7 +268,107 @@ class FinalBossStageTwoFireIntegrationTest {
     assertEquals(100, playerStats.getHealth());
     assertTrue(fire.fireballs.isEmpty());
     assertEquals(1, fire.impacts.size());
-    assertEquals(11.8f, fire.impacts.getFirst().position.x, 0.0001f);
+    assertEquals(11.8f - config.fireballRadius, fire.impacts.getFirst().position.x, 0.0001f);
+  }
+
+  @Test
+  void fireballCannotPassBetweenAdjacentRoomSideWallTiles() {
+    // The final room's right wall has a 0.25-unit gap between these actual tile fixtures.
+    addRoomWall(Direction.RIGHT, 24f, 5f);
+    addRoomWall(Direction.RIGHT, 24f, 5.5f);
+    player.setPosition(24.2f, 4.875f);
+    startEncounter();
+    fire.fireballs.add(
+        new FinalBossStageTwoFireController.Fireball(
+            100L, new Vector2(23.5f, 5.375f), new Vector2(10f, 0f)));
+
+    advance(0.2f);
+
+    assertEquals(100, playerStats.getHealth());
+    assertTrue(fire.fireballs.isEmpty());
+    assertEquals(1, fire.impacts.size());
+    assertTrue(fire.impacts.getFirst().position.x < 24.125f);
+  }
+
+  @Test
+  void fireballCannotPassBetweenAdjacentRoomTopWallTiles() {
+    // Top faces are two tiles tall and shifted down one row by ObstacleComponent.
+    addRoomWall(Direction.UP, 5f, 23.5f);
+    addRoomWall(Direction.UP, 5.5f, 23.5f);
+    player.setPosition(5f, 24.5f);
+    startEncounter();
+    fire.fireballs.add(
+        new FinalBossStageTwoFireController.Fireball(
+            100L, new Vector2(5.5f, 23f), new Vector2(0f, 10f)));
+
+    advance(0.3f);
+
+    assertEquals(100, playerStats.getHealth());
+    assertTrue(fire.fireballs.isEmpty());
+    assertEquals(1, fire.impacts.size());
+    assertTrue(fire.impacts.getFirst().position.y < 23.5f);
+  }
+
+  @Test
+  void fireballEdgeStopsAtAWallEvenWhenItsCentreMisses() {
+    addWallBox(12f, 10f, 0.2f, 0.2f);
+    startEncounter();
+    fire.fireballs.add(
+        new FinalBossStageTwoFireController.Fireball(
+            100L, new Vector2(10f, 10.3f), new Vector2(10f, 0f)));
+
+    advance(0.5f);
+
+    assertTrue(fire.fireballs.isEmpty());
+    assertEquals(1, fire.impacts.size());
+    assertTrue(fire.impacts.getFirst().position.x < 11.8f);
+  }
+
+  @Test
+  void fireballOutsideARoundedWallCornerIsNotBlockedByItsExpandedBoundingBox() {
+    config.fireballRadius = 0.25f;
+    addWallBox(3f, 3f, 1f, 1f);
+    startEncounter();
+    fire.fireballs.add(
+        new FinalBossStageTwoFireController.Fireball(
+            100L, new Vector2(1.78f, 1.78f), new Vector2(0.2f, 0.2f)));
+
+    advance(0.1f);
+
+    // The endpoint is inside the expanded AABB, but 0.283 units from the actual (2, 2) corner.
+    assertEquals(1, fire.fireballs.size());
+    assertEquals(1.8f, fire.fireballs.getFirst().position.x, 0.0001f);
+    assertEquals(1.8f, fire.fireballs.getFirst().position.y, 0.0001f);
+    assertTrue(fire.impacts.isEmpty());
+  }
+
+  @Test
+  void stationaryFireballAlreadyOverlappingAWallIsConsumed() {
+    addWall(12f, 10f, false);
+    startEncounter();
+    fire.fireballs.add(
+        new FinalBossStageTwoFireController.Fireball(100L, new Vector2(11.7f, 10f), new Vector2()));
+
+    advance(0.1f);
+
+    assertTrue(fire.fireballs.isEmpty());
+    assertEquals(1, fire.impacts.size());
+    assertEquals(new Vector2(11.7f, 10f), fire.impacts.getFirst().position);
+  }
+
+  @Test
+  void dynamicBodiesDoNotShieldThePlayerFromFireballs() {
+    player.setPosition(13.5f, 9.5f);
+    addWall(12f, 10f, false).setType(BodyDef.BodyType.DynamicBody);
+    startEncounter();
+    fire.fireballs.add(
+        new FinalBossStageTwoFireController.Fireball(
+            100L, new Vector2(10f, 10f), new Vector2(10f, 0f)));
+
+    advance(0.5f);
+
+    assertEquals(100 - config.fireballDamage, (float) playerStats.getHealth());
+    assertTrue(fire.fireballs.isEmpty());
   }
 
   @Test
@@ -668,6 +774,20 @@ class FinalBossStageTwoFireIntegrationTest {
     body.createFixture(shape, 0f).setSensor(sensor);
     shape.dispose();
     return body;
+  }
+
+  private void addRoomWall(Direction direction, float x, float y) {
+    Texture texture = mock(Texture.class);
+    when(texture.getWidth()).thenReturn(512);
+    when(texture.getHeight()).thenReturn(512);
+    ResourceService resources = mock(ResourceService.class);
+    when(resources.getAsset("images/dungeons/fantasy_dreamland_16.png", Texture.class))
+        .thenReturn(texture);
+    ServiceLocator.registerResourceService(resources);
+    ServiceLocator.registerRenderService(mock(RenderService.class));
+    Entity wall = ObstacleFactory.createWallFor(EnumSet.of(direction), false);
+    wall.setPosition(x, y);
+    wall.create();
   }
 
   private Body addWallBox(float x, float y, float halfWidth, float halfHeight) {
