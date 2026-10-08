@@ -21,6 +21,7 @@ import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.files.GameSaveData;
 import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.minimap.Minimap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -75,6 +76,7 @@ public class RoomManager {
         currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
+    attachMinimap();
 
     if (ServiceLocator.getAchievementService() != null) {
       ServiceLocator.getAchievementService()
@@ -334,6 +336,7 @@ public class RoomManager {
       }
     }
     ServiceLocator.getEntityService().register(currentRoom);
+    player.getEvents().trigger(Minimap.ROOM_CHANGE_EVENT, destination);
 
     if (pendingDungeonCompletion != null && ServiceLocator.getAchievementService() != null) {
       AchievementContext ctx = new AchievementContext();
@@ -437,6 +440,17 @@ public class RoomManager {
   /** Package private setter for unit testing */
   void setCurrentRoom(Entity room) {
     this.currentRoom = room;
+  }
+
+  /**
+   * Attaches the minimap component to the player
+   *
+   * @requries {@link #player} != null && player is not registered
+   * @requries {@link #currentConfig} != null
+   */
+  void attachMinimap() {
+    var minimap = new Minimap(currentConfig, clearedRoomIds);
+    player.addComponent(minimap);
   }
 
   public void activateCheckpoint(String entryPointId) {

@@ -61,7 +61,14 @@ class RoomManagerTest {
           .when(() -> RoomFactory.createRoom(entrance, camera, true))
           .thenReturn(revisitedEntrance);
 
-      RoomManager manager = new RoomManager(world, player, camera);
+      RoomManager manager =
+          new RoomManager(world, player, camera) {
+            // initilising minimap class causes shader errors
+            @Override
+            void attachMinimap() {
+              // Constructing the minimap causes shader unloaded errors
+            }
+          };
       manager.create();
       manager.interact();
       verify(firstEntrance, never()).dispose();
