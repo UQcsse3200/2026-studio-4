@@ -61,7 +61,6 @@ public class RoomFactory {
    * @param room The rooms declarative definition.
    * @param camera The camera for the room.
    * @param cleared Whether the room has been cleared.
-   * @param tileset The tileset location
    * @return The room entity.
    */
   public static Entity createRoom(RoomConfig room, CameraComponent camera, boolean cleared) {
