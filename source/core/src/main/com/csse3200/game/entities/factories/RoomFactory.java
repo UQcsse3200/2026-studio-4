@@ -49,7 +49,8 @@ public class RoomFactory {
         .addComponent(new TrapManagerComponent(room.trapSpawns))
         .addComponent(new ExitComponent(room.exits))
         .addComponent(
-            new EnemyManagerComponent(cleared ? new EnemySpawnConfig[0] : room.enemySpawns, camera))
+             new EnemyManagerComponent(
+                 cleared ? new EnemySpawnConfig[0] : room.enemySpawns, room.id, camera))
         .addComponent(new FriendlyNpcManagerComponent(room.npcSpawns, getFriendlyNpcs()));
   }
 
