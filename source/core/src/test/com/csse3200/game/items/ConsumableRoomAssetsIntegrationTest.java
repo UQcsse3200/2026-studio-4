@@ -2,10 +2,8 @@ package com.csse3200.game.items;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.csse3200.game.components.maingame.ConsumableHotbarDisplay;
 import com.csse3200.game.components.rooms.RoomAssets;
@@ -27,8 +25,6 @@ class ConsumableRoomAssetsIntegrationTest {
   @BeforeEach
   void setUp() {
     assetManager = mock(AssetManager.class);
-    Music music = mock(Music.class);
-    when(assetManager.get("sounds/BGM_03_mp3.mp3", Music.class)).thenReturn(music);
     ServiceLocator.registerResourceService(new ResourceService(assetManager));
     roomAssets = new RoomAssets();
   }

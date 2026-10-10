@@ -66,20 +66,6 @@ timer_back
   offset: 0, 0
   index: -1
 
-book.png
-  size: 1683, 1026
-  format: RGBA8888
-  filter: Linear,Linear
-  repeat: none
-  book-background
-    rotate: false
-    xy: 0, 0
-    size: 1683, 1026
-    split: 0,0,0,0
-    orig: 1683, 1026
-    offset: 0, 0
-    index: -1
-
 scroll.png
   size: 1920, 1080
   format: RGBA8888

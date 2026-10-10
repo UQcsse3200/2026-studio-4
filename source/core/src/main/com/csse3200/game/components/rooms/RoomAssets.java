@@ -46,7 +46,6 @@ public class RoomAssets implements Disposable {
   private static final String[] SOUNDS = {IMPACT_SOUND};
 
   private static final String[] ENEMY_TEXTURES = {
-    "images/hole.png",
     "images/dragon/smoke_sheet.png",
     SnakePlayerHitVisualComponent.HIT_SHEET,
     SnakeShieldComponent.SHIELD_TEXTURE,
@@ -99,9 +98,7 @@ public class RoomAssets implements Disposable {
     "images/dungeons/fantasy_dreamland_door.png"
   };
 
-  private static final String[] OBSTACLE_TEXTURES = {
-    "images/hole.png", "images/rock.png",
-  };
+  private static final String[] OBSTACLE_TEXTURES = {"images/rock.png"};
 
   private static final String[] TRAP_TEXTURES = {
     FireTrapRenderComponent.START_TEXTURE,
@@ -111,7 +108,6 @@ public class RoomAssets implements Disposable {
   };
 
   private static final String[] ITEM_TEXTURES = {
-    "images/heart.png",
     "images/strength_charm_pixel.png",
     "images/attack_speed_charm.png",
     "images/speed_charm.png",
