@@ -7,14 +7,17 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.AchievementService;
 import com.csse3200.game.services.ServiceLocator;
 
-/** Awards the Stage 1 break achievement after a full inter-wave window without a boss hit. */
+/** Reports Final Boss challenge results to the shared achievement system. */
 public class FinalBossAchievementComponent extends Component {
   private final Entity target;
   private final BreakAttempt attempt = new BreakAttempt();
   private FinalBossStageOneComponent stageOne;
+  private FinalBossStageThreeComponent stageThree;
   private FinalBossPhaseControllerComponent phases;
   private CombatStatsComponent bossStats;
   private CombatStatsComponent playerStats;
+  private boolean snowQueenReported;
+  private boolean disposed;
 
   /** Creates an achievement observer for the player participating in this boss encounter. */
   public FinalBossAchievementComponent(Entity target) {
@@ -27,6 +30,7 @@ public class FinalBossAchievementComponent extends Component {
   @Override
   public void create() {
     stageOne = entity.getComponent(FinalBossStageOneComponent.class);
+    stageThree = entity.getComponent(FinalBossStageThreeComponent.class);
     phases = entity.getComponent(FinalBossPhaseControllerComponent.class);
     bossStats = entity.getComponent(CombatStatsComponent.class);
     playerStats = target.getComponent(CombatStatsComponent.class);
@@ -37,6 +41,7 @@ public class FinalBossAchievementComponent extends Component {
 
     entity.getEvents().addListener(FinalBossEvents.STAGE_ONE_STATE_CHANGED, this::onStateChanged);
     entity.getEvents().addListener("damageAttempted", this::onDamageAttempted);
+    entity.getEvents().addListener(FinalBossEvents.STAGE_THREE_ICE_HIT, this::onStageThreeIceHit);
     entity.getEvents().addListener(FinalBossEvents.PHASE_CHANGED, this::onPhaseChanged);
     entity.getEvents().addListener("entityDied", attempt::finish);
     // EventHandler has no removal API. Retain only the small attempt state on the player, not the
@@ -94,6 +99,30 @@ public class FinalBossAchievementComponent extends Component {
     }
   }
 
+  private void onStageThreeIceHit(Entity player) {
+    if (disposed
+        || snowQueenReported
+        || player != target
+        || playerStats == null
+        || playerStats.isDead()
+        || bossStats.isDead()
+        || phases.getCurrentPhase() != FinalBossPhase.STAGE_THREE
+        || phases.isTransitioning()
+        || stageThree == null
+        || stageThree.getState() != FinalBossStageThreeState.WAVE_ONE) {
+      return;
+    }
+
+    // Stage 1's break attempt has already ended; this achievement has its own one-shot result.
+    snowQueenReported = true;
+    AchievementService achievements = ServiceLocator.getAchievementService();
+    if (achievements != null) {
+      AchievementContext context = new AchievementContext();
+      context.finalBossStageThreeIceHit = true;
+      achievements.update(context);
+    }
+  }
+
   private boolean isEncounterActive() {
     return phases.getCurrentPhase() == FinalBossPhase.STAGE_ONE
         && !phases.isTransitioning()
@@ -104,6 +133,7 @@ public class FinalBossAchievementComponent extends Component {
 
   @Override
   public void dispose() {
+    disposed = true;
     attempt.finish();
   }
 

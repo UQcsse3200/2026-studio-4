@@ -18,4 +18,7 @@ public class AchievementContext {
    * the boss, including hits blocked by its shield or damage mitigation.
    */
   public boolean finalBossBreakRespected;
+
+  /** True when the player is hit by a Final Boss Stage 3 Wave 1 ice bolt. */
+  public boolean finalBossStageThreeIceHit;
 }

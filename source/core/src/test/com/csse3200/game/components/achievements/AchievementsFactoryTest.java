@@ -117,6 +117,8 @@ class AchievementsFactoryTest {
       assertInstanceOf(Achievement.class, AchievementsFactory.build(set));
       assertInstanceOf(
           Achievement.class, AchievementsFactory.build(config("finalBossBreakRespected")));
+      assertInstanceOf(
+          Achievement.class, AchievementsFactory.build(config("finalBossStageThreeIceHit")));
     }
 
     @Test
@@ -135,6 +137,8 @@ class AchievementsFactoryTest {
       assertEquals(0f, AchievementsFactory.build(config("killStreak")).getProgress());
       assertEquals(0f, AchievementsFactory.build(set).getProgress());
       assertEquals(0f, AchievementsFactory.build(config("finalBossBreakRespected")).getProgress());
+      assertEquals(
+          0f, AchievementsFactory.build(config("finalBossStageThreeIceHit")).getProgress());
     }
 
     @Test
@@ -206,6 +210,59 @@ class AchievementsFactoryTest {
         }
       }
       assertEquals(1, breakAchievements);
+    }
+  }
+
+  // ---------- finalBossStageThreeIceHit ----------
+
+  @Nested
+  class FinalBossStageThreeIceHit {
+
+    @Test
+    void update_unrelatedDamageAndBossEvents_staysLocked() {
+      Achievement a = AchievementsFactory.build(config("finalBossStageThreeIceHit"));
+      AchievementContext breakCompleted = new AchievementContext();
+      breakCompleted.finalBossBreakRespected = true;
+
+      assertFalse(a.update(new AchievementContext()));
+      assertFalse(a.update(damaged()));
+      assertFalse(a.update(kill(EnemyType.FINAL_BOSS)));
+      assertFalse(a.update(breakCompleted));
+      assertFalse(a.isUnlocked());
+    }
+
+    @Test
+    void update_firstIceHit_unlocksOnlySnowQueenAndOnlyOnce() {
+      Achievement a = AchievementsFactory.build(config("finalBossStageThreeIceHit"));
+      Achievement breakAchievement = AchievementsFactory.build(config("finalBossBreakRespected"));
+      AchievementContext ctx = new AchievementContext();
+      ctx.finalBossStageThreeIceHit = true;
+
+      assertTrue(a.update(ctx));
+      assertTrue(a.isUnlocked());
+      assertFalse(a.update(ctx));
+      assertFalse(breakAchievement.update(ctx));
+      assertFalse(breakAchievement.isUnlocked());
+    }
+
+    @Test
+    void config_registersOneSnowQueenAchievementWithExpectedNameAndCondition() {
+      AchievementConfig[] configs =
+          new Json()
+              .fromJson(AchievementConfig[].class, new FileHandle("configs/achievements.json"));
+      int snowQueenAchievements = 0;
+      for (AchievementConfig c : configs) {
+        Achievement a = AchievementsFactory.build(c);
+        if ("finalBossStageThreeIceHit".equals(c.type)) {
+          snowQueenAchievements++;
+          assertEquals("Whoa! The Snow Queen", a.getName());
+          assertFalse(a.update(damaged()));
+          AchievementContext ctx = new AchievementContext();
+          ctx.finalBossStageThreeIceHit = true;
+          assertTrue(a.update(ctx));
+        }
+      }
+      assertEquals(1, snowQueenAchievements);
     }
   }
 
