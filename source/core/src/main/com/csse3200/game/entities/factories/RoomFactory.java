@@ -50,7 +50,7 @@ public class RoomFactory {
         .addComponent(new ExitComponent(room.exits))
         .addComponent(
              new EnemyManagerComponent(
-                 cleared ? new EnemySpawnConfig[0] : room.enemySpawns, room.id, camera))
+                 cleared ? new EnemySpawnConfig[0] : room.enemySpawns, room, camera))
         .addComponent(new FriendlyNpcManagerComponent(room.npcSpawns, getFriendlyNpcs()));
   }
 
