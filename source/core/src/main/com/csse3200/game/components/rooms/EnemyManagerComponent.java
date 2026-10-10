@@ -14,17 +14,19 @@ import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
+import com.csse3200.game.components.rooms.configs.RoomConfig;
+import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
+import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Spawns configured enemies and tracks when the room has been cleared. */
 public class EnemyManagerComponent extends EntityManagerComponent {
@@ -33,14 +35,19 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   private final ItemFactory itemFactory;
   private boolean disposed;
   private CameraComponent camera;
+  private String roomId;
+  private final WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
+  private static final Logger logger = LoggerFactory.getLogger(EnemyManagerComponent.class);
 
   /** Creates an empty manager for tests and rooms with no enemies. */
   public EnemyManagerComponent() {
     this(new EnemySpawnConfig[0]);
   }
 
-  public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs, CameraComponent camera) {
+  public EnemyManagerComponent(
+      EnemySpawnConfig[] spawnConfigs, String roomId, CameraComponent camera) {
     this(spawnConfigs);
+    this.roomId = roomId;
     this.camera = camera;
   }
 
@@ -54,6 +61,27 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     this.itemFactory = Objects.requireNonNull(itemFactory);
   }
 
+  /** returns true if an enemy is being spawned beyond a wall */
+  boolean outOfBounds(Vector2 entityPos, RoomConfig room) {
+    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+    if (room == null) {
+      return false;
+    }
+    List<String> spawnConfig = room.obstacles.spawns; // obstacles in current room
+
+    for (int y = 0; y < spawnConfig.size(); y++) {
+      String row = spawnConfig.get(y);
+      for (int x = 0; x < row.length(); x++) {
+        Vector2 worldPos = terrain.tileToWorldPosition(new GridPoint2(x, y));
+        if ((row.charAt(x) == ' ' || row.charAt(x) == '#')
+            && entityPos.dst(worldPos) < terrain.getTileSize()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   @Override
   public void create() {
     entity.getEvents().addListener("RoomCreated", this::spawnEnemies);
@@ -61,10 +89,18 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   /** Spawns each enemy declared by the room. */
   public void spawnEnemies(Entity target) {
+    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+
     for (EnemySpawnConfig spawn : spawnConfigs) {
       Entity enemy = createEnemy(spawn, target);
       track(enemy, spawn.type.name());
       enemy.addComponent(new EnemyTypeComponent(spawn.type)); // before spawnEntityAt registers it
+      RoomConfig currentConfig = world.getRoom(roomId);
+      Vector2 entityPos = terrain.tileToWorldPosition(new GridPoint2(spawn.x, spawn.y));
+      if (outOfBounds(entityPos, currentConfig)) {
+        logger.warn("Attempt to spawn out of bounds entity at {}", entityPos);
+        return;
+      }
       spawnEntityAt(enemy, new GridPoint2(spawn.x, spawn.y), true, true);
     }
   }
@@ -290,6 +326,10 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   private void replaceWithChild(Entity parent, Entity child, String enemyType) {
+    if (outOfBounds(child.getPosition(), world.getRoom(roomId))) {
+      logger.warn("Attempt to spawn child out of bounds entity at {}", child.getPosition());
+      return;
+    }
     track(child, enemyType);
     activeEnemies.remove(parent);
     spawnEntity(child);
