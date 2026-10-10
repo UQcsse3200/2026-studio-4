@@ -3,8 +3,10 @@ package com.csse3200.game.components.rooms;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -19,9 +21,11 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
+import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.ItemCatalog;
@@ -37,6 +41,7 @@ import java.util.random.RandomGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 @ExtendWith(GameExtension.class)
@@ -87,6 +92,132 @@ class EnemyManagerComponentTest {
             new EnemySpawnConfig[0], new ItemFactory(LootTable.defaultTable(), fixedDrop(5)));
     enemyManager.setEntity(room);
     enemyManager.create();
+  }
+
+  @Test
+  void shouldSkipRejectedSpawnAndClearAfterRemainingEnemyDies() {
+    EnemySpawnConfig rejectedSpawn = new EnemySpawnConfig();
+    rejectedSpawn.type = EnemySpawnConfig.EnemyType.BUG;
+    rejectedSpawn.x = 1;
+    rejectedSpawn.y = 1;
+
+    EnemySpawnConfig validSpawn = new EnemySpawnConfig();
+    validSpawn.type = EnemySpawnConfig.EnemyType.WOLF;
+    validSpawn.x = 3;
+    validSpawn.y = 3;
+
+    enemyManager =
+        spy(
+            new EnemyManagerComponent(
+                new EnemySpawnConfig[] {rejectedSpawn, validSpawn},
+                new ItemFactory(LootTable.defaultTable(), fixedDrop(5))));
+    enemyManager.setEntity(room);
+
+    // Isolate spawn-loop behaviour from the separate wall geometry rules.
+    doReturn(true).when(enemyManager).outOfBounds(eq(new Vector2(1f, 1f)), any());
+    doReturn(false).when(enemyManager).outOfBounds(eq(new Vector2(3f, 3f)), any());
+
+    Entity target = new Entity();
+    Entity rejectedEnemy = new Entity();
+    Entity validEnemy = new Entity();
+    int[] cleared = {0};
+    room.getEvents().addListener("roomCleared", () -> cleared[0]++);
+
+    try (MockedStatic<NPCFactory> factory = Mockito.mockStatic(NPCFactory.class)) {
+      factory
+          .when(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"))
+          .thenReturn(rejectedEnemy);
+      factory
+          .when(() -> NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas"))
+          .thenReturn(validEnemy);
+
+      enemyManager.spawnEnemies(target);
+
+      assertEquals(1, entityService.getEntities().size);
+      verify(entityService).register(validEnemy);
+      verify(entityService, never()).register(rejectedEnemy);
+      factory.verify(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"), never());
+      factory.verify(() -> NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas"));
+      assertFalse(enemyManager.isCleared());
+      assertEquals(0, cleared[0]);
+
+      validEnemy.getEvents().trigger("entityDied");
+
+      assertTrue(enemyManager.isCleared());
+      assertEquals(1, cleared[0]);
+    }
+  }
+
+  @Test
+  void shouldUseInjectedLayoutForInitialSpawns() {
+    EnemySpawnConfig blockedSpawn = new EnemySpawnConfig();
+    blockedSpawn.type = EnemySpawnConfig.EnemyType.BUG;
+    blockedSpawn.x = 1;
+    blockedSpawn.y = 1;
+    EnemySpawnConfig validSpawn = new EnemySpawnConfig();
+    validSpawn.type = EnemySpawnConfig.EnemyType.WOLF;
+    validSpawn.x = 3;
+    validSpawn.y = 3;
+    enemyManager =
+        new EnemyManagerComponent(
+            new EnemySpawnConfig[] {blockedSpawn, validSpawn}, customRoomLayout(), null);
+    enemyManager.setEntity(room);
+    Entity target = new Entity();
+    Entity blockedEnemy = new Entity();
+    Entity validEnemy = new Entity();
+
+    try (MockedStatic<NPCFactory> factory = Mockito.mockStatic(NPCFactory.class)) {
+      factory
+          .when(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"))
+          .thenReturn(blockedEnemy);
+      factory
+          .when(() -> NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas"))
+          .thenReturn(validEnemy);
+
+      enemyManager.spawnEnemies(target);
+
+      assertEquals(1, entityService.getEntities().size);
+      verify(entityService).register(validEnemy);
+      verify(entityService, never()).register(blockedEnemy);
+      factory.verify(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"), never());
+    }
+  }
+
+  @Test
+  void shouldUseInjectedLayoutForSplitChildren() {
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], customRoomLayout(), null);
+    enemyManager.setEntity(room);
+    Entity parent = new Entity();
+    Entity blockedChild = new Entity();
+    blockedChild.setPosition(1f, 1f);
+    Entity validChild = new Entity();
+    validChild.setPosition(3f, 3f);
+    enemyManager.track(parent);
+
+    parent.getEvents().trigger("spawnChildren", blockedChild);
+    parent.getEvents().trigger("spawnChildren", validChild);
+
+    assertEquals(1, entityService.getEntities().size);
+    verify(entityService, never()).register(blockedChild);
+    verify(entityService).register(validChild);
+    assertFalse(enemyManager.isCleared());
+  }
+
+  @Test
+  void shouldRequireLayoutForRoomAwareConstructor() {
+    assertThrows(
+        NullPointerException.class,
+        () -> new EnemyManagerComponent(new EnemySpawnConfig[0], null, null));
+  }
+
+  private static RoomConfig customRoomLayout() {
+    RoomConfig config = new RoomConfig();
+    // Deliberately absent from rooms.json: the supplied layout must be used directly.
+    config.id = "custom-spawn-regression";
+    config.mapWidth = 5;
+    config.mapHeight = 5;
+    config.obstacles.spawns = List.of("33333", "3#333", "33333", "33333", "33333");
+    return config;
   }
 
   /** Registers n enemies with the manager and returns them. */
