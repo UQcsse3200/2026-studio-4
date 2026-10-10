@@ -22,6 +22,7 @@ import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.ItemCatalog;
@@ -37,6 +38,7 @@ import java.util.random.RandomGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 @ExtendWith(GameExtension.class)
@@ -87,6 +89,60 @@ class EnemyManagerComponentTest {
             new EnemySpawnConfig[0], new ItemFactory(LootTable.defaultTable(), fixedDrop(5)));
     enemyManager.setEntity(room);
     enemyManager.create();
+  }
+
+  @Test
+  void shouldSkipRejectedSpawnAndClearAfterRemainingEnemyDies() {
+    EnemySpawnConfig rejectedSpawn = new EnemySpawnConfig();
+    rejectedSpawn.type = EnemySpawnConfig.EnemyType.BUG;
+    rejectedSpawn.x = 1;
+    rejectedSpawn.y = 1;
+
+    EnemySpawnConfig validSpawn = new EnemySpawnConfig();
+    validSpawn.type = EnemySpawnConfig.EnemyType.WOLF;
+    validSpawn.x = 3;
+    validSpawn.y = 3;
+
+    enemyManager =
+        spy(
+            new EnemyManagerComponent(
+                new EnemySpawnConfig[] {rejectedSpawn, validSpawn},
+                new ItemFactory(LootTable.defaultTable(), fixedDrop(5))));
+    enemyManager.setEntity(room);
+
+    // Isolate spawn-loop behaviour from the separate wall geometry rules.
+    Mockito.doReturn(true).when(enemyManager).outOfBounds(eq(new Vector2(1f, 1f)), any());
+    Mockito.doReturn(false).when(enemyManager).outOfBounds(eq(new Vector2(3f, 3f)), any());
+
+    Entity target = new Entity();
+    Entity rejectedEnemy = new Entity();
+    Entity validEnemy = new Entity();
+    int[] cleared = {0};
+    room.getEvents().addListener("roomCleared", () -> cleared[0]++);
+
+    try (MockedStatic<NPCFactory> factory = Mockito.mockStatic(NPCFactory.class)) {
+      factory
+          .when(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"))
+          .thenReturn(rejectedEnemy);
+      factory
+          .when(() -> NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas"))
+          .thenReturn(validEnemy);
+
+      enemyManager.spawnEnemies(target);
+
+      assertEquals(1, entityService.getEntities().size);
+      verify(entityService).register(validEnemy);
+      verify(entityService, never()).register(rejectedEnemy);
+      factory.verify(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"), never());
+      factory.verify(() -> NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas"));
+      assertFalse(enemyManager.isCleared());
+      assertEquals(0, cleared[0]);
+
+      validEnemy.getEvents().trigger("entityDied");
+
+      assertTrue(enemyManager.isCleared());
+      assertEquals(1, cleared[0]);
+    }
   }
 
   /** Registers n enemies with the manager and returns them. */

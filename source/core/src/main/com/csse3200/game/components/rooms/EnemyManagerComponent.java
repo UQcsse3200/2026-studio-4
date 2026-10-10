@@ -90,17 +90,17 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   /** Spawns each enemy declared by the room. */
   public void spawnEnemies(Entity target) {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+    RoomConfig currentConfig = world.getRoom(roomId);
 
     for (EnemySpawnConfig spawn : spawnConfigs) {
-      Entity enemy = createEnemy(spawn, target);
-      track(enemy, spawn.type.name());
-      enemy.addComponent(new EnemyTypeComponent(spawn.type)); // before spawnEntityAt registers it
-      RoomConfig currentConfig = world.getRoom(roomId);
       Vector2 entityPos = terrain.tileToWorldPosition(new GridPoint2(spawn.x, spawn.y));
       if (outOfBounds(entityPos, currentConfig)) {
         logger.warn("Attempt to spawn out of bounds entity at {}", entityPos);
-        return;
+        continue;
       }
+      Entity enemy = createEnemy(spawn, target);
+      track(enemy, spawn.type.name());
+      enemy.addComponent(new EnemyTypeComponent(spawn.type)); // before spawnEntityAt registers it
       spawnEntityAt(enemy, new GridPoint2(spawn.x, spawn.y), true, true);
     }
   }
