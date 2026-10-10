@@ -15,12 +15,17 @@ public class AchievementsFactory {
       case "killStreak" -> killStreak(c);
       case "speedRun" -> speedRun(c);
       case "enemySet" -> enemySet(c);
+      case "finalBossBreakRespected" -> finalBossBreakRespected(c);
       default -> throw new IllegalArgumentException("Unknown achievement type: " + c.type);
     };
   }
 
   private static Achievement dungeonClear(AchievementConfig c) {
     return new Achievement(c.name, ctx -> c.dungeonId.equals(ctx.dungeonCompletedId));
+  }
+
+  private static Achievement finalBossBreakRespected(AchievementConfig c) {
+    return new Achievement(c.name, ctx -> ctx.finalBossBreakRespected);
   }
 
   private static Achievement gold(AchievementConfig c) {

@@ -12,4 +12,10 @@ public class AchievementContext {
   public float dungeonSeconds;
   public Integer goldTotal;
   public Integer singleHitDamage;
+
+  /**
+   * True only when the full Final Boss Stage 1 inter-wave break finishes without an attack hitting
+   * the boss, including hits blocked by its shield or damage mitigation.
+   */
+  public boolean finalBossBreakRespected;
 }

@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Json;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig.EnemyType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -113,6 +115,8 @@ class AchievementsFactoryTest {
       assertInstanceOf(Achievement.class, AchievementsFactory.build(config("killStreak")));
       assertInstanceOf(Achievement.class, AchievementsFactory.build(speed));
       assertInstanceOf(Achievement.class, AchievementsFactory.build(set));
+      assertInstanceOf(
+          Achievement.class, AchievementsFactory.build(config("finalBossBreakRespected")));
     }
 
     @Test
@@ -130,6 +134,7 @@ class AchievementsFactoryTest {
       assertEquals(0f, AchievementsFactory.build(config("enemyKillCount")).getProgress());
       assertEquals(0f, AchievementsFactory.build(config("killStreak")).getProgress());
       assertEquals(0f, AchievementsFactory.build(set).getProgress());
+      assertEquals(0f, AchievementsFactory.build(config("finalBossBreakRespected")).getProgress());
     }
 
     @Test
@@ -150,6 +155,57 @@ class AchievementsFactoryTest {
           assertThrows(InvocationTargetException.class, constructor::newInstance);
 
       assertInstanceOf(IllegalStateException.class, e.getCause());
+    }
+  }
+
+  // ---------- finalBossBreakRespected ----------
+
+  @Nested
+  class FinalBossBreakRespected {
+
+    @Test
+    void update_withoutCompletedBreak_staysLocked() {
+      Achievement a = AchievementsFactory.build(config("finalBossBreakRespected"));
+
+      assertFalse(a.update(new AchievementContext()));
+      assertFalse(a.update(kill(EnemyType.FINAL_BOSS)));
+      assertFalse(a.update(entered("finalDungeon")));
+      assertFalse(a.update(completed("finalDungeon")));
+      assertFalse(a.update(damaged()));
+      assertFalse(a.isUnlocked());
+    }
+
+    @Test
+    void update_completedBreak_unlocksOnlyOnce() {
+      Achievement a = AchievementsFactory.build(config("finalBossBreakRespected"));
+      AchievementContext ctx = new AchievementContext();
+      ctx.finalBossBreakRespected = true;
+
+      assertTrue(a.update(ctx));
+      assertTrue(a.isUnlocked());
+      assertFalse(a.update(ctx));
+      assertFalse(a.update(new AchievementContext()));
+      assertTrue(a.isUnlocked());
+    }
+
+    @Test
+    void config_registersOneBreakAchievementWithExpectedNameAndCondition() {
+      AchievementConfig[] configs =
+          new Json()
+              .fromJson(AchievementConfig[].class, new FileHandle("configs/achievements.json"));
+      int breakAchievements = 0;
+      for (AchievementConfig c : configs) {
+        Achievement a = AchievementsFactory.build(c);
+        if ("finalBossBreakRespected".equals(c.type)) {
+          breakAchievements++;
+          assertEquals("I need a break too", a.getName());
+          assertFalse(a.update(new AchievementContext()));
+          AchievementContext ctx = new AchievementContext();
+          ctx.finalBossBreakRespected = true;
+          assertTrue(a.update(ctx));
+        }
+      }
+      assertEquals(1, breakAchievements);
     }
   }
 

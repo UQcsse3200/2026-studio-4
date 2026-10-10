@@ -6,6 +6,7 @@
 
 
   { "type": "enemyKillCount", "enemyType": "FINAL_BOSS", "target": 1, "name": "Vanquisher" },
+  { "type": "finalBossBreakRespected", "name": "I need a break too" },
   { "type": "enemyKillCount", "enemyType": "MEDUSA", "target": 3, "name": "You killed 3 Medusa" },
 
   {"type":  "enemyKillCount", "target": 5, "name": "Ah! Boy You killed 5 enemies"},
