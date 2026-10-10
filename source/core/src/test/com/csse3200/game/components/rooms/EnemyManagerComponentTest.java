@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -113,8 +114,8 @@ class EnemyManagerComponentTest {
     enemyManager.setEntity(room);
 
     // Isolate spawn-loop behaviour from the separate wall geometry rules.
-    Mockito.doReturn(true).when(enemyManager).outOfBounds(eq(new Vector2(1f, 1f)), any());
-    Mockito.doReturn(false).when(enemyManager).outOfBounds(eq(new Vector2(3f, 3f)), any());
+    doReturn(true).when(enemyManager).outOfBounds(eq(new Vector2(1f, 1f)), any());
+    doReturn(false).when(enemyManager).outOfBounds(eq(new Vector2(3f, 3f)), any());
 
     Entity target = new Entity();
     Entity rejectedEnemy = new Entity();
