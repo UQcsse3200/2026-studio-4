@@ -7,7 +7,7 @@
 
   { "type": "enemyKillCount", "enemyType": "FINAL_BOSS", "target": 1, "name": "Vanquisher" },
   { "type": "finalBossBreakRespected", "name": "I need a break too" },
-  { "type": "finalBossStageTwoIceHit", "name": "Coolin‘ off, make it fun" },
+  { "type": "finalBossStageTwoIceHit", "name": "Coolin' off, make it fun" },
   { "type": "finalBossStageThreeIceHit", "name": "Whoa! The Snow Queen" },
   { "type": "enemyKillCount", "enemyType": "MEDUSA", "target": 3, "name": "You killed 3 Medusa" },
 

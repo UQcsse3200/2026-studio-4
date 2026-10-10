@@ -262,7 +262,7 @@ class AchievementsFactoryTest {
         Achievement a = AchievementsFactory.build(c);
         if ("finalBossStageTwoIceHit".equals(c.type)) {
           iceHitAchievements++;
-          assertEquals("Coolin‘ off, make it fun", a.getName());
+          assertEquals("Coolin' off, make it fun", a.getName());
           assertFalse(a.update(new AchievementContext()));
           AchievementContext ctx = new AchievementContext();
           ctx.finalBossStageTwoIceHit = true;

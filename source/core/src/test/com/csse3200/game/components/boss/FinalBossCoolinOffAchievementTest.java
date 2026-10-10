@@ -41,7 +41,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 /** Real pickup, input and projectile collisions feeding the Stage 2 ice-hit achievement. */
 @ExtendWith(GameExtension.class)
 class FinalBossCoolinOffAchievementTest {
-  private static final String ACHIEVEMENT_NAME = "Coolin‘ off, make it fun";
+  private static final String ACHIEVEMENT_NAME = "Coolin' off, make it fun";
 
   private final List<String> unlockedNames = new ArrayList<>();
   private final List<Entity> hitPlayers = new ArrayList<>();
