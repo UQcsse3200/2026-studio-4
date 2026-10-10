@@ -369,6 +369,13 @@ public class FinalBossStageTwoComponent extends Component {
     FinalBossDamageControllerComponent protection =
         entity.getComponent(FinalBossDamageControllerComponent.class);
     if (protection != null) {
+      // Only the projectile's unobstructed boss collision reaches this callback. Report before
+      // damage: fractional hits need not reduce health, and a health-floor hit can enter Stage 3.
+      entity.getEvents().trigger(FinalBossEvents.STAGE_TWO_ICE_HIT, target);
+      if (!isIceInputActive()) {
+        clearEffects();
+        return;
+      }
       protection.takeStageTwoIceDamage(stageTwoConfig.iceProjectileDamage, target);
     }
     if (!canContinueFire()) clearEffects();

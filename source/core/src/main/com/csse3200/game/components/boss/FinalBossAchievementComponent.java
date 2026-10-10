@@ -16,6 +16,7 @@ public class FinalBossAchievementComponent extends Component {
   private FinalBossPhaseControllerComponent phases;
   private CombatStatsComponent bossStats;
   private CombatStatsComponent playerStats;
+  private boolean stageTwoIceReported;
   private boolean snowQueenReported;
   private boolean disposed;
 
@@ -41,6 +42,7 @@ public class FinalBossAchievementComponent extends Component {
 
     entity.getEvents().addListener(FinalBossEvents.STAGE_ONE_STATE_CHANGED, this::onStateChanged);
     entity.getEvents().addListener("damageAttempted", this::onDamageAttempted);
+    entity.getEvents().addListener(FinalBossEvents.STAGE_TWO_ICE_HIT, this::onStageTwoIceHit);
     entity.getEvents().addListener(FinalBossEvents.STAGE_THREE_ICE_HIT, this::onStageThreeIceHit);
     entity.getEvents().addListener(FinalBossEvents.PHASE_CHANGED, this::onPhaseChanged);
     entity.getEvents().addListener("entityDied", attempt::finish);
@@ -96,6 +98,28 @@ public class FinalBossAchievementComponent extends Component {
   private void onPhaseChanged(FinalBossPhase phase) {
     if (phase != FinalBossPhase.STAGE_ONE) {
       attempt.finish();
+    }
+  }
+
+  private void onStageTwoIceHit(Entity player) {
+    if (disposed
+        || stageTwoIceReported
+        || player != target
+        || playerStats == null
+        || playerStats.isDead()
+        || bossStats.isDead()
+        || phases.getCurrentPhase() != FinalBossPhase.STAGE_TWO
+        || phases.isTransitioning()) {
+      return;
+    }
+
+    // Independent of the other stages; consume before listeners can re-enter this component.
+    stageTwoIceReported = true;
+    AchievementService achievements = ServiceLocator.getAchievementService();
+    if (achievements != null) {
+      AchievementContext context = new AchievementContext();
+      context.finalBossStageTwoIceHit = true;
+      achievements.update(context);
     }
   }
 

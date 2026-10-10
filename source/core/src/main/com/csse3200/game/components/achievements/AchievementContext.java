@@ -19,6 +19,9 @@ public class AchievementContext {
    */
   public boolean finalBossBreakRespected;
 
+  /** True when the player's Stage 2 ice projectile reaches the Final Boss before any obstacle. */
+  public boolean finalBossStageTwoIceHit;
+
   /** True when the player is hit by a Final Boss Stage 3 Wave 1 ice bolt. */
   public boolean finalBossStageThreeIceHit;
 }

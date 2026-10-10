@@ -10,6 +10,12 @@ public final class FinalBossEvents {
   public static final String STAGE_ONE_STATE_CHANGED = "finalBossStageOneStateChanged";
 
   /**
+   * Stage 2 player ice projectile reached the boss before an obstacle. Argument: firing player
+   * (Entity). Emitted before damage, which may accumulate fractionally or start Stage 3.
+   */
+  public static final String STAGE_TWO_ICE_HIT = "finalBossStageTwoIceHit";
+
+  /**
    * Stage 3 Wave 1 ice-bolt contact. Argument: the player hit (Entity), regardless of health loss.
    */
   public static final String STAGE_THREE_ICE_HIT = "finalBossStageThreeIceHit";
