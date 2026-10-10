@@ -12,4 +12,16 @@ public class AchievementContext {
   public float dungeonSeconds;
   public Integer goldTotal;
   public Integer singleHitDamage;
+
+  /**
+   * True only when the full Final Boss Stage 1 inter-wave break finishes without an attack hitting
+   * the boss, including hits blocked by its shield or damage mitigation.
+   */
+  public boolean finalBossBreakRespected;
+
+  /** True when the player's Stage 2 ice projectile reaches the Final Boss before any obstacle. */
+  public boolean finalBossStageTwoIceHit;
+
+  /** True when the player is hit by a Final Boss Stage 3 Wave 1 ice bolt. */
+  public boolean finalBossStageThreeIceHit;
 }

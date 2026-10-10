@@ -15,12 +15,27 @@ public class AchievementsFactory {
       case "killStreak" -> killStreak(c);
       case "speedRun" -> speedRun(c);
       case "enemySet" -> enemySet(c);
+      case "finalBossBreakRespected" -> finalBossBreakRespected(c);
+      case "finalBossStageTwoIceHit" -> finalBossStageTwoIceHit(c);
+      case "finalBossStageThreeIceHit" -> finalBossStageThreeIceHit(c);
       default -> throw new IllegalArgumentException("Unknown achievement type: " + c.type);
     };
   }
 
   private static Achievement dungeonClear(AchievementConfig c) {
     return new Achievement(c.name, ctx -> c.dungeonId.equals(ctx.dungeonCompletedId));
+  }
+
+  private static Achievement finalBossBreakRespected(AchievementConfig c) {
+    return new Achievement(c.name, ctx -> ctx.finalBossBreakRespected);
+  }
+
+  private static Achievement finalBossStageThreeIceHit(AchievementConfig c) {
+    return new Achievement(c.name, ctx -> ctx.finalBossStageThreeIceHit);
+  }
+
+  private static Achievement finalBossStageTwoIceHit(AchievementConfig c) {
+    return new Achievement(c.name, ctx -> ctx.finalBossStageTwoIceHit);
   }
 
   private static Achievement gold(AchievementConfig c) {

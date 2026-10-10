@@ -315,8 +315,7 @@ public class FinalBossStageThreeComponent extends Component {
       return;
     }
     // Resolve existing projectiles first: a freeze combo takes priority over repositioning.
-    updateBolts(delta);
-    if (isFrozen()) return;
+    if (updateBolts(delta)) return;
 
     if (recoveryRemaining > 0f && updateVolleyRecovery(delta)) return;
 
@@ -372,7 +371,7 @@ public class FinalBossStageThreeComponent extends Component {
     shotRemaining = config.boltInterval;
   }
 
-  private void updateBolts(float delta) {
+  private boolean updateBolts(float delta) {
     boolean hit = false;
     Vector2 player = target.getCenterPosition();
     float radius =
@@ -397,7 +396,10 @@ public class FinalBossStageThreeComponent extends Component {
     if (hit) {
       bolts.clear();
       freezePlayer();
+      // Finish the hit before notifying observers, which may dispose or transition the encounter.
+      entity.getEvents().trigger(FinalBossEvents.STAGE_THREE_ICE_HIT, target);
     } else bolts.removeIf(b -> b.elapsed >= config.boltLifetime);
+    return hit;
   }
 
   static float segmentDistanceSquared(Vector2 from, Vector2 to, Vector2 point) {
