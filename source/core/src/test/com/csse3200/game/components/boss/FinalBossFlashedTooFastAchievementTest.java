@@ -89,7 +89,8 @@ class FinalBossFlashedTooFastAchievementTest {
 
     AchievementConfig definition = new AchievementConfig();
     definition.name = ACHIEVEMENT_NAME;
-    definition.type = "finalBossStageThreeMeleeHit";
+    definition.type = "finalBoss";
+    definition.bossAchievementId = "finalBossStageThreeMeleeHit";
     achievement = AchievementsFactory.build(definition);
     achievements = new AchievementService();
     achievements.register(achievement);

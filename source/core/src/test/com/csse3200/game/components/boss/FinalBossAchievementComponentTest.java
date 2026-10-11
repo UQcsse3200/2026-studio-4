@@ -58,7 +58,8 @@ class FinalBossAchievementComponentTest {
 
     AchievementConfig achievementConfig = new AchievementConfig();
     achievementConfig.name = ACHIEVEMENT_NAME;
-    achievementConfig.type = "finalBossBreakRespected";
+    achievementConfig.type = "finalBoss";
+    achievementConfig.bossAchievementId = "finalBossBreakRespected";
     achievement = AchievementsFactory.build(achievementConfig);
     AchievementService achievements = new AchievementService();
     achievements.register(achievement);

@@ -437,10 +437,11 @@ class FinalBossFreezingAchievementTest {
     assertTrue(misses.isEmpty());
   }
 
-  private Achievement register(String name, String type) {
+  private Achievement register(String name, String bossAchievementId) {
     AchievementConfig definition = new AchievementConfig();
     definition.name = name;
-    definition.type = type;
+    definition.type = "finalBoss";
+    definition.bossAchievementId = bossAchievementId;
     Achievement result = AchievementsFactory.build(definition);
     achievements.register(result);
     return result;

@@ -80,7 +80,8 @@ class FinalBossCoolinOffAchievementTest {
 
     AchievementConfig definition = new AchievementConfig();
     definition.name = ACHIEVEMENT_NAME;
-    definition.type = "finalBossStageTwoIceHit";
+    definition.type = "finalBoss";
+    definition.bossAchievementId = "finalBossStageTwoIceHit";
     achievement = AchievementsFactory.build(definition);
     achievements = new AchievementService();
     achievements.register(achievement);

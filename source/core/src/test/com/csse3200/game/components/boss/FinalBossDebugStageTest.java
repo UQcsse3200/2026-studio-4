@@ -389,10 +389,12 @@ class FinalBossDebugStageTest {
     assertTrue(unlockedNames.isEmpty());
   }
 
-  private static void registerAchievement(AchievementService service, String name, String type) {
+  private static void registerAchievement(
+      AchievementService service, String name, String bossAchievementId) {
     AchievementConfig definition = new AchievementConfig();
     definition.name = name;
-    definition.type = type;
+    definition.type = "finalBoss";
+    definition.bossAchievementId = bossAchievementId;
     service.register(AchievementsFactory.build(definition));
   }
 }

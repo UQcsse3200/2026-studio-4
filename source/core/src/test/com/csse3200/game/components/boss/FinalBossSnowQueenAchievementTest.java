@@ -57,7 +57,8 @@ class FinalBossSnowQueenAchievementTest {
 
     AchievementConfig achievementConfig = new AchievementConfig();
     achievementConfig.name = ACHIEVEMENT_NAME;
-    achievementConfig.type = "finalBossStageThreeIceHit";
+    achievementConfig.type = "finalBoss";
+    achievementConfig.bossAchievementId = "finalBossStageThreeIceHit";
     achievement = AchievementsFactory.build(achievementConfig);
     achievements = new AchievementService();
     achievements.register(achievement);

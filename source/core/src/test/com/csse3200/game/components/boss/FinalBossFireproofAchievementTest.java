@@ -76,7 +76,8 @@ class FinalBossFireproofAchievementTest {
 
     AchievementConfig definition = new AchievementConfig();
     definition.name = ACHIEVEMENT_NAME;
-    definition.type = "finalBossStageTwoFireproof";
+    definition.type = "finalBoss";
+    definition.bossAchievementId = "finalBossStageTwoFireproof";
     achievement = AchievementsFactory.build(definition);
     achievements = new AchievementService();
     achievements.register(achievement);

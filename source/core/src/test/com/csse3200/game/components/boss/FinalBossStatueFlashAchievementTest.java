@@ -75,7 +75,8 @@ class FinalBossStatueFlashAchievementTest {
 
     AchievementConfig definition = new AchievementConfig();
     definition.name = ACHIEVEMENT_NAME;
-    definition.type = "finalBossStageThreeStatueFlash";
+    definition.type = "finalBoss";
+    definition.bossAchievementId = "finalBossStageThreeStatueFlash";
     achievement = AchievementsFactory.build(definition);
     achievements = new AchievementService();
     achievements.register(achievement);
