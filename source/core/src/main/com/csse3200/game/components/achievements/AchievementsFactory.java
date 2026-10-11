@@ -17,6 +17,7 @@ public class AchievementsFactory {
       case "enemySet" -> enemySet(c);
       case "finalBossBreakRespected" -> finalBossBreakRespected(c);
       case "finalBossStageTwoIceHit" -> finalBossStageTwoIceHit(c);
+      case "finalBossStageTwoFireproof" -> finalBossStageTwoFireproof(c);
       case "finalBossStageThreeIceHit" -> finalBossStageThreeIceHit(c);
       default -> throw new IllegalArgumentException("Unknown achievement type: " + c.type);
     };
@@ -36,6 +37,10 @@ public class AchievementsFactory {
 
   private static Achievement finalBossStageTwoIceHit(AchievementConfig c) {
     return new Achievement(c.name, ctx -> ctx.finalBossStageTwoIceHit);
+  }
+
+  private static Achievement finalBossStageTwoFireproof(AchievementConfig c) {
+    return new Achievement(c.name, ctx -> ctx.finalBossStageTwoFireproof);
   }
 
   private static Achievement gold(AchievementConfig c) {

@@ -11,6 +11,7 @@ import com.csse3200.game.services.ServiceLocator;
 public class FinalBossAchievementComponent extends Component {
   private final Entity target;
   private final BreakAttempt attempt = new BreakAttempt();
+  private final FireproofAttempt fireproof = new FireproofAttempt();
   private FinalBossStageOneComponent stageOne;
   private FinalBossStageThreeComponent stageThree;
   private FinalBossPhaseControllerComponent phases;
@@ -43,12 +44,17 @@ public class FinalBossAchievementComponent extends Component {
     entity.getEvents().addListener(FinalBossEvents.STAGE_ONE_STATE_CHANGED, this::onStateChanged);
     entity.getEvents().addListener("damageAttempted", this::onDamageAttempted);
     entity.getEvents().addListener(FinalBossEvents.STAGE_TWO_ICE_HIT, this::onStageTwoIceHit);
+    entity.getEvents().addListener(FinalBossEvents.STAGE_TWO_STARTED, this::onStageTwoStarted);
+    entity.getEvents().addListener(FinalBossEvents.STAGE_TWO_FIRE_HIT, this::onStageTwoFireHit);
+    entity.getEvents().addListener(FinalBossEvents.STAGE_TWO_COMPLETED, this::onStageTwoCompleted);
     entity.getEvents().addListener(FinalBossEvents.STAGE_THREE_ICE_HIT, this::onStageThreeIceHit);
     entity.getEvents().addListener(FinalBossEvents.PHASE_CHANGED, this::onPhaseChanged);
     entity.getEvents().addListener("entityDied", attempt::finish);
+    entity.getEvents().addListener("entityDied", fireproof::finish);
     // EventHandler has no removal API. Retain only the small attempt state on the player, not the
     // boss.
     target.getEvents().addListener("entityDied", attempt::finish);
+    target.getEvents().addListener("entityDied", fireproof::finish);
   }
 
   private void onStateChanged(FinalBossStageOneState state) {
@@ -99,6 +105,47 @@ public class FinalBossAchievementComponent extends Component {
     if (phase != FinalBossPhase.STAGE_ONE) {
       attempt.finish();
     }
+    if (phase != FinalBossPhase.STAGE_TWO) {
+      fireproof.finish();
+    }
+  }
+
+  private void onStageTwoStarted(Entity player) {
+    if (player == target && !fireproof.finished && isStageTwoActive()) {
+      // Never clear an earlier hit: another start listener can advance fire before ours runs.
+      fireproof.started = true;
+    }
+  }
+
+  private void onStageTwoFireHit(Entity player) {
+    if (player == target && !fireproof.finished && isStageTwoActive()) {
+      fireproof.hit = true;
+    }
+  }
+
+  private void onStageTwoCompleted(Entity player) {
+    if (player != target || fireproof.finished || !isStageTwoActive()) {
+      return;
+    }
+    fireproof.finish();
+    if (!fireproof.started || fireproof.hit) {
+      return;
+    }
+    AchievementService achievements = ServiceLocator.getAchievementService();
+    if (achievements != null) {
+      AchievementContext context = new AchievementContext();
+      context.finalBossStageTwoFireproof = true;
+      achievements.update(context);
+    }
+  }
+
+  private boolean isStageTwoActive() {
+    return !disposed
+        && phases.getCurrentPhase() == FinalBossPhase.STAGE_TWO
+        && !phases.isTransitioning()
+        && !bossStats.isDead()
+        && playerStats != null
+        && !playerStats.isDead();
   }
 
   private void onStageTwoIceHit(Entity player) {
@@ -159,6 +206,18 @@ public class FinalBossAchievementComponent extends Component {
   public void dispose() {
     disposed = true;
     attempt.finish();
+    fireproof.finish();
+  }
+
+  /** Independent of the other achievements; player death listeners retain only these flags. */
+  private static class FireproofAttempt {
+    private boolean started;
+    private boolean hit;
+    private boolean finished;
+
+    private void finish() {
+      finished = true;
+    }
   }
 
   /** Encounter-local flags; keeping this static avoids retaining a disposed boss via the player. */

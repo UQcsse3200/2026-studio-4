@@ -15,6 +15,18 @@ public final class FinalBossEvents {
    */
   public static final String STAGE_TWO_ICE_HIT = "finalBossStageTwoIceHit";
 
+  /** First active Stage 2 start, after transformation. Argument: participating player (Entity). */
+  public static final String STAGE_TWO_STARTED = "finalBossStageTwoStarted";
+
+  /** Stage 2 fireball contact before damage or protection checks. Argument: hit player (Entity). */
+  public static final String STAGE_TWO_FIRE_HIT = "finalBossStageTwoFireHit";
+
+  /**
+   * Active Stage 2 reached its health floor, immediately before the Stage 3 handover. Argument:
+   * participating player (Entity). Forced phase changes do not emit this event.
+   */
+  public static final String STAGE_TWO_COMPLETED = "finalBossStageTwoCompleted";
+
   /**
    * Stage 3 Wave 1 ice-bolt contact. Argument: the player hit (Entity), regardless of health loss.
    */

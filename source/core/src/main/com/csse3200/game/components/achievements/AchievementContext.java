@@ -22,6 +22,9 @@ public class AchievementContext {
   /** True when the player's Stage 2 ice projectile reaches the Final Boss before any obstacle. */
   public boolean finalBossStageTwoIceHit;
 
+  /** True after completing the full Final Boss Stage 2 encounter without a fireball contact. */
+  public boolean finalBossStageTwoFireproof;
+
   /** True when the player is hit by a Final Boss Stage 3 Wave 1 ice bolt. */
   public boolean finalBossStageThreeIceHit;
 }

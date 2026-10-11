@@ -120,6 +120,8 @@ class AchievementsFactoryTest {
       assertInstanceOf(
           Achievement.class, AchievementsFactory.build(config("finalBossStageTwoIceHit")));
       assertInstanceOf(
+          Achievement.class, AchievementsFactory.build(config("finalBossStageTwoFireproof")));
+      assertInstanceOf(
           Achievement.class, AchievementsFactory.build(config("finalBossStageThreeIceHit")));
     }
 
@@ -140,6 +142,8 @@ class AchievementsFactoryTest {
       assertEquals(0f, AchievementsFactory.build(set).getProgress());
       assertEquals(0f, AchievementsFactory.build(config("finalBossBreakRespected")).getProgress());
       assertEquals(0f, AchievementsFactory.build(config("finalBossStageTwoIceHit")).getProgress());
+      assertEquals(
+          0f, AchievementsFactory.build(config("finalBossStageTwoFireproof")).getProgress());
       assertEquals(
           0f, AchievementsFactory.build(config("finalBossStageThreeIceHit")).getProgress());
     }
@@ -270,6 +274,79 @@ class AchievementsFactoryTest {
         }
       }
       assertEquals(1, iceHitAchievements);
+    }
+  }
+
+  // ---------- finalBossStageTwoFireproof ----------
+
+  @Nested
+  class FinalBossStageTwoFireproof {
+
+    @Test
+    void update_unrelatedDamageAndBossEvents_staysLocked() {
+      Achievement a = AchievementsFactory.build(config("finalBossStageTwoFireproof"));
+      AchievementContext breakCompleted = new AchievementContext();
+      breakCompleted.finalBossBreakRespected = true;
+      AchievementContext coolinOff = new AchievementContext();
+      coolinOff.finalBossStageTwoIceHit = true;
+      AchievementContext snowQueen = new AchievementContext();
+      snowQueen.finalBossStageThreeIceHit = true;
+
+      assertFalse(a.update(new AchievementContext()));
+      assertFalse(a.update(damaged()));
+      assertFalse(a.update(kill(EnemyType.FINAL_BOSS)));
+      assertFalse(a.update(breakCompleted));
+      assertFalse(a.update(coolinOff));
+      assertFalse(a.update(snowQueen));
+      assertFalse(a.isUnlocked());
+    }
+
+    @Test
+    void update_fireproofResult_unlocksOnlyFireproofAndOnlyOnce() {
+      Achievement a = AchievementsFactory.build(config("finalBossStageTwoFireproof"));
+      Achievement breakAchievement = AchievementsFactory.build(config("finalBossBreakRespected"));
+      Achievement coolinOff = AchievementsFactory.build(config("finalBossStageTwoIceHit"));
+      Achievement snowQueen = AchievementsFactory.build(config("finalBossStageThreeIceHit"));
+      AchievementContext ctx = new AchievementContext();
+      ctx.finalBossStageTwoFireproof = true;
+
+      assertTrue(a.update(ctx));
+      assertTrue(a.isUnlocked());
+      assertFalse(a.update(ctx));
+      assertFalse(a.update(new AchievementContext()));
+      assertTrue(a.isUnlocked());
+      assertFalse(breakAchievement.update(ctx));
+      assertFalse(coolinOff.update(ctx));
+      assertFalse(snowQueen.update(ctx));
+      assertFalse(breakAchievement.isUnlocked());
+      assertFalse(coolinOff.isUnlocked());
+      assertFalse(snowQueen.isUnlocked());
+    }
+
+    @Test
+    void config_registersOneFireproofAchievementWithExpectedNameAndCondition() {
+      AchievementConfig[] configs =
+          new Json()
+              .fromJson(AchievementConfig[].class, new FileHandle("configs/achievements.json"));
+      int fireproofAchievements = 0;
+      int fireproofNames = 0;
+      for (AchievementConfig c : configs) {
+        Achievement a = AchievementsFactory.build(c);
+        if ("I'm fireproof!".equals(a.getName())) {
+          fireproofNames++;
+        }
+        if ("finalBossStageTwoFireproof".equals(c.type)) {
+          fireproofAchievements++;
+          assertEquals("I'm fireproof!", a.getName());
+          assertFalse(a.update(new AchievementContext()));
+          assertFalse(a.update(damaged()));
+          AchievementContext ctx = new AchievementContext();
+          ctx.finalBossStageTwoFireproof = true;
+          assertTrue(a.update(ctx));
+        }
+      }
+      assertEquals(1, fireproofAchievements);
+      assertEquals(1, fireproofNames);
     }
   }
 
