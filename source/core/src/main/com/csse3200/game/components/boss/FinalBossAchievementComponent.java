@@ -12,6 +12,7 @@ public class FinalBossAchievementComponent extends Component {
   private final Entity target;
   private final BreakAttempt attempt = new BreakAttempt();
   private final FireproofAttempt fireproof = new FireproofAttempt();
+  private final IceHitStreak iceHitStreak = new IceHitStreak();
   private FinalBossStageOneComponent stageOne;
   private FinalBossStageThreeComponent stageThree;
   private FinalBossPhaseControllerComponent phases;
@@ -49,6 +50,16 @@ public class FinalBossAchievementComponent extends Component {
     entity.getEvents().addListener(FinalBossEvents.STAGE_TWO_STARTED, this::onStageTwoStarted);
     entity.getEvents().addListener(FinalBossEvents.STAGE_TWO_FIRE_HIT, this::onStageTwoFireHit);
     entity.getEvents().addListener(FinalBossEvents.STAGE_TWO_COMPLETED, this::onStageTwoCompleted);
+    entity
+        .getEvents()
+        .addListener(FinalBossEvents.STAGE_THREE_ICE_HIT, this::onStageThreeIceStreakHit);
+    entity
+        .getEvents()
+        .addListener(
+            FinalBossEvents.STAGE_THREE_ICE_VOLLEY_MISSED, this::onStageThreeIceVolleyMissed);
+    entity
+        .getEvents()
+        .addListener(FinalBossStageThreeComponent.STATE_CHANGED, this::onStageThreeStateChanged);
     entity.getEvents().addListener(FinalBossEvents.STAGE_THREE_ICE_HIT, this::onStageThreeIceHit);
     entity
         .getEvents()
@@ -59,10 +70,12 @@ public class FinalBossAchievementComponent extends Component {
     entity.getEvents().addListener(FinalBossEvents.PHASE_CHANGED, this::onPhaseChanged);
     entity.getEvents().addListener("entityDied", attempt::finish);
     entity.getEvents().addListener("entityDied", fireproof::finish);
+    entity.getEvents().addListener("entityDied", iceHitStreak::finish);
     // EventHandler has no removal API. Retain only the small attempt state on the player, not the
     // boss.
     target.getEvents().addListener("entityDied", attempt::finish);
     target.getEvents().addListener("entityDied", fireproof::finish);
+    target.getEvents().addListener("entityDied", iceHitStreak::finish);
   }
 
   private void onStateChanged(FinalBossStageOneState state) {
@@ -115,6 +128,9 @@ public class FinalBossAchievementComponent extends Component {
     }
     if (phase != FinalBossPhase.STAGE_TWO) {
       fireproof.finish();
+    }
+    if (phase != FinalBossPhase.STAGE_THREE) {
+      iceHitStreak.hits = 0;
     }
   }
 
@@ -210,6 +226,42 @@ public class FinalBossAchievementComponent extends Component {
         && !playerStats.isDead();
   }
 
+  private void onStageThreeIceStreakHit(Entity player) {
+    if (iceHitStreak.finished || !isStageThreeWaveOneActive(player)) return;
+    if (++iceHitStreak.hits < 3) return;
+    // Count every real impact independently of Snow Queen's first-hit notification.
+    iceHitStreak.finish();
+    AchievementService achievements = ServiceLocator.getAchievementService();
+    if (achievements != null) {
+      AchievementContext context = new AchievementContext();
+      context.finalBossStageThreeIceHitStreak = true;
+      achievements.update(context);
+    }
+  }
+
+  private void onStageThreeIceVolleyMissed(Entity player) {
+    if (!iceHitStreak.finished && isStageThreeWaveOneActive(player)) iceHitStreak.hits = 0;
+  }
+
+  private void onStageThreeStateChanged(FinalBossStageThreeState state) {
+    if (stageThree != null
+        && state == stageThree.getState()
+        && state != FinalBossStageThreeState.WAVE_ONE) iceHitStreak.hits = 0;
+  }
+
+  private boolean isStageThreeWaveOneActive(Entity player) {
+    return !disposed
+        && player == target
+        && playerStats != null
+        && !playerStats.isDead()
+        && !bossStats.isDead()
+        && phases.getCurrentPhase() == FinalBossPhase.STAGE_THREE
+        && !phases.isTransitioning()
+        && stageThree != null
+        && stageThree.getTarget() == target
+        && stageThree.getState() == FinalBossStageThreeState.WAVE_ONE;
+  }
+
   private void onStageThreeMeleeHit(Entity player) {
     if (disposed
         || flashedTooFastReported
@@ -238,6 +290,7 @@ public class FinalBossAchievementComponent extends Component {
     disposed = true;
     attempt.finish();
     fireproof.finish();
+    iceHitStreak.finish();
   }
 
   private void onStageThreeStatueFlash(Entity player) {
@@ -261,6 +314,17 @@ public class FinalBossAchievementComponent extends Component {
       AchievementContext context = new AchievementContext();
       context.finalBossStageThreeStatueFlash = true;
       achievements.update(context);
+    }
+  }
+
+  /** Independent of the other achievements; player death listeners retain only these flags. */
+  private static class IceHitStreak {
+    private int hits;
+    private boolean finished;
+
+    private void finish() {
+      hits = 0;
+      finished = true;
     }
   }
 

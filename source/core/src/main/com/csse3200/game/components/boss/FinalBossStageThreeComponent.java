@@ -381,9 +381,10 @@ public class FinalBossStageThreeComponent extends Component {
     Vector2 aim = target.getCenterPosition().sub(origin);
     if (aim.isZero()) aim.set(1f, 0f);
     aim.nor().scl(config.boltSpeed);
+    Volley volley = new Volley(3);
     for (int side = -1; side <= 1; side++) {
       Vector2 velocity = aim.cpy().rotateDeg(side * config.boltSpreadAngle);
-      bolts.add(new Bolt(origin.cpy(), velocity));
+      bolts.add(new Bolt(origin.cpy(), velocity, volley));
     }
     castRemaining = 0.45f;
     shotRemaining = config.boltInterval;
@@ -403,6 +404,7 @@ public class FinalBossStageThreeComponent extends Component {
 
   private boolean updateBolts(float delta) {
     boolean hit = false;
+    int missedVolleys = 0;
     Vector2 player = target.getCenterPosition();
     float radius =
         Math.max(0.25f, Math.min(target.getScale().x, target.getScale().y) * 0.4f) + 0.12f;
@@ -422,14 +424,30 @@ public class FinalBossStageThreeComponent extends Component {
         hit = true;
         break;
       }
+      if (bolt.elapsed >= config.boltLifetime && --bolt.volley.remaining == 0) missedVolleys++;
     }
     if (hit) {
       bolts.clear();
       freezePlayer();
-      // Finish the hit before notifying observers, which may dispose or transition the encounter.
-      entity.getEvents().trigger(FinalBossEvents.STAGE_THREE_ICE_HIT, target);
     } else bolts.removeIf(b -> b.elapsed >= config.boltLifetime);
+    // Resolve whole volleys, not individual side bolts. A hit cancels any still-flying volleys.
+    // Finish projectile/freeze state before callbacks, and settle earlier misses before this hit.
+    for (int i = 0; i < missedVolleys; i++) {
+      entity.getEvents().trigger(FinalBossEvents.STAGE_THREE_ICE_VOLLEY_MISSED, target);
+      if (!canContinueWaveOne()) return true;
+    }
+    if (hit) entity.getEvents().trigger(FinalBossEvents.STAGE_THREE_ICE_HIT, target);
     return hit;
+  }
+
+  private boolean canContinueWaveOne() {
+    return !disposed
+        && !playerDefeated
+        && !stats.isDead()
+        && state == FinalBossStageThreeState.WAVE_ONE
+        && phases.getCurrentPhase() == FinalBossPhase.STAGE_THREE
+        && !phases.isTransitioning()
+        && !stopIfPlayerDefeated();
   }
 
   static float segmentDistanceSquared(Vector2 from, Vector2 to, Vector2 point) {
@@ -1405,14 +1423,28 @@ public class FinalBossStageThreeComponent extends Component {
     }
   }
 
+  private static final class Volley {
+    private int remaining;
+
+    private Volley(int remaining) {
+      this.remaining = remaining;
+    }
+  }
+
   static final class Bolt {
     final Vector2 position;
     final Vector2 velocity;
+    private final Volley volley;
     float elapsed;
 
     Bolt(Vector2 position, Vector2 velocity) {
+      this(position, velocity, new Volley(1));
+    }
+
+    private Bolt(Vector2 position, Vector2 velocity, Volley volley) {
       this.position = position;
       this.velocity = velocity;
+      this.volley = volley;
     }
   }
 

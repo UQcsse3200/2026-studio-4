@@ -28,6 +28,12 @@ public class AchievementContext {
   /** True when the player is hit by a Final Boss Stage 3 Wave 1 ice bolt. */
   public boolean finalBossStageThreeIceHit;
 
+  /**
+   * True after ice bolts hit the player in three consecutive Final Boss Stage 3 Wave 1 volleys. The
+   * encounter tracker counts at most one hit per volley and resets after a full missed volley.
+   */
+  public boolean finalBossStageThreeIceHitStreak;
+
   /** True when the player's sword or knife hits the Final Boss during Stage 3 Wave 1. */
   public boolean finalBossStageThreeMeleeHit;
 

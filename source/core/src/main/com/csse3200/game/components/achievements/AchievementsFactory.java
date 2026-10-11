@@ -19,6 +19,7 @@ public class AchievementsFactory {
       case "finalBossStageTwoIceHit" -> finalBossStageTwoIceHit(c);
       case "finalBossStageTwoFireproof" -> finalBossStageTwoFireproof(c);
       case "finalBossStageThreeIceHit" -> finalBossStageThreeIceHit(c);
+      case "finalBossStageThreeIceHitStreak" -> finalBossStageThreeIceHitStreak(c);
       case "finalBossStageThreeMeleeHit" -> finalBossStageThreeMeleeHit(c);
       case "finalBossStageThreeStatueFlash" -> finalBossStageThreeStatueFlash(c);
       default -> throw new IllegalArgumentException("Unknown achievement type: " + c.type);
@@ -35,6 +36,10 @@ public class AchievementsFactory {
 
   private static Achievement finalBossStageThreeIceHit(AchievementConfig c) {
     return new Achievement(c.name, ctx -> ctx.finalBossStageThreeIceHit);
+  }
+
+  private static Achievement finalBossStageThreeIceHitStreak(AchievementConfig c) {
+    return new Achievement(c.name, ctx -> ctx.finalBossStageThreeIceHitStreak);
   }
 
   private static Achievement finalBossStageThreeMeleeHit(AchievementConfig c) {

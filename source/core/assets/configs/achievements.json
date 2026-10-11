@@ -10,6 +10,7 @@
   { "type": "finalBossStageTwoIceHit", "name": "Coolin' off, make it fun" },
   { "type": "finalBossStageTwoFireproof", "name": "I'm fireproof!" },
   { "type": "finalBossStageThreeIceHit", "name": "Whoa! The Snow Queen" },
+  { "type": "finalBossStageThreeIceHitStreak", "name": "Brrr, it's freezing!" },
   { "type": "finalBossStageThreeMeleeHit", "name": "You flashed too fast" },
   { "type": "finalBossStageThreeStatueFlash", "name": "How can a statue even flash?" },
   { "type": "enemyKillCount", "enemyType": "MEDUSA", "target": 3, "name": "You killed 3 Medusa" },

@@ -33,6 +33,12 @@ public final class FinalBossEvents {
   public static final String STAGE_THREE_ICE_HIT = "finalBossStageThreeIceHit";
 
   /**
+   * Every bolt of a Stage 3 Wave 1 volley expired or hit a wall without hitting the player.
+   * Argument: participating player (Entity). Bolts cancelled by a hit or cleanup do not count.
+   */
+  public static final String STAGE_THREE_ICE_VOLLEY_MISSED = "finalBossStageThreeIceVolleyMissed";
+
+  /**
    * Player sword/knife contact with the unshielded Stage 3 Wave 1 boss. Argument: attacking player
    * (Entity). Emitted before damage can end Wave 1.
    */
