@@ -19,6 +19,8 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
+import com.csse3200.game.components.achievements.AchievementContext;
+import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ItemFactory;
@@ -31,6 +33,8 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.AchievementService;
+import org.mockito.ArgumentCaptor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.random.RandomGenerator;
@@ -375,5 +379,50 @@ class EnemyManagerComponentTest {
     when(enemy.getPosition()).thenReturn(new Vector2());
     when(enemy.getCenterPosition()).thenReturn(new Vector2(0.5f, 0.5f));
     return enemy;
+  }
+
+  @Test
+  void shouldReportCerberusKillOnlyAfterAllHeadsDie() {
+    AchievementService achievements = mock(AchievementService.class);
+    ServiceLocator.registerAchievementService(achievements);
+
+    Entity left = new Entity().addComponent(new CombatStatsComponent(125, 10));
+    Entity middle =
+            new Entity()
+                    .addComponent(new CombatStatsComponent(250, 20))
+                    .addComponent(new EnemyTypeComponent(EnemySpawnConfig.EnemyType.CERBERUS));
+    Entity right = new Entity().addComponent(new CombatStatsComponent(125, 10));
+
+    CerberusDeathComponent death = new CerberusDeathComponent(left, right);
+    middle.addComponent(death);
+
+    enemyManager.track(left, "CERBERUS");
+    enemyManager.track(right, "CERBERUS");
+    enemyManager.track(middle, "CERBERUS");
+    death.create();
+
+    // Killing the middle head must not count as defeating the entire boss.
+    middle.getComponent(CombatStatsComponent.class).setHealth(0);
+    verify(achievements, never()).update(any(AchievementContext.class));
+    assertFalse(enemyManager.isCleared());
+
+    left.getComponent(CombatStatsComponent.class).setHealth(0);
+    verify(achievements, never()).update(any(AchievementContext.class));
+    assertFalse(enemyManager.isCleared());
+
+    right.getComponent(CombatStatsComponent.class).setHealth(0);
+
+    ArgumentCaptor<AchievementContext> context =
+            ArgumentCaptor.forClass(AchievementContext.class);
+    verify(achievements, times(1)).update(context.capture());
+    assertEquals(EnemySpawnConfig.EnemyType.CERBERUS, context.getValue().enemyKilled);
+    assertTrue(enemyManager.isCleared());
+
+    // Repeated death notifications must not report another kill.
+    middle.getEvents().trigger("entityDied");
+    left.getEvents().trigger("entityDied");
+    right.getEvents().trigger("entityDied");
+
+    verify(achievements, times(1)).update(any(AchievementContext.class));
   }
 }
