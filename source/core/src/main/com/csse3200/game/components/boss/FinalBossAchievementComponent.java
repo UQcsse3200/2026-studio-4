@@ -11,6 +11,15 @@ import com.csse3200.game.services.ServiceLocator;
 public class FinalBossAchievementComponent extends Component {
   private static final String ENTITY_DIED_EVENT = "entityDied";
 
+  // Achievements
+  private static final String BREAK_RESPECTED = "finalBossBreakRespected";
+  private static final String FIREPROOF = "finalBossStageTwoFireproof";
+  private static final String STAGE_TWO_ICE_HIT = "finalBossStageTwoIceHit";
+  private static final String STAGE_THREE_ICE_HIT = "finalBossStageThreeIceHit";
+  private static final String STAGE_THREE_ICE_HIT_STREAK = "finalBossStageThreeIceHitStreak";
+  private static final String MELEE_HIT = "finalBossStageThreeMeleeHit";
+  private static final String STATUE_FLASH = "finalBossStageThreeStatueFlash";
+
   private final Entity target;
   private final BreakAttempt attempt = new BreakAttempt();
   private final FireproofAttempt fireproof = new FireproofAttempt();
@@ -104,12 +113,7 @@ public class FinalBossAchievementComponent extends Component {
     if (state == FinalBossStageOneState.SUMMONING_TWO
         && stageOne.getBreakRemaining() <= 0f
         && !attempt.attacked) {
-      AchievementService achievements = ServiceLocator.getAchievementService();
-      if (achievements != null) {
-        AchievementContext context = new AchievementContext();
-        context.bossAchievementId = "finalBossBreakRespected";
-        achievements.update(context);
-      }
+      reportAchievement(BREAK_RESPECTED);
     }
   }
 
@@ -157,12 +161,7 @@ public class FinalBossAchievementComponent extends Component {
     if (!fireproof.started || fireproof.hit) {
       return;
     }
-    AchievementService achievements = ServiceLocator.getAchievementService();
-    if (achievements != null) {
-      AchievementContext context = new AchievementContext();
-      context.bossAchievementId = "finalBossStageTwoFireproof";
-      achievements.update(context);
-    }
+    reportAchievement(FIREPROOF);
   }
 
   private boolean isStageTwoActive() {
@@ -188,12 +187,7 @@ public class FinalBossAchievementComponent extends Component {
 
     // Independent of the other stages; consume before listeners can re-enter this component.
     stageTwoIceReported = true;
-    AchievementService achievements = ServiceLocator.getAchievementService();
-    if (achievements != null) {
-      AchievementContext context = new AchievementContext();
-      context.bossAchievementId = "finalBossStageTwoIceHit";
-      achievements.update(context);
-    }
+    reportAchievement(STAGE_TWO_ICE_HIT);
   }
 
   private void onStageThreeIceHit(Entity player) {
@@ -212,12 +206,7 @@ public class FinalBossAchievementComponent extends Component {
 
     // Stage 1's break attempt has already ended; this achievement has its own one-shot result.
     snowQueenReported = true;
-    AchievementService achievements = ServiceLocator.getAchievementService();
-    if (achievements != null) {
-      AchievementContext context = new AchievementContext();
-      context.bossAchievementId = "finalBossStageThreeIceHit";
-      achievements.update(context);
-    }
+    reportAchievement(STAGE_THREE_ICE_HIT);
   }
 
   private boolean isEncounterActive() {
@@ -233,12 +222,7 @@ public class FinalBossAchievementComponent extends Component {
     if (++iceHitStreak.hits < 3) return;
     // Count every real impact independently of Snow Queen's first-hit notification.
     iceHitStreak.finish();
-    AchievementService achievements = ServiceLocator.getAchievementService();
-    if (achievements != null) {
-      AchievementContext context = new AchievementContext();
-      context.bossAchievementId = "finalBossStageThreeIceHitStreak";
-      achievements.update(context);
-    }
+    reportAchievement(STAGE_THREE_ICE_HIT_STREAK);
   }
 
   private void onStageThreeIceVolleyMissed(Entity player) {
@@ -279,12 +263,7 @@ public class FinalBossAchievementComponent extends Component {
       return;
     }
     flashedTooFastReported = true;
-    AchievementService achievements = ServiceLocator.getAchievementService();
-    if (achievements != null) {
-      AchievementContext context = new AchievementContext();
-      context.bossAchievementId = "finalBossStageThreeMeleeHit";
-      achievements.update(context);
-    }
+    reportAchievement(MELEE_HIT);
   }
 
   @Override
@@ -311,12 +290,7 @@ public class FinalBossAchievementComponent extends Component {
     }
     // Consume before notifying: another listener may re-enter or end this encounter.
     statueFlashReported = true;
-    AchievementService achievements = ServiceLocator.getAchievementService();
-    if (achievements != null) {
-      AchievementContext context = new AchievementContext();
-      context.bossAchievementId = "finalBossStageThreeStatueFlash";
-      achievements.update(context);
-    }
+    reportAchievement(STATUE_FLASH);
   }
 
   /** Independent of the other achievements; player death listeners retain only these flags. */
@@ -350,5 +324,14 @@ public class FinalBossAchievementComponent extends Component {
     private void finish() {
       finished = true;
     }
+  }
+
+  // Report achievement with an ID
+  private void reportAchievement(String achievementId) {
+    AchievementService achievements = ServiceLocator.getAchievementService();
+
+    AchievementContext context = new AchievementContext();
+    context.bossAchievementId = achievementId;
+    achievements.update(context);
   }
 }
