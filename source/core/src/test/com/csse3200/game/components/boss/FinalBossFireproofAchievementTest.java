@@ -80,9 +80,7 @@ class FinalBossFireproofAchievementTest {
     achievement = AchievementsFactory.build(definition);
     achievements = new AchievementService();
     achievements.register(achievement);
-    achievements
-        .getEvents()
-        .addListener("achievementUnlocked", (String name) -> unlockedNames.add(name));
+    achievements.getEvents().<String>addListener("achievementUnlocked", unlockedNames::add);
     ServiceLocator.registerAchievementService(achievements);
 
     config = new FinalBossStageTwoConfig();
@@ -125,11 +123,9 @@ class FinalBossFireproofAchievementTest {
     boss.create();
     bossStats.setHealth(800);
     fire = stage.getFireController();
-    boss.getEvents()
-        .addListener(FinalBossEvents.STAGE_TWO_STARTED, (Entity who) -> starts.add(who));
-    boss.getEvents().addListener(FinalBossEvents.STAGE_TWO_FIRE_HIT, (Entity who) -> hits.add(who));
-    boss.getEvents()
-        .addListener(FinalBossEvents.STAGE_TWO_COMPLETED, (Entity who) -> completions.add(who));
+    boss.getEvents().<Entity>addListener(FinalBossEvents.STAGE_TWO_STARTED, starts::add);
+    boss.getEvents().<Entity>addListener(FinalBossEvents.STAGE_TWO_FIRE_HIT, hits::add);
+    boss.getEvents().<Entity>addListener(FinalBossEvents.STAGE_TWO_COMPLETED, completions::add);
   }
 
   @AfterEach

@@ -740,9 +740,7 @@ public class FinalBossStageThreeComponent extends Component {
             || phases.getCurrentPhase() != FinalBossPhase.STAGE_THREE
             || phases.isTransitioning()
             || stopIfPlayerDefeated()) return;
-        continue;
-      }
-      if (!updateStatueSlam(statue, delta)) updateStoneMovement(statue, delta);
+      } else if (!updateStatueSlam(statue, delta)) updateStoneMovement(statue, delta);
     }
     startNextStatueSlam();
   }

@@ -84,9 +84,7 @@ class FinalBossCoolinOffAchievementTest {
     achievement = AchievementsFactory.build(definition);
     achievements = new AchievementService();
     achievements.register(achievement);
-    achievements
-        .getEvents()
-        .addListener("achievementUnlocked", (String name) -> unlockedNames.add(name));
+    achievements.getEvents().<String>addListener("achievementUnlocked", unlockedNames::add);
     ServiceLocator.registerAchievementService(achievements);
 
     config = new FinalBossStageTwoConfig();
@@ -129,8 +127,7 @@ class FinalBossCoolinOffAchievementTest {
     bossStats.setHealth(800);
     weapon = stage.getPlayerIceController();
     energy = stage.getPickupController();
-    boss.getEvents()
-        .addListener(FinalBossEvents.STAGE_TWO_ICE_HIT, (Entity hit) -> hitPlayers.add(hit));
+    boss.getEvents().<Entity>addListener(FinalBossEvents.STAGE_TWO_ICE_HIT, hitPlayers::add);
   }
 
   @AfterEach

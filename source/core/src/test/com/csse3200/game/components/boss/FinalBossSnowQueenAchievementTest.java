@@ -61,9 +61,7 @@ class FinalBossSnowQueenAchievementTest {
     achievement = AchievementsFactory.build(achievementConfig);
     achievements = new AchievementService();
     achievements.register(achievement);
-    achievements
-        .getEvents()
-        .addListener("achievementUnlocked", (String name) -> unlockedNames.add(name));
+    achievements.getEvents().<String>addListener("achievementUnlocked", unlockedNames::add);
     ServiceLocator.registerAchievementService(achievements);
 
     playerStats = new CombatStatsComponent(100, 10, 3f, 1f);
@@ -95,8 +93,7 @@ class FinalBossSnowQueenAchievementTest {
     boss.setPosition(4f, 0f);
     boss.create();
     bossStats.setHealth(60);
-    boss.getEvents()
-        .addListener(FinalBossEvents.STAGE_THREE_ICE_HIT, (Entity hit) -> hitTargets.add(hit));
+    boss.getEvents().<Entity>addListener(FinalBossEvents.STAGE_THREE_ICE_HIT, hitTargets::add);
   }
 
   @Test

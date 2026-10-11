@@ -9,6 +9,8 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Reports Final Boss challenge results to the shared achievement system. */
 public class FinalBossAchievementComponent extends Component {
+  private static final String ENTITY_DIED_EVENT = "entityDied";
+
   private final Entity target;
   private final BreakAttempt attempt = new BreakAttempt();
   private final FireproofAttempt fireproof = new FireproofAttempt();
@@ -68,14 +70,14 @@ public class FinalBossAchievementComponent extends Component {
         .getEvents()
         .addListener(FinalBossEvents.STAGE_THREE_STATUE_FLASH, this::onStageThreeStatueFlash);
     entity.getEvents().addListener(FinalBossEvents.PHASE_CHANGED, this::onPhaseChanged);
-    entity.getEvents().addListener("entityDied", attempt::finish);
-    entity.getEvents().addListener("entityDied", fireproof::finish);
-    entity.getEvents().addListener("entityDied", iceHitStreak::finish);
+    entity.getEvents().addListener(ENTITY_DIED_EVENT, attempt::finish);
+    entity.getEvents().addListener(ENTITY_DIED_EVENT, fireproof::finish);
+    entity.getEvents().addListener(ENTITY_DIED_EVENT, iceHitStreak::finish);
     // EventHandler has no removal API. Retain only the small attempt state on the player, not the
     // boss.
-    target.getEvents().addListener("entityDied", attempt::finish);
-    target.getEvents().addListener("entityDied", fireproof::finish);
-    target.getEvents().addListener("entityDied", iceHitStreak::finish);
+    target.getEvents().addListener(ENTITY_DIED_EVENT, attempt::finish);
+    target.getEvents().addListener(ENTITY_DIED_EVENT, fireproof::finish);
+    target.getEvents().addListener(ENTITY_DIED_EVENT, iceHitStreak::finish);
   }
 
   private void onStateChanged(FinalBossStageOneState state) {

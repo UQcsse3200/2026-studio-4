@@ -24,18 +24,21 @@ public class RoomCommand implements Command {
       return true;
     }
     if (!"goto".equals(args.get(0)) || args.size() != 2 || args.get(1).isBlank()) return false;
+    return scheduleRoomSwitch(args.get(1));
+  }
 
+  private boolean scheduleRoomSwitch(String roomId) {
     WorldConfig world = roomManager.getWorld();
     EntityService entities = ServiceLocator.getEntityService();
     if (world == null || entities == null) return false;
     FinalBossPhase stage =
-        switch (args.get(1)) {
+        switch (roomId) {
           case "finalBossStage1" -> FinalBossPhase.STAGE_ONE;
           case "finalBossStage2" -> FinalBossPhase.STAGE_TWO;
           case "finalBossStage3" -> FinalBossPhase.STAGE_THREE;
           default -> null;
         };
-    RoomConfig room = world.getRoom(stage == null ? args.get(1) : "finalBossRoom");
+    RoomConfig room = world.getRoom(stage == null ? roomId : "finalBossRoom");
     if (room == null || (stage != null && !RoomManager.hasFinalBoss(room))) return false;
 
     // Validate before scheduling: malformed commands must not replace a pending room switch.

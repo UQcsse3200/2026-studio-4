@@ -72,9 +72,7 @@ class FinalBossDebugStageTest {
     ServiceLocator.registerAchievementService(achievements);
     registerAchievement(achievements, "I need a break too", "finalBossBreakRespected");
     registerAchievement(achievements, "I'm fireproof!", "finalBossStageTwoFireproof");
-    achievements
-        .getEvents()
-        .addListener("achievementUnlocked", (String name) -> unlockedNames.add(name));
+    achievements.getEvents().<String>addListener("achievementUnlocked", unlockedNames::add);
 
     oneConfig = new FinalBossStageOneConfig();
     twoConfig = new FinalBossStageTwoConfig();
@@ -325,6 +323,23 @@ class FinalBossDebugStageTest {
     assertNoSkippedStageResults();
   }
 
+  @Test
+  void shouldNotStartStageTwoAfterAPhaseListenerDisposesTheController() {
+    createBoss(250);
+    boss.getEvents()
+        .addListener(FinalBossEvents.PHASE_CHANGED, (FinalBossPhase ignored) -> phases.dispose());
+
+    assertTrue(phases.startDebugStage(FinalBossPhase.STAGE_TWO));
+
+    assertEquals(FinalBossPhase.STAGE_TWO, phases.getCurrentPhase());
+    assertFalse(stageTwo.isAttacking());
+    assertTrue(stageTwoStarts.isEmpty());
+    assertTrue(protection.isShielded());
+    assertEquals(0, bossStats.getMinimumHealth());
+    assertEquals(FinalBossStageThreeState.INACTIVE, stageThree.getState());
+    assertNoSkippedStageResults();
+  }
+
   private void createBoss(int maxHealth) {
     phases = new FinalBossPhaseControllerComponent();
     protection = new FinalBossDamageControllerComponent();
@@ -350,17 +365,12 @@ class FinalBossDebugStageTest {
     boss.setScale(2f, 2f);
     boss.setPosition(1000f, 1000f);
     boss.create();
+    boss.getEvents().<FinalBossPhase>addListener(FinalBossEvents.PHASE_CHANGED, phaseChanges::add);
     boss.getEvents()
-        .addListener(
-            FinalBossEvents.PHASE_CHANGED, (FinalBossPhase phase) -> phaseChanges.add(phase));
+        .<FinalBossPhase>addListener(FinalBossEvents.STAGE_COMPLETED, completedStages::add);
+    boss.getEvents().<Entity>addListener(FinalBossEvents.STAGE_TWO_STARTED, stageTwoStarts::add);
     boss.getEvents()
-        .addListener(
-            FinalBossEvents.STAGE_COMPLETED, (FinalBossPhase phase) -> completedStages.add(phase));
-    boss.getEvents()
-        .addListener(FinalBossEvents.STAGE_TWO_STARTED, (Entity who) -> stageTwoStarts.add(who));
-    boss.getEvents()
-        .addListener(
-            FinalBossEvents.STAGE_TWO_COMPLETED, (Entity who) -> stageTwoCompletions.add(who));
+        .<Entity>addListener(FinalBossEvents.STAGE_TWO_COMPLETED, stageTwoCompletions::add);
   }
 
   private void assertInsideCamera() {

@@ -62,9 +62,7 @@ class FinalBossAchievementComponentTest {
     achievement = AchievementsFactory.build(achievementConfig);
     AchievementService achievements = new AchievementService();
     achievements.register(achievement);
-    achievements
-        .getEvents()
-        .addListener("achievementUnlocked", (String name) -> unlockedNames.add(name));
+    achievements.getEvents().<String>addListener("achievementUnlocked", unlockedNames::add);
     ServiceLocator.registerAchievementService(achievements);
 
     factory = mockStatic(FinalBossFactory.class);

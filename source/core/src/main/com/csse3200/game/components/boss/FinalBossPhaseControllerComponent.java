@@ -122,13 +122,17 @@ public class FinalBossPhaseControllerComponent extends Component {
     currentPhase = phase;
     protection.enableShield();
     entity.getEvents().trigger(FinalBossEvents.PHASE_CHANGED, phase);
-    if (!disposed && currentPhase == phase) {
-      FinalBossStageTwoArenaComponent arena =
-          entity.getComponent(FinalBossStageTwoArenaComponent.class);
-      if (phase == FinalBossPhase.STAGE_TWO && arena != null) arena.update();
-      finishTransition();
-    }
+    finishDebugStageEntry(phase);
     return true;
+  }
+
+  private void finishDebugStageEntry(FinalBossPhase expectedPhase) {
+    // Phase listeners run synchronously and may dispose the controller or advance the encounter.
+    if (disposed || currentPhase != expectedPhase) return;
+    FinalBossStageTwoArenaComponent arena =
+        entity.getComponent(FinalBossStageTwoArenaComponent.class);
+    if (expectedPhase == FinalBossPhase.STAGE_TWO && arena != null) arena.update();
+    finishTransition();
   }
 
   @Override

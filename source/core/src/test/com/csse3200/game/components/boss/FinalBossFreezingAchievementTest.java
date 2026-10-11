@@ -72,9 +72,7 @@ class FinalBossFreezingAchievementTest {
     achievements = new AchievementService();
     achievement = register(ACHIEVEMENT_NAME, "finalBossStageThreeIceHitStreak");
     snowQueen = register(SNOW_QUEEN_NAME, "finalBossStageThreeIceHit");
-    achievements
-        .getEvents()
-        .addListener("achievementUnlocked", (String name) -> unlockedNames.add(name));
+    achievements.getEvents().<String>addListener("achievementUnlocked", unlockedNames::add);
     ServiceLocator.registerAchievementService(achievements);
 
     playerStats = new CombatStatsComponent(100, 10, 3f, 1f);

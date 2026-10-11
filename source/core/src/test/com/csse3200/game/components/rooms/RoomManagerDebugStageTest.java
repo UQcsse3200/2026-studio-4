@@ -366,7 +366,7 @@ class RoomManagerDebugStageTest {
         .thenAnswer(
             invocation -> {
               GridPoint2 tile = invocation.getArgument(0);
-              return new Vector2(tile.x, tile.y);
+              return new Vector2((float) tile.x, (float) tile.y);
             });
     when(enemies.isCleared()).thenReturn(cleared);
     when(entity.getComponent(TerrainComponent.class)).thenReturn(terrain);
