@@ -2,6 +2,7 @@ package com.csse3200.game.components.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -171,17 +172,17 @@ class PlayerActionsTest {
     actions.setControlsLocked(dialogue, true);
     player.getEvents().trigger("heavyAttack");
     assertEquals(0, heavyAttacks[0]);
-    verify(sound, never()).play();
+    verify(sound, never()).play(anyFloat());
 
     actions.setControlsLocked(freeze, false);
     player.getEvents().trigger("heavyAttack");
     assertEquals(0, heavyAttacks[0]);
-    verify(sound, never()).play();
+    verify(sound, never()).play(anyFloat());
 
     actions.setControlsLocked(dialogue, false);
     player.getEvents().trigger("heavyAttack");
     assertEquals(1, heavyAttacks[0]);
-    verify(sound).play();
+    verify(sound).play(anyFloat());
   }
 
   @Test

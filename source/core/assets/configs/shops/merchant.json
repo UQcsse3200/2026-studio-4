@@ -1,0 +1,10 @@
+{
+  "id": "merchant",
+  "offers": [
+    {"offerId": "HEALTH_POTION", "kind": "CONSUMABLE", "productId": "HEALTH_POTION", "goldPrice": 10},
+    {"offerId": "SHIELD", "kind": "CONSUMABLE", "productId": "SHIELD", "goldPrice": 15},
+    {"offerId": "SPEED_POTION", "kind": "CONSUMABLE", "productId": "SPEED_POTION", "goldPrice": 15},
+    {"offerId": "STRENGTH_POTION", "kind": "CONSUMABLE", "productId": "STRENGTH_POTION", "goldPrice": 20},
+    {"offerId": "FREEZE_BOMB", "kind": "CONSUMABLE", "productId": "FREEZE_BOMB", "goldPrice": 20}
+  ]
+}

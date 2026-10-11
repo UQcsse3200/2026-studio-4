@@ -63,6 +63,25 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
+  void tabCyclesConsumablesOnceOnKeyDown() {
+    int[] cycles = {0};
+    player.getEvents().addListener("cycleConsumable", () -> cycles[0]++);
+    assertTrue(input.keyDown(Keys.TAB));
+    assertFalse(input.keyUp(Keys.TAB));
+    assertEquals(1, cycles[0]);
+  }
+
+  @Test
+  void qRequestsSelectedConsumableWithoutUsingWeaponInput() {
+    int[] uses = {0};
+    player.getEvents().addListener("useSelectedConsumable", () -> uses[0]++);
+    assertTrue(input.keyDown(Keys.Q));
+    assertFalse(input.keyUp(Keys.Q));
+    assertEquals(1, uses[0]);
+    assertEquals(0, attackCount);
+  }
+
+  @Test
   void numberKeysSelectWeaponsOnlyOnKeyDown() {
     List<WeaponType> selected = new ArrayList<>();
     player.getEvents().addListener("equipWeapon", (EventListener1<WeaponType>) selected::add);
@@ -221,7 +240,16 @@ class KeyboardPlayerInputComponentTest {
   @Test
   void tabCyclesConsumablesAndQUsesOnlyTheSelectedSlot() {
     ConsumableSelectionComponent selection = new ConsumableSelectionComponent();
-    player.addComponent(selection);
+    InventoryComponent inventory = new InventoryComponent(0);
+    player.addComponent(inventory).addComponent(selection);
+    for (String id :
+        List.of(
+            ItemIds.HEALTH_POTION,
+            ItemIds.SHIELD,
+            ItemIds.SPEED_POTION,
+            ItemIds.STRENGTH_POTION,
+            ItemIds.FREEZE_BOMB)) inventory.addConsumable(id);
+    inventory.equipConsumable(ItemIds.FREEZE_BOMB, 3);
     selection.create();
     List<String> requested = new ArrayList<>();
     player
@@ -234,11 +262,30 @@ class KeyboardPlayerInputComponentTest {
     assertTrue(input.keyDown(Keys.Q));
     assertEquals(List.of(ItemIds.HEALTH_POTION, ItemIds.SHIELD), requested);
     assertEquals(1, selection.getSelectedIndex());
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 2; i++) {
       assertTrue(input.keyDown(Keys.TAB));
     }
     assertEquals(ItemIds.FREEZE_BOMB, selection.getSelectedType());
     assertTrue(input.keyDown(Keys.TAB));
     assertEquals(0, selection.getSelectedIndex());
+  }
+
+  @Test
+  void lCastsTheAttunedAbility() {
+    List<String> requests = new ArrayList<>();
+    player
+        .getEvents()
+        .addListener(AbilityAttunementComponent.USE_ATTUNED_REQUEST, () -> requests.add("cast"));
+
+    assertTrue(input.keyDown(Keys.L));
+    assertTrue(input.keyDown(Keys.L));
+
+    assertEquals(2, requests.size(), "L asks to cast every press");
+  }
+
+  @Test
+  void lIsNotBoundToAnythingElse() {
+    // L sits beside the J and K attacks; nothing else may claim it.
+    assertFalse(input.keyUp(Keys.L));
   }
 }

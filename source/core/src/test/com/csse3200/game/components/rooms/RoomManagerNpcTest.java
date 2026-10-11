@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.friendlynpc.NpcInteractableComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.maingame.InteractionPromptDisplay;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
@@ -40,6 +42,21 @@ class RoomManagerNpcTest {
 
     manager = new RoomManager(player);
     manager.setCurrentRoom(room);
+  }
+
+  @Test
+  void promptIsHiddenWhileAnythingHoldsThePlayersControls() {
+    InteractionPromptDisplay prompt = mock(InteractionPromptDisplay.class);
+    PlayerActions actions = mock(PlayerActions.class);
+    when(player.getComponent(InteractionPromptDisplay.class)).thenReturn(prompt);
+    when(player.getComponent(PlayerActions.class)).thenReturn(actions);
+    // Hecate's menu, a boss sequence or an ending dialogue: all of them take a control lock.
+    when(actions.areControlsLocked()).thenReturn(true);
+
+    manager.refreshInteractionPrompt();
+
+    verify(prompt).clearPrompt();
+    verify(prompt, never()).setPrompt(org.mockito.ArgumentMatchers.anyString());
   }
 
   @Test

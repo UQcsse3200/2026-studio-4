@@ -16,6 +16,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.files.UserSettings;
+import com.csse3200.game.files.UserSettings.Settings;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.RunTimer;
@@ -159,6 +161,30 @@ class TimerDisplayTest {
   }
 
   @Test
+  void hidesPanelWhenShowTimerIsOff() {
+    Settings original = UserSettings.get();
+    Settings hidden = new Settings();
+    hidden.fps = original.fps;
+    hidden.fullscreen = original.fullscreen;
+    hidden.vsync = original.vsync;
+    hidden.uiScale = original.uiScale;
+    hidden.displayMode = original.displayMode;
+    hidden.showTimer = false;
+    hidden.showFps = original.showFps;
+    hidden.musicVolume = original.musicVolume;
+    hidden.soundVolume = original.soundVolume;
+
+    try {
+      UserSettings.set(hidden, false);
+      TimerDisplay hiddenDisplay = new TimerDisplay();
+      new Entity().addComponent(hiddenDisplay).create();
+      assertFalse(fieldOf(hiddenDisplay, "rootTable", Table.class).isVisible());
+    } finally {
+      UserSettings.set(original, false);
+    }
+  }
+
+  @Test
   void disposeRemovesPanelAndMakesSubsequentDrawSafe() {
     assertDoesNotThrow(display::dispose);
     assertNull(field("rootTable", Table.class));
@@ -169,12 +195,16 @@ class TimerDisplayTest {
     return field(fieldName, Label.class);
   }
 
-  /** Reads a private field via reflection since TimerDisplay exposes no public getters. */
   private <T> T field(String fieldName, Class<T> type) {
+    return fieldOf(display, fieldName, type);
+  }
+
+  /** Reads a private field via reflection since TimerDisplay exposes no public getters. */
+  private static <T> T fieldOf(TimerDisplay target, String fieldName, Class<T> type) {
     try {
       Field f = TimerDisplay.class.getDeclaredField(fieldName);
       f.setAccessible(true);
-      return type.cast(f.get(display));
+      return type.cast(f.get(target));
     } catch (ReflectiveOperationException e) {
       throw new IllegalStateException("Could not read field '" + fieldName + "' via reflection", e);
     }

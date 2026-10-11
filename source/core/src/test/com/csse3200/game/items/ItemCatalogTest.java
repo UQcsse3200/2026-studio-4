@@ -37,6 +37,9 @@ class ItemCatalogTest {
     assertEquals(medium.getClass(), large.getClass());
     assertNotEquals(small.getId(), medium.getId());
     assertNotEquals(medium.getId(), large.getId());
+    assertEquals("images/health_potion_small_pixel.png", small.getTexture());
+    assertEquals("images/health_potion_medium_pixel.png", medium.getTexture());
+    assertEquals("images/health_potion_large_pixel.png", large.getTexture());
   }
 
   @Test
@@ -45,6 +48,7 @@ class ItemCatalogTest {
     assertEquals("HEALTH_POTION_75", custom.getId());
     assertEquals(75, custom.getHealing());
     assertEquals(2, custom.getQuantity());
+    assertEquals("images/health_potion_pixel.png", custom.getTexture());
     assertTrue(ItemCatalog.contains(custom.getId()));
     assertEquals(75, ((InstantHealingPotion) ItemCatalog.create(custom.getId(), 1)).getHealing());
     assertEquals(custom.getId(), ItemCatalog.createItems(custom.getId(), 3).get(0).getId());

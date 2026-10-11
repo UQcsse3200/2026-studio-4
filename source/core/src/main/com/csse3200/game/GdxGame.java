@@ -3,7 +3,6 @@ package com.csse3200.game;
 import static com.badlogic.gdx.Gdx.app;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.csse3200.game.files.GameSaveData;
 import com.csse3200.game.files.UserSettings;
@@ -29,9 +28,6 @@ public class GdxGame extends Game {
   public void create() {
     logger.info("Creating game");
     loadSettings();
-
-    // Sets background to gray
-    Gdx.gl.glClearColor(67 / 255f, 67 / 255f, 67 / 255f, 1);
 
     setScreen(ScreenType.MAIN_MENU);
   }

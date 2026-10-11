@@ -31,6 +31,14 @@ public class TileSheet {
     return new TextureRegion(texture, column * tileSize, row * tileSize, tileSize, tileSize);
   }
 
+  public TextureRegion tile(int column, int row, int height, int width) {
+    if (column < 0 || column >= columns || row < 0 || row >= rows) {
+      throw new IllegalArgumentException("Tile coordinate is outside the tile sheet");
+    }
+    return new TextureRegion(
+        texture, column * tileSize, row * tileSize, width * tileSize, height * tileSize);
+  }
+
   public int getColumns() {
     return columns;
   }

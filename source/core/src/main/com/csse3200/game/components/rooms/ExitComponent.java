@@ -13,7 +13,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Spawns the visible door and bookshelf forms of a room's configured exits. */
 public class ExitComponent extends EntityManagerComponent {
-  private static final String FANTASY_DUNGEON_TILESET = "images/dungeons/fantasy_dreamland_16.png";
+  private static final String FANTASY_DUNGEON_TILESET = "images/dungeons/tileSet0.png";
   private static final String FANTASY_DUNGEON_DOOR = "images/dungeons/fantasy_dreamland_door.png";
   private static final int TILE_SIZE = 16;
   private static final int DOOR_FRAME_SIZE = 32;
@@ -51,14 +51,14 @@ public class ExitComponent extends EntityManagerComponent {
   }
 
   private void spawnBookshelf(ExitConfig exit, TileSheet tileSheet) {
-    spawnFixture(DreamlandTile.BOOKSHELF_LEFT, exit.x, exit.y, tileSheet);
-    spawnFixture(DreamlandTile.BOOKSHELF_MIDDLE, exit.x + 1, exit.y, tileSheet);
-    spawnFixture(DreamlandTile.BOOKSHELF_RIGHT, exit.x + 2, exit.y, tileSheet);
+    spawnFixture(DreamlandTile.randomOfId('b', 0.5f), exit.x, exit.y, tileSheet);
+    spawnFixture(DreamlandTile.randomOfId('b', 0.5f), exit.x + 2, exit.y, tileSheet);
+    spawnFixture(DreamlandTile.randomOfId('b', 0.5f), exit.x + 4, exit.y, tileSheet);
   }
 
   private void spawnFixture(DreamlandTile tile, int x, int y, TileSheet tileSheet) {
     Entity fixture = new Entity().addComponent(new TextureRenderComponent(tile.region(tileSheet)));
-    fixture.getComponent(TextureRenderComponent.class).scaleEntity();
+    fixture.scaleHeight(1f);
     spawnEntityAt(fixture, new GridPoint2(x, y), false, false);
   }
 }

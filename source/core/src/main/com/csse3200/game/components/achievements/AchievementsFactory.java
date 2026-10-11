@@ -24,9 +24,22 @@ public class AchievementsFactory {
   }
 
   private static Achievement gold(AchievementConfig c) {
-    Achievement a =
-        new Achievement(c.name, ctx -> ctx.goldTotal != null && ctx.goldTotal >= c.target);
+    Achievement a = new Achievement(c.name);
     a.setTarget(c.target);
+    boolean[] initial = {true};
+    float[] initialGold = {0f};
+    a.setCondition(
+        ctx -> {
+          if (ctx.goldTotal == null) {
+            return false;
+          }
+          if (initial[0]) {
+            initialGold[0] = ctx.goldTotal;
+            initial[0] = false;
+          }
+          a.setProgress(ctx.goldTotal - initialGold[0]);
+          return a.getProgress() >= c.target;
+        });
     return a;
   }
 

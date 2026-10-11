@@ -1,0 +1,231 @@
+package com.csse3200.game.components.settingsmenu;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
+import com.badlogic.gdx.Graphics.DisplayMode;
+import com.badlogic.gdx.Graphics.Monitor;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.Component;
+import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.files.UserSettings;
+import com.csse3200.game.files.UserSettings.Settings;
+import com.csse3200.game.input.InputService;
+import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.UiScale;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+/**
+ * Headless check that a run can open settings, change them, and stay paused until the menu closes.
+ */
+@ExtendWith(GameExtension.class)
+class InGameSettingsTest {
+  private Stage stage;
+  private Entity ui;
+  private Entity world;
+  private Settings originalSettings;
+
+  @BeforeEach
+  void setUp() {
+    originalSettings = UserSettings.get();
+    Graphics graphics = mock(Graphics.class);
+    Monitor monitor = mock(Monitor.class);
+    DisplayMode mode = new CustomDisplayMode(1280, 800, 60, 0);
+    when(graphics.getWidth()).thenReturn(1280);
+    when(graphics.getHeight()).thenReturn(800);
+    when(graphics.getBackBufferWidth()).thenReturn(1280);
+    when(graphics.getBackBufferHeight()).thenReturn(800);
+    when(graphics.getDensity()).thenReturn(1f);
+    when(graphics.getMonitor()).thenReturn(monitor);
+    when(graphics.getDisplayMode()).thenReturn(mode);
+    when(graphics.getDisplayModes(monitor)).thenReturn(new DisplayMode[] {mode});
+    when(graphics.getDisplayModes()).thenReturn(new DisplayMode[] {mode});
+    Gdx.graphics = graphics;
+
+    stage = new Stage(new ScreenViewport(), mock(SpriteBatch.class));
+    stage.getViewport().update(1280, 800, true);
+    RenderService renderer = new RenderService();
+    renderer.setStage(stage);
+    ServiceLocator.registerRenderService(renderer);
+    ServiceLocator.registerEntityService(new EntityService());
+    ServiceLocator.registerInputService(new InputService());
+  }
+
+  @AfterEach
+  void tearDown() {
+    if (ui != null) {
+      ui.dispose();
+    }
+    if (world != null) {
+      world.dispose();
+    }
+    if (stage != null) {
+      stage.dispose();
+    }
+    if (originalSettings != null) {
+      UserSettings.set(originalSettings, false);
+    }
+  }
+
+  @Test
+  void openingSettingsPausesTheWorldUntilExit() {
+    int[] ticks = {0};
+    world =
+        new Entity()
+            .addComponent(
+                new Component() {
+                  @Override
+                  public void update() {
+                    ticks[0]++;
+                  }
+                });
+    ServiceLocator.getEntityService().register(world);
+
+    Table hud = new Table();
+    hud.setSize(40f, 20f);
+    stage.addActor(hud);
+
+    boolean[] closed = {false};
+    SettingsMenuDisplay menu =
+        new SettingsMenuDisplay(mock(GdxGame.class), () -> closed[0] = true, true);
+    ui = new Entity().addComponent(menu);
+    ui.setUpdatesWhilePaused(true);
+    ServiceLocator.getEntityService().register(ui);
+
+    Actor menuRoot = stage.getRoot().findActor(UiScale.SETTINGS_CONTENT);
+    Actor actions = stage.getRoot().findActor(UiScale.SETTINGS_ACTIONS);
+    assertNotNull(menuRoot);
+    assertNotNull(actions);
+    assertFalse(menuRoot.isVisible());
+    assertFalse(actions.isVisible());
+    assertFalse(ServiceLocator.getEntityService().isFrozen());
+
+    ServiceLocator.getEntityService().update();
+    assertEquals(1, ticks[0]);
+
+    menu.open();
+    assertTrue(menuRoot.isVisible());
+    assertTrue(actions.isVisible());
+    assertTrue(ServiceLocator.getEntityService().isFrozen());
+    assertTrue(ServiceLocator.getInputService().keyDown(Keys.Q));
+    ServiceLocator.getEntityService().update();
+    assertEquals(1, ticks[0]);
+
+    Slider scaleSlider = findSlider(stage.getRoot());
+    assertNotNull(scaleSlider);
+    float saved = UiScale.clamp(originalSettings.uiScale);
+    float changed = Math.abs(saved - 1.4f) < 0.05f ? 0.6f : 1.4f;
+    scaleSlider.setValue(changed);
+    menu.update();
+    assertEquals(1f, menuRoot.getScaleX(), 0.001f);
+    assertEquals(saved, hud.getScaleX(), 0.001f);
+
+    findButton(stage.getRoot(), "Apply").fire(new ChangeListener.ChangeEvent());
+    assertEquals(changed, UserSettings.get().uiScale, 0.001f);
+    assertEquals(1f, menuRoot.getScaleX(), 0.001f);
+    assertEquals(changed, hud.getScaleX(), 0.001f);
+    assertTrue(ServiceLocator.getEntityService().isFrozen());
+
+    TextField fpsField = findTextField(stage.getRoot());
+    assertNotNull(fpsField);
+    stage.setKeyboardFocus(fpsField);
+    findButton(stage.getRoot(), "Exit").fire(new ChangeListener.ChangeEvent());
+    assertTrue(closed[0]);
+    assertNull(stage.getKeyboardFocus());
+    assertFalse(ServiceLocator.getInputService().keyDown(Keys.Q));
+    assertFalse(menuRoot.isVisible());
+    assertFalse(ServiceLocator.getEntityService().isFrozen());
+    ServiceLocator.getEntityService().update();
+    assertEquals(2, ticks[0]);
+  }
+
+  @Test
+  void settingsButtonOpensTheOverlay() {
+    boolean[] opened = {false};
+    MainGameExitDisplay exit =
+        new MainGameExitDisplay(() -> {}, () -> {}, () -> {}, () -> opened[0] = true);
+    ui = new Entity().addComponent(exit);
+    ServiceLocator.getEntityService().register(ui);
+
+    TextButton settings = findButton(stage.getRoot(), "Settings");
+    assertNotNull(settings);
+    settings.fire(new ChangeListener.ChangeEvent());
+    assertTrue(opened[0]);
+  }
+
+  private static Slider findSlider(Actor actor) {
+    if (actor instanceof Slider slider && slider.getMaxValue() > 1f) {
+      return slider;
+    }
+    if (actor instanceof Group group) {
+      for (Actor child : group.getChildren()) {
+        Slider found = findSlider(child);
+        if (found != null) {
+          return found;
+        }
+      }
+    }
+    return null;
+  }
+
+  private static TextField findTextField(Actor actor) {
+    if (actor instanceof TextField field) {
+      return field;
+    }
+    if (actor instanceof Group group) {
+      for (Actor child : group.getChildren()) {
+        TextField found = findTextField(child);
+        if (found != null) {
+          return found;
+        }
+      }
+    }
+    return null;
+  }
+
+  private static TextButton findButton(Actor actor, String text) {
+    if (actor instanceof TextButton button && text.equals(button.getText().toString())) {
+      return button;
+    }
+    if (actor instanceof Group group) {
+      for (Actor child : group.getChildren()) {
+        TextButton found = findButton(child, text);
+        if (found != null) {
+          return found;
+        }
+      }
+    }
+    return null;
+  }
+
+  private static class CustomDisplayMode extends DisplayMode {
+    private CustomDisplayMode(int width, int height, int refreshRate, int bitsPerPixel) {
+      super(width, height, refreshRate, bitsPerPixel);
+    }
+  }
+}

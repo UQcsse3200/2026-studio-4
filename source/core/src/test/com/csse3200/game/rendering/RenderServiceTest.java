@@ -24,6 +24,25 @@ import org.mockito.Mockito;
 @ExtendWith(GameExtension.class)
 class RenderServiceTest {
   @Test
+  void burnVialUsesTranslucentFlashAndFreezeCanRestoreWhitePeak() {
+    GameTime time = mock(GameTime.class);
+    when(time.getDeltaTime()).thenReturn(0.1f);
+    ServiceLocator.registerTimeSource(time);
+    ServiceLocator.registerWorldCamera(new com.badlogic.gdx.graphics.OrthographicCamera(20, 10));
+    ServiceLocator.registerEntityService(new com.csse3200.game.entities.EntityService());
+    RenderService service = new RenderService();
+    ServiceLocator.registerRenderService(service);
+    com.csse3200.game.components.CombatStatsComponent stats =
+        new com.csse3200.game.components.CombatStatsComponent(100, 5);
+    new com.csse3200.game.entities.Entity().addComponent(stats);
+    new com.csse3200.game.items.consumables.BurnVial(1).use(stats, time);
+    float fireAlpha = service.getWhiteFlashAlpha();
+    assertTrue(fireAlpha > 0f && fireAlpha < 0.8f, "fire flash must leave enemies visible");
+    service.startWhiteFlash();
+    assertEquals(1f, service.getWhiteFlashAlpha(), 0.001f);
+  }
+
+  @Test
   void shouldRender() {
     RenderService renderService = new RenderService();
     Renderable renderable = mock(Renderable.class);

@@ -9,10 +9,7 @@
       "width": 1.0,
       "interactionRange": 1.5,
       "dialogueId": "merchant_greeting",
-      "cutsceneId": "merchant_opens_shop",
-      "cutsceneTiming": "AFTER_DIALOGUE",
-      "lockMovementDuringDialogue": true,
-      "lockMovementDuringCutscene": true
+      "lockMovementDuringDialogue": true
     },
     {
       "id": "wanderingSpirit",
@@ -44,6 +41,17 @@
       "requiresCompleted": ["wanderingSpirit"],
       "unavailableMessage": "The guardian will not stir. Perhaps the spirit knows why.",
       "completedMessage": "The guardian watches over the dungeons."
+    },
+    {
+      "id": "hecate",
+      "name": "Hecate",
+      "promptVerb": "Commune with",
+      "atlas": "images/hecate.atlas",
+      "animation": "default",
+      "width": 1.0,
+      "interactionRange": 1.5,
+      "dialogueId": "hecate_attunement",
+      "lockMovementDuringDialogue": true
     }
   ]
 }

@@ -7,6 +7,7 @@ import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.achievements.AchievementConfig;
 import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.achievements.AchievementsFactory;
+import com.csse3200.game.components.gamearea.FpsOverlay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.gamearea.TimerDisplay;
 import com.csse3200.game.components.maingame.*;
@@ -15,14 +16,18 @@ import com.csse3200.game.components.rooms.RoomAssets;
 import com.csse3200.game.components.rooms.RoomCommand;
 import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.components.rooms.configs.WorldConfig;
+import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.NarrativeFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.entities.factories.ShopFactory;
 import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.files.GameProgress;
 import com.csse3200.game.files.GameSaveData;
 import com.csse3200.game.files.GameSaveMapper;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
@@ -32,11 +37,15 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.*;
+import com.csse3200.game.ui.UiScale;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.ui.terminal.commands.AbilityCommand;
+import com.csse3200.game.ui.terminal.commands.BurnVialCommand;
+import com.csse3200.game.ui.terminal.commands.ConsumableCommand;
 import com.csse3200.game.ui.terminal.commands.CutsceneCommand;
 import com.csse3200.game.ui.terminal.commands.DialogueCommand;
+import com.csse3200.game.ui.terminal.commands.MagnetCommand;
 import com.csse3200.game.ui.terminal.commands.SpellCommand;
 import com.csse3200.game.ui.terminal.commands.StatusEffectCommand;
 import com.csse3200.game.ui.terminal.commands.UpgradeCommand;
@@ -64,7 +73,9 @@ public class MainGameScreen extends ScreenAdapter {
   private final RoomAssets roomAssets = new RoomAssets();
   private final RunTimer runTimer;
   private boolean winScreenRequested;
+  private boolean winTransitionStarted; // add this
   private boolean saveOnDispose = true;
+  private boolean worldFrozen;
 
   public MainGameScreen(GdxGame game) {
     this(game, null, 1);
@@ -110,8 +121,17 @@ public class MainGameScreen extends ScreenAdapter {
     player = PlayerFactory.createPlayer();
     // trigger death screen via entity died event
     player.getEvents().addListener("entityDied", this::scheduleDeathScreen);
+    WorldConfig world = null;
+    world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     // trigger win screen via entity win event
     player.getEvents().addListener("winScreenRequested", () -> winScreenRequested = true);
+    // The hub and the dungeons have their own music; rooms announce which one they want.
+    player
+        .getEvents()
+        .addListener(
+            RoomManager.ROOM_ENTERED,
+            (String roomId, String dungeonId, Boolean cleared) ->
+                roomAssets.playMusicFor(dungeonId, Boolean.TRUE.equals(cleared)));
     // notify damage
     player
         .getEvents()
@@ -122,11 +142,6 @@ public class MainGameScreen extends ScreenAdapter {
               ctx.playerDamaged = true;
               ServiceLocator.getAchievementService().update(ctx);
             });
-
-    WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
-    if (world == null) {
-      throw new IllegalStateException("Unable to load configs/rooms.json");
-    }
     roomManager = new RoomManager(world, player, renderer.getCamera());
     if (loadedSave != null) {
       roomManager.initializeFromSavedRun(loadedSave, loadAtCheckpoint);
@@ -135,6 +150,7 @@ public class MainGameScreen extends ScreenAdapter {
 
     if (loadedSave != null) {
       GameSaveMapper.restore(player, loadedSave);
+      GameSaveMapper.restoreAchievements(loadedSave);
     }
     RoomCommand roomCommand = new RoomCommand(roomManager);
     terminal.addCommand("room", roomCommand);
@@ -144,16 +160,35 @@ public class MainGameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    physicsEngine.update();
+    // A dialogue, cutscene, or the settings menu freezes the world.
+    boolean frozen = ServiceLocator.getEntityService().isFrozen();
+    if (frozen != worldFrozen) {
+      worldFrozen = frozen;
+      // Scaled time also stops sprite animations, status effects and other timers
+      ServiceLocator.getTimeSource().setTimeScale(frozen ? 0f : 1f);
+    }
+    if (!frozen) {
+      physicsEngine.update();
+    }
     ServiceLocator.getEntityService().update();
-    roomManager.update();
+    if (!frozen) {
+      roomManager.update();
+    }
+    roomAssets.applyMusicVolume();
     renderer.render();
-    runTimer.update();
+    if (!frozen) {
+      runTimer.update();
+    }
+    if (winScreenRequested && !winTransitionStarted) {
+      winTransitionStarted = true;
+      scheduleWinScreen();
+    }
   }
 
   @Override
   public void resize(int width, int height) {
     renderer.resize(width, height);
+    UiScale.applyToStage(renderer.getStage(), UserSettings.get().uiScale);
     logger.trace("Resized renderer: ({} x {})", width, height);
   }
 
@@ -170,10 +205,14 @@ public class MainGameScreen extends ScreenAdapter {
   @Override
   public void dispose() {
     logger.debug("Disposing main game screen");
+    if (runTimer != null) {
+      GameProgress.recordRun((long) (runTimer.getTotalTime() * 1000f));
+    }
 
     if (saveOnDispose && !runSaved && player != null && roomManager != null) {
       runSaved = true;
       try {
+        runTimer.stopDungeon();
         GameSaveData save =
             GameSaveMapper.capture(
                 player, roomManager.getCheckpointData(), roomManager.getResumePositionData());
@@ -241,8 +280,11 @@ public class MainGameScreen extends ScreenAdapter {
     // constructor) must end up on the same Terminal instance that is attached to the UI below.
     terminal.addCommand("weapon", new WeaponCommand(player));
     terminal.addCommand("ability", new AbilityCommand(player));
+    terminal.addCommand("burnvial", new BurnVialCommand(player));
+    terminal.addCommand("con", new ConsumableCommand(player));
     terminal.addCommand("effect", new StatusEffectCommand(player));
     terminal.addCommand("upgrade", new UpgradeCommand(player));
+    terminal.addCommand("magnet", new MagnetCommand(player));
     terminal.addCommand("spell", new SpellCommand(player));
     terminal.addCommand("room", new RoomCommand(roomManager));
     // QA for the dialogue and cutscene systems, e.g. "dialogue demo" / "cutscene demovideo"
@@ -257,6 +299,10 @@ public class MainGameScreen extends ScreenAdapter {
     player.getComponent(InventoryComponent.class).setDisplay(inventoryDisplay);
     TimerDisplay timerDisplay = new TimerDisplay();
 
+    SettingsMenuDisplay settingsMenu = new SettingsMenuDisplay(this.game, () -> {}, true);
+    // Opens itself when Hecate's interaction finishes; nothing else has to know about it.
+    AbilityMenu abilityMenu = new AbilityMenu(player);
+
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
@@ -265,23 +311,25 @@ public class MainGameScreen extends ScreenAdapter {
             new MainGameExitDisplay(
                 this::saveAndExit,
                 this::deleteSaveAndExit,
+                this::stopPlayerMovement,
                 () -> {
-                  player.getEvents().trigger("walkStop");
-                  player.getEvents().trigger("resetMovementInput");
-                  PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
-                  if (physics != null && physics.getBody() != null) {
-                    physics.getBody().setLinearVelocity(0f, 0f);
-                  }
+                  stopPlayerMovement();
+                  settingsMenu.open();
                 }))
         .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay())
         .addComponent(timerDisplay)
         .addComponent(new TimerDisplay.ToggleInput(timerDisplay))
+        .addComponent(new FpsOverlay())
         .addComponent(inventoryDisplay)
         .addComponent(hotbarDisplay)
         .addComponent(consumableHotbarDisplay)
-        .addComponent(inventoryActions);
+        .addComponent(inventoryActions)
+        .addComponent(settingsMenu)
+        .addComponent(abilityMenu)
+        .addComponent(new KeyboardAbilityMenuInputComponent())
+        .addComponent(new AbilityMenuDisplay(abilityMenu));
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     // The HUD keeps working while a dialogue or cutscene has the world frozen
     ui.setUpdatesWhilePaused(true);
@@ -290,12 +338,31 @@ public class MainGameScreen extends ScreenAdapter {
     // Dialogue and cutscene systems (events are sent on the player)
     ServiceLocator.getEntityService()
         .register(NarrativeFactory.createNarrative(player, terminal::isOpen));
+    ServiceLocator.getEntityService().register(ShopFactory.createShop(player, terminal));
+    UiScale.applyToStage(stage, UserSettings.get().uiScale);
+  }
+
+  private void stopPlayerMovement() {
+    player.getEvents().trigger("walkStop");
+    player.getEvents().trigger("resetMovementInput");
+    PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
+    if (physics != null && physics.getBody() != null) {
+      physics.getBody().setLinearVelocity(0f, 0f);
+    }
   }
 
   /* Schedule the death screen to be shown */
   private void scheduleDeathScreen() {
     runTimer.stopRun();
     ServiceLocator.getEntityService().schedule(() -> game.setScreen(ScreenType.DEATH_SCREEN));
+  }
+
+  /* Schedule the win screen to be shown */
+  private void scheduleWinScreen() {
+    runTimer.stopRun();
+    saveOnDispose = false; // a finished run shouldn't become a resumable save
+    runSaved = true;
+    ServiceLocator.getEntityService().schedule(() -> game.setScreen(ScreenType.WIN_SCREEN));
   }
 
   private AchievementService createAchievementService() {

@@ -59,6 +59,15 @@ public abstract class PlayerAbility {
     unlocked = true;
   }
 
+  /**
+   * Takes the ability away whatever its starting state, so something that grants abilities can also
+   * revoke them. {@link #relock()} restores {@code unlockedByDefault} and therefore cannot lock an
+   * ability that starts unlocked; this always can.
+   */
+  public void lock() {
+    unlocked = false;
+  }
+
   /** Restores the starting unlock state, so death does not carry an unlock into the next life. */
   public void relock() {
     unlocked = unlockedByDefault;

@@ -10,9 +10,6 @@ public class UserSettings {
   private static final String ROOT_DIR = "DECO2800Game";
   private static final String SETTINGS_FILE = "settings.json";
 
-  private static final int WINDOW_WIDTH = 1280;
-  private static final int WINDOW_HEIGHT = 800;
-
   /**
    * Get the stored user settings
    *
@@ -56,7 +53,8 @@ public class UserSettings {
       }
       Gdx.graphics.setFullscreenMode(displayMode);
     } else {
-      Gdx.graphics.setWindowedMode(WINDOW_WIDTH, WINDOW_HEIGHT);
+      Gdx.graphics.setWindowedMode(
+          WindowSize.width(settings.windowWidth), WindowSize.height(settings.windowHeight));
     }
   }
 
@@ -83,8 +81,34 @@ public class UserSettings {
     public boolean fullscreen = true;
     public boolean vsync = true;
 
-    /** ui Scale. Currently unused, but can be implemented. */
+    /** Scales the settings page immediately and the in-game HUD after Apply. */
     public float uiScale = 1f;
+
+    /** When true, the in-run HUD shows the game timer. */
+    public boolean showTimer = true;
+
+    /** When true, a small FPS counter is drawn during a run. */
+    public boolean showFps = false;
+
+    /** Background music volume, from 0 to 1. */
+    public float musicVolume = 0.3f;
+
+    /** Effect volume, from 0 to 1. */
+    public float soundVolume = 1f;
+
+    /** Window size used when fullscreen is off. Zero means the default 1280 x 800. */
+    public int windowWidth = WindowSize.DEFAULT_WIDTH;
+
+    public int windowHeight = WindowSize.DEFAULT_HEIGHT;
+
+    /** Saved preference. The game does not open a network connection from this flag. */
+    public boolean onlinePlay = false;
+
+    /** Name shown next to the online preference. */
+    public String displayName = PlayMode.DEFAULT_NAME;
+
+    /** When true, music and effects are silent while the window is in the background. */
+    public boolean muteUnfocused = false;
 
     public DisplaySettings displayMode = null;
   }

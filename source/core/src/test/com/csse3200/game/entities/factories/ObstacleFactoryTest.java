@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.csse3200.game.components.rooms.Direction;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -19,6 +20,8 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.EnumSet;
+import java.util.Objects;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,24 +84,125 @@ class ObstacleFactoryTest {
 
   @Test
   void barrelIsRenderedStaticObstacleWithBoxCollider() {
-    Entity barrel = created(ObstacleFactory.createBarrel());
+    Entity barrel = created(ObstacleFactory.createBarrel("images/dungeons/tileSet0"));
     assertNotNull(barrel.getComponent(TextureRenderComponent.class));
     assertStaticObstacle(barrel);
     assertEquals(4, shapeOf(barrel).getVertexCount());
   }
 
+  @Test
+  void swordIsRenderedStaticObstacleWithBoxCollider() {
+    Entity sword = created(ObstacleFactory.createSword("images/dungeons/tileSet0"));
+    assertNotNull(sword.getComponent(TextureRenderComponent.class));
+    assertStaticObstacle(sword);
+    assertEquals(4, shapeOf(sword).getVertexCount());
+  }
+
   // tile (bevelled collider)
 
   @Test
-  void tileIsStaticObstacleWithEightVertexCollider() {
-    Entity tile = created(ObstacleFactory.createTile());
+  void wallIsStaticObstacleWithEightVertexColliderCase1() {
+    Entity tile =
+        created(
+            Objects.requireNonNull(
+                ObstacleFactory.createWallFor(
+                    EnumSet.of(Direction.UP), false, "images/dungeons/tileSet0")));
     assertStaticObstacle(tile);
     assertEquals(8, shapeOf(tile).getVertexCount());
   }
 
   @Test
-  void tileColliderIsHalfTileAndBottomAligned() {
-    Entity tile = created(ObstacleFactory.createTile());
+  void wallIsStaticObstacleWithEightVertexColliderCase2() {
+    Entity tile =
+        created(
+            Objects.requireNonNull(
+                ObstacleFactory.createWallFor(
+                    EnumSet.of(Direction.LEFT), false, "images/dungeons/tileSet0")));
+    assertStaticObstacle(tile);
+    assertEquals(8, shapeOf(tile).getVertexCount());
+  }
+
+  @Test
+  void wallIsStaticObstacleWithEightVertexColliderCase3() {
+    Entity tile =
+        created(
+            Objects.requireNonNull(
+                ObstacleFactory.createWallFor(
+                    EnumSet.of(Direction.RIGHT), false, "images/dungeons/tileSet0")));
+    assertStaticObstacle(tile);
+    assertEquals(8, shapeOf(tile).getVertexCount());
+  }
+
+  @Test
+  void wallIsStaticObstacleWithEightVertexColliderCase4() {
+    Entity tile =
+        created(
+            Objects.requireNonNull(
+                ObstacleFactory.createWallFor(
+                    EnumSet.of(Direction.DOWN), false, "images/dungeons/tileSet0")));
+    assertStaticObstacle(tile);
+    assertEquals(8, shapeOf(tile).getVertexCount());
+  }
+
+  @Test
+  void wallIsStaticObstacleWithEightVertexColliderCase5() {
+    Entity tile =
+        created(
+            Objects.requireNonNull(
+                ObstacleFactory.createWallFor(
+                    EnumSet.of(Direction.DOWN_RIGHT), false, "images/dungeons/tileSet0")));
+    assertStaticObstacle(tile);
+    assertEquals(8, shapeOf(tile).getVertexCount());
+  }
+
+  @Test
+  void wallIsStaticObstacleWithEightVertexColliderCase6() {
+    Entity tile =
+        created(
+            Objects.requireNonNull(
+                ObstacleFactory.createWallFor(
+                    EnumSet.of(Direction.DOWN_LEFT), false, "images/dungeons/tileSet0")));
+    assertStaticObstacle(tile);
+    assertEquals(8, shapeOf(tile).getVertexCount());
+  }
+
+  @Test
+  void wallIsStaticObstacleWithEightVertexColliderCase7() {
+    Entity tile =
+        created(
+            Objects.requireNonNull(
+                ObstacleFactory.createWallFor(
+                    EnumSet.of(Direction.UP_RIGHT), false, "images/dungeons/tileSet0")));
+    assertStaticObstacle(tile);
+    assertEquals(8, shapeOf(tile).getVertexCount());
+  }
+
+  @Test
+  void wallIsStaticObstacleWithEightVertexColliderCase8() {
+    Entity tile =
+        created(
+            Objects.requireNonNull(
+                ObstacleFactory.createWallFor(
+                    EnumSet.of(Direction.UP_LEFT), false, "images/dungeons/tileSet0")));
+    assertStaticObstacle(tile);
+    assertEquals(8, shapeOf(tile).getVertexCount());
+  }
+
+  @Test
+  void wallIsStaticObstacleWithEightVertexColliderCase9() {
+    Entity tile =
+        ObstacleFactory.createWallFor(
+            EnumSet.noneOf(Direction.class), false, "images/dungeons/tileSet0");
+    assert tile == null;
+  }
+
+  @Test
+  void shortWallColliderIsHalfTileAndBottomAligned() {
+    Entity tile =
+        created(
+            Objects.requireNonNull(
+                ObstacleFactory.createWallFor(
+                    EnumSet.of(Direction.DOWN), false, "images/dungeons/tileSet0")));
     float[] b = bounds(shapeOf(tile));
     Vector2 scale = tile.getScale();
 
@@ -110,10 +214,32 @@ class ObstacleFactoryTest {
   }
 
   @Test
+  void tallWallColliderIsHalfTileAndBottomAligned() {
+    Entity tile =
+        created(
+            Objects.requireNonNull(
+                ObstacleFactory.createWallFor(
+                    EnumSet.of(Direction.UP), false, "images/dungeons/tileSet0")));
+    float[] b = bounds(shapeOf(tile));
+    Vector2 scale = tile.getScale();
+
+    assertEquals(scale.x * 0.5f, b[2] - b[0], EPS, "width");
+    assertEquals(scale.y, b[3] - b[1], EPS, "height");
+    assertEquals(0f, b[1], EPS, "bottom");
+    // Horizontally centred on the entity.
+    assertEquals(scale.x / 2f, (b[0] + b[2]) / 2f, EPS, "centre x");
+  }
+
+  @Test
   void tileColliderHasNoSquareCorners() {
     // The whole point of the bevel: no vertex may sit on a corner of the bounding box,
     // otherwise the player snags on it again.
-    PolygonShape shape = shapeOf(created(ObstacleFactory.createTile()));
+    PolygonShape shape =
+        shapeOf(
+            created(
+                Objects.requireNonNull(
+                    ObstacleFactory.createWallFor(
+                        EnumSet.of(Direction.DOWN), false, "images/dungeons/tileSet0"))));
     float[] b = bounds(shape);
     Vector2 v = new Vector2();
     for (int i = 0; i < shape.getVertexCount(); i++) {

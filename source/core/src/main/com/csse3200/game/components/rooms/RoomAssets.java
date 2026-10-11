@@ -11,16 +11,38 @@ import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.traps.FireTrapRenderComponent;
 import com.csse3200.game.components.traps.IceTrapRenderComponent;
+import com.csse3200.game.files.AudioLevels;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.minimap.Minimap;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.Stream;
 
-/** Loads the terrain, fixtures, audio, and enemy assets used by a room. */
+/**
+ * Loads the terrain, fixtures, audio, and enemy assets used by a room.
+ *
+ * <p>Music provenance and the credit the boss theme's licence requires are recorded in {@code
+ * assets/licenses/AUDIO-ATTRIBUTION.md}.
+ */
 public class RoomAssets implements Disposable {
-  private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
+  /** Plays in the hub, and in any dungeon room once nothing is left alive in it. */
+  private static final String CALM_MUSIC = "sounds/lobby_music.mp3";
+
+  /** Plays in a dungeon room that still has enemies in it. */
+  private static final String FIGHT_MUSIC = "sounds/fight_music.mp3";
+
+  /** Plays while the final boss is still alive. */
+  private static final String BOSS_MUSIC = "sounds/boss_music.mp3";
+
+  /**
+   * Dungeons that have a theme of their own. Anything not listed here fights to {@link
+   * #FIGHT_MUSIC}, so giving a dungeon its own track is one entry rather than a new branch.
+   */
+  private static final Map<String, String> DUNGEON_MUSIC = Map.of("finalDungeon", BOSS_MUSIC);
+
   private static final String IMPACT_SOUND = "sounds/Impact4.ogg";
-  private static final String[] MUSIC = {BACKGROUND_MUSIC};
+  private static final String[] MUSIC = {CALM_MUSIC, FIGHT_MUSIC, BOSS_MUSIC};
   private static final String[] SOUNDS = {IMPACT_SOUND};
 
   private static final String[] ENEMY_TEXTURES = {
@@ -65,10 +87,16 @@ public class RoomAssets implements Disposable {
   };
 
   private static final String[] PLAYER_ATLASES = {"images/idle_down.atlas"};
+  private static final String[] PLAYER_TEXTURES = {Minimap.PLAYER_HEAD_PATH};
 
   private static final String[] DUNGEON_TEXTURES = {
-    "images/dungeons/fantasy_dreamland_16.png", // tile set texture
-    "images/dungeons/fantasy_dreamland_door.png", // door texture
+    "images/dungeons/tileSet0.png",
+    "images/dungeons/tileSet1.png",
+    "images/dungeons/tileSet2.png",
+    "images/dungeons/tileSet3.png",
+    "images/dungeons/tileSet4.png",
+    "images/dungeons/tileSet5.png",
+    "images/dungeons/fantasy_dreamland_door.png"
   };
 
   private static final String[] OBSTACLE_TEXTURES = {
@@ -88,10 +116,15 @@ public class RoomAssets implements Disposable {
     "images/attack_speed_charm.png",
     "images/speed_charm.png",
     "images/health_potion_pixel.png",
+    "images/health_potion_small_pixel.png",
+    "images/health_potion_medium_pixel.png",
+    "images/health_potion_large_pixel.png",
     "images/shield_consumable_pixel.png",
     "images/speed_potion_pixel.png",
     "images/strength_potion_pixel.png",
     "images/freeze_bomb_pixel.png",
+    "images/burn_vial_pixel.png",
+    "images/magnet_potion_pixel.png",
     "images/consumable-slot-idle.png",
     "images/consumable-slot-selected.png",
     "images/gold_coin_pixel.png"
@@ -104,6 +137,7 @@ public class RoomAssets implements Disposable {
               TRAP_TEXTURES,
               ITEM_TEXTURES,
               ENEMY_TEXTURES,
+              PLAYER_TEXTURES,
               SnakePoisonAssets.paths(),
               FinalBossVisualAssets.paths(),
               FinalBossStageTwoAssets.paths(),
@@ -123,20 +157,68 @@ public class RoomAssets implements Disposable {
     resourceService.loadMusic(MUSIC);
     resourceService.loadSounds(SOUNDS);
     resourceService.loadAll();
-
-    startMusic();
   }
 
-  private void startMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class);
-    music.setLooping(true);
-    music.setVolume(0.3f);
-    music.play();
+  /**
+   * Switches to the track the player's situation calls for: the calm hub track whenever there is
+   * nothing left to fight, and otherwise whatever the dungeon fights to, which is the boss theme in
+   * the final dungeon and the ordinary fight theme everywhere else.
+   *
+   * <p>Does nothing when the wanted track is already playing, so crossing rooms of one dungeon, or
+   * re-entering a room already cleared, never restarts it from the top.
+   *
+   * @param dungeonId the dungeon the room belongs to, or null for the hub
+   * @param cleared whether the room has no enemies left
+   */
+  public void playMusicFor(String dungeonId, boolean cleared) {
+    String wanted =
+        dungeonId == null || cleared
+            ? CALM_MUSIC
+            : DUNGEON_MUSIC.getOrDefault(dungeonId, FIGHT_MUSIC);
+    Music track = music(wanted);
+    if (track == null || track.isPlaying()) {
+      return;
+    }
+    stopAllBut(wanted);
+    track.setLooping(true);
+    track.setVolume(AudioLevels.music());
+    track.play();
+  }
+
+  /** Keeps the playing track on the saved volume, including mute-when-unfocused. */
+  public void applyMusicVolume() {
+    for (String name : MUSIC) {
+      Music track = music(name);
+      if (track != null) {
+        track.setVolume(AudioLevels.music());
+      }
+    }
   }
 
   private void stopMusic() {
+    stopAllBut(null);
+  }
+
+  /** Silences every track except the one about to take over, which may be null to stop them all. */
+  private void stopAllBut(String keep) {
+    for (String name : MUSIC) {
+      if (name.equals(keep)) {
+        continue;
+      }
+      Music track = music(name);
+      if (track != null) {
+        track.stop();
+      }
+    }
+  }
+
+  /** Null rather than throwing, so a track that is not loaded cannot take the game down. */
+  private Music music(String name) {
     ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.getAsset(BACKGROUND_MUSIC, Music.class).stop();
+    if (resourceService == null || !resourceService.containsAsset(name, Music.class)) {
+      return null;
+    }
+    return resourceService.getAsset(name, Music.class);
   }
 
   @Override

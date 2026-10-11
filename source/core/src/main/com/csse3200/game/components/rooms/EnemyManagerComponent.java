@@ -8,6 +8,7 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
+import com.csse3200.game.components.boss.FinalBossStageThreeComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoArenaComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
@@ -218,7 +219,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case CERBERUS:
         TerrainComponent cerberusTerrain = entity.getComponent(TerrainComponent.class);
         Vector2 anchorPoint = cerberusTerrain.tileToWorldPosition(spawn.x, spawn.y);
-        Vector2 wallAnchor = cerberusTerrain.tileToWorldPosition(27, 32);
+        Vector2 wallAnchor = cerberusTerrain.tileToWorldPosition(26, 50);
         wallAnchor.add(cerberusTerrain.getTileSize() / 2f, 0f);
         return CerberusFactory.createCerberus(
             target,
@@ -281,7 +282,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     }
 
     // Capture before deferred disposal or room changes can move/remove the enemy.
-    Vector2 position = enemy.getPosition().cpy();
+    Vector2 position = enemy.getCenterPosition();
     spawnEnemyDrops(enemyType, position);
     if (activeEnemies.isEmpty()) {
       entity.getEvents().trigger("roomCleared");
@@ -336,6 +337,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   /** Defeats all living enemies for temporary transition testing. */
   public void clear() {
     for (Entity enemy : new ArrayList<>(activeEnemies)) {
+      FinalBossStageThreeComponent stageThree =
+          enemy.getComponent(FinalBossStageThreeComponent.class);
+      if (stageThree != null) {
+        stageThree.skipToEnding();
+        continue;
+      }
       CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
       if (stats != null && !stats.isDead()) {
         stats.setHealth(0);

@@ -102,6 +102,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.Q:
         entity.getEvents().trigger(ConsumableSelectionComponent.USE_SELECTED_REQUEST);
         return true;
+      case Keys.L:
+        // Next to the J and K attacks, since casting is another thing the right hand does.
+        entity.getEvents().trigger(AbilityAttunementComponent.USE_ATTUNED_REQUEST);
+        return true;
       default:
         return false;
     }

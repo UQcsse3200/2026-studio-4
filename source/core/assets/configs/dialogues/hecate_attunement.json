@@ -1,0 +1,25 @@
+{
+  "once": true,
+  "speakers": [
+    {
+      "id": "hecate",
+      "name": "Hecate",
+      "atlas": "images/hecate.atlas",
+      "animation": "default"
+    }
+  ],
+  "lines": [
+    {
+      "speaker": "hecate",
+      "text": "Every road has a gate, and every gate has a keeper. At this one, you find me."
+    },
+    {
+      "speaker": "hecate",
+      "text": "I hold two gifts. You may carry one. Ask for the other, and the first returns to my hand."
+    },
+    {
+      "speaker": "hecate",
+      "text": "Come back whenever the road turns. I am not a generous god, but I am a patient one."
+    }
+  ]
+}

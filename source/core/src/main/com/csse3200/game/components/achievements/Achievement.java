@@ -72,4 +72,9 @@ public class Achievement {
   public String getName() {
     return name;
   }
+
+  public void restoreState(boolean unlocked, float progress) {
+    this.unlocked = unlocked;
+    this.progress = progress;
+  }
 }
