@@ -107,7 +107,7 @@ public class FinalBossAchievementComponent extends Component {
       AchievementService achievements = ServiceLocator.getAchievementService();
       if (achievements != null) {
         AchievementContext context = new AchievementContext();
-        context.finalBossBreakRespected = true;
+        context.bossAchievementId = "finalBossBreakRespected";
         achievements.update(context);
       }
     }
@@ -160,7 +160,7 @@ public class FinalBossAchievementComponent extends Component {
     AchievementService achievements = ServiceLocator.getAchievementService();
     if (achievements != null) {
       AchievementContext context = new AchievementContext();
-      context.finalBossStageTwoFireproof = true;
+      context.bossAchievementId = "finalBossStageTwoFireproof";
       achievements.update(context);
     }
   }
@@ -191,7 +191,7 @@ public class FinalBossAchievementComponent extends Component {
     AchievementService achievements = ServiceLocator.getAchievementService();
     if (achievements != null) {
       AchievementContext context = new AchievementContext();
-      context.finalBossStageTwoIceHit = true;
+      context.bossAchievementId = "finalBossStageTwoIceHit";
       achievements.update(context);
     }
   }
@@ -215,7 +215,7 @@ public class FinalBossAchievementComponent extends Component {
     AchievementService achievements = ServiceLocator.getAchievementService();
     if (achievements != null) {
       AchievementContext context = new AchievementContext();
-      context.finalBossStageThreeIceHit = true;
+      context.bossAchievementId = "finalBossStageThreeIceHit";
       achievements.update(context);
     }
   }
@@ -236,7 +236,7 @@ public class FinalBossAchievementComponent extends Component {
     AchievementService achievements = ServiceLocator.getAchievementService();
     if (achievements != null) {
       AchievementContext context = new AchievementContext();
-      context.finalBossStageThreeIceHitStreak = true;
+      context.bossAchievementId = "finalBossStageThreeIceHitStreak";
       achievements.update(context);
     }
   }
@@ -282,7 +282,7 @@ public class FinalBossAchievementComponent extends Component {
     AchievementService achievements = ServiceLocator.getAchievementService();
     if (achievements != null) {
       AchievementContext context = new AchievementContext();
-      context.finalBossStageThreeMeleeHit = true;
+      context.bossAchievementId = "finalBossStageThreeMeleeHit";
       achievements.update(context);
     }
   }
@@ -314,7 +314,7 @@ public class FinalBossAchievementComponent extends Component {
     AchievementService achievements = ServiceLocator.getAchievementService();
     if (achievements != null) {
       AchievementContext context = new AchievementContext();
-      context.finalBossStageThreeStatueFlash = true;
+      context.bossAchievementId = "finalBossStageThreeStatueFlash";
       achievements.update(context);
     }
   }

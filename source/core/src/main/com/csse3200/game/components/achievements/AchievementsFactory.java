@@ -15,13 +15,7 @@ public class AchievementsFactory {
       case "killStreak" -> killStreak(c);
       case "speedRun" -> speedRun(c);
       case "enemySet" -> enemySet(c);
-      case "finalBossBreakRespected" -> finalBossBreakRespected(c);
-      case "finalBossStageTwoIceHit" -> finalBossStageTwoIceHit(c);
-      case "finalBossStageTwoFireproof" -> finalBossStageTwoFireproof(c);
-      case "finalBossStageThreeIceHit" -> finalBossStageThreeIceHit(c);
-      case "finalBossStageThreeIceHitStreak" -> finalBossStageThreeIceHitStreak(c);
-      case "finalBossStageThreeMeleeHit" -> finalBossStageThreeMeleeHit(c);
-      case "finalBossStageThreeStatueFlash" -> finalBossStageThreeStatueFlash(c);
+      case "finalBoss" -> finalBoss(c);
       default -> throw new IllegalArgumentException("Unknown achievement type: " + c.type);
     };
   }
@@ -30,33 +24,9 @@ public class AchievementsFactory {
     return new Achievement(c.name, ctx -> c.dungeonId.equals(ctx.dungeonCompletedId));
   }
 
-  private static Achievement finalBossBreakRespected(AchievementConfig c) {
-    return new Achievement(c.name, ctx -> ctx.finalBossBreakRespected);
-  }
-
-  private static Achievement finalBossStageThreeIceHit(AchievementConfig c) {
-    return new Achievement(c.name, ctx -> ctx.finalBossStageThreeIceHit);
-  }
-
-  private static Achievement finalBossStageThreeIceHitStreak(AchievementConfig c) {
-    return new Achievement(c.name, ctx -> ctx.finalBossStageThreeIceHitStreak);
-  }
-
-  private static Achievement finalBossStageThreeMeleeHit(AchievementConfig c) {
-    return new Achievement(c.name, ctx -> ctx.finalBossStageThreeMeleeHit);
-  }
-
-  private static Achievement finalBossStageThreeStatueFlash(AchievementConfig c) {
-    return new Achievement(c.name, ctx -> ctx.finalBossStageThreeStatueFlash);
-  }
-
-  private static Achievement finalBossStageTwoIceHit(AchievementConfig c) {
-    return new Achievement(c.name, ctx -> ctx.finalBossStageTwoIceHit);
-  }
-
-  private static Achievement finalBossStageTwoFireproof(AchievementConfig c) {
-    return new Achievement(c.name, ctx -> ctx.finalBossStageTwoFireproof);
-  }
+    private static Achievement finalBoss(AchievementConfig c) {
+        return new Achievement(c.name, ctx -> c.bossAchievementId.equals(ctx.bossAchievementId));
+    }
 
   private static Achievement gold(AchievementConfig c) {
     Achievement a = new Achievement(c.name);

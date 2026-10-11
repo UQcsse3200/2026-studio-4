@@ -11,4 +11,5 @@ public class AchievementConfig {
   public List<EnemyType> enemyTypes;
   public String dungeonId;
   public float maxSeconds;
+  public String bossAchievementId;
 }

@@ -11,32 +11,5 @@ public class AchievementContext {
   public String dungeonId;
   public float dungeonSeconds;
   public Integer goldTotal;
-  public Integer singleHitDamage;
-
-  /**
-   * True only when the full Final Boss Stage 1 inter-wave break finishes without an attack hitting
-   * the boss, including hits blocked by its shield or damage mitigation.
-   */
-  public boolean finalBossBreakRespected;
-
-  /** True when the player's Stage 2 ice projectile reaches the Final Boss before any obstacle. */
-  public boolean finalBossStageTwoIceHit;
-
-  /** True after completing the full Final Boss Stage 2 encounter without a fireball contact. */
-  public boolean finalBossStageTwoFireproof;
-
-  /** True when the player is hit by a Final Boss Stage 3 Wave 1 ice bolt. */
-  public boolean finalBossStageThreeIceHit;
-
-  /**
-   * True after ice bolts hit the player in three consecutive Final Boss Stage 3 Wave 1 volleys. The
-   * encounter tracker counts at most one hit per volley and resets after a full missed volley.
-   */
-  public boolean finalBossStageThreeIceHitStreak;
-
-  /** True when the player's sword or knife hits the Final Boss during Stage 3 Wave 1. */
-  public boolean finalBossStageThreeMeleeHit;
-
-  /** True when the player causes a Final Boss Stage 3 Wave 2 statue to successfully flash. */
-  public boolean finalBossStageThreeStatueFlash;
+  public String bossAchievementId;
 }
