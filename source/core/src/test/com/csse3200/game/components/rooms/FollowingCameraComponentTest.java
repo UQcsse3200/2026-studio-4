@@ -85,4 +85,39 @@ class FollowingCameraComponentTest {
     assertFalse(unconfigured.lockPosition(new Object()));
     assertThrows(IllegalArgumentException.class, () -> following.lockPosition(null));
   }
+
+  @Test
+  void snapUpdatesBothTheCameraAndItsFollowPositionBeforeALock() {
+    following.snapToTarget();
+    assertEquals(player.getCenterPosition(), cameraEntity.getPosition());
+    assertEquals(80.5f, camera.position.x);
+    assertEquals(50.5f, camera.position.y);
+
+    following.update();
+    assertEquals(player.getCenterPosition(), cameraEntity.getPosition());
+    assertTrue(following.lockPosition(new Object()));
+    player.setPosition(20f, 20f);
+    following.update();
+    assertEquals(new Vector2(80.5f, 50.5f), cameraEntity.getPosition());
+    assertEquals(80.5f, camera.position.x);
+  }
+
+  @Test
+  void snapKeepsTheViewInsideRoomBounds() {
+    player.setPosition(99f, 99f);
+
+    following.snapToTarget();
+
+    assertEquals(new Vector2(95f, 96f), cameraEntity.getPosition());
+    assertEquals(95f, camera.position.x);
+    assertEquals(96f, camera.position.y);
+  }
+
+  @Test
+  void snapDoesNotMoveAnOwnedCameraLockOrAnUnconfiguredFollower() {
+    assertTrue(following.lockPosition(new Object()));
+    following.snapToTarget();
+    assertEquals(new Vector2(20f, 20f), cameraEntity.getPosition());
+    assertDoesNotThrow(() -> new FollowingCameraComponent().snapToTarget());
+  }
 }
