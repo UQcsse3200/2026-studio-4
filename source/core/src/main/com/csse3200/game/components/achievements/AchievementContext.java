@@ -30,4 +30,7 @@ public class AchievementContext {
 
   /** True when the player's sword or knife hits the Final Boss during Stage 3 Wave 1. */
   public boolean finalBossStageThreeMeleeHit;
+
+  /** True when the player causes a Final Boss Stage 3 Wave 2 statue to successfully flash. */
+  public boolean finalBossStageThreeStatueFlash;
 }

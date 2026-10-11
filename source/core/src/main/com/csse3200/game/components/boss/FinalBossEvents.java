@@ -38,6 +38,12 @@ public final class FinalBossEvents {
    */
   public static final String STAGE_THREE_MELEE_HIT = "finalBossStageThreeMeleeHit";
 
+  /**
+   * Stage 3 Wave 2 statue successfully relocated after enough distinct hits. Argument:
+   * participating player (Entity). Pending or blocked evade attempts do not emit this event.
+   */
+  public static final String STAGE_THREE_STATUE_FLASH = "finalBossStageThreeStatueFlash";
+
   public static final String SUMMON_WARNING = "finalBossSummonWarning";
   public static final String SUMMON_EXPLODED = "finalBossSummonExploded";
   public static final String SUMMON_REMOVED = "finalBossSummonRemoved";

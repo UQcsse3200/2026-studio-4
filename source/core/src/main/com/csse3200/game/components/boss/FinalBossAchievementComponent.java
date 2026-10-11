@@ -20,6 +20,7 @@ public class FinalBossAchievementComponent extends Component {
   private boolean stageTwoIceReported;
   private boolean snowQueenReported;
   private boolean flashedTooFastReported;
+  private boolean statueFlashReported;
   private boolean disposed;
 
   /** Creates an achievement observer for the player participating in this boss encounter. */
@@ -52,6 +53,9 @@ public class FinalBossAchievementComponent extends Component {
     entity
         .getEvents()
         .addListener(FinalBossEvents.STAGE_THREE_MELEE_HIT, this::onStageThreeMeleeHit);
+    entity
+        .getEvents()
+        .addListener(FinalBossEvents.STAGE_THREE_STATUE_FLASH, this::onStageThreeStatueFlash);
     entity.getEvents().addListener(FinalBossEvents.PHASE_CHANGED, this::onPhaseChanged);
     entity.getEvents().addListener("entityDied", attempt::finish);
     entity.getEvents().addListener("entityDied", fireproof::finish);
@@ -234,6 +238,30 @@ public class FinalBossAchievementComponent extends Component {
     disposed = true;
     attempt.finish();
     fireproof.finish();
+  }
+
+  private void onStageThreeStatueFlash(Entity player) {
+    if (disposed
+        || statueFlashReported
+        || player != target
+        || playerStats == null
+        || playerStats.isDead()
+        || bossStats.isDead()
+        || phases.getCurrentPhase() != FinalBossPhase.STAGE_THREE
+        || phases.isTransitioning()
+        || stageThree == null
+        || stageThree.getTarget() != target
+        || stageThree.getState() != FinalBossStageThreeState.WAVE_TWO) {
+      return;
+    }
+    // Consume before notifying: another listener may re-enter or end this encounter.
+    statueFlashReported = true;
+    AchievementService achievements = ServiceLocator.getAchievementService();
+    if (achievements != null) {
+      AchievementContext context = new AchievementContext();
+      context.finalBossStageThreeStatueFlash = true;
+      achievements.update(context);
+    }
   }
 
   /** Independent of the other achievements; player death listeners retain only these flags. */

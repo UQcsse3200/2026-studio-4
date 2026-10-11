@@ -713,7 +713,17 @@ public class FinalBossStageThreeComponent extends Component {
       return;
     }
     for (Statue statue : statues) {
-      if (statue.broken || updateStatueEvade(statue, delta)) continue;
+      if (statue.broken) continue;
+      if (updateStatueEvade(statue, delta)) {
+        // A successful flash notifies achievement listeners, which may end this encounter.
+        if (disposed
+            || stats.isDead()
+            || state != FinalBossStageThreeState.WAVE_TWO
+            || phases.getCurrentPhase() != FinalBossPhase.STAGE_THREE
+            || phases.isTransitioning()
+            || stopIfPlayerDefeated()) return;
+        continue;
+      }
       if (!updateStatueSlam(statue, delta)) updateStoneMovement(statue, delta);
     }
     startNextStatueSlam();
@@ -774,6 +784,7 @@ public class FinalBossStageThreeComponent extends Component {
     statue.slamCooldown = statueSlamCooldown(getRemainingStatues());
     statue.evadePending = false;
     burst(destination, false);
+    entity.getEvents().trigger(FinalBossEvents.STAGE_THREE_STATUE_FLASH, target);
     return true;
   }
 
