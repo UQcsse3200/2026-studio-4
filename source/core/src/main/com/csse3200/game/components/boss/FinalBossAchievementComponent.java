@@ -13,7 +13,7 @@ public class FinalBossAchievementComponent extends Component {
 
   // Achievements
   private static final String BREAK_RESPECTED = "finalBossBreakRespected";
-  private static final String FIREPROOF = "finalBossStageTwoFireproof";
+  private static final String STAGE_TWO_FIREPROOF = "finalBossStageTwoFireproof";
   private static final String STAGE_TWO_ICE_HIT = "finalBossStageTwoIceHit";
   private static final String STAGE_THREE_ICE_HIT = "finalBossStageThreeIceHit";
   private static final String STAGE_THREE_ICE_HIT_STREAK = "finalBossStageThreeIceHitStreak";
@@ -161,7 +161,7 @@ public class FinalBossAchievementComponent extends Component {
     if (!fireproof.started || fireproof.hit) {
       return;
     }
-    reportAchievement(FIREPROOF);
+    reportAchievement(STAGE_TWO_FIREPROOF);
   }
 
   private boolean isStageTwoActive() {
