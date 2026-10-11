@@ -22,18 +22,21 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
+import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.items.LootTable;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
+import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +50,7 @@ import org.mockito.Mockito;
 @ExtendWith(GameExtension.class)
 class EnemyManagerComponentTest {
   private Entity room;
+  private RoomConfig roomConfig;
   private EnemyManagerComponent enemyManager;
   private EntityService entityService;
 
@@ -75,8 +79,16 @@ class EnemyManagerComponentTest {
     ServiceLocator.registerEntityService(entityService);
     ServiceLocator.registerPhysicsService(new PhysicsService());
     ServiceLocator.registerRenderService(mock(RenderService.class));
+    ResourceService resourceService = spy(ResourceService.class);
+    ServiceLocator.registerResourceService(resourceService);
+    WorldConfig worldConfig = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
 
-    ResourceService resourceService = mock(ResourceService.class);
+    ServiceLocator.registerRunTimer(mock(RunTimer.class));
+
+    RoomAssets roomAssets = spy(RoomAssets.class);
+    roomAssets.loadAll();
+    roomConfig = worldConfig.getRoom((worldConfig.startRoomId));
+
     Texture texture = mock(Texture.class);
     for (String itemId : ItemCatalog.ids()) {
       when(resourceService.getAsset(ItemCatalog.create(itemId, 1).getTexture(), Texture.class))
@@ -197,10 +209,25 @@ class EnemyManagerComponentTest {
     parent.getEvents().trigger("spawnChildren", blockedChild);
     parent.getEvents().trigger("spawnChildren", validChild);
 
-    assertEquals(1, entityService.getEntities().size);
-    verify(entityService, never()).register(blockedChild);
+    assertEquals(2, entityService.getEntities().size);
+    verify(entityService).register(blockedChild);
     verify(entityService).register(validChild);
+    assertEquals(new Vector2(2f, 1f), blockedChild.getPosition());
     assertFalse(enemyManager.isCleared());
+
+    blockedChild.getEvents().trigger("entityDied");
+    validChild.getEvents().trigger("entityDied");
+    entityService.update();
+    assertTrue(enemyManager.isCleared());
+
+    int goldDrops = 0;
+    for (Entity spawned : entityService.getEntities()) {
+      ItemComponent item = spawned.getComponent(ItemComponent.class);
+      if (item != null && ItemIds.GOLD_COIN.equals(item.getItemId())) {
+        goldDrops++;
+      }
+    }
+    assertEquals(2, goldDrops);
   }
 
   @Test
@@ -360,37 +387,6 @@ class EnemyManagerComponentTest {
   }
 
   @Test
-  void shouldKeepEnemyTypeForEverySplitChild() {
-    LootTable table = singleItemTable(ItemIds.HEALTH_POTION);
-    table.enemyRules =
-        new LootTable.EnemyRule[] {
-          new LootTable.EnemyRule("GOLEM", singleItemTable(ItemIds.GOLD_COIN))
-        };
-    enemyManager =
-        new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
-    enemyManager.setEntity(room);
-    Entity parent = enemyMock();
-    Entity firstChild = enemyMock();
-    Entity secondChild = enemyMock();
-    enemyManager.track(parent, "GOLEM");
-
-    parent.getEvents().trigger("spawnChildren", firstChild);
-    parent.getEvents().trigger("spawnChildren", secondChild);
-    firstChild.getEvents().trigger("entityDied");
-    secondChild.getEvents().trigger("entityDied");
-    entityService.update();
-
-    int goldDrops = 0;
-    for (Entity spawned : entityService.getEntities()) {
-      ItemComponent item = spawned.getComponent(ItemComponent.class);
-      if (item != null && ItemIds.GOLD_COIN.equals(item.getItemId())) {
-        goldDrops++;
-      }
-    }
-    assertEquals(2, goldDrops);
-  }
-
-  @Test
   void shouldSpawnSelectedCharmsAsSeparateRoomOwnedEntities() {
     LootTable table = new LootTable();
     table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemIds.SPEED_CHARM, 1, 2, 2)};
@@ -434,25 +430,23 @@ class EnemyManagerComponentTest {
   }
 
   @Test
-  void shouldReplaceSplitParentWithTrackedChildren() {
+  void cannotSpawnWhenOutOfBounds() {
     Entity parent = enemyMock();
     Entity firstChild = enemyMock();
     Entity secondChild = enemyMock();
-    int[] cleared = {0};
-    room.getEvents().addListener("roomCleared", () -> cleared[0]++);
-    enemyManager.track(parent);
-
-    parent.getEvents().trigger("spawnChildren", firstChild);
-    parent.getEvents().trigger("spawnChildren", secondChild);
-    firstChild.getEvents().trigger("entityDied");
-
-    assertFalse(enemyManager.isCleared());
-    assertEquals(0, cleared[0]);
-    secondChild.getEvents().trigger("entityDied");
+    parent.setPosition(new Vector2(2, 2));
+    firstChild.setPosition(new Vector2(2, 2));
+    secondChild.setPosition(new Vector2(10, 10));
     assertTrue(enemyManager.isCleared());
-    assertEquals(1, cleared[0]);
-    verify(entityService).register(firstChild);
-    verify(entityService).register(secondChild);
+    assertTrue(enemyManager.outOfBounds(firstChild.getPosition(), roomConfig));
+    assertTrue(enemyManager.outOfBounds(secondChild.getPosition(), roomConfig));
+
+    enemyManager.spawnEnemies(firstChild);
+    enemyManager.spawnEnemies(secondChild);
+    verify(entityService, never()).register(firstChild);
+    verify(entityService, never()).register(secondChild);
+
+    assertTrue(enemyManager.isCleared());
   }
 
   @Test

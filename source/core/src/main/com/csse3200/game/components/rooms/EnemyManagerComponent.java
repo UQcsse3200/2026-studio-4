@@ -60,13 +60,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   /** returns true if an enemy is being spawned beyond a wall */
-  boolean outOfBounds(Vector2 entityPos, RoomConfig room) {
+  protected boolean outOfBounds(Vector2 entityPos, RoomConfig room) {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
-    if (room == null) {
-      // Layout-free managers support isolated lifecycle tests. Runtime rooms pass a required
-      // layout.
-      return false;
-    }
     List<String> spawnConfig = room.obstacles.spawns; // obstacles in current room
 
     for (int y = 0; y < spawnConfig.size(); y++) {
@@ -324,9 +319,54 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     }
   }
 
+  /**
+   * find nearby avaliable tile that is NOT out of bounds only in positive x & y plane
+   *
+   * @param unspawnedEnemy the enemy to be placed
+   * @return the avaliable tileset
+   */
+  private Vector2 findClosestAvaliableTile(Entity unspawnedEnemy, float tileSize) {
+    if (tileSize >= 2) {
+      return null;
+    }
+    if (!outOfBounds(
+        new Vector2((unspawnedEnemy.getPosition().x + tileSize), (unspawnedEnemy.getPosition().y)),
+        roomConfig)) {
+      return (new Vector2(
+          (unspawnedEnemy.getPosition().x + tileSize), (unspawnedEnemy.getPosition().y)));
+    } else if (!outOfBounds(
+        new Vector2((unspawnedEnemy.getPosition().x), (unspawnedEnemy.getPosition().y) + tileSize),
+        roomConfig)) {
+      return (new Vector2(
+          (unspawnedEnemy.getPosition().x + tileSize), (unspawnedEnemy.getPosition().y)));
+    } else if (!outOfBounds(
+        new Vector2(
+            (unspawnedEnemy.getPosition().x + tileSize),
+            (unspawnedEnemy.getPosition().y) + tileSize),
+        roomConfig)) {
+      return (new Vector2(
+          (unspawnedEnemy.getPosition().x + tileSize),
+          (unspawnedEnemy.getPosition().y) + tileSize));
+    }
+    findClosestAvaliableTile(unspawnedEnemy, tileSize + tileSize);
+    return null;
+  }
+
   private void replaceWithChild(Entity parent, Entity child, String enemyType) {
+    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+    float tileSize = terrain.getTileSize();
+
     if (outOfBounds(child.getPosition(), roomConfig)) {
       logger.warn("Attempt to spawn child out of bounds entity at {}", child.getPosition());
+
+      Vector2 newPos;
+      if ((newPos = findClosestAvaliableTile(child, tileSize)) != null) {
+        child.setPosition(newPos);
+        track(child, enemyType);
+        activeEnemies.remove(parent);
+        spawnEntity(child);
+        logger.warn("Successful re-spawn child entity at {}", child.getPosition());
+      }
       return;
     }
     track(child, enemyType);
