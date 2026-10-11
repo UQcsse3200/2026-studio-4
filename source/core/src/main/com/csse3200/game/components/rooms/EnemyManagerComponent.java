@@ -320,7 +320,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   /**
-   * find nearby avaliable tile that is NOT out of bounds only in positive x & y plane
+   * find nearby avaliable tile that is NOT out of bounds in positive/ negative x & y plane
    *
    * @param unspawnedEnemy the enemy to be placed
    * @return the avaliable tileset
@@ -329,24 +329,26 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     if (tileSize >= 2) {
       return null;
     }
-    if (!outOfBounds(
-        new Vector2((unspawnedEnemy.getPosition().x + tileSize), (unspawnedEnemy.getPosition().y)),
-        roomConfig)) {
-      return (new Vector2(
-          (unspawnedEnemy.getPosition().x + tileSize), (unspawnedEnemy.getPosition().y)));
-    } else if (!outOfBounds(
-        new Vector2((unspawnedEnemy.getPosition().x), (unspawnedEnemy.getPosition().y) + tileSize),
-        roomConfig)) {
-      return (new Vector2(
-          (unspawnedEnemy.getPosition().x + tileSize), (unspawnedEnemy.getPosition().y)));
-    } else if (!outOfBounds(
+    Vector2 xIncrease =
+        new Vector2(unspawnedEnemy.getPosition().x + tileSize, unspawnedEnemy.getPosition().y);
+    Vector2 xDecrease =
+        new Vector2(unspawnedEnemy.getPosition().x - tileSize, unspawnedEnemy.getPosition().y);
+    Vector2 bothIncrease =
         new Vector2(
-            (unspawnedEnemy.getPosition().x + tileSize),
-            (unspawnedEnemy.getPosition().y) + tileSize),
-        roomConfig)) {
-      return (new Vector2(
-          (unspawnedEnemy.getPosition().x + tileSize),
-          (unspawnedEnemy.getPosition().y) + tileSize));
+            unspawnedEnemy.getPosition().x + tileSize, unspawnedEnemy.getPosition().y + tileSize);
+    Vector2 bothDecrease =
+        new Vector2(
+            unspawnedEnemy.getPosition().x - tileSize, unspawnedEnemy.getPosition().y - tileSize);
+    Vector2 yIncrease =
+        new Vector2(unspawnedEnemy.getPosition().x, unspawnedEnemy.getPosition().y + tileSize);
+    Vector2 yDecrease =
+        new Vector2(unspawnedEnemy.getPosition().x, unspawnedEnemy.getPosition().y - tileSize);
+
+    Vector2[] nearby = {xIncrease, xDecrease, yIncrease, yDecrease, bothIncrease, bothDecrease};
+    for (Vector2 each : nearby) {
+      if (!outOfBounds(each, roomConfig)) {
+        return each;
+      }
     }
     findClosestAvaliableTile(unspawnedEnemy, tileSize + tileSize);
     return null;
