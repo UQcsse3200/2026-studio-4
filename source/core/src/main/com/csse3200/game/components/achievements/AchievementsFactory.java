@@ -24,9 +24,9 @@ public class AchievementsFactory {
     return new Achievement(c.name, ctx -> c.dungeonId.equals(ctx.dungeonCompletedId));
   }
 
-    private static Achievement finalBoss(AchievementConfig c) {
-        return new Achievement(c.name, ctx -> c.bossAchievementId.equals(ctx.bossAchievementId));
-    }
+  private static Achievement finalBoss(AchievementConfig c) {
+    return new Achievement(c.name, ctx -> c.bossAchievementId.equals(ctx.bossAchievementId));
+  }
 
   private static Achievement gold(AchievementConfig c) {
     Achievement a = new Achievement(c.name);
