@@ -12,9 +12,11 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.PlayerActions;
+import com.csse3200.game.components.weapons.WeaponAttackSourceComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageThreeConfig;
 import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
@@ -95,11 +97,39 @@ public class FinalBossStageThreeComponent extends Component {
       throw new IllegalStateException("Stage 3 requires phase, protection and combat components");
     previousHealth = stats.getHealth();
     entity.getEvents().addListener("updateHealth", this::healthChanged);
+    entity.getEvents().addListener("damageAttempted", this::onDamageAttempted);
     entity.getEvents().addListener(FinalBossEvents.SHIELD_HIT, () -> shieldHitRemaining = 0.48f);
   }
 
   public FinalBossStageThreeState getState() {
     return state;
+  }
+
+  private void onDamageAttempted(int damage, Entity attacker) {
+    if (disposed
+        || playerDefeated
+        || damage <= 0
+        || attacker == null
+        || state != FinalBossStageThreeState.WAVE_ONE
+        || phases.getCurrentPhase() != FinalBossPhase.STAGE_THREE
+        || phases.isTransitioning()
+        || stats.isDead()
+        || stats.isInvulnerable()) {
+      return;
+    }
+    CombatStatsComponent playerStats = target.getComponent(CombatStatsComponent.class);
+    WeaponAttackSourceComponent source = attacker.getComponent(WeaponAttackSourceComponent.class);
+    if (playerStats == null
+        || playerStats.isDead()
+        || source == null
+        || source.getOwner() != target
+        || (source.getWeaponType() != WeaponType.SWORD
+            && source.getWeaponType() != WeaponType.DAGGER)) {
+      return;
+    }
+    // This came from the blade's contact damage path, not attack input or the currently equipped
+    // weapon. Report before healthChanged can move a wave-ending hit into CHARGING.
+    entity.getEvents().trigger(FinalBossEvents.STAGE_THREE_MELEE_HIT, target);
   }
 
   public float getStateTime() {

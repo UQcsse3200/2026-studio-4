@@ -32,6 +32,12 @@ public final class FinalBossEvents {
    */
   public static final String STAGE_THREE_ICE_HIT = "finalBossStageThreeIceHit";
 
+  /**
+   * Player sword/knife contact with the unshielded Stage 3 Wave 1 boss. Argument: attacking player
+   * (Entity). Emitted before damage can end Wave 1.
+   */
+  public static final String STAGE_THREE_MELEE_HIT = "finalBossStageThreeMeleeHit";
+
   public static final String SUMMON_WARNING = "finalBossSummonWarning";
   public static final String SUMMON_EXPLODED = "finalBossSummonExploded";
   public static final String SUMMON_REMOVED = "finalBossSummonRemoved";

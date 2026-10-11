@@ -27,4 +27,7 @@ public class AchievementContext {
 
   /** True when the player is hit by a Final Boss Stage 3 Wave 1 ice bolt. */
   public boolean finalBossStageThreeIceHit;
+
+  /** True when the player's sword or knife hits the Final Boss during Stage 3 Wave 1. */
+  public boolean finalBossStageThreeMeleeHit;
 }

@@ -19,6 +19,7 @@ public class FinalBossAchievementComponent extends Component {
   private CombatStatsComponent playerStats;
   private boolean stageTwoIceReported;
   private boolean snowQueenReported;
+  private boolean flashedTooFastReported;
   private boolean disposed;
 
   /** Creates an achievement observer for the player participating in this boss encounter. */
@@ -48,6 +49,9 @@ public class FinalBossAchievementComponent extends Component {
     entity.getEvents().addListener(FinalBossEvents.STAGE_TWO_FIRE_HIT, this::onStageTwoFireHit);
     entity.getEvents().addListener(FinalBossEvents.STAGE_TWO_COMPLETED, this::onStageTwoCompleted);
     entity.getEvents().addListener(FinalBossEvents.STAGE_THREE_ICE_HIT, this::onStageThreeIceHit);
+    entity
+        .getEvents()
+        .addListener(FinalBossEvents.STAGE_THREE_MELEE_HIT, this::onStageThreeMeleeHit);
     entity.getEvents().addListener(FinalBossEvents.PHASE_CHANGED, this::onPhaseChanged);
     entity.getEvents().addListener("entityDied", attempt::finish);
     entity.getEvents().addListener("entityDied", fireproof::finish);
@@ -200,6 +204,29 @@ public class FinalBossAchievementComponent extends Component {
         && !bossStats.isDead()
         && playerStats != null
         && !playerStats.isDead();
+  }
+
+  private void onStageThreeMeleeHit(Entity player) {
+    if (disposed
+        || flashedTooFastReported
+        || player != target
+        || playerStats == null
+        || playerStats.isDead()
+        || bossStats.isDead()
+        || phases.getCurrentPhase() != FinalBossPhase.STAGE_THREE
+        || phases.isTransitioning()
+        || stageThree == null
+        || stageThree.getTarget() != target
+        || stageThree.getState() != FinalBossStageThreeState.WAVE_ONE) {
+      return;
+    }
+    flashedTooFastReported = true;
+    AchievementService achievements = ServiceLocator.getAchievementService();
+    if (achievements != null) {
+      AchievementContext context = new AchievementContext();
+      context.finalBossStageThreeMeleeHit = true;
+      achievements.update(context);
+    }
   }
 
   @Override
