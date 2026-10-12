@@ -85,6 +85,16 @@ public class NPCFactory {
   }
 
   /**
+   * Creates a zombie with its standard appearance and explosion fuse.
+   *
+   * @param target entity to chase
+   * @return zombie entity
+   */
+  public static Entity createZombie(Entity target) {
+    return createBombEnemy(target, "images/zombie.atlas", 2f);
+  }
+
+  /**
    * Creates a bomb Enemy entity.
    *
    * @param target entity to chase

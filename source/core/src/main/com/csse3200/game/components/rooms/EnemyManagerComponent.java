@@ -77,7 +77,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case JINGWEI:
         return createFlyingEnemy(spawn, target, "images/jingwei.atlas");
       case ZOMBIE:
-        return NPCFactory.createBombEnemy(target, "images/zombie.atlas", 2f);
+        return NPCFactory.createZombie(target);
       case WUKONG:
         return createScaledGiant(target, "images/wukong.atlas", 3f);
       case BUG:
