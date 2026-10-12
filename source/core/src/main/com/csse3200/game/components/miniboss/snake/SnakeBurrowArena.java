@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 /** Keeps the Snake's burrow position and emergence footprint inside clear room space. */
 public final class SnakeBurrowArena {
@@ -37,17 +38,81 @@ public final class SnakeBurrowArena {
   }
 
   /**
+   * Checks the rectangle swept by a footprint between two centres. Both endpoints must fit inside
+   * the room, and the swept rectangle must avoid solid static fixtures. This conservative check
+   * also prevents a long movement step from crossing a thin wall.
+   */
+  public boolean isPathClear(Vector2 from, Vector2 to, Vector2 halfSize) {
+    if (!containsFootprint(from, halfSize) || !containsFootprint(to, halfSize)) {
+      return false;
+    }
+    Vector2 sweptCentre = from.cpy().add(to).scl(0.5f);
+    Vector2 sweptHalfSize =
+        halfSize.cpy().add(Math.abs(to.x - from.x) / 2f, Math.abs(to.y - from.y) / 2f);
+    return isClear(sweptCentre, sweptHalfSize);
+  }
+
+  /**
+   * Moves towards a constrained destination without crossing walls. A blocked diagonal tries
+   * horizontal movement, then vertical movement; a fully blocked move keeps the original centre.
+   * The returned vector is independent of both inputs.
+   */
+  public Vector2 constrainMovement(Vector2 from, Vector2 desired, Vector2 halfSize) {
+    Vector2 destination = constrain(desired, halfSize);
+    if (isPathClear(from, destination, halfSize)) {
+      return destination;
+    }
+    Vector2 horizontal = new Vector2(destination.x, from.y);
+    if (isPathClear(from, horizontal, halfSize)) {
+      return horizontal;
+    }
+    Vector2 vertical = new Vector2(from.x, destination.y);
+    if (isPathClear(from, vertical, halfSize)) {
+      return vertical;
+    }
+    return from.cpy();
+  }
+
+  /**
    * Finds clear space at the constrained requested position or within 2.8 world units of it. Checks
    * the entire footprint against solid static fixtures, ignoring players and sensors. Call during a
    * normal update, outside a physics callback. If physics is unavailable, only the room bounds
    * apply. Returns empty rather than placing the Snake in a blocked location.
    */
   public Optional<Vector2> findClearCentre(Vector2 desired, Vector2 halfSize) {
+    return findCentre(desired, halfSize, centre -> isClear(centre, halfSize));
+  }
+
+  /**
+   * Repairs an overlapping footprint at the start of a burrow. The final footprint must be clear,
+   * and its centre must remain on the same side of every wall. This recovery allows the initial
+   * footprint to overlap a wall but never moves a centre through one.
+   */
+  public Optional<Vector2> findClearStartCentre(Vector2 current, Vector2 halfSize) {
+    return findCentre(
+        current,
+        halfSize,
+        candidate ->
+            isClear(candidate, halfSize)
+                && SnakePoisonCollision.wallFraction(current, candidate, 0f, null) > 1f);
+  }
+
+  /**
+   * Finds a nearby emergence centre whose entire approach from {@code from} clears solid static
+   * fixtures. Uses the same search area as {@link #findClearCentre} and rejects destinations across
+   * a wall even when their final footprint is clear.
+   */
+  public Optional<Vector2> findReachableCentre(Vector2 from, Vector2 desired, Vector2 halfSize) {
+    return findCentre(desired, halfSize, centre -> isPathClear(from, centre, halfSize));
+  }
+
+  private Optional<Vector2> findCentre(
+      Vector2 desired, Vector2 halfSize, Predicate<Vector2> acceptable) {
     if (!fitsRoom(halfSize)) {
       return Optional.empty();
     }
     Vector2 origin = constrain(desired, halfSize);
-    if (isClear(origin, halfSize)) {
+    if (acceptable.test(origin)) {
       return Optional.of(origin);
     }
     for (int ring = 1; ring <= SEARCH_RINGS; ring++) {
@@ -58,7 +123,7 @@ public final class SnakeBurrowArena {
                 .scl(ring * SEARCH_STEP)
                 .add(origin);
         candidate = constrain(candidate, halfSize);
-        if (isClear(candidate, halfSize)) {
+        if (acceptable.test(candidate)) {
           return Optional.of(candidate);
         }
       }
@@ -68,6 +133,14 @@ public final class SnakeBurrowArena {
 
   private boolean fitsRoom(Vector2 halfSize) {
     return bounds == null || (halfSize.x * 2f <= bounds.width && halfSize.y * 2f <= bounds.height);
+  }
+
+  private boolean containsFootprint(Vector2 centre, Vector2 halfSize) {
+    return bounds == null
+        || (centre.x - halfSize.x >= bounds.x
+            && centre.y - halfSize.y >= bounds.y
+            && centre.x + halfSize.x <= bounds.x + bounds.width
+            && centre.y + halfSize.y <= bounds.y + bounds.height);
   }
 
   private boolean isClear(Vector2 centre, Vector2 halfSize) {

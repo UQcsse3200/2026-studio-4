@@ -122,6 +122,217 @@ class SnakeBurrowArenaTest {
     assertEquals(desired, arena.findClearCentre(desired, new Vector2(0.5f, 0.5f)).orElseThrow());
   }
 
+  @Test
+  void clearEndpointsCannotTunnelThroughAThinWall() {
+    createWorld();
+    createBody(new Rectangle(3.9f, 0f, 0.1f, 8f), BodyType.StaticBody, false);
+    SnakeBurrowArena arena = new SnakeBurrowArena(new Rectangle(0f, 0f, 8f, 8f));
+    Vector2 from = new Vector2(2f, 4f);
+    Vector2 to = new Vector2(6f, 4f);
+    Vector2 halfSize = new Vector2(0.4f, 0.4f);
+
+    assertTrue(arena.isPathClear(from, from, halfSize));
+    assertTrue(arena.isPathClear(to, to, halfSize));
+    assertFalse(arena.isPathClear(from, to, halfSize));
+    assertEquals(from, arena.constrainMovement(from, to, halfSize));
+  }
+
+  @Test
+  void openMovementPreservesItsInputVectors() {
+    createWorld();
+    SnakeBurrowArena arena = new SnakeBurrowArena(new Rectangle(0f, 0f, 8f, 8f));
+    Vector2 from = new Vector2(2f, 2f);
+    Vector2 desired = new Vector2(6f, 6f);
+    Vector2 halfSize = new Vector2(0.5f, 0.5f);
+
+    Vector2 result = arena.constrainMovement(from, desired, halfSize);
+
+    assertEquals(new Vector2(6f, 6f), result);
+    assertNotSame(desired, result);
+    assertNotSame(from, result);
+    assertEquals(new Vector2(2f, 2f), from);
+    assertEquals(new Vector2(6f, 6f), desired);
+    assertEquals(new Vector2(0.5f, 0.5f), halfSize);
+  }
+
+  @Test
+  void diagonalMovementSlidesAlongAVerticalWall() {
+    createWorld();
+    createBody(new Rectangle(3.9f, 0f, 0.2f, 8f), BodyType.StaticBody, false);
+    SnakeBurrowArena arena = new SnakeBurrowArena(new Rectangle(0f, 0f, 8f, 8f));
+
+    Vector2 result =
+        arena.constrainMovement(new Vector2(2f, 2f), new Vector2(6f, 6f), new Vector2(0.4f, 0.4f));
+
+    assertEquals(new Vector2(2f, 6f), result);
+  }
+
+  @Test
+  void diagonalMovementSlidesAlongAHorizontalWall() {
+    createWorld();
+    createBody(new Rectangle(0f, 3.9f, 8f, 0.2f), BodyType.StaticBody, false);
+    SnakeBurrowArena arena = new SnakeBurrowArena(new Rectangle(0f, 0f, 8f, 8f));
+
+    Vector2 result =
+        arena.constrainMovement(new Vector2(2f, 2f), new Vector2(6f, 6f), new Vector2(0.4f, 0.4f));
+
+    assertEquals(new Vector2(6f, 2f), result);
+  }
+
+  @Test
+  void blockedCornerRetainsAnIndependentCopyOfTheCurrentPosition() {
+    createWorld();
+    createBody(new Rectangle(3.9f, 0f, 0.2f, 8f), BodyType.StaticBody, false);
+    createBody(new Rectangle(0f, 3.9f, 8f, 0.2f), BodyType.StaticBody, false);
+    SnakeBurrowArena arena = new SnakeBurrowArena(new Rectangle(0f, 0f, 8f, 8f));
+    Vector2 from = new Vector2(2f, 2f);
+
+    Vector2 result = arena.constrainMovement(from, new Vector2(6f, 6f), new Vector2(0.4f, 0.4f));
+
+    assertEquals(new Vector2(2f, 2f), result);
+    assertNotSame(from, result);
+  }
+
+  @Test
+  void reachableSearchKeepsTheEmergenceOnTheCurrentSideOfAWall() {
+    createWorld();
+    createBody(new Rectangle(3.9f, 0f, 0.2f, 8f), BodyType.StaticBody, false);
+    SnakeBurrowArena arena = new SnakeBurrowArena(new Rectangle(0f, 0f, 8f, 8f));
+    Vector2 from = new Vector2(2f, 4f);
+    Vector2 desired = new Vector2(5.5f, 4f);
+    Vector2 halfSize = new Vector2(0.4f, 0.4f);
+
+    assertEquals(desired, arena.findClearCentre(desired, halfSize).orElseThrow());
+    Vector2 result = arena.findReachableCentre(from, desired, halfSize).orElseThrow();
+
+    assertTrue(result.x + halfSize.x < 3.9f);
+    assertTrue(result.dst(desired) <= 2.81f);
+    assertTrue(arena.isPathClear(from, result, halfSize));
+    assertEquals(new Vector2(2f, 4f), from);
+    assertEquals(new Vector2(5.5f, 4f), desired);
+  }
+
+  @Test
+  void reachableSearchReturnsEmptyWhenAllNearbySpaceIsAcrossAWall() {
+    createWorld();
+    createBody(new Rectangle(2.9f, 0f, 0.2f, 8f), BodyType.StaticBody, false);
+    SnakeBurrowArena arena = new SnakeBurrowArena(new Rectangle(0f, 0f, 8f, 8f));
+
+    assertTrue(
+        arena
+            .findReachableCentre(new Vector2(1f, 4f), new Vector2(7f, 4f), new Vector2(0.4f, 0.4f))
+            .isEmpty());
+  }
+
+  @Test
+  void dynamicActorsAndStaticSensorsDoNotBlockTheApproach() {
+    createWorld();
+    Rectangle occupied = new Rectangle(3f, 3f, 2f, 2f);
+    createBody(occupied, BodyType.DynamicBody, false);
+    createBody(occupied, BodyType.StaticBody, true);
+    SnakeBurrowArena arena = new SnakeBurrowArena(new Rectangle(0f, 0f, 8f, 8f));
+    Vector2 from = new Vector2(2f, 4f);
+    Vector2 desired = new Vector2(6f, 4f);
+    Vector2 halfSize = new Vector2(0.4f, 0.4f);
+
+    assertTrue(arena.isPathClear(from, desired, halfSize));
+    assertEquals(desired, arena.constrainMovement(from, desired, halfSize));
+    assertEquals(desired, arena.findReachableCentre(from, desired, halfSize).orElseThrow());
+  }
+
+  @Test
+  void pathRequiresBothEntireFootprintsInsideTheRoom() {
+    SnakeBurrowArena arena = new SnakeBurrowArena(new Rectangle(0f, 0f, 8f, 8f));
+    Vector2 from = new Vector2(4f, 4f);
+    Vector2 halfSize = new Vector2(0.5f, 0.5f);
+
+    for (Vector2 outside :
+        new Vector2[] {
+          new Vector2(0.25f, 4f),
+          new Vector2(7.75f, 4f),
+          new Vector2(4f, 0.25f),
+          new Vector2(4f, 7.75f)
+        }) {
+      assertFalse(arena.isPathClear(from, outside, halfSize));
+      assertFalse(arena.isPathClear(outside, from, halfSize));
+    }
+    assertTrue(arena.isPathClear(from, new Vector2(0.5f, 7.5f), halfSize));
+    assertEquals(
+        new Vector2(0.5f, 7.5f), arena.constrainMovement(from, new Vector2(-2f, 10f), halfSize));
+  }
+
+  @Test
+  void startRecoveryMovesAnOverlappingFootprintAwayFromItsOwnSideOfAWall() {
+    createWorld();
+    createBody(new Rectangle(4f, 0f, 0.1f, 8f), BodyType.StaticBody, false);
+    SnakeBurrowArena arena = new SnakeBurrowArena(new Rectangle(0f, 0f, 8f, 8f));
+    Vector2 current = new Vector2(3.95f, 4f);
+    Vector2 halfSize = new Vector2(0.5f, 0.5f);
+
+    assertFalse(arena.isPathClear(current, current, halfSize));
+    Vector2 result = arena.findClearStartCentre(current, halfSize).orElseThrow();
+
+    assertTrue(result.x + halfSize.x < 4f);
+    assertTrue(arena.isPathClear(result, result, halfSize));
+    assertTrue(SnakePoisonCollision.wallFraction(current, result, 0f, null) > 1f);
+    assertEquals(new Vector2(3.95f, 4f), current);
+    assertEquals(new Vector2(0.5f, 0.5f), halfSize);
+  }
+
+  @Test
+  void startRecoveryCannotTeleportACentreOutOfAWall() {
+    createWorld();
+    createBody(new Rectangle(4f, 0f, 0.2f, 8f), BodyType.StaticBody, false);
+    SnakeBurrowArena arena = new SnakeBurrowArena(new Rectangle(0f, 0f, 8f, 8f));
+
+    assertTrue(
+        arena.findClearStartCentre(new Vector2(4.1f, 4f), new Vector2(0.5f, 0.5f)).isEmpty());
+  }
+
+  @Test
+  void startRecoveryCannotClampAnOutsideCentreAcrossABoundaryWall() {
+    createWorld();
+    createBody(new Rectangle(0f, 0f, 0.2f, 8f), BodyType.StaticBody, false);
+    SnakeBurrowArena arena = new SnakeBurrowArena(new Rectangle(0f, 0f, 8f, 8f));
+
+    assertTrue(arena.findClearStartCentre(new Vector2(-1f, 4f), new Vector2(0.5f, 0.5f)).isEmpty());
+  }
+
+  @Test
+  void startRecoveryPreservesAnAlreadyClearCentre() {
+    createWorld();
+    SnakeBurrowArena arena = new SnakeBurrowArena(new Rectangle(0f, 0f, 8f, 8f));
+    Vector2 current = new Vector2(4f, 4f);
+
+    Vector2 result = arena.findClearStartCentre(current, new Vector2(0.5f, 0.5f)).orElseThrow();
+
+    assertEquals(current, result);
+    assertNotSame(current, result);
+  }
+
+  @Test
+  void configuredSnakeSpawnCanRecoverBetweenAdjacentRoomRecesses() {
+    createWorld();
+    // dungeonTwoEnd tiles (27,29), (27,30), (28,30), (24,33) and (25,33).
+    // These collider bounds follow the half-unit tiles and top-face wall placement.
+    createBody(new Rectangle(13.625f, 14.5f, 0.25f, 0.25f), BodyType.StaticBody, false);
+    createBody(new Rectangle(13.625f, 15f, 0.25f, 0.25f), BodyType.StaticBody, false);
+    createBody(new Rectangle(14.125f, 15f, 0.25f, 0.25f), BodyType.StaticBody, false);
+    createBody(new Rectangle(12.125f, 16f, 0.25f, 1f), BodyType.StaticBody, false);
+    createBody(new Rectangle(12.625f, 16f, 0.25f, 1f), BodyType.StaticBody, false);
+    SnakeBurrowArena arena = new SnakeBurrowArena(new Rectangle(0f, 0f, 31f, 26f));
+    // The 2-by-2 Snake is centred on configured spawn tile (26,31).
+    Vector2 current = new Vector2(13.25f, 15.75f);
+    Vector2 halfSize = new Vector2(1f, 1f);
+
+    assertFalse(arena.isPathClear(current, current, halfSize));
+    Vector2 result = arena.findClearStartCentre(current, halfSize).orElseThrow();
+
+    assertTrue(arena.isPathClear(result, result, halfSize));
+    assertTrue(SnakePoisonCollision.wallFraction(current, result, 0f, null) > 1f);
+    assertTrue(result.dst(current) <= 2.81f);
+  }
+
   private void createWorld() {
     PhysicsService service = new PhysicsService();
     ServiceLocator.registerPhysicsService(service);

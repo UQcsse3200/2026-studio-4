@@ -173,6 +173,9 @@ public class SnakeBurrowComponent extends Component {
       poison.endSpit();
     }
     setUnderground(true);
+    arena
+        .findClearStartCentre(entity.getCenterPosition(), getBurrowHalfSize())
+        .ifPresent(this::setCentre);
     if (visual != null) {
       visual.hideWarning();
       visual.startBurrow(entity.getCenterPosition());
@@ -214,10 +217,11 @@ public class SnakeBurrowComponent extends Component {
             .add(
                 MathUtils.cosDeg(orbitAngle) * config.orbitRadius,
                 MathUtils.sinDeg(orbitAngle) * config.orbitRadius);
-    destination = arena.constrain(destination, entity.getScale().scl(0.5f));
+    Vector2 halfSize = getBurrowHalfSize();
+    destination = arena.constrain(destination, halfSize);
     Vector2 centre = entity.getCenterPosition();
     Vector2 offset = destination.sub(centre).limit(config.burrowSpeed * delta);
-    setCentre(centre.add(offset));
+    setCentre(arena.constrainMovement(centre, centre.cpy().add(offset), halfSize));
     trailTime += delta;
     if (trailTime >= TRAIL_INTERVAL) {
       trailTime = 0f;
@@ -231,10 +235,9 @@ public class SnakeBurrowComponent extends Component {
   }
 
   private void beginWarning() {
-    Vector2 halfSize = entity.getScale().scl(0.5f);
-    halfSize.x = Math.max(halfSize.x, config.burrowAttackRadius);
-    halfSize.y = Math.max(halfSize.y, config.burrowAttackRadius);
-    Optional<Vector2> centre = arena.findClearCentre(target.getCenterPosition(), halfSize);
+    Optional<Vector2> centre =
+        arena.findReachableCentre(
+            entity.getCenterPosition(), target.getCenterPosition(), getBurrowHalfSize());
     if (centre.isEmpty()) {
       // Retry after another underground circuit instead of emerging inside a wall.
       stateTime = 0f;
@@ -249,11 +252,24 @@ public class SnakeBurrowComponent extends Component {
   }
 
   private void updateWarning() {
+    Vector2 centre = entity.getCenterPosition();
+    if (!arena.isPathClear(centre, warningCentre, getBurrowHalfSize())) {
+      // A newly blocked approach cancels the warning instead of teleporting through the wall.
+      beginBurrowing();
+      return;
+    }
     float progress = Math.min(1f, stateTime / config.warningDuration);
     setCentre(warningStart.cpy().lerp(warningCentre, progress));
     if (stateTime >= config.warningDuration) {
       emerge();
     }
+  }
+
+  private Vector2 getBurrowHalfSize() {
+    Vector2 halfSize = entity.getScale().scl(0.5f);
+    halfSize.x = Math.max(halfSize.x, config.burrowAttackRadius);
+    halfSize.y = Math.max(halfSize.y, config.burrowAttackRadius);
+    return halfSize;
   }
 
   private void emerge() {
