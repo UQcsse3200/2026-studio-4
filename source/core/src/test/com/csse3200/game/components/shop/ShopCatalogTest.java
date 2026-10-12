@@ -3,7 +3,9 @@ package com.csse3200.game.components.shop;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.ItemIds;
+import com.csse3200.game.items.consumables.MagnetPotion;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,6 +48,20 @@ class ShopCatalogTest {
   void shouldRejectMissingConfiguration() {
     assertThrows(
         IllegalArgumentException.class, () -> ShopCatalog.load("configs/shops/missing.json"));
+  }
+
+  @Test
+  void shouldOfferRegisteredMagnetPotion() {
+    ShopCatalog catalog = ShopCatalog.load("configs/shops/merchant.json");
+    ShopOffer offer = catalog.find(ItemIds.MAGNET_POTION);
+
+    assertNotNull(offer);
+    assertEquals(ShopProductKind.CONSUMABLE, offer.kind());
+    assertEquals(ItemIds.MAGNET_POTION, offer.productId());
+    assertEquals(20, offer.goldPrice());
+    MagnetPotion potion =
+        assertInstanceOf(MagnetPotion.class, ItemCatalog.create(offer.productId(), 1));
+    assertEquals(1, potion.getQuantity());
   }
 
   @Test

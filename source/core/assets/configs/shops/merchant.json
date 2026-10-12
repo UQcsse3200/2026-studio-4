@@ -5,6 +5,7 @@
     {"offerId": "SHIELD", "kind": "CONSUMABLE", "productId": "SHIELD", "goldPrice": 15},
     {"offerId": "SPEED_POTION", "kind": "CONSUMABLE", "productId": "SPEED_POTION", "goldPrice": 15},
     {"offerId": "STRENGTH_POTION", "kind": "CONSUMABLE", "productId": "STRENGTH_POTION", "goldPrice": 20},
-    {"offerId": "FREEZE_BOMB", "kind": "CONSUMABLE", "productId": "FREEZE_BOMB", "goldPrice": 20}
+    {"offerId": "FREEZE_BOMB", "kind": "CONSUMABLE", "productId": "FREEZE_BOMB", "goldPrice": 20},
+    {"offerId": "MAGNET_POTION", "kind": "CONSUMABLE", "productId": "MAGNET_POTION", "goldPrice": 20}
   ]
 }

@@ -84,6 +84,24 @@ class ShopServiceTest {
   }
 
   @Test
+  void shouldBuyConfiguredMagnetPotionAndPreserveBalanceWhenUnaffordable() {
+    InventoryComponent inventory = new InventoryComponent(25);
+    ShopService service =
+        new ShopService(
+            inventory,
+            ShopCatalog.load("configs/shops/merchant.json"),
+            Map.of(ShopProductKind.CONSUMABLE, new ConsumablePurchaseEffect()));
+
+    assertEquals(ShopPurchaseResult.SUCCESS, service.purchase(ItemIds.MAGNET_POTION));
+    assertEquals(5, inventory.getGold());
+    assertEquals(1, inventory.getConsumableCount(ItemIds.MAGNET_POTION));
+
+    assertEquals(ShopPurchaseResult.INSUFFICIENT_GOLD, service.purchase(ItemIds.MAGNET_POTION));
+    assertEquals(5, inventory.getGold());
+    assertEquals(1, inventory.getConsumableCount(ItemIds.MAGNET_POTION));
+  }
+
+  @Test
   void shouldBuyExistingConsumables() {
     InventoryComponent inventory = new InventoryComponent(100);
     ShopService service =
