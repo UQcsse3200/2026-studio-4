@@ -349,8 +349,6 @@ public class CombatStatsComponent extends Component {
           entity.getComponent(StatusEffectsControllerComponent.class);
 
       if (effects != null) {
-        remainingDamage = effects.modifyIncomingDamage(damage);
-
         Damage damageObject = new Damage(remainingDamage, attacker);
         effects.damage(damageObject);
         remainingDamage = damageObject.getDamage();

@@ -1,11 +1,7 @@
 package com.csse3200.game.components;
 
 import com.badlogic.gdx.graphics.Color;
-import com.csse3200.game.components.statuseffects.Damageable;
-import com.csse3200.game.components.statuseffects.Shield;
-import com.csse3200.game.components.statuseffects.Stat;
-import com.csse3200.game.components.statuseffects.StatusEffect;
-import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
+import com.csse3200.game.components.statuseffects.*;
 import com.csse3200.game.entities.Entity;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +20,9 @@ import java.util.List;
 public class StatusEffectsControllerComponent extends Component {
 
   private CombatStatsComponent combatStatsComponent;
+  private Shield shield;
 
   private final ArrayList<StatusEffect> statusEffects = new ArrayList<>();
-  private Shield shield;
   private boolean disposed;
 
   /**
@@ -260,47 +256,9 @@ public class StatusEffectsControllerComponent extends Component {
     notifyRemoved(removed);
   }
 
-  /**
-   * Activates the entity's absorb-mode shield in response to the {@code shieldAbsorb} event.
-   *
-   * <p>A shield is created and registered lazily the first time either shield mode is activated.
-   */
-  public void activateAbsorb() {
-    ensureShield();
-    shield.activateAbsorb();
-    triggerShieldUi();
-  }
-
-  /**
-   * Activates the entity's timed shield in response to the {@code shieldTimed} event.
-   *
-   * <p>A shield is created and registered lazily the first time either shield mode is activated.
-   */
-  public void activateTimed() {
-    ensureShield();
-    shield.activateTimed();
-    triggerShieldUi();
-  }
-
   /** Returns the rechargeable shield's current mode without consuming points or updating it. */
   public boolean isShieldActive() {
     return shield != null && shield.isActive();
-  }
-
-  /**
-   * Passes incoming damage through the entity's shield, if one has been created.
-   *
-   * @param damage the incoming damage amount
-   * @return the damage remaining after shield mitigation
-   */
-  public int modifyIncomingDamage(int damage) {
-    if (shield == null) {
-      return damage;
-    }
-
-    int remainingDamage = shield.modifyIncomingDamage(damage);
-    triggerShieldUi();
-    return remainingDamage;
   }
 
   /**
@@ -328,7 +286,6 @@ public class StatusEffectsControllerComponent extends Component {
     if (removed != null) {
       notifyRemoved(removed);
     }
-    triggerShieldUi();
   }
 
   /**
@@ -373,19 +330,5 @@ public class StatusEffectsControllerComponent extends Component {
   public void dispose() {
     disposed = true;
     clearStatusEffects();
-  }
-
-  private void ensureShield() {
-    if (shield == null) {
-      shield = StatusEffectsFactory.createShield();
-      statusEffects.add(shield);
-    }
-  }
-
-  private void triggerShieldUi() {
-    if (entity == null || shield == null) {
-      return;
-    }
-    entity.getEvents().trigger("updateShield", shield.getCurrent(), shield.getMax());
   }
 }
