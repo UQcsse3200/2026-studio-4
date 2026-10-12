@@ -12,10 +12,15 @@ import com.csse3200.game.services.ServiceLocator;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Responsible for storing the current room to be rendered and coordination between player and room.
  */
 public class RoomSelector {
+  private static final Logger logger = LoggerFactory.getLogger(RoomSelector.class);
+
   private Entity room; // only one room entity should exist at atime
   private Entity player;
   private CameraComponent camera;
@@ -27,6 +32,7 @@ public class RoomSelector {
 
   private final EventHandler eventHandler = new EventHandler();
   public final String ROOM_SWITCHED_EVENT = "RoomSwitched";
+  public final String SWITCH_ROOM = "SwitchRoom";
 
   RoomSelector(Entity room, Entity player, CameraComponent camera, RoomLoader roomLoader) {
     this.room = room;
@@ -35,12 +41,9 @@ public class RoomSelector {
     this.roomLoader = roomLoader;
   }
 
-  RoomSelector(Entity room, Entity player, CameraComponent camera) {
-    this(room, player, camera, new RoomLoader(camera));
-  }
-
   public RoomSelector(Entity player, CameraComponent camera) {
     this(null, player, camera, new RoomLoader(camera));
+    player.getEvents().addListener("interact", () -> room.getEvents().trigger("requestExit", player.getPosition()));    
   }
 
   /* Gives to the CameraComponent to the room
@@ -55,29 +58,20 @@ public class RoomSelector {
 
   /* */
   public void start() {
-    this.room = roomLoader.getStartingRoom();
+    // this.room = roomLoader.getStartingRoom();
+    setRoom(roomLoader.getStartingRoom());
     spawnPlayer(roomLoader.getStartingSpawn());
-    resetCamera();
 
     ServiceLocator.getEntityService().register(player);
-    ServiceLocator.getEntityService().register(room);
-  }
-
-  /* disposes the old room, then registers new room and sets the player to the given spawn.*/
-  private void switchRoom(Entity newRoom, GridPoint2 spawnPoint) {
-    // TODO not called by anyone yet
-    ServiceLocator.getEntityService().scheduleDisposal(this.room);
-
-    ServiceLocator.getEntityService().register(newRoom);
-    spawnPlayer(spawnPoint);
-
-    resetCamera();
   }
 
   /** Switches the currently rendered room to the destination room declared in exit */
   public void switchRoom(ExitConfig exit) {
     boolean cleared = clearedRoomIds.contains(exit.destinationRoomId);
-    switchRoom(roomLoader.getRoom(exit, cleared), roomLoader.getSpawnPoint(exit));
+    logger.debug("Switching to {}, cleared: {}", exit.destinationRoomId, cleared);
+
+    setRoom(roomLoader.getRoom(exit, cleared));
+    spawnPlayer(roomLoader.getSpawnPoint(exit));
 
     eventHandler.trigger(ROOM_SWITCHED_EVENT);
   }
@@ -90,5 +84,20 @@ public class RoomSelector {
   private void spawnPlayer(GridPoint2 spawn) {
     Vector2 pos = room.getComponent(TerrainComponent.class).tileToWorldPosition(spawn);
     player.setPosition(pos);
+  }
+
+  /**
+   * Disposes the current room then sets then performs setup on the new room.
+   */
+  private void setRoom(Entity newRoom) {
+    if (this.room != null) {
+      ServiceLocator.getEntityService().scheduleDisposal(this.room);
+    }
+    this.room = newRoom;
+
+    ServiceLocator.getEntityService().register(newRoom);
+    room.getEvents().trigger("RoomCreated", this.player);
+    resetCamera();
+    room.getEvents().addListener(SWITCH_ROOM, this::switchRoom);
   }
 }

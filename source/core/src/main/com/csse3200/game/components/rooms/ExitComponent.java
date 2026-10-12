@@ -3,7 +3,9 @@ package com.csse3200.game.components.rooms;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.DreamlandTile;
+import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TileSheet;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.entities.Entity;
@@ -17,6 +19,7 @@ public class ExitComponent extends EntityManagerComponent {
   private static final String FANTASY_DUNGEON_DOOR = "images/dungeons/fantasy_dreamland_door.png";
   private static final int TILE_SIZE = 16;
   private static final int DOOR_FRAME_SIZE = 32;
+  private static final float INTERACTION_RANGE = 1f;
 
   private final ExitConfig[] exits;
 
@@ -38,6 +41,27 @@ public class ExitComponent extends EntityManagerComponent {
         spawnDoor(exit, doorTexture);
       }
     }
+
+    entity.getEvents().addListener("requestExit", this::onExitRequest);
+  }
+
+  private void onExitRequest(Vector2 playerPosition) {
+    ExitConfig nearest = null;
+    float nearestDistance = INTERACTION_RANGE;
+
+    // Finds the nearest exit
+    for (ExitConfig exit : exits) {
+      Vector2 exitPos = entity.getComponent(TerrainComponent.class).tileToWorldPosition(exit.x, exit.y);
+      float distance = playerPosition.dst(exitPos);
+      if (distance <= nearestDistance) {        
+        nearest = exit;
+        nearestDistance = distance;
+      }
+    }
+
+    if (nearest == null) return; // No exit was found withing range
+    
+    entity.getEvents().trigger("SwitchRoom", nearest);
   }
 
   private void spawnDoor(ExitConfig exit, Texture doorTexture) {
