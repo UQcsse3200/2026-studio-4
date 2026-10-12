@@ -129,6 +129,7 @@ public class MainGameScreen extends ScreenAdapter {
     player
         .getEvents()
         .addListener(
+            // TODO A music manager componenet
             RoomManager.ROOM_ENTERED,
             (String roomId, String dungeonId, Boolean cleared) ->
                 roomAssets.playMusicFor(dungeonId, Boolean.TRUE.equals(cleared)));
