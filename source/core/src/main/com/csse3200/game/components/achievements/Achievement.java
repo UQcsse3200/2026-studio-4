@@ -9,19 +9,24 @@ import java.util.function.Predicate;
 public class Achievement {
   private boolean unlocked = false;
   private final String name;
+  private final String description;
   private Predicate<AchievementContext> condition;
   private float progress;
   private float target; // 0 means no numeric target to show
 
   /** Creates an achievement with its condition fixed at construction. */
-  public Achievement(String name, Predicate<AchievementContext> condition) {
+  public Achievement(String name, String description, Predicate<AchievementContext> condition) {
     this.name = name;
+    this.description = description;
     this.condition = condition;
+
+
   }
 
   /** Creates an achievement whose condition is attached afterward via {@link #setCondition}. */
-  public Achievement(String name) {
+  public Achievement(String name, String description) {
     this.name = name;
+    this.description = description;
   }
 
   /**
@@ -71,6 +76,10 @@ public class Achievement {
 
   public String getName() {
     return name;
+  }
+
+  public String getDescription() {
+    return description;
   }
 
   public void restoreState(boolean unlocked, float progress) {

@@ -6,6 +6,7 @@ import java.util.List;
 public class AchievementConfig {
   public String type; // discriminator, matches a case in the factory
   public String name;
+  public String description;
   public float target;
   public EnemyType enemyType;
   public List<EnemyType> enemyTypes;
