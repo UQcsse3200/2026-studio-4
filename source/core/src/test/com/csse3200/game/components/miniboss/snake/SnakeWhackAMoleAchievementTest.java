@@ -193,7 +193,9 @@ class SnakeWhackAMoleAchievementTest {
       case "invulnerable" -> snakeStats.setInvulnerable(true);
       case "multiplier" -> snakeStats.setIncomingDamageMultiplier(0f);
       case "floor" -> snakeStats.setMinimumHealth(snakeStats.getHealth());
-      default -> {}
+      default -> {
+        // The zero-damage case needs no blocking effect.
+      }
     }
     snakeStats.takeDamage("zero".equals(blocker) ? 0 : 10, player);
     assertLocked();

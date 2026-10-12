@@ -143,18 +143,7 @@ public class SnakeShieldPickupComponent extends RenderComponent {
       if (gem.age >= config.shieldGemLifetime) {
         gems.remove(i);
       } else if (gem.age >= SPAWN_DURATION && canCollect(gem)) {
-        SnakeShieldComponent shield = entity.getComponent(SnakeShieldComponent.class);
-        if (shield != null) {
-          gems.remove(i);
-          shieldGemCollected = true;
-          shield.refill();
-          entity.getEvents().trigger(SHIELD_GEM_COLLECTED_EVENT);
-          if (encounterEnded()) {
-            stop();
-            return;
-          }
-          healIfLowHealth();
-        }
+        collectGem(i);
       }
       if (encounterEnded()) {
         stop();
@@ -166,6 +155,20 @@ public class SnakeShieldPickupComponent extends RenderComponent {
       // At most one spawn after a long frame; missed intervals never pile up.
       spawnAge = 0f;
       spawnGem();
+    }
+  }
+
+  private void collectGem(int index) {
+    SnakeShieldComponent shield = entity.getComponent(SnakeShieldComponent.class);
+    if (shield == null) {
+      return;
+    }
+    gems.remove(index);
+    shieldGemCollected = true;
+    shield.refill();
+    entity.getEvents().trigger(SHIELD_GEM_COLLECTED_EVENT);
+    if (!encounterEnded()) {
+      healIfLowHealth();
     }
   }
 

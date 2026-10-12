@@ -158,8 +158,7 @@ class LightningSpellComponentTest {
     List<Entity> sources = new ArrayList<>();
     enemy
         .getEvents()
-        .addListener(
-            LightningSpellComponent.DAMAGE_SOURCE_EVENT, (Entity source) -> sources.add(source));
+        .<Entity>addListener(LightningSpellComponent.DAMAGE_SOURCE_EVENT, sources::add);
 
     lightningAt(damage, enemy).cast();
 
@@ -175,8 +174,7 @@ class LightningSpellComponentTest {
     List<Entity> sources = new ArrayList<>();
     enemy
         .getEvents()
-        .addListener(
-            LightningSpellComponent.DAMAGE_SOURCE_EVENT, (Entity source) -> sources.add(source));
+        .<Entity>addListener(LightningSpellComponent.DAMAGE_SOURCE_EVENT, sources::add);
     enemy
         .getEvents()
         .addListener(
