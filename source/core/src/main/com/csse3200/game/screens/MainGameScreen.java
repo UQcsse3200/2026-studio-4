@@ -15,7 +15,6 @@ import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.rooms.RoomAssets;
 import com.csse3200.game.components.rooms.RoomCommand;
 import com.csse3200.game.components.rooms.RoomManager;
-import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -36,6 +35,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
+import com.csse3200.game.rooms.RoomSelector;
 import com.csse3200.game.services.*;
 import com.csse3200.game.ui.UiScale;
 import com.csse3200.game.ui.terminal.Terminal;
@@ -121,8 +121,6 @@ public class MainGameScreen extends ScreenAdapter {
     player = PlayerFactory.createPlayer();
     // trigger death screen via entity died event
     player.getEvents().addListener("entityDied", this::scheduleDeathScreen);
-    WorldConfig world = null;
-    world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     // trigger win screen via entity win event
     player.getEvents().addListener("winScreenRequested", () -> winScreenRequested = true);
     // The hub and the dungeons have their own music; rooms announce which one they want.
@@ -143,18 +141,21 @@ public class MainGameScreen extends ScreenAdapter {
               ctx.playerDamaged = true;
               ServiceLocator.getAchievementService().update(ctx);
             });
-    roomManager = new RoomManager(world, player, renderer.getCamera());
-    if (loadedSave != null) {
-      roomManager.initializeFromSavedRun(loadedSave, loadAtCheckpoint);
-    }
-    roomManager.create();
+    // roomManager = new RoomManager(world, player, renderer.getCamera());
+    // if (loadedSave != null) {
+    //   roomManager.initializeFromSavedRun(loadedSave, loadAtCheckpoint);
+    // }
+    // roomManager.create();
+
+    RoomSelector roomSelector = new RoomSelector(player, renderer.getCamera());
+    roomSelector.start();
 
     if (loadedSave != null) {
       GameSaveMapper.restore(player, loadedSave);
       GameSaveMapper.restoreAchievements(loadedSave);
     }
-    RoomCommand roomCommand = new RoomCommand(roomManager);
-    terminal.addCommand("room", roomCommand);
+    // RoomCommand roomCommand = new RoomCommand(roomManager);
+    // terminal.addCommand("room", roomCommand);
 
     createUI();
   }
@@ -173,7 +174,7 @@ public class MainGameScreen extends ScreenAdapter {
     }
     ServiceLocator.getEntityService().update();
     if (!frozen) {
-      roomManager.update();
+      // roomManager.update();
     }
     roomAssets.applyMusicVolume();
     renderer.render();

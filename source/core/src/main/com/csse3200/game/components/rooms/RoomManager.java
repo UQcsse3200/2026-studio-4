@@ -134,6 +134,7 @@ public class RoomManager {
     checkpointEntryPointId = checkpoint.entryPointId;
     checkpointPosition = spawn;
 
+    // TODO If the room can query the player than this can be set in the component
     FollowingCameraComponent following = currentRoom.getComponent(FollowingCameraComponent.class);
     following.setCamera(camera);
     following.setTarget(player);
@@ -273,6 +274,7 @@ public class RoomManager {
       completeDungeon();
     }
     pendingDestination = destination;
+    // If a specific exit destination is set use it, else use entry point????
     if (exit.destinationExitId != null) {
       pendingArrivalPosition = arrivalInsideDoor(destination.getExit(exit.destinationExitId));
     } else {
