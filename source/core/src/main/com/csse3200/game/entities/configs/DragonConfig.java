@@ -7,7 +7,7 @@ public class DragonConfig extends BaseEntityConfig {
   public float healthBarScale = 2f;
 
   public DragonConfig() {
-    health = 500;
+    health = 200;
     baseAttack = 20;
   }
 }

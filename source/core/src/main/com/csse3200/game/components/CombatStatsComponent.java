@@ -47,7 +47,7 @@ public class CombatStatsComponent extends Component {
    * @param amount The amount of times scaling is applied
    */
   public void scale(int amount) {
-    maxHealth += scaleStat(maxHealth, healthScaleFactor, amount);
+    setMaxHealth(maxHealth + scaleStat(maxHealth, healthScaleFactor, amount));
     setHealth(maxHealth);
     baseAttack += scaleStat(baseAttack, attackScaleFactor, amount);
   }
