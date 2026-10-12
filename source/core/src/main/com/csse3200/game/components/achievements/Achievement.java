@@ -19,8 +19,6 @@ public class Achievement {
     this.name = name;
     this.description = description;
     this.condition = condition;
-
-
   }
 
   /** Creates an achievement whose condition is attached afterward via {@link #setCondition}. */

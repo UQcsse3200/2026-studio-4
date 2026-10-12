@@ -21,11 +21,13 @@ public class AchievementsFactory {
   }
 
   private static Achievement dungeonClear(AchievementConfig c) {
-    return new Achievement(c.name, c.description, ctx -> c.dungeonId.equals(ctx.dungeonCompletedId));
+    return new Achievement(
+        c.name, c.description, ctx -> c.dungeonId.equals(ctx.dungeonCompletedId));
   }
 
   private static Achievement finalBoss(AchievementConfig c) {
-    return new Achievement(c.name, c.description, ctx -> c.bossAchievementId.equals(ctx.bossAchievementId));
+    return new Achievement(
+        c.name, c.description, ctx -> c.bossAchievementId.equals(ctx.bossAchievementId));
   }
 
   private static Achievement gold(AchievementConfig c) {
@@ -99,7 +101,8 @@ public class AchievementsFactory {
     Set<EnemySpawnConfig.EnemyType> required = EnumSet.copyOf(c.enemyTypes);
     Set<EnemySpawnConfig.EnemyType> seen = EnumSet.noneOf(EnemySpawnConfig.EnemyType.class);
     return new Achievement(
-        c.name, c.description,
+        c.name,
+        c.description,
         ctx -> {
           if (ctx.enemyKilled == null || !required.contains(ctx.enemyKilled)) {
             return false;
