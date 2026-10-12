@@ -45,6 +45,11 @@
           "npcId": "hecate",
           "x": 11,
           "y": 18
+        },
+        {
+          "npcId": "tutorialGuide",
+          "x": 12,
+          "y": 22
         }
       ],
       "obstacles": {
