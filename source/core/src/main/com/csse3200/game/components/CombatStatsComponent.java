@@ -47,9 +47,15 @@ public class CombatStatsComponent extends Component {
    * @param amount The amount of times scaling is applied
    */
   public void scale(int amount) {
-    setMaxHealth(maxHealth + scaleStat(maxHealth, healthScaleFactor, amount));
-    setHealth(maxHealth);
+    maxHealth += scaleStat(maxHealth, healthScaleFactor, amount);
+    health = maxHealth;
     baseAttack += scaleStat(baseAttack, attackScaleFactor, amount);
+
+    // Finish updating both values before notifying UI and phase listeners.
+    if (entity != null) {
+      entity.getEvents().trigger("updateMaxHealth", maxHealth);
+      entity.getEvents().trigger("updateHealth", health);
+    }
   }
 
   /**
