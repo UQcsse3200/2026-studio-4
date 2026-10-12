@@ -106,4 +106,43 @@ public class SleipnirEnemyTest {
     Assertions.assertNotNull(movementComponent);
     Assertions.assertTrue(movementComponent.getMoving());
   }
+
+  @Test
+  void shouldEnterPhaseTwoOnlyBelowHalfOfScaledHealth() {
+    Entity horse = NPCFactory.createSleipnir(new Entity(), mapBounds);
+    horse.create();
+
+    try {
+      CombatStatsComponent stats = horse.getComponent(CombatStatsComponent.class);
+      BossPhaseComponent phase = horse.getComponent(BossPhaseComponent.class);
+      int[] enrageEvents = {0};
+
+      horse.getEvents()
+              .addListener("enragePhaseStarted", () -> enrageEvents[0]++);
+
+      // Three completed dungeons: 250 -> 625.
+      stats.scale(3);
+
+      assertEquals(625, stats.getMaxHealth());
+      assertEquals(625, stats.getHealth());
+      assertEquals(1, phase.getCurrentPhase());
+      assertEquals(0, enrageEvents[0]);
+
+      stats.takeDamage(312);
+
+      assertEquals(313, stats.getHealth());
+      assertEquals(1, phase.getCurrentPhase());
+
+      stats.takeDamage(1);
+
+      assertEquals(312, stats.getHealth());
+      assertEquals(2, phase.getCurrentPhase());
+      assertEquals(1, enrageEvents[0]);
+
+      stats.takeDamage(1);
+      assertEquals(1, enrageEvents[0]);
+    } finally {
+      horse.dispose();
+    }
+  }
 }
