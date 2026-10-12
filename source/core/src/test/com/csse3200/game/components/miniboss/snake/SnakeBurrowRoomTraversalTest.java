@@ -1,6 +1,7 @@
 package com.csse3200.game.components.miniboss.snake;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -176,11 +177,97 @@ class SnakeBurrowRoomTraversalTest {
     assertControllerCrossesRoom(true);
   }
 
-  private void assertControllerCrossesRoom(boolean stageTwo) {
+  @Test
+  void stageOneControllerDetoursLeftAroundLongRightWallAndReturns() {
+    assertControllerDetours(false, true);
+  }
+
+  @Test
+  void stageTwoControllerDetoursLeftAroundLongRightWallAndReturns() {
+    assertControllerDetours(true, true);
+  }
+
+  @Test
+  void stageOneControllerDetoursRightAroundLongLeftWallAndReturns() {
+    assertControllerDetours(false, false);
+  }
+
+  @Test
+  void stageTwoControllerDetoursRightAroundLongLeftWallAndReturns() {
+    assertControllerDetours(true, false);
+  }
+
+  @Test
+  void controllerUpdatesItsDetourWhenPlayerMovesBehindTheWall() {
+    SnakeBurrowComponent burrow = createControllerAt(new Vector2(20f, 17.6f), false);
+    Vector2 originalTarget = new Vector2(20f, 13.25f);
+    movePlayer(originalTarget);
+    boolean startedDetour = false;
+    for (int frame = 0; frame < 400; frame++) {
+      advanceWithoutCrossingWalls(burrow);
+      if (snake.getCenterPosition().x < 18f) {
+        startedDetour = true;
+        break;
+      }
+    }
+    assertTrue(startedDetour, "Snake never moved away from the blocked direct approach");
+
+    Vector2 movedTarget = new Vector2(24f, 13.25f);
+    assertDetourReachesPlayer(burrow, movedTarget, true);
+  }
+
+  private void assertControllerDetours(boolean stageTwo, boolean rightWall) {
+    Vector2 start = rightWall ? new Vector2(20f, 17.6f) : new Vector2(6f, 13.25f);
+    Vector2 destination = rightWall ? new Vector2(20f, 13.25f) : new Vector2(6f, 9.35f);
+    assertFalse(
+        arena.isPathClear(
+            start.cpy().add(GROUND_OFFSET), destination.cpy().add(GROUND_OFFSET), GROUND_HALF_SIZE),
+        "The regression needs a wall blocking the direct approach");
+    SnakeBurrowComponent burrow = createControllerAt(start, stageTwo);
+
+    assertDetourReachesPlayer(burrow, destination, rightWall);
+    assertDetourReachesPlayer(burrow, start, rightWall);
+    assertEquals(stageTwo, burrow.isStageTwo());
+  }
+
+  private void assertDetourReachesPlayer(
+      SnakeBurrowComponent burrow, Vector2 destination, boolean rightWall) {
+    movePlayer(destination);
+    boolean reachedOpening = false;
+    boolean emergedNearPlayer = false;
+    for (int frame = 0; frame < 1200; frame++) {
+      advanceWithoutCrossingWalls(burrow);
+      float x = snake.getCenterPosition().x;
+      reachedOpening |= rightWall ? x < 14.3f : x > 12.2f;
+      if (burrow.getState() == SnakeBurrowComponent.State.EXPOSED
+          && snake.getCenterPosition().dst(destination) < 0.1f) {
+        emergedNearPlayer = true;
+        break;
+      }
+    }
+    assertTrue(reachedOpening, "Snake did not route around the wall tip");
+    assertTrue(
+        emergedNearPlayer, "Snake did not reach player at " + destination + " within 60 seconds");
+  }
+
+  private void advanceWithoutCrossingWalls(SnakeBurrowComponent burrow) {
+    Vector2 before = snake.getCenterPosition().add(GROUND_OFFSET);
+    burrow.update();
+    Vector2 after = snake.getCenterPosition().add(GROUND_OFFSET);
+    assertTrue(
+        arena.isPathClear(before, after, GROUND_HALF_SIZE),
+        "Snake crossed a real room wall from " + before + " to " + after);
+  }
+
+  private void movePlayer(Vector2 centre) {
+    player.setPosition(centre.cpy().mulAdd(player.getScale(), -0.5f));
+  }
+
+  private SnakeBurrowComponent createControllerAt(Vector2 start, boolean stageTwo) {
     player = new Entity().addComponent(new CombatStatsComponent(1000, 0));
     player.create();
     snake = NPCFactory.createSnakeMiniBoss(player);
-    snake.setPosition(configuredSpawn().mulAdd(snake.getScale(), -0.5f));
+    snake.setPosition(start.cpy().mulAdd(snake.getScale(), -0.5f));
     SnakeBurrowComponent burrow = snake.getComponent(SnakeBurrowComponent.class);
     burrow.setArenaBounds(
         new Rectangle(0f, 0f, config.mapWidth * TILE_SIZE, config.mapHeight * TILE_SIZE));
@@ -190,7 +277,11 @@ class SnakeBurrowRoomTraversalTest {
       stats.setHealth(stats.getMaxHealth() / 2);
     }
     when(time.getDeltaTime()).thenReturn(0.05f);
+    return burrow;
+  }
 
+  private void assertControllerCrossesRoom(boolean stageTwo) {
+    SnakeBurrowComponent burrow = createControllerAt(configuredSpawn(), stageTwo);
     for (Vector2 destination :
         new Vector2[] {new Vector2(8f, 17f), new Vector2(20f, 17f), new Vector2(8f, 17f)}) {
       player.setPosition(destination.cpy().mulAdd(player.getScale(), -0.5f));

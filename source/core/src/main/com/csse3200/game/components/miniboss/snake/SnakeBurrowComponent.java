@@ -39,6 +39,7 @@ public class SnakeBurrowComponent extends Component {
   private final Vector2 burrowHalfSize = new Vector2();
   private final Vector2 burrowCentreOffset = new Vector2();
   private SnakeBurrowArena arena = new SnakeBurrowArena(null);
+  private SnakeBurrowNavigator navigator = new SnakeBurrowNavigator(arena, null);
   private CombatStatsComponent stats;
   private PhysicsComponent physics;
   private AnimationRenderComponent animator;
@@ -67,6 +68,7 @@ public class SnakeBurrowComponent extends Component {
   /** Supplies room world bounds before the encounter is registered. */
   public void setArenaBounds(Rectangle bounds) {
     arena = new SnakeBurrowArena(bounds);
+    navigator = new SnakeBurrowNavigator(arena, bounds);
   }
 
   @Override
@@ -195,6 +197,7 @@ public class SnakeBurrowComponent extends Component {
 
   private void beginBurrowing() {
     enter(State.BURROWING);
+    navigator.reset();
     if (poison != null) {
       poison.endSpit();
     }
@@ -237,14 +240,21 @@ public class SnakeBurrowComponent extends Component {
 
   private void updateUnderground(float delta) {
     orbitAngle = (orbitAngle + ORBIT_SPEED * delta) % 360f;
-    Vector2 destination =
-        target
-            .getCenterPosition()
-            .add(
-                MathUtils.cosDeg(orbitAngle) * config.orbitRadius,
-                MathUtils.sinDeg(orbitAngle) * config.orbitRadius);
-    destination = arena.constrain(groundCentre(destination), burrowHalfSize);
     Vector2 centre = groundCentre(entity.getCenterPosition());
+    Vector2 destination =
+        navigator.nextWaypoint(
+            centre, groundCentre(target.getCenterPosition()), burrowHalfSize, delta);
+    if (!navigator.isDetouring()) {
+      Vector2 orbitDestination =
+          groundCentre(target.getCenterPosition())
+              .add(
+                  MathUtils.cosDeg(orbitAngle) * config.orbitRadius,
+                  MathUtils.sinDeg(orbitAngle) * config.orbitRadius);
+      orbitDestination = arena.constrain(orbitDestination, burrowHalfSize);
+      if (arena.isPathClear(centre, orbitDestination, burrowHalfSize)) {
+        destination = orbitDestination;
+      }
+    }
     Vector2 offset = destination.sub(centre).limit(config.burrowSpeed * delta);
     setGroundCentre(arena.constrainMovement(centre, centre.cpy().add(offset), burrowHalfSize));
     trailTime += delta;
@@ -254,7 +264,7 @@ public class SnakeBurrowComponent extends Component {
         visual.addTrail(entity.getCenterPosition());
       }
     }
-    if (stateTime >= config.undergroundDuration) {
+    if (stateTime >= config.undergroundDuration && !navigator.isDetouring()) {
       beginWarning();
     }
   }
@@ -360,6 +370,7 @@ public class SnakeBurrowComponent extends Component {
 
   private void cancelAttack() {
     enter(State.BURROWING);
+    navigator.reset();
     setUnderground(true);
     if (visual != null) {
       visual.clear();
@@ -383,6 +394,7 @@ public class SnakeBurrowComponent extends Component {
       return;
     }
     enter(State.DEAD);
+    navigator.reset();
     if (shieldPickups != null) {
       shieldPickups.stop();
     }
@@ -415,6 +427,7 @@ public class SnakeBurrowComponent extends Component {
   public void dispose() {
     disposed = true;
     state = State.DEAD;
+    navigator.reset();
     if (shieldPickups != null) {
       shieldPickups.stop();
     }

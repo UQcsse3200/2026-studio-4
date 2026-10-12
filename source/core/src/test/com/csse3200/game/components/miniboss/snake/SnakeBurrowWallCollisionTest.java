@@ -80,23 +80,23 @@ class SnakeBurrowWallCollisionTest {
   }
 
   @Test
-  void warningSearchKeepsTheEmergenceOnTheReachableSideOfAWall() {
+  void unreachablePlayerDoesNotTriggerAnEmergenceOnTheWrongSideOfAWall() {
     for (boolean stageTwo : new boolean[] {false, true}) {
       createEncounter(stageTwo, false);
       createWall(new Rectangle(5.5f, 0f, 0.25f, 12f));
       moveCentre(player, new Vector2(6.3f, 6f));
       config.burrowSpeed = 0f;
 
-      reachWarning();
+      tick(config.burrowDuration);
+      tick(config.undergroundDuration);
 
-      assertTrue(
-          burrow.getWarningCentre().x + snake.getScale().x / 2f <= 5.5f,
-          "The warning must remain on the Snake's side of the wall");
       for (int frame = 0; frame < 4; frame++) {
         tick(config.warningDuration / 4f);
         assertTrue(snake.getPosition().x + snake.getScale().x <= 5.5f);
       }
-      assertEquals(SnakeBurrowComponent.State.EXPOSED, burrow.getState());
+      assertEquals(SnakeBurrowComponent.State.UNDERGROUND, burrow.getState());
+      assertTrue(snakeStats.isInvulnerable());
+      assertFalse(physics.getBody().isActive());
       assertEquals(100, playerStats.getHealth());
     }
   }
