@@ -5,7 +5,8 @@ public final class WindowSize {
   public static final int DEFAULT_WIDTH = 1280;
   public static final int DEFAULT_HEIGHT = 800;
 
-  private static final int MIN = 640;
+  private static final int MIN_WIDTH = 960;
+  private static final int MIN_HEIGHT = 540;
   private static final int MAX = 3840;
 
   private static final Preset[] PRESETS = {
@@ -35,18 +36,18 @@ public final class WindowSize {
   }
 
   public static int width(int stored) {
-    return clamp(stored, DEFAULT_WIDTH);
+    return clamp(stored, DEFAULT_WIDTH, MIN_WIDTH);
   }
 
   public static int height(int stored) {
-    return clamp(stored, DEFAULT_HEIGHT);
+    return clamp(stored, DEFAULT_HEIGHT, MIN_HEIGHT);
   }
 
-  private static int clamp(int value, int fallback) {
+  private static int clamp(int value, int fallback, int min) {
     if (value <= 0) {
       return fallback;
     }
-    return Math.clamp(value, MIN, MAX);
+    return Math.clamp(value, min, MAX);
   }
 
   /** One labelled window size. The menu prints {@link #toString()}. */
