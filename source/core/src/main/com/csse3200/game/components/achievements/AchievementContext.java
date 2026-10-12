@@ -12,5 +12,5 @@ public class AchievementContext {
   public float dungeonSeconds;
   public Integer goldTotal;
   public Integer singleHitDamage;
-  public boolean snakeDefeatedWithoutShieldPickup;
+  public String bossAchievementId;
 }

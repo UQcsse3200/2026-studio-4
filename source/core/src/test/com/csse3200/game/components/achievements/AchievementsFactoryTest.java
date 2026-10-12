@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 class AchievementsFactoryTest {
   private static final String SNAKE_NO_SHIELD_PICKUP = "snakeDefeatedWithoutShieldPickup";
+  private static final String SNAKE_GREEN_BUBBLE = "snakeStageTwoShieldPickup";
 
   // ---------- helpers ----------
 
@@ -28,6 +29,12 @@ class AchievementsFactoryTest {
     c.type = type;
     c.name = "test-" + type;
     return c;
+  }
+
+  private static AchievementConfig snakeConfig(String id) {
+    AchievementConfig definition = config("snake");
+    definition.bossAchievementId = id;
+    return definition;
   }
 
   private static AchievementContext kill(EnemyType type) {
@@ -120,7 +127,7 @@ class AchievementsFactoryTest {
       assertInstanceOf(Achievement.class, AchievementsFactory.build(speed));
       assertInstanceOf(Achievement.class, AchievementsFactory.build(set));
       assertInstanceOf(
-          Achievement.class, AchievementsFactory.build(config(SNAKE_NO_SHIELD_PICKUP)));
+          Achievement.class, AchievementsFactory.build(snakeConfig(SNAKE_NO_SHIELD_PICKUP)));
     }
 
     @Test
@@ -138,7 +145,8 @@ class AchievementsFactoryTest {
       assertEquals(0f, AchievementsFactory.build(config("enemyKillCount")).getProgress());
       assertEquals(0f, AchievementsFactory.build(config("killStreak")).getProgress());
       assertEquals(0f, AchievementsFactory.build(set).getProgress());
-      assertEquals(0f, AchievementsFactory.build(config(SNAKE_NO_SHIELD_PICKUP)).getProgress());
+      assertEquals(
+          0f, AchievementsFactory.build(snakeConfig(SNAKE_NO_SHIELD_PICKUP)).getProgress());
     }
 
     @Test
@@ -166,9 +174,9 @@ class AchievementsFactoryTest {
   class SnakeNoShieldPickup {
     @Test
     void unlocksOnceForAReportedVictoryWithoutShieldPickups() {
-      Achievement achievement = AchievementsFactory.build(config(SNAKE_NO_SHIELD_PICKUP));
+      Achievement achievement = AchievementsFactory.build(snakeConfig(SNAKE_NO_SHIELD_PICKUP));
       AchievementContext victory = new AchievementContext();
-      victory.snakeDefeatedWithoutShieldPickup = true;
+      victory.bossAchievementId = SNAKE_NO_SHIELD_PICKUP;
 
       assertTrue(achievement.update(victory));
       assertTrue(achievement.isUnlocked());
@@ -177,7 +185,7 @@ class AchievementsFactoryTest {
 
     @Test
     void ordinarySnakeKillsAndUnrelatedEventsDoNotUnlockTheChallenge() {
-      Achievement achievement = AchievementsFactory.build(config(SNAKE_NO_SHIELD_PICKUP));
+      Achievement achievement = AchievementsFactory.build(snakeConfig(SNAKE_NO_SHIELD_PICKUP));
 
       assertFalse(achievement.update(kill(EnemyType.SNAKE_MINI_BOSS)));
       assertFalse(achievement.update(damaged()));
@@ -194,12 +202,69 @@ class AchievementsFactoryTest {
                   Files.readString(Path.of("configs/achievements.json")));
       List<AchievementConfig> matching =
           Arrays.stream(definitions)
-              .filter(definition -> SNAKE_NO_SHIELD_PICKUP.equals(definition.type))
+              .filter(
+                  definition ->
+                      "snake".equals(definition.type)
+                          && SNAKE_NO_SHIELD_PICKUP.equals(definition.bossAchievementId))
               .toList();
 
       assertEquals(1, matching.size());
       Achievement achievement = AchievementsFactory.build(matching.getFirst());
       assertEquals("What are those green things?", achievement.getName());
+      assertFalse(achievement.isUnlocked());
+    }
+  }
+
+  @Nested
+  class SnakeIds {
+    @Test
+    void differentSnakeChallengesDoNotUnlockEachOther() {
+      List<String> ids = List.of(SNAKE_NO_SHIELD_PICKUP, SNAKE_GREEN_BUBBLE);
+      for (String reportedId : ids) {
+        AchievementContext context = new AchievementContext();
+        context.bossAchievementId = reportedId;
+        for (String configuredId : ids) {
+          Achievement achievement = AchievementsFactory.build(snakeConfig(configuredId));
+          assertEquals(configuredId.equals(reportedId), achievement.update(context));
+          assertFalse(achievement.update(context));
+        }
+      }
+    }
+
+    @Test
+    void nullAndUnknownEventIdsDoNotUnlockGreenBubble() {
+      Achievement achievement = AchievementsFactory.build(snakeConfig(SNAKE_GREEN_BUBBLE));
+      assertFalse(achievement.update(new AchievementContext()));
+      AchievementContext unknown = new AchievementContext();
+      unknown.bossAchievementId = "unknownSnakeAchievement";
+      assertFalse(achievement.update(unknown));
+      assertFalse(achievement.update(kill(EnemyType.SNAKE_MINI_BOSS)));
+      assertFalse(achievement.isUnlocked());
+    }
+
+    @Test
+    void aMissingConfiguredIdCannotMatchAnEmptyContext() {
+      Achievement achievement = AchievementsFactory.build(snakeConfig(null));
+      assertFalse(achievement.update(new AchievementContext()));
+    }
+
+    @Test
+    void gameConfigurationRegistersGreenBubbleOnceWithItsDisplayName() throws IOException {
+      AchievementConfig[] definitions =
+          new Json()
+              .fromJson(
+                  AchievementConfig[].class,
+                  Files.readString(Path.of("configs/achievements.json")));
+      List<AchievementConfig> matching =
+          Arrays.stream(definitions)
+              .filter(
+                  definition ->
+                      "snake".equals(definition.type)
+                          && SNAKE_GREEN_BUBBLE.equals(definition.bossAchievementId))
+              .toList();
+      assertEquals(1, matching.size());
+      Achievement achievement = AchievementsFactory.build(matching.getFirst());
+      assertEquals("Green bubble", achievement.getName());
       assertFalse(achievement.isUnlocked());
     }
   }

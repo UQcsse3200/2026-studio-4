@@ -19,6 +19,7 @@ import java.util.Random;
 
 /** Stage-two green gems, owned by the Snake encounter rather than separate physics entities. */
 public class SnakeShieldPickupComponent extends RenderComponent {
+  public static final String SHIELD_GEM_COLLECTED_EVENT = "snakeShieldGemCollected";
   public static final String GEM_TEXTURE =
       "images/snake-miniboss/pickup/GEM 1 - LIGHT GREEN - Spritesheet.png";
   public static final String SPAWN_TEXTURE =
@@ -147,6 +148,11 @@ public class SnakeShieldPickupComponent extends RenderComponent {
           gems.remove(i);
           shieldGemCollected = true;
           shield.refill();
+          entity.getEvents().trigger(SHIELD_GEM_COLLECTED_EVENT);
+          if (encounterEnded()) {
+            stop();
+            return;
+          }
           healIfLowHealth();
         }
       }

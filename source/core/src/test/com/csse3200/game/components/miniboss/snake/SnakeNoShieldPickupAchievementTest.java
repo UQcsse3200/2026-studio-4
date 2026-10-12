@@ -71,7 +71,8 @@ class SnakeNoShieldPickupAchievementTest {
 
     AchievementConfig definition = new AchievementConfig();
     definition.name = ACHIEVEMENT_NAME;
-    definition.type = "snakeDefeatedWithoutShieldPickup";
+    definition.type = "snake";
+    definition.bossAchievementId = SnakeAchievementComponent.NO_SHIELD_PICKUP;
     achievement = AchievementsFactory.build(definition);
     achievements = new AchievementService();
     achievements.register(achievement);
