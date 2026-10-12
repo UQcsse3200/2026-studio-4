@@ -10,10 +10,10 @@ import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
 import com.csse3200.game.components.boss.FinalBossStageThreeComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoArenaComponent;
+import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
-import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
@@ -152,12 +152,11 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       return;
     }
     enemy.getEvents().<Entity>addListener("cerberusProjectileSpawned", this::spawnEntity);
-    enemy.getEvents().
-            addListener("entityDied", () -> onEnemyDefeated(enemy, enemyType));
+    enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy, enemyType));
     if (enemy.getComponent(CerberusDeathComponent.class) != null) {
-      enemy.getEvents().addListener(
-              CerberusDeathComponent.DEFEATED,
-              () -> reportAchievementKill(enemy));
+      enemy
+          .getEvents()
+          .addListener(CerberusDeathComponent.DEFEATED, () -> reportAchievementKill(enemy));
     }
     enemy
         .getEvents()
@@ -173,7 +172,9 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     }
 
     EnemyTypeComponent typeComponent = enemy.getComponent(EnemyTypeComponent.class);
-    if (typeComponent != null && ServiceLocator.getAchievementService() != null&& typeComponent.getType() != EnemySpawnConfig.EnemyType.CERBERUS) {
+    if (typeComponent != null
+        && ServiceLocator.getAchievementService() != null
+        && typeComponent.getType() != EnemySpawnConfig.EnemyType.CERBERUS) {
       AchievementContext ctx = new AchievementContext();
       ctx.enemyKilled = typeComponent.getType();
       ServiceLocator.getAchievementService().update(ctx);

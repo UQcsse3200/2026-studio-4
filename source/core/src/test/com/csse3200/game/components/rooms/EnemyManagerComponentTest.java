@@ -17,10 +17,10 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.items.ItemComponent;
-import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.components.achievements.AchievementContext;
+import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
+import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ItemFactory;
@@ -31,16 +31,16 @@ import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.items.LootTable;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.AchievementService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.services.AchievementService;
-import org.mockito.ArgumentCaptor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.random.RandomGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 @ExtendWith(GameExtension.class)
@@ -388,9 +388,9 @@ class EnemyManagerComponentTest {
 
     Entity left = new Entity().addComponent(new CombatStatsComponent(125, 10));
     Entity middle =
-            new Entity()
-                    .addComponent(new CombatStatsComponent(250, 20))
-                    .addComponent(new EnemyTypeComponent(EnemySpawnConfig.EnemyType.CERBERUS));
+        new Entity()
+            .addComponent(new CombatStatsComponent(250, 20))
+            .addComponent(new EnemyTypeComponent(EnemySpawnConfig.EnemyType.CERBERUS));
     Entity right = new Entity().addComponent(new CombatStatsComponent(125, 10));
 
     CerberusDeathComponent death = new CerberusDeathComponent(left, right);
@@ -412,8 +412,7 @@ class EnemyManagerComponentTest {
 
     right.getComponent(CombatStatsComponent.class).setHealth(0);
 
-    ArgumentCaptor<AchievementContext> context =
-            ArgumentCaptor.forClass(AchievementContext.class);
+    ArgumentCaptor<AchievementContext> context = ArgumentCaptor.forClass(AchievementContext.class);
     verify(achievements, times(1)).update(context.capture());
     assertEquals(EnemySpawnConfig.EnemyType.CERBERUS, context.getValue().enemyKilled);
     assertTrue(enemyManager.isCleared());
