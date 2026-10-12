@@ -11,6 +11,7 @@ import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.traps.FireTrapRenderComponent;
 import com.csse3200.game.components.traps.IceTrapRenderComponent;
+import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.files.AudioLevels;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -90,12 +91,12 @@ public class RoomAssets implements Disposable {
   private static final String[] PLAYER_TEXTURES = {Minimap.PLAYER_HEAD_PATH};
 
   private static final String[] DUNGEON_TEXTURES = {
-    "images/dungeons/tileSet0.png",
-    "images/dungeons/tileSet1.png",
-    "images/dungeons/tileSet2.png",
-    "images/dungeons/tileSet3.png",
-    "images/dungeons/tileSet4.png",
-    "images/dungeons/tileSet5.png",
+    RoomFactory.DEFAULT_TILESET,
+    RoomFactory.DUNGEON1_TILESET,
+    RoomFactory.DUNGEON2_TILESET,
+    RoomFactory.DUNGEON3_TILESET,
+    RoomFactory.DUNGEON4_TILESET,
+    RoomFactory.DUNGEON5_TILESET,
     "images/dungeons/fantasy_dreamland_door.png"
   };
 

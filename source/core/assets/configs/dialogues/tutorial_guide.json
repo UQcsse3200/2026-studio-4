@@ -1,0 +1,19 @@
+{
+  "speakers": [
+    { "id": "sage", "name": "Old Sage", "atlas": "images/tutorial_guide.atlas", "animation": "default" },
+    { "id": "hero", "name": "You", "atlas": "images/idle_down.atlas", "animation": "idle_down" }
+  ],
+  "lines": [
+    { "speaker": "sage", "text": "Ah, a fresh face. Sit a moment. Those dungeons have swallowed braver souls than you, so listen well." },
+    { "speaker": "sage", "text": "Your feet answer to W, A, S and D. When something lunges at you, tap SPACE to dash clear." },
+    { "speaker": "sage", "text": "J for a quick strike. K for a heavy one: slower, but it hits hard." },
+    { "speaker": "sage", "text": "You carry three weapons. 1 for the sword, 2 for the knife, 3 for the bow. Swap often." },
+    { "speaker": "sage", "text": "E is for talking, picking up loot and stepping through doorways. You'll use it more than you think." },
+    { "speaker": "sage", "text": "I opens your bag. TAB flicks through your potions, and Q uses the one you've picked." },
+    { "speaker": "sage", "text": "The merchant over there trades potions and weapon upgrades for gold. Don't spend it all at once." },
+    { "speaker": "sage", "text": "Hecate offers gifts, but she only lets you hold one at a time. Once you've chosen, press L to use it." },
+    { "speaker": "sage", "text": "And these bookshelves aren't for reading. Four lead into the dungeons. The last one leads to the end of it all." },
+    { "speaker": "hero", "text": "That's a lot to remember." },
+    { "speaker": "sage", "text": "Then come back and ask again. I'm not going anywhere." }
+  ]
+}
