@@ -9,6 +9,7 @@
   { "type": "enemyKillCount", "enemyType": "MEDUSA", "target": 3, "name": "You killed 3 Medusa" },
   { "type": "snake", "bossAchievementId": "snakeDefeatedWithoutShieldPickup", "name": "What are those green things?" },
   { "type": "snake", "bossAchievementId": "snakeStageTwoShieldPickup", "name": "Green bubble" },
+  { "type": "snake", "name": "Whack-a-Mole", "bossAchievementId": "snakeExposedHit" },
 
   {"type":  "enemyKillCount", "target": 5, "name": "Ah! Boy You killed 5 enemies"},
   { "type": "enemyKillCount", "target": 100, "name": "Exterminator" },

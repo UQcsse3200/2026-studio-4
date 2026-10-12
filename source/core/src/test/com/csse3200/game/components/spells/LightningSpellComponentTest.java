@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -19,6 +20,9 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -68,8 +72,12 @@ class LightningSpellComponentTest {
   }
 
   private LightningSpellComponent lightningAt(Entity... targets) {
+    return lightningAt(DAMAGE, targets);
+  }
+
+  private LightningSpellComponent lightningAt(int damage, Entity... targets) {
     LightningSpellComponent spell =
-        new LightningSpellComponent(5f, DAMAGE, FLASH_MILLIS, new FixedTargets(targets));
+        new LightningSpellComponent(5f, damage, FLASH_MILLIS, new FixedTargets(targets));
     caster.addComponent(spell);
     caster.create();
     return spell;
@@ -84,6 +92,105 @@ class LightningSpellComponentTest {
 
     assertEquals(100 - DAMAGE, first.getComponent(CombatStatsComponent.class).getHealth());
     assertEquals(40 - DAMAGE, second.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void exposesCasterDuringDamageWithoutChangingItsHitReactionSource() {
+    Entity enemy = enemyWith(100);
+    AtomicReference<Entity> source = new AtomicReference<>();
+    List<String> events = new ArrayList<>();
+    enemy
+        .getEvents()
+        .addListener(
+            LightningSpellComponent.DAMAGE_SOURCE_EVENT,
+            (Entity currentSource) -> {
+              source.set(currentSource);
+              events.add(currentSource == null ? "cleared" : "caster");
+            });
+    enemy
+        .getEvents()
+        .addListener(
+            "damageAttempted",
+            (Integer damage, Entity attacker) -> {
+              assertSame(caster, source.get());
+              assertNull(attacker);
+              events.add("attempted");
+            });
+    enemy
+        .getEvents()
+        .addListener(
+            "damageTaken",
+            (Entity attacker, Integer healthLost, Integer remainingHealth) -> {
+              assertSame(caster, source.get());
+              assertNull(attacker);
+              assertEquals(DAMAGE, healthLost);
+              events.add("taken");
+            });
+    enemy
+        .getEvents()
+        .addListener(
+            "hitReaction",
+            (Entity attacker) -> {
+              assertSame(caster, source.get());
+              assertNull(attacker);
+              events.add("reaction");
+            });
+
+    lightningAt(enemy).cast();
+
+    assertEquals(List.of("caster", "attempted", "taken", "reaction", "cleared"), events);
+    assertNull(source.get());
+  }
+
+  @Test
+  void clearsCasterForZeroDamage() {
+    assertCasterClearedWithoutDamage(0, false);
+  }
+
+  @Test
+  void clearsCasterForBlockedDamage() {
+    assertCasterClearedWithoutDamage(DAMAGE, true);
+  }
+
+  private void assertCasterClearedWithoutDamage(int damage, boolean invulnerable) {
+    Entity enemy = enemyWith(100);
+    enemy.getComponent(CombatStatsComponent.class).setInvulnerable(invulnerable);
+    List<Entity> sources = new ArrayList<>();
+    enemy
+        .getEvents()
+        .addListener(
+            LightningSpellComponent.DAMAGE_SOURCE_EVENT, (Entity source) -> sources.add(source));
+
+    lightningAt(damage, enemy).cast();
+
+    assertEquals(100, enemy.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals(2, sources.size());
+    assertSame(caster, sources.get(0));
+    assertNull(sources.get(1));
+  }
+
+  @Test
+  void clearsCasterWhenDamageThrows() {
+    Entity enemy = enemyWith(100);
+    List<Entity> sources = new ArrayList<>();
+    enemy
+        .getEvents()
+        .addListener(
+            LightningSpellComponent.DAMAGE_SOURCE_EVENT, (Entity source) -> sources.add(source));
+    enemy
+        .getEvents()
+        .addListener(
+            "damageAttempted",
+            (Integer damage, Entity attacker) -> {
+              throw new IllegalStateException("damage interrupted");
+            });
+    LightningSpellComponent spell = lightningAt(enemy);
+
+    assertThrows(IllegalStateException.class, spell::cast);
+
+    assertEquals(2, sources.size());
+    assertSame(caster, sources.get(0));
+    assertNull(sources.get(1));
   }
 
   @Test

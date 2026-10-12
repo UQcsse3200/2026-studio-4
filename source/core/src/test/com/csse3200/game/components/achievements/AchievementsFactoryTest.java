@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class AchievementsFactoryTest {
   private static final String SNAKE_NO_SHIELD_PICKUP = "snakeDefeatedWithoutShieldPickup";
@@ -219,7 +221,7 @@ class AchievementsFactoryTest {
   class SnakeIds {
     @Test
     void differentSnakeChallengesDoNotUnlockEachOther() {
-      List<String> ids = List.of(SNAKE_NO_SHIELD_PICKUP, SNAKE_GREEN_BUBBLE);
+      List<String> ids = List.of(SNAKE_NO_SHIELD_PICKUP, SNAKE_GREEN_BUBBLE, "snakeExposedHit");
       for (String reportedId : ids) {
         AchievementContext context = new AchievementContext();
         context.bossAchievementId = reportedId;
@@ -248,8 +250,10 @@ class AchievementsFactoryTest {
       assertFalse(achievement.update(new AchievementContext()));
     }
 
-    @Test
-    void gameConfigurationRegistersGreenBubbleOnceWithItsDisplayName() throws IOException {
+    @ParameterizedTest
+    @CsvSource({"snakeStageTwoShieldPickup,Green bubble", "snakeExposedHit,Whack-a-Mole"})
+    void gameConfigurationRegistersEachChallengeOnceWithItsDisplayName(String id, String name)
+        throws IOException {
       AchievementConfig[] definitions =
           new Json()
               .fromJson(
@@ -259,12 +263,11 @@ class AchievementsFactoryTest {
           Arrays.stream(definitions)
               .filter(
                   definition ->
-                      "snake".equals(definition.type)
-                          && SNAKE_GREEN_BUBBLE.equals(definition.bossAchievementId))
+                      "snake".equals(definition.type) && id.equals(definition.bossAchievementId))
               .toList();
       assertEquals(1, matching.size());
       Achievement achievement = AchievementsFactory.build(matching.getFirst());
-      assertEquals("Green bubble", achievement.getName());
+      assertEquals(name, achievement.getName());
       assertFalse(achievement.isUnlocked());
     }
   }

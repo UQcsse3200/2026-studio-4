@@ -15,6 +15,13 @@ public class LightningSpellComponent extends SpellComponent {
   /** Event on the caster that casts this spell. */
   public static final String CAST_EVENT = "castLightning";
 
+  /**
+   * Event on the struck target identifying the caster during synchronous lightning damage. Its
+   * single {@link Entity} argument is the caster before damage and null afterwards. This identifies
+   * the spell for observers without changing the damage or hit-reaction source.
+   */
+  public static final String DAMAGE_SOURCE_EVENT = "lightningDamageSource";
+
   /** Dim purple, drawn over the struck area. */
   private static final Color AOE_COLOUR = new Color(0.55f, 0.25f, 0.85f, 0.85f);
 
@@ -50,9 +57,13 @@ public class LightningSpellComponent extends SpellComponent {
     if (targetStats == null) {
       return;
     }
-    // Unattributed: the bolt has no entity behind it, and naming the caster would make a struck
-    // enemy treat this as a hit from whoever cast it.
-    targetStats.takeDamage(damage);
+    try {
+      target.getEvents().trigger(DAMAGE_SOURCE_EVENT, entity);
+      // Preserve the bolt's unattributed hit reaction while exposing its caster to observers.
+      targetStats.takeDamage(damage);
+    } finally {
+      target.getEvents().<Entity>trigger(DAMAGE_SOURCE_EVENT, null);
+    }
     addEffect(
         target,
         new FlashEffect(ServiceLocator.getTimeSource(), flashDuration, STRUCK_TINT, STRUCK_GLOW));
