@@ -125,9 +125,12 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.rooms.configs.EnemySpawnConfig%5B%5D)" class="member-name-link">EnemyManagerComponent</a><wbr>(<a href="configs/EnemySpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig</a>[]&nbsp;spawnConfigs)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.rooms.configs.EnemySpawnConfig%5B%5D,com.csse3200.game.components.CameraComponent)" class="member-name-link">EnemyManagerComponent</a><wbr>(<a href="configs/EnemySpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig</a>[]&nbsp;spawnConfigs,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.rooms.configs.EnemySpawnConfig%5B%5D,com.csse3200.game.components.rooms.configs.RoomConfig,com.csse3200.game.components.CameraComponent)" class="member-name-link">EnemyManagerComponent</a><wbr>(<a href="configs/EnemySpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig</a>[]&nbsp;spawnConfigs,
+ <a href="configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;roomConfig,
  <a href="../CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Uses the owning room's layout for configured enemies and split children.</div>
+</div>
 </div>
 </section>
 </li>
@@ -162,21 +165,27 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns whether the room has any living enemies.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#scale(int)" class="member-name-link">scale</a><wbr>(int&nbsp;mult)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#outOfBounds(com.badlogic.gdx.math.Vector2,com.csse3200.game.components.rooms.configs.RoomConfig)" class="member-name-link">outOfBounds</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;entityPos,
+ <a href="configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Iterates through the active enemies and calls scale on their <a href="../CombatStatsComponent.html" title="class in com.csse3200.game.components"><code>CombatStatsComponent</code></a></div>
+<div class="block">returns true if an enemy is being spawned beyond a wall</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#spawnEnemies(com.csse3200.game.entities.Entity)" class="member-name-link">spawnEnemies</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#scale(int)" class="member-name-link">scale</a><wbr>(int&nbsp;mult)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Spawns each enemy declared by the room.</div>
+<div class="block">Iterates through the active enemies and calls scale on their <a href="../CombatStatsComponent.html" title="class in com.csse3200.game.components"><code>CombatStatsComponent</code></a></div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#spawnItem(java.lang.String,int,com.badlogic.gdx.math.Vector2)" class="member-name-link">spawnItem</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#spawnEnemies(com.csse3200.game.entities.Entity)" class="member-name-link">spawnEnemies</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Spawns each enemy declared by the room.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#spawnItem(java.lang.String,int,com.badlogic.gdx.math.Vector2)" class="member-name-link">spawnItem</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId,
  int&nbsp;quantity,
  com.badlogic.gdx.math.Vector2&nbsp;position)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Creates and registers room-owned items after the current update is safe for spawning.</div>
 </div>
 </div>
@@ -210,10 +219,12 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="&lt;init&gt;(com.csse3200.game.components.rooms.configs.EnemySpawnConfig[],com.csse3200.game.components.CameraComponent)">
+<section class="detail" id="&lt;init&gt;(com.csse3200.game.components.rooms.configs.EnemySpawnConfig[],com.csse3200.game.components.rooms.configs.RoomConfig,com.csse3200.game.components.CameraComponent)">
 <h3>EnemyManagerComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">EnemyManagerComponent</span><wbr><span class="parameters">(<a href="configs/EnemySpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig</a>[]&nbsp;spawnConfigs,
+ <a href="configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;roomConfig,
  <a href="../CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera)</span></div>
+<div class="block">Uses the owning room's layout for configured enemies and split children.</div>
 </section>
 </li>
 <li>
@@ -230,6 +241,14 @@ loadScripts(document, 'script');</script>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="outOfBounds(com.badlogic.gdx.math.Vector2,com.csse3200.game.components.rooms.configs.RoomConfig)">
+<h3>outOfBounds</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">outOfBounds</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;entityPos,
+ <a href="configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room)</span></div>
+<div class="block">returns true if an enemy is being spawned beyond a wall</div>
+</section>
+</li>
 <li>
 <section class="detail" id="create()">
 <h3>create</h3>
