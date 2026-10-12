@@ -177,11 +177,13 @@ class InventoryDisplayTest {
   void achievementPageRetainsMainProgressAndBothPageDirections() {
     var service = new com.csse3200.game.services.AchievementService();
     var locked =
-        new com.csse3200.game.components.achievements.Achievement("Locked test", c -> false);
+        new com.csse3200.game.components.achievements.Achievement(
+            "Locked test", "desc", c -> false);
     locked.setTarget(10);
     locked.setProgress(4);
     var unlocked =
-        new com.csse3200.game.components.achievements.Achievement("Unlocked test", c -> true);
+        new com.csse3200.game.components.achievements.Achievement(
+            "Unlocked test", "desc", c -> true);
     unlocked.update(null);
     service.register(locked);
     service.register(unlocked);
