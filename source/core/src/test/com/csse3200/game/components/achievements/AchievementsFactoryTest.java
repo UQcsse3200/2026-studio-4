@@ -6,14 +6,20 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.badlogic.gdx.utils.Json;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig.EnemyType;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class AchievementsFactoryTest {
+  private static final String SNAKE_NO_SHIELD_PICKUP = "snakeDefeatedWithoutShieldPickup";
 
   // ---------- helpers ----------
 
@@ -113,6 +119,8 @@ class AchievementsFactoryTest {
       assertInstanceOf(Achievement.class, AchievementsFactory.build(config("killStreak")));
       assertInstanceOf(Achievement.class, AchievementsFactory.build(speed));
       assertInstanceOf(Achievement.class, AchievementsFactory.build(set));
+      assertInstanceOf(
+          Achievement.class, AchievementsFactory.build(config(SNAKE_NO_SHIELD_PICKUP)));
     }
 
     @Test
@@ -130,6 +138,7 @@ class AchievementsFactoryTest {
       assertEquals(0f, AchievementsFactory.build(config("enemyKillCount")).getProgress());
       assertEquals(0f, AchievementsFactory.build(config("killStreak")).getProgress());
       assertEquals(0f, AchievementsFactory.build(set).getProgress());
+      assertEquals(0f, AchievementsFactory.build(config(SNAKE_NO_SHIELD_PICKUP)).getProgress());
     }
 
     @Test
@@ -150,6 +159,48 @@ class AchievementsFactoryTest {
           assertThrows(InvocationTargetException.class, constructor::newInstance);
 
       assertInstanceOf(IllegalStateException.class, e.getCause());
+    }
+  }
+
+  @Nested
+  class SnakeNoShieldPickup {
+    @Test
+    void unlocksOnceForAReportedVictoryWithoutShieldPickups() {
+      Achievement achievement = AchievementsFactory.build(config(SNAKE_NO_SHIELD_PICKUP));
+      AchievementContext victory = new AchievementContext();
+      victory.snakeDefeatedWithoutShieldPickup = true;
+
+      assertTrue(achievement.update(victory));
+      assertTrue(achievement.isUnlocked());
+      assertFalse(achievement.update(victory));
+    }
+
+    @Test
+    void ordinarySnakeKillsAndUnrelatedEventsDoNotUnlockTheChallenge() {
+      Achievement achievement = AchievementsFactory.build(config(SNAKE_NO_SHIELD_PICKUP));
+
+      assertFalse(achievement.update(kill(EnemyType.SNAKE_MINI_BOSS)));
+      assertFalse(achievement.update(damaged()));
+      assertFalse(achievement.update(new AchievementContext()));
+      assertFalse(achievement.isUnlocked());
+    }
+
+    @Test
+    void gameConfigurationRegistersTheChallengeOnceWithItsDisplayName() throws IOException {
+      AchievementConfig[] definitions =
+          new Json()
+              .fromJson(
+                  AchievementConfig[].class,
+                  Files.readString(Path.of("configs/achievements.json")));
+      List<AchievementConfig> matching =
+          Arrays.stream(definitions)
+              .filter(definition -> SNAKE_NO_SHIELD_PICKUP.equals(definition.type))
+              .toList();
+
+      assertEquals(1, matching.size());
+      Achievement achievement = AchievementsFactory.build(matching.getFirst());
+      assertEquals("What are those green things?", achievement.getName());
+      assertFalse(achievement.isUnlocked());
     }
   }
 

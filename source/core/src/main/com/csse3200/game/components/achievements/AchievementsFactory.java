@@ -15,6 +15,8 @@ public class AchievementsFactory {
       case "killStreak" -> killStreak(c);
       case "speedRun" -> speedRun(c);
       case "enemySet" -> enemySet(c);
+      case "snakeDefeatedWithoutShieldPickup" ->
+          new Achievement(c.name, ctx -> ctx.snakeDefeatedWithoutShieldPickup);
       default -> throw new IllegalArgumentException("Unknown achievement type: " + c.type);
     };
   }

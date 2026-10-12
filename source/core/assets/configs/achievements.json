@@ -7,6 +7,7 @@
 
   { "type": "enemyKillCount", "enemyType": "FINAL_BOSS", "target": 1, "name": "Vanquisher" },
   { "type": "enemyKillCount", "enemyType": "MEDUSA", "target": 3, "name": "You killed 3 Medusa" },
+  { "type": "snakeDefeatedWithoutShieldPickup", "name": "What are those green things?" },
 
   {"type":  "enemyKillCount", "target": 5, "name": "Ah! Boy You killed 5 enemies"},
   { "type": "enemyKillCount", "target": 100, "name": "Exterminator" },

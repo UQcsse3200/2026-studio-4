@@ -44,6 +44,7 @@ public class SnakeShieldPickupComponent extends RenderComponent {
   private float spawnAge;
   private boolean active;
   private boolean stopped;
+  private boolean shieldGemCollected;
   private boolean fresh;
   private boolean preferNearby = true;
 
@@ -107,6 +108,14 @@ public class SnakeShieldPickupComponent extends RenderComponent {
     return gems.size();
   }
 
+  /**
+   * Returns whether the player collected a green shield gem during this encounter. Clearing,
+   * restarting or stopping the drops does not erase this pickup history.
+   */
+  public boolean hasCollectedShieldGem() {
+    return shieldGemCollected;
+  }
+
   /** Returns independent positions so callers cannot move live drops through the list. */
   public List<Vector2> getPickupPositions() {
     return gems.stream().map(gem -> gem.position.cpy()).toList();
@@ -136,9 +145,14 @@ public class SnakeShieldPickupComponent extends RenderComponent {
         SnakeShieldComponent shield = entity.getComponent(SnakeShieldComponent.class);
         if (shield != null) {
           gems.remove(i);
+          shieldGemCollected = true;
           shield.refill();
           healIfLowHealth();
         }
+      }
+      if (encounterEnded()) {
+        stop();
+        return;
       }
     }
     spawnAge += delta;
