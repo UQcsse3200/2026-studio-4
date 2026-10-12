@@ -68,7 +68,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       String row = spawnConfig.get(y);
       for (int x = 0; x < row.length(); x++) {
         Vector2 worldPos = terrain.tileToWorldPosition(new GridPoint2(x, y));
-        if ((row.charAt(x) == ' ' || row.charAt(x) == '#')
+        if ((row.charAt(x) == ' ' || row.charAt(x) == '#' || row.charAt(x) == '%')
             && entityPos.dst(worldPos) < terrain.getTileSize()) {
           return true;
         }
@@ -329,34 +329,42 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     if (tileSize >= 2) {
       return null;
     }
-    Vector2 xIncrease =
+    Vector2 right =
         new Vector2(unspawnedEnemy.getPosition().x + tileSize, unspawnedEnemy.getPosition().y);
-    Vector2 xDecrease =
+    Vector2 left =
         new Vector2(unspawnedEnemy.getPosition().x - tileSize, unspawnedEnemy.getPosition().y);
-    Vector2 bothIncrease =
+    Vector2 upRight =
         new Vector2(
             unspawnedEnemy.getPosition().x + tileSize, unspawnedEnemy.getPosition().y + tileSize);
-    Vector2 bothDecrease =
+    Vector2 upLeft =
+        new Vector2(
+            unspawnedEnemy.getPosition().x - tileSize, unspawnedEnemy.getPosition().y + tileSize);
+    Vector2 downLeft =
         new Vector2(
             unspawnedEnemy.getPosition().x - tileSize, unspawnedEnemy.getPosition().y - tileSize);
-    Vector2 yIncrease =
+    Vector2 downRight =
+        new Vector2(
+            unspawnedEnemy.getPosition().x + tileSize, unspawnedEnemy.getPosition().y - tileSize);
+    Vector2 up =
         new Vector2(unspawnedEnemy.getPosition().x, unspawnedEnemy.getPosition().y + tileSize);
-    Vector2 yDecrease =
+    Vector2 down =
         new Vector2(unspawnedEnemy.getPosition().x, unspawnedEnemy.getPosition().y - tileSize);
 
-    Vector2[] nearby = {xIncrease, xDecrease, yIncrease, yDecrease, bothIncrease, bothDecrease};
+    // move x plane last (in case on top of other enemy)
+    Vector2[] nearby = {up, down, upRight, upLeft, downLeft, downRight, left, right};
+
     for (Vector2 each : nearby) {
       if (!outOfBounds(each, roomConfig)) {
         return each;
       }
     }
-    findClosestAvaliableTile(unspawnedEnemy, tileSize + tileSize);
-    return null;
+    return findClosestAvaliableTile(unspawnedEnemy, tileSize + tileSize);
   }
 
   private void replaceWithChild(Entity parent, Entity child, String enemyType) {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
     float tileSize = terrain.getTileSize();
+    activeEnemies.remove(parent);
 
     if (outOfBounds(child.getPosition(), roomConfig)) {
       logger.warn("Attempt to spawn child out of bounds entity at {}", child.getPosition());
@@ -365,14 +373,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       if ((newPos = findClosestAvaliableTile(child, tileSize)) != null) {
         child.setPosition(newPos);
         track(child, enemyType);
-        activeEnemies.remove(parent);
         spawnEntity(child);
         logger.warn("Successful re-spawn child entity at {}", child.getPosition());
       }
       return;
     }
     track(child, enemyType);
-    activeEnemies.remove(parent);
     spawnEntity(child);
   }
 

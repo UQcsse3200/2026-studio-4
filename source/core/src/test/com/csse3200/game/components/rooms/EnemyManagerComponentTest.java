@@ -212,7 +212,7 @@ class EnemyManagerComponentTest {
     assertEquals(2, entityService.getEntities().size);
     verify(entityService).register(blockedChild);
     verify(entityService).register(validChild);
-    assertEquals(new Vector2(2f, 1f), blockedChild.getPosition());
+    assertEquals(new Vector2(1f, 2f), blockedChild.getPosition());
     assertFalse(enemyManager.isCleared());
 
     blockedChild.getEvents().trigger("entityDied");
