@@ -117,8 +117,7 @@ public class SleipnirEnemyTest {
       BossPhaseComponent phase = horse.getComponent(BossPhaseComponent.class);
       int[] enrageEvents = {0};
 
-      horse.getEvents()
-              .addListener("enragePhaseStarted", () -> enrageEvents[0]++);
+      horse.getEvents().addListener("enragePhaseStarted", () -> enrageEvents[0]++);
 
       // Three completed dungeons: 250 -> 625.
       stats.scale(3);

@@ -117,8 +117,7 @@ class CerberusPhaseComponentTest {
     leftStats.takeDamage(156);
     rightStats.takeDamage(156);
 
-    assertEquals(625,
-            middleStats.getHealth() + leftStats.getHealth() + rightStats.getHealth());
+    assertEquals(625, middleStats.getHealth() + leftStats.getHealth() + rightStats.getHealth());
     assertEquals(1, phase.getCurrentPhase());
 
     // Total current health = 624: below half.
