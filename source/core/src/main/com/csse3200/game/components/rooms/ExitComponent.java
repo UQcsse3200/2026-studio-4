@@ -1,5 +1,8 @@
 package com.csse3200.game.components.rooms;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
@@ -15,6 +18,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Spawns the visible door and bookshelf forms of a room's configured exits. */
 public class ExitComponent extends EntityManagerComponent {
+  private static final Logger logger = LoggerFactory.getLogger(ExitComponent.class);
   private static final String FANTASY_DUNGEON_TILESET = "images/dungeons/tileSet0.png";
   private static final String FANTASY_DUNGEON_DOOR = "images/dungeons/fantasy_dreamland_door.png";
   private static final int TILE_SIZE = 16;
@@ -59,8 +63,13 @@ public class ExitComponent extends EntityManagerComponent {
       }
     }
 
-    if (nearest == null) return; // No exit was found withing range
-    
+    if (nearest == null) {
+      logger.debug("No exits found in range");
+      // can trigger an event notification for hud things.
+      return;
+    };
+
+    logger.debug("Found exit: {}", nearest.id);
     entity.getEvents().trigger("SwitchRoom", nearest);
   }
 

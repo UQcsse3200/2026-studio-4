@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.components.rooms.FollowingCameraComponent;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.entities.Entity;
@@ -43,7 +44,7 @@ public class RoomSelector {
 
   public RoomSelector(Entity player, CameraComponent camera) {
     this(null, player, camera, new RoomLoader(camera));
-    player.getEvents().addListener("interact", () -> room.getEvents().trigger("requestExit", player.getPosition()));    
+    player.getEvents().addListener("interact", this::onPlayerInteract);
   }
 
   /* Gives to the CameraComponent to the room
@@ -99,5 +100,14 @@ public class RoomSelector {
     room.getEvents().trigger("RoomCreated", this.player);
     resetCamera();
     room.getEvents().addListener(SWITCH_ROOM, this::switchRoom);
+  }
+
+  /** Callback function for the interact event when player presses E.
+   * If the room is cleared, will request the room entity for any potential exits.
+   */
+  private void onPlayerInteract() {
+    if (room.getComponent(EnemyManagerComponent.class).isCleared()) {
+      room.getEvents().trigger("requestExit", player.getCenterPosition());
+    }
   }
 }
