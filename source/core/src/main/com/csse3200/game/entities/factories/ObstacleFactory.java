@@ -8,7 +8,6 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.csse3200.game.areas.terrain.DreamlandTile;
 import com.csse3200.game.areas.terrain.TileSheet;
 import com.csse3200.game.components.rooms.Direction;
-import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
@@ -36,7 +35,7 @@ public class ObstacleFactory {
   }
 
   public static Entity createWallFor(Set<Direction> voids, boolean shift) {
-    return createWallFor(voids, shift, RoomManager.DEFAULT_TILESET);
+    return createWallFor(voids, shift, RoomFactory.DEFAULT_TILESET);
   }
 
   /**
