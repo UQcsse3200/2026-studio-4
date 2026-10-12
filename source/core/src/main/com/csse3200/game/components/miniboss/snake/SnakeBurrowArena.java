@@ -38,18 +38,14 @@ public final class SnakeBurrowArena {
   }
 
   /**
-   * Checks the rectangle swept by a footprint between two centres. Both endpoints must fit inside
-   * the room, and the swept rectangle must avoid solid static fixtures. This conservative check
-   * also prevents a long movement step from crossing a thin wall.
+   * Checks the footprint along the complete straight path between two centres. Both endpoints must
+   * fit inside the room, and the swept footprint must avoid solid static fixture geometry.
    */
   public boolean isPathClear(Vector2 from, Vector2 to, Vector2 halfSize) {
     if (!containsFootprint(from, halfSize) || !containsFootprint(to, halfSize)) {
       return false;
     }
-    Vector2 sweptCentre = from.cpy().add(to).scl(0.5f);
-    Vector2 sweptHalfSize =
-        halfSize.cpy().add(Math.abs(to.x - from.x) / 2f, Math.abs(to.y - from.y) / 2f);
-    return isClear(sweptCentre, sweptHalfSize);
+    return isSweepClear(from, to, halfSize);
   }
 
   /**
@@ -144,6 +140,10 @@ public final class SnakeBurrowArena {
   }
 
   private boolean isClear(Vector2 centre, Vector2 halfSize) {
+    return isSweepClear(centre, centre, halfSize);
+  }
+
+  private boolean isSweepClear(Vector2 from, Vector2 to, Vector2 halfSize) {
     PhysicsService service = ServiceLocator.getPhysicsService();
     if (service == null) {
       return true;
@@ -154,16 +154,18 @@ public final class SnakeBurrowArena {
         .getWorld()
         .QueryAABB(
             fixture -> {
-              if (!fixture.isSensor() && fixture.getBody().getType() == BodyType.StaticBody) {
+              if (!fixture.isSensor()
+                  && fixture.getBody().getType() == BodyType.StaticBody
+                  && SnakeBurrowCollision.intersects(fixture, from, to, halfSize)) {
                 clear[0] = false;
                 return false;
               }
               return true;
             },
-            centre.x - halfSize.x,
-            centre.y - halfSize.y,
-            centre.x + halfSize.x,
-            centre.y + halfSize.y);
+            Math.min(from.x, to.x) - halfSize.x,
+            Math.min(from.y, to.y) - halfSize.y,
+            Math.max(from.x, to.x) + halfSize.x,
+            Math.max(from.y, to.y) + halfSize.y);
     return clear[0];
   }
 }

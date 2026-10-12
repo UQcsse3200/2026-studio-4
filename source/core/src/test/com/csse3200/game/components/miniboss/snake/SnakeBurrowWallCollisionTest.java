@@ -19,6 +19,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.SnakeMiniBossConfig;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.GameTime;
@@ -89,7 +90,7 @@ class SnakeBurrowWallCollisionTest {
       reachWarning();
 
       assertTrue(
-          burrow.getWarningCentre().x + config.burrowAttackRadius <= 5.5f,
+          burrow.getWarningCentre().x + snake.getScale().x / 2f <= 5.5f,
           "The warning must remain on the Snake's side of the wall");
       for (int frame = 0; frame < 4; frame++) {
         tick(config.warningDuration / 4f);
@@ -97,6 +98,63 @@ class SnakeBurrowWallCollisionTest {
       }
       assertEquals(SnakeBurrowComponent.State.EXPOSED, burrow.getState());
       assertEquals(100, playerStats.getHealth());
+    }
+  }
+
+  @Test
+  void groundColliderCanPassThroughAOneUnitHighCorridor() {
+    for (boolean stageTwo : new boolean[] {false, true}) {
+      createEncounter(stageTwo, false, null, 2f, true);
+      moveCentre(snake, new Vector2(3f, 6.1f));
+      moveCentre(player, new Vector2(8f, 6.1f));
+      createWall(new Rectangle(0f, 0f, 12f, 5f));
+      createWall(new Rectangle(0f, 6f, 12f, 6f));
+
+      reachWarning();
+
+      assertTrue(snake.getCenterPosition().x > 7.5f);
+      assertEquals(player.getCenterPosition(), burrow.getWarningCentre());
+      tick(config.warningDuration);
+
+      assertEquals(SnakeBurrowComponent.State.EXPOSED, burrow.getState());
+      assertEquals(100 - config.burrowDamage, playerStats.getHealth());
+      assertTrue(snake.getPosition().y >= 5f);
+      assertTrue(snake.getPosition().y + 0.8f <= 6f);
+      assertTrue(physics.getBody().isActive());
+    }
+  }
+
+  @Test
+  void groundColliderCanEmergeBesideAWallWithoutMovingTheWarning() {
+    for (boolean stageTwo : new boolean[] {false, true}) {
+      createEncounter(stageTwo, false, new Rectangle(0f, 6f, 12f, 6f), 2f, true);
+      assertEquals(new Vector2(3f, 6f), snake.getCenterPosition());
+
+      reachWarning();
+
+      assertEquals(player.getCenterPosition(), burrow.getWarningCentre());
+      tick(config.warningDuration);
+
+      assertEquals(SnakeBurrowComponent.State.EXPOSED, burrow.getState());
+      assertEquals(player.getCenterPosition(), snake.getCenterPosition());
+      assertEquals(100 - config.burrowDamage, playerStats.getHealth());
+      assertTrue(snake.getPosition().y + 0.8f < 6f);
+    }
+  }
+
+  @Test
+  void newlyBlockedBottomAlignedColliderCancelsEmergence() {
+    for (boolean stageTwo : new boolean[] {false, true}) {
+      createEncounter(stageTwo, false, null, 2f, true);
+      config.burrowSpeed = 0f;
+      reachWarning();
+      Vector2 warning = burrow.getWarningCentre();
+      createWall(new Rectangle(warning.x - 0.1f, warning.y - 0.95f, 0.2f, 0.2f));
+
+      tick(config.warningDuration);
+
+      assertCancelledAttack();
+      assertEquals(new Vector2(3f, 6f), snake.getCenterPosition());
     }
   }
 
@@ -196,6 +254,15 @@ class SnakeBurrowWallCollisionTest {
 
   private void createEncounter(
       boolean stageTwo, boolean horizontal, Rectangle initialWall, float snakeSize) {
+    createEncounter(stageTwo, horizontal, initialWall, snakeSize, false);
+  }
+
+  private void createEncounter(
+      boolean stageTwo,
+      boolean horizontal,
+      Rectangle initialWall,
+      float snakeSize,
+      boolean groundCollider) {
     disposeWorld();
     PhysicsService service = new PhysicsService();
     ServiceLocator.registerPhysicsService(service);
@@ -219,6 +286,9 @@ class SnakeBurrowWallCollisionTest {
             .addComponent(new ColliderComponent())
             .addComponent(burrow);
     snake.setScale(snakeSize, snakeSize);
+    if (groundCollider) {
+      PhysicsUtils.setScaledCollider(snake, 0.9f, 0.4f);
+    }
     moveCentre(snake, horizontal ? new Vector2(6f, 3f) : new Vector2(3f, 6f));
     snake.create();
     if (stageTwo) {

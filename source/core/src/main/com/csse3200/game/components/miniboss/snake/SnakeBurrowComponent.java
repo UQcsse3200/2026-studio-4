@@ -3,11 +3,13 @@ package com.csse3200.game.components.miniboss.snake;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.SnakeMiniBossConfig;
+import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
@@ -34,6 +36,8 @@ public class SnakeBurrowComponent extends Component {
   private final SnakeMiniBossConfig config;
   private final Vector2 warningCentre = new Vector2();
   private final Vector2 warningStart = new Vector2();
+  private final Vector2 burrowHalfSize = new Vector2();
+  private final Vector2 burrowCentreOffset = new Vector2();
   private SnakeBurrowArena arena = new SnakeBurrowArena(null);
   private CombatStatsComponent stats;
   private PhysicsComponent physics;
@@ -97,7 +101,29 @@ public class SnakeBurrowComponent extends Component {
       movement.setEnabled(false);
     }
     orbitAngle = entity.getCenterPosition().sub(target.getCenterPosition()).angleDeg();
+    initialiseBurrowFootprint();
     beginBurrowing();
+  }
+
+  private void initialiseBurrowFootprint() {
+    burrowHalfSize.set(entity.getScale()).scl(0.5f);
+    ColliderComponent collider = entity.getComponent(ColliderComponent.class);
+    if (collider == null
+        || collider.getFixture() == null
+        || !(collider.getFixture().getShape() instanceof PolygonShape shape)) {
+      return;
+    }
+    Vector2 vertex = new Vector2();
+    Vector2 minimum = new Vector2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+    Vector2 maximum = new Vector2(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
+    for (int index = 0; index < shape.getVertexCount(); index++) {
+      shape.getVertex(index, vertex);
+      minimum.set(Math.min(minimum.x, vertex.x), Math.min(minimum.y, vertex.y));
+      maximum.set(Math.max(maximum.x, vertex.x), Math.max(maximum.y, vertex.y));
+    }
+    // Ground collision is bottom-aligned; the artwork and attack radius are not movement bounds.
+    burrowCentreOffset.set(minimum).add(maximum).scl(0.5f).sub(burrowHalfSize);
+    burrowHalfSize.set(maximum).sub(minimum).scl(0.5f);
   }
 
   @Override
@@ -174,8 +200,8 @@ public class SnakeBurrowComponent extends Component {
     }
     setUnderground(true);
     arena
-        .findClearStartCentre(entity.getCenterPosition(), getBurrowHalfSize())
-        .ifPresent(this::setCentre);
+        .findClearStartCentre(groundCentre(entity.getCenterPosition()), burrowHalfSize)
+        .ifPresent(this::setGroundCentre);
     if (visual != null) {
       visual.hideWarning();
       visual.startBurrow(entity.getCenterPosition());
@@ -217,11 +243,10 @@ public class SnakeBurrowComponent extends Component {
             .add(
                 MathUtils.cosDeg(orbitAngle) * config.orbitRadius,
                 MathUtils.sinDeg(orbitAngle) * config.orbitRadius);
-    Vector2 halfSize = getBurrowHalfSize();
-    destination = arena.constrain(destination, halfSize);
-    Vector2 centre = entity.getCenterPosition();
+    destination = arena.constrain(groundCentre(destination), burrowHalfSize);
+    Vector2 centre = groundCentre(entity.getCenterPosition());
     Vector2 offset = destination.sub(centre).limit(config.burrowSpeed * delta);
-    setCentre(arena.constrainMovement(centre, centre.cpy().add(offset), halfSize));
+    setGroundCentre(arena.constrainMovement(centre, centre.cpy().add(offset), burrowHalfSize));
     trailTime += delta;
     if (trailTime >= TRAIL_INTERVAL) {
       trailTime = 0f;
@@ -237,13 +262,15 @@ public class SnakeBurrowComponent extends Component {
   private void beginWarning() {
     Optional<Vector2> centre =
         arena.findReachableCentre(
-            entity.getCenterPosition(), target.getCenterPosition(), getBurrowHalfSize());
+            groundCentre(entity.getCenterPosition()),
+            groundCentre(target.getCenterPosition()),
+            burrowHalfSize);
     if (centre.isEmpty()) {
       // Retry after another underground circuit instead of emerging inside a wall.
       stateTime = 0f;
       return;
     }
-    warningCentre.set(centre.get());
+    warningCentre.set(centre.get()).sub(burrowCentreOffset);
     warningStart.set(entity.getCenterPosition());
     enter(State.WARNING);
     if (visual != null) {
@@ -252,8 +279,8 @@ public class SnakeBurrowComponent extends Component {
   }
 
   private void updateWarning() {
-    Vector2 centre = entity.getCenterPosition();
-    if (!arena.isPathClear(centre, warningCentre, getBurrowHalfSize())) {
+    Vector2 centre = groundCentre(entity.getCenterPosition());
+    if (!arena.isPathClear(centre, groundCentre(warningCentre), burrowHalfSize)) {
       // A newly blocked approach cancels the warning instead of teleporting through the wall.
       beginBurrowing();
       return;
@@ -265,11 +292,12 @@ public class SnakeBurrowComponent extends Component {
     }
   }
 
-  private Vector2 getBurrowHalfSize() {
-    Vector2 halfSize = entity.getScale().scl(0.5f);
-    halfSize.x = Math.max(halfSize.x, config.burrowAttackRadius);
-    halfSize.y = Math.max(halfSize.y, config.burrowAttackRadius);
-    return halfSize;
+  private Vector2 groundCentre(Vector2 centre) {
+    return centre.cpy().add(burrowCentreOffset);
+  }
+
+  private void setGroundCentre(Vector2 centre) {
+    setCentre(centre.cpy().sub(burrowCentreOffset));
   }
 
   private void emerge() {

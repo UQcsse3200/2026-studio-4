@@ -10,7 +10,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.ChainShape;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
@@ -135,6 +139,96 @@ class SnakeBurrowArenaTest {
     assertTrue(arena.isPathClear(to, to, halfSize));
     assertFalse(arena.isPathClear(from, to, halfSize));
     assertEquals(from, arena.constrainMovement(from, to, halfSize));
+  }
+
+  @Test
+  void diagonalPathIgnoresWallsOutsideTheActualSweptFootprint() {
+    createWorld();
+    createBody(new Rectangle(2f, 5f, 1f, 1f), BodyType.StaticBody, false);
+    SnakeBurrowArena arena = new SnakeBurrowArena(null);
+    Vector2 from = new Vector2(2f, 2f);
+    Vector2 to = new Vector2(6f, 6f);
+    Vector2 halfSize = new Vector2(0.4f, 0.4f);
+
+    assertTrue(arena.isPathClear(from, to, halfSize));
+    assertEquals(to, arena.constrainMovement(from, to, halfSize));
+    assertEquals(to, arena.findReachableCentre(from, to, halfSize).orElseThrow());
+
+    createBody(new Rectangle(3.95f, 3.95f, 0.1f, 0.1f), BodyType.StaticBody, false);
+    assertFalse(arena.isPathClear(from, to, halfSize));
+  }
+
+  @Test
+  void nearbyWallBroadphasePaddingDoesNotBlockClearMovement() {
+    createWorld();
+    createBody(new Rectangle(4f, 0f, 0.1f, 8f), BodyType.StaticBody, false);
+    SnakeBurrowArena arena = new SnakeBurrowArena(null);
+    Vector2 from = new Vector2(3.55f, 1f);
+    Vector2 to = new Vector2(3.55f, 7f);
+    Vector2 halfSize = new Vector2(0.4f, 0.4f);
+
+    assertEquals(from, arena.findClearCentre(from, halfSize).orElseThrow());
+    assertTrue(arena.isPathClear(from, to, halfSize));
+    assertEquals(to, arena.constrainMovement(from, to, halfSize));
+    assertFalse(arena.isPathClear(new Vector2(3.65f, 1f), new Vector2(3.65f, 7f), halfSize));
+  }
+
+  @Test
+  void rotatedPolygonUsesItsEdgesInsteadOfItsBoundingRectangle() {
+    createWorld();
+    PolygonShape diamond = new PolygonShape();
+    diamond.setAsBox(1f, 1f);
+    createStaticShape(diamond, new Vector2(4f, 4f), (float) Math.PI / 4f);
+    SnakeBurrowArena arena = new SnakeBurrowArena(null);
+    Vector2 clear = new Vector2(2.8f, 5.2f);
+    Vector2 halfSize = new Vector2(0.1f, 0.1f);
+
+    assertTrue(arena.isPathClear(clear, clear, halfSize));
+    assertEquals(clear, arena.findClearCentre(clear, halfSize).orElseThrow());
+    assertFalse(arena.isPathClear(new Vector2(2f, 4f), new Vector2(6f, 4f), halfSize));
+  }
+
+  @Test
+  void circularObstaclesKeepRoundedCornersAndBlockACompleteCrossing() {
+    createWorld();
+    CircleShape circle = new CircleShape();
+    circle.setRadius(0.5f);
+    createStaticShape(circle, new Vector2(4f, 4f), 0f);
+    SnakeBurrowArena arena = new SnakeBurrowArena(null);
+    Vector2 from = new Vector2(2f, 2f);
+    Vector2 halfSize = new Vector2(0.3f, 0.3f);
+
+    assertTrue(arena.isPathClear(from, new Vector2(3.3f, 3.3f), halfSize));
+    assertFalse(arena.isPathClear(from, new Vector2(3.4f, 3.4f), halfSize));
+    assertFalse(arena.isPathClear(from, new Vector2(6f, 6f), halfSize));
+    assertFalse(arena.isPathClear(new Vector2(4f, 4f), new Vector2(4f, 4f), halfSize));
+  }
+
+  @Test
+  void chainFixturesCheckEachEdgeWithoutFillingTheirInterior() {
+    createWorld();
+    ChainShape chain = new ChainShape();
+    chain.createChain(
+        new Vector2[] {new Vector2(4f, 1f), new Vector2(4f, 4f), new Vector2(7f, 4f)});
+    createStaticShape(chain, new Vector2(), 0f);
+    SnakeBurrowArena arena = new SnakeBurrowArena(null);
+    Vector2 halfSize = new Vector2(0.2f, 0.2f);
+
+    assertTrue(arena.isPathClear(new Vector2(5f, 1f), new Vector2(6f, 2f), halfSize));
+    assertFalse(arena.isPathClear(new Vector2(2f, 2f), new Vector2(6f, 2f), halfSize));
+  }
+
+  @Test
+  void edgeFixturesBlockCrossingsButPermitParallelMovement() {
+    createWorld();
+    EdgeShape edge = new EdgeShape();
+    edge.set(new Vector2(4f, 1f), new Vector2(4f, 7f));
+    createStaticShape(edge, new Vector2(), 0f);
+    SnakeBurrowArena arena = new SnakeBurrowArena(null);
+    Vector2 halfSize = new Vector2(0.2f, 0.2f);
+
+    assertTrue(arena.isPathClear(new Vector2(3.5f, 1f), new Vector2(3.5f, 7f), halfSize));
+    assertFalse(arena.isPathClear(new Vector2(2f, 4f), new Vector2(6f, 4f), halfSize));
   }
 
   @Test
@@ -348,6 +442,18 @@ class SnakeBurrowArenaTest {
     try {
       shape.setAsBox(area.width / 2f, area.height / 2f);
       body.createFixture(shape, 1f).setSensor(sensor);
+    } finally {
+      shape.dispose();
+    }
+  }
+
+  private void createStaticShape(Shape shape, Vector2 position, float angle) {
+    BodyDef definition = new BodyDef();
+    definition.type = BodyType.StaticBody;
+    definition.position.set(position);
+    definition.angle = angle;
+    try {
+      world.createBody(definition).createFixture(shape, 1f);
     } finally {
       shape.dispose();
     }
