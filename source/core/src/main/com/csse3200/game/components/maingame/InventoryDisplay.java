@@ -148,20 +148,20 @@ public class InventoryDisplay extends UIComponent {
           // Pre-existing movement releases must still reach the player input handler.
           return capturedKeys.remove(keycode);
         }
-      };
 
-  private void moveAchievementSelection(int dx, int dy) {
-    if (achievementItems.isEmpty()) return;
-    int step = dy != 0 ? dy : dx;
-    selectedIndex = Math.clamp(selectedIndex + step, 0, achievementItems.size() - 1);
-    updateSelection();
-    table.validate();
-    Label row = achievementLabels.get(selectedIndex);
-    if (row.getParent().getParent() instanceof ScrollPane scroll) {
-      scroll.scrollTo(row.getX(), row.getY(), row.getWidth(), row.getHeight());
-      scroll.updateVisualScroll();
-    }
-  }
+        private void moveAchievementSelection(int dx, int dy) {
+          if (achievementItems.isEmpty()) return;
+          int step = dy != 0 ? dy : dx;
+          selectedIndex = Math.clamp((long) selectedIndex + step, 0, achievementItems.size() - 1);
+          updateSelection();
+          table.validate();
+          Label row = achievementLabels.get(selectedIndex);
+          if (row.getParent().getParent() instanceof ScrollPane scroll) {
+            scroll.scrollTo(row.getX(), row.getY(), row.getWidth(), row.getHeight());
+            scroll.updateVisualScroll();
+          }
+        }
+      };
 
   private final Supplier<DragAndDrop> dragAndDropFactory;
   private DragAndDrop dragAndDrop;
