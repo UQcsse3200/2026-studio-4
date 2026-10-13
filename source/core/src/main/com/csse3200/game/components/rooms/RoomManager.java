@@ -362,9 +362,7 @@ public class RoomManager {
     String previousDungeonId = currentConfig.dungeonId;
     Entity nextRoom =
         RoomFactory.createRoom(
-            destination,
-            camera,
-            bossStage == null && clearedRoomIds.contains(destination.id));
+            destination, camera, bossStage == null && clearedRoomIds.contains(destination.id));
     currentRoom.dispose();
     currentConfig = destination;
     currentRoom = nextRoom;
