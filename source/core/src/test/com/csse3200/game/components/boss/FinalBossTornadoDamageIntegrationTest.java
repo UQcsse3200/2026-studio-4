@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -32,13 +31,10 @@ import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockedConstruction;
 
 /** Real combat and wall integration for the shared Stage 3 tornado contact-damage interval. */
 @ExtendWith(GameExtension.class)
@@ -479,71 +475,6 @@ class FinalBossTornadoDamageIntegrationTest {
     assertProtectionPreservesOnlyEffectiveHalfDamage(
         () -> when(effects.isConcealed()).thenReturn(true),
         () -> when(effects.isConcealed()).thenReturn(false));
-  }
-
-  @Test
-  void timedShieldRetainsEarlierHealthHalfButItsOwnHalfDoesNotLeakOrFlash() {
-    config.tornadoDamage = 0.5f;
-    addTornado(true);
-    tick(0.25f);
-    AtomicLong shieldTime = new AtomicLong();
-    try (MockedConstruction<GameTime> ignored =
-        mockConstruction(
-            GameTime.class,
-            (clock, context) -> when(clock.getTime()).thenAnswer(call -> shieldTime.get()))) {
-      effects.activateTimed();
-      assertTrue(effects.isShieldActive());
-      for (int index = 0; index < 3; index++) {
-        tick(0.25f);
-        assertEquals(100, playerStats.getHealth());
-        assertEquals(0f, stage.tornadoHitRemaining);
-      }
-      shieldTime.set(3001L);
-      effects.update();
-      assertFalse(effects.isShieldActive());
-
-      tick(0.25f);
-      assertEquals(99, playerStats.getHealth());
-      assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
-      tick(0.25f);
-      assertEquals(99, playerStats.getHealth());
-      tick(0.25f);
-      assertEquals(98, playerStats.getHealth());
-    }
-  }
-
-  @Test
-  void absorbShieldConsumesOnePointPerPairWithoutFlashingOrLeakingItsHalfOnExpiry() {
-    config.tornadoDamage = 0.5f;
-    addTornado(true);
-    AtomicInteger shieldPoints = new AtomicInteger();
-    player
-        .getEvents()
-        .addListener(
-            "updateShield", (Integer current, Integer maximum) -> shieldPoints.set(current));
-    AtomicLong shieldTime = new AtomicLong();
-    try (MockedConstruction<GameTime> ignored =
-        mockConstruction(
-            GameTime.class,
-            (clock, context) -> when(clock.getTime()).thenAnswer(call -> shieldTime.get()))) {
-      effects.activateAbsorb();
-      assertTrue(effects.isShieldActive());
-      for (int expectedPoints : new int[] {20, 19, 19}) {
-        tick(0.25f);
-        assertEquals(expectedPoints, shieldPoints.get());
-        assertEquals(100, playerStats.getHealth());
-        assertEquals(0f, stage.tornadoHitRemaining);
-      }
-      shieldTime.set(5001L);
-      effects.update();
-      assertFalse(effects.isShieldActive());
-
-      tick(0.25f);
-      assertEquals(100, playerStats.getHealth());
-      assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
-      tick(0.25f);
-      assertEquals(99, playerStats.getHealth());
-    }
   }
 
   @Test

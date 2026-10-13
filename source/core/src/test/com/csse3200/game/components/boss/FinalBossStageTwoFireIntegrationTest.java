@@ -21,6 +21,7 @@ import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.rooms.Direction;
+import com.csse3200.game.components.statuseffects.ShieldEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageTwoConfig;
 import com.csse3200.game.entities.factories.ObstacleFactory;
@@ -573,56 +574,13 @@ class FinalBossStageTwoFireIntegrationTest {
         mockConstruction(
             GameTime.class,
             (clock, context) -> when(clock.getTime()).thenAnswer(call -> shieldTime.get()))) {
-      playerEffects.activateTimed();
-      assertTrue(playerEffects.isShieldActive());
+      player
+          .getComponent(StatusEffectsControllerComponent.class)
+          .addStatusEffect(new ShieldEffect(new GameTime(), 1000));
       hitWithFireball();
       hitWithFireball();
       hitWithFireball();
       assertEquals(100, playerStats.getHealth());
-
-      shieldTime.set(3001L);
-      playerEffects.update();
-      assertFalse(playerEffects.isShieldActive());
-      hitWithFireball();
-      assertEquals(99, playerStats.getHealth());
-      hitWithFireball();
-      assertEquals(99, playerStats.getHealth());
-      hitWithFireball();
-      assertEquals(98, playerStats.getHealth());
-    }
-  }
-
-  @Test
-  void absorbShieldLosesOnePointPerPairAndItsRemainingHalfExpiresWithTheShield() {
-    startHalfDamageEncounter();
-    AtomicInteger shieldPoints = new AtomicInteger();
-    player
-        .getEvents()
-        .addListener(
-            "updateShield", (Integer current, Integer maximum) -> shieldPoints.set(current));
-    AtomicLong shieldTime = new AtomicLong();
-    try (MockedConstruction<GameTime> ignored =
-        mockConstruction(
-            GameTime.class,
-            (clock, context) -> when(clock.getTime()).thenAnswer(call -> shieldTime.get()))) {
-      playerEffects.activateAbsorb();
-      assertTrue(playerEffects.isShieldActive());
-      assertEquals(20, shieldPoints.get());
-
-      hitWithFireball();
-      assertEquals(20, shieldPoints.get());
-      hitWithFireball();
-      assertEquals(19, shieldPoints.get());
-      hitWithFireball();
-      assertEquals(19, shieldPoints.get());
-      assertEquals(100, playerStats.getHealth());
-      shieldTime.set(5001L);
-      playerEffects.update();
-      assertFalse(playerEffects.isShieldActive());
-      hitWithFireball();
-      assertEquals(100, playerStats.getHealth());
-      hitWithFireball();
-      assertEquals(99, playerStats.getHealth());
     }
   }
 

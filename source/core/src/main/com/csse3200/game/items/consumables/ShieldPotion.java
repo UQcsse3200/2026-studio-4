@@ -1,11 +1,7 @@
 package com.csse3200.game.items.consumables;
 
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.Damage;
-import com.csse3200.game.components.statuseffects.Damageable;
-import com.csse3200.game.components.statuseffects.Shield;
-import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.components.statuseffects.*;
 import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.services.GameTime;
@@ -32,27 +28,5 @@ public final class ShieldPotion extends ConsumableItem {
   @Override
   public TimedStatusEffect use(CombatStatsComponent stats, GameTime time) {
     return new ShieldEffect(time, durationMs);
-  }
-
-  /**
-   * Owns the consumable duration while delegating mitigation to the existing shield implementation.
-   * The delegate is not registered or ticked: its rechargeable ability lifecycle does not apply to
-   * a consumable. Only this wrapper's deadline decides when protection ends.
-   */
-  private static final class ShieldEffect extends TimedStatusEffect implements Damageable {
-    private final Shield protection = StatusEffectsFactory.createShield();
-
-    ShieldEffect(GameTime time, long durationMs) {
-      super(time, durationMs);
-      protection.activateTimed();
-    }
-
-    @Override
-    public boolean damage(Damage damage) {
-      if (!isExpired()) {
-        damage.setDamage(protection.modifyIncomingDamage(damage.getDamage()));
-      }
-      return false;
-    }
   }
 }

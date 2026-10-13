@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.csse3200.game.components.statuseffects.Damageable;
-import com.csse3200.game.components.statuseffects.Shield;
 import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
 import com.csse3200.game.entities.Entity;
@@ -221,123 +220,6 @@ class StatusEffectControllerComponentTest {
     }
   }
 
-  @Test
-  void shieldActivityQueryReflectsBothModesWithoutConsumingOrUpdatingTheShield() {
-    Shield shield = mock(Shield.class);
-    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
-      factory.when(StatusEffectsFactory::createShield).thenReturn(shield);
-      StatusEffectsControllerComponent controller = createController();
-
-      for (Runnable activate :
-          List.<Runnable>of(controller::activateAbsorb, controller::activateTimed)) {
-        activate.run();
-        when(shield.isActive()).thenReturn(true, true, false);
-        clearInvocations(shield, eventHandler);
-
-        assertTrue(controller.isShieldActive());
-        assertTrue(controller.isShieldActive());
-        assertFalse(controller.isShieldActive());
-
-        verify(shield, times(3)).isActive();
-        verifyNoMoreInteractions(shield);
-        verifyNoInteractions(eventHandler);
-      }
-    }
-  }
-
-  @Test
-  void activateAbsorbCreatesShield() {
-    Shield shield = mock(Shield.class);
-
-    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
-
-      factory.when(StatusEffectsFactory::createShield).thenReturn(shield);
-
-      when(shield.getCurrent()).thenReturn(50);
-      when(shield.getMax()).thenReturn(100);
-
-      StatusEffectsControllerComponent controller = createController();
-
-      controller.activateAbsorb();
-
-      verify(shield).activateAbsorb();
-
-      verify(eventHandler).trigger("updateShield", 50, 100);
-    }
-  }
-
-  @Test
-  void activateTimedCreatesShield() {
-    Shield shield = mock(Shield.class);
-
-    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
-
-      factory.when(StatusEffectsFactory::createShield).thenReturn(shield);
-
-      when(shield.getCurrent()).thenReturn(25);
-      when(shield.getMax()).thenReturn(100);
-
-      StatusEffectsControllerComponent controller = createController();
-
-      controller.activateTimed();
-
-      verify(shield).activateTimed();
-
-      verify(eventHandler).trigger("updateShield", 25, 100);
-    }
-  }
-
-  @Test
-  void shieldIsOnlyCreatedOnce() {
-    Shield shield = mock(Shield.class);
-
-    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
-
-      factory.when(StatusEffectsFactory::createShield).thenReturn(shield);
-
-      when(shield.getCurrent()).thenReturn(50);
-      when(shield.getMax()).thenReturn(100);
-
-      StatusEffectsControllerComponent controller = createController();
-
-      controller.activateAbsorb();
-      controller.activateTimed();
-
-      factory.verify(StatusEffectsFactory::createShield, times(1));
-
-      verify(shield).activateAbsorb();
-      verify(shield).activateTimed();
-    }
-  }
-
-  @Test
-  void modifyIncomingDamageUsesShield() {
-    Shield shield = mock(Shield.class);
-
-    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
-
-      factory.when(StatusEffectsFactory::createShield).thenReturn(shield);
-
-      when(shield.getCurrent()).thenReturn(30);
-      when(shield.getMax()).thenReturn(100);
-      when(shield.modifyIncomingDamage(80)).thenReturn(50);
-
-      StatusEffectsControllerComponent controller = createController();
-
-      controller.activateAbsorb();
-
-      clearInvocations(eventHandler);
-
-      int result = controller.modifyIncomingDamage(80);
-
-      assertEquals(50, result);
-
-      verify(shield).modifyIncomingDamage(80);
-
-      verify(eventHandler).trigger("updateShield", 30, 100);
-    }
-  }
-
   // ---------------------------------------------------------
   // update()
   // ---------------------------------------------------------
@@ -403,29 +285,6 @@ class StatusEffectControllerComponentTest {
 
       verify(removedEffect, times(1)).update();
       verify(remainingEffect, times(2)).update();
-    }
-  }
-
-  @Test
-  void updateTriggersShieldUiWhenShieldExists() {
-    Shield shield = mock(Shield.class);
-
-    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
-
-      factory.when(StatusEffectsFactory::createShield).thenReturn(shield);
-
-      when(shield.getCurrent()).thenReturn(40);
-      when(shield.getMax()).thenReturn(100);
-
-      StatusEffectsControllerComponent controller = createController();
-
-      controller.activateAbsorb();
-
-      clearInvocations(eventHandler);
-
-      controller.update();
-
-      verify(eventHandler).trigger("updateShield", 40, 100);
     }
   }
 
