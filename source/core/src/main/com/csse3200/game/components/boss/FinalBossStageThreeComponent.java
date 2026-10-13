@@ -12,9 +12,11 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.PlayerActions;
+import com.csse3200.game.components.weapons.WeaponAttackSourceComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageThreeConfig;
 import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
@@ -95,11 +97,39 @@ public class FinalBossStageThreeComponent extends Component {
       throw new IllegalStateException("Stage 3 requires phase, protection and combat components");
     previousHealth = stats.getHealth();
     entity.getEvents().addListener("updateHealth", this::healthChanged);
+    entity.getEvents().addListener("damageAttempted", this::onDamageAttempted);
     entity.getEvents().addListener(FinalBossEvents.SHIELD_HIT, () -> shieldHitRemaining = 0.48f);
   }
 
   public FinalBossStageThreeState getState() {
     return state;
+  }
+
+  private void onDamageAttempted(int damage, Entity attacker) {
+    if (disposed
+        || playerDefeated
+        || damage <= 0
+        || attacker == null
+        || state != FinalBossStageThreeState.WAVE_ONE
+        || phases.getCurrentPhase() != FinalBossPhase.STAGE_THREE
+        || phases.isTransitioning()
+        || stats.isDead()
+        || stats.isInvulnerable()) {
+      return;
+    }
+    CombatStatsComponent playerStats = target.getComponent(CombatStatsComponent.class);
+    WeaponAttackSourceComponent source = attacker.getComponent(WeaponAttackSourceComponent.class);
+    if (playerStats == null
+        || playerStats.isDead()
+        || source == null
+        || source.getOwner() != target
+        || (source.getWeaponType() != WeaponType.SWORD
+            && source.getWeaponType() != WeaponType.DAGGER)) {
+      return;
+    }
+    // This came from the blade's contact damage path, not attack input or the currently equipped
+    // weapon. Report before healthChanged can move a wave-ending hit into CHARGING.
+    entity.getEvents().trigger(FinalBossEvents.STAGE_THREE_MELEE_HIT, target);
   }
 
   public float getStateTime() {
@@ -315,8 +345,7 @@ public class FinalBossStageThreeComponent extends Component {
       return;
     }
     // Resolve existing projectiles first: a freeze combo takes priority over repositioning.
-    updateBolts(delta);
-    if (isFrozen()) return;
+    if (updateBolts(delta)) return;
 
     if (recoveryRemaining > 0f && updateVolleyRecovery(delta)) return;
 
@@ -352,9 +381,10 @@ public class FinalBossStageThreeComponent extends Component {
     Vector2 aim = target.getCenterPosition().sub(origin);
     if (aim.isZero()) aim.set(1f, 0f);
     aim.nor().scl(config.boltSpeed);
+    Volley volley = new Volley(3);
     for (int side = -1; side <= 1; side++) {
       Vector2 velocity = aim.cpy().rotateDeg(side * config.boltSpreadAngle);
-      bolts.add(new Bolt(origin.cpy(), velocity));
+      bolts.add(new Bolt(origin.cpy(), velocity, volley));
     }
     castRemaining = 0.45f;
     shotRemaining = config.boltInterval;
@@ -372,8 +402,9 @@ public class FinalBossStageThreeComponent extends Component {
     shotRemaining = config.boltInterval;
   }
 
-  private void updateBolts(float delta) {
+  private boolean updateBolts(float delta) {
     boolean hit = false;
+    int missedVolleys = 0;
     Vector2 player = target.getCenterPosition();
     float radius =
         Math.max(0.25f, Math.min(target.getScale().x, target.getScale().y) * 0.4f) + 0.12f;
@@ -393,11 +424,30 @@ public class FinalBossStageThreeComponent extends Component {
         hit = true;
         break;
       }
+      if (bolt.elapsed >= config.boltLifetime && --bolt.volley.remaining == 0) missedVolleys++;
     }
     if (hit) {
       bolts.clear();
       freezePlayer();
     } else bolts.removeIf(b -> b.elapsed >= config.boltLifetime);
+    // Resolve whole volleys, not individual side bolts. A hit cancels any still-flying volleys.
+    // Finish projectile/freeze state before callbacks, and settle earlier misses before this hit.
+    for (int i = 0; i < missedVolleys; i++) {
+      entity.getEvents().trigger(FinalBossEvents.STAGE_THREE_ICE_VOLLEY_MISSED, target);
+      if (!canContinueWaveOne()) return true;
+    }
+    if (hit) entity.getEvents().trigger(FinalBossEvents.STAGE_THREE_ICE_HIT, target);
+    return hit;
+  }
+
+  private boolean canContinueWaveOne() {
+    return !disposed
+        && !playerDefeated
+        && !stats.isDead()
+        && state == FinalBossStageThreeState.WAVE_ONE
+        && phases.getCurrentPhase() == FinalBossPhase.STAGE_THREE
+        && !phases.isTransitioning()
+        && !stopIfPlayerDefeated();
   }
 
   static float segmentDistanceSquared(Vector2 from, Vector2 to, Vector2 point) {
@@ -681,8 +731,16 @@ public class FinalBossStageThreeComponent extends Component {
       return;
     }
     for (Statue statue : statues) {
-      if (statue.broken || updateStatueEvade(statue, delta)) continue;
-      if (!updateStatueSlam(statue, delta)) updateStoneMovement(statue, delta);
+      if (statue.broken) continue;
+      if (updateStatueEvade(statue, delta)) {
+        // A successful flash notifies achievement listeners, which may end this encounter.
+        if (disposed
+            || stats.isDead()
+            || state != FinalBossStageThreeState.WAVE_TWO
+            || phases.getCurrentPhase() != FinalBossPhase.STAGE_THREE
+            || phases.isTransitioning()
+            || stopIfPlayerDefeated()) return;
+      } else if (!updateStatueSlam(statue, delta)) updateStoneMovement(statue, delta);
     }
     startNextStatueSlam();
   }
@@ -742,6 +800,7 @@ public class FinalBossStageThreeComponent extends Component {
     statue.slamCooldown = statueSlamCooldown(getRemainingStatues());
     statue.evadePending = false;
     burst(destination, false);
+    entity.getEvents().trigger(FinalBossEvents.STAGE_THREE_STATUE_FLASH, target);
     return true;
   }
 
@@ -1362,14 +1421,28 @@ public class FinalBossStageThreeComponent extends Component {
     }
   }
 
+  private static final class Volley {
+    private int remaining;
+
+    private Volley(int remaining) {
+      this.remaining = remaining;
+    }
+  }
+
   static final class Bolt {
     final Vector2 position;
     final Vector2 velocity;
+    private final Volley volley;
     float elapsed;
 
     Bolt(Vector2 position, Vector2 velocity) {
+      this(position, velocity, new Volley(1));
+    }
+
+    private Bolt(Vector2 position, Vector2 velocity, Volley volley) {
       this.position = position;
       this.velocity = velocity;
+      this.volley = volley;
     }
   }
 

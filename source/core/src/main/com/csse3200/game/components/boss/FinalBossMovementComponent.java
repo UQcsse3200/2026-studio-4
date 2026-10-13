@@ -87,6 +87,14 @@ public class FinalBossMovementComponent extends Component {
     return camera;
   }
 
+  /** Stops the fresh boss and contains it in the focused camera before a debug phase change. */
+  void prepareDebugStage() {
+    disableChargeAttacks();
+    setMode(Mode.STOPPED);
+    movement.setMoving(false);
+    keepInsideVisibleArea();
+  }
+
   /** Changes behaviour and resets any previous movement or pause. */
   public void setMode(Mode mode) {
     if (mode == Mode.FLEE_ALONG_EDGE && camera == null) {

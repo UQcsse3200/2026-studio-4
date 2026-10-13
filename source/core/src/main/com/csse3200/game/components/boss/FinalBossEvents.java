@@ -8,6 +8,48 @@ public final class FinalBossEvents {
   public static final String SHIELD_DEACTIVATED = "finalBossShieldDeactivated";
   public static final String SHIELD_HIT = "finalBossShieldHit";
   public static final String STAGE_ONE_STATE_CHANGED = "finalBossStageOneStateChanged";
+
+  /**
+   * Stage 2 player ice projectile reached the boss before an obstacle. Argument: firing player
+   * (Entity). Emitted before damage, which may accumulate fractionally or start Stage 3.
+   */
+  public static final String STAGE_TWO_ICE_HIT = "finalBossStageTwoIceHit";
+
+  /** First active Stage 2 start, after transformation. Argument: participating player (Entity). */
+  public static final String STAGE_TWO_STARTED = "finalBossStageTwoStarted";
+
+  /** Stage 2 fireball contact before damage or protection checks. Argument: hit player (Entity). */
+  public static final String STAGE_TWO_FIRE_HIT = "finalBossStageTwoFireHit";
+
+  /**
+   * Active Stage 2 reached its health floor, immediately before the Stage 3 handover. Argument:
+   * participating player (Entity). Forced phase changes do not emit this event.
+   */
+  public static final String STAGE_TWO_COMPLETED = "finalBossStageTwoCompleted";
+
+  /**
+   * Stage 3 Wave 1 ice-bolt contact. Argument: the player hit (Entity), regardless of health loss.
+   */
+  public static final String STAGE_THREE_ICE_HIT = "finalBossStageThreeIceHit";
+
+  /**
+   * Every bolt of a Stage 3 Wave 1 volley expired or hit a wall without hitting the player.
+   * Argument: participating player (Entity). Bolts cancelled by a hit or cleanup do not count.
+   */
+  public static final String STAGE_THREE_ICE_VOLLEY_MISSED = "finalBossStageThreeIceVolleyMissed";
+
+  /**
+   * Player sword/knife contact with the unshielded Stage 3 Wave 1 boss. Argument: attacking player
+   * (Entity). Emitted before damage can end Wave 1.
+   */
+  public static final String STAGE_THREE_MELEE_HIT = "finalBossStageThreeMeleeHit";
+
+  /**
+   * Stage 3 Wave 2 statue successfully relocated after enough distinct hits. Argument:
+   * participating player (Entity). Pending or blocked evade attempts do not emit this event.
+   */
+  public static final String STAGE_THREE_STATUE_FLASH = "finalBossStageThreeStatueFlash";
+
   public static final String SUMMON_WARNING = "finalBossSummonWarning";
   public static final String SUMMON_EXPLODED = "finalBossSummonExploded";
   public static final String SUMMON_REMOVED = "finalBossSummonRemoved";

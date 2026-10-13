@@ -6,6 +6,15 @@
 
 
   { "type": "enemyKillCount", "enemyType": "FINAL_BOSS", "target": 1, "name": "Vanquisher" },
+
+  { "type": "finalBoss", "bossAchievementId": "finalBossBreakRespected", "name": "I need a break too" },
+  { "type": "finalBoss", "bossAchievementId": "finalBossStageTwoIceHit", "name": "Coolin' off, make it fun" },
+  { "type": "finalBoss", "bossAchievementId": "finalBossStageTwoFireproof", "name": "I'm fireproof!" },
+  { "type": "finalBoss", "bossAchievementId": "finalBossStageThreeIceHit", "name": "Whoa! The Snow Queen" },
+  { "type": "finalBoss", "bossAchievementId": "finalBossStageThreeIceHitStreak", "name": "Brrr, it's freezing!" },
+  { "type": "finalBoss", "bossAchievementId": "finalBossStageThreeMeleeHit", "name": "You flashed too fast" },
+  { "type": "finalBoss", "bossAchievementId": "finalBossStageThreeStatueFlash", "name": "How can a statue even flash?" },
+
   { "type": "enemyKillCount", "enemyType": "MEDUSA", "target": 3, "name": "You killed 3 Medusa" },
 
   {"type":  "enemyKillCount", "target": 5, "name": "Ah! Boy You killed 5 enemies"},

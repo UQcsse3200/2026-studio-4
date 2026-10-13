@@ -8,6 +8,8 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
+import com.csse3200.game.components.boss.FinalBossPhase;
+import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
 import com.csse3200.game.components.boss.FinalBossStageThreeComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoArenaComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
@@ -435,6 +437,21 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         stats.setHealth(0);
       }
     }
+  }
+
+  /** Initialises a freshly spawned Final Boss after room scaling and camera placement. */
+  public boolean startFinalBossStage(FinalBossPhase stage) {
+    if (disposed
+        || (stage != FinalBossPhase.STAGE_ONE
+            && stage != FinalBossPhase.STAGE_TWO
+            && stage != FinalBossPhase.STAGE_THREE)) return false;
+    boolean started = false;
+    for (Entity enemy : new ArrayList<>(activeEnemies)) {
+      FinalBossPhaseControllerComponent phases =
+          enemy.getComponent(FinalBossPhaseControllerComponent.class);
+      if (phases != null) started |= phases.startDebugStage(stage);
+    }
+    return started;
   }
 
   /**

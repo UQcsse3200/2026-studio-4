@@ -96,6 +96,14 @@ public class FollowingCameraComponent extends Component {
     this.camera = camera;
   }
 
+  /** Focuses a newly entered room immediately before a boss stage can lock the camera view. */
+  public void snapToTarget() {
+    if (camera == null || target == null || !positionLocks.isEmpty()) return;
+    cameraPosition = target.getCenterPosition();
+    update();
+    camera.update();
+  }
+
   public void setTarget(Entity entity) {
     this.target = entity;
   }
