@@ -267,6 +267,7 @@ public class RoomManager {
       return;
     }
     if (roomCleared) {
+      // TODO The room ids are added twice.
       clearedRoomIds.add(currentConfig.id);
     }
     if (exit.completesDungeon) {
@@ -335,6 +336,7 @@ public class RoomManager {
   }
 
   private void onRoomCleared() {
+    // TODO cleared room id is added
     if (clearedRoomIds.add(currentConfig.id)) {
       showStatus("Room cleared.");
     }

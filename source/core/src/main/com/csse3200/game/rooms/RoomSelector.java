@@ -10,9 +10,6 @@ import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,10 +23,6 @@ public class RoomSelector {
   private Entity player;
   private CameraComponent camera;
   private RoomLoader roomLoader;
-
-  // TODO Cleared tracking should be somewhere else
-  private final Set<String> clearedRoomIds = new HashSet<>();
-  private final Set<String> completedDungeonIds = new HashSet<>();
 
   private final EventHandler eventHandler = new EventHandler();
   public final String ROOM_SWITCHED_EVENT = "RoomSwitched";
@@ -59,7 +52,6 @@ public class RoomSelector {
 
   /* */
   public void start() {
-    // this.room = roomLoader.getStartingRoom();
     setRoom(roomLoader.getStartingRoom());
     spawnPlayer(roomLoader.getStartingSpawn());
 
@@ -68,7 +60,6 @@ public class RoomSelector {
 
   /** Switches the currently rendered room to the destination room declared in exit */
   public void switchRoom(ExitConfig exit) {
-    boolean cleared = clearedRoomIds.contains(exit.destinationRoomId);
     logger.debug("Switching to {}, cleared: {}", exit.destinationRoomId, cleared);
 
     setRoom(roomLoader.getRoom(exit, cleared));
@@ -87,9 +78,7 @@ public class RoomSelector {
     player.setPosition(pos);
   }
 
-  /**
-   * Disposes the current room then sets then performs setup on the new room.
-   */
+  /** Disposes the current room then sets then performs setup on the new room. */
   private void setRoom(Entity newRoom) {
     if (this.room != null) {
       ServiceLocator.getEntityService().scheduleDisposal(this.room);
@@ -102,10 +91,12 @@ public class RoomSelector {
     room.getEvents().addListener(SWITCH_ROOM, this::switchRoom);
   }
 
-  /** Callback function for the interact event when player presses E.
-   * If the room is cleared, will request the room entity for any potential exits.
+  /**
+   * Callback function for the interact event when player presses E. If the room is cleared, will
+   * request the room entity for any potential exits.
    */
   private void onPlayerInteract() {
+    // TODO Handle room switch via hitbox events
     if (room.getComponent(EnemyManagerComponent.class).isCleared()) {
       room.getEvents().trigger("requestExit", player.getCenterPosition());
     }

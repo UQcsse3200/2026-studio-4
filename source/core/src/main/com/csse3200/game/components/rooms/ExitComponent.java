@@ -1,8 +1,5 @@
 package com.csse3200.game.components.rooms;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
@@ -15,6 +12,8 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Spawns the visible door and bookshelf forms of a room's configured exits. */
 public class ExitComponent extends EntityManagerComponent {
@@ -49,15 +48,17 @@ public class ExitComponent extends EntityManagerComponent {
     entity.getEvents().addListener("requestExit", this::onExitRequest);
   }
 
+  // This is kind of an anti pattern since it is kinda forcing a "return value" for the listener
   private void onExitRequest(Vector2 playerPosition) {
     ExitConfig nearest = null;
     float nearestDistance = INTERACTION_RANGE;
 
     // Finds the nearest exit
     for (ExitConfig exit : exits) {
-      Vector2 exitPos = entity.getComponent(TerrainComponent.class).tileToWorldPosition(exit.x, exit.y);
+      Vector2 exitPos =
+          entity.getComponent(TerrainComponent.class).tileToWorldPosition(exit.x, exit.y);
       float distance = playerPosition.dst(exitPos);
-      if (distance <= nearestDistance) {        
+      if (distance <= nearestDistance) {
         nearest = exit;
         nearestDistance = distance;
       }
@@ -67,7 +68,8 @@ public class ExitComponent extends EntityManagerComponent {
       logger.debug("No exits found in range");
       // can trigger an event notification for hud things.
       return;
-    };
+    }
+    ;
 
     logger.debug("Found exit: {}", nearest.id);
     entity.getEvents().trigger("SwitchRoom", nearest);
@@ -89,6 +91,11 @@ public class ExitComponent extends EntityManagerComponent {
     spawnFixture(DreamlandTile.randomOfId('b', 0.5f), exit.x + 4, exit.y, tileSheet);
   }
 
+  // TODO Spawn exits with a component that can be queried via an interact component on the player
+  // New component should exist on the player
+  // The (player) interact component should trigger a function call on the (door) component
+  //      to obtain the ExitConfig linked to that door
+  // ExitConfig can then be given to RoomSelector to request a room switch
   private void spawnFixture(DreamlandTile tile, int x, int y, TileSheet tileSheet) {
     Entity fixture = new Entity().addComponent(new TextureRenderComponent(tile.region(tileSheet)));
     fixture.scaleHeight(1f);
