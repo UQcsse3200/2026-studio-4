@@ -52,8 +52,7 @@ public class RoomSelector {
 
   /* */
   public void start() {
-    setRoom(roomLoader.getStartingRoom());
-    spawnPlayer(roomLoader.getStartingSpawn());
+    setRoom(roomLoader.getStartingRoom(), roomLoader.getStartingSpawn());
 
     ServiceLocator.getEntityService().register(player);
   }
@@ -65,8 +64,7 @@ public class RoomSelector {
         exit.destinationRoomId,
         RoomClearService.isRoomCleared(exit.destinationRoomId));
 
-    setRoom(roomLoader.getRoom(exit));
-    spawnPlayer(roomLoader.getSpawnPoint(exit));
+    ServiceLocator.getEntityService().schedule(() -> setRoom(exit));
 
     eventHandler.trigger(ROOM_SWITCHED_EVENT);
   }
@@ -81,14 +79,19 @@ public class RoomSelector {
     player.setPosition(pos);
   }
 
+  private void setRoom(ExitConfig exit) {
+    setRoom(roomLoader.getRoom(exit), roomLoader.getSpawnPoint(exit));
+  }
+
   /** Disposes the current room then sets then performs setup on the new room. */
-  private void setRoom(Entity newRoom) {
+  private void setRoom(Entity newRoom, GridPoint2 spawn) {
     if (this.room != null) {
-      ServiceLocator.getEntityService().scheduleDisposal(this.room);
+      this.room.dispose();
     }
     this.room = newRoom;
 
     ServiceLocator.getEntityService().register(newRoom);
+    spawnPlayer(spawn);
     room.getEvents().trigger("RoomCreated", this.player);
     RoomClearService.attachListeners(room);
     resetCamera();
