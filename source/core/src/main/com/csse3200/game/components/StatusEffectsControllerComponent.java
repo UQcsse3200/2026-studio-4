@@ -20,7 +20,6 @@ import java.util.List;
 public class StatusEffectsControllerComponent extends Component {
 
   private CombatStatsComponent combatStatsComponent;
-  private Shield shield;
 
   private final ArrayList<StatusEffect> statusEffects = new ArrayList<>();
   private boolean disposed;
@@ -254,11 +253,6 @@ public class StatusEffectsControllerComponent extends Component {
     List<StatusEffect> removed = new ArrayList<>(statusEffects);
     statusEffects.clear();
     notifyRemoved(removed);
-  }
-
-  /** Returns the rechargeable shield's current mode without consuming points or updating it. */
-  public boolean isShieldActive() {
-    return shield != null && shield.isActive();
   }
 
   /**

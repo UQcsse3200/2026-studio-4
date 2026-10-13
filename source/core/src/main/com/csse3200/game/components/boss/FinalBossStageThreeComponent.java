@@ -31,6 +31,8 @@ public class FinalBossStageThreeComponent extends Component {
   private static final float STATUE_SPACING_BUFFER = 0.35f;
   private static final float GRANDPA_RETURN_SIZE = 2.4f;
   static final float TORNADO_HIT_DURATION = 0.24f;
+  private static final int TORNADO_DAMAGE = 1;
+
   private final Entity target;
   private final Consumer<Entity> spawner;
   final FinalBossStageThreeConfig config;
@@ -264,7 +266,6 @@ public class FinalBossStageThreeComponent extends Component {
   }
 
   private void updateEffects(float delta) {
-    if (!isPlayerShieldActive()) shieldTornadoDamageRemainder = 0d;
     tornadoes.update(
         delta,
         state == FinalBossStageThreeState.WAVE_TWO && !playerDefeated && !phases.isTransitioning());
@@ -1120,19 +1121,7 @@ public class FinalBossStageThreeComponent extends Component {
         || StatusEffectsControllerComponent.isConcealed(target)
         || StatusEffectsControllerComponent.isImmobilised(entity)
         || (consumables != null && consumables.isShielded())) return;
-    boolean shieldActive = isPlayerShieldActive();
-    if (!shieldActive) shieldTornadoDamageRemainder = 0d;
-    double accumulated =
-        (shieldActive ? shieldTornadoDamageRemainder : tornadoDamageRemainder) + damage;
-    double wholeDamage = Math.floor(accumulated);
-    // Consume before dispatch; synchronous cleanup must never restore an old remainder.
-    if (shieldActive) shieldTornadoDamageRemainder = accumulated - wholeDamage;
-    else tornadoDamageRemainder = accumulated - wholeDamage;
-    if (wholeDamage < 1d) {
-      // A valid half-point contact is still an attack, even before the integer HP counter changes.
-      if (!shieldActive) tornadoHitRemaining = TORNADO_HIT_DURATION;
-      return;
-    }
+    double wholeDamage = TORNADO_DAMAGE;
     int before = playerStats.getHealth();
     tornadoDamageInProgress = true;
     try {
@@ -1151,12 +1140,6 @@ public class FinalBossStageThreeComponent extends Component {
         && !phases.isTransitioning()
         && playerStats.getHealth() < before
         && !playerStats.isDead()) tornadoHitRemaining = TORNADO_HIT_DURATION;
-  }
-
-  private boolean isPlayerShieldActive() {
-    StatusEffectsControllerComponent effects =
-        target.getComponent(StatusEffectsControllerComponent.class);
-    return effects != null && effects.isShieldActive();
   }
 
   private void clearTornadoDamage() {

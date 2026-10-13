@@ -207,18 +207,6 @@ class StatusEffectControllerComponentTest {
   // Shield
   // ---------------------------------------------------------
 
-  @Test
-  void queryingAnAbsentShieldDoesNotCreateItOrPublishAnUpdate() {
-    try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
-      StatusEffectsControllerComponent controller = createController();
-      clearInvocations(eventHandler);
-
-      assertFalse(controller.isShieldActive());
-
-      factory.verifyNoInteractions();
-      verifyNoInteractions(eventHandler);
-    }
-  }
 
   // ---------------------------------------------------------
   // update()
