@@ -35,8 +35,8 @@ class GameSaveMapperTest {
 
     String earnedName = "earned achievement";
     String pendingName = "pending achievement";
-    Achievement earned = new Achievement(earnedName, "Test achievement", context -> false);
-    Achievement pending = new Achievement(pendingName, "Test achievement", context -> false);
+    Achievement earned = new Achievement(earnedName, "earned description", context -> false);
+    Achievement pending = new Achievement(pendingName, "pending description", context -> false);
     earned.restoreState(true, 7f);
     pending.restoreState(false, 3f);
     AchievementService achievements = new AchievementService();
