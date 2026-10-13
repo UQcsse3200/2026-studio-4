@@ -7,8 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A Singleton class to track the players cleared rooms. Write access should only be given to room
- * entities via attaching events to it.
+ * A Singleton class to track the players cleared rooms.
+ *
+ * <p>Write access should only be given to room entities via attaching events to it.
  */
 public class RoomClearService {
   private static final Logger logger = LoggerFactory.getLogger(RoomClearService.class);
@@ -17,6 +18,16 @@ public class RoomClearService {
 
   private RoomClearService() {}
 
+  /**
+   * Provides listeners to room events to track the cleared rooms
+   *
+   * <p>Currently only room entities should have write access
+   *
+   * <p>If a feature wishes run logic on a room clear added a new listener somewhere within the room
+   * entities and not to modify this function
+   *
+   * @param entity The room entity to attach lisners to
+   */
   public static void attachListeners(Entity entity) {
     entity
         .getEvents()

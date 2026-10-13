@@ -10,7 +10,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.files.FileLoader;
 
-/** A facade for the WorldConfig, returns fully set up unintialised rooms */
+/** A facade for the WorldConfig, returns fully set up unintialised room entities */
 public class RoomLoader {
   private String CONFIG_PATH = "configs/rooms.json";
   private static final int ARRIVAL_OFFSET_TILES = 3;

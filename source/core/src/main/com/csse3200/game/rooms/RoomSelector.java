@@ -50,7 +50,7 @@ public class RoomSelector {
     followingCamera.setTarget(player);
   }
 
-  /* */
+  /* Entry point to the game. Sets up the starting room then registers the player */
   public void start() {
     setRoom(roomLoader.getStartingRoom(), roomLoader.getStartingSpawn());
 
@@ -72,18 +72,30 @@ public class RoomSelector {
   /**
    * Converts the spawn from tile coord to position the set the player to it
    *
-   * @require room to be set
+   * @require room != null
    */
   private void spawnPlayer(GridPoint2 spawn) {
     Vector2 pos = room.getComponent(TerrainComponent.class).tileToWorldPosition(spawn);
     player.setPosition(pos);
   }
 
+  /** Transitions to a new room pointed to in the given exit. */
   private void setRoom(ExitConfig exit) {
     setRoom(roomLoader.getRoom(exit), roomLoader.getSpawnPoint(exit));
   }
 
-  /** Disposes the current room then sets then performs setup on the new room. */
+  /**
+   * Performs a transition to a new room
+   *
+   * <p>Disposes the current room, registers and sets up the new room to the entity service, Moves
+   * the player to it spawn point in the new room.
+   *
+   * <p>This function should ideally be called via {@link EntityService#schedule(Runnable)} to aviod
+   * box2d errors
+   *
+   * @param newRoom The <b>Unregistered</b> room entity to switch to.
+   * @param spawn Where to spawn the player upon switching to the new room
+   */
   private void setRoom(Entity newRoom, GridPoint2 spawn) {
     if (this.room != null) {
       this.room.dispose();
@@ -109,6 +121,7 @@ public class RoomSelector {
     }
   }
 
+  /** Debug function to clear the current room's enemies */
   public void clearRoom() {
     room.getComponent(EnemyManagerComponent.class).clear();
   }
