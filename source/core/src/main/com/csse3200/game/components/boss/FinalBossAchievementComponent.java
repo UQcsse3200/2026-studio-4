@@ -329,6 +329,9 @@ public class FinalBossAchievementComponent extends Component {
   // Report achievement with an ID
   private void reportAchievement(String achievementId) {
     AchievementService achievements = ServiceLocator.getAchievementService();
+    if (achievements == null) {
+      return;
+    }
 
     AchievementContext context = new AchievementContext();
     context.bossAchievementId = achievementId;

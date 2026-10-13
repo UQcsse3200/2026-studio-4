@@ -388,6 +388,7 @@ public class RoomManager {
         currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
+
     if (bossStage != null) {
       // RoomCreated spawns the boss before start() scales it and places the player. Initialise the
       // requested stage only now, using its scaled health and the destination room's camera view.

@@ -45,6 +45,14 @@ public class AchievementService {
     return achievements.stream().filter(Achievement::isUnlocked).map(Achievement::getName).toList();
   }
 
+  public Map<String, String> getAchievementDescriptions() {
+    Map<String, String> description = new HashMap<>();
+    for (Achievement achievement : achievements) {
+      description.put(achievement.getName(), achievement.getDescription());
+    }
+    return description;
+  }
+
   public Map<String, Float> getAchievementProgress() {
     Map<String, Float> progress = new HashMap<>();
 

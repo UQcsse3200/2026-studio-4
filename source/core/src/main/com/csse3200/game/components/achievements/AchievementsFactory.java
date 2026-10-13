@@ -21,15 +21,17 @@ public class AchievementsFactory {
   }
 
   private static Achievement dungeonClear(AchievementConfig c) {
-    return new Achievement(c.name, ctx -> c.dungeonId.equals(ctx.dungeonCompletedId));
+    return new Achievement(
+        c.name, c.description, ctx -> c.dungeonId.equals(ctx.dungeonCompletedId));
   }
 
   private static Achievement finalBoss(AchievementConfig c) {
-    return new Achievement(c.name, ctx -> c.bossAchievementId.equals(ctx.bossAchievementId));
+    return new Achievement(
+        c.name, c.description, ctx -> c.bossAchievementId.equals(ctx.bossAchievementId));
   }
 
   private static Achievement gold(AchievementConfig c) {
-    Achievement a = new Achievement(c.name);
+    Achievement a = new Achievement(c.name, c.description);
     a.setTarget(c.target);
     boolean[] initial = {true};
     float[] initialGold = {0f};
@@ -49,7 +51,7 @@ public class AchievementsFactory {
   }
 
   private static Achievement enemyKillCount(AchievementConfig c) {
-    Achievement a = new Achievement(c.name);
+    Achievement a = new Achievement(c.name, c.description);
     a.setTarget(c.target);
     a.setCondition(
         ctx -> {
@@ -62,7 +64,7 @@ public class AchievementsFactory {
   }
 
   private static Achievement killStreak(AchievementConfig c) {
-    Achievement a = new Achievement(c.name);
+    Achievement a = new Achievement(c.name, c.description);
     a.setTarget(c.target);
     a.setCondition(
         ctx -> {
@@ -78,11 +80,11 @@ public class AchievementsFactory {
   }
 
   private static Achievement dungeonReached(AchievementConfig c) {
-    return new Achievement(c.name, ctx -> c.dungeonId.equals(ctx.dungeonEnteredId));
+    return new Achievement(c.name, c.description, ctx -> c.dungeonId.equals(ctx.dungeonEnteredId));
   }
 
   private static Achievement speedRun(AchievementConfig c) {
-    Achievement a = new Achievement(c.name);
+    Achievement a = new Achievement(c.name, c.description);
     a.setProgress(
         Float.MAX_VALUE); // no time recorded yet; never beats the limit until a real reading lands
     a.setCondition(
@@ -100,6 +102,7 @@ public class AchievementsFactory {
     Set<EnemySpawnConfig.EnemyType> seen = EnumSet.noneOf(EnemySpawnConfig.EnemyType.class);
     return new Achievement(
         c.name,
+        c.description,
         ctx -> {
           if (ctx.enemyKilled == null || !required.contains(ctx.enemyKilled)) {
             return false;
