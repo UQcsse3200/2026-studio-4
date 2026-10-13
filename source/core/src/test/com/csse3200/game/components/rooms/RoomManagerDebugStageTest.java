@@ -101,7 +101,7 @@ class RoomManagerDebugStageTest {
     hub = room(true);
     roomFactory = mockStatic(RoomFactory.class);
     roomFactory
-        .when(() -> RoomFactory.createRoom(hubConfig, camera, false, RoomManager.DEFAULT_TILESET))
+        .when(() -> RoomFactory.createRoom(hubConfig, camera, false))
         .thenReturn(hub.entity());
     manager =
         new RoomManager(world, player, camera) {
@@ -164,9 +164,7 @@ class RoomManagerDebugStageTest {
     verify(entities).register(second.entity());
     verify(first.enemies()).startFinalBossStage(FinalBossPhase.STAGE_THREE);
     verify(second.enemies()).startFinalBossStage(FinalBossPhase.STAGE_ONE);
-    roomFactory.verify(
-        () -> RoomFactory.createRoom(bossConfig, camera, false, RoomManager.DUNGEON5_TILESET),
-        times(2));
+    roomFactory.verify(() -> RoomFactory.createRoom(bossConfig, camera, false), times(2));
   }
 
   @Test
@@ -202,7 +200,7 @@ class RoomManagerDebugStageTest {
     RoomFixture clearedRevisit = room(true);
     freshBossRooms(first, fresh);
     roomFactory
-        .when(() -> RoomFactory.createRoom(bossConfig, camera, true, RoomManager.DUNGEON5_TILESET))
+        .when(() -> RoomFactory.createRoom(bossConfig, camera, true))
         .thenReturn(clearedRevisit.entity());
     assertTrue(manager.debugSwitchFinalBossRoom(bossConfig, FinalBossPhase.STAGE_THREE));
     manager.update();
@@ -215,11 +213,8 @@ class RoomManagerDebugStageTest {
     manager.debugSwitchRoom(bossConfig);
     manager.update();
 
-    roomFactory.verify(
-        () -> RoomFactory.createRoom(bossConfig, camera, false, RoomManager.DUNGEON5_TILESET),
-        times(2));
-    roomFactory.verify(
-        () -> RoomFactory.createRoom(bossConfig, camera, true, RoomManager.DUNGEON5_TILESET));
+    roomFactory.verify(() -> RoomFactory.createRoom(bossConfig, camera, false), times(2));
+    roomFactory.verify(() -> RoomFactory.createRoom(bossConfig, camera, true));
     verify(clearedRevisit.enemies(), never()).startFinalBossStage(any());
   }
 
@@ -265,17 +260,14 @@ class RoomManagerDebugStageTest {
 
     verify(bossRoom.enemies(), never()).startFinalBossStage(FinalBossPhase.STAGE_ONE);
     verify(bossRoom.enemies()).startFinalBossStage(FinalBossPhase.STAGE_THREE);
-    roomFactory.verify(
-        () -> RoomFactory.createRoom(bossConfig, camera, false, RoomManager.DUNGEON5_TILESET));
+    roomFactory.verify(() -> RoomFactory.createRoom(bossConfig, camera, false));
   }
 
   @Test
   void shouldDiscardThePendingStageWhenAnOrdinaryGotoReplacesIt() {
     RoomFixture normalRoom = room(true);
     roomFactory
-        .when(
-            () ->
-                RoomFactory.createRoom(dungeonConfig, camera, false, RoomManager.DUNGEON1_TILESET))
+        .when(() -> RoomFactory.createRoom(dungeonConfig, camera, false))
         .thenReturn(normalRoom.entity());
     assertTrue(manager.debugSwitchFinalBossRoom(bossConfig, FinalBossPhase.STAGE_THREE));
 
@@ -285,9 +277,7 @@ class RoomManagerDebugStageTest {
     assertEquals(dungeonConfig.id, manager.getCheckpointData().roomId);
     verify(normalRoom.enemies(), never()).startFinalBossStage(any());
     verify(normalRoom.following(), never()).snapToTarget();
-    roomFactory.verify(
-        () -> RoomFactory.createRoom(bossConfig, camera, false, RoomManager.DUNGEON5_TILESET),
-        never());
+    roomFactory.verify(() -> RoomFactory.createRoom(bossConfig, camera, false), never());
   }
 
   @Test
@@ -310,9 +300,7 @@ class RoomManagerDebugStageTest {
     RoomFixture dungeon = room(true);
     RoomFixture bossRoom = room(false);
     roomFactory
-        .when(
-            () ->
-                RoomFactory.createRoom(dungeonConfig, camera, false, RoomManager.DUNGEON1_TILESET))
+        .when(() -> RoomFactory.createRoom(dungeonConfig, camera, false))
         .thenReturn(dungeon.entity());
     freshBossRooms(bossRoom);
     // Enter through the entry point, so the fixture's completing bookshelf is beside the
@@ -338,8 +326,7 @@ class RoomManagerDebugStageTest {
     Entity[] later = new Entity[rest.length];
     for (int index = 0; index < rest.length; index++) later[index] = rest[index].entity();
     roomFactory
-        .<Entity>when(
-            () -> RoomFactory.createRoom(bossConfig, camera, false, RoomManager.DUNGEON5_TILESET))
+        .<Entity>when(() -> RoomFactory.createRoom(bossConfig, camera, false))
         .thenReturn(first.entity(), later);
   }
 
