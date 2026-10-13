@@ -51,6 +51,10 @@ public class RoomClearService {
     return clearedRoomIds.contains(RoomId);
   }
 
+  public static int getDungeonClearedCount() {
+    return clearedDungeonIds.size();
+  }
+
   public static boolean isDungeonCleared(String dungeonId) {
     return clearedDungeonIds.contains(dungeonId);
   }

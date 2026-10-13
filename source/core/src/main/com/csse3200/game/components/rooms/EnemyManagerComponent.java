@@ -21,6 +21,7 @@ import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.rooms.RoomClearService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -105,7 +106,10 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     entity.getEvents().addListener("RoomCreated", this::spawnEnemies);
   }
 
-  /** Spawns each enemy declared by the room. */
+  /**
+   * Spawns each enemy declared by the room. After spawning scales enemies based on no. of cleared
+   * dungeons.
+   */
   public void spawnEnemies(Entity target) {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
 
@@ -120,6 +124,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       enemy.addComponent(new EnemyTypeComponent(spawn.type)); // before spawnEntityAt registers it
       spawnEntityAt(enemy, new GridPoint2(spawn.x, spawn.y), true, true);
     }
+
+    scale(RoomClearService.getDungeonClearedCount());
   }
 
   private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
