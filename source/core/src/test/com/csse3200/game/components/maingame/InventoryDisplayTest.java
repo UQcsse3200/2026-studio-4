@@ -195,17 +195,23 @@ class InventoryDisplayTest {
 
     stage.keyDown(com.badlogic.gdx.Input.Keys.Q);
     Table left = stage.getRoot().findActor("inventory-page-left");
-    Table right = stage.getRoot().findActor("inventory-page-right");
     assertNotNull(left.findActor("achievement-Locked test"));
-    assertNotNull(right.findActor("achievement-Unlocked test"));
-    var label =
-        (com.badlogic.gdx.scenes.scene2d.ui.Label) left.findActor("achievement-Locked test");
-    var entries = (Table) label.getParent();
-    assertEquals(
-        "4 / 10",
-        ((com.badlogic.gdx.scenes.scene2d.ui.Label) entries.getChildren().get(1))
-            .getText()
-            .toString());
+    assertNotNull(left.findActor("achievement-Unlocked test"));
+
+    var details =
+        (com.badlogic.gdx.scenes.scene2d.ui.Label)
+            stage.getRoot().findActor("inventory-selection-details");
+    // Unlocked achievements are listed first, so the first row is selected initially.
+    assertTrue(details.getText().toString().contains("Unlocked test"));
+
+    // Move down to the locked achievement; its details should show progress.
+    stage.keyDown(com.badlogic.gdx.Input.Keys.S);
+    String lockedDetails = details.getText().toString();
+    assertTrue(lockedDetails.contains("Locked test"));
+    assertTrue(
+        lockedDetails.contains("Progress: 4 / 10"),
+        "Locked achievement should show its progress as \"4 / 10\"");
+
     assertTrue(display.getPageItems(true).isEmpty());
     for (int key :
         new int[] {
@@ -230,6 +236,24 @@ class InventoryDisplayTest {
     assertNotNull(stage.getRoot().findActor("achievement-Locked test"));
     stage.keyDown(com.badlogic.gdx.Input.Keys.Q);
     assertNotNull(stage.getRoot().findActor("consumables-equipped"));
+  }
+
+  @Test
+  void achievementDisplayTextUsesHintWhileLockedAndFullTextOnceUnlocked() {
+    var hinted =
+        new com.csse3200.game.components.achievements.Achievement(
+            "Hinted", "the hint||the full description", c -> true);
+    var plain =
+        new com.csse3200.game.components.achievements.Achievement("Plain", "same text", c -> true);
+
+    assertEquals("the hint", InventoryDisplay.displayText(hinted));
+    assertEquals("same text", InventoryDisplay.displayText(plain));
+
+    hinted.update(null);
+    plain.update(null);
+
+    assertEquals("the full description", InventoryDisplay.displayText(hinted));
+    assertEquals("same text", InventoryDisplay.displayText(plain));
   }
 
   @Test
