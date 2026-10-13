@@ -32,16 +32,24 @@ public class SplashScreen extends ScreenAdapter{
 
     @Override 
     public void render(float delta) {
-        
+        ServiceLocator.getEntityService().update();
+        renderer.render();        
     }
 
     @Override
     public void resize(int width, int height) {
-
+        renderer.resize(width, height);
+        logger.trace("Resized renderer: ({} x {})", width, height);
     }
 
     @Override
     public void dispose() {
+        logger.debug("Disposing splash screen");
 
+        renderer.dispose();
+        ServiceLocator.getRenderService().dispose();
+        ServiceLocator.getEntityService().dispose();
+
+        ServiceLocator.clear();
     }
 }
