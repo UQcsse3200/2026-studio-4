@@ -11,6 +11,5 @@ public class AchievementContext {
   public String dungeonId;
   public float dungeonSeconds;
   public Integer goldTotal;
-  public Integer singleHitDamage;
   public String bossAchievementId;
 }

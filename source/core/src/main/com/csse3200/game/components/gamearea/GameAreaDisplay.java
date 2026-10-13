@@ -50,7 +50,8 @@ public class GameAreaDisplay extends UIComponent {
     achievementTable = new Table();
     achievementTable.add(achievement);
     achievementTable.setFillParent(true);
-    achievementTable.center().top().padTop(40f); // just below the status label
+    // Leave room for the top-centre boss tutorial hints, including a wrapped second line.
+    achievementTable.center().top().padTop(96f);
 
     stage.addActor(achievementTable);
     stage.addActor(titleTable);

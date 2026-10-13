@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig.EnemyType;
 import java.io.IOException;
@@ -15,12 +16,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 class AchievementsFactoryTest {
+
   private static final String SNAKE_NO_SHIELD_PICKUP = "snakeDefeatedWithoutShieldPickup";
   private static final String SNAKE_GREEN_BUBBLE = "snakeStageTwoShieldPickup";
 
@@ -37,6 +41,13 @@ class AchievementsFactoryTest {
     AchievementConfig definition = config("snake");
     definition.bossAchievementId = id;
     return definition;
+  }
+
+  private static AchievementConfig finalBossConfig(String bossAchievementId) {
+    AchievementConfig c = config("finalBoss");
+    c.name = "test-" + bossAchievementId;
+    c.bossAchievementId = bossAchievementId;
+    return c;
   }
 
   private static AchievementContext kill(EnemyType type) {
@@ -130,6 +141,25 @@ class AchievementsFactoryTest {
       assertInstanceOf(Achievement.class, AchievementsFactory.build(set));
       assertInstanceOf(
           Achievement.class, AchievementsFactory.build(snakeConfig(SNAKE_NO_SHIELD_PICKUP)));
+      assertInstanceOf(
+          Achievement.class, AchievementsFactory.build(finalBossConfig("finalBossBreakRespected")));
+      assertInstanceOf(
+          Achievement.class, AchievementsFactory.build(finalBossConfig("finalBossStageTwoIceHit")));
+      assertInstanceOf(
+          Achievement.class,
+          AchievementsFactory.build(finalBossConfig("finalBossStageTwoFireproof")));
+      assertInstanceOf(
+          Achievement.class,
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeIceHit")));
+      assertInstanceOf(
+          Achievement.class,
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeIceHitStreak")));
+      assertInstanceOf(
+          Achievement.class,
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeMeleeHit")));
+      assertInstanceOf(
+          Achievement.class,
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeStatueFlash")));
     }
 
     @Test
@@ -149,6 +179,27 @@ class AchievementsFactoryTest {
       assertEquals(0f, AchievementsFactory.build(set).getProgress());
       assertEquals(
           0f, AchievementsFactory.build(snakeConfig(SNAKE_NO_SHIELD_PICKUP)).getProgress());
+      assertEquals(
+          0f, AchievementsFactory.build(finalBossConfig("finalBossBreakRespected")).getProgress());
+      assertEquals(
+          0f, AchievementsFactory.build(finalBossConfig("finalBossStageTwoIceHit")).getProgress());
+      assertEquals(
+          0f,
+          AchievementsFactory.build(finalBossConfig("finalBossStageTwoFireproof")).getProgress());
+      assertEquals(
+          0f,
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeIceHit")).getProgress());
+      assertEquals(
+          0f,
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeIceHitStreak"))
+              .getProgress());
+      assertEquals(
+          0f,
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeMeleeHit")).getProgress());
+      assertEquals(
+          0f,
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeStatueFlash"))
+              .getProgress());
     }
 
     @Test
@@ -269,6 +320,580 @@ class AchievementsFactoryTest {
       Achievement achievement = AchievementsFactory.build(matching.getFirst());
       assertEquals(name, achievement.getName());
       assertFalse(achievement.isUnlocked());
+    }
+  }
+
+  // ---------- finalBoss ID matching ----------
+
+  @Nested
+  class FinalBoss {
+
+    private static final Set<String> BOSS_ACHIEVEMENT_IDS =
+        Set.of(
+            "finalBossBreakRespected",
+            "finalBossStageTwoIceHit",
+            "finalBossStageTwoFireproof",
+            "finalBossStageThreeIceHit",
+            "finalBossStageThreeIceHitStreak",
+            "finalBossStageThreeMeleeHit",
+            "finalBossStageThreeStatueFlash");
+
+    @Test
+    void config_eachBossEventUnlocksOnlyItsMatchingAchievement() {
+      AchievementConfig[] configs =
+          new Json()
+              .fromJson(AchievementConfig[].class, new FileHandle("configs/achievements.json"));
+      List<AchievementConfig> bossConfigs =
+          Arrays.stream(configs).filter(c -> "finalBoss".equals(c.type)).toList();
+      assertEquals(BOSS_ACHIEVEMENT_IDS.size(), bossConfigs.size());
+      assertEquals(
+          BOSS_ACHIEVEMENT_IDS,
+          bossConfigs.stream().map(c -> c.bossAchievementId).collect(Collectors.toSet()));
+
+      for (String eventId : BOSS_ACHIEVEMENT_IDS) {
+        AchievementContext ctx = new AchievementContext();
+        ctx.bossAchievementId = eventId;
+        for (AchievementConfig c : bossConfigs) {
+          Achievement achievement = AchievementsFactory.build(c);
+          boolean matching = eventId.equals(c.bossAchievementId);
+          String description = eventId + " -> " + c.bossAchievementId;
+
+          assertEquals(matching, achievement.update(ctx), description);
+          assertEquals(matching, achievement.isUnlocked(), description);
+          assertFalse(achievement.update(ctx), description);
+          assertEquals(matching, achievement.isUnlocked(), description);
+        }
+      }
+    }
+
+    @Test
+    void update_missingEmptyOrUnknownBossId_staysLocked() {
+      for (String bossId : BOSS_ACHIEVEMENT_IDS) {
+        Achievement achievement = AchievementsFactory.build(finalBossConfig(bossId));
+        AchievementContext ctx = new AchievementContext();
+        assertFalse(achievement.update(ctx), bossId);
+        for (String unrelatedId : List.of("", "unknownFinalBossAchievement", bossId + "Typo")) {
+          ctx.bossAchievementId = unrelatedId;
+          assertFalse(achievement.update(ctx), bossId);
+          assertFalse(achievement.isUnlocked(), bossId);
+        }
+      }
+    }
+  }
+
+  // ---------- finalBossBreakRespected ----------
+
+  @Nested
+  class FinalBossBreakRespected {
+
+    @Test
+    void update_withoutCompletedBreak_staysLocked() {
+      Achievement a = AchievementsFactory.build(finalBossConfig("finalBossBreakRespected"));
+
+      assertFalse(a.update(new AchievementContext()));
+      assertFalse(a.update(kill(EnemyType.FINAL_BOSS)));
+      assertFalse(a.update(entered("finalDungeon")));
+      assertFalse(a.update(completed("finalDungeon")));
+      assertFalse(a.update(damaged()));
+      assertFalse(a.isUnlocked());
+    }
+
+    @Test
+    void update_completedBreak_unlocksOnlyOnce() {
+      Achievement a = AchievementsFactory.build(finalBossConfig("finalBossBreakRespected"));
+      AchievementContext ctx = new AchievementContext();
+      ctx.bossAchievementId = "finalBossBreakRespected";
+
+      assertTrue(a.update(ctx));
+      assertTrue(a.isUnlocked());
+      assertFalse(a.update(ctx));
+      assertFalse(a.update(new AchievementContext()));
+      assertTrue(a.isUnlocked());
+    }
+
+    @Test
+    void config_registersOneBreakAchievementWithExpectedNameAndCondition() {
+      AchievementConfig[] configs =
+          new Json()
+              .fromJson(AchievementConfig[].class, new FileHandle("configs/achievements.json"));
+      int breakAchievements = 0;
+      for (AchievementConfig c : configs) {
+        Achievement a = AchievementsFactory.build(c);
+        if ("finalBoss".equals(c.type) && "finalBossBreakRespected".equals(c.bossAchievementId)) {
+          breakAchievements++;
+          assertEquals("I need a break too", a.getName());
+          assertFalse(a.update(new AchievementContext()));
+          AchievementContext ctx = new AchievementContext();
+          ctx.bossAchievementId = "finalBossBreakRespected";
+          assertTrue(a.update(ctx));
+        }
+      }
+      assertEquals(1, breakAchievements);
+    }
+  }
+
+  // ---------- finalBossStageTwoIceHit ----------
+
+  @Nested
+  class FinalBossStageTwoIceHit {
+
+    @Test
+    void update_unrelatedDamageAndBossEvents_staysLocked() {
+      Achievement a = AchievementsFactory.build(finalBossConfig("finalBossStageTwoIceHit"));
+      AchievementContext breakCompleted = new AchievementContext();
+      breakCompleted.bossAchievementId = "finalBossBreakRespected";
+      AchievementContext snowQueen = new AchievementContext();
+      snowQueen.bossAchievementId = "finalBossStageThreeIceHit";
+
+      assertFalse(a.update(new AchievementContext()));
+      assertFalse(a.update(damaged()));
+      assertFalse(a.update(kill(EnemyType.FINAL_BOSS)));
+      assertFalse(a.update(breakCompleted));
+      assertFalse(a.update(snowQueen));
+      assertFalse(a.isUnlocked());
+    }
+
+    @Test
+    void update_firstPlayerIceHit_unlocksOnlyCoolinOffAndOnlyOnce() {
+      Achievement a = AchievementsFactory.build(finalBossConfig("finalBossStageTwoIceHit"));
+      Achievement breakAchievement =
+          AchievementsFactory.build(finalBossConfig("finalBossBreakRespected"));
+      Achievement snowQueen =
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeIceHit"));
+      AchievementContext ctx = new AchievementContext();
+      ctx.bossAchievementId = "finalBossStageTwoIceHit";
+
+      assertTrue(a.update(ctx));
+      assertTrue(a.isUnlocked());
+      assertFalse(a.update(ctx));
+      assertFalse(breakAchievement.update(ctx));
+      assertFalse(snowQueen.update(ctx));
+    }
+
+    @Test
+    void config_registersOneCoolinOffAchievementWithExpectedNameAndCondition() {
+      AchievementConfig[] configs =
+          new Json()
+              .fromJson(AchievementConfig[].class, new FileHandle("configs/achievements.json"));
+      int iceHitAchievements = 0;
+      for (AchievementConfig c : configs) {
+        Achievement a = AchievementsFactory.build(c);
+        if ("finalBoss".equals(c.type) && "finalBossStageTwoIceHit".equals(c.bossAchievementId)) {
+          iceHitAchievements++;
+          assertEquals("Coolin' off, make it fun", a.getName());
+          assertFalse(a.update(new AchievementContext()));
+          AchievementContext ctx = new AchievementContext();
+          ctx.bossAchievementId = "finalBossStageTwoIceHit";
+          assertTrue(a.update(ctx));
+        }
+      }
+      assertEquals(1, iceHitAchievements);
+    }
+  }
+
+  // ---------- finalBossStageTwoFireproof ----------
+
+  @Nested
+  class FinalBossStageTwoFireproof {
+
+    @Test
+    void update_unrelatedDamageAndBossEvents_staysLocked() {
+      Achievement a = AchievementsFactory.build(finalBossConfig("finalBossStageTwoFireproof"));
+      AchievementContext breakCompleted = new AchievementContext();
+      breakCompleted.bossAchievementId = "finalBossBreakRespected";
+      AchievementContext coolinOff = new AchievementContext();
+      coolinOff.bossAchievementId = "finalBossStageTwoIceHit";
+      AchievementContext snowQueen = new AchievementContext();
+      snowQueen.bossAchievementId = "finalBossStageThreeIceHit";
+
+      assertFalse(a.update(new AchievementContext()));
+      assertFalse(a.update(damaged()));
+      assertFalse(a.update(kill(EnemyType.FINAL_BOSS)));
+      assertFalse(a.update(breakCompleted));
+      assertFalse(a.update(coolinOff));
+      assertFalse(a.update(snowQueen));
+      assertFalse(a.isUnlocked());
+    }
+
+    @Test
+    void update_fireproofResult_unlocksOnlyFireproofAndOnlyOnce() {
+      Achievement a = AchievementsFactory.build(finalBossConfig("finalBossStageTwoFireproof"));
+      Achievement breakAchievement =
+          AchievementsFactory.build(finalBossConfig("finalBossBreakRespected"));
+      Achievement coolinOff = AchievementsFactory.build(finalBossConfig("finalBossStageTwoIceHit"));
+      Achievement snowQueen =
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeIceHit"));
+      AchievementContext ctx = new AchievementContext();
+      ctx.bossAchievementId = "finalBossStageTwoFireproof";
+
+      assertTrue(a.update(ctx));
+      assertTrue(a.isUnlocked());
+      assertFalse(a.update(ctx));
+      assertFalse(a.update(new AchievementContext()));
+      assertTrue(a.isUnlocked());
+      assertFalse(breakAchievement.update(ctx));
+      assertFalse(coolinOff.update(ctx));
+      assertFalse(snowQueen.update(ctx));
+      assertFalse(breakAchievement.isUnlocked());
+      assertFalse(coolinOff.isUnlocked());
+      assertFalse(snowQueen.isUnlocked());
+    }
+
+    @Test
+    void config_registersOneFireproofAchievementWithExpectedNameAndCondition() {
+      AchievementConfig[] configs =
+          new Json()
+              .fromJson(AchievementConfig[].class, new FileHandle("configs/achievements.json"));
+      int fireproofAchievements = 0;
+      int fireproofNames = 0;
+      for (AchievementConfig c : configs) {
+        Achievement a = AchievementsFactory.build(c);
+        if ("I'm fireproof!".equals(a.getName())) {
+          fireproofNames++;
+        }
+        if ("finalBoss".equals(c.type)
+            && "finalBossStageTwoFireproof".equals(c.bossAchievementId)) {
+          fireproofAchievements++;
+          assertEquals("I'm fireproof!", a.getName());
+          assertFalse(a.update(new AchievementContext()));
+          assertFalse(a.update(damaged()));
+          AchievementContext ctx = new AchievementContext();
+          ctx.bossAchievementId = "finalBossStageTwoFireproof";
+          assertTrue(a.update(ctx));
+        }
+      }
+      assertEquals(1, fireproofAchievements);
+      assertEquals(1, fireproofNames);
+    }
+  }
+
+  // ---------- finalBossStageThreeIceHit ----------
+
+  @Nested
+  class FinalBossStageThreeIceHit {
+
+    @Test
+    void update_unrelatedDamageAndBossEvents_staysLocked() {
+      Achievement a = AchievementsFactory.build(finalBossConfig("finalBossStageThreeIceHit"));
+      AchievementContext breakCompleted = new AchievementContext();
+      breakCompleted.bossAchievementId = "finalBossBreakRespected";
+
+      assertFalse(a.update(new AchievementContext()));
+      assertFalse(a.update(damaged()));
+      assertFalse(a.update(kill(EnemyType.FINAL_BOSS)));
+      assertFalse(a.update(breakCompleted));
+      assertFalse(a.isUnlocked());
+    }
+
+    @Test
+    void update_firstIceHit_unlocksOnlySnowQueenAndOnlyOnce() {
+      Achievement a = AchievementsFactory.build(finalBossConfig("finalBossStageThreeIceHit"));
+      Achievement breakAchievement =
+          AchievementsFactory.build(finalBossConfig("finalBossBreakRespected"));
+      AchievementContext ctx = new AchievementContext();
+      ctx.bossAchievementId = "finalBossStageThreeIceHit";
+
+      assertTrue(a.update(ctx));
+      assertTrue(a.isUnlocked());
+      assertFalse(a.update(ctx));
+      assertFalse(breakAchievement.update(ctx));
+      assertFalse(breakAchievement.isUnlocked());
+    }
+
+    @Test
+    void config_registersOneSnowQueenAchievementWithExpectedNameAndCondition() {
+      AchievementConfig[] configs =
+          new Json()
+              .fromJson(AchievementConfig[].class, new FileHandle("configs/achievements.json"));
+      int snowQueenAchievements = 0;
+      for (AchievementConfig c : configs) {
+        Achievement a = AchievementsFactory.build(c);
+        if ("finalBoss".equals(c.type) && "finalBossStageThreeIceHit".equals(c.bossAchievementId)) {
+          snowQueenAchievements++;
+          assertEquals("Whoa! The Snow Queen", a.getName());
+          assertFalse(a.update(damaged()));
+          AchievementContext ctx = new AchievementContext();
+          ctx.bossAchievementId = "finalBossStageThreeIceHit";
+          assertTrue(a.update(ctx));
+        }
+      }
+      assertEquals(1, snowQueenAchievements);
+    }
+  }
+
+  // ---------- finalBossStageThreeIceHitStreak ----------
+
+  @Nested
+  class FinalBossStageThreeIceHitStreak {
+
+    @Test
+    void update_unrelatedEventsAndRepeatedSingleIceHits_staysLocked() {
+      Achievement a = AchievementsFactory.build(finalBossConfig("finalBossStageThreeIceHitStreak"));
+      AchievementContext breakCompleted = new AchievementContext();
+      breakCompleted.bossAchievementId = "finalBossBreakRespected";
+      AchievementContext coolinOff = new AchievementContext();
+      coolinOff.bossAchievementId = "finalBossStageTwoIceHit";
+      AchievementContext fireproof = new AchievementContext();
+      fireproof.bossAchievementId = "finalBossStageTwoFireproof";
+      AchievementContext snowQueen = new AchievementContext();
+      snowQueen.bossAchievementId = "finalBossStageThreeIceHit";
+      AchievementContext flashedTooFast = new AchievementContext();
+      flashedTooFast.bossAchievementId = "finalBossStageThreeMeleeHit";
+      AchievementContext statueFlash = new AchievementContext();
+      statueFlash.bossAchievementId = "finalBossStageThreeStatueFlash";
+
+      assertFalse(a.isUnlocked());
+      assertFalse(a.update(new AchievementContext()));
+      assertFalse(a.update(damaged()));
+      assertFalse(a.update(kill(EnemyType.FINAL_BOSS)));
+      assertFalse(a.update(breakCompleted));
+      assertFalse(a.update(coolinOff));
+      assertFalse(a.update(fireproof));
+      for (int hit = 0; hit < 3; hit++) {
+        assertFalse(a.update(snowQueen));
+      }
+      assertFalse(a.update(flashedTooFast));
+      assertFalse(a.update(statueFlash));
+      assertFalse(a.isUnlocked());
+    }
+
+    @Test
+    void update_completedIceHitStreak_unlocksOnlyFreezingAndOnlyOnce() {
+      Achievement a = AchievementsFactory.build(finalBossConfig("finalBossStageThreeIceHitStreak"));
+      Achievement breakAchievement =
+          AchievementsFactory.build(finalBossConfig("finalBossBreakRespected"));
+      Achievement coolinOff = AchievementsFactory.build(finalBossConfig("finalBossStageTwoIceHit"));
+      Achievement fireproof =
+          AchievementsFactory.build(finalBossConfig("finalBossStageTwoFireproof"));
+      Achievement snowQueen =
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeIceHit"));
+      Achievement flashedTooFast =
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeMeleeHit"));
+      Achievement statueFlash =
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeStatueFlash"));
+      AchievementContext ctx = new AchievementContext();
+      ctx.bossAchievementId = "finalBossStageThreeIceHitStreak";
+
+      assertTrue(a.update(ctx));
+      assertTrue(a.isUnlocked());
+      assertFalse(a.update(ctx));
+      assertFalse(a.update(new AchievementContext()));
+      assertTrue(a.isUnlocked());
+      assertFalse(breakAchievement.update(ctx));
+      assertFalse(coolinOff.update(ctx));
+      assertFalse(fireproof.update(ctx));
+      assertFalse(snowQueen.update(ctx));
+      assertFalse(flashedTooFast.update(ctx));
+      assertFalse(statueFlash.update(ctx));
+      assertFalse(breakAchievement.isUnlocked());
+      assertFalse(coolinOff.isUnlocked());
+      assertFalse(fireproof.isUnlocked());
+      assertFalse(snowQueen.isUnlocked());
+      assertFalse(flashedTooFast.isUnlocked());
+      assertFalse(statueFlash.isUnlocked());
+    }
+
+    @Test
+    void config_registersOneFreezingAchievementWithExpectedNameAndCondition() {
+      AchievementConfig[] configs =
+          new Json()
+              .fromJson(AchievementConfig[].class, new FileHandle("configs/achievements.json"));
+      int freezingAchievements = 0;
+      int freezingNames = 0;
+      for (AchievementConfig c : configs) {
+        Achievement a = AchievementsFactory.build(c);
+        if ("Brrr, it's freezing!".equals(a.getName())) {
+          freezingNames++;
+        }
+        if ("finalBoss".equals(c.type)
+            && "finalBossStageThreeIceHitStreak".equals(c.bossAchievementId)) {
+          freezingAchievements++;
+          assertEquals("Brrr, it's freezing!", a.getName());
+          assertFalse(a.isUnlocked());
+          assertFalse(a.update(new AchievementContext()));
+          assertFalse(a.update(damaged()));
+          AchievementContext ctx = new AchievementContext();
+          ctx.bossAchievementId = "finalBossStageThreeIceHitStreak";
+          assertTrue(a.update(ctx));
+        }
+      }
+      assertEquals(1, freezingAchievements);
+      assertEquals(1, freezingNames);
+    }
+  }
+
+  // ---------- finalBossStageThreeMeleeHit ----------
+
+  @Nested
+  class FinalBossStageThreeMeleeHit {
+
+    @Test
+    void update_unrelatedDamageAndBossEvents_staysLocked() {
+      Achievement a = AchievementsFactory.build(finalBossConfig("finalBossStageThreeMeleeHit"));
+      AchievementContext breakCompleted = new AchievementContext();
+      breakCompleted.bossAchievementId = "finalBossBreakRespected";
+      AchievementContext coolinOff = new AchievementContext();
+      coolinOff.bossAchievementId = "finalBossStageTwoIceHit";
+      AchievementContext fireproof = new AchievementContext();
+      fireproof.bossAchievementId = "finalBossStageTwoFireproof";
+      AchievementContext snowQueen = new AchievementContext();
+      snowQueen.bossAchievementId = "finalBossStageThreeIceHit";
+
+      assertFalse(a.update(new AchievementContext()));
+      assertFalse(a.update(damaged()));
+      assertFalse(a.update(kill(EnemyType.FINAL_BOSS)));
+      assertFalse(a.update(breakCompleted));
+      assertFalse(a.update(coolinOff));
+      assertFalse(a.update(fireproof));
+      assertFalse(a.update(snowQueen));
+      assertFalse(a.isUnlocked());
+    }
+
+    @Test
+    void update_firstMeleeHit_unlocksOnlyFlashedTooFastAndOnlyOnce() {
+      Achievement a = AchievementsFactory.build(finalBossConfig("finalBossStageThreeMeleeHit"));
+      Achievement breakAchievement =
+          AchievementsFactory.build(finalBossConfig("finalBossBreakRespected"));
+      Achievement coolinOff = AchievementsFactory.build(finalBossConfig("finalBossStageTwoIceHit"));
+      Achievement fireproof =
+          AchievementsFactory.build(finalBossConfig("finalBossStageTwoFireproof"));
+      Achievement snowQueen =
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeIceHit"));
+      AchievementContext ctx = new AchievementContext();
+      ctx.bossAchievementId = "finalBossStageThreeMeleeHit";
+
+      assertTrue(a.update(ctx));
+      assertTrue(a.isUnlocked());
+      assertFalse(a.update(ctx));
+      assertFalse(a.update(new AchievementContext()));
+      assertTrue(a.isUnlocked());
+      assertFalse(breakAchievement.update(ctx));
+      assertFalse(coolinOff.update(ctx));
+      assertFalse(fireproof.update(ctx));
+      assertFalse(snowQueen.update(ctx));
+      assertFalse(breakAchievement.isUnlocked());
+      assertFalse(coolinOff.isUnlocked());
+      assertFalse(fireproof.isUnlocked());
+      assertFalse(snowQueen.isUnlocked());
+    }
+
+    @Test
+    void config_registersOneFlashedTooFastAchievementWithExpectedNameAndCondition() {
+      AchievementConfig[] configs =
+          new Json()
+              .fromJson(AchievementConfig[].class, new FileHandle("configs/achievements.json"));
+      int meleeHitAchievements = 0;
+      int flashedTooFastNames = 0;
+      for (AchievementConfig c : configs) {
+        Achievement a = AchievementsFactory.build(c);
+        if ("You flashed too fast".equals(a.getName())) {
+          flashedTooFastNames++;
+        }
+        if ("finalBoss".equals(c.type)
+            && "finalBossStageThreeMeleeHit".equals(c.bossAchievementId)) {
+          meleeHitAchievements++;
+          assertEquals("You flashed too fast", a.getName());
+          assertFalse(a.update(new AchievementContext()));
+          assertFalse(a.update(damaged()));
+          AchievementContext ctx = new AchievementContext();
+          ctx.bossAchievementId = "finalBossStageThreeMeleeHit";
+          assertTrue(a.update(ctx));
+        }
+      }
+      assertEquals(1, meleeHitAchievements);
+      assertEquals(1, flashedTooFastNames);
+    }
+  }
+
+  // ---------- finalBossStageThreeStatueFlash ----------
+
+  @Nested
+  class FinalBossStageThreeStatueFlash {
+
+    @Test
+    void update_unrelatedDamageAndBossEvents_staysLocked() {
+      Achievement a = AchievementsFactory.build(finalBossConfig("finalBossStageThreeStatueFlash"));
+      AchievementContext breakCompleted = new AchievementContext();
+      breakCompleted.bossAchievementId = "finalBossBreakRespected";
+      AchievementContext coolinOff = new AchievementContext();
+      coolinOff.bossAchievementId = "finalBossStageTwoIceHit";
+      AchievementContext fireproof = new AchievementContext();
+      fireproof.bossAchievementId = "finalBossStageTwoFireproof";
+      AchievementContext snowQueen = new AchievementContext();
+      snowQueen.bossAchievementId = "finalBossStageThreeIceHit";
+      AchievementContext flashedTooFast = new AchievementContext();
+      flashedTooFast.bossAchievementId = "finalBossStageThreeMeleeHit";
+
+      assertFalse(a.isUnlocked());
+      assertFalse(a.update(new AchievementContext()));
+      assertFalse(a.update(damaged()));
+      assertFalse(a.update(kill(EnemyType.FINAL_BOSS)));
+      assertFalse(a.update(breakCompleted));
+      assertFalse(a.update(coolinOff));
+      assertFalse(a.update(fireproof));
+      assertFalse(a.update(snowQueen));
+      assertFalse(a.update(flashedTooFast));
+      assertFalse(a.isUnlocked());
+    }
+
+    @Test
+    void update_firstSuccessfulStatueFlash_unlocksOnlyStatueFlashAndOnlyOnce() {
+      Achievement a = AchievementsFactory.build(finalBossConfig("finalBossStageThreeStatueFlash"));
+      Achievement breakAchievement =
+          AchievementsFactory.build(finalBossConfig("finalBossBreakRespected"));
+      Achievement coolinOff = AchievementsFactory.build(finalBossConfig("finalBossStageTwoIceHit"));
+      Achievement fireproof =
+          AchievementsFactory.build(finalBossConfig("finalBossStageTwoFireproof"));
+      Achievement snowQueen =
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeIceHit"));
+      Achievement flashedTooFast =
+          AchievementsFactory.build(finalBossConfig("finalBossStageThreeMeleeHit"));
+      AchievementContext ctx = new AchievementContext();
+      ctx.bossAchievementId = "finalBossStageThreeStatueFlash";
+
+      assertTrue(a.update(ctx));
+      assertTrue(a.isUnlocked());
+      assertFalse(a.update(ctx));
+      assertFalse(a.update(new AchievementContext()));
+      assertTrue(a.isUnlocked());
+      assertFalse(breakAchievement.update(ctx));
+      assertFalse(coolinOff.update(ctx));
+      assertFalse(fireproof.update(ctx));
+      assertFalse(snowQueen.update(ctx));
+      assertFalse(flashedTooFast.update(ctx));
+      assertFalse(breakAchievement.isUnlocked());
+      assertFalse(coolinOff.isUnlocked());
+      assertFalse(fireproof.isUnlocked());
+      assertFalse(snowQueen.isUnlocked());
+      assertFalse(flashedTooFast.isUnlocked());
+    }
+
+    @Test
+    void config_registersOneStatueFlashAchievementWithExpectedNameAndCondition() {
+      AchievementConfig[] configs =
+          new Json()
+              .fromJson(AchievementConfig[].class, new FileHandle("configs/achievements.json"));
+      int statueFlashAchievements = 0;
+      int statueFlashNames = 0;
+      for (AchievementConfig c : configs) {
+        Achievement a = AchievementsFactory.build(c);
+        if ("How can a statue even flash?".equals(a.getName())) {
+          statueFlashNames++;
+        }
+        if ("finalBoss".equals(c.type)
+            && "finalBossStageThreeStatueFlash".equals(c.bossAchievementId)) {
+          statueFlashAchievements++;
+          assertEquals("How can a statue even flash?", a.getName());
+          assertFalse(a.isUnlocked());
+          assertFalse(a.update(new AchievementContext()));
+          assertFalse(a.update(damaged()));
+          AchievementContext ctx = new AchievementContext();
+          ctx.bossAchievementId = "finalBossStageThreeStatueFlash";
+          assertTrue(a.update(ctx));
+        }
+      }
+      assertEquals(1, statueFlashAchievements);
+      assertEquals(1, statueFlashNames);
     }
   }
 

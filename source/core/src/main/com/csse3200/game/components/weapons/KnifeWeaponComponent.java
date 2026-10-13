@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.HitboxFactory;
 import com.csse3200.game.entities.factories.HitboxSpec;
+import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -181,7 +182,9 @@ public class KnifeWeaponComponent extends WeaponComponent {
         baseSpec(origin, cardinalDir, damage, knockback, lifetime)
             .localOffset(offset)
             .rotation(cardinalDir.angleDeg());
-    ServiceLocator.getEntityService().register(HitboxFactory.createHitbox(spec));
+    Entity hitbox = HitboxFactory.createHitbox(spec);
+    hitbox.addComponent(new WeaponAttackSourceComponent(entity, WeaponType.DAGGER));
+    ServiceLocator.getEntityService().register(hitbox);
   }
 
   /**
@@ -201,6 +204,7 @@ public class KnifeWeaponComponent extends WeaponComponent {
     HitboxSpec spec =
         baseSpec(origin, aim, damage, 0f, SLASH_LIFETIME).localOffset(offset).rotation(fromAngle);
     Entity hitbox = HitboxFactory.createHitbox(spec);
+    hitbox.addComponent(new WeaponAttackSourceComponent(entity, WeaponType.DAGGER));
     hitbox.addComponent(new SweepComponent(SLASH_LIFETIME, fromAngle, toAngle, reach));
     ServiceLocator.getEntityService().register(hitbox);
   }
