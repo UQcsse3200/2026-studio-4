@@ -25,14 +25,18 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Spawns configured enemies and tracks when the room has been cleared. */
 public class EnemyManagerComponent extends EntityManagerComponent {
+  private static final Logger logger = LoggerFactory.getLogger(EnemyManagerComponent.class);
   private final EnemySpawnConfig[] spawnConfigs;
   private final Set<Entity> activeEnemies = new HashSet<>();
   private final ItemFactory itemFactory;
   private boolean disposed;
   private CameraComponent camera;
+  private boolean notified = false;
 
   /** Creates an empty manager for tests and rooms with no enemies. */
   public EnemyManagerComponent() {
@@ -52,6 +56,24 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs, ItemFactory itemFactory) {
     this.spawnConfigs = spawnConfigs;
     this.itemFactory = Objects.requireNonNull(itemFactory);
+  }
+
+  @Override
+  public void update() {
+    super.update();
+    if (activeEnemies.isEmpty() && !notified) {
+      var config = entity.getComponent(RoomDataComponent.class).getConfig();
+      logger.info("Room Cleared");
+
+      entity.getEvents().trigger("RoomCleared", config.id);
+      // Not the ideal way to know if it is end of a dungeon but works for now.
+      // Should be changed later or enforce the naming convention
+      if (config.id.endsWith("End")) {
+        entity.getEvents().trigger("DungeonCleared", config.dungeonId);
+      }
+
+      notified = true;
+    }
   }
 
   @Override
@@ -284,9 +306,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     // Capture before deferred disposal or room changes can move/remove the enemy.
     Vector2 position = enemy.getCenterPosition();
     spawnEnemyDrops(enemyType, position);
-    if (activeEnemies.isEmpty()) {
-      entity.getEvents().trigger("roomCleared");
-    }
   }
 
   private void replaceWithChild(Entity parent, Entity child, String enemyType) {

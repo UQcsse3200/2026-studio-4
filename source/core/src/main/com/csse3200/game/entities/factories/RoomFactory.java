@@ -5,11 +5,6 @@ import com.csse3200.game.areas.terrain.TerrainBuilder;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.rooms.*;
-import com.csse3200.game.components.rooms.EnemyManagerComponent;
-import com.csse3200.game.components.rooms.ExitComponent;
-import com.csse3200.game.components.rooms.ObstacleComponent;
-import com.csse3200.game.components.rooms.TrapManagerComponent;
-import com.csse3200.game.components.rooms.WallComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
@@ -80,7 +75,8 @@ public class RoomFactory {
         .addComponent(new ExitComponent(room.exits))
         .addComponent(
             new EnemyManagerComponent(cleared ? new EnemySpawnConfig[0] : room.enemySpawns, camera))
-        .addComponent(new FriendlyNpcManagerComponent(room.npcSpawns, getFriendlyNpcs()));
+        .addComponent(new FriendlyNpcManagerComponent(room.npcSpawns, getFriendlyNpcs()))
+        .addComponent(new RoomDataComponent(room));
   }
 
   private static InteractableNpcConfigs getFriendlyNpcs() {

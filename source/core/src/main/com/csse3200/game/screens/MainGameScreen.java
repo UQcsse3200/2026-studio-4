@@ -65,6 +65,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private RoomManager roomManager;
+  private RoomSelector roomSelector;
   private Entity player;
   private final Terminal terminal;
   private final int saveSlot;
@@ -147,7 +148,7 @@ public class MainGameScreen extends ScreenAdapter {
     // }
     // roomManager.create();
 
-    RoomSelector roomSelector = new RoomSelector(player, renderer.getCamera());
+    roomSelector = new RoomSelector(player, renderer.getCamera());
     roomSelector.start();
 
     if (loadedSave != null) {
@@ -288,7 +289,7 @@ public class MainGameScreen extends ScreenAdapter {
     terminal.addCommand("upgrade", new UpgradeCommand(player));
     terminal.addCommand("magnet", new MagnetCommand(player));
     terminal.addCommand("spell", new SpellCommand(player));
-    terminal.addCommand("room", new RoomCommand(roomManager));
+    terminal.addCommand("room", new RoomCommand(roomSelector));
     // QA for the dialogue and cutscene systems, e.g. "dialogue demo" / "cutscene demovideo"
     terminal.addCommand("dialogue", new DialogueCommand(player));
     terminal.addCommand("cutscene", new CutsceneCommand(player));

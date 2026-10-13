@@ -40,6 +40,10 @@ public class RoomLoader {
     return getRoom(exit.destinationRoomId, cleared);
   }
 
+  public Entity getRoom(ExitConfig exit) {
+    return getRoom(exit.destinationRoomId, RoomClearService.isRoomCleared(exit.destinationRoomId));
+  }
+
   public GridPoint2 getStartingSpawn() {
     RoomConfig startRoom = world.getRoom(world.startRoomId);
     PositionConfig spawn = startRoom.getEntryPoint(world.startEntryPointId);

@@ -60,9 +60,12 @@ public class RoomSelector {
 
   /** Switches the currently rendered room to the destination room declared in exit */
   public void switchRoom(ExitConfig exit) {
-    logger.debug("Switching to {}, cleared: {}", exit.destinationRoomId, cleared);
+    logger.debug(
+        "going to room: {}, isCleared: {}",
+        exit.destinationRoomId,
+        RoomClearService.isRoomCleared(exit.destinationRoomId));
 
-    setRoom(roomLoader.getRoom(exit, cleared));
+    setRoom(roomLoader.getRoom(exit));
     spawnPlayer(roomLoader.getSpawnPoint(exit));
 
     eventHandler.trigger(ROOM_SWITCHED_EVENT);
@@ -87,6 +90,7 @@ public class RoomSelector {
 
     ServiceLocator.getEntityService().register(newRoom);
     room.getEvents().trigger("RoomCreated", this.player);
+    RoomClearService.attachListeners(room);
     resetCamera();
     room.getEvents().addListener(SWITCH_ROOM, this::switchRoom);
   }
@@ -100,5 +104,9 @@ public class RoomSelector {
     if (room.getComponent(EnemyManagerComponent.class).isCleared()) {
       room.getEvents().trigger("requestExit", player.getCenterPosition());
     }
+  }
+
+  public void clearRoom() {
+    room.getComponent(EnemyManagerComponent.class).clear();
   }
 }
