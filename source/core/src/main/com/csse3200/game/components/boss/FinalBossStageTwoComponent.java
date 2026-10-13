@@ -34,6 +34,7 @@ public class FinalBossStageTwoComponent extends Component {
   private FinalBossStageTwoArenaComponent arena;
   private boolean transitionSent;
   private boolean encounterStarted;
+  private boolean startReported;
   private boolean disposed;
   private boolean isAttacking;
   private double cycleTimer;
@@ -192,6 +193,14 @@ public class FinalBossStageTwoComponent extends Component {
     previousBossCentre = entity.getCenterPosition();
     movementComponent.disableChargeAttacks();
     movementComponent.setMode(FinalBossMovementComponent.Mode.STOPPED);
+    if (!startReported
+        && target != null
+        && canContinueFire()
+        && !phaseController.isTransitioning()) {
+      // Reinitialising this controller must not let a late observer qualify for a full encounter.
+      startReported = true;
+      entity.getEvents().trigger(FinalBossEvents.STAGE_TWO_STARTED, target);
+    }
   }
 
   @Override
@@ -369,6 +378,13 @@ public class FinalBossStageTwoComponent extends Component {
     FinalBossDamageControllerComponent protection =
         entity.getComponent(FinalBossDamageControllerComponent.class);
     if (protection != null) {
+      // Only the projectile's unobstructed boss collision reaches this callback. Report before
+      // damage: fractional hits need not reduce health, and a health-floor hit can enter Stage 3.
+      entity.getEvents().trigger(FinalBossEvents.STAGE_TWO_ICE_HIT, target);
+      if (!isIceInputActive()) {
+        clearEffects();
+        return;
+      }
       protection.takeStageTwoIceDamage(stageTwoConfig.iceProjectileDamage, target);
     }
     if (!canContinueFire()) clearEffects();
@@ -413,9 +429,12 @@ public class FinalBossStageTwoComponent extends Component {
 
   private void hitPlayer() {
     CombatStatsComponent stats = target.getComponent(CombatStatsComponent.class);
+    if (stats == null || !canContinueFire() || phaseController.isTransitioning()) return;
+    // The projectile has already confirmed contact. Even a shield or fractional/zero health loss
+    // must invalidate a no-hit attempt, so report before the damage guards below.
+    entity.getEvents().trigger(FinalBossEvents.STAGE_TWO_FIRE_HIT, target);
     ConsumableEffectComponent consumables = target.getComponent(ConsumableEffectComponent.class);
-    if (stats == null
-        || fireDamageInProgress
+    if (fireDamageInProgress
         || !canContinueFire()
         || phaseController.isTransitioning()
         || stats.isInvulnerable()
@@ -566,9 +585,12 @@ public class FinalBossStageTwoComponent extends Component {
 
   /** Prevents a powerful hit from skipping the Stage 3 encounter entirely. */
   public void applyStageThreeHealthFloor() {
-    bossStats.setMinimumHealth(
-        Math.max(
-            1, Math.round(bossStats.getMaxHealth() * stageTwoConfig.stageThreeHealthThreshold)));
+    bossStats.setMinimumHealth(Math.max(1, getStageThreeStartingHealth()));
+  }
+
+  /** Stage 3's entry threshold, using this encounter's configuration and scaled maximum health. */
+  int getStageThreeStartingHealth() {
+    return Math.round(bossStats.getMaxHealth() * stageTwoConfig.stageThreeHealthThreshold);
   }
 
   /** Returns whether the active encounter is in its firing interval rather than its pause. */
@@ -582,15 +604,24 @@ public class FinalBossStageTwoComponent extends Component {
   }
 
   private void onBossHealthChanged(Integer health) {
-    if (transitionSent
+    if (disposed
+        || transitionSent
         || health <= 0
         || phaseController.getCurrentPhase() != FinalBossPhase.STAGE_TWO) {
       return;
     }
-    int healthThreshold =
-        Math.round(bossStats.getMaxHealth() * stageTwoConfig.stageThreeHealthThreshold);
+    int healthThreshold = getStageThreeStartingHealth();
     if (health <= healthThreshold) {
       transitionSent = true;
+      if (encounterStarted
+          && target != null
+          && !phaseController.isTransitioning()
+          && !isTargetDead()) {
+        // Report the genuine completion while listeners can still validate Stage 2. The generic
+        // completion event below synchronously changes the phase and cancels unfinished attempts.
+        entity.getEvents().trigger(FinalBossEvents.STAGE_TWO_COMPLETED, target);
+        if (!canContinueFire() || phaseController.isTransitioning()) return;
+      }
       movementComponent.disableChargeAttacks();
       entity.getEvents().trigger(FinalBossEvents.STAGE_COMPLETED, FinalBossPhase.STAGE_TWO);
     }

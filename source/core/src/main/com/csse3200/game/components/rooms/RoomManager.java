@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.achievements.AchievementContext;
+import com.csse3200.game.components.boss.FinalBossPhase;
 import com.csse3200.game.components.friendlynpc.NpcInteractableComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
@@ -12,6 +13,7 @@ import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InteractionPrompt;
 import com.csse3200.game.components.player.PlayerActions;
+import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.components.rooms.configs.PositionConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
@@ -52,6 +54,7 @@ public class RoomManager {
   private Vector2 initialWorldPosition;
   private RoomConfig pendingDestination;
   private PositionConfig pendingArrivalPosition;
+  private FinalBossPhase pendingFinalBossStage;
   private boolean clearRequested;
   private final RunTimer runTimer;
   private String pendingDungeonCompletion;
@@ -234,9 +237,12 @@ public class RoomManager {
     RoomConfig destination = pendingDestination;
     PositionConfig arrivalPosition = pendingArrivalPosition;
     // iiuc this was done to prevent room switching from crashing box2d
+    FinalBossPhase bossStage = pendingFinalBossStage;
     pendingDestination = null;
     pendingArrivalPosition = null;
-    switchToRoom(destination, arrivalPosition);
+    pendingFinalBossStage = null;
+    if (bossStage == null) switchToRoom(destination, arrivalPosition);
+    else switchToRoom(destination, arrivalPosition, bossStage);
   }
 
   /** Processes an E-key interaction with the nearest configured fixture. */
@@ -360,9 +366,15 @@ public class RoomManager {
   }
 
   void switchToRoom(RoomConfig destination, PositionConfig arrivalPosition) {
+    switchToRoom(destination, arrivalPosition, null);
+  }
+
+  private void switchToRoom(
+      RoomConfig destination, PositionConfig arrivalPosition, FinalBossPhase bossStage) {
     String previousDungeonId = currentConfig.dungeonId;
     Entity nextRoom =
-        RoomFactory.createRoom(destination, camera, clearedRoomIds.contains(destination.id));
+        RoomFactory.createRoom(
+            destination, camera, bossStage == null && clearedRoomIds.contains(destination.id));
     currentRoom.dispose();
     currentConfig = destination;
     currentRoom = nextRoom;
@@ -391,6 +403,12 @@ public class RoomManager {
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
 
+    if (bossStage != null) {
+      // RoomCreated spawns the boss before start() scales it and places the player. Initialise the
+      // requested stage only now, using its scaled health and the destination room's camera view.
+      cameraFollowingComponent.snapToTarget();
+      currentRoom.getComponent(EnemyManagerComponent.class).startFinalBossStage(bossStage);
+    }
     if (runTimer != null
         && destination.dungeonId != null
         && !Objects.equals(previousDungeonId, destination.dungeonId)
@@ -560,19 +578,45 @@ public class RoomManager {
 
   /** debug function for RoomCommand */
   void debugSwitchRoom(RoomConfig destination) {
+    if (destination == null) return;
     pendingDestination = destination;
+    pendingArrivalPosition = debugArrival(destination);
+    pendingFinalBossStage = null;
+  }
 
-    // sets either the first exit of the room or first exit as destination pos
-    if (destination.exits.length < 1 && destination.entryPoints.length > 0) {
-      pendingArrivalPosition = destination.entryPoints[0];
-    } else if (destination.exits.length >= 1) {
-      pendingArrivalPosition = destination.exits[0];
-    } else {
-      // fallback if no entries or exits. Should ideally never happen
-      // could end up spawning in a wall
-      pendingArrivalPosition = new PositionConfig();
-      pendingArrivalPosition.x = 5;
-      pendingArrivalPosition.y = 5;
+  /** Queues a fresh boss encounter; invalid requests leave any existing request untouched. */
+  boolean debugSwitchFinalBossRoom(RoomConfig destination, FinalBossPhase stage) {
+    if (!hasFinalBoss(destination)
+        || (stage != FinalBossPhase.STAGE_ONE
+            && stage != FinalBossPhase.STAGE_TWO
+            && stage != FinalBossPhase.STAGE_THREE)) return false;
+    pendingDestination = destination;
+    pendingArrivalPosition =
+        destination.entryPoints.length > 0 ? destination.entryPoints[0] : debugArrival(destination);
+    pendingFinalBossStage = stage;
+    clearRequested = false;
+    pendingDungeonCompletion = null;
+    return true;
+  }
+
+  /** Stage aliases are available only when the destination really declares a Final Boss. */
+  static boolean hasFinalBoss(RoomConfig destination) {
+    if (destination == null || destination.enemySpawns == null) return false;
+    for (EnemySpawnConfig spawn : destination.enemySpawns) {
+      if (spawn != null && spawn.type == EnemySpawnConfig.EnemyType.FINAL_BOSS) return true;
     }
+    return false;
+  }
+
+  private PositionConfig debugArrival(RoomConfig destination) {
+    if (destination.exits.length < 1 && destination.entryPoints.length > 0) {
+      return destination.entryPoints[0];
+    } else if (destination.exits.length >= 1) {
+      return destination.exits[0];
+    }
+    PositionConfig fallback = new PositionConfig();
+    fallback.x = 5;
+    fallback.y = 5;
+    return fallback;
   }
 }

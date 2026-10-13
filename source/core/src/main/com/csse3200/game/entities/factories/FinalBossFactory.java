@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.factories;
 
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.boss.FinalBossAchievementComponent;
 import com.csse3200.game.components.boss.FinalBossDamageControllerComponent;
 import com.csse3200.game.components.boss.FinalBossEndingDialogueComponent;
 import com.csse3200.game.components.boss.FinalBossExplosiveSummonComponent;
@@ -58,6 +59,7 @@ public final class FinalBossFactory {
             .addComponent(new FinalBossDamageControllerComponent())
             .addComponent(new FinalBossMovementComponent(target, config, stageTwoConfig))
             .addComponent(new FinalBossStageOneComponent(target, summonSpawner, config))
+            .addComponent(new FinalBossAchievementComponent(target))
             .addComponent(new FinalBossStageTwoArenaComponent(target, stageTwoConfig))
             .addComponent(new FinalBossStageTwoComponent(target, stageTwoConfig))
             .addComponent(new FinalBossStageTwoVisualComponent(target))

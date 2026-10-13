@@ -155,6 +155,16 @@ public class FinalBossStageOneComponent extends Component {
     return breakRemaining;
   }
 
+  /** Whether this newly created encounter can still choose its debug entry stage. */
+  boolean isFreshIntro() {
+    return !cleanupStarted && !transitionSent && state == FinalBossStageOneState.INTRO;
+  }
+
+  /** Stage 2's entry health, using this encounter's configuration and scaled maximum health. */
+  int getStageTwoStartingHealth() {
+    return Math.round(bossStats.getMaxHealth() * config.stageTwoStartingHealth);
+  }
+
   private void spawnWave(int count, float movementSpeed, float warningDuration) {
     activeSummons.clear();
 
@@ -260,8 +270,7 @@ public class FinalBossStageOneComponent extends Component {
     movementController.setMode(FinalBossMovementComponent.Mode.STOPPED);
     damageController.disableStageOneProtection();
 
-    int stageTwoHealth = Math.round(bossStats.getMaxHealth() * config.stageTwoStartingHealth);
-    bossStats.setHealth(stageTwoHealth);
+    bossStats.setHealth(getStageTwoStartingHealth());
 
     changeState(FinalBossStageOneState.COMPLETE);
 
