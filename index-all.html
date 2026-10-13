@@ -109,11 +109,11 @@ loadScripts(document, 'script');</script>
 <div class="block">A single achievement: a name, a condition checked on update, and a shared progress value some
  conditions use to track a running count or measurement between updates.</div>
 </dd>
-<dt><a href="com/csse3200/game/components/achievements/Achievement.html#%3Cinit%3E(java.lang.String)" class="member-name-link">Achievement(String)</a> - Constructor for class com.csse3200.game.components.achievements.<a href="com/csse3200/game/components/achievements/Achievement.html" title="class in com.csse3200.game.components.achievements">Achievement</a></dt>
+<dt><a href="com/csse3200/game/components/achievements/Achievement.html#%3Cinit%3E(java.lang.String,java.lang.String)" class="member-name-link">Achievement(String, String)</a> - Constructor for class com.csse3200.game.components.achievements.<a href="com/csse3200/game/components/achievements/Achievement.html" title="class in com.csse3200.game.components.achievements">Achievement</a></dt>
 <dd>
 <div class="block">Creates an achievement whose condition is attached afterward via <a href="com/csse3200/game/components/achievements/Achievement.html#setCondition(java.util.function.Predicate)"><code>Achievement.setCondition(java.util.function.Predicate&lt;com.csse3200.game.components.achievements.AchievementContext&gt;)</code></a>.</div>
 </dd>
-<dt><a href="com/csse3200/game/components/achievements/Achievement.html#%3Cinit%3E(java.lang.String,java.util.function.Predicate)" class="member-name-link">Achievement(String, Predicate&lt;AchievementContext&gt;)</a> - Constructor for class com.csse3200.game.components.achievements.<a href="com/csse3200/game/components/achievements/Achievement.html" title="class in com.csse3200.game.components.achievements">Achievement</a></dt>
+<dt><a href="com/csse3200/game/components/achievements/Achievement.html#%3Cinit%3E(java.lang.String,java.lang.String,java.util.function.Predicate)" class="member-name-link">Achievement(String, String, Predicate&lt;AchievementContext&gt;)</a> - Constructor for class com.csse3200.game.components.achievements.<a href="com/csse3200/game/components/achievements/Achievement.html" title="class in com.csse3200.game.components.achievements">Achievement</a></dt>
 <dd>
 <div class="block">Creates an achievement with its condition fixed at construction.</div>
 </dd>
@@ -2034,6 +2034,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossPhase.html#DEFEATED" class="member-name-link">DEFEATED</a> - Enum constant in enum class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossPhase.html" title="enum class in com.csse3200.game.components.boss">FinalBossPhase</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusDeathComponent.html#DEFEATED" class="member-name-link">DEFEATED</a> - Static variable in class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusDeathComponent.html" title="class in com.csse3200.game.components.miniboss.cerberus">CerberusDeathComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/screens/MainGameScreen.html#deleteSaveAndExit()" class="member-name-link">deleteSaveAndExit()</a> - Method in class com.csse3200.game.screens.<a href="com/csse3200/game/screens/MainGameScreen.html" title="class in com.csse3200.game.screens">MainGameScreen</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/FileLoader.html#deleteSaveSlot(int)" class="member-name-link">deleteSaveSlot(int)</a> - Static method in class com.csse3200.game.files.<a href="com/csse3200/game/files/FileLoader.html" title="class in com.csse3200.game.files">FileLoader</a></dt>
@@ -2042,6 +2044,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the supported weapon's descriptor, rejecting missing or unknown product IDs.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/achievements/AchievementConfig.html#description" class="member-name-link">description</a> - Variable in class com.csse3200.game.components.achievements.<a href="com/csse3200/game/components/achievements/AchievementConfig.html" title="class in com.csse3200.game.components.achievements">AchievementConfig</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/WeaponUpgradeCatalog.Descriptor.html#%3Cinit%3E(java.lang.String,java.lang.String,java.lang.String,java.lang.String)" class="member-name-link">Descriptor(String, String, String, String)</a> - Constructor for record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/WeaponUpgradeCatalog.Descriptor.html" title="class in com.csse3200.game.components.shop">WeaponUpgradeCatalog.Descriptor</a></dt>
 <dd>
 <div class="block">Creates an instance of a <code>Descriptor</code> record class.</div>
@@ -3545,6 +3549,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/entities/configs/InteractableNpcConfigs.html#get(java.lang.String)" class="member-name-link">get(String)</a> - Method in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/InteractableNpcConfigs.html" title="class in com.csse3200.game.entities.configs">InteractableNpcConfigs</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/AchievementService.html#getAchievementDescriptions()" class="member-name-link">getAchievementDescriptions()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/AchievementService.html" title="class in com.csse3200.game.services">AchievementService</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/AchievementService.html#getAchievementProgress()" class="member-name-link">getAchievementProgress()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/AchievementService.html" title="class in com.csse3200.game.services">AchievementService</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/AchievementService.html#getAchievements()" class="member-name-link">getAchievements()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/AchievementService.html" title="class in com.csse3200.game.services">AchievementService</a></dt>
@@ -3706,6 +3712,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/rendering/RenderService.html#getDebug()" class="member-name-link">getDebug()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RenderService.html" title="class in com.csse3200.game.rendering">RenderService</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/GameTime.html#getDeltaTime()" class="member-name-link">getDeltaTime()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/GameTime.html" title="class in com.csse3200.game.services">GameTime</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/achievements/Achievement.html#getDescription()" class="member-name-link">getDescription()</a> - Method in class com.csse3200.game.components.achievements.<a href="com/csse3200/game/components/achievements/Achievement.html" title="class in com.csse3200.game.components.achievements">Achievement</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/Item.html#getDescription()" class="member-name-link">getDescription()</a> - Method in class com.csse3200.game.items.<a href="com/csse3200/game/items/Item.html" title="class in com.csse3200.game.items">Item</a></dt>
 <dd>&nbsp;</dd>
