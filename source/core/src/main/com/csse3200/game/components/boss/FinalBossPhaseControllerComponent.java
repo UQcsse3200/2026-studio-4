@@ -1,5 +1,6 @@
 package com.csse3200.game.components.boss;
 
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
@@ -10,6 +11,8 @@ public class FinalBossPhaseControllerComponent extends Component {
 
   private FinalBossPhase currentPhase = FinalBossPhase.STAGE_ONE;
   private float transitionRemaining;
+  private boolean debugStageStarted;
+  private boolean disposed;
 
   @Override
   public void create() {
@@ -62,6 +65,80 @@ public class FinalBossPhaseControllerComponent extends Component {
 
   public FinalBossPhase getCurrentPhase() {
     return currentPhase;
+  }
+
+  /**
+   * Boots a fresh boss directly into the requested playable stage for local testing.
+   *
+   * <p>The room must supply its focused camera before calling this method. This is a one-time entry
+   * choice, not a way to reset an ongoing fight or report skipped stages as completed.
+   *
+   * @return whether the fresh encounter accepted the requested entry stage
+   */
+  public boolean startDebugStage(FinalBossPhase phase) {
+    if (disposed
+        || debugStageStarted
+        || phase == null
+        || phase == FinalBossPhase.DEFEATED
+        || currentPhase != FinalBossPhase.STAGE_ONE
+        || entity == null) {
+      return false;
+    }
+    FinalBossStageOneComponent stageOne = entity.getComponent(FinalBossStageOneComponent.class);
+    FinalBossStageTwoComponent stageTwo = entity.getComponent(FinalBossStageTwoComponent.class);
+    FinalBossStageThreeComponent stageThree =
+        entity.getComponent(FinalBossStageThreeComponent.class);
+    FinalBossMovementComponent movement = entity.getComponent(FinalBossMovementComponent.class);
+    FinalBossDamageControllerComponent protection =
+        entity.getComponent(FinalBossDamageControllerComponent.class);
+    CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
+    if (stageOne == null
+        || !stageOne.isFreshIntro()
+        || movement == null
+        || protection == null
+        || stats == null
+        || stats.isDead()
+        || (phase != FinalBossPhase.STAGE_ONE && stageTwo == null)
+        || (phase == FinalBossPhase.STAGE_THREE && stageThree == null)) {
+      return false;
+    }
+    int startingHealth =
+        switch (phase) {
+          case STAGE_TWO -> stageOne.getStageTwoStartingHealth();
+          case STAGE_THREE -> stageTwo.getStageThreeStartingHealth();
+          default -> stats.getHealth();
+        };
+    if (startingHealth <= 0) return false;
+
+    debugStageStarted = true;
+    movement.prepareDebugStage();
+    if (phase == FinalBossPhase.STAGE_ONE) return true;
+
+    // Set entry health while still in INTRO: Stage 2 must not mistake the Stage 3 threshold
+    // for a completed fight and award its no-fire-hit achievement during this debug jump.
+    stats.setHealth(startingHealth);
+    stageOne.dispose();
+    transitionRemaining = 0f;
+    currentPhase = phase;
+    protection.enableShield();
+    entity.getEvents().trigger(FinalBossEvents.PHASE_CHANGED, phase);
+    finishDebugStageEntry(phase);
+    return true;
+  }
+
+  private void finishDebugStageEntry(FinalBossPhase expectedPhase) {
+    // Phase listeners run synchronously and may dispose the controller or advance the encounter.
+    if (disposed || currentPhase != expectedPhase) return;
+    FinalBossStageTwoArenaComponent arena =
+        entity.getComponent(FinalBossStageTwoArenaComponent.class);
+    if (expectedPhase == FinalBossPhase.STAGE_TWO && arena != null) arena.update();
+    finishTransition();
+  }
+
+  @Override
+  public void dispose() {
+    disposed = true;
+    transitionRemaining = 0f;
   }
 
   /** Returns whether the boss is in the brief invulnerable window right after a stage change. */

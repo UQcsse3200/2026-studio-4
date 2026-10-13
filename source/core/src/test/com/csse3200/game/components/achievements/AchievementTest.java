@@ -13,21 +13,21 @@ class AchievementTest {
 
   @Test
   void getName_returnsNameGivenToConstructor() {
-    Achievement achievement = new Achievement("Slayer", ctx -> true);
+    Achievement achievement = new Achievement("Slayer", "Test achievement", ctx -> true);
 
     assertEquals("Slayer", achievement.getName());
   }
 
   @Test
   void newAchievement_startsLocked() {
-    Achievement achievement = new Achievement("Slayer", ctx -> true);
+    Achievement achievement = new Achievement("Slayer", "Test achievement", ctx -> true);
 
     assertFalse(achievement.isUnlocked());
   }
 
   @Test
   void update_conditionNotMet_returnsFalseAndStaysLocked() {
-    Achievement achievement = new Achievement("Never", ctx -> false);
+    Achievement achievement = new Achievement("Never", "Test achievement", ctx -> false);
 
     assertFalse(achievement.update(ANY_CONTEXT));
     assertFalse(achievement.isUnlocked());
@@ -35,7 +35,7 @@ class AchievementTest {
 
   @Test
   void update_conditionMet_returnsTrueAndUnlocks() {
-    Achievement achievement = new Achievement("Always", ctx -> true);
+    Achievement achievement = new Achievement("Always", "Test achievement", ctx -> true);
 
     assertTrue(achievement.update(ANY_CONTEXT));
     assertTrue(achievement.isUnlocked());
@@ -46,14 +46,15 @@ class AchievementTest {
     AchievementContext context = new AchievementContext();
     context.goldTotal = 50;
     Achievement achievement =
-        new Achievement("Rich", ctx -> ctx.goldTotal != null && ctx.goldTotal == 50);
+        new Achievement(
+            "Rich", "Test achievement", ctx -> ctx.goldTotal != null && ctx.goldTotal == 50);
 
     assertTrue(achievement.update(context));
   }
 
   @Test
   void update_afterUnlocking_returnsFalseSoItOnlyReportsUnlockOnce() {
-    Achievement achievement = new Achievement("Always", ctx -> true);
+    Achievement achievement = new Achievement("Always", "Test achievement", ctx -> true);
 
     assertTrue(achievement.update(ANY_CONTEXT));
     assertFalse(achievement.update(ANY_CONTEXT));
@@ -66,7 +67,8 @@ class AchievementTest {
     AchievementContext poor = new AchievementContext();
     poor.goldTotal = 0;
     Achievement achievement =
-        new Achievement("Rich", ctx -> ctx.goldTotal != null && ctx.goldTotal >= 100);
+        new Achievement(
+            "Rich", "Test achievement", ctx -> ctx.goldTotal != null && ctx.goldTotal >= 100);
 
     achievement.update(rich);
     achievement.update(poor);
@@ -80,6 +82,7 @@ class AchievementTest {
     Achievement achievement =
         new Achievement(
             "Counted",
+            "Test achievement",
             ctx -> {
               evaluations.incrementAndGet();
               return true;
@@ -98,7 +101,8 @@ class AchievementTest {
     AchievementContext now = new AchievementContext();
     now.dungeonCompletedId = "forest";
     Achievement achievement =
-        new Achievement("Forest", ctx -> "forest".equals(ctx.dungeonCompletedId));
+        new Achievement(
+            "Forest", "Test achievement", ctx -> "forest".equals(ctx.dungeonCompletedId));
 
     assertFalse(achievement.update(notYet));
     assertFalse(achievement.isUnlocked());
@@ -108,20 +112,20 @@ class AchievementTest {
 
   @Test
   void getProgress_startsAtZero() {
-    Achievement achievement = new Achievement("Counter");
+    Achievement achievement = new Achievement("Counter", "Test achievement");
     assertEquals(0f, achievement.getProgress());
   }
 
   @Test
   void getTarget_returnsTarget() {
-    Achievement achievement = new Achievement("Slayer");
+    Achievement achievement = new Achievement("Slayer", "Test achievement");
 
     assertEquals(0, achievement.getTarget());
   }
 
   @Test
   void addProgress_accumulatesAcrossCalls() {
-    Achievement achievement = new Achievement("Counter");
+    Achievement achievement = new Achievement("Counter", "Test achievement");
     achievement.setCondition(ctx -> false);
     achievement.addProgress(2f);
     achievement.addProgress(3f);

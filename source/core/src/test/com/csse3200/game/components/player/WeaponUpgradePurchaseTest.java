@@ -30,6 +30,7 @@ class WeaponUpgradePurchaseTest {
     achievements.register(
         new Achievement(
             "observe weapon purchase",
+            "Test achievement",
             context -> {
               assertTrue(upgrades.isUpgraded(SwordWeaponComponent.class));
               assertEquals(40, inventory.getGold());
