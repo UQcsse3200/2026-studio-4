@@ -9,6 +9,9 @@ public final class DiceDuelGame {
   /** Smallest normal stake, matching Coin Flip. */
   public static final int MIN_STAKE = 10;
 
+  /** Gold charged to reroll the player's dice once per round. */
+  public static final int REROLL_FEE = 5;
+
   private final InventoryComponent inventory;
   // Returns one die roll (1 to 6). Passed in so tests can use fixed rolls instead of random ones.
   private final IntSupplier dice;
@@ -68,13 +71,33 @@ public final class DiceDuelGame {
       return null;
     }
     inventory.addGold(-stake);
-    round = new Round(stake, rollDie(), rollDie(), rollDie(), rollDie());
+    round = new Round(stake, rollDie(), rollDie(), rollDie(), rollDie(), false);
+    return round;
+  }
+
+  /** True when a round is active, it has not been rerolled yet and the player can pay the fee. */
+  public boolean canReroll() {
+    return round != null && !round.rerolled() && inventory.getGold() >= REROLL_FEE;
+  }
+
+  /**
+   * Pays the reroll fee and rerolls only the player's two dice. The merchant's dice are kept.
+   *
+   * @return the updated round, or null if a reroll is not allowed right now
+   */
+  public Round reroll() {
+    if (!canReroll()) {
+      return null;
+    }
+    inventory.addGold(-REROLL_FEE);
+    round =
+        new Round(round.stake(), rollDie(), rollDie(), round.merchant1(), round.merchant2(), true);
     return round;
   }
 
   /**
    * Ends the current round and pays out: win returns double the stake, a tie returns the stake, and
-   * a loss returns nothing.
+   * a loss returns nothing. Reroll fees are never refunded.
    *
    * @return the outcome, or null if no round is active
    */
@@ -95,7 +118,12 @@ public final class DiceDuelGame {
       result = Result.LOSE;
     }
     refresh();
-    return new Outcome(result, finished.playerTotal(), finished.merchantTotal(), finished.stake());
+    return new Outcome(
+        result,
+        finished.playerTotal(),
+        finished.merchantTotal(),
+        finished.stake(),
+        finished.rerolled());
   }
 
   private int rollDie() {
@@ -113,8 +141,9 @@ public final class DiceDuelGame {
     LOSE
   }
 
-  /** The dice rolled in one round. */
-  public record Round(int stake, int player1, int player2, int merchant1, int merchant2) {
+  /** The dice rolled in one round, and whether the player has used their reroll. */
+  public record Round(
+      int stake, int player1, int player2, int merchant1, int merchant2, boolean rerolled) {
     public int playerTotal() {
       return player1 + player2;
     }
@@ -125,5 +154,6 @@ public final class DiceDuelGame {
   }
 
   /** The settled result of one round. */
-  public record Outcome(Result result, int playerTotal, int merchantTotal, int stake) {}
+  public record Outcome(
+      Result result, int playerTotal, int merchantTotal, int stake, boolean rerolled) {}
 }

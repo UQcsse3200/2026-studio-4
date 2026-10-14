@@ -104,4 +104,43 @@ class DiceDuelGameTest {
     DiceDuelGame game = new DiceDuelGame(inventory, () -> 7);
     assertThrows(IllegalStateException.class, game::roll);
   }
+
+  @Test
+  void rerollChargesFeeAndOnlyChangesPlayerDice() {
+    InventoryComponent inventory = new InventoryComponent(50);
+    // player 1+1, merchant 4+4, then reroll player to 6+5
+    DiceDuelGame game = new DiceDuelGame(inventory, rolls(1, 1, 4, 4, 6, 5));
+    game.roll();
+    assertTrue(game.canReroll());
+    DiceDuelGame.Round round = game.reroll();
+    assertEquals(11, round.playerTotal());
+    assertEquals(8, round.merchantTotal());
+    assertEquals(35, inventory.getGold()); // 50 - 10 stake - 5 fee
+    DiceDuelGame.Outcome outcome = game.settle();
+    assertEquals(DiceDuelGame.Result.WIN, outcome.result());
+    assertTrue(outcome.rerolled());
+    assertEquals(55, inventory.getGold()); // fee is not refunded
+  }
+
+  @Test
+  void rerollOnlyOncePerRound() {
+    InventoryComponent inventory = new InventoryComponent(50);
+    DiceDuelGame game = new DiceDuelGame(inventory, rolls(1, 1, 4, 4, 2, 2));
+    game.roll();
+    game.reroll();
+    assertFalse(game.canReroll());
+    assertNull(game.reroll());
+    assertEquals(35, inventory.getGold()); // second reroll charged nothing
+  }
+
+  @Test
+  void cannotRerollWithoutRoundOrFee() {
+    InventoryComponent inventory = new InventoryComponent(12);
+    DiceDuelGame game = new DiceDuelGame(inventory, rolls(1, 1, 4, 4));
+    assertNull(game.reroll()); // no round yet
+    game.roll(); // stake 10 taken, 2 Gold left
+    assertFalse(game.canReroll());
+    assertNull(game.reroll());
+    assertEquals(2, inventory.getGold());
+  }
 }
