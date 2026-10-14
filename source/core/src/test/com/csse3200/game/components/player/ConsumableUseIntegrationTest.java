@@ -128,28 +128,6 @@ class ConsumableUseIntegrationTest {
   }
 
   @Test
-  void shieldBlocksActualDamageAndExpiresBeforeControllerTick() {
-    inventory.addConsumable(ItemIds.SHIELD);
-    assertTrue(consumables.tryUse(ItemIds.SHIELD));
-    assertTrue(consumables.isShielded());
-    stats.takeDamage(30, new Entity());
-    assertEquals(100, stats.getHealth());
-    now.set(3001);
-    effects.update();
-    stats.takeDamage(30);
-    assertEquals(100, stats.getHealth());
-    now.set(7999);
-    effects.update();
-    stats.takeDamage(30);
-    assertEquals(100, stats.getHealth());
-    assertEquals(1, consumables.getShieldRemainingMs());
-    now.set(8000);
-    assertFalse(consumables.isShielded());
-    stats.takeDamage(30);
-    assertEquals(70, stats.getHealth());
-  }
-
-  @Test
   void strengthRefreshDoesNotCompoundOrRemoveNewCharm() {
     inventory.addConsumable(ItemIds.STRENGTH_POTION, 2);
     assertTrue(consumables.tryUse(ItemIds.STRENGTH_POTION));

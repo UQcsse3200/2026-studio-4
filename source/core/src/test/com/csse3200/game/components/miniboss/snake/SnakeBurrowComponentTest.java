@@ -22,7 +22,7 @@ import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.player.PlayerDamageFlashComponent;
 import com.csse3200.game.components.statuseffects.FrozenEffect;
 import com.csse3200.game.components.statuseffects.InvisibilityEffect;
-import com.csse3200.game.components.statuseffects.ShieldEffect;
+import com.csse3200.game.components.statuseffects.Shield;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.SnakeMiniBossConfig;
 import com.csse3200.game.extensions.GameExtension;
@@ -279,7 +279,7 @@ class SnakeBurrowComponentTest {
 
   @Test
   void fullyAbsorbedAttackDoesNotReceiveHitFeedback() {
-    playerEffects.addStatusEffect(new ShieldEffect(new GameTime(), 1000));
+    playerEffects.addStatusEffect(new Shield(new GameTime(), 1000));
     reachExposed();
 
     assertEquals(100, playerStats.getHealth());

@@ -432,7 +432,6 @@ public class FinalBossStageTwoComponent extends Component {
     }
   }
 
-
   private record WallHit(Fixture fixture, float fraction) {}
 
   FinalBossStageTwoIceController getIceController() {
