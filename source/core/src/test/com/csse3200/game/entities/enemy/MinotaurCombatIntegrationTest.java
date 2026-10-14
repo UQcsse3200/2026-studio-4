@@ -41,6 +41,7 @@ import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.rendering.MinotaurAttackRenderComponent;
+import com.csse3200.game.rendering.MinotaurDashTrailComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
@@ -371,6 +372,8 @@ class MinotaurCombatIntegrationTest {
     assertTrue(
         minotaur.getComponent(MinotaurAnimationController.class)
             instanceof EnemyAnimationController);
+    assertNotNull(minotaur.getComponent(MinotaurDashTrailComponent.class));
+    assertNull(crab.getComponent(MinotaurDashTrailComponent.class));
     assertNull(minotaur.getComponent(TouchAttackComponent.class));
     assertNotNull(crab.getComponent(TouchAttackComponent.class));
     assertNotNull(crab.getComponent(EnemyAnimationController.class));

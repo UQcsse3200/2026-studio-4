@@ -31,6 +31,7 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.MinotaurAttackRenderComponent;
+import com.csse3200.game.rendering.MinotaurDashTrailComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.function.Consumer;
 
@@ -162,7 +163,8 @@ public class NPCFactory {
               new MinotaurAttackRenderComponent(
                   ServiceLocator.getResourceService()
                       .getAsset(MinotaurAttackRenderComponent.ATLAS, TextureAtlas.class)))
-          .addComponent(new MinotaurAnimationController(target));
+          .addComponent(new MinotaurAnimationController(target))
+          .addComponent(new MinotaurDashTrailComponent());
     } else {
       chaseEnemy
           .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f, 1f))
