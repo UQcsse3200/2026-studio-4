@@ -36,7 +36,7 @@ public class FinalBossStageTwoHintDisplay extends UIComponent {
     if (stage == null) return;
 
     Label.LabelStyle style = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
-    style.fontColor = Color.valueOf("123F7A");
+    style.fontColor = Color.valueOf("B3E5FC");
     Label hint =
         new Label(HINT, style) {
           @Override
