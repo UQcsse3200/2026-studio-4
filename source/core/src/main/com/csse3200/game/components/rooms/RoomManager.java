@@ -29,7 +29,13 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-/** Owns the active room and applies the room graph specified by {@link WorldConfig}. */
+/**
+ * Owns the active room and applies the room graph specified by {@link WorldConfig}.
+ *
+ * @deprecated Deprecated in favour of a new {@link com.csse3200.game.rooms.RoomSelector} and
+ *     related classes.
+ */
+@Deprecated
 public class RoomManager {
   /**
    * Triggered on the player with the room id, its dungeon id (null for the hub) and whether the

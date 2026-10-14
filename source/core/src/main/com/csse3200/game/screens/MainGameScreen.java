@@ -64,7 +64,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
-  private RoomManager roomManager;
+  private RoomManager roomManager = null; // Will be removed in the future
   private RoomSelector roomSelector;
   private Entity player;
   private final Terminal terminal;
@@ -124,14 +124,6 @@ public class MainGameScreen extends ScreenAdapter {
     player.getEvents().addListener("entityDied", this::scheduleDeathScreen);
     // trigger win screen via entity win event
     player.getEvents().addListener("winScreenRequested", () -> winScreenRequested = true);
-    // The hub and the dungeons have their own music; rooms announce which one they want.
-    player
-        .getEvents()
-        .addListener(
-            // TODO A music manager componenet
-            RoomManager.ROOM_ENTERED,
-            (String roomId, String dungeonId, Boolean cleared) ->
-                roomAssets.playMusicFor(dungeonId, Boolean.TRUE.equals(cleared)));
     // notify damage
     player
         .getEvents()
@@ -142,21 +134,15 @@ public class MainGameScreen extends ScreenAdapter {
               ctx.playerDamaged = true;
               ServiceLocator.getAchievementService().update(ctx);
             });
-    // roomManager = new RoomManager(world, player, renderer.getCamera());
-    // if (loadedSave != null) {
-    //   roomManager.initializeFromSavedRun(loadedSave, loadAtCheckpoint);
-    // }
-    // roomManager.create();
 
     roomSelector = new RoomSelector(player, renderer.getCamera());
     roomSelector.start();
 
+    // Unsure of how this interacts with current roomSelector implementation
     if (loadedSave != null) {
       GameSaveMapper.restore(player, loadedSave);
       GameSaveMapper.restoreAchievements(loadedSave);
     }
-    // RoomCommand roomCommand = new RoomCommand(roomManager);
-    // terminal.addCommand("room", roomCommand);
 
     createUI();
   }
@@ -212,6 +198,7 @@ public class MainGameScreen extends ScreenAdapter {
       GameProgress.recordRun((long) (runTimer.getTotalTime() * 1000f));
     }
 
+    // This should all just be one function call GameSave.save();
     if (saveOnDispose && !runSaved && player != null && roomManager != null) {
       runSaved = true;
       try {
