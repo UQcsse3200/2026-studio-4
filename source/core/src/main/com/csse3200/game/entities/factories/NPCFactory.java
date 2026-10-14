@@ -257,7 +257,7 @@ public class NPCFactory {
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(new PatrolTask(spawn, true))
-            .addTask(new RangedAttackTask(target, 5, config.baseAttack, projectileSpawner));
+            .addTask(new RangedAttackTask(target, 10, config.baseAttack, projectileSpawner));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
