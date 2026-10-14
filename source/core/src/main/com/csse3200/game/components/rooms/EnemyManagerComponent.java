@@ -12,6 +12,7 @@ import com.csse3200.game.components.boss.FinalBossPhase;
 import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
 import com.csse3200.game.components.boss.FinalBossStageThreeComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoArenaComponent;
+import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
@@ -93,11 +94,15 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       var config = entity.getComponent(RoomDataComponent.class).getConfig();
       logger.info("Room Cleared");
 
-      entity.getEvents().trigger("RoomCleared", config.id);
+      entity.getEvents().trigger(RoomClearService.ROOM_CLEARED, config.id);
+
       // Not the ideal way to know if it is end of a dungeon but works for now.
       // Should be changed later or enforce the naming convention
       if (config.id.endsWith("End")) {
-        entity.getEvents().trigger("DungeonCleared", config.dungeonId);
+        entity.getEvents().trigger(RoomClearService.DUNGEON_CLEARED, config.dungeonId);
+        entity.getEvents().trigger(GameAreaDisplay.DISPLAY, "Dungeon Cleared!");
+      } else {
+        entity.getEvents().trigger(GameAreaDisplay.DISPLAY, "Room Cleared!");
       }
 
       notified = true;

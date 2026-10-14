@@ -16,6 +16,9 @@ public class RoomClearService {
   private static final Set<String> clearedRoomIds = new HashSet<>();
   private static final Set<String> clearedDungeonIds = new HashSet<>();
 
+  public static final String ROOM_CLEARED = "RoomCleared";
+  public static final String DUNGEON_CLEARED = "DungeonCleared";
+
   private RoomClearService() {}
 
   /**
@@ -32,7 +35,7 @@ public class RoomClearService {
     entity
         .getEvents()
         .addListener(
-            "RoomCleared",
+            ROOM_CLEARED,
             (String roomId) -> {
               clearedRoomIds.add(roomId);
               logger.debug("Added {} to cleared rooms", roomId);
@@ -40,7 +43,7 @@ public class RoomClearService {
     entity
         .getEvents()
         .addListener(
-            "DungeonCleared",
+            DUNGEON_CLEARED,
             (String dungeonId) -> {
               clearedDungeonIds.add(dungeonId);
               logger.debug("Added {} to cleared dungeons", dungeonId);
