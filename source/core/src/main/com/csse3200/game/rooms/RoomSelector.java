@@ -118,6 +118,7 @@ public class RoomSelector {
   private void onPlayerInteract() {
     // Handle room switch via hitbox events
     room.getEvents().trigger("requestExit", player.getCenterPosition());
+    room.getEvents().trigger("npcInteract", player);
   }
 
   /** Debug function to clear the current room's enemies */
