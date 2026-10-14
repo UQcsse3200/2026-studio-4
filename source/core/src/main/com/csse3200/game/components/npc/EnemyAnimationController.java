@@ -11,18 +11,22 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * This class listens to events relevant to a ghost entity's state and plays the animation when one
- * of the events is triggered.
+ * Plays enemy animations in response to existing AI and combat events. Skins with a contact-attack
+ * clip or with both lunge clips opt into phase playback; other skins retain their existing
+ * animation mapping.
  */
 public class EnemyAnimationController extends Component {
   private static final String CONTACT_ATTACK = "contactAttack";
-  private AnimationRenderComponent animator;
   private static final String DEFAULT = "default";
+  private static final String HURT = "hurt";
+  private AnimationRenderComponent animator;
   private boolean hasContactAnimation;
+  private boolean hasLungeAnimations;
   private String locomotionAnimation = DEFAULT;
   private boolean dying = false;
   private boolean disposalQueued = false;
   private boolean followPlayer = false; // used by enemies to follow player
+  private boolean lunging = false;
 
   @Override
   public void create() {
@@ -38,9 +42,19 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener(DEFAULT, this::animatePause);
     entity.getEvents().addListener("moving", this::animateMove);
     entity.getEvents().addListener("stampede", this::dustCloud);
+
     hasContactAnimation = animator.hasAnimation(CONTACT_ATTACK);
     if (hasContactAnimation) {
       entity.getEvents().addListener(CONTACT_ATTACK, this::animateContactAttack);
+    }
+
+    hasLungeAnimations =
+        animator.hasAnimation("lungeTelegraph") && animator.hasAnimation("lungeDash");
+    if (hasLungeAnimations) {
+      entity.getEvents().addListener("lungeTelegraphStart", () -> animateLunge("lungeTelegraph"));
+      entity.getEvents().addListener("lungeDashStart", () -> animateLunge("lungeDash"));
+      entity.getEvents().addListener("lungeDashEnd", this::finishLunge);
+      entity.getEvents().addListener("hitReaction", this::animateHurt);
     }
   }
 
@@ -48,11 +62,11 @@ public class EnemyAnimationController extends Component {
     if (dying) {
       return;
     }
-    if (hasContactAnimation) {
-      animateLocomotion("move", true);
-      if (!isPlayingContactAttack() && dir.x != 0f) {
+    if (hasContactAnimation || hasLungeAnimations) {
+      if (!lunging && !isPlayingContactAttack() && dir.x != 0f) {
         animator.setFlipX(dir.x < 0f);
       }
+      animateLocomotion("move", true);
       return;
     }
     followPlayer = false;
@@ -120,6 +134,17 @@ public class EnemyAnimationController extends Component {
       updateLocomotion();
       return;
     }
+    if (hasLungeAnimations) {
+      // AI and the renderer already pause for these effects. Keep the same displayed clip too.
+      if (StatusEffectsControllerComponent.isImmobilised(entity)) {
+        return;
+      }
+      updateFacingDirection(followPlayer);
+      if (!lunging && !isPlayingHurt()) {
+        updateLocomotion();
+      }
+      return;
+    }
     updateFacingDirection(followPlayer);
     if ("attack".equals(animator.getCurrentAnimation()) && animator.isFinished()) {
       animator.startAnimation("move");
@@ -147,7 +172,7 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateChase() {
-    animateLocomotion("chase", hasContactAnimation);
+    animateLocomotion("chase", hasContactAnimation || hasLungeAnimations);
   }
 
   private void animatePause() {
@@ -187,17 +212,47 @@ public class EnemyAnimationController extends Component {
     return CONTACT_ATTACK.equals(animator.getCurrentAnimation()) && !animator.isFinished();
   }
 
+  private void animateLunge(String animation) {
+    if (!dying) {
+      lunging = true;
+      followPlayer = true;
+      animator.startAnimation(animation);
+    }
+  }
+
+  private void finishLunge() {
+    if (!dying) {
+      lunging = false;
+      updateLocomotion();
+    }
+  }
+
+  private void animateHurt(Entity attacker) {
+    if (!dying
+        && !lunging
+        && !StatusEffectsControllerComponent.isImmobilised(entity)
+        && animator.hasAnimation(HURT)) {
+      animator.startAnimation(HURT);
+    }
+  }
+
+  private boolean isPlayingHurt() {
+    return HURT.equals(animator.getCurrentAnimation()) && !animator.isFinished();
+  }
+
   private void animateLocomotion(String animation, boolean followMovement) {
     if (dying) {
       return;
     }
     followPlayer = followMovement;
-    if (!hasContactAnimation) {
+    if (!hasContactAnimation && !hasLungeAnimations) {
       animator.startAnimation(animation);
       return;
     }
     locomotionAnimation = animation;
-    if (!isPlayingContactAttack()) {
+    // A cancelled telegraph can yield to wander/chase without emitting lungeDashEnd.
+    lunging = false;
+    if (!isPlayingContactAttack() && !isPlayingHurt()) {
       updateLocomotion();
     }
   }
