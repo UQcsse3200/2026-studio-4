@@ -5,6 +5,10 @@ sourceSets.test.java.srcDirs = [ "src/test/" ]
 
 eclipse.project.name = appName + "-core"
 
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junit5Version"
+}
+
 test {
     useJUnitPlatform()
     workingDir = new File("../core/assets")

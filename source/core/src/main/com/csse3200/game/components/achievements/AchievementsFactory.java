@@ -15,9 +15,17 @@ public class AchievementsFactory {
       case "killStreak" -> killStreak(c);
       case "speedRun" -> speedRun(c);
       case "enemySet" -> enemySet(c);
+      case "snake" -> snake(c);
       case "finalBoss" -> finalBoss(c);
       default -> throw new IllegalArgumentException("Unknown achievement type: " + c.type);
     };
+  }
+
+  private static Achievement snake(AchievementConfig c) {
+    return new Achievement(
+        c.name,
+        c.description,
+        ctx -> c.bossAchievementId != null && c.bossAchievementId.equals(ctx.bossAchievementId));
   }
 
   private static Achievement dungeonClear(AchievementConfig c) {

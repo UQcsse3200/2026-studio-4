@@ -19,6 +19,9 @@
   { "type": "finalBoss", "bossAchievementId": "finalBossStageThreeStatueFlash", "name": "How can a statue even flash?", "description": "Keep an eye on the statues in the second wave of Stage 3.||Trigger the first successful statue teleport during Stage 3 Wave 2." },
 
   { "type": "enemyKillCount", "enemyType": "MEDUSA", "target": 3, "name": "You killed 3 Medusa", "description": "Defeat 3 Medusas." },
+  { "type": "snake", "bossAchievementId": "snakeDefeatedWithoutShieldPickup", "name": "What are those green things?", "description": "Defeat the Snake miniboss without collecting any green shield gems during the encounter." },
+  { "type": "snake", "bossAchievementId": "snakeStageTwoShieldPickup", "name": "Green bubble", "description": "Collect a green shield gem for the first time during Stage 2." },
+  { "type": "snake", "name": "Whack-a-Mole", "bossAchievementId": "snakeExposedHit", "description": "Land a damaging player attack during Snake's post-emergence pause in either stage, before the Stage 2 poison-spitting sequence begins." },
   { "type": "enemyKillCount", "target": 5, "name": "Ah! Boy You killed 5 enemies", "description": "Defeat 5 enemies of any type." },
   { "type": "enemyKillCount", "target": 100, "name": "Exterminator", "description": "Defeat 100 enemies of any type." },
 
