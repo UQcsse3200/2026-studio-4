@@ -16,6 +16,7 @@ import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.components.tasks.*;
 import com.csse3200.game.components.tasks.ChaseTask;
+import com.csse3200.game.components.tasks.GroundChaseTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
 import com.csse3200.game.components.tasks.PatrolTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
@@ -138,7 +139,7 @@ public class NPCFactory {
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(new WanderTask(config.movement, 1f))
-            .addTask(new ChaseTask(target, 10, 3f, 10f))
+            .addTask(new GroundChaseTask(target, 10, 3f, 10f))
             .addTask(new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy));
 
     AnimationRenderComponent animator =
