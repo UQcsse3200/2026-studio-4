@@ -75,6 +75,7 @@ public class RoomAssets implements Disposable {
     "images/horse.atlas",
     "images/crow.atlas",
     "images/minotaur.atlas",
+    "images/minotaur-combat/attacks.atlas",
     "images/sandeye.atlas",
     "images/dark_elves.atlas",
     "images/jingwei.atlas",
