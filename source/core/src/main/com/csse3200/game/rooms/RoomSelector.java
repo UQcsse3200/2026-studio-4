@@ -25,8 +25,8 @@ public class RoomSelector {
   private RoomLoader roomLoader;
 
   private final EventHandler eventHandler = new EventHandler();
-  public final String ROOM_SWITCHED_EVENT = "RoomSwitched";
-  public final String SWITCH_ROOM = "SwitchRoom";
+  public static final String ROOM_SWITCHED_EVENT = "RoomSwitched";
+  public static final String SWITCH_ROOM = "SwitchRoom";
 
   RoomSelector(Entity room, Entity player, CameraComponent camera, RoomLoader roomLoader) {
     this.room = room;
@@ -97,7 +97,10 @@ public class RoomSelector {
    * @param newRoom The <b>Unregistered</b> room entity to switch to.
    * @param spawn Where to spawn the player upon switching to the new room
    */
-  private void setRoom(Entity newRoom, GridPoint2 spawn) {
+  void setRoom(Entity newRoom, GridPoint2 spawn) {
+    if (this.room == newRoom) {
+      throw new IllegalArgumentException("Current room is same as the new room to set");
+    }
     if (this.room != null) {
       this.room.dispose();
     }

@@ -50,8 +50,8 @@ public class RoomClearService {
             });
   }
 
-  public static boolean isRoomCleared(String RoomId) {
-    return clearedRoomIds.contains(RoomId);
+  public static boolean isRoomCleared(String roomId) {
+    return clearedRoomIds.contains(roomId);
   }
 
   public static int getDungeonClearedCount() {
