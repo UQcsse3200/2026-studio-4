@@ -35,7 +35,7 @@ import java.util.Set;
  * @deprecated Deprecated in favour of a new {@link com.csse3200.game.rooms.RoomSelector} and
  *     related classes.
  */
-@Deprecated
+@Deprecated(since = "14.10", forRemoval = true)
 public class RoomManager {
   /**
    * Triggered on the player with the room id, its dungeon id (null for the hub) and whether the
