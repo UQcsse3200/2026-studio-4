@@ -1,6 +1,5 @@
-package com.csse3200.game.components.rooms;
+package com.csse3200.game.rooms;
 
-import com.csse3200.game.rooms.RoomSelector;
 import com.csse3200.game.ui.terminal.commands.Command;
 import java.util.ArrayList;
 

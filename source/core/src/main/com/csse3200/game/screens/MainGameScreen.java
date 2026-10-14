@@ -13,7 +13,7 @@ import com.csse3200.game.components.gamearea.TimerDisplay;
 import com.csse3200.game.components.maingame.*;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.rooms.RoomAssets;
-import com.csse3200.game.components.rooms.RoomCommand;
+import com.csse3200.game.rooms.RoomCommand;
 import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
 import com.csse3200.game.entities.Entity;
