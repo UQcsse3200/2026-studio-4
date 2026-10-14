@@ -70,7 +70,7 @@ class DragonThunderOrbComponentTest {
     DragonPhaseComponent phase = new DragonPhaseComponent();
     dragon.addComponent(phase);
     phase.create();
-    dragonStats.setHealth(250);
+    dragonStats.setHealth(100);
   }
 
   @Test

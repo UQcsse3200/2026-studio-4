@@ -16,6 +16,7 @@ public class CerberusDeathComponent extends Component {
   private boolean disposalScheduled;
 
   private static final String ENTITY_DIED = "entityDied";
+  public static final String DEFEATED = "cerberusDefeated";
 
   public CerberusDeathComponent(Entity leftHead, Entity rightHead) {
     this.leftHead = leftHead;
@@ -76,6 +77,7 @@ public class CerberusDeathComponent extends Component {
     }
 
     disposalScheduled = true;
+    entity.getEvents().trigger(DEFEATED);
     ServiceLocator.getEntityService().scheduleDisposal(entity);
   }
 }

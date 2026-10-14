@@ -54,8 +54,8 @@ class DragonTest {
     Entity dragon = DragonFactory.createDragon();
     CombatStatsComponent stats = dragon.getComponent(CombatStatsComponent.class);
 
-    assertEquals(500, stats.getHealth());
-    assertEquals(500, stats.getMaxHealth());
+    assertEquals(200, stats.getHealth());
+    assertEquals(200, stats.getMaxHealth());
     assertEquals(20, stats.getBaseAttack());
   }
 
@@ -120,7 +120,7 @@ class DragonTest {
     // Initialise only phase logic; UI rendering is outside this test.
     phase.create();
 
-    dragon.getComponent(CombatStatsComponent.class).setHealth(250);
+    dragon.getComponent(CombatStatsComponent.class).setHealth(100);
 
     assertEquals(2, phase.getCurrentPhase());
   }

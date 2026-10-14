@@ -44,6 +44,10 @@ public class InventoryDisplay extends UIComponent {
   private static final String RIGHT_PAGE_NAME = "inventory-page-right";
   private static final String ACTIVE_SLOT = "active";
 
+  private static final String HINT_SEPARATOR = "||";
+  private final List<Achievement> achievementItems = new ArrayList<>();
+  private final List<Label> achievementLabels = new ArrayList<>();
+
   private enum Page {
     CHARMS,
     CONSUMABLES,
@@ -91,6 +95,10 @@ public class InventoryDisplay extends UIComponent {
         }
 
         private void moveSelection(int dx, int dy) {
+          if (currentPage == Page.ACHIEVEMENTS) {
+            moveAchievementSelection(dx, dy);
+            return;
+          }
           if (selectedSlots().isEmpty()) return;
           tooltipManager.hideAll();
           int columns = selectedEquipped ? 3 : 4;
@@ -140,7 +148,21 @@ public class InventoryDisplay extends UIComponent {
           // Pre-existing movement releases must still reach the player input handler.
           return capturedKeys.remove(keycode);
         }
+
+        private void moveAchievementSelection(int dx, int dy) {
+          if (achievementItems.isEmpty()) return;
+          int step = dy != 0 ? dy : dx;
+          selectedIndex = Math.clamp((long) selectedIndex + step, 0, achievementItems.size() - 1);
+          updateSelection();
+          table.validate();
+          Label row = achievementLabels.get(selectedIndex);
+          if (row.getParent().getParent() instanceof ScrollPane scroll) {
+            scroll.scrollTo(row.getX(), row.getY(), row.getWidth(), row.getHeight());
+            scroll.updateVisualScroll();
+          }
+        }
       };
+
   private final Supplier<DragAndDrop> dragAndDropFactory;
   private DragAndDrop dragAndDrop;
   private InventoryComponent inventoryComponent;
@@ -200,6 +222,8 @@ public class InventoryDisplay extends UIComponent {
     stage.addActor(table);
     equippedSlots.clear();
     storedSlots.clear();
+    achievementItems.clear();
+    achievementLabels.clear();
 
     selectionDetails = new Label("", skin);
     selectionDetails.setName("inventory-selection-details");
@@ -397,23 +421,29 @@ public class InventoryDisplay extends UIComponent {
     Table pagesContainer = new Table();
     pagesContainer.pad(30, 40, 30, 40);
 
-    List<Achievement> all = new ArrayList<>();
     AchievementService achievementService = ServiceLocator.getAchievementService();
     if (achievementService != null) {
-      all.addAll(achievementService.getAchievements());
+      // Unlocked first, then locked
+      achievementService.getAchievements().stream()
+          .filter(Achievement::isUnlocked)
+          .forEach(achievementItems::add);
+      achievementService.getAchievements().stream()
+          .filter(a -> !a.isUnlocked())
+          .forEach(achievementItems::add);
     }
-
-    List<Achievement> locked = all.stream().filter(a -> !a.isUnlocked()).toList();
-    List<Achievement> unlocked = all.stream().filter(Achievement::isUnlocked).toList();
+    long unlockedCount = achievementItems.stream().filter(Achievement::isUnlocked).count();
 
     Table leftPage = new Table().background(inventory.getDrawable(LEFT_PAGE)).top();
     leftPage.setName(LEFT_PAGE_NAME);
     leftPage.pad(20);
     leftPage.add(pageTabs()).padBottom(10).growX().row();
-    leftPage.add(createDarkLabel("Locked achievements")).top().pad(15f).row();
-    leftPage.add(achievementList(locked, false)).grow();
-    leftPage.row();
-    Label hints = createDarkLabel("Q / E : Category    I / Esc : Close");
+    leftPage
+        .add(createDarkLabel("Unlocked " + unlockedCount + " / " + achievementItems.size()))
+        .top()
+        .pad(10f)
+        .row();
+    leftPage.add(achievementList()).grow().row();
+    Label hints = createDarkLabel("WASD/Arrows:Select\nQ/E:Category I/Esc:Close");
     hints.setFontScale(0.8f);
     leftPage.add(hints).padTop(10);
     pagesContainer.add(leftPage).size(350, 500).padRight(20);
@@ -421,35 +451,46 @@ public class InventoryDisplay extends UIComponent {
     Table rightPage = new Table().background(inventory.getDrawable(RIGHT_PAGE)).top();
     rightPage.setName(RIGHT_PAGE_NAME);
     rightPage.pad(20);
-    rightPage.add(createDarkLabel("Unlocked achievements")).top().pad(15f).row();
-    rightPage.add(achievementList(unlocked, true)).grow();
+    rightPage.add(createDarkLabel("Details")).padBottom(10).row();
+    Table detailsTable = new Table();
+    detailsTable.top().left();
+    detailsTable.add(selectionDetails).width(270).top().left();
+    rightPage.add(scrollGrid(detailsTable)).grow();
     pagesContainer.add(rightPage).size(350, 500);
 
     return pagesContainer;
   }
 
-  /** Builds a scrollable column of achievement names, styled for locked or unlocked. */
-  private ScrollPane achievementList(List<Achievement> achievements, boolean unlockedStyle) {
+  /** One row per achievement; hovering or clicking a row selects it. */
+  private ScrollPane achievementList() {
     Table list = new Table();
     list.top();
-    for (Achievement a : achievements) {
-      Label name = createDarkLabel("> " + a.getName());
+    for (int i = 0; i < achievementItems.size(); i++) {
+      Achievement a = achievementItems.get(i);
+      final int index = i;
+      Label row = createDarkLabel((a.isUnlocked() ? "[x] " : "[ ] ") + a.getName());
+      row.setName("achievement-" + a.getName());
+      row.setWrap(true);
+      row.addListener(
+          new InputListener() {
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+              if (pointer != -1) return;
+              selectedIndex = index;
+              updateSelection();
+            }
 
-      name.setName("achievement-" + a.getName());
-      name.setWrap(true);
-      list.add(name).left().width(280f).pad(6).row();
-
-      if (!unlockedStyle && a.getTarget() > 0) {
-        int shown = (int) Math.min(a.getProgress(), a.getTarget());
-        Label progress = new Label(shown + " / " + (int) a.getTarget(), skin, "achievements_lock");
-        progress.setColor(Color.valueOf(DARK_TEXT_COLOR));
-        list.add(progress).left().padLeft(6).padBottom(20).row();
-      }
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+              selectedIndex = index;
+              updateSelection();
+              return true;
+            }
+          });
+      achievementLabels.add(row);
+      list.add(row).left().width(280f).pad(6).row();
     }
-    ScrollPane scrollPane = new ScrollPane(list, skin);
-    scrollPane.setScrollingDisabled(true, false);
-    scrollPane.setFadeScrollBars(false);
-    return scrollPane;
+    return scrollGrid(list);
   }
 
   /**
@@ -589,6 +630,10 @@ public class InventoryDisplay extends UIComponent {
   }
 
   private void updateSelection() {
+    if (currentPage == Page.ACHIEVEMENTS) {
+      updateAchievementSelection();
+      return;
+    }
     if (selectedSlots().isEmpty()) return;
     selectedIndex = Math.clamp(selectedIndex, 0, selectedSlots().size() - 1);
     for (Stack slot : equippedSlots) slot.getChildren().first().setColor(Color.WHITE);
@@ -607,6 +652,50 @@ public class InventoryDisplay extends UIComponent {
               + "\n"
               + String.join("\n", lines.subList(1, lines.size())));
     }
+  }
+
+  private void updateAchievementSelection() {
+    if (achievementItems.isEmpty()) {
+      selectionDetails.setText("No achievements yet.");
+      return;
+    }
+    selectedIndex = Math.clamp(selectedIndex, 0, achievementItems.size() - 1);
+    for (int i = 0; i < achievementLabels.size(); i++) {
+      achievementLabels
+          .get(i)
+          .setColor(Color.valueOf(i == selectedIndex ? "8b0000ff" : DARK_TEXT_COLOR));
+    }
+    Achievement a = achievementItems.get(selectedIndex);
+    StringBuilder text =
+        new StringBuilder(a.getName())
+            .append('\n')
+            .append(a.isUnlocked() ? "Unlocked" : "Locked")
+            .append("\n\n")
+            .append(displayText(a));
+    if (!a.isUnlocked() && a.getTarget() > 0) {
+      int shown = (int) Math.min(a.getProgress(), a.getTarget());
+      text.append("\n\nProgress: ").append(shown).append(" / ").append((int) a.getTarget());
+    } else if (!a.isUnlocked()
+        && a.getTarget() <= 0
+        && a.getProgress() > 0
+        && a.getProgress() < Float.MAX_VALUE) {
+      // Only the speed run stores a time here (its "nothing recorded" value is MAX_VALUE).
+      text.append("\n\nLast time: ").append(String.format("%.1f", a.getProgress())).append("s");
+    }
+    selectionDetails.setText(text.toString());
+  }
+
+  /** Locked: the part before "||" (or all of it). Unlocked: the part after it (or all of it). */
+  static String displayText(Achievement a) {
+    String description = a.getDescription();
+    if (description == null || description.isBlank()) return "";
+    int split = description.indexOf(HINT_SEPARATOR);
+    if (split < 0) return description.trim();
+    String part =
+        a.isUnlocked()
+            ? description.substring(split + HINT_SEPARATOR.length())
+            : description.substring(0, split);
+    return part.trim();
   }
 
   private static Texture getTexture(Item item) {
