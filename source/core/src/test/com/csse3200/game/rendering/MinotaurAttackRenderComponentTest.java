@@ -59,6 +59,17 @@ class MinotaurAttackRenderComponentTest {
   }
 
   @Test
+  void renderingAloneCannotAdvanceTheCombatTimeline() {
+    renderer.startAnimation("normalAttack", false);
+    SpriteBatch batch = mock(SpriteBatch.class);
+    for (int i = 0; i < 20; i++) {
+      renderer.render(batch);
+    }
+    assertFrame(renderer.getCurrentFrame(), "normalAttack", 0);
+    assertFalse(renderer.isFinished());
+  }
+
+  @Test
   void fullAttackCanvasUsesOldSpritePixelScaleAndPreservesGroundAnchor() {
     renderer.startAnimation("normalAttack", false);
     SpriteBatch batch = mock(SpriteBatch.class);
@@ -120,22 +131,25 @@ class MinotaurAttackRenderComponentTest {
     renderer.startAnimation("chargeAttack", false);
     SpriteBatch batch = mock(SpriteBatch.class);
     renderer.draw(batch);
+    renderer.advance(0.1f);
     TextureRegion held = renderer.getCurrentFrame();
     assertFrame(held, "chargeAttack", 1);
     effects.addStatusEffect(StatusEffectsFactory.createFrozen(time, 5000L));
     for (int i = 0; i < 12; i++) {
+      renderer.advance(0.1f);
       renderer.draw(batch);
     }
     assertFrame(renderer.getCurrentFrame(), "chargeAttack", 1);
     assertFalse(renderer.isFinished());
 
     effects.clearStatusEffects();
+    renderer.advance(0.1f);
     renderer.draw(batch);
     assertFrame(renderer.getCurrentFrame(), "chargeAttack", 2);
   }
 
   @Test
-  void glowReplaysTheVisibleFrameAndAdvancesPlayheadOnlyOncePerRender() {
+  void glowReplaysTheSameCombatFrameWithoutAdvancingTime() {
     effects.addStatusEffect(
         new FlashEffect(time, 2000L, null, new Color(0.35f, 0.65f, 0.95f, 0.5f)));
     renderer.startAnimation("normalAttack", false);
@@ -148,8 +162,9 @@ class MinotaurAttackRenderComponentTest {
     List<TextureRegion> drawn = frames.getAllValues();
     assertFrame(drawn.get(0), "normalAttack", 0);
     assertFrame(drawn.get(1), "normalAttack", 0);
-    assertFrame(renderer.getCurrentFrame(), "normalAttack", 1);
+    assertFrame(renderer.getCurrentFrame(), "normalAttack", 0);
 
+    renderer.advance(0.1f);
     clearInvocations(batch);
     renderer.render(batch);
     frames = ArgumentCaptor.forClass(TextureRegion.class);
@@ -157,7 +172,7 @@ class MinotaurAttackRenderComponentTest {
     drawn = frames.getAllValues();
     assertFrame(drawn.get(0), "normalAttack", 1);
     assertFrame(drawn.get(1), "normalAttack", 1);
-    assertFrame(renderer.getCurrentFrame(), "normalAttack", 2);
+    assertFrame(renderer.getCurrentFrame(), "normalAttack", 1);
   }
 
   @Test
@@ -182,6 +197,7 @@ class MinotaurAttackRenderComponentTest {
       assertFalse(renderer.isFinished());
       assertFrame(renderer.getCurrentFrame(), name, i);
       renderer.draw(batch);
+      renderer.advance(0.1f);
     }
     assertTrue(renderer.isFinished());
     assertFrame(renderer.getCurrentFrame(), name, count - 1);

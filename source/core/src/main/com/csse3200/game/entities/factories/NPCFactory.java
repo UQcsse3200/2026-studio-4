@@ -152,7 +152,6 @@ public class NPCFactory {
 
     chaseEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f, 1f))
         .addComponent(aiComponent)
         .addComponent(animator)
         .addComponent(new EnemyDeathComponent(true, true))
@@ -165,7 +164,9 @@ public class NPCFactory {
                       .getAsset(MinotaurAttackRenderComponent.ATLAS, TextureAtlas.class)))
           .addComponent(new MinotaurAnimationController(target));
     } else {
-      chaseEnemy.addComponent(new EnemyAnimationController());
+      chaseEnemy
+          .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f, 1f))
+          .addComponent(new EnemyAnimationController());
     }
     if (shouldSplit) {
       chaseEnemy.addComponent(new SplitComponent(target, skin));

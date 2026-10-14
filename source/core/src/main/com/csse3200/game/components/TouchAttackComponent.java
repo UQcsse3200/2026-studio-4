@@ -192,9 +192,5 @@ public class TouchAttackComponent extends Component {
       Vector2 impulse = direction.setLength(knockbackForce);
       targetBody.applyLinearImpulse(impulse, targetBody.getWorldCenter(), true);
     }
-    if (targetStats != null) {
-      // Visual listeners observe the existing attack after damage and knockback have completed.
-      entity.getEvents().trigger("touchAttack", target);
-    }
   }
 }
