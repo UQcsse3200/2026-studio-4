@@ -293,7 +293,9 @@ final class SnakeBurrowNavigator {
     }
 
     private Vector2 point(int index) {
-      return new Vector2(x + (index % columns) * GRID_STEP, y + (index / columns) * GRID_STEP);
+      int column = index % columns;
+      int row = index / columns;
+      return new Vector2(x + column * GRID_STEP, y + row * GRID_STEP);
     }
   }
 }
