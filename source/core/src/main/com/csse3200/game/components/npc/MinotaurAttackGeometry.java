@@ -227,18 +227,22 @@ public final class MinotaurAttackGeometry {
         for (int x = Math.max(0, MathUtils.floor(minX));
             x < Math.min(width, MathUtils.ceil(maxX));
             x++) {
-          int tx = sourceX + (flipX ? width - 1 - x : x);
-          int ty = sourceY + (flipY ? y : height - 1 - y);
-          if (mask.opaque.get(ty * mask.width + tx)
+          if (isOpaque(x, y, width, height)
               && (Math.abs(sine) < epsilon
                   || (Intersector.overlapConvexPolygons(
-                          local, vertices(pixel.setPosition(x, y)), overlap)
+                          local, vertices(pixel.setPosition((float) x, (float) y)), overlap)
                       && overlap.depth > epsilon))) {
             return true;
           }
         }
       }
       return false;
+    }
+
+    private boolean isOpaque(int x, int y, int width, int height) {
+      int tx = sourceX + (flipX ? width - 1 - x : x);
+      int ty = sourceY + (flipY ? y : height - 1 - y);
+      return mask.opaque.get(ty * mask.width + tx);
     }
   }
 }

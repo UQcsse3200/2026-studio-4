@@ -22,6 +22,7 @@ public class MinotaurAnimationController extends EnemyAnimationController {
   private static final float ATTACK_INTERVAL = 1f;
   private static final float KNOCKBACK = 1.5f;
   private static final float TIME_EPSILON = 0.000001f;
+  private static final String DEFAULT_ANIMATION = "default";
 
   private enum Phase {
     LOCOMOTION,
@@ -36,7 +37,7 @@ public class MinotaurAnimationController extends EnemyAnimationController {
   private HitboxComponent hitbox;
   private CombatStatsComponent stats;
   private Phase phase = Phase.LOCOMOTION;
-  private String resumeAnimation = "default";
+  private String resumeAnimation = DEFAULT_ANIMATION;
   private Entity swingTarget;
   private float cooldown;
   private boolean impactResolved;
@@ -62,7 +63,7 @@ public class MinotaurAnimationController extends EnemyAnimationController {
     entity.getEvents().addListener("wanderStart", () -> resumeLocomotion("move"));
     entity.getEvents().addListener("chaseStart", () -> resumeLocomotion("chase"));
     entity.getEvents().addListener("patrolStart", () -> resumeLocomotion("move"));
-    entity.getEvents().addListener("default", () -> resumeLocomotion("default"));
+    entity.getEvents().addListener(DEFAULT_ANIMATION, () -> resumeLocomotion(DEFAULT_ANIMATION));
     entity.getEvents().addListener("dieAnimation", this::stopForDeath);
     entity.getEvents().addListener("enemyDeathAnimation", this::stopForDeath);
     entity.getEvents().addListener("entityDied", this::stopForDeath);

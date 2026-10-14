@@ -119,6 +119,11 @@ public class MinotaurDashTrailComponent extends RenderComponent {
       resetHistory();
       return;
     }
+    TextureRegion frame = body.getCurrentFrame();
+    if (frame == null) {
+      resetHistory();
+      return;
+    }
     float delta = Math.max(0f, ServiceLocator.getTimeSource().getDeltaTime());
     Vector2 position = entity.getPosition();
     Vector2 displacement = position.cpy().sub(lastPosition);
@@ -155,18 +160,22 @@ public class MinotaurDashTrailComponent extends RenderComponent {
     ageGhosts(delta);
     sampleElapsed += delta;
     if (sampleElapsed + MOVEMENT_EPSILON >= SAMPLE_INTERVAL) {
-      Ghost snapshot = previousPose == null ? capturePose() : previousPose;
-      // On the first moving update the current pose was also the last visible pose.
-      if (previousPose == null) {
-        snapshot.x = lastPosition.x;
-        snapshot.y += lastPosition.y - position.y;
-      }
-      ghosts.add(snapshot);
-      if (ghosts.size() > MAX_GHOSTS) ghosts.remove(0);
+      addGhost(frame, position);
       sampleElapsed %= SAMPLE_INTERVAL;
     }
-    previousPose = capturePose();
+    previousPose = capturePose(frame);
     lastPosition.set(position);
+  }
+
+  private void addGhost(TextureRegion frame, Vector2 position) {
+    Ghost snapshot = previousPose == null ? capturePose(frame) : previousPose;
+    // On the first moving update the current pose was also the last visible pose.
+    if (previousPose == null) {
+      snapshot.x = lastPosition.x;
+      snapshot.y += lastPosition.y - position.y;
+    }
+    ghosts.add(snapshot);
+    if (ghosts.size() > MAX_GHOSTS) ghosts.remove(0);
   }
 
   private void ageGhosts(float delta) {
@@ -174,8 +183,7 @@ public class MinotaurDashTrailComponent extends RenderComponent {
     ghosts.removeIf(ghost -> ghost.age >= LIFETIME);
   }
 
-  private Ghost capturePose() {
-    TextureRegion frame = body.getCurrentFrame();
+  private Ghost capturePose(TextureRegion frame) {
     Silhouette silhouette = ownedSilhouettes.get(frame.getTexture());
     if (silhouette == null) {
       silhouette = SILHOUETTES.computeIfAbsent(frame.getTexture(), Silhouette::new);

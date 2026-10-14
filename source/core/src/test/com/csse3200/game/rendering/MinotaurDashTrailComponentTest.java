@@ -10,8 +10,11 @@ import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -83,7 +86,7 @@ class MinotaurDashTrailComponentTest {
     atlas.addRegion("move", source, 4, 0, 4, 4).index = 1;
     for (int i = 0; i < 7; i++) atlas.addRegion("normalAttack", source, 0, 0, 4, 4).index = i;
     for (int i = 0; i < 9; i++) atlas.addRegion("chargeAttack", source, 0, 0, 4, 4).index = i;
-    body = new AnimationRenderComponent(atlas);
+    body = spy(new AnimationRenderComponent(atlas));
     body.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
     body.startAnimation("move");
     attack = new MinotaurAttackRenderComponent(atlas);
@@ -211,6 +214,25 @@ class MinotaurDashTrailComponentTest {
     move(entity.getPosition().x + 0.3f, entity.getPosition().y, 0.06f);
     assertTrue(renderTrail().ghosts.isEmpty());
     assertTrue(renderTrail().quads.isEmpty());
+  }
+
+  @Test
+  void missingCurrentFrameClearsTrailAndResumesFromNewPosition() {
+    entity.getEvents().trigger("lungeDashStart");
+    sampleMotion(new Vector2(0.3f, 0f), 4);
+    assertFalse(renderTrail().ghosts.isEmpty());
+
+    // A frame is a nullable renderer result; the effect must not retain stale silhouettes.
+    doReturn(null).when(body).getCurrentFrame();
+    move(1.5f, 0f, 0.06f);
+    assertTrue(renderTrail().ghosts.isEmpty());
+    assertTrue(renderTrail().quads.isEmpty());
+
+    doCallRealMethod().when(body).getCurrentFrame();
+    move(1.8f, 0f, 0.06f);
+    RecordingBatch resumed = renderTrail();
+    assertEquals(1, resumed.ghosts.size());
+    assertEquals(1.5f, resumed.ghosts.get(0).x, 0.0001f);
   }
 
   @Test
