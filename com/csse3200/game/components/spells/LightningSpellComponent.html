@@ -114,6 +114,11 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">Event on the caster that casts this spell.</div>
 </div>
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#DAMAGE_SOURCE_EVENT" class="member-name-link">DAMAGE_SOURCE_EVENT</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Event on the struck target identifying the caster during synchronous lightning damage.</div>
+</div>
 </div>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-com.csse3200.game.components.Component">Fields inherited from class&nbsp;com.csse3200.game.components.<a href="../Component.html" title="class in com.csse3200.game.components">Component</a></h3>
@@ -185,6 +190,23 @@ loadScripts(document, 'script');</script>
 <dd>
 <ul class="tag-list">
 <li><a href="../../../../../constant-values.html#com.csse3200.game.components.spells.LightningSpellComponent.CAST_EVENT">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="DAMAGE_SOURCE_EVENT">
+<h3>DAMAGE_SOURCE_EVENT</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">DAMAGE_SOURCE_EVENT</span></div>
+<div class="block">Event on the struck target identifying the caster during synchronous lightning damage. Its
+ single <a href="../../entities/Entity.html" title="class in com.csse3200.game.entities"><code>Entity</code></a> argument is the caster before damage and null afterwards. This identifies
+ the spell for observers without changing the damage or hit-reaction source.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.components.spells.LightningSpellComponent.DAMAGE_SOURCE_EVENT">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
