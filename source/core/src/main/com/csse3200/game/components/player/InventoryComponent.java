@@ -95,6 +95,27 @@ public class InventoryComponent extends Component {
   }
 
   /**
+   * Buys a fresh, unequipped charm, committing ownership and payment before notifying observers.
+   */
+  public CharmPurchaseResult tryPurchaseCharm(String itemId, int goldPrice) {
+    if (!ItemCatalog.contains(itemId) || !(ItemCatalog.create(itemId, 1) instanceof Charm charm)) {
+      return CharmPurchaseResult.INVALID_ITEM;
+    }
+    if (goldPrice <= 0) {
+      return CharmPurchaseResult.INVALID_PRICE;
+    }
+    if (gold < goldPrice) {
+      return CharmPurchaseResult.INSUFFICIENT_GOLD;
+    }
+    charms.add(charm);
+    setGold(gold - goldPrice);
+    if (entity != null) {
+      entity.getEvents().trigger("charmAdded", charm);
+    }
+    return CharmPurchaseResult.SUCCESS;
+  }
+
+  /**
    * Buys a weapon's existing upgrade once. Payment is committed before the upgrade component
    * publishes its event, so both upgrade and gold observers see the completed transaction.
    * Unsupported upgrades restore the balance without publishing a gold event. As with consumable

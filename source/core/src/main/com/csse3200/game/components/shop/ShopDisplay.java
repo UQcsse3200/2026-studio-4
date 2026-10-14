@@ -162,7 +162,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
 
   private void loadAssets(ResourceService resources, ItemGambleConfig gambleConfig) {
     for (ShopOffer offer : catalog.offers()) {
-      if (offer.kind() == ShopProductKind.CONSUMABLE) {
+      if (offer.kind() == ShopProductKind.CONSUMABLE || offer.kind() == ShopProductKind.CHARM) {
         addTexture(ItemCatalog.create(offer.productId(), 1).getTexture());
       }
     }
@@ -293,7 +293,8 @@ public class ShopDisplay extends UIComponent implements ShopView {
     offers.setName("shop-offers");
     offers.top();
     for (ShopOffer offer : catalog.offers()) {
-      if (offer.kind() != ShopProductKind.CONSUMABLE) continue;
+      if (offer.kind() != ShopProductKind.CONSUMABLE && offer.kind() != ShopProductKind.CHARM)
+        continue;
       offers
           .add(createOfferRow(offer, resources, parchment, iconFrame, buyStyle))
           .growX()
@@ -597,10 +598,17 @@ public class ShopDisplay extends UIComponent implements ShopView {
           boolean affordable = inventoryData.getGold() >= offer.goldPrice();
           button.setDisabled(!affordable);
           button.setText(affordable ? "BUY" : "No gold");
-          ownedLabels
-              .get(offer)
-              .setText("Owned: " + inventoryData.getConsumableCount(offer.productId()));
+          ownedLabels.get(offer).setText("Owned: " + ownedCount(offer));
         });
+  }
+
+  private long ownedCount(ShopOffer offer) {
+    if (offer.kind() == ShopProductKind.CHARM) {
+      return inventoryData.getCharms().stream()
+          .filter(charm -> charm.getId().equals(offer.productId()))
+          .count();
+    }
+    return inventoryData.getConsumableCount(offer.productId());
   }
 
   @Override

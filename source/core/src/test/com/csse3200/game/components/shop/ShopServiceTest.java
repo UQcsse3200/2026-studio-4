@@ -54,7 +54,14 @@ class ShopServiceTest {
       ShopService service =
           new ShopService(
               inventory,
-              new ShopCatalog("future", List.of(new ShopOffer("future-offer", kind, "future", 10))),
+              new ShopCatalog(
+                  "future",
+                  List.of(
+                      new ShopOffer(
+                          "future-offer",
+                          kind,
+                          kind == ShopProductKind.CHARM ? ItemIds.STRENGTH_CHARM : "future",
+                          10))),
               Map.of(ShopProductKind.CONSUMABLE, new ConsumablePurchaseEffect()));
       assertEquals(ShopPurchaseResult.UNSUPPORTED_PRODUCT, service.purchase("future-offer"));
       assertEquals(25, inventory.getGold());

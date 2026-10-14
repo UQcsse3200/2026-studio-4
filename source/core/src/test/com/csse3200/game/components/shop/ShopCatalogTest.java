@@ -4,9 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.ItemCatalog;
+import com.csse3200.game.items.ItemCategory;
 import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.items.consumables.MagnetPotion;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -62,6 +65,35 @@ class ShopCatalogTest {
     MagnetPotion potion =
         assertInstanceOf(MagnetPotion.class, ItemCatalog.create(offer.productId(), 1));
     assertEquals(1, potion.getQuantity());
+  }
+
+  @Test
+  void shouldOfferEveryRegisteredConsumableAndCharmExactlyOnce() {
+    ShopCatalog catalog = ShopCatalog.load("configs/shops/merchant.json");
+    Set<String> expected =
+        ItemCatalog.ids().stream()
+            .filter(
+                id -> {
+                  ItemCategory category = ItemCatalog.create(id, 1).getCategory();
+                  return category == ItemCategory.CONSUMABLE || category == ItemCategory.CHARM;
+                })
+            .collect(Collectors.toSet());
+    Set<String> offered =
+        catalog.offers().stream().map(ShopOffer::productId).collect(Collectors.toSet());
+    assertEquals(expected, offered);
+    assertEquals(expected.size(), catalog.offers().size());
+    for (ShopOffer offer : catalog.offers()) {
+      assertEquals(
+          ItemCatalog.create(offer.productId(), 1).getCategory().name(), offer.kind().name());
+    }
+  }
+
+  @Test
+  void shouldRejectUnknownOrMismatchedCharms() {
+    for (String id : new String[] {"missing", ItemIds.HEALTH_POTION, ItemIds.GOLD_COIN}) {
+      List<ShopOffer> offers = List.of(new ShopOffer("charm", ShopProductKind.CHARM, id, 40));
+      assertThrows(IllegalArgumentException.class, () -> new ShopCatalog("merchant", offers));
+    }
   }
 
   @Test

@@ -17,12 +17,31 @@ in none of the enemy tables, and Crab and Beetle had no charm reward. The mercha
 catalogue did not offer Magnet Potion. Stage-one Final Boss explosive summons
 were spawned as room entities without a death-loot listener.
 
-## Magnet Potion purchase
+## Merchant purchases
 
 `configs/shops/merchant.json` now offers `MAGNET_POTION` for **20 gold**. The
 existing shop catalogue, purchase service and consumable transaction add one
 potion and charge once. An unaffordable purchase preserves the player's balance
 and potion count. The shop renders the item using its existing catalogue metadata.
+
+The merchant now sells all nine registered consumable types and all three charms.
+Existing prices are retained; the additional offers are:
+
+| Item | Gold |
+| --- | ---: |
+| Medium Health Potion | 20 |
+| Large Health Potion | 35 |
+| Burn Vial | 20 |
+| Strength Charm | 40 |
+| Speed Charm | 40 |
+| Attack Speed Charm | 40 |
+
+Charms use the existing shop category dispatch and inventory ownership/equipment
+interfaces. Each purchase adds a fresh, **unequipped** charm to the backpack;
+players equip it through the existing inventory controls. Payment and ownership
+are committed before gold and charm notifications are published. Invalid items,
+invalid prices and insufficient funds leave the inventory unchanged. The same
+scrolling shop list displays both categories, including each charm's owned count.
 
 ## Enemy loot coverage and probabilities
 
@@ -94,7 +113,15 @@ classes include the loot, room lifecycle, item factory/catalogue, shop
 catalogue/service/factory/session/input, inventory, pickup, charm and Magnet
 Potion integration checks.
 
+The merchant expansion was verified on October 14, 2026: 17 selected test classes
+completed **127 tests** with zero failures, errors or skips, and the full
+`formatCheck` passed. Coverage includes purchasing every configured offer through
+the shop buttons, independent charm instances, equipment effects, rejected
+transactions, inventory event consistency, owned counts, closed-shop protection,
+and existing weapon-upgrade and gambling behaviour.
+
 Static review found no additional actionable issue in the task diff. The eight
 pre-existing HUD/terminal-command files were preserved against a saved local
-baseline and excluded from attribution to this task. No gameplay preview has
-been started; shop layout, visuals and manual interaction remain unverified.
+baseline and excluded from attribution to this task. On October 14, 2026, the
+user confirmed that purchase checks for all charms and consumables passed in
+the updated windowed game.
