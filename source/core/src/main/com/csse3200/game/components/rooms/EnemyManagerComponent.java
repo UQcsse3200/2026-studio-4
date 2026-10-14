@@ -121,6 +121,11 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   public void spawnEnemies(Entity target) {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
 
+    if (spawnConfigs.length == 0) {
+      notified = true; // Don't notify if empty
+      return;
+    }
+
     for (EnemySpawnConfig spawn : spawnConfigs) {
       Vector2 entityPos = terrain.tileToWorldPosition(new GridPoint2(spawn.x, spawn.y));
       if (outOfBounds(entityPos, roomConfig)) {
