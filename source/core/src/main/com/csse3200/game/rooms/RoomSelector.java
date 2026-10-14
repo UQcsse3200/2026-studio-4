@@ -115,7 +115,7 @@ public class RoomSelector {
    * request the room entity for any potential exits.
    */
   private void onPlayerInteract() {
-    // TODO Handle room switch via hitbox events
+    // Handle room switch via hitbox events
     room.getEvents().trigger("requestExit", player.getCenterPosition());
   }
 

@@ -97,7 +97,7 @@ public class ExitComponent extends EntityManagerComponent {
     spawnFixture(DreamlandTile.randomOfId('b', 0.5f), exit.x + 4, exit.y, tileSheet);
   }
 
-  // TODO Spawn exits with a component that can be queried via an interact component on the player
+  // Spawn exits with a component that can be queried via an interact component on the player
   // New component should exist on the player
   // The (player) interact component should trigger a function call on the (door) component
   //      to obtain the ExitConfig linked to that door
