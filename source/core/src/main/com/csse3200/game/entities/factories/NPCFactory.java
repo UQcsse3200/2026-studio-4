@@ -124,8 +124,8 @@ public class NPCFactory {
 
   /**
    * Creates a chase enemy entity. Moves quickly toward the player, performs a telegraphed
-   * lunge/dash attack when close enough, and splits into two weaker copies the first time it is hit
-   * and survives.
+   * lunge/dash attack when close enough, and optionally splits into two weaker copies on a lethal
+   * hit.
    *
    * @param target entity to chase
    * @param shouldSplit whether the enemy should receive a {@link SplitComponent}
@@ -147,7 +147,18 @@ public class NPCFactory {
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
+
+    boolean medusa = "images/medusa.atlas".equals(skin);
+    // Keep the original one-second death and the AI's 0.5s telegraph / 0.4s dash timings.
+    animator.addAnimation(DIE_ANIMATION, medusa ? 1f / 3f : 0.5f, Animation.PlayMode.NORMAL);
+    if (medusa) {
+      animator.addAnimation("lungeTelegraph", 0.5f / 6f, Animation.PlayMode.NORMAL);
+      animator.addAnimation("lungeDash", 0.1f, Animation.PlayMode.NORMAL);
+      animator.addAnimation("hurt", 0.1f, Animation.PlayMode.NORMAL);
+      // The old idle crop was 65x85, including 8px below the body. Keep its height/foot position
+      // and centre the full 128px canvas, preserving square pixels and the existing entity size.
+      animator.setDrawBounds(-22f / 85f, 8f / 85f, 128f / 85f, 128f / 85f);
+    }
 
     chaseEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
