@@ -27,10 +27,14 @@ public class GameAreaDisplay extends UIComponent {
     this.gameAreaName = gameAreaName;
   }
 
+  public static final String DISPLAY = "display";
+
   @Override
   public void create() {
     super.create();
     addActors();
+
+    entity.getEvents().addListener(DISPLAY, this::showStatus);
   }
 
   private void addActors() {

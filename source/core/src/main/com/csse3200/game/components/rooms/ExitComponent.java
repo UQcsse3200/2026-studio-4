@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.DreamlandTile;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TileSheet;
+import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.rendering.TextureRenderComponent;
@@ -69,7 +70,12 @@ public class ExitComponent extends EntityManagerComponent {
       // can trigger an event notification for hud things.
       return;
     }
-    ;
+
+    if (!entity.getComponent(EnemyManagerComponent.class).isCleared()) {
+      // room is not yet cleared
+      entity.getEvents().trigger(GameAreaDisplay.DISPLAY, "Defeat all enemies to progress");
+      return;
+    }
 
     logger.debug("Found exit: {}", nearest.id);
     entity.getEvents().trigger("SwitchRoom", nearest);

@@ -116,9 +116,7 @@ public class RoomSelector {
    */
   private void onPlayerInteract() {
     // TODO Handle room switch via hitbox events
-    if (room.getComponent(EnemyManagerComponent.class).isCleared()) {
-      room.getEvents().trigger("requestExit", player.getCenterPosition());
-    }
+    room.getEvents().trigger("requestExit", player.getCenterPosition());
   }
 
   /** Debug function to clear the current room's enemies */
