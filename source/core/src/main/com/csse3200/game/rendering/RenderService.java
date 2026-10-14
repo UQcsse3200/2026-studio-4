@@ -1,5 +1,6 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
@@ -29,6 +30,8 @@ public class RenderService implements Disposable {
   private float shakeStrength;
   private float whiteFlashElapsed;
   private boolean whiteFlashActive;
+  private final Color flashColour = new Color(Color.WHITE);
+  private float flashPeak = 1f;
 
   /** Map from layer to list of renderables, allows us to render each layer in the correct order */
   private final SortedIntMap<Array<Renderable>> renderables =
@@ -146,11 +149,25 @@ public class RenderService implements Disposable {
 
   /** Start or restart the brief full-screen flash used by the freeze bomb. */
   public void startWhiteFlash() {
+    flashColour.set(Color.WHITE);
+    flashPeak = 1f;
     whiteFlashElapsed = 0f;
     whiteFlashActive = true;
   }
 
-  /** Advance one frame and return the white overlay's opacity. */
+  /** Start a warm, translucent ignition flash once per fire bomb, using the existing overlay. */
+  public void startFireFlash() {
+    startWhiteFlash();
+    flashColour.set(1f, 0.32f, 0.04f, 1f);
+    flashPeak = 0.65f;
+  }
+
+  /** Current overlay colour; read only. Freeze bombs reset this to white. */
+  public Color getFlashColour() {
+    return flashColour;
+  }
+
+  /** Advance one frame and return the overlay opacity (the original white-flash API). */
   public float getWhiteFlashAlpha() {
     if (!whiteFlashActive) return 0f;
 
@@ -163,9 +180,11 @@ public class RenderService implements Disposable {
       whiteFlashActive = false;
       return 0f;
     }
-    return whiteFlashElapsed < WHITE_FLASH_RISE
-        ? whiteFlashElapsed / WHITE_FLASH_RISE
-        : (WHITE_FLASH_RISE + WHITE_FLASH_FALL - whiteFlashElapsed) / WHITE_FLASH_FALL;
+    float envelope =
+        whiteFlashElapsed < WHITE_FLASH_RISE
+            ? whiteFlashElapsed / WHITE_FLASH_RISE
+            : (WHITE_FLASH_RISE + WHITE_FLASH_FALL - whiteFlashElapsed) / WHITE_FLASH_FALL;
+    return envelope * flashPeak;
   }
 
   public void setStage(Stage stage) {

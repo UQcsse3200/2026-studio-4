@@ -128,4 +128,35 @@ class DragonPhaseComponentTest {
 
     assertThrows(IllegalStateException.class, invalidDragon::create);
   }
+
+  @Test
+  void shouldRemainInPhaseOneAfterScalingUntilHalfHealth() {
+    CombatStatsComponent stats = new CombatStatsComponent(200, 20);
+    DragonPhaseComponent phase = new DragonPhaseComponent();
+    Entity scaledDragon = new Entity().addComponent(stats).addComponent(phase);
+    int[] events = {0};
+
+    scaledDragon.getEvents().addListener(DragonPhaseComponent.ENRAGE_STARTED, () -> events[0]++);
+    scaledDragon.create();
+
+    // Three completed dungeons: 200 -> 500 health.
+    stats.scale(3);
+
+    assertEquals(500, stats.getMaxHealth());
+    assertEquals(500, stats.getHealth());
+    assertEquals(1, phase.getCurrentPhase());
+    assertEquals(0, events[0]);
+
+    stats.takeDamage(249);
+
+    assertEquals(251, stats.getHealth());
+    assertEquals(1, phase.getCurrentPhase());
+    assertEquals(0, events[0]);
+
+    stats.takeDamage(1);
+
+    assertEquals(250, stats.getHealth());
+    assertEquals(2, phase.getCurrentPhase());
+    assertEquals(1, events[0]);
+  }
 }

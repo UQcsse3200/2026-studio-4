@@ -4,13 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.items.ItemComponent;
-import com.csse3200.game.components.items.ItemSpinComponent;
+import com.csse3200.game.components.items.ItemDropAnimationComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.CurrencyItem;
@@ -18,6 +19,7 @@ import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.ItemIds;
+import com.csse3200.game.items.LootTable;
 import com.csse3200.game.items.WeaponItem;
 import com.csse3200.game.items.consumables.InstantHealingPotion;
 import com.csse3200.game.items.consumables.ShieldPotion;
@@ -29,10 +31,10 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.rendering.RenderService;
-import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
+import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,8 +65,7 @@ class ItemFactoryTest {
         ItemFactory.createItem(ItemCatalog.create(ItemIds.STRENGTH_CHARM, 1), new Vector2());
 
     assertNotNull(itemEntity.getComponent(ItemComponent.class));
-    assertNotNull(itemEntity.getComponent(RotatingTextureRenderComponent.class));
-    assertNotNull(itemEntity.getComponent(ItemSpinComponent.class));
+    assertNotNull(itemEntity.getComponent(ItemDropAnimationComponent.class));
     assertNotNull(itemEntity.getComponent(HitboxComponent.class));
     assertNotNull(itemEntity.getComponent(PhysicsComponent.class));
     assertEquals(PhysicsLayer.ITEM, itemEntity.getComponent(HitboxComponent.class).getLayer());
@@ -129,7 +130,7 @@ class ItemFactoryTest {
     assertEquals(ItemIds.SPEED_CHARM, itemTypeOf(first));
     assertEquals(ItemIds.SPEED_CHARM, itemTypeOf(second));
     assertEquals(1, first.getComponent(ItemComponent.class).getQuantity());
-    assertNotNull(first.getComponent(ItemSpinComponent.class));
+    assertNotNull(first.getComponent(ItemDropAnimationComponent.class));
   }
 
   @Test
@@ -168,6 +169,79 @@ class ItemFactoryTest {
 
   private static String itemTypeOf(Entity entity) {
     return entity.getComponent(ItemComponent.class).getItemId();
+  }
+
+  @Test
+  void enemyDropsStartTogetherAndFlyInDifferentDirectionsThenSlowDown() {
+    LootTable loot = new LootTable();
+    loot.rolls = 4;
+    loot.entries = new LootTable.Entry[] {new LootTable.Entry(ItemIds.STRENGTH_CHARM, 1, 1, 1)};
+    Vector2 origin = new Vector2(3f, 5f);
+    var drops = new ItemFactory(loot, new Random(7)).createEnemyDrops("test", origin);
+    assertEquals(4, drops.size());
+    Vector2 first =
+        drops.get(0).getComponent(PhysicsComponent.class).getBody().getLinearVelocity().cpy();
+    Vector2 opposite =
+        drops.get(2).getComponent(PhysicsComponent.class).getBody().getLinearVelocity().cpy();
+    assertTrue(first.dot(opposite) < 0f);
+    for (Entity drop : drops) {
+      assertEquals(origin, drop.getCenterPosition());
+      assertTrue(
+          drop.getComponent(PhysicsComponent.class).getBody().getLinearVelocity().len() >= 4.5f);
+      drop.create();
+    }
+    var world = ServiceLocator.getPhysicsService().getPhysics().getWorld();
+    var clock = mock(com.csse3200.game.services.GameTime.class);
+    when(clock.getDeltaTime()).thenReturn(0.016f);
+    ServiceLocator.registerTimeSource(clock);
+    for (int i = 0; i < 120; i++) {
+      world.step(0.016f, 6, 2);
+      for (Entity drop : drops) {
+        drop.earlyUpdate();
+        drop.getComponent(ItemDropAnimationComponent.class).update();
+      }
+    }
+    for (Entity drop : drops) {
+      drop.earlyUpdate();
+      assertTrue(drop.getCenterPosition().dst(origin) > 0.5f);
+      assertEquals(
+          Vector2.Zero, drop.getComponent(PhysicsComponent.class).getBody().getLinearVelocity());
+    }
+    assertTrue(drops.get(0).getPosition().dst(drops.get(2).getPosition()) > 1f);
+  }
+
+  @Test
+  void fountainDropsStayInsideNearbyTerrainWalls() {
+    var world = ServiceLocator.getPhysicsService().getPhysics().getWorld();
+    for (float[] wall :
+        new float[][] {
+          {2f, 5.5f, 0.1f, 2f}, {5f, 5.5f, 0.1f, 2f},
+          {3.5f, 4f, 2f, 0.1f}, {3.5f, 7f, 2f, 0.1f}
+        }) {
+      var definition = new com.badlogic.gdx.physics.box2d.BodyDef();
+      definition.position.set(wall[0], wall[1]);
+      var body = world.createBody(definition);
+      var shape = new com.badlogic.gdx.physics.box2d.PolygonShape();
+      shape.setAsBox(wall[2], wall[3]);
+      var fixture = body.createFixture(shape, 0f);
+      var filter = fixture.getFilterData();
+      filter.categoryBits = PhysicsLayer.OBSTACLE;
+      fixture.setFilterData(filter);
+      shape.dispose();
+    }
+    LootTable loot = new LootTable();
+    loot.rolls = 8;
+    loot.entries = new LootTable.Entry[] {new LootTable.Entry(ItemIds.STRENGTH_CHARM, 1, 1, 1)};
+    var drops = new ItemFactory(loot, new Random(7)).createEnemyDrops("test", new Vector2(3f, 5f));
+    drops.forEach(Entity::create);
+    for (int i = 0; i < 120; i++) world.step(0.016f, 6, 2);
+    for (Entity drop : drops) {
+      drop.earlyUpdate();
+      Vector2 position = drop.getPosition();
+      Vector2 size = drop.getScale();
+      assertTrue(position.x >= 2.1f && position.x + size.x <= 4.9f);
+      assertTrue(position.y >= 4.1f && position.y + size.y <= 6.9f);
+    }
   }
 
   @Test

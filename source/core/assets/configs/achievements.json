@@ -1,24 +1,32 @@
 [
-  { "type": "dungeonClear", "dungeonId": "dungeonOne", "name": "First Steps" },
-  { "type": "dungeonClear", "dungeonId": "dungeonTwo", "name": "Into the Depths" },
-  { "type": "dungeonClear", "dungeonId": "dungeonThree", "name": "Sanctum of Shadows" },
-  { "type": "dungeonReached", "dungeonId": "finalDungeon", "name": "The Final Showdown" },
+  { "type": "dungeonClear", "dungeonId": "dungeonOne", "name": "First Steps", "description": "Clear the first dungeon from start to finish." },
+  { "type": "dungeonClear", "dungeonId": "dungeonTwo", "name": "Into the Depths", "description": "Clear the second dungeon from start to finish." },
+  { "type": "dungeonClear", "dungeonId": "dungeonThree", "name": "Sanctum of Shadows", "description": "Clear the third dungeon from start to finish." },
+  { "type": "dungeonReached", "dungeonId": "finalDungeon", "name": "The Final Showdown", "description": "Fight your way through the earlier dungeons and reach the final dungeon." },
 
+  { "type": "enemyKillCount", "enemyType": "FINAL_BOSS", "target": 1, "name": "Vanquisher", "description": "Reach the final dungeon and defeat the final boss."},
+  { "type": "enemyKillCount", "enemyType": "DRAGON", "target": 1, "name": "Dragon Slayer", "description": "Defeat the Chinese Dragon miniboss."},
+  { "type": "enemyKillCount", "enemyType": "SNAKE_MINI_BOSS", "target": 1, "name": "Serpent Slayer", "description": "Defeat the Snake miniboss."},
+  { "type": "enemyKillCount", "enemyType": "SLEIPNIR", "target": 1, "name": "Eight Legs, No Escape", "description": "Defeat Sleipnir, the eight-legged horse miniboss."},
+  { "type": "enemyKillCount", "enemyType": "CERBERUS", "target": 1, "name": "Three Heads, One Victory", "description": "Defeat all three Cerberus heads in one encounter."},
 
-  { "type": "enemyKillCount", "enemyType": "FINAL_BOSS", "target": 1, "name": "Vanquisher" },
-  { "type": "enemyKillCount", "enemyType": "MEDUSA", "target": 3, "name": "You killed 3 Medusa" },
+  { "type": "finalBoss", "bossAchievementId": "finalBossBreakRespected", "name": "I need a break too", "description": "Hold your attacks during the pause in Stage 1.||Complete the full Stage 1 inter-wave break without hitting the Boss." },
+  { "type": "finalBoss", "bossAchievementId": "finalBossStageTwoIceHit", "name": "Coolin' off, make it fun", "description": "Try your ice projectile on the Boss in Stage 2.||Hit the Boss with a player ice projectile during Stage 2." },
+  { "type": "finalBoss", "bossAchievementId": "finalBossStageTwoFireproof", "name": "I'm fireproof!", "description": "Stay clear of the Boss's fire for all of Stage 2.||Complete Stage 2 without being hit by a Boss fireball." },
+  { "type": "finalBoss", "bossAchievementId": "finalBossStageThreeIceHit", "name": "Whoa! The Snow Queen", "description": "Let the Boss's ice reach you early in Stage 3.||Be hit by an ice projectile for the first time during Stage 3 Wave 1." },
+  { "type": "finalBoss", "bossAchievementId": "finalBossStageThreeIceHitStreak", "name": "Brrr, it's freezing!", "description": "Take several ice hits in a row early in Stage 3.||Be hit in three consecutive ice volleys during Stage 3 Wave 1." },
+  { "type": "finalBoss", "bossAchievementId": "finalBossStageThreeMeleeHit", "name": "You flashed too fast", "description": "Get in close and strike the Boss first early in Stage 3.||Land the first sword or dagger hit on the Boss during Stage 3 Wave 1." },
+  { "type": "finalBoss", "bossAchievementId": "finalBossStageThreeStatueFlash", "name": "How can a statue even flash?", "description": "Keep an eye on the statues in the second wave of Stage 3.||Trigger the first successful statue teleport during Stage 3 Wave 2." },
 
-  {"type":  "enemyKillCount", "target": 5, "name": "Ah! Boy You killed 5 enemies"},
-  { "type": "enemyKillCount", "target": 100, "name": "Exterminator" },
+  { "type": "enemyKillCount", "enemyType": "MEDUSA", "target": 3, "name": "You killed 3 Medusa", "description": "Defeat 3 Medusas." },
+  { "type": "snake", "bossAchievementId": "snakeDefeatedWithoutShieldPickup", "name": "What are those green things?", "description": "Defeat the Snake miniboss without collecting any green shield gems during the encounter." },
+  { "type": "snake", "bossAchievementId": "snakeStageTwoShieldPickup", "name": "Green bubble", "description": "Collect a green shield gem for the first time during Stage 2." },
+  { "type": "snake", "name": "Whack-a-Mole", "bossAchievementId": "snakeExposedHit", "description": "Land a damaging player attack during Snake's post-emergence pause in either stage, before the Stage 2 poison-spitting sequence begins." },
+  { "type": "enemyKillCount", "target": 5, "name": "Ah! Boy You killed 5 enemies", "description": "Defeat 5 enemies of any type." },
+  { "type": "enemyKillCount", "target": 100, "name": "Exterminator", "description": "Defeat 100 enemies of any type." },
 
-
-
-  { "type": "speedRun", "dungeonId": "dungeonOne", "maxSeconds": 60, "name": "Hermes" },
-
-  { "type": "killStreak", "target": 5, "name": "On a Roll" },
-
-  { "type": "enemySet", "enemyTypes": ["BEETLE", "CRAB", "WASP", "MUMMY", "SNAKE_MINI_BOSS"], "name": "Monster Hunter: Dungeon Two" },
-
-  { "type": "gold", "target": 60, "name": "Hoarder" }
-
+  { "type": "speedRun", "dungeonId": "dungeonOne", "maxSeconds": 60, "name": "Hermes", "description": "Clear the first dungeon in under 60 seconds." },
+  { "type": "killStreak", "target": 5, "name": "On a Roll", "description": "Defeat 5 enemies in a row without taking damage. Getting hit resets your streak." },
+  { "type": "enemySet", "enemyTypes": ["BEETLE", "CRAB", "WASP", "MUMMY", "SNAKE_MINI_BOSS"], "name": "Monster Hunter: Dungeon Two", "description": "Defeat at least one of each enemy found in the second dungeon: Beetle, Crab, Wasp, Mummy and the Snake mini-boss." },
+  { "type": "gold", "target": 60, "name": "Hoarder", "description": "Collect 60 gold." }
 ]

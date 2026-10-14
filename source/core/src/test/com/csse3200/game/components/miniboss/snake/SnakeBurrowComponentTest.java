@@ -661,6 +661,32 @@ class SnakeBurrowComponentTest {
     verify(poison, never()).fireVolley(anyInt());
   }
 
+  @Test
+  void shouldUseScaledHealthForStageTwoAfterDungeonProgress() {
+    // Three completed dungeons: 150 -> 375.
+    snakeStats.scale(3);
+    tick(0f);
+
+    assertEquals(375, snakeStats.getMaxHealth());
+    assertEquals(375, snakeStats.getHealth());
+    assertFalse(burrow.isStageTwo());
+
+    // Damage must be tested during the normal vulnerability window.
+    reachExposed();
+
+    snakeStats.takeDamage(187);
+    tick(0f);
+
+    assertEquals(188, snakeStats.getHealth());
+    assertFalse(burrow.isStageTwo());
+
+    snakeStats.takeDamage(1);
+    tick(0f);
+
+    assertEquals(187, snakeStats.getHealth());
+    assertTrue(burrow.isStageTwo());
+  }
+
   private void reachSpitting() {
     reachExposed();
     snakeStats.setHealth(75);

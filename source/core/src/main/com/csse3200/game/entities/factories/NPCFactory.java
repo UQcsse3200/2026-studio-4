@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.*;
+import com.csse3200.game.components.miniboss.snake.SnakeAchievementComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowVisualComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent;
@@ -214,6 +215,7 @@ public class NPCFactory {
         .addComponent(new SnakeShieldComponent(target, config))
         .addComponent(new SnakeShieldPickupComponent(target, config))
         .addComponent(new SnakePoisonVolleyComponent(target, config))
+        .addComponent(new SnakeAchievementComponent(target))
         .addComponent(animator)
         .addComponent(new EnemyDeathComponent(true))
         .addComponent(new EnemyAnimationController())

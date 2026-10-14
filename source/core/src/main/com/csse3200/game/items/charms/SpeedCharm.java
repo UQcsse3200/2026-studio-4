@@ -9,7 +9,11 @@ public class SpeedCharm extends Charm {
   public static final String TEXTURE = "images/speed_charm.png";
 
   public SpeedCharm() {
-    super(ItemIds.SPEED_CHARM, "Speed Charm", "You feel yourself getting faster.", TEXTURE);
+    super(
+        ItemIds.SPEED_CHARM,
+        "Speed Charm",
+        "You feel yourself getting faster.\n\nIncreases movement speed while equipped.",
+        TEXTURE);
   }
 
   @Override
