@@ -53,14 +53,15 @@ class SnakeBurrowNavigatorTest {
   void clearApproachReturnsIndependentDestinationWithoutChangingInputs() {
     Vector2 start = new Vector2(2f, 2f);
     Vector2 goal = new Vector2(12f, 9f);
+    Vector2 halfSize = HALF_SIZE.cpy();
 
-    Vector2 next = navigator.nextWaypoint(start, goal, HALF_SIZE, 0.016f);
+    Vector2 next = navigator.nextWaypoint(start, goal, halfSize, 0.016f);
 
     assertEquals(goal, next);
     assertNotSame(goal, next);
     assertEquals(new Vector2(2f, 2f), start);
     assertEquals(new Vector2(12f, 9f), goal);
-    assertEquals(new Vector2(0.9f, 0.4f), HALF_SIZE);
+    assertEquals(new Vector2(0.9f, 0.4f), halfSize);
     assertFalse(navigator.isDetouring());
   }
 
