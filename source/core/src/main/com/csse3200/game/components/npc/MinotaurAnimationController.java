@@ -6,22 +6,17 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.MinotaurAttackRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
- * Starts a minotaur swing on contact and resolves it on the visible axe impact frame. Animation and
- * damage share one update clock. The shared controller retains the original death lifecycle; lunge
- * movement and physics shapes are unchanged.
+ * Starts a minotaur swing within axe reach and resolves it against the visible cutting pixels.
+ * Animation and damage share one update clock. The shared controller retains the original death
+ * lifecycle; lunge movement and solid physics shapes are unchanged.
  */
 public class MinotaurAnimationController extends EnemyAnimationController {
   private static final float ATTACK_INTERVAL = 1f;
@@ -35,7 +30,7 @@ public class MinotaurAnimationController extends EnemyAnimationController {
   }
 
   private final Entity target;
-  private final Map<Entity, Set<Fixture>> contacts = new HashMap<>();
+  private final MinotaurAttackGeometry geometry = new MinotaurAttackGeometry();
   private AnimationRenderComponent locomotion;
   private MinotaurAttackRenderComponent attacks;
   private HitboxComponent hitbox;
@@ -61,7 +56,6 @@ public class MinotaurAnimationController extends EnemyAnimationController {
     hitbox = entity.getComponent(HitboxComponent.class);
     stats = entity.getComponent(CombatStatsComponent.class);
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
-    entity.getEvents().addListener("collisionEnd", this::onCollisionEnd);
     entity.getEvents().addListener("lungeTelegraphStart", () -> startApproach(Phase.TELEGRAPH));
     entity.getEvents().addListener("lungeDashStart", () -> startApproach(Phase.DASH));
     entity.getEvents().addListener("lungeDashEnd", this::endDash);
@@ -81,23 +75,7 @@ public class MinotaurAnimationController extends EnemyAnimationController {
         || !PhysicsLayer.contains(PhysicsLayer.PLAYER, other.getFilterData().categoryBits)) {
       return;
     }
-    Entity victim = ((BodyUserData) other.getBody().getUserData()).entity;
-    contacts.computeIfAbsent(victim, ignored -> new HashSet<>()).add(other);
     tryStartAttack();
-  }
-
-  private void onCollisionEnd(Fixture me, Fixture other) {
-    if (disposed || hitbox.getFixture() != me) {
-      return;
-    }
-    // Bodies can be being disposed here, so do not inspect native fixture data.
-    contacts
-        .values()
-        .removeIf(
-            fixtures -> {
-              fixtures.remove(other);
-              return fixtures.isEmpty();
-            });
   }
 
   private void startApproach(Phase nextPhase) {
@@ -105,7 +83,7 @@ public class MinotaurAnimationController extends EnemyAnimationController {
       return;
     }
     phase = nextPhase;
-    if (attacks.getCurrentAnimation() != null && !impactResolved) {
+    if (attacks.getCurrentAnimation() != null && !attacks.hasReachedImpactFrame()) {
       // A cancelled wind-up did not strike; it must not prevent the ensuing charge strike.
       cooldown = 0f;
     }
@@ -129,13 +107,16 @@ public class MinotaurAnimationController extends EnemyAnimationController {
   }
 
   private boolean canHit(Entity victim) {
-    if (victim == null
-        || !contacts.containsKey(victim)
-        || StatusEffectsControllerComponent.isConcealed(victim)) {
+    if (victim == null || StatusEffectsControllerComponent.isConcealed(victim)) {
       return false;
     }
     CombatStatsComponent victimStats = victim.getComponent(CombatStatsComponent.class);
-    return victimStats != null && !victimStats.isDead();
+    HitboxComponent victimHitbox = victim.getComponent(HitboxComponent.class);
+    return victimStats != null
+        && !victimStats.isDead()
+        && victimHitbox != null
+        && victimHitbox.getFixture() != null
+        && PhysicsLayer.contains(PhysicsLayer.PLAYER, victimHitbox.getLayer());
   }
 
   private void tryStartAttack() {
@@ -145,11 +126,13 @@ public class MinotaurAnimationController extends EnemyAnimationController {
         || attacks.getCurrentAnimation() != null) {
       return;
     }
-    for (Entity victim : contacts.keySet()) {
-      if (canHit(victim)) {
-        startAttack(victim);
-        return;
-      }
+    if (canHit(target)) {
+      String animation =
+          phase == Phase.DASH
+              ? MinotaurAttackRenderComponent.CHARGE_ATTACK
+              : MinotaurAttackRenderComponent.NORMAL_ATTACK;
+      boolean facingLeft = target.getCenterPosition().x < entity.getCenterPosition().x;
+      if (geometry.inReach(animation, entity, facingLeft, target)) startAttack(target);
     }
   }
 
@@ -171,12 +154,18 @@ public class MinotaurAnimationController extends EnemyAnimationController {
     if (impactResolved || !attacks.hasReachedImpactFrame()) {
       return;
     }
-    // Consume the impact even on a miss. Re-entering later cannot cause a delayed hit.
-    impactResolved = true;
     Entity victim = swingTarget;
-    if (!canHit(victim)) {
+    if (!canHit(victim)
+        || !geometry.overlaps(
+            attacks.getCurrentAnimation(),
+            attacks.getFrameIndex(),
+            entity,
+            attacks.isFlipX(),
+            victim)) {
       return;
     }
+    // One hit per swing, even when the next cutting frame overlaps the same player again.
+    impactResolved = true;
     victim.getComponent(CombatStatsComponent.class).hit(stats);
     PhysicsComponent physics = victim.getComponent(PhysicsComponent.class);
     if (physics != null) {
@@ -208,7 +197,6 @@ public class MinotaurAnimationController extends EnemyAnimationController {
   private void stopForDeath() {
     dying = true;
     cancelSwing();
-    contacts.clear();
   }
 
   @Override
@@ -227,7 +215,7 @@ public class MinotaurAnimationController extends EnemyAnimationController {
       return;
     }
     float delta = ServiceLocator.getTimeSource().getDeltaTime();
-    if (!Float.isFinite(delta) || delta <= 0f) {
+    if (!Float.isFinite(delta) || delta < 0f) {
       return;
     }
     cooldown = Math.max(0f, cooldown - delta);
@@ -246,7 +234,6 @@ public class MinotaurAnimationController extends EnemyAnimationController {
   public void dispose() {
     disposed = true;
     cancelSwing();
-    contacts.clear();
     super.dispose();
   }
 }

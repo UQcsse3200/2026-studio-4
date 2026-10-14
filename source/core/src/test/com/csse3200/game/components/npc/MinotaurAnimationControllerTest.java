@@ -62,7 +62,7 @@ class MinotaurAnimationControllerTest {
             .addComponent(new CombatStatsComponent(20, 0))
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER));
-    target.setPosition(2f, 0f);
+    target.setPosition(0.9f, 0f);
     target.create();
     controller = new MinotaurAnimationController(target);
     enemy =
@@ -90,6 +90,8 @@ class MinotaurAnimationControllerTest {
     when(time.getDeltaTime()).thenReturn(0.3f);
     controller.update();
     controller.update();
+    when(time.getDeltaTime()).thenReturn(0.2f);
+    controller.update();
     assertNull(attacks.getCurrentAnimation());
     assertEquals("chase", walking.getCurrentAnimation());
   }
@@ -113,10 +115,8 @@ class MinotaurAnimationControllerTest {
     enemy.getEvents().trigger("wanderStart");
     when(time.getDeltaTime()).thenReturn(0.3f);
     controller.update();
-    when(time.getDeltaTime()).thenReturn(0.6f);
-    controller.update();
     when(time.getDeltaTime()).thenReturn(0.1f);
-    controller.update();
+    for (int i = 0; i < 7; i++) controller.update();
     assertEquals("normalAttack", attacks.getCurrentAnimation());
   }
 

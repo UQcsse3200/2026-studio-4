@@ -4,13 +4,14 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Rectangle;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.npc.MinotaurAttackGeometry;
 import java.util.Map;
 
 /**
  * Renders the minotaur's full attack canvas around its existing walking sprite anchor. Transparent
- * padding and the extended axe affect only drawing, never the entity size or physics fixtures.
+ * padding does not affect entity size or solid physics fixtures. Cutting masks share this canvas.
  */
 public class MinotaurAttackRenderComponent extends RenderComponent {
   public static final String NORMAL_ATTACK = "normalAttack";
@@ -65,6 +66,14 @@ public class MinotaurAttackRenderComponent extends RenderComponent {
     return currentAnimation == null ? null : currentAnimation.getKeyFrame(playTime);
   }
 
+  public int getFrameIndex() {
+    return currentAnimation == null ? -1 : currentAnimation.getKeyFrameIndex(playTime);
+  }
+
+  public boolean isFlipX() {
+    return flipX;
+  }
+
   public boolean isFinished() {
     return currentAnimation != null && currentAnimation.isAnimationFinished(playTime);
   }
@@ -78,10 +87,10 @@ public class MinotaurAttackRenderComponent extends RenderComponent {
       return;
     }
     float nextTime = playTime + delta;
-    float impactTime = impactTime();
-    if (playTime < impactTime && nextTime + TIME_EPSILON >= impactTime) {
+    float nextCutTime = playTime < impactTime() ? impactTime() : impactTime() + FRAME_DURATION;
+    if (playTime < nextCutTime && nextTime + TIME_EPSILON >= nextCutTime) {
       // Even a long frame must present the strike when it lands, rather than skipping to recovery.
-      playTime = impactTime;
+      playTime = nextCutTime;
     } else {
       float duration = currentAnimation.getAnimationDuration();
       playTime = nextTime + TIME_EPSILON >= duration ? duration : nextTime;
@@ -107,15 +116,7 @@ public class MinotaurAttackRenderComponent extends RenderComponent {
       frame = new TextureRegion(frame);
       frame.flip(true, false);
     }
-    Vector2 position = entity.getPosition();
-    Vector2 scale = entity.getScale();
-    // The original 148 x 130 walk is crop (70, 30, 218, 160) of this 288 x 160 canvas.
-    // Both share the same bottom edge and horizontal centre, including when mirrored.
-    batch.draw(
-        frame,
-        position.x - scale.x * 70f / 148f,
-        position.y,
-        scale.x * 288f / 148f,
-        scale.y * 160f / 130f);
+    Rectangle canvas = MinotaurAttackGeometry.canvas(entity);
+    batch.draw(frame, canvas.x, canvas.y, canvas.width, canvas.height);
   }
 }

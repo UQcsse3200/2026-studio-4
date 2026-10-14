@@ -33,3 +33,29 @@ of the full frame, so the feet remain aligned. Entity dimensions and the
 physics collider are independent of this larger visual rectangle.
 
 The existing `minotaur.png` and `minotaur.atlas` are retained separately.
+
+
+## Cutting geometry
+
+`attacks-hit-masks.json` records frame-local pixel spans `[y, x0, x1Exclusive]`
+for A05–A06 (`normalAttack` 4–5) and A11–A12 (`chargeAttack` 3–4). Coordinates
+use the right-facing 288 × 160 atlas canvas with a top-left origin. Rendering
+and collision share the same canvas transform; mirroring maps a span to
+`[288-x1, 288-x0]`. The PNG hash in the JSON binds this geometry to its artwork.
+
+The masks select the visible white cut and pale edge. They exclude the crescent's
+transparent interior, body, horns and white knee armor. In these active frames
+the axe blade is obscured by the painted cut. The raised-axe wind-up and pale
+residual trails in A07/A13 are not damaging. Large updates present both cutting
+frames instead of skipping them; each swing can damage the player once.
+
+Authoring used connected white components plus pale boundary pixels, separating
+boundaries from white armor and horns by nearest connected core. The four masks
+were inspected at enlarged pixel scale; ambiguous edge ties were excluded.
+Runtime uses these authored spans, not a color threshold on the whole sprite.
+Counts including pale edges: A05 4513, A06 3167, A11 5826, A12 2599 pixels.
+
+Player overlap uses the current visible body frame's alpha (at least 128),
+including flip, offset and rotation. Transparent padding and translucent ground
+shadows do not take axe hits. Actors without an animated sprite use their real
+hitbox shape. Original body/foot collision fixtures remain separate and unchanged.

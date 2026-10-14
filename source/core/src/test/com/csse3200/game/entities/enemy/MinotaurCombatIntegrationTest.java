@@ -9,6 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -42,6 +45,7 @@ import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,6 +56,8 @@ class MinotaurCombatIntegrationTest {
   private GameTime time;
   private Entity player;
   private Entity minotaur;
+  private Pixmap spritePixels;
+  private Texture spriteTexture;
 
   @BeforeEach
   void setUp() {
@@ -163,15 +169,18 @@ class MinotaurCombatIntegrationTest {
   }
 
   @Test
-  void leavingAtImpactWhiffsAndLaterReentryCannotHitLateOrBypassCooldown() {
+  void leavingStrikeMaskUntilActiveWindowEndsCannotHitLateOrBypassCooldown() {
     contact("collisionStart");
     tick(0.2f);
     contact("collisionEnd");
+    player.setPosition(5f, 5f);
     tick(0.2f);
     assertEquals(20, health());
     assertEquals(Vector2.Zero, playerBody().getLinearVelocity());
+    tick(0.2f);
+    player.setPosition(1f, 0f);
     contact("collisionStart");
-    tick(0.3f);
+    tick(0.1f);
     tick(0.299f);
     assertEquals(20, health());
     assertNull(attackRenderer().getCurrentAnimation());
@@ -180,7 +189,10 @@ class MinotaurCombatIntegrationTest {
     tick(0.4f);
     assertEquals(18, health());
     contact("collisionEnd");
+    player.setPosition(5f, 5f);
     tick(2f);
+    assertFrame("normalAttack", 5); // A long update still presents the second cutting frame.
+    tick(0.2f);
     assertEquals(18, health());
     assertNull(attackRenderer().getCurrentAnimation());
   }
@@ -190,6 +202,8 @@ class MinotaurCombatIntegrationTest {
     contact("collisionStart");
     tick(0.2f);
     contact("collisionEnd");
+    player.setPosition(5f, 5f);
+    player.setPosition(1f, 0f);
     contact("collisionStart");
     assertFrame("normalAttack", 2);
     tick(0.199f);
@@ -288,6 +302,8 @@ class MinotaurCombatIntegrationTest {
 
   @Test
   void missedLungeKeepsWalkVisualAndOriginalTelegraphDashAndCooldownBoundaries() {
+    // Close enough for the lunge's 3-unit trigger, beyond the visible axe's strike area.
+    player.setPosition(2.5f, 0f);
     LungeAttackTask lunge = createLunge();
     PhysicsMovementComponent movement = minotaur.getComponent(PhysicsMovementComponent.class);
     Body body = minotaur.getComponent(PhysicsComponent.class).getBody();
@@ -371,6 +387,239 @@ class MinotaurCombatIntegrationTest {
     assertEquals("chase", crabAnimations.getCurrentAnimation());
     assertFalse(crabAnimations.hasAnimation("normalAttack"));
     assertFalse(crabAnimations.hasAnimation("chargeAttack"));
+  }
+
+  @Test
+  void axeCanHitTinyTargetBeyondBodyWithoutAnyCollisionEvent() {
+    spatialScene(0f, 0f, 1.5f, 1.5f);
+    player.setPosition(1.7587162f, 0.55115384f);
+    tick(0f);
+    assertEquals("normalAttack", attackRenderer().getCurrentAnimation());
+    assertEquals(20, health());
+    tick(0.4f);
+    assertEquals(18, health());
+    assertFrame("normalAttack", 4);
+  }
+
+  @Test
+  void bodyContactOutsideVisibleBladeDoesNotCauseInvisibleDamage() {
+    spatialScene(0f, 0f, 1.5f, 1.5f);
+    // A05 torso pixel (160.5,90.5), well inside the old square body hitbox.
+    player.setPosition(0.89722973f, 0.78192306f);
+    contact("collisionStart");
+    tick(0.4f);
+    assertEquals(20, health());
+    assertEquals(Vector2.Zero, playerBody().getLinearVelocity());
+  }
+
+  @Test
+  void transparentCutoutWithinBladeBoundsIsNotAnInvisibleStrikeArea() {
+    spatialScene(0f, 0f, 1.5f, 1.5f);
+    // A05/A06 pixel (200.5,95.5) is transparent despite lying inside the slash's broad bounds.
+    player.setPosition(1.3026352f, 0.72423077f);
+    contact("collisionStart");
+    tick(0.4f);
+    tick(0.1f);
+    assertEquals(20, health());
+    assertEquals(Vector2.Zero, playerBody().getLinearVelocity());
+  }
+
+  @Test
+  void visibleAxeMaskUsesTranslatedNonSquareScaleAndMirroredFacing() {
+    spatialScene(3f, 4f, 2f, 1f);
+    // Mirrored A05 slash pixel center (42.5,110.5), using independently calculated draw mapping.
+    player.setPosition(2.6083784f, 4.3607693f);
+    tick(0f);
+    assertEquals("normalAttack", attackRenderer().getCurrentAnimation());
+    tick(0.4f);
+    assertEquals(18, health());
+    assertEquals(1.5f, playerBody().getLinearVelocity().len(), 0.0001f);
+    assertTrue(playerBody().getLinearVelocity().x < 0f);
+  }
+
+  @Test
+  void targetMovingBehindLockedSwingBeforeImpactIsMissed() {
+    spatialScene(0f, 0f, 1.5f, 1.5f);
+    player.setPosition(1.7587162f, 0.55115384f);
+    tick(0f);
+    assertEquals("normalAttack", attackRenderer().getCurrentAnimation());
+    tick(0.399f);
+    player.setPosition(-0.29871622f, 0.55115384f);
+    tick(0.001f);
+    assertEquals(20, health());
+    assertEquals(Vector2.Zero, playerBody().getLinearVelocity());
+  }
+
+  @Test
+  void laterVisibleSlashCanHitOnceAfterInitialImpactMisses() {
+    spatialScene(0f, 0f, 1.5f, 1.5f);
+    player.setPosition(1.7587162f, 0.55115384f);
+    tick(0f);
+    player.setPosition(5f, 5f);
+    tick(0.4f);
+    assertEquals(20, health());
+    // A06 pixel (200.5,60.5) is visible slash, but was transparent in A05.
+    player.setPosition(1.3026352f, 1.128077f);
+    tick(0.1f);
+    assertEquals(18, health());
+    assertFrame("normalAttack", 5);
+    tick(0.1f);
+    assertEquals(18, health());
+  }
+
+  @Test
+  void chargeAxeHitsOutsideBodyWithoutContactAtItsOwnImpactBoundary() {
+    spatialScene(0f, 0f, 1.5f, 1.5f);
+    player.setPosition(1.7587162f, 0.55115384f);
+    LungeAttackTask lunge = createLunge();
+    lunge.start();
+    when(time.getTime()).thenReturn(500L);
+    lunge.update();
+    tick(0f);
+    assertEquals("chargeAttack", attackRenderer().getCurrentAnimation());
+    tick(0.299f);
+    assertEquals(20, health());
+    tick(0.001f);
+    assertEquals(18, health());
+    assertFrame("chargeAttack", 3);
+  }
+
+  @Test
+  void whiteKneeArmorIsExcludedFromChargeCuttingMask() {
+    spatialScene(0f, 0f, 1.5f, 1.5f);
+    // White armor A11 pixel (170.5,112.5) must not be confused with white cutting slash.
+    player.setPosition(0.99858105f, 0.52807695f);
+    LungeAttackTask lunge = createLunge();
+    lunge.start();
+    when(time.getTime()).thenReturn(500L);
+    lunge.update();
+    contact("collisionStart");
+    tick(0.3f);
+    assertEquals(20, health());
+    // A12's separately checked white knee pixel is (176.5,112.5).
+    player.setPosition(1.0593919f, 0.52807695f);
+    tick(0.1f);
+    assertEquals(20, health());
+    assertEquals(Vector2.Zero, playerBody().getLinearVelocity());
+  }
+
+  @Test
+  void residualTrailAfterActiveSlashWindowCannotHitReturningTarget() {
+    spatialScene(0f, 0f, 1.5f, 1.5f);
+    player.setPosition(1.7587162f, 0.55115384f);
+    tick(0f);
+    player.setPosition(5f, 5f);
+    tick(0.4f);
+    tick(0.2f);
+    tick(0.1f);
+    player.setPosition(1.3026352f, 1.128077f);
+    tick(0f);
+    assertFrame("normalAttack", 6);
+    assertEquals(20, health());
+    assertEquals(Vector2.Zero, playerBody().getLinearVelocity());
+  }
+
+  @Test
+  void playerTransparentCornerAndTranslucentShadowDoNotCountAsVisibleBody() {
+    spriteScene();
+    // The real fixture overlaps the slash, but only transparent pixels and alpha127 shadow do.
+    contact("collisionStart");
+    tick(0.4f);
+    tick(0.1f);
+    assertEquals(20, health());
+    assertEquals(Vector2.Zero, playerBody().getLinearVelocity());
+  }
+
+  @Test
+  void playerSpriteFlipMovesOpaqueBodyIntoVisibleAxeWithoutMovingFixture() {
+    spriteScene();
+    player.getComponent(AnimationRenderComponent.class).setFlipX(true);
+    tick(0f);
+    assertEquals("normalAttack", attackRenderer().getCurrentAnimation());
+    tick(0.4f);
+    assertEquals(18, health());
+    assertEquals(new Vector2(1.1655406f, 0.5653846f), player.getPosition());
+  }
+
+  @Test
+  void preFlippedPlayerAtlasRegionUsesOriginalSourcePixelsAndVisibleOrientation() {
+    spriteScene();
+    AnimationRenderComponent sprite = player.getComponent(AnimationRenderComponent.class);
+    sprite.getCurrentFrame().flip(true, false);
+    assertFalse(sprite.isFlipX());
+    tick(0f);
+    assertEquals("normalAttack", attackRenderer().getCurrentAnimation());
+    tick(0.4f);
+    assertEquals(18, health());
+  }
+
+  @Test
+  void playerSpriteOffsetMovesVisibleBodyIntoAxeWhileGroundFixtureStaysPut() {
+    spriteScene();
+    player.getComponent(AnimationRenderComponent.class).setVerticalOffset(-0.23076923f);
+    tick(0f);
+    assertEquals("normalAttack", attackRenderer().getCurrentAnimation());
+    tick(0.4f);
+    assertEquals(18, health());
+    assertEquals(new Vector2(1.1655406f, 0.5653846f), player.getPosition());
+  }
+
+  @Test
+  void playerSpriteRotationAroundCentreIsIncludedInVisibleBodyIntersection() {
+    spriteScene();
+    player.getComponent(AnimationRenderComponent.class).setRotation(180f);
+    tick(0f);
+    assertEquals("normalAttack", attackRenderer().getCurrentAnimation());
+    tick(0.4f);
+    assertEquals(18, health());
+  }
+
+  private void spriteScene() {
+    spritePixels = new Pixmap(4, 4, Pixmap.Format.RGBA8888);
+    spritePixels.drawPixel(0, 0, 0xffffffff);
+    spritePixels.drawPixel(3, 0, 0xffffff7f);
+    spriteTexture = new Texture(spritePixels);
+    TextureAtlas atlas = new TextureAtlas();
+    atlas.addRegion("body", spriteTexture, 0, 0, 4, 4).index = 0;
+    AnimationRenderComponent sprite = new AnimationRenderComponent(atlas);
+    sprite.addAnimation("body", 0.1f, Animation.PlayMode.LOOP);
+    sprite.startAnimation("body");
+    player =
+        new Entity()
+            .addComponent(new CombatStatsComponent(20, 0))
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+            .addComponent(sprite);
+    // In axe canvas pixels this fixture spans x185..245,y91..111. The opaque top-left
+    // sprite cell occupies x185..200,y91..96 (clear). Flip puts it at230..245 (cutting slash).
+    player.setPosition(1.1655406f, 0.5653846f);
+    player.setScale(0.6081081f, 0.23076923f);
+    player.create();
+    minotaur = NPCFactory.createChaseEnemy(player, false, "images/minotaur.atlas");
+    minotaur.setScale(1.5f, 1.5f);
+    minotaur.create();
+  }
+
+  @AfterEach
+  void disposeSpriteFixture() {
+    if (spriteTexture != null) spriteTexture.dispose();
+    if (spritePixels != null) spritePixels.dispose();
+  }
+
+  private void spatialScene(float x, float y, float width, float height) {
+    player =
+        new Entity()
+            .addComponent(new CombatStatsComponent(20, 0))
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER));
+    player.setScale(0.04f, 0.04f);
+    player.create();
+    minotaur = NPCFactory.createChaseEnemy(player, false, "images/minotaur.atlas");
+    minotaur.setPosition(x, y);
+    minotaur.setScale(width, height);
+    minotaur.create();
   }
 
   private int[] observeImpactFrame(String animation, int index) {
