@@ -16,32 +16,44 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
   private int currentPoint;
   private static final int PRIORITY = 5;
   private boolean phaseTwoActivated = false;
+  private boolean flying;
+  private Vector2 spawnPoint;
 
-  public PatrolTask(Vector2[] layout) {
-    if (layout.length == 3) { // flying enemy
-      phaseTwoActivated = true;
-      patrolPoints = layout;
+  public PatrolTask(Vector2 spawnPoint, boolean flying) {
+    this.flying = flying;
+    this.spawnPoint = spawnPoint;
+  }
+
+  private void create() {
+    if (flying) {
+      patrolPoints = createTriangularPatrol(spawnPoint);
       pointDist = 0.2f;
-    } else if (layout.length == 2) { // norse miniboss
+    } else {
+      patrolPoints = createBounds(spawnPoint);
       pointDist = 2f;
-      patrolPoints = createBounds(layout);
     }
+  }
+
+  private Vector2[] createTriangularPatrol(Vector2 spawnPoint) {
+    int x = (int) spawnPoint.x;
+    int y = (int) spawnPoint.y;
+    Vector2 leftPoint = new Vector2(x - 2, y);
+    Vector2 topPoint = new Vector2(x, y + 1.5f);
+    Vector2 rightPoint = new Vector2(x + 2, y);
+    return new Vector2[] {leftPoint, topPoint, rightPoint};
   }
 
   /**
    * a function to create the four points the norse miniboss goes to with
    *
-   * @param grid the first Vector2 is the bottom left point of the square and the second point is
-   *     the width & height
    * @return each point the miniboss patrols in order
    */
-  private Vector2[] createBounds(Vector2[] grid) {
-    float width = grid[1].x;
-    float height = grid[1].y;
-    Vector2 bottomLeft = grid[0];
-    Vector2 bottomRight = new Vector2(grid[0].x + width, grid[0].y);
-    Vector2 topLeft = new Vector2(grid[0].x, grid[0].y + height);
-    Vector2 topRight = new Vector2(grid[0].x + width, grid[0].y + height);
+  private Vector2[] createBounds(Vector2 spawnPoint) {
+    int extra = 5;
+    Vector2 bottomLeft = spawnPoint;
+    Vector2 bottomRight = new Vector2(spawnPoint.x + extra, spawnPoint.y);
+    Vector2 topLeft = new Vector2(spawnPoint.x, spawnPoint.y + extra);
+    Vector2 topRight = new Vector2(spawnPoint.x + extra, spawnPoint.y + extra);
     return (new Vector2[] {bottomLeft, topRight, topLeft, bottomRight});
   }
 
@@ -71,10 +83,10 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
 
   @Override
   public int getPriority() {
-    if (phaseTwoActivated) {
-      return 1;
-    } else {
+    if (flying || phaseTwoActivated) {
       return PRIORITY;
+    } else {
+      return 1;
     }
   }
 
@@ -82,6 +94,9 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
   public void start() {
     super.start();
     movementComponent = owner.getEntity().getComponent(PhysicsMovementComponent.class);
+    if (this.patrolPoints == null) {
+      create();
+    }
     setTarget();
     movementComponent.setMoving(true);
     owner.getEntity().getEvents().trigger("patrolStart");
@@ -89,6 +104,7 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
 
   @Override
   public void update() {
+
     Vector2 position = owner.getEntity().getPosition();
     int temp = currentPoint;
     if (position.dst(patrolPoints[currentPoint]) <= pointDist) {

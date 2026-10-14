@@ -44,6 +44,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class NPCFactoryTest {
+  private final Vector2 spawnPoints = new Vector2(10, 10);
 
   @BeforeEach
   void beforeEach() {
@@ -331,13 +332,8 @@ class NPCFactoryTest {
 
   @Test
   void floatingDemonHasHealthBar() {
-    Entity enemy =
-        NPCFactory.createFloatingDemon(
-            new Entity(),
-            new Vector2(0f, 0f),
-            new Vector2(1f, 1f),
-            new Vector2(2f, 0f),
-            "images/floatingDemon.atlas");
+    Entity enemy;
+    enemy = NPCFactory.createFloatingDemon(new Entity(), spawnPoints, "images/floatingDemon.atlas");
     assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
   }
 

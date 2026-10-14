@@ -231,44 +231,32 @@ public class NPCFactory {
    * Creates a floating demon which patrols in a straight horizontal line.
    *
    * @param target target entity to attack
-   * @param leftPoint left point of its patrol path
-   * @param topPoint top point of its patrol path
-   * @param rightPoint right point of its patrol path
    * @param skin the atlas file path for the entity
    * @return floating demon entity
    */
-  public static Entity createFloatingDemon(
-      Entity target, Vector2 leftPoint, Vector2 topPoint, Vector2 rightPoint, String skin) {
+  public static Entity createFloatingDemon(Entity target, Vector2 spawnPoint, String skin) {
     return createFloatingDemon(
         target,
-        leftPoint,
-        topPoint,
-        rightPoint,
-        projectile -> ServiceLocator.getEntityService().register(projectile),
-        skin);
+        spawnPoint,
+        skin,
+        projectile -> ServiceLocator.getEntityService().register(projectile));
   }
 
   /**
    * Creates a floating demon and delegates ownership of its projectiles to the given spawner.
    *
-   * @param leftPoint left point of its patrol path
-   * @param topPoint top point of its patrol path
-   * @param rightPoint right point of its patrol path
    * @return floating demon entity
    */
   public static Entity createFloatingDemon(
-      Entity target,
-      Vector2 leftPoint,
-      Vector2 topPoint,
-      Vector2 rightPoint,
-      Consumer<Entity> projectileSpawner,
-      String skin) {
+      Entity target, Vector2 spawn, String skin, Consumer<Entity> projectileSpawner) {
 
     FloatingDemonConfig config = configs.floatingDemon;
 
+    Entity demon = createBaseNPC();
+
     AITaskComponent aiComponent =
         new AITaskComponent()
-            .addTask(new PatrolTask(new Vector2[] {leftPoint, topPoint, rightPoint}))
+            .addTask(new PatrolTask(spawn, true))
             .addTask(new RangedAttackTask(target, 5, config.baseAttack, projectileSpawner));
 
     AnimationRenderComponent animator =
@@ -280,8 +268,6 @@ public class NPCFactory {
     animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-
-    Entity demon = createBaseNPC();
 
     demon
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
@@ -299,16 +285,16 @@ public class NPCFactory {
     return demon;
   }
 
-  public static Entity createSleipnir(Entity target, Vector2[] mapBounds) {
+  public static Entity createSleipnir(Entity target, Vector2 spawn) {
     Entity sleipnir = createBaseNPC();
     BaseEntityConfig config = configs.sleipnir;
 
     AITaskComponent aiComponent =
         new AITaskComponent()
-            .addTask(new PatrolTask(mapBounds))
+            .addTask(new PatrolTask(spawn, false))
             .addTask(new StampedeTask(target, sleipnir))
             .addTask(new EarthquakeAttackTask(target, 5f, sleipnir))
-            .addTask(new OneAttackTask(target, 2f, mapBounds[1].x / 2f, new Vector2(8f, 8f)));
+            .addTask(new OneAttackTask(target, 2f, 5, new Vector2(8f, 8f)));
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(

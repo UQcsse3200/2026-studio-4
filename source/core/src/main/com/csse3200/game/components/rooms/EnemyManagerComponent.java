@@ -71,11 +71,14 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
-
+    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+    Vector2 spawnPoints = terrain.tileToWorldPosition(spawn.x, spawn.y);
+    System.out.println(terrain.tileToWorldPosition(3, 3));
+    System.out.println(terrain.tileToWorldPosition(10, 10));
     switch (spawn.type) {
       // Chinese
       case JINGWEI:
-        return createFlyingEnemy(spawn, target, "images/jingwei.atlas");
+        return NPCFactory.createFloatingDemon(target, spawnPoints, "images/jingwei.atlas");
       case ZOMBIE:
         return NPCFactory.createZombie(target);
       case WUKONG:
@@ -91,7 +94,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case WOLF:
         return NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas");
       case CROW:
-        return createFlyingEnemy(spawn, target, "images/crow.atlas");
+        return NPCFactory.createFloatingDemon(target, spawnPoints, "images/crow.atlas");
       case KNIGHT:
         return createScaledBombEnemy(target, "images/knight.atlas", 0.75f, 1f);
       case DARK_ELVES:
@@ -99,7 +102,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case JOTUNN:
         return createScaledGiant(target, "images/jotunn.atlas", 3f);
       case SLEIPNIR:
-        return createSleipnir(target);
+        return NPCFactory.createSleipnir(target, spawnPoints);
 
       // Egyptian
       case SANDEYE:
@@ -109,7 +112,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case CRAB:
         return createCrab(target);
       case WASP:
-        return createFlyingEnemy(spawn, target, "images/wasp.atlas");
+        return NPCFactory.createFloatingDemon(target, spawnPoints, "images/wasp.atlas");
       case MUMMY:
         return createMummy(target);
       case SNAKE_MINI_BOSS:
@@ -123,7 +126,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case MEDUSA:
         return createMedusa(target);
       case HARPY:
-        return createFlyingEnemy(spawn, target, "images/harpy.atlas");
+        return NPCFactory.createFloatingDemon(target, spawnPoints, "images/harpy.atlas");
       case CYCLOPS:
         return createScaledGiant(target, "images/cyclops.atlas", 1.5f);
       case CERBERUS:
@@ -244,17 +247,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             });
   }
 
-  /** Creates a flying enemy with patrol points relative to its spawn tile. */
-  private Entity createFlyingEnemy(EnemySpawnConfig spawn, Entity target, String atlasPath) {
-    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
-    Vector2 leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);
-    Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
-    Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
-
-    return NPCFactory.createFloatingDemon(
-        target, leftPoint, topPoint, rightPoint, this::spawnEntity, atlasPath);
-  }
-
   /** Applies the existing visual scale for bomb-type enemies. */
   private Entity createScaledBombEnemy(Entity target, String atlasPath, float width, float height) {
     Entity enemy = NPCFactory.createBombEnemy(target, atlasPath, 2f);
@@ -353,12 +345,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         wallAnchor,
         head -> spawnAndTrackCerberusHead(head, spawn.type.name()),
         "images/cerberus/cerberus-modular.atlas");
-  }
-
-  /** Preserves Sleipnir's existing patrol bounds. */
-  private Entity createSleipnir(Entity target) {
-    Vector2[] mapBounds = {new Vector2(0f, 0f), new Vector2(10f, 10f)};
-    return NPCFactory.createSleipnir(target, mapBounds);
   }
 
   /** Connects Final Boss movement and arena behaviour to the room camera. */
