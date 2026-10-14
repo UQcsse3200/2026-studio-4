@@ -276,7 +276,7 @@ class EnemyManagerComponentTest {
   @Test
   void shouldNotifiyOnUpdateWithNoMoreActiveEnemies() {
     int[] cleared = {0}; // array workaround for anon lambdas
-    var spawns = new EnemySpawnConfig[] { new EnemySpawnConfig() };
+    var spawns = new EnemySpawnConfig[] {new EnemySpawnConfig()};
     var enemyManager = new EnemyManagerComponent(spawns);
     var roomConfig = new RoomConfig();
     roomConfig.id = "asdfasdf";
@@ -284,7 +284,7 @@ class EnemyManagerComponentTest {
     var room = new Entity().addComponent(enemyManager).addComponent(roomData);
 
     room.getEvents().addListener("RoomClear", (config) -> cleared[0]++);
-    
+
     enemyManager.clear();
     enemyManager.update();
     enemyManager.update();
