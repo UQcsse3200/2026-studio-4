@@ -75,6 +75,7 @@ public class RoomSelector {
    * @require room != null
    */
   private void spawnPlayer(GridPoint2 spawn) {
+    spawn.add(2, -2); // Weired fix from room manager to fix spawning in walls
     Vector2 pos = room.getComponent(TerrainComponent.class).tileToWorldPosition(spawn);
     player.setPosition(pos);
   }
