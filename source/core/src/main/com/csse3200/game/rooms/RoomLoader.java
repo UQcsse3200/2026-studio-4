@@ -9,20 +9,22 @@ import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.files.FileLoader;
+import java.util.Objects;
 
 /** A facade for the WorldConfig, returns fully set up unintialised room entities */
 public class RoomLoader {
-  private String CONFIG_PATH = "configs/rooms.json";
+  private static final String CONFIG_PATH = "configs/rooms.json";
   private static final int ARRIVAL_OFFSET_TILES = 3;
-  private WorldConfig world = FileLoader.readClass(WorldConfig.class, CONFIG_PATH);
+  private final WorldConfig world;
   private CameraComponent camera; // Storing camera not ideal
 
-  public RoomLoader() {
-    world.validate();
+  public RoomLoader(CameraComponent camera) {
+    this(camera, FileLoader.readClass(WorldConfig.class, CONFIG_PATH));
   }
 
-  public RoomLoader(CameraComponent camera) {
+  public RoomLoader(CameraComponent camera, WorldConfig worldConfig) {
     this.camera = camera;
+    this.world = Objects.requireNonNull(worldConfig);
     world.validate();
   }
 
