@@ -44,8 +44,14 @@ public class InventoryDisplay extends UIComponent {
   private static final String RIGHT_PAGE_NAME = "inventory-page-right";
   private static final String ACTIVE_SLOT = "active";
 
-  private static final String HINT_SEPARATOR = "||";
+  private static final String DARK_COLOR = "8b0000ff";
+
   private final List<Achievement> achievementItems = new ArrayList<>();
+  private static final List<String> CATEGORY_ORDER =
+      List.of("Dungeons", "Bosses", "Final Boss", "Monsters", "Sets", "Combat");
+  private static final String OTHER_CATEGORY = "Other";
+  private final List<String> categories = new ArrayList<>();
+  private String currentCategory = CATEGORY_ORDER.get(0);
   private final List<Label> achievementLabels = new ArrayList<>();
 
   private enum Page {
@@ -150,9 +156,12 @@ public class InventoryDisplay extends UIComponent {
         }
 
         private void moveAchievementSelection(int dx, int dy) {
+          if (dx != 0) {
+            changeCategory(dx);
+            return;
+          }
           if (achievementItems.isEmpty()) return;
-          int step = dy != 0 ? dy : dx;
-          selectedIndex = Math.clamp((long) selectedIndex + step, 0, achievementItems.size() - 1);
+          selectedIndex = Math.clamp((long) selectedIndex + dy, 0, achievementItems.size() - 1);
           updateSelection();
           table.validate();
           Label row = achievementLabels.get(selectedIndex);
@@ -160,6 +169,12 @@ public class InventoryDisplay extends UIComponent {
             scroll.scrollTo(row.getX(), row.getY(), row.getWidth(), row.getHeight());
             scroll.updateVisualScroll();
           }
+        }
+
+        private void changeCategory(int delta) {
+          if (categories.isEmpty()) return;
+          int index = categories.indexOf(currentCategory);
+          showCategory(categories.get(Math.floorMod(index + delta, categories.size())));
         }
       };
 
@@ -421,29 +436,40 @@ public class InventoryDisplay extends UIComponent {
     Table pagesContainer = new Table();
     pagesContainer.pad(30, 40, 30, 40);
 
+    // Unlocked first, then locked
+    List<Achievement> all = new ArrayList<>();
     AchievementService achievementService = ServiceLocator.getAchievementService();
     if (achievementService != null) {
-      // Unlocked first, then locked
       achievementService.getAchievements().stream()
           .filter(Achievement::isUnlocked)
-          .forEach(achievementItems::add);
-      achievementService.getAchievements().stream()
-          .filter(a -> !a.isUnlocked())
-          .forEach(achievementItems::add);
+          .forEach(all::add);
+      achievementService.getAchievements().stream().filter(a -> !a.isUnlocked()).forEach(all::add);
     }
-    long unlockedCount = achievementItems.stream().filter(Achievement::isUnlocked).count();
+
+    categories.clear();
+    categories.addAll(CATEGORY_ORDER);
+    if (all.stream().anyMatch(a -> OTHER_CATEGORY.equals(categoryOf(a)))) {
+      categories.add(OTHER_CATEGORY);
+    }
+    if (!categories.contains(currentCategory)) currentCategory = categories.get(0);
+
+    for (Achievement a : all) {
+      if (categoryOf(a).equals(currentCategory)) achievementItems.add(a);
+    }
+    long unlockedCount = all.stream().filter(Achievement::isUnlocked).count();
 
     Table leftPage = new Table().background(inventory.getDrawable(LEFT_PAGE)).top();
     leftPage.setName(LEFT_PAGE_NAME);
     leftPage.pad(20);
-    leftPage.add(pageTabs()).padBottom(10).growX().row();
+    leftPage.add(pageTabs()).padBottom(6).growX().row();
+    leftPage.add(categoryTabs(all)).padBottom(6).growX().row();
     leftPage
-        .add(createDarkLabel("Unlocked " + unlockedCount + " / " + achievementItems.size()))
+        .add(createDarkLabel("Unlocked " + unlockedCount + " / " + all.size()))
         .top()
-        .pad(10f)
+        .pad(4f)
         .row();
     leftPage.add(achievementList()).grow().row();
-    Label hints = createDarkLabel("WASD/Arrows:Select\nQ/E:Category I/Esc:Close");
+    Label hints = createDarkLabel("W/S:Select A/D:Tab\nQ/E:Page I/Esc:Close");
     hints.setFontScale(0.8f);
     leftPage.add(hints).padTop(10);
     pagesContainer.add(leftPage).size(350, 500).padRight(20);
@@ -603,14 +629,14 @@ public class InventoryDisplay extends UIComponent {
     style.down = null;
     style.over = null;
     style.checked = null;
-    style.fontColor = Color.valueOf(currentPage == page ? "8b0000ff" : DARK_TEXT_COLOR);
+    style.fontColor = Color.valueOf(currentPage == page ? DARK_COLOR : DARK_TEXT_COLOR);
     style.overFontColor = style.fontColor;
     style.downFontColor = style.fontColor;
 
     TextButton tab = new TextButton(text, style);
     tab.setName("inventory-tab-" + page.name().toLowerCase(java.util.Locale.ROOT));
     tab.setColor(Color.WHITE);
-    tab.getLabel().setFontScale(0.65f);
+    tab.getLabel().setFontScale(0.675f);
     tab.addListener(
         new ChangeListener() {
           @Override
@@ -663,13 +689,13 @@ public class InventoryDisplay extends UIComponent {
     for (int i = 0; i < achievementLabels.size(); i++) {
       achievementLabels
           .get(i)
-          .setColor(Color.valueOf(i == selectedIndex ? "8b0000ff" : DARK_TEXT_COLOR));
+          .setColor(Color.valueOf(i == selectedIndex ? DARK_COLOR : DARK_TEXT_COLOR));
     }
     Achievement a = achievementItems.get(selectedIndex);
     StringBuilder text =
         new StringBuilder(a.getName())
-            .append('\n')
-            .append(a.isUnlocked() ? "Unlocked" : "Locked")
+            .append("\n\n")
+            .append(a.isUnlocked() ? "---Unlocked---" : "?---Locked---?")
             .append("\n\n")
             .append(displayText(a));
     if (!a.isUnlocked() && a.getTarget() > 0) {
@@ -685,17 +711,69 @@ public class InventoryDisplay extends UIComponent {
     selectionDetails.setText(text.toString());
   }
 
-  /** Locked: the part before "||" (or all of it). Unlocked: the part after it (or all of it). */
+  /** Returns the achievement's description as written. */
   static String displayText(Achievement a) {
     String description = a.getDescription();
-    if (description == null || description.isBlank()) return "";
-    int split = description.indexOf(HINT_SEPARATOR);
-    if (split < 0) return description.trim();
-    String part =
-        a.isUnlocked()
-            ? description.substring(split + HINT_SEPARATOR.length())
-            : description.substring(0, split);
-    return part.trim();
+    return description == null ? "" : description.trim();
+  }
+
+  private static String categoryOf(Achievement a) {
+    String category = a.getCategory();
+    return category != null && CATEGORY_ORDER.contains(category) ? category : OTHER_CATEGORY;
+  }
+
+  /** Two rows of three tabs, each showing unlocked/total for its category. */
+  private Table categoryTabs(List<Achievement> all) {
+    Table tabs = new Table();
+    for (int i = 0; i < categories.size(); i++) {
+      String category = categories.get(i);
+      long total = all.stream().filter(a -> categoryOf(a).equals(category)).count();
+      long done =
+          all.stream().filter(a -> categoryOf(a).equals(category) && a.isUnlocked()).count();
+
+      String color = categoryColor(category, done, total);
+      TextButton.TextButtonStyle style =
+          new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
+      style.up = null;
+      style.down = null;
+      style.over = null;
+      style.checked = null;
+      style.fontColor = Color.valueOf(color);
+      style.overFontColor = style.fontColor;
+      style.downFontColor = style.fontColor;
+
+      TextButton tab = new TextButton(category, style);
+      tab.setName(
+          "achievement-category-" + category.toLowerCase(java.util.Locale.ROOT).replace(' ', '-'));
+      tab.getLabel().setFontScale(0.8f);
+      tab.addListener(
+          new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+              showCategory(category);
+            }
+          });
+      tabs.add(tab).expandX().fillX().height(26).pad(1);
+      if ((i + 1) % 3 == 0) tabs.row();
+    }
+    return tabs;
+  }
+
+  private String categoryColor(String category, long done, long total) {
+    if (category.equals(currentCategory)) {
+      return DARK_COLOR;
+    }
+    if (total > 0 && done == total) {
+      return "b8860bff";
+    }
+    return DARK_TEXT_COLOR;
+  }
+
+  private void showCategory(String category) {
+    if (category.equals(currentCategory)) return;
+    currentCategory = category;
+    selectedIndex = 0;
+    refreshPage();
   }
 
   private static Texture getTexture(Item item) {
