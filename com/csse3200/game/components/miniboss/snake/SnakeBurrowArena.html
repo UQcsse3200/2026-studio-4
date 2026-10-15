@@ -128,11 +128,39 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a copied centre constrained by the supplied half-size.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;com.badlogic.gdx.math.Vector2&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#findClearCentre(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">findClearCentre</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;desired,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.math.Vector2</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#constrainMovement(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">constrainMovement</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;from,
+ com.badlogic.gdx.math.Vector2&nbsp;desired,
  com.badlogic.gdx.math.Vector2&nbsp;halfSize)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Moves towards a constrained destination without crossing walls.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;com.badlogic.gdx.math.Vector2&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#findClearCentre(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">findClearCentre</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;desired,
+ com.badlogic.gdx.math.Vector2&nbsp;halfSize)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Finds clear space at the constrained requested position or within 2.8 world units of it.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;com.badlogic.gdx.math.Vector2&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#findClearStartCentre(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">findClearStartCentre</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;current,
+ com.badlogic.gdx.math.Vector2&nbsp;halfSize)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Repairs an overlapping footprint at the start of a burrow.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;com.badlogic.gdx.math.Vector2&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#findReachableCentre(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">findReachableCentre</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;from,
+ com.badlogic.gdx.math.Vector2&nbsp;desired,
+ com.badlogic.gdx.math.Vector2&nbsp;halfSize)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Finds a nearby emergence centre whose entire approach from <code>from</code> clears solid static
+ fixtures.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isPathClear(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">isPathClear</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;from,
+ com.badlogic.gdx.math.Vector2&nbsp;to,
+ com.badlogic.gdx.math.Vector2&nbsp;halfSize)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Checks the footprint along the complete straight path between two centres.</div>
 </div>
 </div>
 </div>
@@ -176,6 +204,27 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="isPathClear(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
+<h3>isPathClear</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isPathClear</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;from,
+ com.badlogic.gdx.math.Vector2&nbsp;to,
+ com.badlogic.gdx.math.Vector2&nbsp;halfSize)</span></div>
+<div class="block">Checks the footprint along the complete straight path between two centres. Both endpoints must
+ fit inside the room, and the swept footprint must avoid solid static fixture geometry.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="constrainMovement(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
+<h3>constrainMovement</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.Vector2</span>&nbsp;<span class="element-name">constrainMovement</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;from,
+ com.badlogic.gdx.math.Vector2&nbsp;desired,
+ com.badlogic.gdx.math.Vector2&nbsp;halfSize)</span></div>
+<div class="block">Moves towards a constrained destination without crossing walls. A blocked diagonal tries
+ horizontal movement, then vertical movement; a fully blocked move keeps the original centre.
+ The returned vector is independent of both inputs.</div>
+</section>
+</li>
+<li>
 <section class="detail" id="findClearCentre(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
 <h3>findClearCentre</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;com.badlogic.gdx.math.Vector2&gt;</span>&nbsp;<span class="element-name">findClearCentre</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;desired,
@@ -184,6 +233,27 @@ loadScripts(document, 'script');</script>
  the entire footprint against solid static fixtures, ignoring players and sensors. Call during a
  normal update, outside a physics callback. If physics is unavailable, only the room bounds
  apply. Returns empty rather than placing the Snake in a blocked location.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="findClearStartCentre(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
+<h3>findClearStartCentre</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;com.badlogic.gdx.math.Vector2&gt;</span>&nbsp;<span class="element-name">findClearStartCentre</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;current,
+ com.badlogic.gdx.math.Vector2&nbsp;halfSize)</span></div>
+<div class="block">Repairs an overlapping footprint at the start of a burrow. The final footprint must be clear,
+ and its centre must remain on the same side of every wall. This recovery allows the initial
+ footprint to overlap a wall but never moves a centre through one.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="findReachableCentre(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
+<h3>findReachableCentre</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;com.badlogic.gdx.math.Vector2&gt;</span>&nbsp;<span class="element-name">findReachableCentre</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;from,
+ com.badlogic.gdx.math.Vector2&nbsp;desired,
+ com.badlogic.gdx.math.Vector2&nbsp;halfSize)</span></div>
+<div class="block">Finds a nearby emergence centre whose entire approach from <code>from</code> clears solid static
+ fixtures. Uses the same search area as <a href="#findClearCentre(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)"><code>findClearCentre(com.badlogic.gdx.math.Vector2, com.badlogic.gdx.math.Vector2)</code></a> and rejects destinations across
+ a wall even when their final footprint is clear.</div>
 </section>
 </li>
 </ul>
