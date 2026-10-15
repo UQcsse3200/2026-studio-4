@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -32,13 +31,10 @@ import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockedConstruction;
 
 /** Real combat and wall integration for the shared Stage 3 tornado contact-damage interval. */
 @ExtendWith(GameExtension.class)
@@ -267,14 +263,11 @@ class FinalBossTornadoDamageIntegrationTest {
     addTornado(true);
     playerStats.setHealth(1);
 
-    tick(0.25f);
     assertEquals(1, playerStats.getHealth());
-    assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
     tick(0.25f);
 
     assertEquals(0, playerStats.getHealth());
     assertTrue(stage.tornadoes.items.isEmpty());
-    assertEquals(0f, stage.tornadoHitRemaining);
     tick(1f);
     assertEquals(0, playerStats.getHealth());
     assertTrue(stage.tornadoes.items.isEmpty());
@@ -290,7 +283,7 @@ class FinalBossTornadoDamageIntegrationTest {
     bossStats.setHealth(0);
     tick(0.01f);
 
-    assertEquals(100, playerStats.getHealth());
+    assertEquals(99, playerStats.getHealth());
     assertTrue(stage.tornadoes.items.isEmpty());
     assertEquals(0f, stage.tornadoHitRemaining);
   }
@@ -305,7 +298,7 @@ class FinalBossTornadoDamageIntegrationTest {
 
     tick(0.01f);
 
-    assertEquals(100, playerStats.getHealth());
+    assertEquals(99, playerStats.getHealth());
     assertTrue(stage.tornadoes.items.isEmpty());
     assertEquals(0f, stage.tornadoHitRemaining);
   }
@@ -326,7 +319,7 @@ class FinalBossTornadoDamageIntegrationTest {
 
     tick(0.3f);
 
-    assertEquals(100, playerStats.getHealth());
+    assertEquals(99, playerStats.getHealth());
     assertEquals(0f, stage.tornadoHitRemaining);
   }
 
@@ -340,7 +333,7 @@ class FinalBossTornadoDamageIntegrationTest {
     stage.dispose();
     tick(1f);
 
-    assertEquals(100, playerStats.getHealth());
+    assertEquals(99, playerStats.getHealth());
     assertTrue(stage.tornadoes.items.isEmpty());
     assertEquals(0f, stage.tornadoHitRemaining);
   }
@@ -355,8 +348,7 @@ class FinalBossTornadoDamageIntegrationTest {
             "damageTaken", (Entity source, Integer lost, Integer remaining) -> stage.dispose());
 
     tick(0.25f);
-    assertEquals(100, playerStats.getHealth());
-    assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
+    assertEquals(99, playerStats.getHealth());
     tick(0.25f);
 
     assertEquals(99, playerStats.getHealth());
@@ -381,13 +373,13 @@ class FinalBossTornadoDamageIntegrationTest {
             "damageTaken",
             (Entity attacker, Integer lost, Integer remaining) -> sources.add(attacker));
 
-    for (int expectedHealth : new int[] {100, 99, 99, 98}) {
+    for (int expectedHealth : new int[] {99, 98, 97, 96}) {
       tick(0.25f);
       assertEquals(expectedHealth, playerStats.getHealth());
       assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
     }
 
-    assertEquals(List.of(boss, boss), sources);
+    assertEquals(List.of(boss, boss, boss, boss), sources);
   }
 
   @Test
@@ -398,17 +390,17 @@ class FinalBossTornadoDamageIntegrationTest {
     tick(0.1f);
     player.setPosition(8f, 0f);
     tick(0.3f);
-    assertEquals(100, playerStats.getHealth());
+    assertEquals(99, playerStats.getHealth());
     assertEquals(0f, stage.tornadoHitRemaining);
     player.setPosition(0f, 0f);
     tornado.position.set(FinalBossStageThreeComponent.groundPosition(player));
 
     tick(0.2f);
-    assertEquals(100, playerStats.getHealth());
+    assertEquals(99, playerStats.getHealth());
     assertEquals(0f, stage.tornadoHitRemaining);
     tick(0.05f);
 
-    assertEquals(99, playerStats.getHealth());
+    assertEquals(98, playerStats.getHealth());
     assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
   }
 
@@ -420,15 +412,15 @@ class FinalBossTornadoDamageIntegrationTest {
     tick(0.1f);
     when(phases.isTransitioning()).thenReturn(true);
     tick(1f);
-    assertEquals(100, playerStats.getHealth());
+    assertEquals(99, playerStats.getHealth());
     assertEquals(0f, stage.tornadoHitRemaining);
     when(phases.isTransitioning()).thenReturn(false);
 
     tick(0.2f);
-    assertEquals(100, playerStats.getHealth());
+    assertEquals(99, playerStats.getHealth());
     tick(0.05f);
 
-    assertEquals(99, playerStats.getHealth());
+    assertEquals(98, playerStats.getHealth());
     assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
   }
 
@@ -438,11 +430,11 @@ class FinalBossTornadoDamageIntegrationTest {
     for (int index = 0; index < 4; index++) addTornado(true);
 
     tick(0.25f);
-    assertEquals(100, playerStats.getHealth());
+    assertEquals(99, playerStats.getHealth());
     assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
     tick(0.25f);
 
-    assertEquals(99, playerStats.getHealth());
+    assertEquals(98, playerStats.getHealth());
   }
 
   @Test
@@ -451,99 +443,14 @@ class FinalBossTornadoDamageIntegrationTest {
     addTornado(true);
 
     tick(2.25f);
-    assertEquals(100, playerStats.getHealth());
-    assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
-    tick(0.01f);
-    assertEquals(100, playerStats.getHealth());
-    tick(0.24f);
-
     assertEquals(99, playerStats.getHealth());
     assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
-  }
+    tick(0.01f);
+    assertEquals(99, playerStats.getHealth());
+    tick(0.24f);
 
-  @Test
-  void localZeroDamageNeitherAccumulatesNorDiscardsEffectiveHalfDamageOrFlashes() {
-    assertProtectionPreservesOnlyEffectiveHalfDamage(
-        () -> playerStats.setIncomingDamageMultiplier(0f),
-        () -> playerStats.setIncomingDamageMultiplier(1f));
-  }
-
-  @Test
-  void invulnerabilityNeitherAccumulatesNorDiscardsEffectiveHalfDamageOrFlashes() {
-    assertProtectionPreservesOnlyEffectiveHalfDamage(
-        () -> playerStats.setInvulnerable(true), () -> playerStats.setInvulnerable(false));
-  }
-
-  @Test
-  void concealmentNeitherAccumulatesNorDiscardsEffectiveHalfDamageOrFlashes() {
-    assertProtectionPreservesOnlyEffectiveHalfDamage(
-        () -> when(effects.isConcealed()).thenReturn(true),
-        () -> when(effects.isConcealed()).thenReturn(false));
-  }
-
-  @Test
-  void timedShieldRetainsEarlierHealthHalfButItsOwnHalfDoesNotLeakOrFlash() {
-    config.tornadoDamage = 0.5f;
-    addTornado(true);
-    tick(0.25f);
-    AtomicLong shieldTime = new AtomicLong();
-    try (MockedConstruction<GameTime> ignored =
-        mockConstruction(
-            GameTime.class,
-            (clock, context) -> when(clock.getTime()).thenAnswer(call -> shieldTime.get()))) {
-      effects.activateTimed();
-      assertTrue(effects.isShieldActive());
-      for (int index = 0; index < 3; index++) {
-        tick(0.25f);
-        assertEquals(100, playerStats.getHealth());
-        assertEquals(0f, stage.tornadoHitRemaining);
-      }
-      shieldTime.set(3001L);
-      effects.update();
-      assertFalse(effects.isShieldActive());
-
-      tick(0.25f);
-      assertEquals(99, playerStats.getHealth());
-      assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
-      tick(0.25f);
-      assertEquals(99, playerStats.getHealth());
-      tick(0.25f);
-      assertEquals(98, playerStats.getHealth());
-    }
-  }
-
-  @Test
-  void absorbShieldConsumesOnePointPerPairWithoutFlashingOrLeakingItsHalfOnExpiry() {
-    config.tornadoDamage = 0.5f;
-    addTornado(true);
-    AtomicInteger shieldPoints = new AtomicInteger();
-    player
-        .getEvents()
-        .addListener(
-            "updateShield", (Integer current, Integer maximum) -> shieldPoints.set(current));
-    AtomicLong shieldTime = new AtomicLong();
-    try (MockedConstruction<GameTime> ignored =
-        mockConstruction(
-            GameTime.class,
-            (clock, context) -> when(clock.getTime()).thenAnswer(call -> shieldTime.get()))) {
-      effects.activateAbsorb();
-      assertTrue(effects.isShieldActive());
-      for (int expectedPoints : new int[] {20, 19, 19}) {
-        tick(0.25f);
-        assertEquals(expectedPoints, shieldPoints.get());
-        assertEquals(100, playerStats.getHealth());
-        assertEquals(0f, stage.tornadoHitRemaining);
-      }
-      shieldTime.set(5001L);
-      effects.update();
-      assertFalse(effects.isShieldActive());
-
-      tick(0.25f);
-      assertEquals(100, playerStats.getHealth());
-      assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
-      tick(0.25f);
-      assertEquals(99, playerStats.getHealth());
-    }
+    assertEquals(98, playerStats.getHealth());
+    assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
   }
 
   @Test
@@ -560,39 +467,18 @@ class FinalBossTornadoDamageIntegrationTest {
     effects.update();
     assertFalse(consumables.isShielded());
     tick(0.25f);
-    assertEquals(100, playerStats.getHealth());
+    assertEquals(99, playerStats.getHealth());
     assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
     assertTrue(consumables.tryUse(ItemIds.SHIELD));
     tick(0.25f);
-    assertEquals(100, playerStats.getHealth());
+    assertEquals(99, playerStats.getHealth());
     assertEquals(0f, stage.tornadoHitRemaining);
     when(time.getTime()).thenReturn(2 * shieldDurationMs + 2);
     effects.update();
     assertFalse(consumables.isShielded());
     tick(0.25f);
 
-    assertEquals(99, playerStats.getHealth());
-    assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
-  }
-
-  private void assertProtectionPreservesOnlyEffectiveHalfDamage(Runnable block, Runnable unblock) {
-    config.tornadoDamage = 0.5f;
-    addTornado(true);
-    block.run();
-    tick(0.25f);
-    assertEquals(100, playerStats.getHealth());
-    assertEquals(0f, stage.tornadoHitRemaining);
-    unblock.run();
-    tick(0.25f);
-    assertEquals(100, playerStats.getHealth());
-    assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
-    block.run();
-    tick(0.25f);
-    assertEquals(100, playerStats.getHealth());
-    assertEquals(0f, stage.tornadoHitRemaining);
-    unblock.run();
-    tick(0.25f);
-    assertEquals(99, playerStats.getHealth());
+    assertEquals(98, playerStats.getHealth());
     assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
   }
 

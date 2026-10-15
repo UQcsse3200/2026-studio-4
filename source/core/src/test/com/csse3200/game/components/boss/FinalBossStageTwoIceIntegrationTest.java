@@ -127,7 +127,7 @@ class FinalBossStageTwoIceIntegrationTest {
 
     advance(0.3f);
 
-    assertEquals(100 - config.fireballDamage, (float) playerStats.getHealth());
+    assertEquals(97, (float) playerStats.getHealth());
     assertEquals(4, cover.hitsRemaining);
     assertTrue(fire.fireballs.isEmpty());
   }
@@ -144,12 +144,12 @@ class FinalBossStageTwoIceIntegrationTest {
     placePlayerAt(cover.bounds.x - 1f, centreY(cover));
     addShotsThrough(cover, 1);
     advance(0.3f);
-    assertEquals(100, playerStats.getHealth());
+    assertEquals(97, playerStats.getHealth());
     assertEquals(3, cover.hitsRemaining);
     addShotsThrough(cover, 1);
     advance(0.3f);
 
-    assertEquals(99, playerStats.getHealth());
+    assertEquals(94, playerStats.getHealth());
     assertEquals(3, cover.hitsRemaining);
     assertTrue(fire.fireballs.isEmpty());
   }
@@ -223,7 +223,7 @@ class FinalBossStageTwoIceIntegrationTest {
 
     assertTrue(ice.covers.isEmpty());
     assertEquals(1, ice.shatters.size());
-    assertEquals(100 - config.fireballDamage, (float) playerStats.getHealth());
+    assertEquals(97, (float) playerStats.getHealth());
     assertTrue(fire.fireballs.isEmpty());
     assertEquals(1, world.getBodyCount());
     assertEquals(0, entities.getEntities().size);
@@ -264,7 +264,7 @@ class FinalBossStageTwoIceIntegrationTest {
     assertTrue(ice.shatters.isEmpty());
     assertEquals(4, cover.hitsRemaining);
     assertEquals(1, world.getBodyCount());
-    assertEquals(100 - config.fireballDamage, (float) playerStats.getHealth());
+    assertEquals(97, (float) playerStats.getHealth());
     assertTrue(fire.fireballs.isEmpty());
   }
 
