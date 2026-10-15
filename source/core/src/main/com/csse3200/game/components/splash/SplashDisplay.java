@@ -186,8 +186,7 @@ public class SplashDisplay extends UIComponent {
           }
 
           @Override
-          public boolean touchDown(
-              InputEvent event, float x, float y, int pointer, int button) {
+          public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
             skip();
             return true;
           }
@@ -199,8 +198,7 @@ public class SplashDisplay extends UIComponent {
     s.addAction(moveTo(sFinalX, 0f, SPLIT_DURATION, Interpolation.pow3Out));
     four.addAction(moveTo(fourFinalX, 0f, SPLIT_DURATION, Interpolation.pow3Out));
     for (int i = 0; i < tudio.length; i++) {
-      tudio[i].addAction(
-          sequence(delay(LETTER_DELAY + i * LETTER_STAGGER), fadeIn(LETTER_FADE)));
+      tudio[i].addAction(sequence(delay(LETTER_DELAY + i * LETTER_STAGGER), fadeIn(LETTER_FADE)));
     }
   }
 
