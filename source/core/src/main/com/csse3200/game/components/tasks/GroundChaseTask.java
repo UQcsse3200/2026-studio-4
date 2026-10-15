@@ -29,6 +29,7 @@ public class GroundChaseTask extends DefaultTask implements PriorityTask {
   private long progressTime;
   private Vector2 yieldTarget;
   private long yieldUntil;
+  private boolean targetAcquired;
 
   public GroundChaseTask(Entity target, int priority, float viewDistance, float maxChaseDistance) {
     this.target = target;
@@ -41,6 +42,7 @@ public class GroundChaseTask extends DefaultTask implements PriorityTask {
   @Override
   public void start() {
     super.start();
+    targetAcquired = true;
     movement = owner.getEntity().getComponent(PhysicsMovementComponent.class);
     route = List.of();
     nextPlanTime = time.getTime();
@@ -52,8 +54,11 @@ public class GroundChaseTask extends DefaultTask implements PriorityTask {
 
   @Override
   public int getPriority() {
-    float range = status == Status.ACTIVE ? maxChaseDistance : viewDistance;
-    if (canPursue(range)) {
+    // The scheduler also checks this while an attack owns movement. Remember a spotted target
+    // even if lunge wins immediately, and retain it when that attack interrupts pursuit.
+    float range = targetAcquired ? maxChaseDistance : viewDistance;
+    targetAcquired = canPursue(range);
+    if (targetAcquired) {
       return priority;
     }
     // The scheduler skips update() if every task has a negative priority.
@@ -68,6 +73,7 @@ public class GroundChaseTask extends DefaultTask implements PriorityTask {
   public void update() {
     Entity entity = owner.getEntity();
     if (!canPursue(maxChaseDistance)) {
+      targetAcquired = false;
       movement.setMoving(false);
       route = List.of();
       nextPlanTime = time.getTime();
@@ -159,6 +165,7 @@ public class GroundChaseTask extends DefaultTask implements PriorityTask {
   @Override
   public void stop() {
     super.stop();
+    // A higher-priority attack stops this task without ending the enemy's pursuit awareness.
     movement.setMoving(false);
     route = List.of();
     yieldTarget = null;

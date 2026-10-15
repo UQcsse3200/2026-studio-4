@@ -67,6 +67,70 @@ class GroundChaseTaskTest {
     ServiceLocator.getPhysicsService().getPhysics().dispose();
   }
 
+  @org.junit.jupiter.params.ParameterizedTest
+  @org.junit.jupiter.params.provider.ValueSource(booleans = {false, true})
+  void resumesPursuitAfterLungeEvenWhenPlayerLeavesAcquisitionRange(boolean chasedFirst) {
+    enemy
+        .getComponent(AITaskComponent.class)
+        .addTask(new WanderTask(new Vector2(2f, 2f), 1f))
+        .addTask(new LungeAttackTask(target, 20, 2.5f, enemy));
+    if (chasedFirst) {
+      Entity barrier = wall(1.4f, -1f, 0.2f, 3f);
+      tick();
+      assertEquals(com.csse3200.game.ai.tasks.Task.Status.ACTIVE, chase.getStatus());
+      barrier.dispose();
+    }
+    boolean[] dashEnded = {false};
+    enemy
+        .getEvents()
+        .addListener(
+            "lungeDashEnd",
+            () -> {
+              dashEnded[0] = true;
+              target.setPosition(enemy.getPosition().cpy().add(4f, 0f));
+            });
+    for (int i = 0; i < 100 && !dashEnded[0]; i++) {
+      tick();
+    }
+    assertTrue(dashEnded[0], "The real scheduler must complete a lunge before checking resumption");
+    tick();
+    assertEquals(
+        com.csse3200.game.ai.tasks.Task.Status.ACTIVE,
+        chase.getStatus(),
+        "Switching to an attack must not make the enemy forget its acquired target");
+    assertTrue(movement.getMoving());
+    assertEquals(target.getPosition(), movement.getTarget());
+  }
+
+  @Test
+  void forgottenTargetMustReenterAcquisitionRangeAfterEscaping() {
+    assertEquals(10, chase.getPriority());
+    chase.start();
+    chase.stop();
+    target.setPosition(11f, 0f);
+    assertEquals(-1, chase.getPriority());
+    target.setPosition(4f, 0f);
+    assertEquals(-1, chase.getPriority());
+    target.setPosition(2f, 0f);
+    assertEquals(10, chase.getPriority());
+  }
+
+  @Test
+  void concealmentClearsRememberedTargetWhilePursuitIsInterrupted() {
+    StatusEffectsControllerComponent effects = mock(StatusEffectsControllerComponent.class);
+    target.addComponent(effects);
+    assertEquals(10, chase.getPriority());
+    chase.start();
+    chase.stop();
+    when(effects.isConcealed()).thenReturn(true);
+    assertEquals(-1, chase.getPriority());
+    when(effects.isConcealed()).thenReturn(false);
+    target.setPosition(4f, 0f);
+    assertEquals(-1, chase.getPriority());
+    target.setPosition(2f, 0f);
+    assertEquals(10, chase.getPriority());
+  }
+
   @Test
   void approachesPlayerStandingCloserToWallThanEnemyCanFit() {
     wall(0f, -5f, 0.2f, 10f);
