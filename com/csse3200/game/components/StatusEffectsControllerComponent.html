@@ -140,16 +140,6 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#activateAbsorb()" class="member-name-link">activateAbsorb</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Activates the entity's absorb-mode shield in response to the <code>shieldAbsorb</code> event.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#activateTimed()" class="member-name-link">activateTimed</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Activates the entity's timed shield in response to the <code>shieldTimed</code> event.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addStatusEffect(int,char)" class="member-name-link">addStatusEffect</a><wbr>(int&nbsp;stacks,
  char&nbsp;statusEffect)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -233,16 +223,6 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#isImmobilised(com.csse3200.game.entities.Entity)" class="member-name-link">isImmobilised</a><wbr>(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns whether the entity currently cannot move or act under its own steam.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isShieldActive()" class="member-name-link">isShieldActive</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the rechargeable shield's current mode without consuming points or updating it.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#modifyIncomingDamage(int)" class="member-name-link">modifyIncomingDamage</a><wbr>(int&nbsp;damage)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Passes incoming damage through the entity's shield, if one has been created.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removeStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)" class="member-name-link">removeStatusEffect</a><wbr>(<a href="statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</code></div>
@@ -450,44 +430,6 @@ loadScripts(document, 'script');</script>
 <h3>clearStatusEffects</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">clearStatusEffects</span>()</div>
 <div class="block">Takes every effect off at once, running each removal callback after the list is empty.</div>
-</section>
-</li>
-<li>
-<section class="detail" id="activateAbsorb()">
-<h3>activateAbsorb</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">activateAbsorb</span>()</div>
-<div class="block">Activates the entity's absorb-mode shield in response to the <code>shieldAbsorb</code> event.
-
- <p>A shield is created and registered lazily the first time either shield mode is activated.</div>
-</section>
-</li>
-<li>
-<section class="detail" id="activateTimed()">
-<h3>activateTimed</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">activateTimed</span>()</div>
-<div class="block">Activates the entity's timed shield in response to the <code>shieldTimed</code> event.
-
- <p>A shield is created and registered lazily the first time either shield mode is activated.</div>
-</section>
-</li>
-<li>
-<section class="detail" id="isShieldActive()">
-<h3>isShieldActive</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isShieldActive</span>()</div>
-<div class="block">Returns the rechargeable shield's current mode without consuming points or updating it.</div>
-</section>
-</li>
-<li>
-<section class="detail" id="modifyIncomingDamage(int)">
-<h3>modifyIncomingDamage</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">modifyIncomingDamage</span><wbr><span class="parameters">(int&nbsp;damage)</span></div>
-<div class="block">Passes incoming damage through the entity's shield, if one has been created.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>damage</code> - the incoming damage amount</dd>
-<dt>Returns:</dt>
-<dd>the damage remaining after shield mitigation</dd>
-</dl>
 </section>
 </li>
 <li>

@@ -86,23 +86,19 @@ loadScripts(document, 'script');</script>
 <h1 title="Class Shield" class="title">Class Shield</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance"><a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">com.csse3200.game.components.statuseffects.TimedStatusEffect</a>
 <div class="inheritance">com.csse3200.game.components.statuseffects.Shield</div>
+</div>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></code></dd>
+<dd><code><a href="Damageable.html" title="interface in com.csse3200.game.components.statuseffects">Damageable</a></code>, <code><a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Shield</span>
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
-implements <a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></span></div>
-<div class="block">A rechargeable defensive status effect that protects an entity from incoming damage.
-
- <p>The shield supports two activation modes: absorb mode consumes shield points as damage is
- received, while timed mode prevents all incoming damage for a short duration and immediately
- depletes the shield. After depletion, the shield waits briefly before recharging to its maximum
- capacity.</div>
+<span class="extends-implements">extends <a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a>
+implements <a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a>, <a href="Damageable.html" title="interface in com.csse3200.game.components.statuseffects">Damageable</a></span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -114,7 +110,8 @@ implements <a href="StatusEffect.html" title="interface in com.csse3200.game.com
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">Shield</a>()</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.services.GameTime,long)" class="member-name-link">Shield</a><wbr>(<a href="../../services/GameTime.html" title="class in com.csse3200.game.services">GameTime</a>&nbsp;time,
+ long&nbsp;duration)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -131,48 +128,22 @@ implements <a href="StatusEffect.html" title="interface in com.csse3200.game.com
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#activateAbsorb()" class="member-name-link">activateAbsorb</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#damage(com.csse3200.game.components.Damage)" class="member-name-link">damage</a><wbr>(<a href="../Damage.html" title="class in com.csse3200.game.components">Damage</a>&nbsp;damage)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Activates absorb mode if the shield is full and not already active.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#activateTimed()" class="member-name-link">activateTimed</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Activates timed mode if the shield is full and not already active.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCurrent()" class="member-name-link">getCurrent</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMax()" class="member-name-link">getMax</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRemainingDuration()" class="member-name-link">getRemainingDuration</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the time remaining for the current activation.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isActive()" class="member-name-link">isActive</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#modifyIncomingDamage(int)" class="member-name-link">modifyIncomingDamage</a><wbr>(int&nbsp;damage)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Applies the active shield mode to incoming damage.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Advances the shield timer and recharge state.</div>
+<div class="block">Does the thing when damaged.</div>
 </div>
 </div>
 </div>
 </div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-com.csse3200.game.components.statuseffects.TimedStatusEffect">Methods inherited from class&nbsp;com.csse3200.game.components.statuseffects.<a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a></h3>
+<code><a href="TimedStatusEffect.html#getDuration()">getDuration</a>, <a href="TimedStatusEffect.html#getRemainingDuration()">getRemainingDuration</a>, <a href="TimedStatusEffect.html#onRemoved()">onRemoved</a>, <a href="TimedStatusEffect.html#setOnEnded(java.lang.Runnable)">setOnEnded</a>, <a href="TimedStatusEffect.html#update()">update</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.components.statuseffects.StatusEffect">Methods inherited from interface&nbsp;com.csse3200.game.components.statuseffects.<a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></h3>
-<code><a href="StatusEffect.html#concealsOwner()">concealsOwner</a>, <a href="StatusEffect.html#getGlow()">getGlow</a>, <a href="StatusEffect.html#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)">getStatMultiplier</a>, <a href="StatusEffect.html#getTint()">getTint</a>, <a href="StatusEffect.html#immobilisesOwner()">immobilisesOwner</a>, <a href="StatusEffect.html#isExpired()">isExpired</a>, <a href="StatusEffect.html#onRemoved()">onRemoved</a></code></div>
+<code><a href="StatusEffect.html#concealsOwner()">concealsOwner</a>, <a href="StatusEffect.html#getGlow()">getGlow</a>, <a href="StatusEffect.html#getRemainingDuration()">getRemainingDuration</a>, <a href="StatusEffect.html#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)">getStatMultiplier</a>, <a href="StatusEffect.html#getTint()">getTint</a>, <a href="StatusEffect.html#immobilisesOwner()">immobilisesOwner</a>, <a href="StatusEffect.html#isExpired()">isExpired</a>, <a href="StatusEffect.html#onRemoved()">onRemoved</a>, <a href="StatusEffect.html#update()">update</a></code></div>
 </section>
 </li>
 </ul>
@@ -185,9 +156,10 @@ implements <a href="StatusEffect.html" title="interface in com.csse3200.game.com
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;()">
+<section class="detail" id="&lt;init&gt;(com.csse3200.game.services.GameTime,long)">
 <h3>Shield</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Shield</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Shield</span><wbr><span class="parameters">(<a href="../../services/GameTime.html" title="class in com.csse3200.game.services">GameTime</a>&nbsp;time,
+ long&nbsp;duration)</span></div>
 </section>
 </li>
 </ul>
@@ -199,106 +171,18 @@ implements <a href="StatusEffect.html" title="interface in com.csse3200.game.com
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="getCurrent()">
-<h3>getCurrent</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getCurrent</span>()</div>
+<section class="detail" id="damage(com.csse3200.game.components.Damage)">
+<h3>damage</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">damage</span><wbr><span class="parameters">(<a href="../Damage.html" title="class in com.csse3200.game.components">Damage</a>&nbsp;damage)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="Damageable.html#damage(com.csse3200.game.components.Damage)">Damageable</a></code></span></div>
+<div class="block">Does the thing when damaged. Returns true if the object should be removed.</div>
 <dl class="notes">
-<dt>Returns:</dt>
-<dd>the shield's current number of available points.</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="getMax()">
-<h3>getMax</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getMax</span>()</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>the shield's maximum number of points.</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="isActive()">
-<h3>isActive</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isActive</span>()</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>whether either shield activation mode is currently active.</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="activateAbsorb()">
-<h3>activateAbsorb</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">activateAbsorb</span>()</div>
-<div class="block">Activates absorb mode if the shield is full and not already active.
-
- <p>In absorb mode, incoming damage is deducted from the shield until its points are depleted or
- the five-second duration expires.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd><code>true</code> if absorb mode was activated; <code>false</code> if activation was rejected</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="activateTimed()">
-<h3>activateTimed</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">activateTimed</span>()</div>
-<div class="block">Activates timed mode if the shield is full and not already active.
-
- <p>Timed mode prevents all incoming damage for three seconds, then starts the shield recharge
- process.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd><code>true</code> if timed mode was activated; <code>false</code> if activation was rejected</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="modifyIncomingDamage(int)">
-<h3>modifyIncomingDamage</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">modifyIncomingDamage</span><wbr><span class="parameters">(int&nbsp;damage)</span></div>
-<div class="block">Applies the active shield mode to incoming damage.
-
- <p>Absorb mode subtracts available shield points from the damage. Timed mode blocks the damage
- completely. If the shield is inactive, or the damage is non-positive, the original value is
- returned unchanged.</div>
-<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="Damageable.html#damage(com.csse3200.game.components.Damage)">damage</a></code>&nbsp;in interface&nbsp;<code><a href="Damageable.html" title="interface in com.csse3200.game.components.statuseffects">Damageable</a></code></dd>
 <dt>Parameters:</dt>
-<dd><code>damage</code> - the incoming damage amount</dd>
+<dd><code>damage</code> - the damage object to interact with</dd>
 <dt>Returns:</dt>
-<dd>the damage remaining after shield mitigation</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="update()">
-<h3>update</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block">Advances the shield timer and recharge state.
-
- <p>When an activation expires, the shield is depleted. Once the recharge delay has elapsed,
- shield points are restored gradually over the configured recharge duration.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="StatusEffect.html#update()">update</a></code>&nbsp;in interface&nbsp;<code><a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></code></dd>
-<dt>Returns:</dt>
-<dd>always <code>false</code>; the shield remains registered as a status effect</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="getRemainingDuration()">
-<h3>getRemainingDuration</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">long</span>&nbsp;<span class="element-name">getRemainingDuration</span>()</div>
-<div class="block">Returns the time remaining for the current activation.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="StatusEffect.html#getRemainingDuration()">getRemainingDuration</a></code>&nbsp;in interface&nbsp;<code><a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></code></dd>
-<dt>Returns:</dt>
-<dd>activation time remaining in milliseconds, or <code>0</code> when inactive</dd>
+<dd>true if the object should be removed. False otherwise.</dd>
 </dl>
 </section>
 </li>
