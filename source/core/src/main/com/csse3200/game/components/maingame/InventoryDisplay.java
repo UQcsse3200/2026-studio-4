@@ -44,6 +44,8 @@ public class InventoryDisplay extends UIComponent {
   private static final String RIGHT_PAGE_NAME = "inventory-page-right";
   private static final String ACTIVE_SLOT = "active";
 
+  private static final String DARK_COLOR = "8b0000ff";
+
   private final List<Achievement> achievementItems = new ArrayList<>();
   private static final List<String> CATEGORY_ORDER =
       List.of("Dungeons", "Bosses", "Final Boss", "Monsters", "Sets", "Combat");
@@ -627,7 +629,7 @@ public class InventoryDisplay extends UIComponent {
     style.down = null;
     style.over = null;
     style.checked = null;
-    style.fontColor = Color.valueOf(currentPage == page ? "8b0000ff" : DARK_TEXT_COLOR);
+    style.fontColor = Color.valueOf(currentPage == page ? DARK_COLOR : DARK_TEXT_COLOR);
     style.overFontColor = style.fontColor;
     style.downFontColor = style.fontColor;
 
@@ -687,7 +689,7 @@ public class InventoryDisplay extends UIComponent {
     for (int i = 0; i < achievementLabels.size(); i++) {
       achievementLabels
           .get(i)
-          .setColor(Color.valueOf(i == selectedIndex ? "8b0000ff" : DARK_TEXT_COLOR));
+          .setColor(Color.valueOf(i == selectedIndex ? DARK_COLOR : DARK_TEXT_COLOR));
     }
     Achievement a = achievementItems.get(selectedIndex);
     StringBuilder text =
@@ -729,10 +731,7 @@ public class InventoryDisplay extends UIComponent {
       long done =
           all.stream().filter(a -> categoryOf(a).equals(category) && a.isUnlocked()).count();
 
-      String color =
-          category.equals(currentCategory)
-              ? "8b0000ff"
-              : (total > 0 && done == total ? "b8860bff" : DARK_TEXT_COLOR);
+      String color = categoryColor(category, done, total);
       TextButton.TextButtonStyle style =
           new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
       style.up = null;
@@ -758,6 +757,16 @@ public class InventoryDisplay extends UIComponent {
       if ((i + 1) % 3 == 0) tabs.row();
     }
     return tabs;
+  }
+
+  private String categoryColor(String category, long done, long total) {
+    if (category.equals(currentCategory)) {
+      return DARK_COLOR;
+    }
+    if (total > 0 && done == total) {
+      return "b8860bff";
+    }
+    return DARK_TEXT_COLOR;
   }
 
   private void showCategory(String category) {
