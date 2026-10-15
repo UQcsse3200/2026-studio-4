@@ -66,10 +66,13 @@ public class ShopDisplay extends UIComponent implements ShopView {
   private CoinFlipPanel casinoPanel;
   private ItemDrawPanel itemPanel;
   private ScrollPane itemScroll;
+  private HigherLowerPanel higherLowerPanel;
+  private ScrollPane higherLowerScroll;
   private Table casinoContent;
-  private boolean itemGame;
+  private CasinoGame activeGame = CasinoGame.COIN_FLIP;
   private TextButton coinSelector;
   private TextButton itemSelector;
+  private TextButton higherLowerSelector;
   private TextButton casinoButton;
   private Label sectionLabel;
   private Label hint;
@@ -399,18 +402,49 @@ public class ShopDisplay extends UIComponent implements ShopView {
     itemScroll.setName("item-draw-scroll");
     itemScroll.setScrollingDisabled(true, false);
     itemScroll.setFadeScrollBars(false);
+    higherLowerPanel =
+        new HigherLowerPanel(
+            new HigherLowerGame(inventoryData, () -> MathUtils.random(1, 13)),
+            appearance,
+            round -> {
+              feedback.setText(
+                  switch (round.outcome()) {
+                    case ACTIVE -> "New round dealt.";
+                    case CORRECT -> "Correct guess! Streak " + round.streak() + ".";
+                    case PUSH -> "Push - same rank, redraw.";
+                    case BUST -> "Wrong guess. Stake lost.";
+                    case CASHED_OUT -> "Cashed out " + round.payout() + GOLD_SUFFIX;
+                  });
+              entity.getEvents().trigger("higherLowerResolved", round);
+              refresh();
+            });
+    higherLowerScroll = new ScrollPane(higherLowerPanel);
+    higherLowerScroll.setName("higher-lower-scroll");
+    higherLowerScroll.setScrollingDisabled(true, false);
+    higherLowerScroll.setFadeScrollBars(false);
     casinoContent = new Table();
     Table selectors = new Table();
-    coinSelector = gameSelector("Coin Flip", "casino-select-coin", appearance.wager(), false);
-    itemSelector = gameSelector("Item Draw", "casino-select-item", appearance.wager(), true);
+    coinSelector =
+        gameSelector("Coin Flip", "casino-select-coin", appearance.wager(), CasinoGame.COIN_FLIP);
+    itemSelector =
+        gameSelector("Item Draw", "casino-select-item", appearance.wager(), CasinoGame.ITEM_DRAW);
+    higherLowerSelector =
+        gameSelector(
+            "Higher/Lower",
+            "casino-select-higher-lower",
+            appearance.wager(),
+            CasinoGame.HIGHER_LOWER);
     selectors.add(coinSelector).growX().height(38f).padRight(8f);
-    selectors.add(itemSelector).growX().height(38f);
+    selectors.add(itemSelector).growX().height(38f).padRight(8f);
+    selectors.add(higherLowerSelector).growX().height(38f);
     casinoContent.add(selectors).growX().padBottom(10f);
     casinoContent.row();
-    casinoContent.add(new Stack(casinoScroll, itemScroll)).minHeight(0f).grow();
+    casinoContent.add(new Stack(casinoScroll, itemScroll, higherLowerScroll)).minHeight(0f).grow();
     casinoContent.setVisible(false);
     itemPanel.setVisible(false);
     itemScroll.setVisible(false);
+    higherLowerPanel.setVisible(false);
+    higherLowerScroll.setVisible(false);
   }
 
   private void addBody(
@@ -455,7 +489,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
     casino = show;
     productScroll.setVisible(!show);
     casinoContent.setVisible(show);
-    selectGame(false);
+    selectGame(CasinoGame.COIN_FLIP);
     casinoButton.setText(show ? "Back to Shop" : CASINO_LABEL);
     sectionLabel.setText(show ? "COIN FLIP" : "YOUR PURCHASE");
     feedback.setText(show ? "A fair 50/50 toss. Win your stake or lose it." : SUPPLIES_HELP);
@@ -479,6 +513,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
     casino = false;
     casinoPanel.close();
     itemPanel.close();
+    higherLowerPanel.close();
     productScroll.setVisible(false);
     casinoContent.setVisible(false);
     shopBody.setVisible(false);
@@ -492,40 +527,65 @@ public class ShopDisplay extends UIComponent implements ShopView {
     refresh();
   }
 
+  /** The games available in the Casino tab. Add a new case here to add another minigame. */
+  private enum CasinoGame {
+    COIN_FLIP,
+    ITEM_DRAW,
+    HIGHER_LOWER
+  }
+
   private TextButton gameSelector(
-      String text, String name, TextButton.TextButtonStyle style, boolean item) {
+      String text, String name, TextButton.TextButtonStyle style, CasinoGame game) {
     TextButton button = new TextButton(text, style);
     button.setName(name);
     button.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
-            if (active && casino && itemGame != item) selectGame(item);
+            if (active && casino && activeGame != game) selectGame(game);
           }
         });
     return button;
   }
 
-  private void selectGame(boolean item) {
+  private void selectGame(CasinoGame game) {
     stage.cancelTouchFocus();
-    itemGame = item;
+    activeGame = game;
     casinoPanel.close();
     itemPanel.close();
-    casinoPanel.setVisible(casino && !item);
-    casinoScroll.setVisible(casino && !item);
+    higherLowerPanel.close();
+    boolean coin = game == CasinoGame.COIN_FLIP;
+    boolean item = game == CasinoGame.ITEM_DRAW;
+    boolean higherLower = game == CasinoGame.HIGHER_LOWER;
+    casinoPanel.setVisible(casino && coin);
+    casinoScroll.setVisible(casino && coin);
     itemPanel.setVisible(casino && item);
     itemScroll.setVisible(casino && item);
-    coinSelector.setText(item ? "Coin Flip" : "[ Coin Flip ]");
+    higherLowerPanel.setVisible(casino && higherLower);
+    higherLowerScroll.setVisible(casino && higherLower);
+    coinSelector.setText(coin ? "[ Coin Flip ]" : "Coin Flip");
     itemSelector.setText(item ? "[ Item Draw ]" : "Item Draw");
+    higherLowerSelector.setText(higherLower ? "[ Higher/Lower ]" : "Higher/Lower");
     if (!casino) return;
-    if (item) itemPanel.open();
-    else casinoPanel.open();
-    sectionLabel.setText(item ? "ITEM DRAW" : "COIN FLIP");
-    feedback.setText(
-        item
-            ? "Spend gold for one random item or no prize. Rewards go straight to your inventory."
-            : "A fair 50/50 toss. Win your stake or lose it.");
-    stage.setScrollFocus(item ? itemScroll : casinoScroll);
+    ScrollPane activeScroll;
+    if (item) {
+      itemPanel.open();
+      sectionLabel.setText("ITEM DRAW");
+      feedback.setText(
+          "Spend gold for one random item or no prize. Rewards go straight to your inventory.");
+      activeScroll = itemScroll;
+    } else if (higherLower) {
+      higherLowerPanel.open();
+      sectionLabel.setText("HIGHER / LOWER");
+      feedback.setText("Guess right to grow your multiplier. Cash out any time.");
+      activeScroll = higherLowerScroll;
+    } else {
+      casinoPanel.open();
+      sectionLabel.setText("COIN FLIP");
+      feedback.setText("A fair 50/50 toss. Win your stake or lose it.");
+      activeScroll = casinoScroll;
+    }
+    stage.setScrollFocus(activeScroll);
   }
 
   private Label label(String text, Color color) {
@@ -591,6 +651,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
     if (casino) {
       casinoPanel.refresh();
       itemPanel.refresh();
+      higherLowerPanel.refresh();
     }
     buyButtons.forEach(
         (offer, button) -> {
@@ -610,6 +671,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
     if (weaponPanel != null) weaponPanel.close();
     if (casinoPanel != null) casinoPanel.close();
     if (itemPanel != null) itemPanel.close();
+    if (higherLowerPanel != null) higherLowerPanel.close();
     if (root != null) {
       // Cancel press ownership before hiding, so a later release cannot buy in a reopened shop.
       stage.cancelTouchFocus();

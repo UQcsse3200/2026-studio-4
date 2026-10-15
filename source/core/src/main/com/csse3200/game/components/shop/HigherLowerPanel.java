@@ -1,0 +1,204 @@
+package com.csse3200.game.components.shop;
+
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
+import java.util.function.Consumer;
+
+/** Higher/Lower casino panel, styled to match {@link CoinFlipPanel} in the same Casino tab. */
+public final class HigherLowerPanel extends Table {
+  private static final String[] RANK_NAMES = {
+    "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"
+  };
+
+  private final HigherLowerGame game;
+  private final Consumer<HigherLowerGame.Round> onResolved;
+  private final Label cardLabel;
+  private final Label result;
+  private final Label stakeLabel;
+  private final Label multiplierLabel;
+  private final TextButton down;
+  private final TextButton up;
+  private final TextButton start;
+  private final TextButton higher;
+  private final TextButton lower;
+  private final TextButton cashOut;
+  private boolean active;
+
+  public HigherLowerPanel(
+      HigherLowerGame game,
+      CoinFlipPanel.Appearance appearance,
+      Consumer<HigherLowerGame.Round> onResolved) {
+    Label.LabelStyle textStyle = appearance.text();
+    Label.LabelStyle goldStyle = appearance.gold();
+    TextButton.TextButtonStyle wagerStyle = appearance.wager();
+    TextButton.TextButtonStyle flipStyle = appearance.flip();
+    this.game = game;
+    this.onResolved = onResolved;
+    setName("higher-lower-panel");
+    setBackground(appearance.parchment());
+    pad(14f);
+    top();
+
+    Label rules =
+        new Label(
+            "HIGHER / LOWER  |  Guess right to grow your multiplier. Cash out any time.",
+            textStyle);
+    rules.setWrap(true);
+    add(rules).growX().padBottom(12f);
+    row();
+
+    Table arena = new Table();
+    arena.setBackground(appearance.arena());
+    arena.pad(16f);
+    cardLabel = new Label("", goldStyle);
+    cardLabel.setName("higher-lower-card");
+    cardLabel.setAlignment(Align.center);
+    arena.add(cardLabel).padBottom(8f);
+    arena.row();
+    multiplierLabel = new Label("", textStyle);
+    multiplierLabel.setName("higher-lower-multiplier");
+    multiplierLabel.setAlignment(Align.center);
+    arena.add(multiplierLabel).padBottom(8f);
+    arena.row();
+    result = new Label("Set your stake and start", goldStyle);
+    result.setName("higher-lower-result");
+    result.setWrap(true);
+    result.setAlignment(Align.center);
+    arena.add(result).growX();
+    add(arena).growX().minHeight(200f).padBottom(12f);
+    row();
+
+    add(new Label("WAGER STAKE", textStyle)).growX().left().padBottom(8f);
+    row();
+    down = button("-10", "higher-lower-down", wagerStyle, () -> adjust(-10));
+    up = button("+10", "higher-lower-up", wagerStyle, () -> adjust(10));
+    start = button("START", "higher-lower-start", flipStyle, this::start);
+    stakeLabel = new Label("", textStyle);
+    stakeLabel.setName("higher-lower-stake");
+    stakeLabel.setAlignment(Align.center);
+    Table wager = new Table();
+    wager.add(down).width(58f).height(42f).padRight(8f);
+    wager.add(stakeLabel).growX().minWidth(48f).padRight(8f);
+    wager.add(up).width(58f).height(42f).padRight(8f);
+    wager.add(start).width(90f).height(42f);
+    add(wager).growX().padBottom(12f);
+    row();
+
+    higher = button("HIGHER", "higher-lower-higher", flipStyle, () -> guess(true));
+    lower = button("LOWER", "higher-lower-lower", flipStyle, () -> guess(false));
+    cashOut = button("CASH OUT", "higher-lower-cashout", wagerStyle, this::cashOut);
+    Table playRow = new Table();
+    playRow.add(lower).growX().height(42f).padRight(8f);
+    playRow.add(higher).growX().height(42f).padRight(8f);
+    playRow.add(cashOut).growX().height(42f);
+    add(playRow).growX().padBottom(12f);
+    row();
+
+    Label hint =
+        new Label(
+            "Stake changes by 10 gold before you start. Each correct guess is worth 1.5x more.",
+            textStyle);
+    hint.setWrap(true);
+    add(hint).growX();
+  }
+
+  private TextButton button(
+      String text, String name, TextButton.TextButtonStyle style, Runnable action) {
+    TextButton button = new TextButton(text, style);
+    button.setName(name);
+    button.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            if (active && !button.isDisabled()) action.run();
+          }
+        });
+    return button;
+  }
+
+  private void adjust(int delta) {
+    game.adjustStake(delta);
+    refresh();
+  }
+
+  private void start() {
+    HigherLowerGame.Round round = game.start();
+    if (round == null) {
+      result.setText("This wager is unavailable. Check your gold.");
+      refresh();
+      return;
+    }
+    result.setText("Higher or lower than this card?");
+    onResolved.accept(round);
+    pulseCard();
+    refresh();
+  }
+
+  private void guess(boolean higherGuess) {
+    HigherLowerGame.Round round = game.guess(higherGuess);
+    if (round == null) {
+      refresh();
+      return;
+    }
+    switch (round.outcome()) {
+      case CORRECT ->
+          result.setText("Correct! Streak " + round.streak() + " - cash out or keep going.");
+      case PUSH -> result.setText("Push - same rank again, try once more.");
+      case BUST -> result.setText("Wrong guess. You lost your stake.");
+      default -> {}
+    }
+    onResolved.accept(round);
+    pulseCard();
+    refresh();
+  }
+
+  private void cashOut() {
+    HigherLowerGame.Round round = game.cashOut();
+    if (round == null) {
+      refresh();
+      return;
+    }
+    result.setText("Cashed out " + round.payout() + " Gold at streak " + round.streak() + "!");
+    onResolved.accept(round);
+    refresh();
+  }
+
+  private void pulseCard() {
+    cardLabel.clearActions();
+    cardLabel.setOrigin(Align.center);
+    cardLabel.addAction(
+        Actions.sequence(Actions.scaleTo(1.3f, 1.3f, 0.1f), Actions.scaleTo(1f, 1f, 0.15f)));
+  }
+
+  public void open() {
+    active = true;
+    result.setText("Set your stake and start");
+    refresh();
+  }
+
+  public void close() {
+    active = false;
+  }
+
+  public void refresh() {
+    stakeLabel.setText(game.getStake() + " Gold");
+    cardLabel.setText("Current: " + RANK_NAMES[game.getCurrentCard() - 1]);
+    multiplierLabel.setText(
+        game.isRoundActive()
+            ? String.format(
+                "Cash out: %d Gold (x%.1f)", game.potentialPayout(), game.currentMultiplier())
+            : "No active round");
+    boolean idle = !game.isRoundActive();
+    down.setDisabled(!active || !idle);
+    up.setDisabled(!active || !idle);
+    start.setDisabled(!active || !idle || !game.canStart());
+    higher.setDisabled(!active || idle);
+    lower.setDisabled(!active || idle);
+    cashOut.setDisabled(!active || idle);
+  }
+}
