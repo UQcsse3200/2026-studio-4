@@ -3,23 +3,35 @@ package com.csse3200.game.components.tasks;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.ai.movement.ObstacleNavigation;
 import com.csse3200.game.ai.tasks.AITaskComponent;
+import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.rooms.ObstacleComponent;
+import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ObstacleFactory;
+import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
+import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +39,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @ExtendWith(GameExtension.class)
 class GroundChaseTaskTest {
@@ -129,6 +143,67 @@ class GroundChaseTaskTest {
     assertEquals(-1, chase.getPriority());
     target.setPosition(2f, 0f);
     assertEquals(10, chase.getPriority());
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {16, 33, 80})
+  void pursuesAroundPillarsInActualDungeonAnnex(int frameMillis) {
+    when(time.getDeltaTime()).thenReturn(frameMillis / 1000f);
+    actualDungeonWalls();
+    enemy.setPosition(29f, 3.5f);
+    chase.start();
+    for (Vector2 point :
+        List.of(
+            new Vector2(25.7f, 5f),
+            new Vector2(26.1f, 7.4f),
+            new Vector2(29f, 7.4f),
+            new Vector2(26.1f, 1.6f),
+            new Vector2(29f, 2f))) {
+      target.setPosition(point);
+      for (int i = 0; i < 600 && enemy.getPosition().dst(point) > 0.15f; i++) {
+        now += frameMillis;
+        enemy.earlyUpdate();
+        enemy.update();
+        ServiceLocator.getPhysicsService().getPhysics().update();
+      }
+      assertTrue(
+          enemy.getPosition().dst(point) < 0.15f,
+          "Stopped at "
+              + enemy.getPosition()
+              + " on way to "
+              + point
+              + "; steering "
+              + movement.getTarget()
+              + "; path "
+              + ObstacleNavigation.findPath(enemy, target));
+    }
+  }
+
+  private void actualDungeonWalls() {
+    Texture texture = mock(Texture.class);
+    when(texture.getWidth()).thenReturn(512);
+    when(texture.getHeight()).thenReturn(512);
+    ResourceService resources = mock(ResourceService.class);
+    when(resources.getAsset(anyString(), eq(Texture.class))).thenReturn(texture);
+    ServiceLocator.registerResourceService(resources);
+    ServiceLocator.registerRenderService(new RenderService());
+    TerrainComponent terrain = mock(TerrainComponent.class);
+    when(terrain.getTileSize()).thenReturn(0.5f);
+    when(terrain.getMapBounds(0)).thenReturn(new GridPoint2(64, 56));
+    when(terrain.tileToWorldPosition(any(GridPoint2.class)))
+        .thenAnswer(
+            invocation -> {
+              GridPoint2 grid = invocation.getArgument(0);
+              return new Vector2(grid.x * 0.5f, grid.y * 0.5f);
+            });
+    WorldConfig config = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
+    Entity room =
+        new Entity()
+            .addComponent(terrain)
+            .addComponent(
+                new ObstacleComponent(
+                    config.getRoom("dungeonOneEntrance"), RoomFactory.DUNGEON1_TILESET));
+    room.create();
   }
 
   @Test

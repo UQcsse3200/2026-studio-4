@@ -153,7 +153,7 @@ public class GroundChaseTask extends DefaultTask implements PriorityTask {
   }
 
   private void moveTo(Vector2 point) {
-    movement.setTarget(point.cpy());
+    movement.setTarget(point.cpy(), true);
     movement.setMoving(true);
   }
 
