@@ -75,16 +75,15 @@ public class RoomSelector {
       reportDungeonCompleted(previousDungeonId);
     }
 
-
     ServiceLocator.getEntityService()
-            .schedule(
-                    () -> {
-                      setRoom(exit);
+        .schedule(
+            () -> {
+              setRoom(exit);
 
-                      String nextDungeonId = getCurrentDungeonId();
-                      updateDungeonTimer(previousDungeonId, nextDungeonId);
-                      reportDungeonEntered(previousDungeonId, nextDungeonId);
-                    });
+              String nextDungeonId = getCurrentDungeonId();
+              updateDungeonTimer(previousDungeonId, nextDungeonId);
+              reportDungeonEntered(previousDungeonId, nextDungeonId);
+            });
 
     eventHandler.trigger(ROOM_SWITCHED_EVENT);
   }
@@ -152,13 +151,12 @@ public class RoomSelector {
   /**
    * @requires room != null && roomData != null
    */
-  private String getCurrentDungeonId () {
+  private String getCurrentDungeonId() {
     RoomDataComponent roomData = room.getComponent(RoomDataComponent.class);
     return roomData.getConfig().dungeonId;
   }
 
   /**
-   *
    * @param dungeonId
    * @requires achievements != null && dungeonId != null && timer != null
    */
@@ -174,14 +172,12 @@ public class RoomSelector {
   }
 
   /**
-   *
    * @param previousDungeonId
    * @param nextDungeonId
    * @requires achievements != null
    */
   private void reportDungeonEntered(String previousDungeonId, String nextDungeonId) {
-    if (nextDungeonId == null
-            || nextDungeonId.equals(previousDungeonId)) {
+    if (nextDungeonId == null || nextDungeonId.equals(previousDungeonId)) {
       return;
     }
 

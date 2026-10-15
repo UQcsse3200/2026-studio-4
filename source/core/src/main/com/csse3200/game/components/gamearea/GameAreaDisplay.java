@@ -5,8 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.csse3200.game.ui.UIComponent;
-import java.util.ArrayDeque;
-import java.util.Queue;
 
 /** Displays the name of the current game area. */
 public class GameAreaDisplay extends UIComponent {
@@ -15,7 +13,6 @@ public class GameAreaDisplay extends UIComponent {
   private Label status;
   private Table statusTable;
   private long statusExpiryMillis;
-
 
   private Table titleTable;
 

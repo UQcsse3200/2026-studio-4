@@ -96,7 +96,6 @@ public class RoomManager {
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
     attachMinimap();
-
   }
 
   /** Package private constructer to create empty room manager for testing */
@@ -509,8 +508,6 @@ public class RoomManager {
       display.showStatus(message);
     }
   }
-
-
 
   /** Package private setter for unit testing */
   void setCurrentRoom(Entity room) {
