@@ -108,11 +108,11 @@ public class SplashDisplay extends UIComponent {
     }
 
     // Measure the full name in source pixels: S, the TUDIO letters, a word gap, then the 4.
-    float sourceHeight = Math.max(sTexture.getHeight(), fourTexture.getHeight());
+    float sourceHeight = (float) Math.max(sTexture.getHeight(), fourTexture.getHeight());
     float sourceWidth = sTexture.getWidth() + WORD_GAP + fourTexture.getWidth();
     for (Texture letter : tudioTextures) {
       sourceWidth += LETTER_GAP + letter.getWidth();
-      sourceHeight = Math.max(sourceHeight, letter.getHeight());
+      sourceHeight = Math.max(sourceHeight, (float) letter.getHeight());
     }
 
     // Scale to the target height, shrinking if needed so the full name fits across the screen.
@@ -144,7 +144,9 @@ public class SplashDisplay extends UIComponent {
     // Starting layout: the monogram, centred within the final word. The overlap is however much
     // narrower the combined image is than the S and 4 side by side.
     float overlap =
-        Math.max(0f, sTexture.getWidth() + fourTexture.getWidth() - combinedTexture.getWidth())
+        (float)
+                Math.max(
+                    0f, sTexture.getWidth() + fourTexture.getWidth() - combinedTexture.getWidth())
             * scale;
     float monogramWidth = s.getWidth() + four.getWidth() - overlap;
     float monogramLeft = (wordWidth - monogramWidth) / 2f;
