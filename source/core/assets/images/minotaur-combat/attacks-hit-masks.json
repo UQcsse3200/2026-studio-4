@@ -1,4 +1,5 @@
 {
+  "_comment": "Active axe-swing hit masks only; charge movement uses the walk animation. Each span is [y, x0, x1], with x1 excluded. The frame field is zero-based.",
   "coordinate_space": "right-facing atlas frame, 288x160 pixels, top-left origin; x1 exclusive",
   "atlas_png_sha256": "f8f5e0edb8e07ce0d392bed3dc35ba53428f0a4bc90a5080e451b849665ee592",
   "method": "Frame-local four-neighbour white components larger than 200 pixels identify slash cores; include connected pale edge pixels only if graph distance to slash core is strictly less than distance to excluded white armor/horn components. Ties excluded. Reviewed A06 ROI x[175,182),y[83,88) is a detached white slash tip, included in core. The metallic axe itself is obscured by the white slash during these four active frames.",
@@ -10,6 +11,7 @@
       "edge_pixels": 624,
       "mask_pixels": 4513,
       "bounds": [97, 79, 265, 136],
+      "_comment": "Normal attack, frame 5/7 (A05): first active axe-swing frame.",
       "spans": [
         [79, 205, 208], [80, 207, 211], [81, 209, 216], [82, 211, 222], [83, 98, 99],
         [83, 212, 227], [84, 97, 100], [84, 213, 231], [85, 97, 100], [85, 215, 236],
@@ -41,6 +43,7 @@
       "edge_pixels": 528,
       "mask_pixels": 3167,
       "bounds": [130, 50, 270, 132],
+      "_comment": "Normal attack, frame 6/7 (A06): second active axe-swing frame.",
       "spans": [
         [50, 132, 151], [51, 131, 159], [52, 130, 165], [53, 130, 147], [53, 155, 177],
         [54, 130, 148], [54, 156, 185], [55, 131, 149], [55, 157, 190], [56, 132, 151],
@@ -82,6 +85,7 @@
       "edge_pixels": 647,
       "mask_pixels": 5826,
       "bounds": [142, 51, 259, 143],
+      "_comment": "Post-charge strike, frame 4/9 (A11): first active axe-swing frame.",
       "spans": [
         [51, 160, 178], [52, 153, 190], [53, 153, 196], [54, 156, 202], [55, 160, 208],
         [56, 163, 213], [57, 166, 216], [58, 169, 219], [59, 172, 221], [60, 175, 223],
@@ -118,6 +122,7 @@
       "edge_pixels": 614,
       "mask_pixels": 2599,
       "bounds": [102, 83, 252, 147],
+      "_comment": "Post-charge strike, frame 5/9 (A12): second active axe-swing frame.",
       "spans": [
         [83, 204, 205], [84, 204, 206], [85, 204, 206], [86, 205, 207], [87, 205, 208],
         [88, 205, 208], [89, 205, 209], [90, 205, 209], [91, 205, 210], [92, 205, 210],
