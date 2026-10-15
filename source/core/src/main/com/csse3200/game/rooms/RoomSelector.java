@@ -4,15 +4,13 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.components.rooms.FollowingCameraComponent;
 import com.csse3200.game.components.rooms.RoomDataComponent;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
+import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.EventHandler;
-import com.csse3200.game.services.AchievementService;
-import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,19 +66,7 @@ public class RoomSelector {
         exit.destinationRoomId,
         RoomClearService.isRoomCleared(exit.destinationRoomId));
 
-    String previousDungeonId = getCurrentDungeonId();
-
-    ServiceLocator.getEntityService()
-        .schedule(
-            () -> {
-              setRoom(exit);
-
-              String nextDungeonId = getCurrentDungeonId();
-              updateDungeonTimer(previousDungeonId, nextDungeonId);
-              reportDungeonEntered(previousDungeonId, nextDungeonId);
-            });
-
-    eventHandler.trigger(ROOM_SWITCHED_EVENT);
+    ServiceLocator.getEntityService().schedule(() -> setRoom(exit));
   }
 
   /**
@@ -115,7 +101,9 @@ public class RoomSelector {
     if (this.room == newRoom) {
       throw new IllegalArgumentException("Current room is same as the new room to set");
     }
+    RoomConfig oldConfig = null;
     if (this.room != null) {
+      oldConfig = room.getComponent(RoomDataComponent.class).getConfig();
       this.room.dispose();
     }
     this.room = newRoom;
@@ -126,6 +114,9 @@ public class RoomSelector {
     RoomClearService.attachListeners(room);
     resetCamera();
     room.getEvents().addListener(SWITCH_ROOM, this::switchRoom);
+
+    RoomConfig newConfig = room.getComponent(RoomDataComponent.class).getConfig();
+    room.getEvents().trigger("RoomSwitched", oldConfig, newConfig);
   }
 
   /**
@@ -141,48 +132,5 @@ public class RoomSelector {
   /** Debug function to clear the current room's enemies */
   public void clearRoom() {
     room.getComponent(EnemyManagerComponent.class).clear();
-  }
-
-  /**
-   * @requires room != null && roomData != null
-   */
-  private String getCurrentDungeonId() {
-    RoomDataComponent roomData = room.getComponent(RoomDataComponent.class);
-    return roomData.getConfig().dungeonId;
-  }
-
-  /**
-   * @param previousDungeonId
-   * @param nextDungeonId
-   * @requires achievements != null
-   */
-  private void reportDungeonEntered(String previousDungeonId, String nextDungeonId) {
-    if (nextDungeonId == null || nextDungeonId.equals(previousDungeonId)) {
-      return;
-    }
-
-    AchievementService achievements = ServiceLocator.getAchievementService();
-
-    AchievementContext context = new AchievementContext();
-    context.dungeonEnteredId = nextDungeonId;
-
-    achievements.update(context);
-  }
-
-  private void updateDungeonTimer(String previousDungeonId, String nextDungeonId) {
-    if (java.util.Objects.equals(previousDungeonId, nextDungeonId)) {
-      return;
-    }
-
-    RunTimer timer = ServiceLocator.getRunTimer();
-    if (timer == null) {
-      return;
-    }
-
-    timer.stopDungeon();
-
-    if (nextDungeonId != null) {
-      timer.startDungeon(nextDungeonId);
-    }
   }
 }
