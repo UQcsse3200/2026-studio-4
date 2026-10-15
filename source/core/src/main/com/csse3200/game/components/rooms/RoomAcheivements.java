@@ -4,6 +4,7 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.rooms.RoomClearService;
+import com.csse3200.game.rooms.RoomSelector;
 import com.csse3200.game.services.AchievementService;
 import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
@@ -15,7 +16,7 @@ public class RoomAcheivements extends Component {
   @Override
   public void create() {
     entity.getEvents().addListener(RoomClearService.DUNGEON_CLEARED, this::onDungeonCompleted);
-    entity.getEvents().addListener("RoomSwitched", this::onRoomSwitched);
+    entity.getEvents().addListener(RoomSelector.ROOM_SWITCHED_EVENT, this::onRoomSwitched);
   }
 
   private void onDungeonCompleted(String dungeonId) {
