@@ -12,6 +12,9 @@ public final class DiceDuelGame {
   /** Gold charged to reroll the player's dice once per round. */
   public static final int REROLL_FEE = 5;
 
+  /** Extra winnings, as a percentage of the stake, for winning with a double. */
+  public static final int DOUBLES_BONUS_PERCENT = 50;
+
   private final InventoryComponent inventory;
   // Returns one die roll (1 to 6). Passed in so tests can use fixed rolls instead of random ones.
   private final IntSupplier dice;
@@ -49,7 +52,8 @@ public final class DiceDuelGame {
   /** True when no round is active, the player can afford the stake and a win cannot overflow. */
   public boolean canRoll() {
     int gold = inventory.getGold();
-    return round == null && stake > 0 && gold >= stake && gold <= Integer.MAX_VALUE - stake;
+    long maxWin = (long) stake + bonusFor(stake);
+    return round == null && stake > 0 && gold >= stake && gold <= Integer.MAX_VALUE - maxWin;
   }
 
   public boolean isRoundActive() {
@@ -96,8 +100,9 @@ public final class DiceDuelGame {
   }
 
   /**
-   * Ends the current round and pays out: win returns double the stake, a tie returns the stake, and
-   * a loss returns nothing. Reroll fees are never refunded.
+   * Ends the current round and pays out: a win returns double the stake (plus a bonus when the
+   * player rolled a double), a tie returns the stake, and a loss returns nothing. Reroll fees are
+   * never refunded.
    *
    * @return the outcome, or null if no round is active
    */
@@ -108,9 +113,13 @@ public final class DiceDuelGame {
     Round finished = round;
     round = null;
     Result result;
+    int bonus = 0;
     if (finished.playerTotal() > finished.merchantTotal()) {
       result = Result.WIN;
-      inventory.addGold(finished.stake() * 2);
+      if (finished.isPlayerDouble()) {
+        bonus = bonusFor(finished.stake());
+      }
+      inventory.addGold(finished.stake() * 2 + bonus);
     } else if (finished.playerTotal() == finished.merchantTotal()) {
       result = Result.TIE;
       inventory.addGold(finished.stake());
@@ -123,7 +132,12 @@ public final class DiceDuelGame {
         finished.playerTotal(),
         finished.merchantTotal(),
         finished.stake(),
-        finished.rerolled());
+        finished.rerolled(),
+        bonus);
+  }
+
+  private static int bonusFor(int stake) {
+    return stake * DOUBLES_BONUS_PERCENT / 100;
   }
 
   private int rollDie() {
@@ -151,9 +165,14 @@ public final class DiceDuelGame {
     public int merchantTotal() {
       return merchant1 + merchant2;
     }
+
+    /** True when both of the player's dice show the same number. */
+    public boolean isPlayerDouble() {
+      return player1 == player2;
+    }
   }
 
-  /** The settled result of one round. */
+  /** The settled result of one round. {@code bonus} is the extra Gold won for a double. */
   public record Outcome(
-      Result result, int playerTotal, int merchantTotal, int stake, boolean rerolled) {}
+      Result result, int playerTotal, int merchantTotal, int stake, boolean rerolled, int bonus) {}
 }

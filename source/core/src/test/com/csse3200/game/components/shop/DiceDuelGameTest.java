@@ -143,4 +143,28 @@ class DiceDuelGameTest {
     assertNull(game.reroll());
     assertEquals(2, inventory.getGold());
   }
+
+  @Test
+  void winningWithADoubleAddsBonus() {
+    InventoryComponent inventory = new InventoryComponent(50);
+    DiceDuelGame game = new DiceDuelGame(inventory, rolls(4, 4, 1, 2));
+    game.roll();
+    DiceDuelGame.Outcome outcome = game.settle();
+    assertEquals(DiceDuelGame.Result.WIN, outcome.result());
+    assertEquals(5, outcome.bonus());
+    assertEquals(65, inventory.getGold()); // 50 - 10 + 20 + 5 bonus
+  }
+
+  @Test
+  void doublesGiveNoBonusOnLossOrTie() {
+    InventoryComponent inventory = new InventoryComponent(50);
+    DiceDuelGame loss = new DiceDuelGame(inventory, rolls(2, 2, 6, 6));
+    loss.roll();
+    assertEquals(0, loss.settle().bonus());
+    assertEquals(40, inventory.getGold());
+    DiceDuelGame tie = new DiceDuelGame(inventory, rolls(3, 3, 4, 2));
+    tie.roll();
+    assertEquals(0, tie.settle().bonus());
+    assertEquals(40, inventory.getGold());
+  }
 }

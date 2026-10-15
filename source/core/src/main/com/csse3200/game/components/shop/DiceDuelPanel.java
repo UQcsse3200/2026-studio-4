@@ -158,7 +158,10 @@ public final class DiceDuelPanel extends Table {
     }
     result.setText(
         switch (outcome.result()) {
-          case WIN -> "You won " + outcome.stake() + " Gold!";
+          case WIN ->
+              outcome.bonus() > 0
+                  ? "Doubles! You won " + (outcome.stake() + outcome.bonus()) + " Gold!"
+                  : "You won " + outcome.stake() + " Gold!";
           case TIE -> "Tie! Your " + outcome.stake() + " Gold is returned.";
           case LOSE -> "You lost " + outcome.stake() + " Gold.";
         });
