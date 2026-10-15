@@ -10,7 +10,6 @@ import com.csse3200.game.components.rooms.RoomDataComponent;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,6 @@ public class RoomSelector {
   private CameraComponent camera;
   private RoomLoader roomLoader;
 
-  private final EventHandler eventHandler = new EventHandler();
   public static final String ROOM_SWITCHED_EVENT = "RoomSwitched";
   public static final String SWITCH_ROOM = "SwitchRoom";
 
@@ -116,7 +114,7 @@ public class RoomSelector {
     room.getEvents().addListener(SWITCH_ROOM, this::switchRoom);
 
     RoomConfig newConfig = room.getComponent(RoomDataComponent.class).getConfig();
-    room.getEvents().trigger("RoomSwitched", oldConfig, newConfig);
+    room.getEvents().trigger(ROOM_SWITCHED_EVENT, oldConfig, newConfig);
   }
 
   /**

@@ -151,7 +151,7 @@ public class MainGameScreen extends ScreenAdapter {
     }
     ServiceLocator.getEntityService().update();
     if (!frozen) {
-      // roomManager.update();
+      // roomManager . update ();
     }
     roomAssets.applyMusicVolume();
     renderer.render();
@@ -188,7 +188,7 @@ public class MainGameScreen extends ScreenAdapter {
       GameProgress.recordRun((long) (runTimer.getTotalTime() * 1000f));
     }
 
-    // This should all just be one function call GameSave.save();
+    // This should all just be one function call GameSave . save ();
     if (saveOnDispose && !runSaved && player != null && roomManager != null) {
       runSaved = true;
       try {

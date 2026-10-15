@@ -343,7 +343,6 @@ public class RoomManager {
 
   private void switchToRoom(
       RoomConfig destination, PositionConfig arrivalPosition, FinalBossPhase bossStage) {
-    String previousDungeonId = currentConfig.dungeonId;
     Entity nextRoom =
         RoomFactory.createRoom(
             destination, camera, bossStage == null && clearedRoomIds.contains(destination.id));

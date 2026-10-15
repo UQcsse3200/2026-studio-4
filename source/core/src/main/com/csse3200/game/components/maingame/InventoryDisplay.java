@@ -168,6 +168,12 @@ public class InventoryDisplay extends UIComponent {
             scroll.updateVisualScroll();
           }
         }
+
+        private void changeCategory(int delta) {
+          if (categories.isEmpty()) return;
+          int index = categories.indexOf(currentCategory);
+          showCategory(categories.get(Math.floorMod(index + delta, categories.size())));
+        }
       };
 
   private final Supplier<DragAndDrop> dragAndDropFactory;
@@ -759,12 +765,6 @@ public class InventoryDisplay extends UIComponent {
     currentCategory = category;
     selectedIndex = 0;
     refreshPage();
-  }
-
-  private void changeCategory(int delta) {
-    if (categories.isEmpty()) return;
-    int index = categories.indexOf(currentCategory);
-    showCategory(categories.get(Math.floorMod(index + delta, categories.size())));
   }
 
   private static Texture getTexture(Item item) {

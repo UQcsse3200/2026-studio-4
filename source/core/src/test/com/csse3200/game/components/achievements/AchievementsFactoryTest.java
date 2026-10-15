@@ -9,8 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig.EnemyType;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -20,8 +23,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class AchievementsFactoryTest {
+
+  private static final String SNAKE_NO_SHIELD_PICKUP = "snakeDefeatedWithoutShieldPickup";
+  private static final String SNAKE_GREEN_BUBBLE = "snakeStageTwoShieldPickup";
 
   // ---------- helpers ----------
 
@@ -30,6 +38,12 @@ class AchievementsFactoryTest {
     c.type = type;
     c.name = "test-" + type;
     return c;
+  }
+
+  private static AchievementConfig snakeConfig(String id) {
+    AchievementConfig definition = config("snake");
+    definition.bossAchievementId = id;
+    return definition;
   }
 
   private static AchievementConfig finalBossConfig(String bossAchievementId) {
@@ -120,6 +134,7 @@ class AchievementsFactoryTest {
     all.put("killStreak", config("killStreak"));
     all.put("speedRun", speed);
     all.put("enemySet", set);
+    all.put("snake", snakeConfig(SNAKE_NO_SHIELD_PICKUP));
     all.put("finalBoss", finalBossConfig("finalBossBreakRespected"));
     return all;
   }
@@ -204,6 +219,106 @@ class AchievementsFactoryTest {
           assertThrows(InvocationTargetException.class, constructor::newInstance);
 
       assertTrue(e.getCause() instanceof IllegalStateException);
+    }
+  }
+
+  @Nested
+  class SnakeNoShieldPickup {
+    @Test
+    void unlocksOnceForAReportedVictoryWithoutShieldPickups() {
+      Achievement achievement = AchievementsFactory.build(snakeConfig(SNAKE_NO_SHIELD_PICKUP));
+      AchievementContext victory = new AchievementContext();
+      victory.bossAchievementId = SNAKE_NO_SHIELD_PICKUP;
+
+      assertTrue(achievement.update(victory));
+      assertTrue(achievement.isUnlocked());
+      assertFalse(achievement.update(victory));
+    }
+
+    @Test
+    void ordinarySnakeKillsAndUnrelatedEventsDoNotUnlockTheChallenge() {
+      Achievement achievement = AchievementsFactory.build(snakeConfig(SNAKE_NO_SHIELD_PICKUP));
+
+      assertFalse(achievement.update(kill(EnemyType.SNAKE_MINI_BOSS)));
+      assertFalse(achievement.update(damaged()));
+      assertFalse(achievement.update(new AchievementContext()));
+      assertFalse(achievement.isUnlocked());
+    }
+
+    @Test
+    void gameConfigurationRegistersTheChallengeOnceWithItsDisplayName() throws IOException {
+      AchievementConfig[] definitions =
+          new Json()
+              .fromJson(
+                  AchievementConfig[].class,
+                  Files.readString(Path.of("configs/achievements.json")));
+      List<AchievementConfig> matching =
+          Arrays.stream(definitions)
+              .filter(
+                  definition ->
+                      "snake".equals(definition.type)
+                          && SNAKE_NO_SHIELD_PICKUP.equals(definition.bossAchievementId))
+              .toList();
+
+      assertEquals(1, matching.size());
+      Achievement achievement = AchievementsFactory.build(matching.getFirst());
+      assertEquals("What are those green things?", achievement.getName());
+      assertFalse(achievement.isUnlocked());
+    }
+  }
+
+  @Nested
+  class SnakeIds {
+    @Test
+    void differentSnakeChallengesDoNotUnlockEachOther() {
+      List<String> ids = List.of(SNAKE_NO_SHIELD_PICKUP, SNAKE_GREEN_BUBBLE, "snakeExposedHit");
+      for (String reportedId : ids) {
+        AchievementContext context = new AchievementContext();
+        context.bossAchievementId = reportedId;
+        for (String configuredId : ids) {
+          Achievement achievement = AchievementsFactory.build(snakeConfig(configuredId));
+          assertEquals(configuredId.equals(reportedId), achievement.update(context));
+          assertFalse(achievement.update(context));
+        }
+      }
+    }
+
+    @Test
+    void nullAndUnknownEventIdsDoNotUnlockGreenBubble() {
+      Achievement achievement = AchievementsFactory.build(snakeConfig(SNAKE_GREEN_BUBBLE));
+      assertFalse(achievement.update(new AchievementContext()));
+      AchievementContext unknown = new AchievementContext();
+      unknown.bossAchievementId = "unknownSnakeAchievement";
+      assertFalse(achievement.update(unknown));
+      assertFalse(achievement.update(kill(EnemyType.SNAKE_MINI_BOSS)));
+      assertFalse(achievement.isUnlocked());
+    }
+
+    @Test
+    void aMissingConfiguredIdCannotMatchAnEmptyContext() {
+      Achievement achievement = AchievementsFactory.build(snakeConfig(null));
+      assertFalse(achievement.update(new AchievementContext()));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"snakeStageTwoShieldPickup,Green bubble", "snakeExposedHit,Whack-a-Mole"})
+    void gameConfigurationRegistersEachChallengeOnceWithItsDisplayName(String id, String name)
+        throws IOException {
+      AchievementConfig[] definitions =
+          new Json()
+              .fromJson(
+                  AchievementConfig[].class,
+                  Files.readString(Path.of("configs/achievements.json")));
+      List<AchievementConfig> matching =
+          Arrays.stream(definitions)
+              .filter(
+                  definition ->
+                      "snake".equals(definition.type) && id.equals(definition.bossAchievementId))
+              .toList();
+      assertEquals(1, matching.size());
+      Achievement achievement = AchievementsFactory.build(matching.getFirst());
+      assertEquals(name, achievement.getName());
+      assertFalse(achievement.isUnlocked());
     }
   }
 

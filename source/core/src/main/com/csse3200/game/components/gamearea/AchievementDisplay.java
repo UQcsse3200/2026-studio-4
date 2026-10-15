@@ -30,7 +30,6 @@ public class AchievementDisplay extends UIComponent {
 
   private Table rootTable;
   private Table toast;
-  private Label titleLabel;
   private Label nameLabel;
   private long expiryMillis;
 
@@ -47,7 +46,8 @@ public class AchievementDisplay extends UIComponent {
   }
 
   private void addActors() {
-    titleLabel = new Label("Achievement Unlocked:", skin);
+
+    Label titleLabel = new Label("Achievement Unlocked:", skin);
 
     nameLabel = new Label("", skin);
     nameLabel.setWrap(true);

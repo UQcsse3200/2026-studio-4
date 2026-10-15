@@ -13,6 +13,9 @@
   { "type": "enemyKillCount", "category": "Bosses", "enemyType": "SNAKE_MINI_BOSS", "target": 1, "name": "Serpent Slayer", "description": "Defeat the Snake miniboss." },
   { "type": "enemyKillCount", "category": "Bosses", "enemyType": "SLEIPNIR", "target": 1, "name": "Eight Legs, No Escape", "description": "Defeat Sleipnir, the eight-legged horse miniboss." },
   { "type": "enemyKillCount", "category": "Bosses", "enemyType": "DRAGON", "target": 1, "name": "Dragon Slayer", "description": "Defeat the Chinese Dragon miniboss." },
+  { "type": "snake", "category": "Bosses","bossAchievementId": "snakeDefeatedWithoutShieldPickup", "name": "What are those green things?", "description": "Defeat the Snake miniboss without collecting any green shield gems during the encounter." },
+  { "type": "snake", "category": "Bosses", "bossAchievementId": "snakeStageTwoShieldPickup", "name": "Green bubble", "description": "Collect a green shield gem for the first time during Stage 2." },
+  { "type": "snake", "category": "Bosses", "name": "Whack-a-Mole", "bossAchievementId": "snakeExposedHit", "description": "Land a damaging player attack during Snake's post-emergence pause in either stage, before the Stage 2 poison-spitting sequence begins." },
   { "type": "enemyKillCount", "category": "Bosses", "enemyType": "FINAL_BOSS", "target": 1, "name": "Vanquisher", "description": "Reach the final dungeon and defeat the final boss." },
 
   { "type": "finalBoss", "category": "Final Boss", "bossAchievementId": "finalBossBreakRespected", "name": "I need a break too", "description": "Complete the full Stage 1 inter-wave break without hitting the Boss." },

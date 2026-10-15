@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.miniboss.snake.SnakeAchievementComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowVisualComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent;
@@ -114,6 +115,7 @@ class NPCFactoryTest {
     assertNotNull(enemy.getComponent(SnakePoisonVolleyComponent.class));
     assertNotNull(enemy.getComponent(SnakeShieldComponent.class));
     assertNotNull(enemy.getComponent(SnakeShieldPickupComponent.class));
+    assertNotNull(enemy.getComponent(SnakeAchievementComponent.class));
     assertNull(enemy.getComponent(AITaskComponent.class));
   }
 
