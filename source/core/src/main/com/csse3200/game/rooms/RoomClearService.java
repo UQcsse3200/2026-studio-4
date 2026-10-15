@@ -7,19 +7,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A Singleton class to track the players cleared rooms.
+ * tracker for the players cleared rooms.
  *
  * <p>Write access should only be given to room entities via attaching events to it.
  */
 public class RoomClearService {
   private static final Logger logger = LoggerFactory.getLogger(RoomClearService.class);
-  private static final Set<String> clearedRoomIds = new HashSet<>();
-  private static final Set<String> clearedDungeonIds = new HashSet<>();
+  private final Set<String> clearedRoomIds = new HashSet<>();
+  private final Set<String> clearedDungeonIds = new HashSet<>();
 
   public static final String ROOM_CLEARED = "RoomCleared";
   public static final String DUNGEON_CLEARED = "DungeonCleared";
 
-  private RoomClearService() {}
+  public RoomClearService() {}
 
   /**
    * Provides listeners to room events to track the cleared rooms
@@ -31,7 +31,7 @@ public class RoomClearService {
    *
    * @param entity The room entity to attach lisners to
    */
-  static void attachListeners(Entity entity) {
+  void attachListeners(Entity entity) {
     entity
         .getEvents()
         .addListener(
@@ -50,15 +50,15 @@ public class RoomClearService {
             });
   }
 
-  public static boolean isRoomCleared(String roomId) {
-    return clearedRoomIds.contains(roomId);
-  }
-
-  public static int getDungeonClearedCount() {
+  public int getDungeonClearedCount() {
     return clearedDungeonIds.size();
   }
 
-  public static boolean isDungeonCleared(String dungeonId) {
+  public boolean isRoomCleared(String roomId) {
+    return clearedRoomIds.contains(roomId);
+  }
+
+  public boolean isDungeonCleared(String dungeonId) {
     return clearedDungeonIds.contains(dungeonId);
   }
 }

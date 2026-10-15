@@ -26,7 +26,6 @@ public class RoomSelector {
   private CameraComponent camera;
   private RoomLoader roomLoader;
 
-  private final EventHandler eventHandler = new EventHandler();
   public static final String ROOM_SWITCHED_EVENT = "RoomSwitched";
   public static final String SWITCH_ROOM = "SwitchRoom";
 
@@ -61,11 +60,7 @@ public class RoomSelector {
 
   /** Switches the currently rendered room to the destination room declared in exit */
   public void switchRoom(ExitConfig exit) {
-    logger.debug(
-        "going to room: {}, isCleared: {}",
-        exit.destinationRoomId,
-        RoomClearService.isRoomCleared(exit.destinationRoomId));
-
+    logger.debug("Switching to room: {}", exit.destinationRoomId);
     ServiceLocator.getEntityService().schedule(() -> setRoom(exit));
   }
 
@@ -111,7 +106,6 @@ public class RoomSelector {
     ServiceLocator.getEntityService().register(newRoom);
     spawnPlayer(spawn);
     room.getEvents().trigger("RoomCreated", this.player);
-    RoomClearService.attachListeners(room);
     resetCamera();
     room.getEvents().addListener(SWITCH_ROOM, this::switchRoom);
 

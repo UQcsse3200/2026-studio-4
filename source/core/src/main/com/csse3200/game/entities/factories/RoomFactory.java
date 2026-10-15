@@ -76,7 +76,6 @@ public class RoomFactory {
         .addComponent(
             new EnemyManagerComponent(
                 cleared ? new EnemySpawnConfig[0] : room.enemySpawns, room, camera))
-        .addComponent(new RoomDataComponent(room))
         .addComponent(new RoomAcheivements())
         .addComponent(new FriendlyNpcManagerComponent(room.npcSpawns, getFriendlyNpcs()));
   }
