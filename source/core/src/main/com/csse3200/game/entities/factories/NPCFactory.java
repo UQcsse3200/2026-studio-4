@@ -13,6 +13,7 @@ import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
+import com.csse3200.game.components.npc.FlyingEnemyPatrolComponent;
 import com.csse3200.game.components.tasks.*;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
@@ -46,6 +47,7 @@ public class NPCFactory {
   private static final NPCConfigs configs =
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
 
+  public static final String PROJECTILE_SPAWNED = "enemyProjectileSpawned";
   private static final float CHASE_SPEED = 2.5f;
   private static final String DEFAULT_ANIMATION = "default";
   private static final String DIE_ANIMATION = "dieAnimation";
@@ -82,16 +84,6 @@ public class NPCFactory {
     giantEnemy.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(0.5f, 0.5f));
 
     return giantEnemy;
-  }
-
-  /**
-   * Creates a zombie with its standard appearance and explosion fuse.
-   *
-   * @param target entity to chase
-   * @return zombie entity
-   */
-  public static Entity createZombie(Entity target) {
-    return createBombEnemy(target, "images/zombie.atlas", 2f);
   }
 
   /**
@@ -182,6 +174,54 @@ public class NPCFactory {
   }
 
   /**
+   * Creates a floating enemy with an explicitly supplied patrol origin. Retained for existing
+   * callers.
+   */
+  public static Entity createFloatingDemon(
+      Entity target, Vector2 spawn, String skin, Consumer<Entity> projectileSpawner) {
+    Entity demon = createFloatingDemonBase(skin);
+
+    AITaskComponent aiComponent =
+        new AITaskComponent()
+            .addTask(new PatrolTask(spawn, true))
+            .addTask(
+                new RangedAttackTask(
+                    target, 10, configs.floatingDemon.baseAttack, projectileSpawner));
+
+    demon.addComponent(aiComponent);
+    return demon;
+  }
+
+  /** Builds the shared appearance and components of a floating enemy. */
+  private static Entity createFloatingDemonBase(String skin) {
+    FloatingDemonConfig config = configs.floatingDemon;
+    Entity demon = createBaseNPC();
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
+
+    animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
+    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+
+    demon
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(animator)
+        .addComponent(new EnemyDeathComponent(true, true))
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f));
+
+    animator.scaleEntity();
+    animator.startAnimation(MOVE);
+    demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
+
+    return demon;
+  }
+
+  /**
    * Creates the snake mini-boss with an invulnerable underground approach, a fixed ground warning,
    * one emergence strike and a brief vulnerable recovery. Its old contact and poison-pool attacks
    * are replaced by the burrow controller.
@@ -242,49 +282,6 @@ public class NPCFactory {
         projectile -> ServiceLocator.getEntityService().register(projectile));
   }
 
-  /**
-   * Creates a floating demon and delegates ownership of its projectiles to the given spawner.
-   *
-   * @return floating demon entity
-   */
-  public static Entity createFloatingDemon(
-      Entity target, Vector2 spawn, String skin, Consumer<Entity> projectileSpawner) {
-
-    FloatingDemonConfig config = configs.floatingDemon;
-
-    Entity demon = createBaseNPC();
-
-    AITaskComponent aiComponent =
-        new AITaskComponent()
-            .addTask(new PatrolTask(spawn, true))
-            .addTask(new RangedAttackTask(target, 10, config.baseAttack, projectileSpawner));
-
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
-
-    animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
-    animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
-    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-
-    demon
-        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(aiComponent)
-        .addComponent(animator)
-        .addComponent(new EnemyDeathComponent(true, true))
-        .addComponent(new EnemyAnimationController())
-        .addComponent(new EnemyStatDisplay(1.5f));
-
-    animator.scaleEntity();
-    animator.startAnimation("move");
-
-    demon.getComponent(PhysicsMovementComponent.class).setMaxSpeed(config.movement);
-
-    return demon;
-  }
-
   public static Entity createSleipnir(Entity target, Vector2 spawn) {
     Entity sleipnir = createBaseNPC();
     BaseEntityConfig config = configs.sleipnir;
@@ -332,6 +329,76 @@ public class NPCFactory {
     sleipnir.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(8f, 8f));
 
     return sleipnir;
+  }
+
+  /**
+   * Creates a zombie with its standard appearance and explosion fuse.
+   *
+   * @param target entity to chase
+   * @return zombie entity
+   */
+  public static Entity createZombie(Entity target) {
+    return createBombEnemy(target, "images/zombie.atlas", 2f);
+  }
+
+  /** Creates a bug with its standard appearance and splitting behaviour. */
+  public static Entity createBug(Entity target) {
+    return createChaseEnemy(target, true, "images/bug.atlas");
+  }
+
+  /** Creates a Longwei with its standard appearance and no splitting. */
+  public static Entity createLongwei(Entity target) {
+    return createChaseEnemy(target, false, "images/longwei.atlas");
+  }
+
+  /**
+   * Creates Jingwei. The owning room must listen for PROJECTILE_SPAWNED before registering the
+   * entity.
+   *
+   * @param target entity to attack
+   * @return an unregistered Jingwei entity
+   */
+  public static Entity createJingwei(Entity target) {
+    Entity jingwei = createFloatingDemonBase("images/jingwei.atlas");
+
+    AITaskComponent aiComponent =
+        new AITaskComponent()
+            .addTask(
+                new RangedAttackTask(
+                    target,
+                    10,
+                    configs.floatingDemon.baseAttack,
+                    projectile -> jingwei.getEvents().trigger(PROJECTILE_SPAWNED, projectile)));
+
+    jingwei.addComponent(aiComponent).addComponent(new FlyingEnemyPatrolComponent());
+
+    return jingwei;
+  }
+
+  /** Creates Wukong with its standard scale and collision bounds. */
+  public static Entity createWukong(Entity target) {
+    Entity wukong = createGiantEnemy(target, "images/wukong.atlas");
+    wukong.setScale(3f, 3f);
+    wukong
+        .getComponent(HitboxComponent.class)
+        .setAsBox(
+            new Vector2(1f, 1f),
+            new Vector2(wukong.getCenterPosition().x, wukong.getCenterPosition().y / 2f));
+    PhysicsUtils.setScaledCollider(wukong, 0.3f, 0.3f);
+    return wukong;
+  }
+
+  /**
+   * Creates Jingwei with its standard appearance.
+   *
+   * @param target entity to attack
+   * @param spawnPoint patrol origin in world coordinates
+   * @param projectileSpawner callback for spawning room-owned projectiles
+   * @return Jingwei entity
+   */
+  public static Entity createJingwei(
+      Entity target, Vector2 spawnPoint, Consumer<Entity> projectileSpawner) {
+    return createFloatingDemon(target, spawnPoint, "images/jingwei.atlas", projectileSpawner);
   }
 
   /**

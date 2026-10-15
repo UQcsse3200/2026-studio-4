@@ -65,6 +65,7 @@ class NPCFactoryTest {
           "images/crab.atlas",
           "images/cyclops.atlas",
           "images/floatingDemon.atlas",
+          "images/jingwei.atlas",
           "images/golem.atlas",
           "images/medusa.atlas",
           "images/mummy.atlas",
@@ -328,6 +329,29 @@ class NPCFactoryTest {
     assertEquals(0, shield.getDurability());
     assertEquals(0, pickups.getPickupCount());
     snake.dispose();
+  }
+
+  @Test
+  void jingweiShouldPatrolFromItsAssignedSpawnPosition() {
+    Entity target = new Entity();
+    target.setPosition(100f, 100f);
+
+    Entity jingwei = NPCFactory.createJingwei(target);
+    jingwei.setPosition(10f, 20f);
+
+    jingwei
+        .getComponent(com.csse3200.game.components.npc.FlyingEnemyPatrolComponent.class)
+        .create();
+
+    // Simulate displacement before the first patrol update.
+    jingwei.setPosition(30f, 40f);
+    jingwei.getComponent(AITaskComponent.class).update();
+
+    assertEquals(
+        new Vector2(8f, 20f),
+        jingwei
+            .getComponent(com.csse3200.game.physics.components.PhysicsMovementComponent.class)
+            .getTarget());
   }
 
   @Test

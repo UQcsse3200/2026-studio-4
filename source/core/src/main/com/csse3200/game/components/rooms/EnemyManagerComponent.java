@@ -79,16 +79,15 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     switch (spawn.type) {
       // Chinese
       case JINGWEI:
-        return NPCFactory.createFloatingDemon(
-            target, spawnPoints, "images/jingwei.atlas", this::spawnEntity);
+        return NPCFactory.createJingwei(target);
       case ZOMBIE:
-        return createBombEnemy(target, "images/zombie.atlas", 2f);
+        return NPCFactory.createZombie(target);
       case WUKONG:
-        return createScaledGiant(target, "images/wukong.atlas", 3f);
+        return NPCFactory.createWukong(target);
       case BUG:
-        return NPCFactory.createChaseEnemy(target, true, "images/bug.atlas");
+        return NPCFactory.createBug(target);
       case LONGWEI:
-        return NPCFactory.createChaseEnemy(target, false, "images/longwei.atlas");
+        return NPCFactory.createLongwei(target);
       case DRAGON:
         return DragonFactory.createDragon(target, this::spawnEntity);
 
@@ -159,6 +158,15 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     if (disposed || !activeEnemies.add(enemy)) {
       return;
     }
+    enemy
+        .getEvents()
+        .<Entity>addListener(
+            NPCFactory.PROJECTILE_SPAWNED,
+            projectile -> {
+              if (!disposed) {
+                spawnEntity(projectile);
+              }
+            });
     enemy.getEvents().<Entity>addListener("cerberusProjectileSpawned", this::spawnEntity);
     enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy, enemyType));
     if (enemy.getComponent(CerberusDeathComponent.class) != null) {
