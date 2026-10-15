@@ -1,13 +1,9 @@
 package com.csse3200.game.components.gamearea;
 
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.csse3200.game.files.AudioLevels;
 import com.csse3200.game.services.AchievementService;
@@ -15,7 +11,6 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import java.util.ArrayDeque;
 import java.util.Queue;
-import java.util.StringTokenizer;
 
 /**
  * Displays achievement-unlocked notifications independently from room or game-area displays.
@@ -30,7 +25,6 @@ public class AchievementDisplay extends UIComponent {
 
   private static final String ACHIEVEMENT_BACK = "achievement";
   private static final String ACHIEVEMENT_SOUND = "sounds/achievementSound.mp3";
-
 
   private final Queue<String> achievementQueue = new ArrayDeque<>();
 
@@ -108,7 +102,7 @@ public class AchievementDisplay extends UIComponent {
 
   private void playAchievementSound() {
     Sound achievementSound =
-            ServiceLocator.getResourceService().getAsset(ACHIEVEMENT_SOUND, Sound.class);
+        ServiceLocator.getResourceService().getAsset(ACHIEVEMENT_SOUND, Sound.class);
     AudioLevels.play(achievementSound);
   }
 
@@ -141,7 +135,6 @@ public class AchievementDisplay extends UIComponent {
     if (rootTable != null) {
       rootTable.remove();
     }
-
 
     super.dispose();
   }
