@@ -36,6 +36,8 @@ public class RoomAssets implements Disposable {
   /** Plays while the final boss is still alive. */
   private static final String BOSS_MUSIC = "sounds/boss_music.mp3";
 
+  private static final String ACHIEVEMENT_MUSIC = "sounds/achievementSound.mp3";
+
   /**
    * Dungeons that have a theme of their own. Anything not listed here fights to {@link
    * #FIGHT_MUSIC}, so giving a dungeon its own track is one entry rather than a new branch.
@@ -44,7 +46,7 @@ public class RoomAssets implements Disposable {
 
   private static final String IMPACT_SOUND = "sounds/Impact4.ogg";
   private static final String[] MUSIC = {CALM_MUSIC, FIGHT_MUSIC, BOSS_MUSIC};
-  private static final String[] SOUNDS = {IMPACT_SOUND};
+  private static final String[] SOUNDS = {IMPACT_SOUND, ACHIEVEMENT_MUSIC};
 
   private static final String[] ENEMY_TEXTURES = {
     "images/hole.png",

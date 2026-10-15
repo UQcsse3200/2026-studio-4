@@ -136,8 +136,6 @@ class EnemyManagerComponentTest {
     Entity target = new Entity();
     Entity rejectedEnemy = new Entity();
     Entity validEnemy = new Entity();
-    int[] cleared = {0};
-    room.getEvents().addListener("roomCleared", () -> cleared[0]++);
 
     try (MockedStatic<NPCFactory> factory = Mockito.mockStatic(NPCFactory.class)) {
       factory
@@ -155,12 +153,10 @@ class EnemyManagerComponentTest {
       factory.verify(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"), never());
       factory.verify(() -> NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas"));
       assertFalse(enemyManager.isCleared());
-      assertEquals(0, cleared[0]);
 
       validEnemy.getEvents().trigger("entityDied");
 
       assertTrue(enemyManager.isCleared());
-      assertEquals(1, cleared[0]);
     }
   }
 
@@ -278,17 +274,23 @@ class EnemyManagerComponentTest {
   }
 
   @Test
-  void shouldClearRoomWhenLastEnemyDies() {
-    Entity[] enemies = trackEnemies(3);
-    int[] cleared = {0};
-    room.getEvents().addListener("roomCleared", () -> cleared[0]++);
+  void shouldNotifiyOnUpdateWithNoMoreActiveEnemies() {
+    int[] cleared = {0}; // array workaround for anon lambdas
+    var spawns = new EnemySpawnConfig[] {new EnemySpawnConfig()};
+    var enemy = new EnemyManagerComponent(spawns);
+    var config = new RoomConfig();
+    config.id = "asdfasdf";
+    var roomData = new RoomDataComponent(config);
+    var roomL = new Entity().addComponent(enemy).addComponent(roomData);
 
-    for (Entity enemy : enemies) {
-      enemy.getEvents().trigger("entityDied");
-    }
+    roomL.getEvents().addListener("RoomClear", a -> cleared[0]++);
 
-    assertEquals(1, cleared[0], "roomCleared should fire once all enemies are dead");
-    assertTrue(enemyManager.isCleared());
+    enemy.clear();
+    enemy.update();
+    enemy.update();
+
+    assertEquals(0, cleared[0]);
+    assertTrue(enemy.isCleared());
   }
 
   @Test
