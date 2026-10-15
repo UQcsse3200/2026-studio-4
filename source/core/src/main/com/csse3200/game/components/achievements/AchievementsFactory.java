@@ -33,20 +33,15 @@ public class AchievementsFactory {
   private static Achievement gold(AchievementConfig c) {
     Achievement a = new Achievement(c.name, c.description);
     a.setTarget(c.target);
-    boolean[] initial = {true};
-    float[] initialGold = {0f};
     a.setCondition(
-        ctx -> {
-          if (ctx.goldTotal == null) {
+        context -> {
+          if (context.goldCollected == null || context.goldCollected <= 0) {
             return false;
           }
-          if (initial[0]) {
-            initialGold[0] = ctx.goldTotal;
-            initial[0] = false;
-          }
-          a.setProgress(ctx.goldTotal - initialGold[0]);
+          a.addProgress(context.goldCollected);
           return a.getProgress() >= c.target;
         });
+
     return a;
   }
 

@@ -10,6 +10,6 @@ public class AchievementContext {
   public String dungeonEnteredId;
   public String dungeonId;
   public float dungeonSeconds;
-  public Integer goldTotal;
+  public Integer goldCollected;
   public String bossAchievementId;
 }

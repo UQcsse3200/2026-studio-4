@@ -25,5 +25,5 @@
   { "type": "speedRun", "dungeonId": "dungeonOne", "maxSeconds": 60, "name": "Hermes", "description": "Clear the first dungeon in under 60 seconds." },
   { "type": "killStreak", "target": 5, "name": "On a Roll", "description": "Defeat 5 enemies in a row without taking damage. Getting hit resets your streak." },
   { "type": "enemySet", "enemyTypes": ["BEETLE", "CRAB", "WASP", "MUMMY", "SNAKE_MINI_BOSS"], "name": "Monster Hunter: Dungeon Two", "description": "Defeat at least one of each enemy found in the second dungeon: Beetle, Crab, Wasp, Mummy and the Snake mini-boss." },
-  { "type": "gold", "target": 60, "name": "Hoarder", "description": "Collect 60 gold." }
+  { "type": "gold", "target": 60, "name": "Coin Collector", "description": "Collect 60 gold coins." }
 ]

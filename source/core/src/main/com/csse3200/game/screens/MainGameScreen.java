@@ -136,6 +136,22 @@ public class MainGameScreen extends ScreenAdapter {
               ServiceLocator.getAchievementService().update(ctx);
             });
 
+    // notify gold collected
+    player
+        .getEvents()
+        .addListener(
+            InventoryComponent.GOLD_PICKED_UP,
+            (Integer amount) -> {
+              AchievementService achievements = ServiceLocator.getAchievementService();
+              if (achievements == null) {
+                return;
+              }
+
+              AchievementContext context = new AchievementContext();
+              context.goldCollected = amount;
+              achievements.update(context);
+            });
+
     roomSelector = new RoomSelector(player, renderer.getCamera());
     roomSelector.start();
 
