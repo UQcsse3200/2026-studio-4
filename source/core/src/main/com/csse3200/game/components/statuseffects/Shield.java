@@ -11,8 +11,7 @@ public class Shield extends TimedStatusEffect implements StatusEffect, Damageabl
 
   @Override
   public boolean damage(Damage damage) {
-    int damageValue = damage.getDamage();
-    damageValue = 0;
+    int damageValue = 0;
     damage.setDamage(damageValue);
     return false;
   }
