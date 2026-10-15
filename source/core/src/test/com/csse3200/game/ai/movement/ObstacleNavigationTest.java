@@ -40,6 +40,29 @@ class ObstacleNavigationTest {
   }
 
   @Test
+  void smallInitialOverlapAllowsRetreatButNotCrossingTheWall() {
+    wall(0.94f, -1f, 0.2f, 3f);
+
+    assertTrue(ObstacleNavigation.isClear(mover, new Vector2(-0.3f, 0f)));
+    assertFalse(ObstacleNavigation.isClear(mover, new Vector2(2f, 0f)));
+  }
+
+  @Test
+  void pursuitIgnoresTargetBodyAndSensorsButAvoidsOtherSolidBodies() {
+    Entity body =
+        new Entity().addComponent(new PhysicsComponent()).addComponent(new ColliderComponent());
+    body.setPosition(1.2f, 0f);
+    body.create();
+    Vector2 destination = new Vector2(3f, 0f);
+    Entity player = new Entity();
+
+    assertFalse(ObstacleNavigation.isClear(mover, destination, player));
+    assertTrue(ObstacleNavigation.isClear(mover, destination, body));
+    body.getComponent(ColliderComponent.class).setSensor(true);
+    assertTrue(ObstacleNavigation.isClear(mover, destination, player));
+  }
+
+  @Test
   void openGroundAndWalkableSensorsAllowDirectMovement() {
     Entity sensor = wall(1.4f, -1f, 0.2f, 3f);
     sensor.getComponent(ColliderComponent.class).setSensor(true);

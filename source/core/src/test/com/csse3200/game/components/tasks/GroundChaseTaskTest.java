@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.ai.movement.ObstacleNavigation;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
@@ -20,6 +21,8 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,6 +65,107 @@ class GroundChaseTaskTest {
   @AfterEach
   void tearDown() {
     ServiceLocator.getPhysicsService().getPhysics().dispose();
+  }
+
+  @Test
+  void approachesPlayerStandingCloserToWallThanEnemyCanFit() {
+    wall(0f, -5f, 0.2f, 10f);
+    enemy.setPosition(2.6f, 0f);
+    target.setPosition(0.02f, 0f);
+    for (int i = 0; i < 250; i++) {
+      tick();
+    }
+    assertTrue(
+        enemy.getPosition().dst(target.getPosition()) < 0.4f,
+        "Must approach the player instead of rejecting the blocked endpoint: "
+            + enemy.getPosition());
+    assertTrue(enemy.getPosition().x >= 0.15f, "Must keep the enemy collider outside the wall");
+  }
+
+  @Test
+  void walksAroundStationaryEnemyInsteadOfPushingIntoIt() {
+    Entity blocker =
+        new Entity()
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody))
+            .addComponent(new ColliderComponent())
+            .addComponent(new PhysicsMovementComponent());
+    blocker
+        .getComponent(ColliderComponent.class)
+        .setAsBox(new Vector2(0.9f, 0.4f), new Vector2(0.5f, 0.2f));
+    blocker.setPosition(1.2f, 0f);
+    blocker.create();
+    for (int i = 0; i < 400; i++) {
+      tick();
+    }
+    assertTrue(
+        enemy.getPosition().dst(target.getPosition()) < 0.15f,
+        "Must route around another solid body: " + enemy.getPosition());
+  }
+
+  @org.junit.jupiter.params.ParameterizedTest
+  @org.junit.jupiter.params.provider.ValueSource(booleans = {false, true})
+  void fourEnemiesCanPassThroughSingleFileDoorwayWithoutBlockingEachOther(boolean lunges) {
+    wall(-2.5f, -2.5f, 0.2f, 7f);
+    wall(3f, -2.5f, 0.2f, 7f);
+    wall(-2.5f, -2.5f, 5.7f, 0.2f);
+    wall(-2.5f, 4.5f, 5.7f, 0.2f);
+    wall(-4f, 1.4f, 4f, 0.2f);
+    wall(1.1f, 1.4f, 4f, 0.2f);
+    target.setPosition(0.05f, 3f);
+    enemy.setPosition(-0.5f, -0.5f);
+    List<Entity> crowd = new ArrayList<>();
+    crowd.add(enemy);
+    crowd.add(crowdEnemy(0.5f, -0.5f));
+    crowd.add(crowdEnemy(-0.5f, -1.1f));
+    crowd.add(crowdEnemy(0.5f, -1.1f));
+    if (lunges) {
+      target.addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody));
+      target.addComponent(new ColliderComponent());
+      target
+          .getComponent(ColliderComponent.class)
+          .setAsBox(new Vector2(0.6f, 0.3f), new Vector2(0.3f, 0.15f));
+      target.create();
+      for (Entity member : crowd) {
+        member
+            .getComponent(AITaskComponent.class)
+            .addTask(new LungeAttackTask(target, 20, 2.5f, member));
+      }
+    }
+    // They are already aware of the player before entering the choke point.
+    chase.start();
+    for (int i = 0; i < 1200; i++) {
+      now += 16;
+      for (Entity member : crowd) {
+        member.earlyUpdate();
+      }
+      for (Entity member : crowd) {
+        member.update();
+      }
+      ServiceLocator.getPhysicsService().getPhysics().update();
+    }
+    for (Entity member : crowd) {
+      assertTrue(
+          member.getPosition().y > 1.62f,
+          "Every enemy should pass through the opening: " + member.getPosition());
+    }
+  }
+
+  private Entity crowdEnemy(float x, float y) {
+    PhysicsMovementComponent steering = new PhysicsMovementComponent();
+    steering.setMaxSpeed(new Vector2(2.5f, 2.5f));
+    GroundChaseTask task = new GroundChaseTask(target, 10, 10f, 10f);
+    Entity member =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent())
+            .addComponent(steering);
+    member
+        .getComponent(ColliderComponent.class)
+        .setAsBox(new Vector2(0.9f, 0.4f), new Vector2(0.5f, 0.2f));
+    member.addComponent(new AITaskComponent().addTask(task));
+    member.setPosition(x, y);
+    member.create();
+    return member;
   }
 
   @Test
@@ -172,6 +276,24 @@ class GroundChaseTaskTest {
     }
     assertTrue(dashCount[0] > 0, "Lunging must still work after rounding the wall");
     assertTrue(closest < 0.3f, "Enemy never reached the player: " + closest);
+  }
+
+  @Test
+  void anotherEnemyEnteringTelegraphPathCancelsLunge() {
+    Entity blocker = crowdEnemy(1.2f, 0f);
+    LungeAttackTask lunge = new LungeAttackTask(target, 20, 2.5f, enemy);
+    lunge.create(() -> enemy);
+    assertEquals(-1, lunge.getPriority());
+
+    blocker.setPosition(1.2f, 2f);
+    assertEquals(20, lunge.getPriority());
+    lunge.start();
+    blocker.setPosition(1.2f, 0f);
+    now = 600;
+    lunge.update();
+
+    assertEquals(-1, lunge.getPriority());
+    assertFalse(movement.getMoving());
   }
 
   @Test

@@ -116,7 +116,7 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
       return -1;
     }
     if (getDistanceToTarget() <= TRIGGER_RANGE
-        && ObstacleNavigation.isClear(owner.getEntity(), target.getPosition())) {
+        && ObstacleNavigation.isClear(owner.getEntity(), target.getPosition(), target)) {
       return this.priority;
     }
     return -1;
@@ -143,7 +143,7 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
 
   private void beginDash(long now) {
     // The target may have stepped behind a wall during the telegraph.
-    if (!ObstacleNavigation.isClear(owner.getEntity(), target.getPosition())) {
+    if (!ObstacleNavigation.isClear(owner.getEntity(), target.getPosition(), target)) {
       movementComponent.setMoving(false);
       phase = Phase.DONE;
       return;
