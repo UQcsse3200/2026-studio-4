@@ -10,7 +10,6 @@ import com.csse3200.game.components.rooms.RoomDataComponent;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,10 +1,9 @@
 package com.csse3200.game.components.rooms;
 
-import java.util.Objects;
-
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.rooms.RoomClearService;
+import java.util.Objects;
 
 /** Provides access to the Config that the room entity is build on */
 public class RoomDataComponent extends Component {
