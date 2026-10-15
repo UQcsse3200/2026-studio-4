@@ -329,7 +329,6 @@ public class ShopDisplay extends UIComponent implements ShopView {
     String description =
         item.getEffectSummary().isBlank() ? item.getDescription() : item.getEffectSummary();
     Label effect = label(description, INK);
-    effect.setFontScale(0.85f);
     details.add(effect).growX().left().padTop(4f);
     details.row();
     Label owned = label("", INK);

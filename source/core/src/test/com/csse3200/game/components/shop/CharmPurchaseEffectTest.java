@@ -24,7 +24,7 @@ class CharmPurchaseEffectTest {
       InventoryComponent inventory = new InventoryComponent(80);
       CombatStatsComponent stats = new CombatStatsComponent(100, 20);
       new Entity().addComponent(inventory).addComponent(stats);
-      float attack = stats.getEffectiveBaseAttack();
+      int attack = stats.getEffectiveBaseAttack();
       float speed = stats.getEffectiveMovementSpeed();
       float attackSpeed = stats.getEffectiveAttackSpeed();
 

@@ -97,54 +97,7 @@ public class ConsumableHotbarDisplay extends UIComponent {
     goldLabel = label("Gold: " + displayedGold, 0.65f);
     goldLabel.setName("consumable-gold");
     for (int i = 0; i < InventoryComponent.CONSUMABLE_SLOT_COUNT; i++) {
-      String id = Integer.toString(i + 1);
-      int index = i;
-      Stack slot =
-          new Stack() {
-            @Override
-            protected void sizeChanged() {
-              super.sizeChanged();
-              if (counts[index] != null) {
-                float scale = getWidth() / 72f;
-                counts[index].setFontScale(0.55f * scale);
-                pointers[index].setFontScale(0.8f * Math.min(1f, scale));
-                useHints[index].setFontScale(0.55f * Math.min(1f, scale));
-                if (index == 0) {
-                  goldLabel.setFontScale(0.65f * Math.min(1f, scale));
-                  cycleHint.setFontScale(0.5f * Math.min(1f, scale));
-                }
-              }
-            }
-          };
-      slotActors[i] = slot;
-      slot.setName("consumable-slot-" + id);
-      frames[i] = new Image(regularFrame);
-      slot.add(frames[i]);
-      speedRings[i] = new SpeedPotionTimerRing(effects, ringPixel);
-      speedRings[i].setName("speed-potion-timer-ring-" + id);
-      slot.add(speedRings[i]);
-      icons[i] = new Image();
-      icons[i].setScaling(Scaling.fit);
-      icons[i].setName("consumable-icon-" + id);
-      Table iconLayer = new Table();
-      iconLayer.add(icons[i]).size(Value.percentWidth(0.75f, slot));
-      slot.add(iconLayer);
-
-      counts[i] = label("0", 0.55f);
-      counts[i].setName("consumable-count-" + id);
-      Table countLayer = new Table();
-      countLayer
-          .bottom()
-          .right()
-          .add(counts[i])
-          .padRight(Value.percentWidth(13f / 72f, slot))
-          .padBottom(Value.percentHeight(11f / 72f, slot));
-      slot.add(countLayer);
-
-      pointers[i] = label("v", 0.8f);
-      pointers[i].setName("consumable-pointer-" + id);
-      useHints[i] = label("Q USE", 0.55f);
-      useHints[i].setName("consumable-use-" + id);
+      slotActors[i] = createSlot(i);
     }
     cycleHint = label("TAB NEXT", 0.5f);
     cycleHint.setName("consumable-cycle-hint");
@@ -176,6 +129,56 @@ public class ConsumableHotbarDisplay extends UIComponent {
     }
     root.add(slots);
     stage.addActor(root);
+  }
+
+  private Stack createSlot(int index) {
+    String id = Integer.toString(index + 1);
+    Stack slot =
+        new Stack() {
+          @Override
+          protected void sizeChanged() {
+            super.sizeChanged();
+            if (counts[index] != null) {
+              float scale = getWidth() / 72f;
+              counts[index].setFontScale(0.55f * scale);
+              pointers[index].setFontScale(0.8f * Math.min(1f, scale));
+              useHints[index].setFontScale(0.55f * Math.min(1f, scale));
+              if (index == 0) {
+                goldLabel.setFontScale(0.65f * Math.min(1f, scale));
+                cycleHint.setFontScale(0.5f * Math.min(1f, scale));
+              }
+            }
+          }
+        };
+    slot.setName("consumable-slot-" + id);
+    frames[index] = new Image(regularFrame);
+    slot.add(frames[index]);
+    speedRings[index] = new SpeedPotionTimerRing(effects, ringPixel);
+    speedRings[index].setName("speed-potion-timer-ring-" + id);
+    slot.add(speedRings[index]);
+    icons[index] = new Image();
+    icons[index].setScaling(Scaling.fit);
+    icons[index].setName("consumable-icon-" + id);
+    Table iconLayer = new Table();
+    iconLayer.add(icons[index]).size(Value.percentWidth(0.75f, slot));
+    slot.add(iconLayer);
+
+    counts[index] = label("0", 0.55f);
+    counts[index].setName("consumable-count-" + id);
+    Table countLayer = new Table();
+    countLayer
+        .bottom()
+        .right()
+        .add(counts[index])
+        .padRight(Value.percentWidth(13f / 72f, slot))
+        .padBottom(Value.percentHeight(11f / 72f, slot));
+    slot.add(countLayer);
+
+    pointers[index] = label("v", 0.8f);
+    pointers[index].setName("consumable-pointer-" + id);
+    useHints[index] = label("Q USE", 0.55f);
+    useHints[index].setName("consumable-use-" + id);
+    return slot;
   }
 
   private Label label(String text, float scale) {

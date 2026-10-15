@@ -22,24 +22,7 @@ public class ShopCatalog {
     }
     Map<String, ShopOffer> indexed = new LinkedHashMap<>();
     for (ShopOffer offer : offers) {
-      if (offer == null
-          || isBlank(offer.offerId())
-          || isBlank(offer.productId())
-          || offer.kind() == null
-          || offer.goldPrice() <= 0) {
-        throw new IllegalArgumentException(
-            "Shop offers require IDs, a category and positive price");
-      }
-      if (offer.kind() == ShopProductKind.CONSUMABLE
-          && (!ItemCatalog.contains(offer.productId())
-              || !(ItemCatalog.create(offer.productId(), 1) instanceof ConsumableItem))) {
-        throw new IllegalArgumentException("Unknown consumable: " + offer.productId());
-      }
-      if (offer.kind() == ShopProductKind.CHARM
-          && (!ItemCatalog.contains(offer.productId())
-              || !(ItemCatalog.create(offer.productId(), 1) instanceof Charm))) {
-        throw new IllegalArgumentException("Unknown charm: " + offer.productId());
-      }
+      validateOffer(offer);
       if (indexed.putIfAbsent(offer.offerId(), offer) != null) {
         throw new IllegalArgumentException("Duplicate shop offer: " + offer.offerId());
       }
@@ -47,6 +30,26 @@ public class ShopCatalog {
     this.id = id;
     this.offers = List.copyOf(offers);
     byId = Collections.unmodifiableMap(indexed);
+  }
+
+  private static void validateOffer(ShopOffer offer) {
+    if (offer == null
+        || isBlank(offer.offerId())
+        || isBlank(offer.productId())
+        || offer.kind() == null
+        || offer.goldPrice() <= 0) {
+      throw new IllegalArgumentException("Shop offers require IDs, a category and positive price");
+    }
+    if (offer.kind() == ShopProductKind.CONSUMABLE
+        && (!ItemCatalog.contains(offer.productId())
+            || !(ItemCatalog.create(offer.productId(), 1) instanceof ConsumableItem))) {
+      throw new IllegalArgumentException("Unknown consumable: " + offer.productId());
+    }
+    if (offer.kind() == ShopProductKind.CHARM
+        && (!ItemCatalog.contains(offer.productId())
+            || !(ItemCatalog.create(offer.productId(), 1) instanceof Charm))) {
+      throw new IllegalArgumentException("Unknown charm: " + offer.productId());
+    }
   }
 
   public String id() {

@@ -606,8 +606,8 @@ class EnemyManagerComponentTest {
 
   private static Entity explosiveSummonMock() {
     Entity summon = enemyMock();
-    when(summon.getComponent(FinalBossExplosiveSummonComponent.class))
-        .thenReturn(mock(FinalBossExplosiveSummonComponent.class));
+    FinalBossExplosiveSummonComponent explosive = mock(FinalBossExplosiveSummonComponent.class);
+    when(summon.getComponent(FinalBossExplosiveSummonComponent.class)).thenReturn(explosive);
     return summon;
   }
 
