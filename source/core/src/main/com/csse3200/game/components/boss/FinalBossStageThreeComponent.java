@@ -66,8 +66,6 @@ public class FinalBossStageThreeComponent extends Component {
   float playerHitRemaining;
   float tornadoHitRemaining;
   private float tornadoContactElapsed;
-  private double tornadoDamageRemainder;
-  private double shieldTornadoDamageRemainder;
   private boolean tornadoDamageInProgress;
   float freezeElapsed;
   float thawRemaining;
@@ -1145,8 +1143,6 @@ public class FinalBossStageThreeComponent extends Component {
   private void clearTornadoDamage() {
     tornadoContactElapsed = 0f;
     tornadoHitRemaining = 0f;
-    tornadoDamageRemainder = 0d;
-    shieldTornadoDamageRemainder = 0d;
   }
 
   private void finishEncounter() {

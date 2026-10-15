@@ -560,22 +560,6 @@ class FinalBossStageTwoFireIntegrationTest {
     startEncounter();
   }
 
-  private void assertBlockedHitsDoNotChangeRemainder(Runnable block, Runnable unblock) {
-    startHalfDamageEncounter();
-    block.run();
-    hitWithFireball();
-    assertEquals(100, playerStats.getHealth());
-    unblock.run();
-    hitWithFireball();
-    assertEquals(100, playerStats.getHealth());
-    block.run();
-    hitWithFireball();
-    assertEquals(100, playerStats.getHealth());
-    unblock.run();
-    hitWithFireball();
-    assertEquals(99, playerStats.getHealth());
-  }
-
   private FinalBossStageTwoFireController.Fireball addFireballAtPlayer() {
     FinalBossStageTwoFireController.Fireball ball =
         new FinalBossStageTwoFireController.Fireball(

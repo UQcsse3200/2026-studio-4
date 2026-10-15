@@ -482,27 +482,6 @@ class FinalBossTornadoDamageIntegrationTest {
     assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
   }
 
-  private void assertProtectionPreservesOnlyEffectiveHalfDamage(Runnable block, Runnable unblock) {
-    config.tornadoDamage = 0.5f;
-    addTornado(true);
-    block.run();
-    tick(0.25f);
-    assertEquals(100, playerStats.getHealth());
-    assertEquals(0f, stage.tornadoHitRemaining);
-    unblock.run();
-    tick(0.25f);
-    assertEquals(100, playerStats.getHealth());
-    assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
-    block.run();
-    tick(0.25f);
-    assertEquals(100, playerStats.getHealth());
-    assertEquals(0f, stage.tornadoHitRemaining);
-    unblock.run();
-    tick(0.25f);
-    assertEquals(99, playerStats.getHealth());
-    assertEquals(FinalBossStageThreeComponent.TORNADO_HIT_DURATION, stage.tornadoHitRemaining);
-  }
-
   private FinalBossTornadoController.Tornado addTornado(boolean fullySpawned) {
     FinalBossTornadoController.Tornado tornado =
         new FinalBossTornadoController.Tornado(

@@ -5,8 +5,6 @@ import com.csse3200.game.services.GameTime;
 
 public class Shield extends TimedStatusEffect implements StatusEffect, Damageable {
 
-  private final GameTime time = new GameTime();
-
   public Shield(GameTime time, long duration) {
     super(time, duration);
   }
