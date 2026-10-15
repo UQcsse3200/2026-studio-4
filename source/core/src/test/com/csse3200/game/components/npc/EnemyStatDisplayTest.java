@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ServiceLocator;
@@ -33,6 +34,8 @@ class EnemyStatDisplayTest {
 
   @BeforeEach
   void setUp() {
+    EntityService entityService = mock(EntityService.class);
+    ServiceLocator.registerEntityService(entityService);
     RenderService renderService = mock(RenderService.class);
     Stage stage = mock(Stage.class);
     when(renderService.getStage()).thenReturn(stage);
@@ -159,6 +162,51 @@ class EnemyStatDisplayTest {
             .addComponent(new EnemyStatDisplay());
 
     assertDoesNotThrow(headlessEnemy::create);
+  }
+
+  @Test
+  void shouldUpdateScaledHealthBarAndShowFirstHitForEveryDungeonCount() {
+    int[] expectedMaximums = {200, 300, 400, 500};
+
+    for (int completedDungeons = 0; completedDungeons <= 3; completedDungeons++) {
+      String scenario = "Completed dungeons: " + completedDungeons;
+
+      CombatStatsComponent stats = new CombatStatsComponent(200, 20);
+      EnemyStatDisplay healthDisplay = new EnemyStatDisplay();
+      Entity scaledEnemy = new Entity().addComponent(stats).addComponent(healthDisplay);
+
+      // Match the room lifecycle: initialise the UI before applying scaling.
+      scaledEnemy.create();
+
+      try {
+        ProgressBar healthBar = getField(healthDisplay, "healthBar", ProgressBar.class);
+
+        stats.scale(completedDungeons);
+        int expectedMaximum = expectedMaximums[completedDungeons];
+
+        assertEquals(expectedMaximum, stats.getMaxHealth(), scenario);
+        assertEquals(expectedMaximum, stats.getHealth(), scenario);
+        assertEquals((float) expectedMaximum, healthBar.getMaxValue(), 0.001f, scenario);
+        assertEquals((float) expectedMaximum, healthBar.getValue(), 0.001f, scenario);
+
+        // Advance the real ProgressBar animation without waiting in real time.
+        healthBar.act(0.4f);
+        assertEquals(1f, healthBar.getVisualPercent(), 0.001f, scenario);
+
+        // The first hit must reduce the bar, even above the original 200 HP.
+        stats.takeDamage(10);
+
+        assertEquals(expectedMaximum - 10, stats.getHealth(), scenario);
+        assertEquals(expectedMaximum - 10f, healthBar.getValue(), 0.001f, scenario);
+
+        healthBar.act(0.4f);
+        float expectedPercent = (expectedMaximum - 10f) / expectedMaximum;
+        assertEquals(expectedPercent, healthBar.getVisualPercent(), 0.001f, scenario);
+        assertTrue(healthBar.getVisualPercent() < 1f, scenario);
+      } finally {
+        scaledEnemy.dispose();
+      }
+    }
   }
 
   /** Reads a private field via reflection since the display exposes no public getters. */

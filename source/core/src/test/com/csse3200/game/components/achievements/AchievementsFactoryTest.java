@@ -2,18 +2,34 @@ package com.csse3200.game.components.achievements;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Json;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig.EnemyType;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class AchievementsFactoryTest {
+
+  private static final String SNAKE_NO_SHIELD_PICKUP = "snakeDefeatedWithoutShieldPickup";
+  private static final String SNAKE_GREEN_BUBBLE = "snakeStageTwoShieldPickup";
 
   // ---------- helpers ----------
 
@@ -21,6 +37,19 @@ class AchievementsFactoryTest {
     AchievementConfig c = new AchievementConfig();
     c.type = type;
     c.name = "test-" + type;
+    return c;
+  }
+
+  private static AchievementConfig snakeConfig(String id) {
+    AchievementConfig definition = config("snake");
+    definition.bossAchievementId = id;
+    return definition;
+  }
+
+  private static AchievementConfig finalBossConfig(String bossAchievementId) {
+    AchievementConfig c = config("finalBoss");
+    c.name = "test-" + bossAchievementId;
+    c.bossAchievementId = bossAchievementId;
     return c;
   }
 
@@ -50,7 +79,7 @@ class AchievementsFactoryTest {
 
   private static AchievementContext gold(Integer total) {
     AchievementContext ctx = new AchievementContext();
-    ctx.goldTotal = total;
+    ctx.goldCollected = total;
     return ctx;
   }
 
@@ -59,6 +88,55 @@ class AchievementsFactoryTest {
     ctx.dungeonId = dungeonId;
     ctx.dungeonSeconds = seconds;
     return ctx;
+  }
+
+  private static AchievementContext bossEvent(String bossAchievementId) {
+    AchievementContext ctx = new AchievementContext();
+    ctx.bossAchievementId = bossAchievementId;
+    return ctx;
+  }
+
+  private static AchievementConfig[] loadConfigs() {
+    return new Json()
+        .fromJson(AchievementConfig[].class, new FileHandle("configs/achievements.json"));
+  }
+
+  // ---------- shared data ----------
+
+  private record Boss(String id, String name) {}
+
+  private static final List<Boss> BOSSES =
+      List.of(
+          new Boss("finalBossBreakRespected", "I need a break too"),
+          new Boss("finalBossStageTwoIceHit", "Coolin' off, make it fun"),
+          new Boss("finalBossStageTwoFireproof", "I'm fireproof!"),
+          new Boss("finalBossStageThreeIceHit", "Whoa! The Snow Queen"),
+          new Boss("finalBossStageThreeIceHitStreak", "Brrr, it's freezing!"),
+          new Boss("finalBossStageThreeMeleeHit", "You flashed too fast"),
+          new Boss("finalBossStageThreeStatueFlash", "How can a statue even flash?"));
+
+  /** One valid config for every achievement type, keyed by type name. Fresh objects each call. */
+  private static Map<String, AchievementConfig> everyType() {
+    AchievementConfig dungeon = config("dungeonClear");
+    dungeon.dungeonId = "d";
+    AchievementConfig reached = config("dungeonReached");
+    reached.dungeonId = "d";
+    AchievementConfig speed = config("speedRun");
+    speed.dungeonId = "d";
+    AchievementConfig set = config("enemySet");
+    set.enemyTypes = List.of(EnemyType.KNIGHT);
+
+    Map<String, AchievementConfig> all = new LinkedHashMap<>();
+    all.put("dungeonClear", dungeon);
+    all.put("dungeonReached", reached);
+    all.put("gold", config("gold"));
+    all.put("enemyKillCount", config("enemyKillCount"));
+    all.put("killStreak", config("killStreak"));
+    all.put("speedRun", speed);
+    all.put("enemySet", set);
+    all.put("snake", snakeConfig(SNAKE_NO_SHIELD_PICKUP));
+    all.put("finalBoss", finalBossConfig("finalBossBreakRespected"));
+    return all;
   }
 
   // ---------- build() / general ----------
@@ -84,60 +162,51 @@ class AchievementsFactoryTest {
     }
 
     @Test
-    void build_validType_returnsLockedAchievementWithConfiguredName() {
-      AchievementConfig c = config("gold");
-      c.name = "Gold Digger";
-      c.target = 10;
-
-      Achievement a = AchievementsFactory.build(c);
-
-      assertEquals("Gold Digger", a.getName());
-      assertFalse(a.isUnlocked());
+    void build_missingDescription_leavesDescriptionNull() {
+      assertNull(AchievementsFactory.build(config("gold")).getDescription());
     }
 
     @Test
-    void build_everyKnownType_returnsAnAchievement() {
-      AchievementConfig dungeon = config("dungeonClear");
-      dungeon.dungeonId = "d";
-      AchievementConfig reached = config("dungeonReached");
-      reached.dungeonId = "d";
-      AchievementConfig speed = config("speedRun");
-      speed.dungeonId = "d";
-      AchievementConfig set = config("enemySet");
-      set.enemyTypes = List.of(EnemyType.KNIGHT);
+    void build_everyType_keepsNameAndDescriptionAndStartsLocked() {
+      for (Map.Entry<String, AchievementConfig> entry : everyType().entrySet()) {
+        String type = entry.getKey();
+        AchievementConfig c = entry.getValue();
+        c.name = "name-" + type;
+        c.description = "desc-" + type;
 
-      assertInstanceOf(Achievement.class, AchievementsFactory.build(dungeon));
-      assertInstanceOf(Achievement.class, AchievementsFactory.build(reached));
-      assertInstanceOf(Achievement.class, AchievementsFactory.build(config("gold")));
-      assertInstanceOf(Achievement.class, AchievementsFactory.build(config("enemyKillCount")));
-      assertInstanceOf(Achievement.class, AchievementsFactory.build(config("killStreak")));
-      assertInstanceOf(Achievement.class, AchievementsFactory.build(speed));
-      assertInstanceOf(Achievement.class, AchievementsFactory.build(set));
+        Achievement a = AchievementsFactory.build(c);
+
+        assertEquals("name-" + type, a.getName(), type);
+        assertEquals("desc-" + type, a.getDescription(), type);
+        assertFalse(a.isUnlocked(), type);
+      }
     }
 
     @Test
-    void build_everyKnownType_startsWithZeroProgress() {
-      AchievementConfig dungeon = config("dungeonClear");
-      dungeon.dungeonId = "d";
-      AchievementConfig reached = config("dungeonReached");
-      reached.dungeonId = "d";
-      AchievementConfig set = config("enemySet");
-      set.enemyTypes = List.of(EnemyType.KNIGHT);
+    void build_everyType_startsWithExpectedProgress() {
+      for (Map.Entry<String, AchievementConfig> entry : everyType().entrySet()) {
+        String type = entry.getKey();
+        // speedRun uses MAX_VALUE as its "no time recorded yet" sentinel; everything else starts
+        // at 0
+        float expected = "speedRun".equals(type) ? Float.MAX_VALUE : 0f;
 
-      assertEquals(0f, AchievementsFactory.build(dungeon).getProgress());
-      assertEquals(0f, AchievementsFactory.build(reached).getProgress());
-      assertEquals(0f, AchievementsFactory.build(config("gold")).getProgress());
-      assertEquals(0f, AchievementsFactory.build(config("enemyKillCount")).getProgress());
-      assertEquals(0f, AchievementsFactory.build(config("killStreak")).getProgress());
-      assertEquals(0f, AchievementsFactory.build(set).getProgress());
+        assertEquals(expected, AchievementsFactory.build(entry.getValue()).getProgress(), type);
+      }
     }
 
     @Test
-    void build_speedRun_startsWithNoTimeRecordedSentinel() {
-      AchievementConfig speed = config("speedRun");
-      speed.dungeonId = "d";
+    void build_countingTypes_setTargetForTheUi() {
+      Map<String, Float> targets = new LinkedHashMap<>();
+      targets.put("gold", 60f);
+      targets.put("enemyKillCount", 5f);
+      targets.put("killStreak", 7f);
 
-      assertEquals(Float.MAX_VALUE, AchievementsFactory.build(speed).getProgress());
+      for (Map.Entry<String, Float> entry : targets.entrySet()) {
+        AchievementConfig c = config(entry.getKey());
+        c.target = entry.getValue();
+
+        assertEquals(entry.getValue(), AchievementsFactory.build(c).getTarget(), entry.getKey());
+      }
     }
 
     @Test
@@ -149,7 +218,199 @@ class AchievementsFactoryTest {
       InvocationTargetException e =
           assertThrows(InvocationTargetException.class, constructor::newInstance);
 
-      assertInstanceOf(IllegalStateException.class, e.getCause());
+      assertTrue(e.getCause() instanceof IllegalStateException);
+    }
+  }
+
+  @Nested
+  class SnakeNoShieldPickup {
+    @Test
+    void unlocksOnceForAReportedVictoryWithoutShieldPickups() {
+      Achievement achievement = AchievementsFactory.build(snakeConfig(SNAKE_NO_SHIELD_PICKUP));
+      AchievementContext victory = new AchievementContext();
+      victory.bossAchievementId = SNAKE_NO_SHIELD_PICKUP;
+
+      assertTrue(achievement.update(victory));
+      assertTrue(achievement.isUnlocked());
+      assertFalse(achievement.update(victory));
+    }
+
+    @Test
+    void ordinarySnakeKillsAndUnrelatedEventsDoNotUnlockTheChallenge() {
+      Achievement achievement = AchievementsFactory.build(snakeConfig(SNAKE_NO_SHIELD_PICKUP));
+
+      assertFalse(achievement.update(kill(EnemyType.SNAKE_MINI_BOSS)));
+      assertFalse(achievement.update(damaged()));
+      assertFalse(achievement.update(new AchievementContext()));
+      assertFalse(achievement.isUnlocked());
+    }
+
+    @Test
+    void gameConfigurationRegistersTheChallengeOnceWithItsDisplayName() throws IOException {
+      AchievementConfig[] definitions =
+          new Json()
+              .fromJson(
+                  AchievementConfig[].class,
+                  Files.readString(Path.of("configs/achievements.json")));
+      List<AchievementConfig> matching =
+          Arrays.stream(definitions)
+              .filter(
+                  definition ->
+                      "snake".equals(definition.type)
+                          && SNAKE_NO_SHIELD_PICKUP.equals(definition.bossAchievementId))
+              .toList();
+
+      assertEquals(1, matching.size());
+      Achievement achievement = AchievementsFactory.build(matching.getFirst());
+      assertEquals("What are those green things?", achievement.getName());
+      assertFalse(achievement.isUnlocked());
+    }
+  }
+
+  @Nested
+  class SnakeIds {
+    @Test
+    void differentSnakeChallengesDoNotUnlockEachOther() {
+      List<String> ids = List.of(SNAKE_NO_SHIELD_PICKUP, SNAKE_GREEN_BUBBLE, "snakeExposedHit");
+      for (String reportedId : ids) {
+        AchievementContext context = new AchievementContext();
+        context.bossAchievementId = reportedId;
+        for (String configuredId : ids) {
+          Achievement achievement = AchievementsFactory.build(snakeConfig(configuredId));
+          assertEquals(configuredId.equals(reportedId), achievement.update(context));
+          assertFalse(achievement.update(context));
+        }
+      }
+    }
+
+    @Test
+    void nullAndUnknownEventIdsDoNotUnlockGreenBubble() {
+      Achievement achievement = AchievementsFactory.build(snakeConfig(SNAKE_GREEN_BUBBLE));
+      assertFalse(achievement.update(new AchievementContext()));
+      AchievementContext unknown = new AchievementContext();
+      unknown.bossAchievementId = "unknownSnakeAchievement";
+      assertFalse(achievement.update(unknown));
+      assertFalse(achievement.update(kill(EnemyType.SNAKE_MINI_BOSS)));
+      assertFalse(achievement.isUnlocked());
+    }
+
+    @Test
+    void aMissingConfiguredIdCannotMatchAnEmptyContext() {
+      Achievement achievement = AchievementsFactory.build(snakeConfig(null));
+      assertFalse(achievement.update(new AchievementContext()));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"snakeStageTwoShieldPickup,Green bubble", "snakeExposedHit,Whack-a-Mole"})
+    void gameConfigurationRegistersEachChallengeOnceWithItsDisplayName(String id, String name)
+        throws IOException {
+      AchievementConfig[] definitions =
+          new Json()
+              .fromJson(
+                  AchievementConfig[].class,
+                  Files.readString(Path.of("configs/achievements.json")));
+      List<AchievementConfig> matching =
+          Arrays.stream(definitions)
+              .filter(
+                  definition ->
+                      "snake".equals(definition.type) && id.equals(definition.bossAchievementId))
+              .toList();
+      assertEquals(1, matching.size());
+      Achievement achievement = AchievementsFactory.build(matching.getFirst());
+      assertEquals(name, achievement.getName());
+      assertFalse(achievement.isUnlocked());
+    }
+  }
+
+  // ---------- finalBoss (one table drives all seven achievements) ----------
+
+  @Test
+  void finalBoss_unlocksOnlyOnItsOwnIdAndOnlyOnce() {
+    for (Boss boss : BOSSES) {
+      String id = boss.id();
+      Achievement a = AchievementsFactory.build(finalBossConfig(id));
+
+      assertTrue(a.update(bossEvent(id)), id);
+      assertTrue(a.isUnlocked(), id);
+      assertFalse(a.update(bossEvent(id)), id);
+      assertFalse(a.update(new AchievementContext()), id);
+      assertTrue(a.isUnlocked(), id);
+    }
+  }
+
+  @Test
+  void finalBoss_ignoresEveryOtherBossIdAndUnrelatedEvents() {
+    for (Boss boss : BOSSES) {
+      String id = boss.id();
+      Achievement a = AchievementsFactory.build(finalBossConfig(id));
+
+      assertFalse(a.update(new AchievementContext()), id);
+      assertFalse(a.update(damaged()), id);
+      assertFalse(a.update(kill(EnemyType.FINAL_BOSS)), id);
+      assertFalse(a.update(entered("finalDungeon")), id);
+      assertFalse(a.update(completed("finalDungeon")), id);
+      for (String unrelated : List.of("", "unknownFinalBossAchievement", id + "Typo")) {
+        assertFalse(a.update(bossEvent(unrelated)), id + " vs " + unrelated);
+      }
+      for (Boss other : BOSSES) {
+        if (!other.id().equals(id)) {
+          assertFalse(a.update(bossEvent(other.id())), id + " vs " + other.id());
+        }
+      }
+      assertFalse(a.isUnlocked(), id);
+    }
+  }
+
+  @Test
+  void finalBoss_configRegistersEachBossOnceWithTheExpectedName() {
+    AchievementConfig[] configs = loadConfigs();
+
+    for (Boss boss : BOSSES) {
+      String id = boss.id();
+      int found = 0;
+      for (AchievementConfig c : configs) {
+        if ("finalBoss".equals(c.type) && id.equals(c.bossAchievementId)) {
+          found++;
+          Achievement a = AchievementsFactory.build(c);
+          assertEquals(boss.name(), a.getName(), id);
+          assertFalse(a.update(new AchievementContext()), id);
+          assertFalse(a.update(damaged()), id);
+          assertTrue(a.update(bossEvent(id)), id);
+        }
+      }
+      assertEquals(1, found, id);
+    }
+  }
+
+  @Test
+  void finalBoss_configRegistersExactlyTheKnownBossIds() {
+    Set<String> expected = BOSSES.stream().map(Boss::id).collect(Collectors.toSet());
+    Set<String> actual =
+        Arrays.stream(loadConfigs())
+            .filter(c -> "finalBoss".equals(c.type))
+            .map(c -> c.bossAchievementId)
+            .collect(Collectors.toSet());
+
+    assertEquals(expected, actual);
+  }
+
+  // ---------- whole config file ----------
+
+  @Test
+  void config_everyEntryBuildsAndHasANameAndDescription() {
+    for (AchievementConfig c : loadConfigs()) {
+      Achievement a = AchievementsFactory.build(c); // throws on unknown type or missing fields
+
+      assertFalse(a.getName() == null || a.getName().isBlank(), c.type);
+      assertFalse(a.getDescription() == null || a.getDescription().isBlank(), a.getName());
+    }
+  }
+
+  @Test
+  void config_achievementNamesAreUnique() {
+    Set<String> seen = new HashSet<>();
+    for (AchievementConfig c : loadConfigs()) {
+      assertTrue(seen.add(c.name), "Duplicate achievement name: " + c.name);
     }
   }
 
@@ -267,47 +528,14 @@ class AchievementsFactoryTest {
     }
 
     @Test
-    void update_firstReadingAlone_establishesBaselineWithoutUnlocking() {
-      Achievement a = build(100);
+    void update_goldEarnedBelowTarget_staysLocked() {
+      for (int reading : new int[] {0, 40, 99}) {
+        Achievement a = build(100);
 
-      // The first reading becomes the baseline; progress against it starts at 0.
-      assertFalse(a.update(gold(100)));
-      assertEquals(0f, a.getProgress());
-    }
+        a.update(gold(0)); // baseline
 
-    @Test
-    void update_earningGoldAfterBaseline_tracksTheDelta() {
-      Achievement a = build(100);
-
-      a.update(gold(50)); // baseline = 50
-      a.update(gold(90)); // earned 40 so far
-
-      assertEquals(40f, a.getProgress());
-    }
-
-    @Test
-    void update_goldReachesTargetAboveBaseline_unlocks() {
-      Achievement a = build(100);
-
-      a.update(gold(0)); // baseline = 0
-      assertTrue(a.update(gold(100))); // earned 100, matches target
-    }
-
-    @Test
-    void update_goldAboveTargetAboveBaseline_unlocks() {
-      Achievement a = build(100);
-
-      a.update(gold(0));
-      assertTrue(a.update(gold(500)));
-    }
-
-    @Test
-    void update_startingWithExistingGold_onlyCountsFurtherEarnings() {
-      Achievement a = build(100);
-
-      a.update(gold(50)); // player started with 50; this becomes the baseline, not progress
-      assertFalse(a.update(gold(120))); // earned 70 so far, short of 100
-      assertTrue(a.update(gold(150))); // earned 100, unlocks
+        assertFalse(a.update(gold(reading)), "reading " + reading);
+      }
     }
 
     @Test
@@ -315,26 +543,6 @@ class AchievementsFactoryTest {
       Achievement a = build(100);
 
       assertFalse(a.update(gold(null)));
-    }
-
-    @Test
-    void update_nullReadingBeforeBaseline_doesNotEstablishABaseline() {
-      Achievement a = build(100);
-
-      a.update(gold(null)); // ignored; no baseline set yet
-      a.update(gold(0)); // this becomes the baseline instead
-
-      assertTrue(a.update(gold(100))); // earned 100 relative to the real baseline
-    }
-
-    @Test
-    void update_goldReachesTargetOverSeveralUpdates_unlocksOnceTargetIsReached() {
-      Achievement a = build(100);
-
-      a.update(gold(0)); // baseline
-      assertFalse(a.update(gold(40)));
-      assertFalse(a.update(gold(80)));
-      assertTrue(a.update(gold(120)));
     }
   }
 
@@ -605,32 +813,38 @@ class AchievementsFactoryTest {
     }
 
     @Test
-    void update_completedUnderTimeLimit_unlocks() {
-      Achievement a = build("forest", 60f);
+    void update_completedWithTimeWithinTheLimit_unlocks() {
+      for (float seconds : new float[] {1f, 45f, 60f}) {
+        Achievement a = build("forest", 60f);
 
-      a.update(timing("forest", 45f));
+        a.update(timing("forest", seconds));
 
-      assertTrue(a.update(completed("forest")));
-      assertTrue(a.isUnlocked());
+        assertTrue(a.update(completed("forest")), "time " + seconds);
+        assertTrue(a.isUnlocked(), "time " + seconds);
+      }
     }
 
     @Test
-    void update_completedExactlyAtTimeLimit_unlocks() {
-      Achievement a = build("forest", 60f);
+    void update_completedWithTimeOverTheLimit_staysLocked() {
+      for (float seconds : new float[] {60.5f, 90f}) {
+        Achievement a = build("forest", 60f);
 
-      a.update(timing("forest", 60f));
+        a.update(timing("forest", seconds));
 
-      assertTrue(a.update(completed("forest")));
+        assertFalse(a.update(completed("forest")), "time " + seconds);
+        assertFalse(a.isUnlocked(), "time " + seconds);
+      }
     }
 
     @Test
-    void update_completedOverTimeLimit_staysLocked() {
-      Achievement a = build("forest", 60f);
+    void update_zeroOrNegativeReading_isIgnoredAsATimeReading() {
+      for (float seconds : new float[] {0f, -5f}) {
+        Achievement a = build("forest", 60f);
 
-      a.update(timing("forest", 60.5f));
+        a.update(timing("forest", seconds));
 
-      assertFalse(a.update(completed("forest")));
-      assertFalse(a.isUnlocked());
+        assertFalse(a.update(completed("forest")), "reading " + seconds);
+      }
     }
 
     @Test
@@ -663,24 +877,6 @@ class AchievementsFactoryTest {
       a.update(timing("desert", 10f));
 
       // No forest time was ever recorded, so completing forest cannot unlock
-      assertFalse(a.update(completed("forest")));
-    }
-
-    @Test
-    void update_zeroSeconds_isIgnoredAsATimeReading() {
-      Achievement a = build("forest", 60f);
-
-      a.update(timing("forest", 0f));
-
-      assertFalse(a.update(completed("forest")));
-    }
-
-    @Test
-    void update_negativeSeconds_isIgnoredAsATimeReading() {
-      Achievement a = build("forest", 60f);
-
-      a.update(timing("forest", -5f));
-
       assertFalse(a.update(completed("forest")));
     }
 

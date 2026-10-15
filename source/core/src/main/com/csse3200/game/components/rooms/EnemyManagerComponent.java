@@ -10,40 +10,54 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
+import com.csse3200.game.components.boss.FinalBossPhase;
+import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
 import com.csse3200.game.components.boss.FinalBossStageThreeComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoArenaComponent;
+import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
+import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
 import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.rooms.RoomClearService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Spawns configured enemies and tracks when the room has been cleared. */
 public class EnemyManagerComponent extends EntityManagerComponent {
+  private static final Logger logger = LoggerFactory.getLogger(EnemyManagerComponent.class);
   private final EnemySpawnConfig[] spawnConfigs;
   private final Set<Entity> activeEnemies = new HashSet<>();
   private final ItemFactory itemFactory;
   private boolean disposed;
   private CameraComponent camera;
+  private boolean notified = false;
+  private RoomConfig roomConfig;
 
   /** Creates an empty manager for tests and rooms with no enemies. */
   public EnemyManagerComponent() {
     this(new EnemySpawnConfig[0]);
   }
 
-  public EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs, CameraComponent camera) {
+  /** Uses the owning room's layout for configured enemies and split children. */
+  public EnemyManagerComponent(
+      EnemySpawnConfig[] spawnConfigs, RoomConfig roomConfig, CameraComponent camera) {
     this(spawnConfigs);
+    this.roomConfig = Objects.requireNonNull(roomConfig, "roomConfig cannot be null");
     this.camera = camera;
   }
 
@@ -51,10 +65,50 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     this(spawnConfigs, new ItemFactory());
   }
 
-  /** Uses an injectable item factory for enemy drops. */
+  /** Uses an injectable item factory without a room layout for isolated lifecycle tests. */
   EnemyManagerComponent(EnemySpawnConfig[] spawnConfigs, ItemFactory itemFactory) {
     this.spawnConfigs = spawnConfigs;
     this.itemFactory = Objects.requireNonNull(itemFactory);
+  }
+
+  /** returns true if an enemy is being spawned beyond a wall */
+  protected boolean outOfBounds(Vector2 entityPos, RoomConfig room) {
+    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+    List<String> spawnConfig = room.obstacles.spawns; // obstacles in current room
+
+    for (int y = 0; y < spawnConfig.size(); y++) {
+      String row = spawnConfig.get(y);
+      for (int x = 0; x < row.length(); x++) {
+        Vector2 worldPos = terrain.tileToWorldPosition(new GridPoint2(x, y));
+        if ((row.charAt(x) == ' ' || row.charAt(x) == '#' || row.charAt(x) == '%')
+            && entityPos.dst(worldPos) < terrain.getTileSize()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public void update() {
+    super.update();
+    if (activeEnemies.isEmpty() && !notified) {
+      var config = entity.getComponent(RoomDataComponent.class).getConfig();
+      logger.info("Room Cleared");
+
+      entity.getEvents().trigger(RoomClearService.ROOM_CLEARED, config.id);
+
+      // Not the ideal way to know if it is end of a dungeon but works for now.
+      // Should be changed later or enforce the naming convention
+      if (config.id.endsWith("End")) {
+        entity.getEvents().trigger(RoomClearService.DUNGEON_CLEARED, config.dungeonId);
+        entity.getEvents().trigger(GameAreaDisplay.DISPLAY, "Dungeon Cleared!");
+      } else {
+        entity.getEvents().trigger(GameAreaDisplay.DISPLAY, "Room Cleared!");
+      }
+
+      notified = true;
+    }
   }
 
   @Override
@@ -62,14 +116,31 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     entity.getEvents().addListener("RoomCreated", this::spawnEnemies);
   }
 
-  /** Spawns each enemy declared by the room. */
+  /**
+   * Spawns each enemy declared by the room. After spawning scales enemies based on no. of cleared
+   * dungeons.
+   */
   public void spawnEnemies(Entity target) {
+    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+
+    if (spawnConfigs.length == 0) {
+      notified = true; // Don't notify if empty
+      return;
+    }
+
     for (EnemySpawnConfig spawn : spawnConfigs) {
+      Vector2 entityPos = terrain.tileToWorldPosition(new GridPoint2(spawn.x, spawn.y));
+      if (outOfBounds(entityPos, roomConfig)) {
+        logger.warn("Attempt to spawn out of bounds entity at {}", entityPos);
+        continue;
+      }
       Entity enemy = createEnemy(spawn, target);
       track(enemy, spawn.type.name());
       enemy.addComponent(new EnemyTypeComponent(spawn.type)); // before spawnEntityAt registers it
       spawnEntityAt(enemy, new GridPoint2(spawn.x, spawn.y), true, true);
     }
+
+    scale(RoomClearService.getDungeonClearedCount());
   }
 
   private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
@@ -199,9 +270,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     // Capture before deferred disposal or room changes can move/remove the enemy.
     Vector2 position = enemy.getCenterPosition();
     spawnEnemyDrops(enemyType, position);
-    if (activeEnemies.isEmpty()) {
-      entity.getEvents().trigger("roomCleared");
-    }
   }
 
   /** Reports a confirmed enemy defeat to the existing achievement system. */
@@ -220,9 +288,66 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     ServiceLocator.getAchievementService().update(context);
   }
 
+  /**
+   * find nearby avaliable tile that is NOT out of bounds in positive/ negative x & y plane
+   *
+   * @param unspawnedEnemy the enemy to be placed
+   * @return the avaliable tileset
+   */
+  private Vector2 findClosestAvaliableTile(Entity unspawnedEnemy, float tileSize) {
+    if (tileSize >= 2) {
+      return null;
+    }
+    Vector2 right =
+        new Vector2(unspawnedEnemy.getPosition().x + tileSize, unspawnedEnemy.getPosition().y);
+    Vector2 left =
+        new Vector2(unspawnedEnemy.getPosition().x - tileSize, unspawnedEnemy.getPosition().y);
+    Vector2 upRight =
+        new Vector2(
+            unspawnedEnemy.getPosition().x + tileSize, unspawnedEnemy.getPosition().y + tileSize);
+    Vector2 upLeft =
+        new Vector2(
+            unspawnedEnemy.getPosition().x - tileSize, unspawnedEnemy.getPosition().y + tileSize);
+    Vector2 downLeft =
+        new Vector2(
+            unspawnedEnemy.getPosition().x - tileSize, unspawnedEnemy.getPosition().y - tileSize);
+    Vector2 downRight =
+        new Vector2(
+            unspawnedEnemy.getPosition().x + tileSize, unspawnedEnemy.getPosition().y - tileSize);
+    Vector2 up =
+        new Vector2(unspawnedEnemy.getPosition().x, unspawnedEnemy.getPosition().y + tileSize);
+    Vector2 down =
+        new Vector2(unspawnedEnemy.getPosition().x, unspawnedEnemy.getPosition().y - tileSize);
+
+    // move x plane last (in case on top of other enemy)
+    Vector2[] nearby = {up, down, upRight, upLeft, downLeft, downRight, left, right};
+
+    for (Vector2 each : nearby) {
+      if (!outOfBounds(each, roomConfig)) {
+        return each;
+      }
+    }
+    return findClosestAvaliableTile(unspawnedEnemy, tileSize + tileSize);
+  }
+
   private void replaceWithChild(Entity parent, Entity child, String enemyType) {
-    track(child, enemyType);
+    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+    float tileSize = terrain.getTileSize();
     activeEnemies.remove(parent);
+
+    if (outOfBounds(child.getPosition(), roomConfig)) {
+      logger.warn("Attempt to spawn child out of bounds entity at {}", child.getPosition());
+
+      Vector2 newPos;
+      if ((newPos = findClosestAvaliableTile(child, tileSize)) != null) {
+        child.setPosition(newPos);
+        track(child, enemyType);
+        spawnEntity(child);
+        logger.warn("Successful re-spawn child entity at {}", child.getPosition());
+      }
+      return;
+    }
+    track(child, enemyType);
     spawnEntity(child);
   }
 
@@ -390,6 +515,21 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         stats.setHealth(0);
       }
     }
+  }
+
+  /** Initialises a freshly spawned Final Boss after room scaling and camera placement. */
+  public boolean startFinalBossStage(FinalBossPhase stage) {
+    if (disposed
+        || (stage != FinalBossPhase.STAGE_ONE
+            && stage != FinalBossPhase.STAGE_TWO
+            && stage != FinalBossPhase.STAGE_THREE)) return false;
+    boolean started = false;
+    for (Entity enemy : new ArrayList<>(activeEnemies)) {
+      FinalBossPhaseControllerComponent phases =
+          enemy.getComponent(FinalBossPhaseControllerComponent.class);
+      if (phases != null) started |= phases.startDebugStage(stage);
+    }
+    return started;
   }
 
   /**

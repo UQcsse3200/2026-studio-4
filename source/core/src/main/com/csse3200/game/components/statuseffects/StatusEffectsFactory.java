@@ -25,7 +25,7 @@ public class StatusEffectsFactory {
    * @return a new shield status effect
    */
   public static Shield createShield() {
-    return new Shield();
+    return new Shield(new GameTime(), 8000);
   }
 
   /**
