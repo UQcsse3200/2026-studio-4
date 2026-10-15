@@ -16,10 +16,6 @@ public class GameAreaDisplay extends UIComponent {
   private Table statusTable;
   private long statusExpiryMillis;
 
-  private Label achievement;
-  private Table achievementTable;
-  private long achievementExpiryMillis;
-  private final Queue<String> achievementQueue = new ArrayDeque<>();
 
   private Table titleTable;
 
@@ -50,14 +46,6 @@ public class GameAreaDisplay extends UIComponent {
     statusTable.setFillParent(true);
     statusTable.center().top();
 
-    achievement = new Label("", skin);
-    achievementTable = new Table();
-    achievementTable.add(achievement);
-    achievementTable.setFillParent(true);
-    // Leave room for the top-centre boss tutorial hints, including a wrapped second line.
-    achievementTable.center().top().padTop(96f);
-
-    stage.addActor(achievementTable);
     stage.addActor(titleTable);
     stage.addActor(statusTable);
   }
@@ -68,41 +56,18 @@ public class GameAreaDisplay extends UIComponent {
     statusExpiryMillis = TimeUtils.millis() + 2500;
   }
 
-  /** Shows an achievement-unlocked toast below the status message. */
-  public void showAchievement(String name) {
-    achievementQueue.add(name);
-    if (achievementExpiryMillis == 0) {
-      showNextAchievement();
-    }
-  }
-
-  private void showNextAchievement() {
-    String next = achievementQueue.poll();
-    if (next != null) {
-      achievement.setText("Achievement Unlocked: " + next);
-      achievementExpiryMillis = TimeUtils.millis() + 2000;
-    }
-  }
-
   @Override
   public void draw(SpriteBatch batch) {
     if (statusExpiryMillis > 0 && TimeUtils.millis() >= statusExpiryMillis) {
       status.setText("");
       statusExpiryMillis = 0;
     }
-    if (achievementExpiryMillis > 0 && TimeUtils.millis() >= achievementExpiryMillis) {
-      achievement.setText("");
-      achievementExpiryMillis = 0;
-      showNextAchievement(); // immediately start the next queued toast, if any
-    }
   }
 
   @Override
   public void dispose() {
     super.dispose();
-    achievementQueue.clear();
     titleTable.remove();
     statusTable.remove();
-    achievementTable.remove();
   }
 }
