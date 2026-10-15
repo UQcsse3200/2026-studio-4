@@ -6,7 +6,9 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.components.rooms.FollowingCameraComponent;
+import com.csse3200.game.components.rooms.RoomDataComponent;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
+import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
@@ -65,8 +67,6 @@ public class RoomSelector {
         RoomClearService.isRoomCleared(exit.destinationRoomId));
 
     ServiceLocator.getEntityService().schedule(() -> setRoom(exit));
-
-    eventHandler.trigger(ROOM_SWITCHED_EVENT);
   }
 
   /**
@@ -101,7 +101,9 @@ public class RoomSelector {
     if (this.room == newRoom) {
       throw new IllegalArgumentException("Current room is same as the new room to set");
     }
+    RoomConfig oldConfig = null;
     if (this.room != null) {
+      oldConfig = room.getComponent(RoomDataComponent.class).getConfig();
       this.room.dispose();
     }
     this.room = newRoom;
@@ -112,6 +114,9 @@ public class RoomSelector {
     RoomClearService.attachListeners(room);
     resetCamera();
     room.getEvents().addListener(SWITCH_ROOM, this::switchRoom);
+
+    RoomConfig newConfig = room.getComponent(RoomDataComponent.class).getConfig();
+    room.getEvents().trigger("RoomSwitched", oldConfig, newConfig);
   }
 
   /**

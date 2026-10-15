@@ -1,7 +1,6 @@
 package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.maingame.InventoryDisplay;
 import com.csse3200.game.components.weapons.WeaponComponent;
 import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
@@ -20,6 +19,7 @@ import org.slf4j.LoggerFactory;
 public class InventoryComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(InventoryComponent.class);
   private static final String CONSUMABLE_INVENTORY_CHANGED = "consumableInventoryChanged";
+  public static final String GOLD_PICKED_UP = "goldPickedUp";
   private int gold;
   private final List<Charm> charms;
   private final Map<String, Integer> consumables;
@@ -48,12 +48,8 @@ public class InventoryComponent extends Component {
   public void setGold(int gold) {
     int previous = this.gold;
     this.gold = Math.max(gold, 0);
+
     logger.debug("Setting gold to {}", this.gold);
-    if (ServiceLocator.getAchievementService() != null) {
-      AchievementContext ctx = new AchievementContext();
-      ctx.goldTotal = this.gold;
-      ServiceLocator.getAchievementService().update(ctx);
-    }
     if (previous != this.gold && entity != null) {
       entity.getEvents().trigger("goldChanged", this.gold);
     }
@@ -85,7 +81,7 @@ public class InventoryComponent extends Component {
       return ConsumablePurchaseResult.QUANTITY_LIMIT;
     }
     consumables.put(itemId, count + quantity);
-    // Commit stock first so both achievement and gold observers see the complete transaction.
+    // Commit stock first so gold observers see the complete transaction.
     setGold(gold - goldPrice);
     if (entity != null) {
       // A gold listener may synchronously add/remove items; publish the current final quantity.
@@ -119,8 +115,6 @@ public class InventoryComponent extends Component {
       gold += goldPrice;
       return WeaponUpgradePurchaseResult.INVALID_WEAPON;
     }
-    // The balance is already committed; retain the shared achievement notification without
-    // publishing an early goldChanged event before the weapon upgrade exists.
     setGold(gold);
     if (entity != null) {
       entity.getEvents().trigger("goldChanged", gold);
@@ -296,5 +290,17 @@ public class InventoryComponent extends Component {
 
   public Map<String, Integer> getConsumables() {
     return Map.copyOf(consumables);
+  }
+
+  public void addGoldFromPickup(int amount) {
+    if (amount <= 0) {
+      return;
+    }
+
+    addGold(amount);
+
+    if (entity != null) {
+      entity.getEvents().trigger(GOLD_PICKED_UP, amount);
+    }
   }
 }

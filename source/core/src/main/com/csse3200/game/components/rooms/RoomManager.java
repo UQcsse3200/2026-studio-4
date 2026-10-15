@@ -96,12 +96,6 @@ public class RoomManager {
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
     attachMinimap();
-
-    if (ServiceLocator.getAchievementService() != null) {
-      ServiceLocator.getAchievementService()
-          .getEvents()
-          .addListener("achievementUnlocked", this::onAchievementUnlocked);
-    }
   }
 
   /** Package private constructer to create empty room manager for testing */
@@ -512,14 +506,6 @@ public class RoomManager {
     GameAreaDisplay display = currentRoom.getComponent(GameAreaDisplay.class);
     if (display != null) {
       display.showStatus(message);
-    }
-  }
-
-  private void onAchievementUnlocked(String name) {
-    // This could be moved to potentially a component of room
-    GameAreaDisplay display = currentRoom.getComponent(GameAreaDisplay.class);
-    if (display != null) {
-      display.showAchievement(name);
     }
   }
 

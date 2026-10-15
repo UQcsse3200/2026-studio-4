@@ -5,8 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.achievements.AchievementConfig;
-import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.achievements.AchievementsFactory;
+import com.csse3200.game.components.gamearea.AchievementDisplay;
 import com.csse3200.game.components.gamearea.FpsOverlay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.gamearea.TimerDisplay;
@@ -124,16 +124,6 @@ public class MainGameScreen extends ScreenAdapter {
     player.getEvents().addListener("entityDied", this::scheduleDeathScreen);
     // trigger win screen via entity win event
     player.getEvents().addListener("winScreenRequested", () -> winScreenRequested = true);
-    // notify damage
-    player
-        .getEvents()
-        .addListener(
-            "damageTaken",
-            (Entity attacker, Integer lost, Integer remaining) -> {
-              AchievementContext ctx = new AchievementContext();
-              ctx.playerDamaged = true;
-              ServiceLocator.getAchievementService().update(ctx);
-            });
 
     roomSelector = new RoomSelector(player, renderer.getCamera());
     roomSelector.start();
@@ -319,7 +309,8 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(settingsMenu)
         .addComponent(abilityMenu)
         .addComponent(new KeyboardAbilityMenuInputComponent())
-        .addComponent(new AbilityMenuDisplay(abilityMenu));
+        .addComponent(new AbilityMenuDisplay(abilityMenu))
+        .addComponent(new AchievementDisplay());
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     // The HUD keeps working while a dialogue or cutscene has the world frozen
     ui.setUpdatesWhilePaused(true);
