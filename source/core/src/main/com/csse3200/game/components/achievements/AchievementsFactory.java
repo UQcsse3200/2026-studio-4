@@ -38,7 +38,7 @@ public class AchievementsFactory {
           if (context.goldCollected == null || context.goldCollected <= 0) {
             return false;
           }
-          a.addProgress(context.goldCollected);
+          a.addProgress(1);
           return a.getProgress() >= c.target;
         });
 

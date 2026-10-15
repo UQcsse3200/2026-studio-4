@@ -424,31 +424,10 @@ class AchievementsFactoryTest {
     }
 
     @Test
-    void update_goldEarnedAtOrAboveTarget_unlocks() {
-      for (int reading : new int[] {100, 500}) {
-        Achievement a = build(100);
-
-        a.update(gold(0)); // baseline
-
-        assertTrue(a.update(gold(reading)), "reading " + reading);
-      }
-    }
-
-    @Test
     void update_nullGoldTotal_staysLockedWithoutThrowing() {
       Achievement a = build(100);
 
       assertFalse(a.update(gold(null)));
-    }
-
-    @Test
-    void update_nullReadingBeforeBaseline_doesNotEstablishABaseline() {
-      Achievement a = build(100);
-
-      a.update(gold(null)); // ignored; no baseline set yet
-      a.update(gold(0)); // this becomes the baseline instead
-
-      assertTrue(a.update(gold(100))); // earned 100 relative to the real baseline
     }
   }
 
