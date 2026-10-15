@@ -626,7 +626,7 @@ public class InventoryDisplay extends UIComponent {
     style.downFontColor = style.fontColor;
 
     TextButton tab = new TextButton(text, style);
-    tab.setName("inventory-tab-/" + page.name().toLowerCase(java.util.Locale.ROOT));
+    tab.setName("inventory-tab-" + page.name().toLowerCase(java.util.Locale.ROOT));
     tab.setColor(Color.WHITE);
     tab.getLabel().setFontScale(0.675f);
     tab.addListener(
