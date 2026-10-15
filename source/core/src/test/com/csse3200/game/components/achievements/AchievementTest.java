@@ -75,9 +75,9 @@ class AchievementTest {
   @Test
   void update_passesContextToCondition() {
     AchievementContext context = new AchievementContext();
-    context.goldTotal = 50;
+    context.goldCollected = 50;
     Achievement achievement =
-        new Achievement("Rich", DESC, ctx -> ctx.goldTotal != null && ctx.goldTotal == 50);
+        new Achievement("Rich", DESC, ctx -> ctx.goldCollected != null && ctx.goldCollected == 50);
 
     assertTrue(achievement.update(context));
   }
@@ -93,11 +93,11 @@ class AchievementTest {
   @Test
   void update_afterUnlocking_staysUnlockedEvenIfConditionLaterFails() {
     AchievementContext rich = new AchievementContext();
-    rich.goldTotal = 100;
+    rich.goldCollected = 100;
     AchievementContext poor = new AchievementContext();
-    poor.goldTotal = 0;
+    poor.goldCollected = 0;
     Achievement achievement =
-        new Achievement("Rich", DESC, ctx -> ctx.goldTotal != null && ctx.goldTotal >= 100);
+        new Achievement("Rich", DESC, ctx -> ctx.goldCollected != null && ctx.goldCollected >= 100);
 
     achievement.update(rich);
     achievement.update(poor);

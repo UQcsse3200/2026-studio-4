@@ -12,6 +12,7 @@ import com.csse3200.game.components.boss.FinalBossPhase;
 import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
 import com.csse3200.game.components.boss.FinalBossStageThreeComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoArenaComponent;
+import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
@@ -24,20 +25,26 @@ import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.rooms.RoomClearService;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Spawns configured enemies and tracks when the room has been cleared. */
 public class EnemyManagerComponent extends EntityManagerComponent {
+  private static final Logger logger = LoggerFactory.getLogger(EnemyManagerComponent.class);
   private final EnemySpawnConfig[] spawnConfigs;
   private final Set<Entity> activeEnemies = new HashSet<>();
   private final ItemFactory itemFactory;
   private boolean disposed;
   private CameraComponent camera;
+  private boolean notified = false;
   private RoomConfig roomConfig;
-  private static final Logger logger = LoggerFactory.getLogger(EnemyManagerComponent.class);
 
   /** Creates an empty manager for tests and rooms with no enemies. */
   public EnemyManagerComponent() {
@@ -81,13 +88,43 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   }
 
   @Override
+  public void update() {
+    super.update();
+    if (activeEnemies.isEmpty() && !notified) {
+      var config = entity.getComponent(RoomDataComponent.class).getConfig();
+      logger.info("Room Cleared");
+
+      entity.getEvents().trigger(RoomClearService.ROOM_CLEARED, config.id);
+
+      // Not the ideal way to know if it is end of a dungeon but works for now.
+      // Should be changed later or enforce the naming convention
+      if (config.id.endsWith("End")) {
+        entity.getEvents().trigger(RoomClearService.DUNGEON_CLEARED, config.dungeonId);
+        entity.getEvents().trigger(GameAreaDisplay.DISPLAY, "Dungeon Cleared!");
+      } else {
+        entity.getEvents().trigger(GameAreaDisplay.DISPLAY, "Room Cleared!");
+      }
+
+      notified = true;
+    }
+  }
+
+  @Override
   public void create() {
     entity.getEvents().addListener("RoomCreated", this::spawnEnemies);
   }
 
-  /** Spawns each enemy declared by the room. */
+  /**
+   * Spawns each enemy declared by the room. After spawning scales enemies based on no. of cleared
+   * dungeons.
+   */
   public void spawnEnemies(Entity target) {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+
+    if (spawnConfigs.length == 0) {
+      notified = true; // Don't notify if empty
+      return;
+    }
 
     for (EnemySpawnConfig spawn : spawnConfigs) {
       Vector2 entityPos = terrain.tileToWorldPosition(new GridPoint2(spawn.x, spawn.y));
@@ -100,6 +137,8 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       enemy.addComponent(new EnemyTypeComponent(spawn.type)); // before spawnEntityAt registers it
       spawnEntityAt(enemy, new GridPoint2(spawn.x, spawn.y), true, true);
     }
+
+    scale(RoomClearService.getDungeonClearedCount());
   }
 
   private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
@@ -215,9 +254,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     // Capture before deferred disposal or room changes can move/remove the enemy.
     Vector2 position = enemy.getCenterPosition();
     spawnEnemyDrops(enemyType, position);
-    if (activeEnemies.isEmpty()) {
-      entity.getEvents().trigger("roomCleared");
-    }
   }
 
   /** Reports a confirmed enemy defeat to the existing achievement system. */

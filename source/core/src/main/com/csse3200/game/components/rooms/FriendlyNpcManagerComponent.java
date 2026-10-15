@@ -3,6 +3,7 @@ package com.csse3200.game.components.rooms;
 import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.friendlynpc.NpcInteractableComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractableComponent.Availability;
+import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.rooms.configs.NpcSpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.InteractableNpcConfig;
@@ -68,6 +69,20 @@ public class FriendlyNpcManagerComponent extends EntityManagerComponent {
   @Override
   public void create() {
     entity.getEvents().addListener("RoomCreated", this::spawnNpcs);
+    entity.getEvents().addListener("npcInteract", this::onInteract);
+  }
+
+  // Moved from existing logic inside RoomManager
+  public void onInteract(Entity player) {
+    // Passing player through to here is kind of not great ...
+    var npc = findNearestInRange(player);
+    if (npc != null) {
+      npc.interact(player);
+    }
+
+    var prompt = getPrompt(player);
+    if (prompt == null) return;
+    entity.getEvents().trigger(GameAreaDisplay.DISPLAY, prompt);
   }
 
   public void spawnNpcs(Entity player) {
