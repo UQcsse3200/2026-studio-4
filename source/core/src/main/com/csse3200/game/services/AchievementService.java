@@ -1,5 +1,6 @@
 package com.csse3200.game.services;
 
+import com.badlogic.gdx.audio.Sound;
 import com.csse3200.game.components.achievements.Achievement;
 import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.events.EventHandler;
@@ -7,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.csse3200.game.files.AudioLevels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +34,7 @@ public class AchievementService {
   private void dispatch(Achievement a) {
     logger.info("Achievement unlocked: {}", a.getName());
     eventHandler.trigger("achievementUnlocked", a.getName());
+        playAchievementSound();
   }
 
   public EventHandler getEvents() {
@@ -80,4 +84,9 @@ public class AchievementService {
       achievement.restoreState(unlocked, progress);
     }
   }
+
+    private void playAchievementSound () {
+      Sound achievementSound = ServiceLocator.getResourceService().getAsset("achievementSound", Sound.class);
+      AudioLevels.play(achievementSound);
+    }
 }

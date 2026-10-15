@@ -46,7 +46,7 @@ public class AchievementDisplay extends UIComponent {
     rootTable = new Table();
     rootTable.setFillParent(true);
     rootTable.center().top().padTop(TOP_PADDING);
-    rootTable.add(achievementLabel).width(700f);
+    rootTable.add(achievementLabel).width(800f);
 
     stage.addActor(rootTable);
     rootTable.toFront();
