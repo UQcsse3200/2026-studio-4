@@ -70,11 +70,6 @@ public class RoomSelector {
 
     String previousDungeonId = getCurrentDungeonId();
 
-    // Report completion before changing rooms or stopping the timer.
-    if (exit.completesDungeon) {
-      reportDungeonCompleted(previousDungeonId);
-    }
-
     ServiceLocator.getEntityService()
         .schedule(
             () -> {
@@ -154,21 +149,6 @@ public class RoomSelector {
   private String getCurrentDungeonId() {
     RoomDataComponent roomData = room.getComponent(RoomDataComponent.class);
     return roomData.getConfig().dungeonId;
-  }
-
-  /**
-   * @param dungeonId
-   * @requires achievements != null && dungeonId != null && timer != null
-   */
-  private void reportDungeonCompleted(String dungeonId) {
-    AchievementService achievements = ServiceLocator.getAchievementService();
-    AchievementContext context = new AchievementContext();
-    context.dungeonCompletedId = dungeonId;
-    context.dungeonId = dungeonId;
-
-    RunTimer timer = ServiceLocator.getRunTimer();
-    context.dungeonSeconds = timer.getDungeonTime();
-    achievements.update(context);
   }
 
   /**
