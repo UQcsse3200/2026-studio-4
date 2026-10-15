@@ -227,10 +227,12 @@ public final class MinotaurAttackGeometry {
         for (int x = Math.max(0, MathUtils.floor(minX));
             x < Math.min(width, MathUtils.ceil(maxX));
             x++) {
+          var pixelX = (float) x;
+          var pixelY = (float) y;
           if (isOpaque(x, y, width, height)
               && (Math.abs(sine) < epsilon
                   || (Intersector.overlapConvexPolygons(
-                          local, vertices(pixel.setPosition((float) x, (float) y)), overlap)
+                          local, vertices(pixel.setPosition(pixelX, pixelY)), overlap)
                       && overlap.depth > epsilon))) {
             return true;
           }
