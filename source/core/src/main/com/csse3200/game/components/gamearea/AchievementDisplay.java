@@ -1,9 +1,11 @@
 package com.csse3200.game.components.gamearea;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.csse3200.game.files.AudioLevels;
 import com.csse3200.game.services.AchievementService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -81,6 +83,13 @@ public class AchievementDisplay extends UIComponent {
     achievementLabel.setText("Achievement Unlocked: " + next);
     achievementLabel.setVisible(true);
     expiryMillis = TimeUtils.millis() + DISPLAY_DURATION_MILLIS;
+    playAchievementSound();
+  }
+
+  private void playAchievementSound() {
+    Sound achievementSound =
+        ServiceLocator.getResourceService().getAsset("sounds/achievementSound.mp3", Sound.class);
+    AudioLevels.play(achievementSound);
   }
 
   @Override
