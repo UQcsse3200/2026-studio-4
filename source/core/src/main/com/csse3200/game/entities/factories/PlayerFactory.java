@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.achievements.AchievementProgressComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
@@ -131,7 +132,10 @@ public class PlayerFactory {
             .addComponent(
                 new LightningSpellComponent(5f, 25, 400L, new StrategyWithinRadius(SPELL_RADIUS)))
             .addComponent(
-                new FreezeSpellComponent(5f, 5000L, new StrategyWithinRadius(SPELL_RADIUS)));
+                new FreezeSpellComponent(5f, 5000L, new StrategyWithinRadius(SPELL_RADIUS)))
+
+            // progress player achievements using events
+            .addComponent(new AchievementProgressComponent());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);

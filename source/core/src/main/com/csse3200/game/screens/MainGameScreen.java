@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.achievements.AchievementConfig;
-import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.achievements.AchievementsFactory;
 import com.csse3200.game.components.gamearea.AchievementDisplay;
 import com.csse3200.game.components.gamearea.FpsOverlay;
@@ -125,32 +124,6 @@ public class MainGameScreen extends ScreenAdapter {
     player.getEvents().addListener("entityDied", this::scheduleDeathScreen);
     // trigger win screen via entity win event
     player.getEvents().addListener("winScreenRequested", () -> winScreenRequested = true);
-    // notify damage
-    player
-        .getEvents()
-        .addListener(
-            "damageTaken",
-            (Entity attacker, Integer lost, Integer remaining) -> {
-              AchievementContext ctx = new AchievementContext();
-              ctx.playerDamaged = true;
-              ServiceLocator.getAchievementService().update(ctx);
-            });
-
-    // notify gold collected
-    player
-        .getEvents()
-        .addListener(
-            InventoryComponent.GOLD_PICKED_UP,
-            (Integer amount) -> {
-              AchievementService achievements = ServiceLocator.getAchievementService();
-              if (achievements == null) {
-                return;
-              }
-
-              AchievementContext context = new AchievementContext();
-              context.goldCollected = amount;
-              achievements.update(context);
-            });
 
     roomSelector = new RoomSelector(player, renderer.getCamera());
     roomSelector.start();
