@@ -116,7 +116,7 @@ public class RoomSelector {
     room.getEvents().addListener(SWITCH_ROOM, this::switchRoom);
 
     RoomConfig newConfig = room.getComponent(RoomDataComponent.class).getConfig();
-    room.getEvents().trigger("RoomSwitched", oldConfig, newConfig);
+    room.getEvents().trigger(ROOM_SWITCHED_EVENT, oldConfig, newConfig);
   }
 
   /**
