@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
@@ -24,14 +23,12 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import java.util.Objects;
 
-/** A compact consumable bar on the lower half of the right side of the game UI. */
+/** Four consumable slots along the bottom of the game UI, following the weapon slots. */
 public class ConsumableHotbarDisplay extends UIComponent {
   public static final String IDLE_FRAME_TEXTURE = "images/consumable-slot-idle.png";
   public static final String SELECTED_FRAME_TEXTURE = "images/consumable-slot-selected.png";
-  private static final float SLOT_SIZE = 72f;
-  private static final float SLOT_GAP = 6f;
-  private static final float RIGHT_INSET = 24f;
-  private static final float BOTTOM_FRACTION = 0.16f;
+  private static final float USE_HINT_HEIGHT = 20f;
+  private static final float USE_HINT_GAP = 4f;
   private final Entity player;
   private final InventoryComponent inventoryComponent;
   private final ConsumableSelectionComponent selection;
@@ -46,6 +43,7 @@ public class ConsumableHotbarDisplay extends UIComponent {
   private final int[] slotCounts = new int[InventoryComponent.CONSUMABLE_SLOT_COUNT];
   private Table root;
   private Label goldLabel;
+  private Label cycleHint;
   private int displayedGold;
   private Texture regularFrame;
   private Texture selectedFrame;
@@ -81,28 +79,44 @@ public class ConsumableHotbarDisplay extends UIComponent {
   }
 
   private void buildActors() {
-    root = new Table();
-    root.setName("consumable-hotbar");
-    root.setFillParent(true);
-    root.bottom().right().padRight(RIGHT_INSET);
-    root.padBottom(
+    root = BottomHotbarLayout.root("consumable-hotbar");
+    // The hint row sits below the shared frame baseline.
+    root.padBottom(BottomHotbarLayout.BOTTOM_INSET - USE_HINT_HEIGHT - USE_HINT_GAP);
+    root.padLeft(
         new Value() {
           @Override
           public float get(Actor context) {
-            return Math.max(180f, stage.getHeight() * BOTTOM_FRACTION);
+            return BottomHotbarLayout.consumableInset(BottomHotbarLayout.availableWidth(root));
           }
         });
-    root.setTouchable(Touchable.disabled);
 
     Table slots = new Table();
+    Value diameter = BottomHotbarLayout.slotSize(root);
+    Stack[] slotActors = new Stack[InventoryComponent.CONSUMABLE_SLOT_COUNT];
     displayedGold = inventoryComponent.getGold();
     goldLabel = label("Gold: " + displayedGold, 0.65f);
     goldLabel.setName("consumable-gold");
-    slots.add(goldLabel).colspan(3).padBottom(8f);
-    slots.row();
     for (int i = 0; i < InventoryComponent.CONSUMABLE_SLOT_COUNT; i++) {
       String id = Integer.toString(i + 1);
-      Stack slot = new Stack();
+      int index = i;
+      Stack slot =
+          new Stack() {
+            @Override
+            protected void sizeChanged() {
+              super.sizeChanged();
+              if (counts[index] != null) {
+                float scale = getWidth() / 72f;
+                counts[index].setFontScale(0.55f * scale);
+                pointers[index].setFontScale(0.8f * Math.min(1f, scale));
+                useHints[index].setFontScale(0.55f * Math.min(1f, scale));
+                if (index == 0) {
+                  goldLabel.setFontScale(0.65f * Math.min(1f, scale));
+                  cycleHint.setFontScale(0.5f * Math.min(1f, scale));
+                }
+              }
+            }
+          };
+      slotActors[i] = slot;
       slot.setName("consumable-slot-" + id);
       frames[i] = new Image(regularFrame);
       slot.add(frames[i]);
@@ -113,28 +127,53 @@ public class ConsumableHotbarDisplay extends UIComponent {
       icons[i].setScaling(Scaling.fit);
       icons[i].setName("consumable-icon-" + id);
       Table iconLayer = new Table();
-      iconLayer.add(icons[i]).size(54f);
+      iconLayer.add(icons[i]).size(Value.percentWidth(0.75f, slot));
       slot.add(iconLayer);
 
       counts[i] = label("0", 0.55f);
       counts[i].setName("consumable-count-" + id);
       Table countLayer = new Table();
-      countLayer.bottom().right().add(counts[i]).padRight(13f).padBottom(11f);
+      countLayer
+          .bottom()
+          .right()
+          .add(counts[i])
+          .padRight(Value.percentWidth(13f / 72f, slot))
+          .padBottom(Value.percentHeight(11f / 72f, slot));
       slot.add(countLayer);
 
-      pointers[i] = label(">", 0.8f);
+      pointers[i] = label("v", 0.8f);
       pointers[i].setName("consumable-pointer-" + id);
       useHints[i] = label("Q USE", 0.55f);
       useHints[i].setName("consumable-use-" + id);
-      slots.add(pointers[i]).width(18f).padRight(3f);
-      slots.add(slot).size(SLOT_SIZE);
-      slots.add(useHints[i]).width(60f).padLeft(6f);
-      slots.row().padTop(i == 0 ? 0f : SLOT_GAP);
     }
-    Label cycleHint = label("TAB NEXT", 0.5f);
+    cycleHint = label("TAB NEXT", 0.5f);
     cycleHint.setName("consumable-cycle-hint");
-    slots.add().colspan(1);
-    slots.add(cycleHint).padTop(8f);
+    slots.add(goldLabel).colspan(2).left().padBottom(8f);
+    slots.add(cycleHint).colspan(2).right().padBottom(8f);
+    slots.row();
+    for (int i = 0; i < slotActors.length; i++) {
+      slots
+          .add(pointers[i])
+          .width(diameter)
+          .height(14f)
+          .padRight(i < slotActors.length - 1 ? BottomHotbarLayout.SLOT_GAP : 0f);
+    }
+    slots.row();
+    for (int i = 0; i < slotActors.length; i++) {
+      slots
+          .add(slotActors[i])
+          .size(diameter)
+          .padRight(i < slotActors.length - 1 ? BottomHotbarLayout.SLOT_GAP : 0f);
+    }
+    slots.row();
+    for (int i = 0; i < slotActors.length; i++) {
+      slots
+          .add(useHints[i])
+          .width(diameter)
+          .height(USE_HINT_HEIGHT)
+          .padTop(USE_HINT_GAP)
+          .padRight(i < slotActors.length - 1 ? BottomHotbarLayout.SLOT_GAP : 0f);
+    }
     root.add(slots);
     stage.addActor(root);
   }
