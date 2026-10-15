@@ -2,7 +2,6 @@ package com.csse3200.game.rooms;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.rooms.RoomDataComponent;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.components.rooms.configs.PositionConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
@@ -18,7 +17,6 @@ public class RoomLoader {
   private static final int ARRIVAL_OFFSET_TILES = 3;
   private final WorldConfig world;
   private CameraComponent camera; // Storing camera not ideal
-  private final RoomClearService roomClearService = new RoomClearService();
 
   public RoomLoader(CameraComponent camera) {
     this(camera, FileLoader.readClass(WorldConfig.class, CONFIG_PATH));
@@ -30,21 +28,14 @@ public class RoomLoader {
     world.validate();
   }
 
-  private Entity roomFactoryWrapper(RoomConfig config, CameraComponent camera, boolean cleared) {
-    Entity room = RoomFactory.createRoom(config, camera, cleared);
-    room.addComponent(new RoomDataComponent(config, roomClearService));
-    roomClearService.attachListeners(room);
-    return room;
-  }
-
   /** Returns an unintialised starting room as decalred in config */
   public Entity getStartingRoom() {
     RoomConfig room = world.getRoom(world.startRoomId);
-    return roomFactoryWrapper(room, camera, false);
+    return RoomFactory.createRoom(room, camera, false);
   }
 
   public Entity getRoom(String roomId, boolean cleared) {
-    return roomFactoryWrapper(world.getRoom(roomId), camera, cleared);
+    return RoomFactory.createRoom(world.getRoom(roomId), camera, cleared);
   }
 
   public Entity getRoom(ExitConfig exit, boolean cleared) {
@@ -52,7 +43,7 @@ public class RoomLoader {
   }
 
   public Entity getRoom(ExitConfig exit) {
-    return getRoom(exit.destinationRoomId, roomClearService.isRoomCleared(exit.destinationRoomId));
+    return getRoom(exit.destinationRoomId, RoomClearService.isRoomCleared(exit.destinationRoomId));
   }
 
   public GridPoint2 getStartingSpawn() {

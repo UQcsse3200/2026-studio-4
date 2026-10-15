@@ -138,7 +138,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       spawnEntityAt(enemy, new GridPoint2(spawn.x, spawn.y), true, true);
     }
 
-    scale(entity.getComponent(RoomDataComponent.class).getRoomClear().getDungeonClearedCount());
+    scale(RoomClearService.getDungeonClearedCount());
   }
 
   private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
