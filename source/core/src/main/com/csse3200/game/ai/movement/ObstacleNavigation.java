@@ -198,8 +198,21 @@ public final class ObstacleNavigation {
 
   private record Candidate(int index, float estimate) {}
 
-  private record SearchState(
-      float[] costs, int[] previous, boolean[] visited, PriorityQueue<Candidate> open) {}
+  /** Mutable working data for a single path search. */
+  private static final class SearchState {
+    private final float[] costs;
+    private final int[] previous;
+    private final boolean[] visited;
+    private final PriorityQueue<Candidate> open;
+
+    private SearchState(
+        float[] costs, int[] previous, boolean[] visited, PriorityQueue<Candidate> open) {
+      this.costs = costs;
+      this.previous = previous;
+      this.visited = visited;
+      this.open = open;
+    }
+  }
 
   private static List<Vector2> search(
       List<Vector2> nodes, List<Rectangle> obstacles, int goalCount) {
@@ -232,15 +245,15 @@ public final class ObstacleNavigation {
       int index, List<Vector2> nodes, List<Rectangle> obstacles, SearchState state, int goalCount) {
     Vector2 from = nodes.get(index);
     for (int next = 1; next < nodes.size(); next++) {
-      float cost = state.costs()[index] + from.dst(nodes.get(next));
-      if (state.visited()[next]
-          || cost >= state.costs()[next]
+      float cost = state.costs[index] + from.dst(nodes.get(next));
+      if (state.visited[next]
+          || cost >= state.costs[next]
           || !isClear(from, nodes.get(next), obstacles)) {
         continue;
       }
-      state.costs()[next] = cost;
-      state.previous()[next] = index;
-      state.open().add(new Candidate(next, cost + remaining(nodes.get(next), nodes, goalCount)));
+      state.costs[next] = cost;
+      state.previous[next] = index;
+      state.open.add(new Candidate(next, cost + remaining(nodes.get(next), nodes, goalCount)));
     }
   }
 
