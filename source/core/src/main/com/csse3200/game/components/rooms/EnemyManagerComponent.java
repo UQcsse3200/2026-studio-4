@@ -178,16 +178,15 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
       // Egyptian
       case SANDEYE:
-        return NPCFactory.createChaseEnemy(target, false, "images/sandeye.atlas");
+        return NPCFactory.createSandeye(target);
       case BEETLE:
-        return createScaledBombEnemy(target, "images/beetle.atlas", 0.75f, 0.75f);
+        return NPCFactory.createBeetle(target);
       case CRAB:
-        return createCrab(target);
+        return NPCFactory.createCrab(target);
       case WASP:
-        return NPCFactory.createFloatingDemon(
-            target, spawnPoints, "images/wasp.atlas", this::spawnEntity);
+        return NPCFactory.createWasp(target);
       case MUMMY:
-        return createMummy(target);
+        return NPCFactory.createMummy(target);
       case SNAKE_MINI_BOSS:
         return createSnake(target);
 

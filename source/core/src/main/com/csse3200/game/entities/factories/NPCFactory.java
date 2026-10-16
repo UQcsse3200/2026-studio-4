@@ -434,6 +434,44 @@ public class NPCFactory {
     return createFloatingEnemy(target, "images/crow.atlas");
   }
 
+  /** Creates a Sandeye with its standard appearance and no splitting. */
+  public static Entity createSandeye(Entity target) {
+    return createChaseEnemy(target, false, "images/sandeye.atlas");
+  }
+
+  /** Creates a beetle with its standard appearance, fuse and scale. */
+  public static Entity createBeetle(Entity target) {
+    Entity beetle = createBombEnemy(target, "images/beetle.atlas", 2f);
+    beetle.setScale(0.75f, 0.75f);
+    return beetle;
+  }
+
+  /** Creates a crab with its standard scale and hitbox. */
+  public static Entity createCrab(Entity target) {
+    Entity crab = createChaseEnemy(target, true, "images/crab.atlas");
+    crab.setScale(1.5f, 1f);
+    crab.getComponent(HitboxComponent.class)
+        .setAsBox(
+            new Vector2(1f, 0.5f),
+            new Vector2(crab.getCenterPosition().x, crab.getCenterPosition().y / 2f));
+    return crab;
+  }
+
+  /** Creates a mummy with its standard hitbox and collider. */
+  public static Entity createMummy(Entity target) {
+    Entity mummy = createGiantEnemy(target, "images/mummy.atlas");
+    mummy
+        .getComponent(HitboxComponent.class)
+        .setAsBox(new Vector2(1f, 1.5f), mummy.getCenterPosition());
+    PhysicsUtils.setScaledCollider(mummy, 0.3f, 0.3f);
+    return mummy;
+  }
+
+  /** Creates a wasp with its standard appearance. */
+  public static Entity createWasp(Entity target) {
+    return createFloatingEnemy(target, "images/wasp.atlas");
+  }
+
   /**
    * Creates a generic NPC to be used as a base entity by more specific NPC creation methods.
    *
