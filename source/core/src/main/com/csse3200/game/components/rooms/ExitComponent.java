@@ -11,8 +11,10 @@ import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.rooms.RoomClearService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +76,13 @@ public class ExitComponent extends EntityManagerComponent {
     if (!entity.getComponent(EnemyManagerComponent.class).isCleared()) {
       // room is not yet cleared
       entity.getEvents().trigger(GameAreaDisplay.DISPLAY, "Defeat all enemies to progress");
+      return;
+    } else if (Objects.equals(nearest.id, "dungeonFiveShelf")
+        && RoomClearService.getDungeonClearedCount() < 4) {
+      // Access boss room before all other dungeons are cleared
+      entity
+          .getEvents()
+          .trigger(GameAreaDisplay.DISPLAY, "Clear all other dungeons before attempting.");
       return;
     }
 
