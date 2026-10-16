@@ -7,18 +7,21 @@ import java.util.Set;
 public class AchievementsFactory {
 
   public static Achievement build(AchievementConfig c) {
-    return switch (c.type) {
-      case "dungeonClear" -> dungeonClear(c);
-      case "dungeonReached" -> dungeonReached(c);
-      case "gold" -> gold(c);
-      case "enemyKillCount" -> enemyKillCount(c);
-      case "killStreak" -> killStreak(c);
-      case "speedRun" -> speedRun(c);
-      case "enemySet" -> enemySet(c);
-      case "snake" -> snake(c);
-      case "finalBoss" -> finalBoss(c);
-      default -> throw new IllegalArgumentException("Unknown achievement type: " + c.type);
-    };
+    Achievement a =
+        switch (c.type) {
+          case "dungeonClear" -> dungeonClear(c);
+          case "dungeonReached" -> dungeonReached(c);
+          case "gold" -> gold(c);
+          case "enemyKillCount" -> enemyKillCount(c);
+          case "killStreak" -> killStreak(c);
+          case "speedRun" -> speedRun(c);
+          case "enemySet" -> enemySet(c);
+          case "snake" -> snake(c);
+          case "finalBoss" -> finalBoss(c);
+          default -> throw new IllegalArgumentException("Unknown achievement type: " + c.type);
+        };
+    a.setCategory(c.category);
+    return a;
   }
 
   private static Achievement snake(AchievementConfig c) {

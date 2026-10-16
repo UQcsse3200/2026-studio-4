@@ -13,6 +13,7 @@ public class Achievement {
   private Predicate<AchievementContext> condition;
   private float progress;
   private float target; // 0 means no numeric target to show
+  private String category; // optional; null means uncategorised
 
   /** Creates an achievement with its condition fixed at construction. */
   public Achievement(String name, String description, Predicate<AchievementContext> condition) {
@@ -78,6 +79,14 @@ public class Achievement {
 
   public String getDescription() {
     return description;
+  }
+
+  public String getCategory() {
+    return category;
+  }
+
+  public void setCategory(String category) {
+    this.category = category;
   }
 
   public void restoreState(boolean unlocked, float progress) {
