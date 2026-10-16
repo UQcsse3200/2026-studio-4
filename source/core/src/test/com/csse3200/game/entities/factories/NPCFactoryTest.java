@@ -68,6 +68,9 @@ class NPCFactoryTest {
           "images/floatingDemon.atlas",
           "images/jingwei.atlas",
           "images/golem.atlas",
+          "images/knight.atlas",
+          "images/jotunn.atlas",
+          "images/crow.atlas",
           "images/medusa.atlas",
           "images/mummy.atlas",
           "images/snake.atlas"
@@ -353,6 +356,48 @@ class NPCFactoryTest {
         new Vector2(8f, 20f),
         jingwei
             .getComponent(com.csse3200.game.physics.components.PhysicsMovementComponent.class)
+            .getTarget());
+  }
+
+  @Test
+  void knightShouldKeepItsScaleAndExplosionComponent() {
+    Entity knight = NPCFactory.createKnight(new Entity());
+
+    assertEquals(0.75f, knight.getScale().x, 0.001f);
+    assertEquals(1f, knight.getScale().y, 0.001f);
+    assertNotNull(knight.getComponent(com.csse3200.game.components.ExplodeComponent.class));
+    assertNotNull(knight.getComponent(CombatStatsComponent.class));
+    assertNotNull(knight.getComponent(EnemyStatDisplay.class));
+  }
+
+  @Test
+  void jotunnShouldKeepItsScaleAndContactAttack() {
+    Entity jotunn = NPCFactory.createJotunn(new Entity());
+
+    assertEquals(3f, jotunn.getScale().x, 0.001f);
+    assertEquals(3f, jotunn.getScale().y, 0.001f);
+    assertNotNull(jotunn.getComponent(TouchAttackComponent.class));
+    assertNotNull(jotunn.getComponent(CombatStatsComponent.class));
+    assertNotNull(jotunn.getComponent(EnemyStatDisplay.class));
+  }
+
+  @Test
+  void crowShouldKeepPatrolOriginAfterDisplacement() {
+    Entity target = new Entity();
+    target.setPosition(100f, 100f);
+
+    Entity crow = NPCFactory.createCrow(target);
+    crow.setPosition(20f, 10f);
+
+    crow.getComponent(com.csse3200.game.components.npc.FlyingEnemyPatrolComponent.class).create();
+
+    // Displacement before the first patrol must not change its origin.
+    crow.setPosition(30f, 40f);
+    crow.getComponent(AITaskComponent.class).update();
+
+    assertEquals(
+        new Vector2(18f, 10f),
+        crow.getComponent(com.csse3200.game.physics.components.PhysicsMovementComponent.class)
             .getTarget());
   }
 

@@ -164,16 +164,15 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
       // Norse
       case WOLF:
-        return NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas");
+        return NPCFactory.createWolf(target);
       case CROW:
-        return NPCFactory.createFloatingDemon(
-            target, spawnPoints, "images/crow.atlas", this::spawnEntity);
+        return NPCFactory.createCrow(target);
       case KNIGHT:
-        return createScaledBombEnemy(target, "images/knight.atlas", 0.75f, 1f);
+        return NPCFactory.createKnight(target);
       case DARK_ELVES:
-        return NPCFactory.createChaseEnemy(target, true, "images/dark_elves.atlas");
+        return NPCFactory.createDarkElves(target);
       case JOTUNN:
-        return createScaledGiant(target, "images/jotunn.atlas", 3f);
+        return NPCFactory.createJotunn(target);
       case SLEIPNIR:
         return NPCFactory.createSleipnir(target, spawnPoints);
 
