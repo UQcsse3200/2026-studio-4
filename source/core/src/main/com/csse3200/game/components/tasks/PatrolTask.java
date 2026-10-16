@@ -15,9 +15,9 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
   private PhysicsMovementComponent movementComponent;
   private int currentPoint;
   private static final int PRIORITY = 5;
-  private boolean phaseTwoActivated = false;
-  private boolean flying;
-  private Vector2 spawnPoint;
+  private final boolean phaseTwoActivated = false;
+  private final boolean flying;
+  private final Vector2 spawnPoint;
 
   public PatrolTask(Vector2 spawnPoint, boolean flying) {
     this.flying = flying;
@@ -35,11 +35,9 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
   }
 
   private Vector2[] createTriangularPatrol(Vector2 spawnPoint) {
-    int x = (int) spawnPoint.x;
-    int y = (int) spawnPoint.y;
-    Vector2 leftPoint = new Vector2(x - 2, y);
-    Vector2 topPoint = new Vector2(x, y + 1.5f);
-    Vector2 rightPoint = new Vector2(x + 2, y);
+    Vector2 leftPoint = new Vector2(spawnPoint.x - 2, spawnPoint.y);
+    Vector2 topPoint = new Vector2(spawnPoint.x, spawnPoint.y + 1.5f);
+    Vector2 rightPoint = new Vector2(spawnPoint.x + 2, spawnPoint.y);
     return new Vector2[] {leftPoint, topPoint, rightPoint};
   }
 
@@ -50,11 +48,10 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
    */
   private Vector2[] createBounds(Vector2 spawnPoint) {
     int extra = 5;
-    Vector2 bottomLeft = spawnPoint;
     Vector2 bottomRight = new Vector2(spawnPoint.x + extra, spawnPoint.y);
     Vector2 topLeft = new Vector2(spawnPoint.x, spawnPoint.y + extra);
     Vector2 topRight = new Vector2(spawnPoint.x + extra, spawnPoint.y + extra);
-    return (new Vector2[] {bottomLeft, topRight, topLeft, bottomRight});
+    return (new Vector2[] {spawnPoint, topRight, topLeft, bottomRight});
   }
 
   /**
@@ -104,7 +101,6 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
 
   @Override
   public void update() {
-
     Vector2 position = owner.getEntity().getPosition();
     int temp = currentPoint;
     if (position.dst(patrolPoints[currentPoint]) <= pointDist) {
