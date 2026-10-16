@@ -1,6 +1,9 @@
 package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.rooms.configs.ExitConfig;
+import com.csse3200.game.rooms.RoomClearService;
+
+import java.util.Objects;
 
 /**
  * Copy for in-range interaction prompts. The HUD displays these strings; it does not handle the E
@@ -12,6 +15,7 @@ public final class InteractionPrompt {
   public static final String CLEAR_REQUIRED = "Defeat all enemies first.";
   public static final String DUNGEON_UNAVAILABLE = "This dungeon is not available yet.";
   public static final String DUNGEON_COMPLETED = "Dungeon completed.";
+  public static final String CLEAR_ALL_DUNGEONS_REQUIRED = "Clear all other dungeons before attempting.";
 
   private InteractionPrompt() {}
 
@@ -48,6 +52,9 @@ public final class InteractionPrompt {
     }
     if (exit.requiresClear && !roomCleared) {
       return CLEAR_REQUIRED;
+    }
+    if (Objects.equals(exit.id, "dungeonFiveShelf") && (RoomClearService.getDungeonClearedCount() < 4)) {
+      return CLEAR_ALL_DUNGEONS_REQUIRED;
     }
     if ("BOOKSHELF".equals(exit.kind)) {
       return ENTER_DUNGEON;
