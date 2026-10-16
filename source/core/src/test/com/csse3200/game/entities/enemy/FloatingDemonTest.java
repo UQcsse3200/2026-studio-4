@@ -49,8 +49,8 @@ class FloatingDemonTest {
 
   @Test
   void shouldHaveFlyingEnemyAnimation() {
-    Entity harpy = NPCFactory.createFloatingDemon(new Entity(), spawnPoints, "images/harpy.atlas");
-    Entity wasp = NPCFactory.createFloatingDemon(new Entity(), spawnPoints, "images/wasp.atlas");
+    Entity harpy = NPCFactory.createHarpy(new Entity(), spawnPoints);
+    Entity wasp = NPCFactory.createWasp(new Entity(), spawnPoints);
 
     AnimationRenderComponent harpyAnimator = harpy.getComponent(AnimationRenderComponent.class);
     AnimationRenderComponent waspAnimator = wasp.getComponent(AnimationRenderComponent.class);
@@ -68,7 +68,7 @@ class FloatingDemonTest {
   @Test
   void shouldTakeDamageFromPlayerWeapon() {
     Entity player = new Entity();
-    Entity demon = NPCFactory.createFloatingDemon(player, spawnPoints, "images/harpy.atlas");
+    Entity demon = NPCFactory.createHarpy(player, spawnPoints);
     demon.create();
 
     HitboxComponent demonHitbox = demon.getComponent(HitboxComponent.class);
@@ -103,7 +103,7 @@ class FloatingDemonTest {
 
   @Test
   void shouldStartDeathAnimationWhenHealthReachesZero() {
-    Entity demon = NPCFactory.createFloatingDemon(new Entity(), spawnPoints, "images/harpy.atlas");
+    Entity demon = NPCFactory.createHarpy(new Entity(), spawnPoints);
     demon.create();
 
     demon.getComponent(CombatStatsComponent.class).setHealth(0);

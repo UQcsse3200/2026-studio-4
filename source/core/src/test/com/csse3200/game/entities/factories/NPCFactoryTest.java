@@ -341,8 +341,7 @@ class NPCFactoryTest {
     Entity target = new Entity();
     target.setPosition(100f, 100f);
 
-    Entity jingwei = NPCFactory.createJingwei(target);
-    jingwei.setPosition(10f, 20f);
+    Entity jingwei = NPCFactory.createJingwei(target, spawnPoints);
 
     jingwei
         .getComponent(com.csse3200.game.components.npc.FlyingEnemyPatrolComponent.class)
@@ -353,7 +352,7 @@ class NPCFactoryTest {
     jingwei.getComponent(AITaskComponent.class).update();
 
     assertEquals(
-        new Vector2(8f, 20f),
+        new Vector2(8f, 10f),
         jingwei
             .getComponent(com.csse3200.game.physics.components.PhysicsMovementComponent.class)
             .getTarget());
@@ -386,8 +385,7 @@ class NPCFactoryTest {
     Entity target = new Entity();
     target.setPosition(100f, 100f);
 
-    Entity crow = NPCFactory.createCrow(target);
-    crow.setPosition(20f, 10f);
+    Entity crow = NPCFactory.createCrow(target, spawnPoints);
 
     crow.getComponent(com.csse3200.game.components.npc.FlyingEnemyPatrolComponent.class).create();
 
@@ -396,7 +394,7 @@ class NPCFactoryTest {
     crow.getComponent(AITaskComponent.class).update();
 
     assertEquals(
-        new Vector2(18f, 10f),
+        new Vector2(8f, 10f),
         crow.getComponent(com.csse3200.game.physics.components.PhysicsMovementComponent.class)
             .getTarget());
   }
@@ -404,7 +402,7 @@ class NPCFactoryTest {
   @Test
   void floatingDemonHasHealthBar() {
     Entity enemy;
-    enemy = NPCFactory.createFloatingDemon(new Entity(), spawnPoints, "images/floatingDemon.atlas");
+    enemy = NPCFactory.createJingwei(new Entity(), spawnPoints);
     assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
   }
 
