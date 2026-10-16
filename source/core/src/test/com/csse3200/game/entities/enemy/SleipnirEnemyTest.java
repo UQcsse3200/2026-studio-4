@@ -30,7 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public class SleipnirEnemyTest {
   private final Vector2 spawnPoints = new Vector2(10, 10);
 
-  private final Vector2[] mapBounds = {new Vector2(10, 10), new Vector2(2, 2)};
+  private final Vector2 mapBounds = new Vector2(10, 10);
 
   @BeforeEach
   void setUp() {
