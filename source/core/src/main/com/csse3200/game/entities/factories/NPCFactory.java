@@ -234,7 +234,6 @@ public class NPCFactory {
     Entity snakeBoss = createBaseNPC();
     SnakeMiniBossConfig config = configs.snakeMiniBoss;
 
-    // Shravika's own hand-drawn snake sprite sheet.
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset("images/snake.atlas", TextureAtlas.class));
@@ -285,7 +284,7 @@ public class NPCFactory {
   }
 
   /**
-   * funciton to create the norse mini boss
+   * function to create the norse mini boss
    *
    * @param target - the player, used in tasks for chasing/ tracking
    * @param spawn - the spawn position
