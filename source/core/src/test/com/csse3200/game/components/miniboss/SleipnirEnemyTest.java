@@ -30,8 +30,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public class SleipnirEnemyTest {
   private final Vector2 spawnPoints = new Vector2(10, 10);
 
+<<<<<<< HEAD
   private final Vector2 mapBounds = new Vector2(10, 10);
 
+=======
+>>>>>>> 6ccafb3f6fac9480c295963755d5857fa1e6f4af
   @BeforeEach
   void setUp() {
     RenderService renderService = new RenderService();
@@ -110,7 +113,7 @@ public class SleipnirEnemyTest {
 
   @Test
   void shouldEnterPhaseTwoOnlyBelowHalfOfScaledHealth() {
-    Entity horse = NPCFactory.createSleipnir(new Entity(), mapBounds);
+    Entity horse = NPCFactory.createSleipnir(new Entity(), spawnPoints);
     horse.create();
 
     try {

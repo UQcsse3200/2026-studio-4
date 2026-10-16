@@ -11,6 +11,7 @@ import com.csse3200.game.screens.LoadGameScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsScreen;
+import com.csse3200.game.screens.SplashScreen;
 import com.csse3200.game.screens.WinScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class GdxGame extends Game {
     logger.info("Creating game");
     loadSettings();
 
-    setScreen(ScreenType.MAIN_MENU);
+    setScreen(ScreenType.SPLASH);
   }
 
   /** Loads the game's settings. */
@@ -88,6 +89,8 @@ public class GdxGame extends Game {
    */
   private Screen newScreen(ScreenType screenType) {
     switch (screenType) {
+      case SPLASH:
+        return new SplashScreen(this);
       case MAIN_MENU:
         return new MainMenuScreen(this);
       case LOAD_GAME:
@@ -106,6 +109,7 @@ public class GdxGame extends Game {
   }
 
   public enum ScreenType {
+    SPLASH,
     MAIN_MENU,
     LOAD_GAME,
     MAIN_GAME,

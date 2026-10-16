@@ -87,6 +87,19 @@ public class NPCFactory {
     return giantEnemy;
   }
 
+  /** Applies shared scale and collision settings to a giant enemy. */
+  private static Entity createScaledGiant(Entity target, String skin, float size) {
+    Entity enemy = createGiantEnemy(target, skin);
+    enemy.setScale(size, size);
+    enemy
+        .getComponent(HitboxComponent.class)
+        .setAsBox(
+            new Vector2(1f, 1f),
+            new Vector2(enemy.getCenterPosition().x, enemy.getCenterPosition().y / 2f));
+    PhysicsUtils.setScaledCollider(enemy, 0.3f, 0.3f);
+    return enemy;
+  }
+
   /**
    * Creates a bomb Enemy entity.
    *
@@ -175,6 +188,21 @@ public class NPCFactory {
   }
 
   /**
+   * Creates a floating demon which patrols in a straight horizontal line.
+   *
+   * @param target target entity to attack
+   * @param skin the atlas file path for the entity
+   * @return floating demon entity
+   */
+  public static Entity createFloatingDemon(Entity target, Vector2 spawnPoint, String skin) {
+    return createFloatingDemon(
+        target,
+        spawnPoint,
+        skin,
+        projectile -> ServiceLocator.getEntityService().register(projectile));
+  }
+
+  /**
    * Creates a floating enemy with an explicitly supplied patrol origin. Retained for existing
    * callers.
    */
@@ -223,6 +251,27 @@ public class NPCFactory {
   }
 
   /**
+   * Creates a floating enemy with spawn-relative patrol and projectile events. The owning room must
+   * listen for PROJECTILE_SPAWNED before registration.
+   */
+  private static Entity createFloatingEnemy(Entity target, String skin) {
+    Entity enemy = createFloatingDemonBase(skin);
+
+    AITaskComponent aiComponent =
+        new AITaskComponent()
+            .addTask(
+                new RangedAttackTask(
+                    target,
+                    10,
+                    configs.floatingDemon.baseAttack,
+                    projectile -> enemy.getEvents().trigger(PROJECTILE_SPAWNED, projectile)));
+
+    enemy.addComponent(aiComponent).addComponent(new FlyingEnemyPatrolComponent());
+
+    return enemy;
+  }
+
+  /**
    * Creates the snake mini-boss with an invulnerable underground approach, a fixed ground warning,
    * one emergence strike and a brief vulnerable recovery. Its old contact and poison-pool attacks
    * are replaced by the burrow controller.
@@ -234,6 +283,7 @@ public class NPCFactory {
     Entity snakeBoss = createBaseNPC();
     SnakeMiniBossConfig config = configs.snakeMiniBoss;
 
+    // Shravika's own hand-drawn snake sprite sheet.
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset("images/snake.atlas", TextureAtlas.class));
@@ -359,54 +409,127 @@ public class NPCFactory {
     return createChaseEnemy(target, false, "images/longwei.atlas");
   }
 
-  /**
-   * Creates Jingwei. The owning room must listen for PROJECTILE_SPAWNED before registering the
-   * entity.
-   *
-   * @param target entity to attack
-   * @return an unregistered Jingwei entity
-   */
+  /** Creates Jingwei with its standard appearance. */
   public static Entity createJingwei(Entity target) {
-    Entity jingwei = createFloatingDemonBase("images/jingwei.atlas");
-
-    AITaskComponent aiComponent =
-        new AITaskComponent()
-            .addTask(
-                new RangedAttackTask(
-                    target,
-                    10,
-                    configs.floatingDemon.baseAttack,
-                    projectile -> jingwei.getEvents().trigger(PROJECTILE_SPAWNED, projectile)));
-
-    jingwei.addComponent(aiComponent).addComponent(new FlyingEnemyPatrolComponent());
-
-    return jingwei;
+    return createFloatingEnemy(target, "images/jingwei.atlas");
   }
 
   /** Creates Wukong with its standard scale and collision bounds. */
   public static Entity createWukong(Entity target) {
-    Entity wukong = createGiantEnemy(target, "images/wukong.atlas");
-    wukong.setScale(3f, 3f);
-    wukong
-        .getComponent(HitboxComponent.class)
-        .setAsBox(
-            new Vector2(1f, 1f),
-            new Vector2(wukong.getCenterPosition().x, wukong.getCenterPosition().y / 2f));
-    PhysicsUtils.setScaledCollider(wukong, 0.3f, 0.3f);
-    return wukong;
+    return createScaledGiant(target, "images/wukong.atlas", 3f);
   }
 
   /**
-   * Creates Jingwei with its standard appearance.
+   * Creates a wolf with its standard appearance and no splitting.
    *
-   * @param target entity to attack
-   * @param spawnPoint patrol origin in world coordinates
-   * @param projectileSpawner callback for spawning room-owned projectiles
-   * @return Jingwei entity
+   * @param target entity to chase
+   * @return wolf entity
    */
-  public static Entity createJingwei(
-      Entity target, Vector2 spawnPoint, Consumer<Entity> projectileSpawner) {
-    return createFloatingDemon(target, spawnPoint, "images/jingwei.atlas", projectileSpawner);
+  public static Entity createWolf(Entity target) {
+    return createChaseEnemy(target, false, "images/wolf.atlas");
+  }
+
+  /**
+   * Creates a dark elf with its standard appearance and splitting behaviour.
+   *
+   * @param target entity to chase
+   * @return dark elf entity
+   */
+  public static Entity createDarkElves(Entity target) {
+    return createChaseEnemy(target, true, "images/dark_elves.atlas");
+  }
+
+  /** Creates a knight with its standard appearance, fuse and scale. */
+  public static Entity createKnight(Entity target) {
+    Entity knight = createBombEnemy(target, "images/knight.atlas", 2f);
+    knight.setScale(0.75f, 1f);
+    return knight;
+  }
+
+  /** Creates Jotunn with its standard scale and collision bounds. */
+  public static Entity createJotunn(Entity target) {
+    return createScaledGiant(target, "images/jotunn.atlas", 3f);
+  }
+
+  /** Creates a crow with its standard appearance. */
+  public static Entity createCrow(Entity target) {
+    return createFloatingEnemy(target, "images/crow.atlas");
+  }
+
+  /** Creates a Sandeye with its standard appearance and no splitting. */
+  public static Entity createSandeye(Entity target) {
+    return createChaseEnemy(target, false, "images/sandeye.atlas");
+  }
+
+  /** Creates a beetle with its standard appearance, fuse and scale. */
+  public static Entity createBeetle(Entity target) {
+    Entity beetle = createBombEnemy(target, "images/beetle.atlas", 2f);
+    beetle.setScale(0.75f, 0.75f);
+    return beetle;
+  }
+
+  /** Creates a crab with its standard scale and hitbox. */
+  public static Entity createCrab(Entity target) {
+    Entity crab = createChaseEnemy(target, true, "images/crab.atlas");
+    crab.setScale(1.5f, 1f);
+    crab.getComponent(HitboxComponent.class)
+        .setAsBox(
+            new Vector2(1f, 0.5f),
+            new Vector2(crab.getCenterPosition().x, crab.getCenterPosition().y / 2f));
+    return crab;
+  }
+
+  /** Creates a mummy with its standard hitbox and collider. */
+  public static Entity createMummy(Entity target) {
+    Entity mummy = createGiantEnemy(target, "images/mummy.atlas");
+    mummy
+        .getComponent(HitboxComponent.class)
+        .setAsBox(new Vector2(1f, 1.5f), mummy.getCenterPosition());
+    PhysicsUtils.setScaledCollider(mummy, 0.3f, 0.3f);
+    return mummy;
+  }
+
+  /** Creates a wasp with its standard appearance. */
+  public static Entity createWasp(Entity target) {
+    return createFloatingEnemy(target, "images/wasp.atlas");
+  }
+
+  /** Creates a minotaur with its standard appearance and scale. */
+  public static Entity createMinotaur(Entity target) {
+    Entity minotaur = createChaseEnemy(target, false, "images/minotaur.atlas");
+    minotaur.setScale(1.5f, 1.5f);
+    return minotaur;
+  }
+
+  /** Creates Medusa with splitting behaviour and its standard hitbox. */
+  public static Entity createMedusa(Entity target) {
+    Entity medusa = createChaseEnemy(target, true, "images/medusa.atlas");
+    medusa.setScale(1f, 1f);
+    medusa.getComponent(HitboxComponent.class).setAsBox(new Vector2(1f, 1f));
+    return medusa;
+  }
+
+  /** Creates a cyclops with its standard scale and collision bounds. */
+  public static Entity createCyclops(Entity target) {
+    return createScaledGiant(target, "images/cyclops.atlas", 1.5f);
+  }
+
+  /** Creates a harpy with its standard appearance. */
+  public static Entity createHarpy(Entity target) {
+    return createFloatingEnemy(target, "images/harpy.atlas");
+  }
+
+  /** Creates a golem with its standard scale and collision bounds. */
+  public static Entity createGolem(Entity target) {
+    Entity golem = createBombEnemy(target, "images/golem.atlas", 2f);
+    golem.setScale(0.9f, 0.7f);
+    golem
+        .getComponent(HitboxComponent.class)
+        .setAsBox(
+            new Vector2(1f, 1f),
+            new Vector2(golem.getCenterPosition().x, golem.getCenterPosition().y / 2f));
+    PhysicsUtils.setScaledCollider(golem, 0.3f, 0.3f);
+    return golem;
   }
 
   /**
@@ -420,7 +543,6 @@ public class NPCFactory {
             .addComponent(new PhysicsComponent())
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
-            .addComponent(new KnockbackComponent(1.5f))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new StatusEffectsControllerComponent());
 
