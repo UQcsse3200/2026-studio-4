@@ -76,13 +76,13 @@ public class SplashScreen extends ScreenAdapter {
   private void loadAssets() {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.loadTextures(SplashDisplay.TEXTURES);
+    resourceService.loadTextures(SplashDisplay.getTextures());
     resourceService.loadAll();
   }
 
   private void unloadAssets() {
     logger.debug("Unloading assets");
-    ServiceLocator.getResourceService().unloadAssets(SplashDisplay.TEXTURES);
+    ServiceLocator.getResourceService().unloadAssets(SplashDisplay.getTextures());
   }
 
   private void createUI() {

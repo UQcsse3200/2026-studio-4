@@ -53,10 +53,6 @@ public class SplashDisplay extends UIComponent {
     "images/splash/o-512px.png"
   };
 
-  /** Every texture this display needs, for the screen to load and unload. */
-  public static final String[] TEXTURES = allTextures();
-
-  // --- Spacing, in pixels of the exported PNGs ---
   /** Space between letters within "STUDIO". */
   private static final float LETTER_GAP = 24f;
 
@@ -70,7 +66,7 @@ public class SplashDisplay extends UIComponent {
   /** The widest the full name may be, as a fraction of the screen width. */
   private static final float NAME_MAX_WIDTH_FRACTION = 0.85f;
 
-  // --- Timing, in seconds ---
+  // Timing, in seconds
   private static final float FADE_IN = 0.6f;
   private static final float MONOGRAM_HOLD = 0.6f;
   private static final float SPLIT_DURATION = 0.8f;
@@ -108,11 +104,11 @@ public class SplashDisplay extends UIComponent {
     }
 
     // Measure the full name in source pixels: S, the TUDIO letters, a word gap, then the 4.
-    float sourceHeight = Math.max(sTexture.getHeight(), fourTexture.getHeight());
+    float sourceHeight = (float) Math.max(sTexture.getHeight(), fourTexture.getHeight());
     float sourceWidth = sTexture.getWidth() + WORD_GAP + fourTexture.getWidth();
     for (Texture letter : tudioTextures) {
       sourceWidth += LETTER_GAP + letter.getWidth();
-      sourceHeight = Math.max(sourceHeight, letter.getHeight());
+      sourceHeight = Math.max(sourceHeight, (float) letter.getHeight());
     }
 
     // Scale to the target height, shrinking if needed so the full name fits across the screen.
@@ -144,7 +140,9 @@ public class SplashDisplay extends UIComponent {
     // Starting layout: the monogram, centred within the final word. The overlap is however much
     // narrower the combined image is than the S and 4 side by side.
     float overlap =
-        Math.max(0f, sTexture.getWidth() + fourTexture.getWidth() - combinedTexture.getWidth())
+        Math.max(
+                0f,
+                (float) sTexture.getWidth() + fourTexture.getWidth() - combinedTexture.getWidth())
             * scale;
     float monogramWidth = s.getWidth() + four.getWidth() - overlap;
     float monogramLeft = (wordWidth - monogramWidth) / 2f;
@@ -257,5 +255,9 @@ public class SplashDisplay extends UIComponent {
     textures[2] = FOUR_TEXTURE;
     System.arraycopy(TUDIO_TEXTURES, 0, textures, 3, TUDIO_TEXTURES.length);
     return textures;
+  }
+
+  public static String[] getTextures() {
+    return allTextures();
   }
 }
