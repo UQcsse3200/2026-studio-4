@@ -24,6 +24,7 @@ com.csse3200.game.components.settingsmenu
 com.csse3200.game.components.shop
 com.csse3200.game.components.spells
 com.csse3200.game.components.spells.targeting
+com.csse3200.game.components.splash
 com.csse3200.game.components.statuseffects
 com.csse3200.game.components.tasks
 com.csse3200.game.components.traps
