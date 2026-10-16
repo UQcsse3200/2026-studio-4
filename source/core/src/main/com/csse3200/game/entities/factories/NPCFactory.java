@@ -284,6 +284,13 @@ public class NPCFactory {
         projectile -> ServiceLocator.getEntityService().register(projectile));
   }
 
+  /**
+   * funciton to create the norse mini boss
+   *
+   * @param target - the player, used in tasks for chasing/ tracking
+   * @param spawn - the spawn position
+   * @return Sleipnir
+   */
   public static Entity createSleipnir(Entity target, Vector2 spawn) {
     Entity sleipnir = createBaseNPC();
     BaseEntityConfig config = configs.sleipnir;
