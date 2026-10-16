@@ -138,20 +138,16 @@ class EnemyManagerComponentTest {
     Entity validEnemy = new Entity();
 
     try (MockedStatic<NPCFactory> factory = Mockito.mockStatic(NPCFactory.class)) {
-      factory
-          .when(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"))
-          .thenReturn(rejectedEnemy);
-      factory
-          .when(() -> NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas"))
-          .thenReturn(validEnemy);
+      factory.when(() -> NPCFactory.createBug(target)).thenReturn(rejectedEnemy);
+      factory.when(() -> NPCFactory.createWolf(target)).thenReturn(validEnemy);
 
       enemyManager.spawnEnemies(target);
 
       assertEquals(1, entityService.getEntities().size);
       verify(entityService).register(validEnemy);
       verify(entityService, never()).register(rejectedEnemy);
-      factory.verify(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"), never());
-      factory.verify(() -> NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas"));
+      factory.verify(() -> NPCFactory.createBug(target), never());
+      factory.verify(() -> NPCFactory.createWolf(target));
       assertFalse(enemyManager.isCleared());
 
       validEnemy.getEvents().trigger("entityDied");
@@ -179,19 +175,15 @@ class EnemyManagerComponentTest {
     Entity validEnemy = new Entity();
 
     try (MockedStatic<NPCFactory> factory = Mockito.mockStatic(NPCFactory.class)) {
-      factory
-          .when(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"))
-          .thenReturn(blockedEnemy);
-      factory
-          .when(() -> NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas"))
-          .thenReturn(validEnemy);
+      factory.when(() -> NPCFactory.createBug(target)).thenReturn(blockedEnemy);
+      factory.when(() -> NPCFactory.createWolf(target)).thenReturn(validEnemy);
 
       enemyManager.spawnEnemies(target);
 
       assertEquals(1, entityService.getEntities().size);
       verify(entityService).register(validEnemy);
       verify(entityService, never()).register(blockedEnemy);
-      factory.verify(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"), never());
+      factory.verify(() -> NPCFactory.createBug(target), never());
     }
   }
 
