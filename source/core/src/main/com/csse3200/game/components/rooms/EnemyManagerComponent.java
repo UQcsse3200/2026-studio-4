@@ -1,7 +1,5 @@
 package com.csse3200.game.components.rooms;
 
-import static com.csse3200.game.entities.factories.NPCFactory.createBombEnemy;
-
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -25,8 +23,6 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
 import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemCatalog;
-import com.csse3200.game.physics.PhysicsUtils;
-import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.rooms.RoomClearService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -192,16 +188,15 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
       // Greek
       case MINOTAUR:
-        return createMinotaur(target);
-      case GOLEM:
-        return createGolem(target);
+        return NPCFactory.createMinotaur(target);
       case MEDUSA:
-        return createMedusa(target);
+        return NPCFactory.createMedusa(target);
       case HARPY:
-        return NPCFactory.createFloatingDemon(
-            target, spawnPoints, "images/harpy.atlas", this::spawnEntity);
+        return NPCFactory.createHarpy(target);
       case CYCLOPS:
-        return createScaledGiant(target, "images/cyclops.atlas", 1.5f);
+        return NPCFactory.createCyclops(target);
+      case GOLEM:
+        return NPCFactory.createGolem(target);
       case CERBERUS:
         return createCerberus(spawn, target);
 
@@ -383,45 +378,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             });
   }
 
-  /** Applies the existing visual scale for bomb-type enemies. */
-  private Entity createScaledBombEnemy(Entity target, String atlasPath, float width, float height) {
-    Entity enemy = createBombEnemy(target, atlasPath, 2f);
-    enemy.setScale(width, height);
-    return enemy;
-  }
-
-  /** Shared setup for Wukong, Jotunn and Cyclops. */
-  private Entity createScaledGiant(Entity target, String atlasPath, float size) {
-    Entity enemy = NPCFactory.createGiantEnemy(target, atlasPath);
-    enemy.setScale(size, size);
-    enemy
-        .getComponent(HitboxComponent.class)
-        .setAsBox(
-            new Vector2(1f, 1f),
-            new Vector2(enemy.getCenterPosition().x, enemy.getCenterPosition().y / 2f));
-    PhysicsUtils.setScaledCollider(enemy, 0.3f, 0.3f);
-    return enemy;
-  }
-
-  private Entity createCrab(Entity target) {
-    Entity crab = NPCFactory.createChaseEnemy(target, true, "images/crab.atlas");
-    crab.setScale(1.5f, 1f);
-    crab.getComponent(HitboxComponent.class)
-        .setAsBox(
-            new Vector2(1f, 0.5f),
-            new Vector2(crab.getCenterPosition().x, crab.getCenterPosition().y / 2f));
-    return crab;
-  }
-
-  private Entity createMummy(Entity target) {
-    Entity mummy = NPCFactory.createGiantEnemy(target, "images/mummy.atlas");
-    mummy
-        .getComponent(HitboxComponent.class)
-        .setAsBox(new Vector2(1f, 1.5f), mummy.getCenterPosition());
-    PhysicsUtils.setScaledCollider(mummy, 0.3f, 0.3f);
-    return mummy;
-  }
-
   /** Connects the snake's abilities to this room's bounds and camera. */
   private Entity createSnake(Entity target) {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
@@ -442,30 +398,6 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       snake.getComponent(SnakeShieldPickupComponent.class).setCamera(camera.getCamera());
     }
     return snake;
-  }
-
-  private Entity createMinotaur(Entity target) {
-    Entity minotaur = NPCFactory.createChaseEnemy(target, false, "images/minotaur.atlas");
-    minotaur.setScale(1.5f, 1.5f);
-    return minotaur;
-  }
-
-  private Entity createGolem(Entity target) {
-    Entity golem = createScaledBombEnemy(target, "images/golem.atlas", 0.9f, 0.7f);
-    golem
-        .getComponent(HitboxComponent.class)
-        .setAsBox(
-            new Vector2(1f, 1f),
-            new Vector2(golem.getCenterPosition().x, golem.getCenterPosition().y / 2f));
-    PhysicsUtils.setScaledCollider(golem, 0.3f, 0.3f);
-    return golem;
-  }
-
-  private Entity createMedusa(Entity target) {
-    Entity medusa = NPCFactory.createChaseEnemy(target, true, "images/medusa.atlas");
-    medusa.setScale(1f, 1f);
-    medusa.getComponent(HitboxComponent.class).setAsBox(new Vector2(1f, 1f));
-    return medusa;
   }
 
   /** Creates Cerberus with the current room's movement and wall anchors. */

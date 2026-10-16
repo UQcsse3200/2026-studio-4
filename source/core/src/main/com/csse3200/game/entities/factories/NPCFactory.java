@@ -472,6 +472,44 @@ public class NPCFactory {
     return createFloatingEnemy(target, "images/wasp.atlas");
   }
 
+  /** Creates a minotaur with its standard appearance and scale. */
+  public static Entity createMinotaur(Entity target) {
+    Entity minotaur = createChaseEnemy(target, false, "images/minotaur.atlas");
+    minotaur.setScale(1.5f, 1.5f);
+    return minotaur;
+  }
+
+  /** Creates Medusa with splitting behaviour and its standard hitbox. */
+  public static Entity createMedusa(Entity target) {
+    Entity medusa = createChaseEnemy(target, true, "images/medusa.atlas");
+    medusa.setScale(1f, 1f);
+    medusa.getComponent(HitboxComponent.class).setAsBox(new Vector2(1f, 1f));
+    return medusa;
+  }
+
+  /** Creates a cyclops with its standard scale and collision bounds. */
+  public static Entity createCyclops(Entity target) {
+    return createScaledGiant(target, "images/cyclops.atlas", 1.5f);
+  }
+
+  /** Creates a harpy with its standard appearance. */
+  public static Entity createHarpy(Entity target) {
+    return createFloatingEnemy(target, "images/harpy.atlas");
+  }
+
+  /** Creates a golem with its standard scale and collision bounds. */
+  public static Entity createGolem(Entity target) {
+    Entity golem = createBombEnemy(target, "images/golem.atlas", 2f);
+    golem.setScale(0.9f, 0.7f);
+    golem
+        .getComponent(HitboxComponent.class)
+        .setAsBox(
+            new Vector2(1f, 1f),
+            new Vector2(golem.getCenterPosition().x, golem.getCenterPosition().y / 2f));
+    PhysicsUtils.setScaledCollider(golem, 0.3f, 0.3f);
+    return golem;
+  }
+
   /**
    * Creates a generic NPC to be used as a base entity by more specific NPC creation methods.
    *
