@@ -256,7 +256,7 @@ class TouchAttackComponentTest {
     Fixture targetFixture = target.getComponent(HitboxComponent.class).getFixture();
 
     assertDoesNotThrow(
-      () -> entity.getEvents().trigger("collisionStart", entityFixture, targetFixture));
+        () -> entity.getEvents().trigger("collisionStart", entityFixture, targetFixture));
   }
 
   Entity createAttacker(short targetLayer) {
