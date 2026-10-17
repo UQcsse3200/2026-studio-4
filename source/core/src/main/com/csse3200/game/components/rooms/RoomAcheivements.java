@@ -5,6 +5,7 @@ import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.rooms.RoomClearService;
 import com.csse3200.game.rooms.RoomSelector;
+import com.csse3200.game.saving.RunSaveState;
 import com.csse3200.game.services.AchievementService;
 import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
@@ -31,6 +32,11 @@ public class RoomAcheivements extends Component {
   }
 
   private void onRoomSwitched(RoomConfig oldConfig, RoomConfig newConfig) {
+    if (newConfig == null) {
+      return;
+    }
+
+    RunSaveState.setCurrentRoomId(newConfig.id);
     String oldDungeonId = oldConfig == null ? null : oldConfig.dungeonId;
     String newDungeonId = newConfig.dungeonId;
 
