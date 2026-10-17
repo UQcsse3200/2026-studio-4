@@ -111,6 +111,10 @@ public class NPCFactory {
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("fuse", 0.1f, Animation.PlayMode.LOOP);
+    EnemyAnimationController animationController = new EnemyAnimationController();
+    if ("images/zombie.atlas".equals(skin)) {
+      animationController.setDeathRotation(30f, 90f);
+    }
 
     bombEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
@@ -118,7 +122,7 @@ public class NPCFactory {
         .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(animator)
         .addComponent(new ExplodeComponent(target, fuseTime))
-        .addComponent(new EnemyAnimationController())
+        .addComponent(animationController)
         .addComponent(new EnemyStatDisplay(1.5f));
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
 

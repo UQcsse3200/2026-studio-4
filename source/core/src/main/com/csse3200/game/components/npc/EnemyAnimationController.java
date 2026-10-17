@@ -17,6 +17,19 @@ public class EnemyAnimationController extends Component {
   private AnimationRenderComponent animator;
   private boolean dying = false;
   private boolean followPlayer = false; // used by enemies to follow player
+  private float deathRotationPerFrame;
+  private float maxDeathRotation;
+
+  public void setDeathRotation(float degreesPerFrame, float maxDegrees) {
+    if (!Float.isFinite(degreesPerFrame)
+        || degreesPerFrame < 0f
+        || !Float.isFinite(maxDegrees)
+        || maxDegrees < 0f) {
+      throw new IllegalArgumentException("Death rotation values must be finite and non-negative");
+    }
+    deathRotationPerFrame = degreesPerFrame;
+    maxDeathRotation = maxDegrees;
+  }
 
   @Override
   public void create() {
@@ -77,6 +90,13 @@ public class EnemyAnimationController extends Component {
   @Override
   public void update() {
     updateFacingDirection(followPlayer);
+
+    if (dying && deathRotationPerFrame > 0f) {
+      int frameIndex = animator.getCurrentFrameIndex();
+      if (frameIndex >= 0) {
+        animator.setRotation(Math.min(frameIndex * deathRotationPerFrame, maxDeathRotation));
+      }
+    }
 
     if (dying && animator.isFinished()) {
       dying = false;

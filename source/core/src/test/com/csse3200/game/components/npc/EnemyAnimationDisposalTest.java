@@ -88,6 +88,26 @@ class EnemyAnimationDisposalTest {
     verify(animator).setFlipX(false);
   }
 
+  @Test
+  void shouldRotateDeathFramesByThirtyDegreesUpToNinety() {
+    AnimationRenderComponent animator = mock(AnimationRenderComponent.class);
+    when(animator.getCurrentFrameIndex()).thenReturn(0, 1, 2, 3, 4);
+    EnemyAnimationController controller = new EnemyAnimationController();
+    controller.setDeathRotation(30f, 90f);
+    Entity enemy = new Entity().addComponent(animator).addComponent(controller);
+    enemy.create();
+
+    enemy.getEvents().trigger("dieAnimation");
+    for (int frame = 0; frame < 5; frame++) {
+      controller.update();
+    }
+
+    verify(animator).setRotation(0f);
+    verify(animator).setRotation(30f);
+    verify(animator).setRotation(60f);
+    verify(animator, times(2)).setRotation(90f);
+  }
+
   private static AnimationRenderComponent finishedAnimator() {
     AnimationRenderComponent animator = mock(AnimationRenderComponent.class);
     when(animator.isFinished()).thenReturn(true);
