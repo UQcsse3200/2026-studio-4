@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -21,16 +20,8 @@ import com.csse3200.game.ui.UIComponent;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Displays two groups of three circular slots at the bottom of the UI stage. The left three are for
- * player weapons and the right three are for player spells.
- */
+/** Displays three weapon slots along the bottom, beside the four consumable slots. */
 public class HotbarDisplay extends UIComponent {
-  // Dimensions are in UI stage units
-  private static final float EDGE_INSET = 48f;
-  private static final float SLOT_GAP = 6f;
-  private static final float SIDE_INSET = 340f;
-  private static final float SLOT_SIZE = 96f;
   private Table hotbarTable;
   private Texture hotbarTexture;
   private TextureRegionDrawable frameDrawable;
@@ -61,44 +52,22 @@ public class HotbarDisplay extends UIComponent {
     player.getEvents().addListener("weaponSelected", this::updateWeaponSelection);
   }
 
-  /** Builds the root table and its two slot groups. */
+  /** Builds the weapon group; consumables occupy the adjacent space in their own display. */
   private void buildHotbar() {
     hotbarTexture = new Texture(Gdx.files.internal("images/ui/ui_big_pieces.png"));
     hotbarTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     // The large circular frame in the sprite sheet's bottom-right minimap section.
     frameDrawable = new TextureRegionDrawable(new TextureRegion(hotbarTexture, 718, 288, 130, 130));
 
-    hotbarTable =
-        new Table() {
-          @Override
-          protected void sizeChanged() {
-            super.sizeChanged();
-            // Slot sizes depend on the viewport
-            for (Actor child : getChildren()) {
-              if (child instanceof Table group) {
-                group.invalidate();
-              }
-            }
-          }
-        };
-    hotbarTable.setName("inventory-hotbar");
-    hotbarTable.setFillParent(true);
-    // Keep the existing horizontal layout, anchored 48 pixels above the bottom edge.
-    hotbarTable.bottom().padBottom(EDGE_INSET).padLeft(SIDE_INSET);
-    hotbarTable.padRight(
+    hotbarTable = BottomHotbarLayout.root("inventory-hotbar");
+    hotbarTable.padLeft(
         new Value() {
           @Override
           public float get(Actor context) {
-            float groupsWidth = 2f * (3f * slotSize(context.getWidth()) + 2f * SLOT_GAP);
-            // Prefer matching 340-unit side margins. Narrow windows reduce the right margin
-            // to at least 96 units, reserving 24 units between the groups where space permits.
-            return Math.clamp(context.getWidth() - SIDE_INSET - groupsWidth - 24f, 96f, SIDE_INSET);
+            return BottomHotbarLayout.leftInset(BottomHotbarLayout.availableWidth(hotbarTable));
           }
         });
-    hotbarTable.setTouchable(Touchable.disabled);
     hotbarTable.add(createWeaponGroup());
-    hotbarTable.add().expandX();
-    hotbarTable.add(createSpellGroup());
     stage.addActor(hotbarTable);
   }
 
@@ -110,15 +79,12 @@ public class HotbarDisplay extends UIComponent {
    */
   private Table createHotbarGroup(List<Actor> slots) {
     Table group = new Table();
-    Value slotSize =
-        new Value() {
-          @Override
-          public float get(Actor context) {
-            return slotSize(stage.getWidth());
-          }
-        };
+    Value slotSize = BottomHotbarLayout.slotSize(hotbarTable);
     for (int i = 0; i < slots.size(); i++) {
-      group.add(slots.get(i)).size(slotSize).padRight(i < slots.size() - 1 ? SLOT_GAP : 0f);
+      group
+          .add(slots.get(i))
+          .size(slotSize)
+          .padRight(i < slots.size() - 1 ? BottomHotbarLayout.SLOT_GAP : 0f);
     }
     return group;
   }
@@ -127,12 +93,6 @@ public class HotbarDisplay extends UIComponent {
   private Table createWeaponGroup() {
     return createHotbarGroup(
         List.of(createWeaponSlot(0), createWeaponSlot(1), createWeaponSlot(2)));
-  }
-
-  /** Reserves three empty right-hand frames for spells when they are added */
-  private Table createSpellGroup() {
-    return createHotbarGroup(
-        List.of(createCircleFrame(), createCircleFrame(), createCircleFrame()));
   }
 
   /** Creates a separate frame actor using the shared sprite-sheet drawable. */
@@ -179,28 +139,6 @@ public class HotbarDisplay extends UIComponent {
     labelOverlay.bottom().add(keyLabel).padBottom(2f);
     slot.add(labelOverlay);
     return slot;
-  }
-
-  /**
-   * Calculates a common slot diameter, capped at 96 stage units.
-   *
-   * @param width available stage width
-   * @return slot diameter between 1 and 96 stage units
-   */
-  private float slotSize(float width) {
-    int groupCount = 2;
-    int slotsPerGroup = 3;
-    int totalSlots = groupCount * slotsPerGroup;
-    int internalGapCount = groupCount * (slotsPerGroup - 1);
-    float minimumRightMargin = 96f;
-    float minimumGroupGap = 24f;
-    float minimumSlotSize = 1f;
-    float reservedWidth =
-        SIDE_INSET + minimumRightMargin + minimumGroupGap + internalGapCount * SLOT_GAP;
-    float availableWidthPerSlot = (width - reservedWidth) / totalSlots;
-
-    // Keep a positive diameter on narrow windows and cap it at the intended full size.
-    return Math.clamp(availableWidthPerSlot, minimumSlotSize, SLOT_SIZE);
   }
 
   /**

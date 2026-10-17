@@ -7,6 +7,7 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.achievements.AchievementContext;
+import com.csse3200.game.components.boss.FinalBossExplosiveSummonComponent;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
 import com.csse3200.game.components.boss.FinalBossPhase;
 import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
@@ -40,6 +41,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   private static final Logger logger = LoggerFactory.getLogger(EnemyManagerComponent.class);
   private final EnemySpawnConfig[] spawnConfigs;
   private final Set<Entity> activeEnemies = new HashSet<>();
+  private final Set<Entity> lootOnlyEnemies = new HashSet<>();
   private final ItemFactory itemFactory;
   private boolean disposed;
   private CameraComponent camera;
@@ -211,6 +213,27 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   private void spawnAndTrackCerberusHead(Entity head, String enemyType) {
     track(head, enemyType);
     spawnEntity(head);
+  }
+
+  /** Summons receive death loot without becoming additional room-clear requirements. */
+  void spawnFinalBossEntity(Entity spawnedEntity) {
+    if (disposed) {
+      return;
+    }
+    if (spawnedEntity.getComponent(FinalBossExplosiveSummonComponent.class) != null
+        && lootOnlyEnemies.add(spawnedEntity)) {
+      spawnedEntity
+          .getEvents()
+          .addListener(
+              "entityDied",
+              () -> {
+                if (disposed || !lootOnlyEnemies.remove(spawnedEntity)) {
+                  return;
+                }
+                spawnEnemyDrops("FINAL_BOSS_SUMMON", spawnedEntity.getCenterPosition());
+              });
+    }
+    spawnEntity(spawnedEntity);
   }
 
   /** Tracks an enemy and any children it spawns. Package-private for testing. */
@@ -488,7 +511,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
 
   /** Connects Final Boss movement and arena behaviour to the room camera. */
   private Entity createFinalBoss(Entity target) {
-    Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnEntity);
+    Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnFinalBossEntity);
     if (camera != null) {
       boss.getComponent(FinalBossMovementComponent.class).setCamera(camera.getCamera());
       boss.getComponent(FinalBossStageTwoArenaComponent.class)
@@ -551,6 +574,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   public void dispose() {
     disposed = true;
     activeEnemies.clear();
+    lootOnlyEnemies.clear();
     super.dispose();
   }
 }
