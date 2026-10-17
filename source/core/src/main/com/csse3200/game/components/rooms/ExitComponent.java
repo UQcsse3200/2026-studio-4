@@ -78,7 +78,7 @@ public class ExitComponent extends EntityManagerComponent {
       entity.getEvents().trigger(GameAreaDisplay.DISPLAY, "Defeat all enemies to progress");
       return;
     } else if (Objects.equals(nearest.id, "dungeonFiveShelf")
-        && RoomClearService.getDungeonClearedCount() < 4) {
+        && ServiceLocator.getRoomClearService().getDungeonClearedCount() < 4) {
       // Access boss room before all other dungeons are cleared
       entity
           .getEvents()

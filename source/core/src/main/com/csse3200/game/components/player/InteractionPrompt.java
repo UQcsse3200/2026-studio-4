@@ -2,6 +2,8 @@ package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.rooms.RoomClearService;
+import com.csse3200.game.services.ServiceLocator;
+
 import java.util.Objects;
 
 /**
@@ -54,7 +56,7 @@ public final class InteractionPrompt {
       return CLEAR_REQUIRED;
     }
     if (Objects.equals(exit.id, "dungeonFiveShelf")
-        && (RoomClearService.getDungeonClearedCount() < 4)) {
+        && (ServiceLocator.getRoomClearService().getDungeonClearedCount() < 4)) {
       return CLEAR_ALL_DUNGEONS_REQUIRED;
     }
     if ("BOOKSHELF".equals(exit.kind)) {
