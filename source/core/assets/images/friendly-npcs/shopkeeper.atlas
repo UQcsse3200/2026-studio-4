@@ -8,5 +8,5 @@ default
     xy: 0, 0
     size: 512, 512
     orig: 512, 512
-    offset: 0
+    offset: 0, 0
     index: 0
