@@ -59,4 +59,15 @@ public class RoomClearService {
   public boolean isDungeonCleared(String dungeonId) {
     return clearedDungeonIds.contains(dungeonId);
   }
+
+  /**
+   * A debug functino to mark all dungeons as cleared to unlock final boss. Do not call outside
+   * debug terminal.
+   */
+  public void clearAllDungeons() {
+    clearedDungeonIds.add("dungeonOne");
+    clearedDungeonIds.add("dungeonTwo");
+    clearedDungeonIds.add("dungeonThree");
+    clearedDungeonIds.add("dungeonFour");
+  }
 }
