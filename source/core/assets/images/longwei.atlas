@@ -1,9 +1,16 @@
 longwei.png
-size: 64, 64
+size: 256, 128
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 default
+    rotate: false
+    xy: 0, 0
+    size: 64, 64
+    orig: 64, 64
+    offset: 0, 0
+    index: 0
+move
     rotate: false
     xy: 0, 0
     size: 64, 64
@@ -24,13 +31,13 @@ move
     orig: 64, 64
     offset: 0, 0
     index: 2
-move
+chase
     rotate: false
-    xy: 0, 3
+    xy: 0, 0
     size: 64, 64
     orig: 64, 64
     offset: 0, 0
-    index: 3
+    index: 0
 chase
     rotate: false
     xy: 0, 3
@@ -45,22 +52,24 @@ chase
     orig: 64, 64
     offset: 0, 0
     index: 2
-chase
-    rotate: false
-    xy: 0, 3
-    size: 64, 64
-    orig: 64, 64
-    offset: 0, 0
-    index: 3
-longwei_dead.png
-size: 64, 64
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-dieAnimation
+attack
     rotate: false
     xy: 0, 0
     size: 64, 64
     orig: 64, 64
     offset: 0, 0
+    index: 0
+attack
+    rotate: false
+    xy: 72, 0
+    size: 64, 64
+    orig: 64, 64
+    offset: 0, 0
     index: 1
+dieAnimation
+    rotate: false
+    xy: 138, 0
+    size: 64, 64
+    orig: 64, 64
+    offset: 0, 0
+    index: 0
