@@ -36,6 +36,7 @@ import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.rooms.RoomCommand;
 import com.csse3200.game.rooms.RoomSelector;
+import com.csse3200.game.saving.RunSaveState;
 import com.csse3200.game.services.*;
 import com.csse3200.game.ui.UiScale;
 import com.csse3200.game.ui.terminal.Terminal;
@@ -52,6 +53,7 @@ import com.csse3200.game.ui.terminal.commands.UpgradeCommand;
 import com.csse3200.game.ui.terminal.commands.WeaponCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.csse3200.game.saving.RunSaveState;
 
 /**
  * The game screen containing the main game.
@@ -193,9 +195,12 @@ public class MainGameScreen extends ScreenAdapter {
       runSaved = true;
       try {
         runTimer.stopDungeon();
-        GameSaveData save =
-            GameSaveMapper.capture(
-                player, roomManager.getCheckpointData(), roomManager.getResumePositionData());
+        GameSaveData save = GameSaveMapper.capture(player);
+        GameSaveData.ResumePosition resume = new GameSaveData.ResumePosition();
+        resume.roomId =   RunSaveState.getCurrentRoomId();
+        resume.x = player.getPosition().x;
+        resume.y = player.getPosition().y;
+        save.resumePosition = resume;
         save.playTimeSeconds = runTimer.getTotalTime();
         save.dungeonTimesSeconds.putAll(runTimer.getDungeonTimes());
         FileLoader.save(save, saveSlot);
