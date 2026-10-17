@@ -236,29 +236,35 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toggleDisplay()" class="member-name-link">toggleDisplay</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ConsumablePurchaseResult.html" title="enum class in com.csse3200.game.components.player">ConsumablePurchaseResult</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tryPurchaseConsumable(java.lang.String,int)" class="member-name-link">tryPurchaseConsumable</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CharmPurchaseResult.html" title="enum class in com.csse3200.game.components.player">CharmPurchaseResult</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tryPurchaseCharm(java.lang.String,int)" class="member-name-link">tryPurchaseCharm</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId,
  int&nbsp;goldPrice)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Buys one existing consumable.</div>
+<div class="block">Buys a fresh, unequipped charm, committing ownership and payment before notifying observers.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ConsumablePurchaseResult.html" title="enum class in com.csse3200.game.components.player">ConsumablePurchaseResult</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tryPurchaseConsumable(java.lang.String,int,int)" class="member-name-link">tryPurchaseConsumable</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tryPurchaseConsumable(java.lang.String,int)" class="member-name-link">tryPurchaseConsumable</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId,
+ int&nbsp;goldPrice)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Buys one existing consumable.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ConsumablePurchaseResult.html" title="enum class in com.csse3200.game.components.player">ConsumablePurchaseResult</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tryPurchaseConsumable(java.lang.String,int,int)" class="member-name-link">tryPurchaseConsumable</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId,
  int&nbsp;goldPrice,
  int&nbsp;quantity)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Commits a paid consumable reward and its quantity before publishing inventory events.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="WeaponUpgradePurchaseResult.html" title="enum class in com.csse3200.game.components.player">WeaponUpgradePurchaseResult</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tryPurchaseWeaponUpgrade(com.csse3200.game.components.weapons.WeaponUpgradeComponent,java.lang.Class,int)" class="member-name-link">tryPurchaseWeaponUpgrade</a><wbr>(<a href="../weapons/WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeComponent</a>&nbsp;upgrades,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="WeaponUpgradePurchaseResult.html" title="enum class in com.csse3200.game.components.player">WeaponUpgradePurchaseResult</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tryPurchaseWeaponUpgrade(com.csse3200.game.components.weapons.WeaponUpgradeComponent,java.lang.Class,int)" class="member-name-link">tryPurchaseWeaponUpgrade</a><wbr>(<a href="../weapons/WeaponUpgradeComponent.html" title="class in com.csse3200.game.components.weapons">WeaponUpgradeComponent</a>&nbsp;upgrades,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="../weapons/WeaponComponent.html" title="class in com.csse3200.game.components.weapons">WeaponComponent</a>&gt;&nbsp;weapon,
  int&nbsp;goldPrice)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Buys a weapon's existing upgrade once.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unequipConsumable(int)" class="member-name-link">unequipConsumable</a><wbr>(int&nbsp;index)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unequipConsumable(int)" class="member-name-link">unequipConsumable</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Removes a slot assignment while retaining the item quantity in the backpack.</div>
 </div>
 </div>
@@ -366,6 +372,14 @@ loadScripts(document, 'script');</script>
  int&nbsp;goldPrice,
  int&nbsp;quantity)</span></div>
 <div class="block">Commits a paid consumable reward and its quantity before publishing inventory events.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="tryPurchaseCharm(java.lang.String,int)">
+<h3>tryPurchaseCharm</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="CharmPurchaseResult.html" title="enum class in com.csse3200.game.components.player">CharmPurchaseResult</a></span>&nbsp;<span class="element-name">tryPurchaseCharm</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemId,
+ int&nbsp;goldPrice)</span></div>
+<div class="block">Buys a fresh, unequipped charm, committing ownership and payment before notifying observers.</div>
 </section>
 </li>
 <li>

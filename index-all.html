@@ -927,6 +927,16 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Null in legacy saves; otherwise one equipped flag per charm, including duplicates.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/CharmPurchaseEffect.html" class="type-name-link" title="class in com.csse3200.game.components.shop">CharmPurchaseEffect</a> - Class in <a href="com/csse3200/game/components/shop/package-summary.html">com.csse3200.game.components.shop</a></dt>
+<dd>
+<div class="block">Adds one independent charm through the inventory's gold transaction.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/CharmPurchaseEffect.html#%3Cinit%3E()" class="member-name-link">CharmPurchaseEffect()</a> - Constructor for class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/CharmPurchaseEffect.html" title="class in com.csse3200.game.components.shop">CharmPurchaseEffect</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/CharmPurchaseResult.html" class="type-name-link" title="enum class in com.csse3200.game.components.player">CharmPurchaseResult</a> - Enum Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
+<dd>
+<div class="block">Outcome of buying one charm; rejected purchases leave gold and ownership unchanged.</div>
+</dd>
 <dt><a href="com/csse3200/game/files/GameSaveData.PlayerData.html#charms" class="member-name-link">charms</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/GameSaveData.PlayerData.html" title="class in com.csse3200.game.files">GameSaveData.PlayerData</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/cutscene/DialogueRunner.html#CHARS_PER_SECOND" class="member-name-link">CHARS_PER_SECOND</a> - Static variable in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueRunner.html" title="class in com.csse3200.game.components.cutscene">DialogueRunner</a></dt>
@@ -1291,7 +1301,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/ConsumableHotbarDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">ConsumableHotbarDisplay</a> - Class in <a href="com/csse3200/game/components/maingame/package-summary.html">com.csse3200.game.components.maingame</a></dt>
 <dd>
-<div class="block">A compact consumable bar on the lower half of the right side of the game UI.</div>
+<div class="block">Four consumable slots along the bottom of the game UI, following the weapon slots.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/maingame/ConsumableHotbarDisplay.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">ConsumableHotbarDisplay(Entity)</a> - Constructor for class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/ConsumableHotbarDisplay.html" title="class in com.csse3200.game.components.maingame">ConsumableHotbarDisplay</a></dt>
 <dd>&nbsp;</dd>
@@ -4741,7 +4751,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/HotbarDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">HotbarDisplay</a> - Class in <a href="com/csse3200/game/components/maingame/package-summary.html">com.csse3200.game.components.maingame</a></dt>
 <dd>
-<div class="block">Displays two groups of three circular slots at the bottom of the UI stage.</div>
+<div class="block">Displays three weapon slots along the bottom, beside the four consumable slots.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/maingame/HotbarDisplay.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">HotbarDisplay(Entity)</a> - Constructor for class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/HotbarDisplay.html" title="class in com.csse3200.game.components.maingame">HotbarDisplay</a></dt>
 <dd>
@@ -4919,6 +4929,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/shop/GambleResult.Status.html#INSUFFICIENT_FUNDS" class="member-name-link">INSUFFICIENT_FUNDS</a> - Enum constant in enum class com.csse3200.game.shop.<a href="com/csse3200/game/shop/GambleResult.Status.html" title="enum class in com.csse3200.game.shop">GambleResult.Status</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/CharmPurchaseResult.html#INSUFFICIENT_GOLD" class="member-name-link">INSUFFICIENT_GOLD</a> - Enum constant in enum class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/CharmPurchaseResult.html" title="enum class in com.csse3200.game.components.player">CharmPurchaseResult</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/ConsumablePurchaseResult.html#INSUFFICIENT_GOLD" class="member-name-link">INSUFFICIENT_GOLD</a> - Enum constant in enum class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumablePurchaseResult.html" title="enum class in com.csse3200.game.components.player">ConsumablePurchaseResult</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/WeaponUpgradePurchaseResult.html#INSUFFICIENT_GOLD" class="member-name-link">INSUFFICIENT_GOLD</a> - Enum constant in enum class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/WeaponUpgradePurchaseResult.html" title="enum class in com.csse3200.game.components.player">WeaponUpgradePurchaseResult</a></dt>
@@ -4974,9 +4986,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossStageOneState.html#INTRO" class="member-name-link">INTRO</a> - Enum constant in enum class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossStageOneState.html" title="enum class in com.csse3200.game.components.boss">FinalBossStageOneState</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/CharmPurchaseResult.html#INVALID_ITEM" class="member-name-link">INVALID_ITEM</a> - Enum constant in enum class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/CharmPurchaseResult.html" title="enum class in com.csse3200.game.components.player">CharmPurchaseResult</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/ConsumablePurchaseResult.html#INVALID_ITEM" class="member-name-link">INVALID_ITEM</a> - Enum constant in enum class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumablePurchaseResult.html" title="enum class in com.csse3200.game.components.player">ConsumablePurchaseResult</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/ShopPurchaseResult.html#INVALID_OFFER" class="member-name-link">INVALID_OFFER</a> - Enum constant in enum class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShopPurchaseResult.html" title="enum class in com.csse3200.game.components.shop">ShopPurchaseResult</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/CharmPurchaseResult.html#INVALID_PRICE" class="member-name-link">INVALID_PRICE</a> - Enum constant in enum class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/CharmPurchaseResult.html" title="enum class in com.csse3200.game.components.player">CharmPurchaseResult</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/ConsumablePurchaseResult.html#INVALID_PRICE" class="member-name-link">INVALID_PRICE</a> - Enum constant in enum class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumablePurchaseResult.html" title="enum class in com.csse3200.game.components.player">ConsumablePurchaseResult</a></dt>
 <dd>&nbsp;</dd>
@@ -6638,6 +6654,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/consumables/MagnetPotion.html#PULL_SPEED" class="member-name-link">PULL_SPEED</a> - Static variable in class com.csse3200.game.items.consumables.<a href="com/csse3200/game/items/consumables/MagnetPotion.html" title="class in com.csse3200.game.items.consumables">MagnetPotion</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/CharmPurchaseEffect.html#purchase(com.csse3200.game.components.player.InventoryComponent,java.lang.String,int)" class="member-name-link">purchase(InventoryComponent, String, int)</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/CharmPurchaseEffect.html" title="class in com.csse3200.game.components.shop">CharmPurchaseEffect</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/ConsumablePurchaseEffect.html#purchase(com.csse3200.game.components.player.InventoryComponent,java.lang.String,int)" class="member-name-link">purchase(InventoryComponent, String, int)</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ConsumablePurchaseEffect.html" title="class in com.csse3200.game.components.shop">ConsumablePurchaseEffect</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/ShopPurchaseEffect.html#purchase(com.csse3200.game.components.player.InventoryComponent,java.lang.String,int)" class="member-name-link">purchase(InventoryComponent, String, int)</a> - Method in interface com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShopPurchaseEffect.html" title="interface in com.csse3200.game.components.shop">ShopPurchaseEffect</a></dt>
@@ -7854,7 +7872,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/shop/ShopProductKind.html" class="type-name-link" title="enum class in com.csse3200.game.components.shop">ShopProductKind</a> - Enum Class in <a href="com/csse3200/game/components/shop/package-summary.html">com.csse3200.game.components.shop</a></dt>
 <dd>
-<div class="block">Purchase categories; only consumables have a handler in the first shop.</div>
+<div class="block">Purchase categories dispatched to the merchant's registered handlers.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/shop/ShopPurchaseEffect.html" class="type-name-link" title="interface in com.csse3200.game.components.shop">ShopPurchaseEffect</a> - Interface in <a href="com/csse3200/game/components/shop/package-summary.html">com.csse3200.game.components.shop</a></dt>
 <dd>
@@ -8598,6 +8616,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the value of the <code>struck</code> record component.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/player/CharmPurchaseResult.html#SUCCESS" class="member-name-link">SUCCESS</a> - Enum constant in enum class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/CharmPurchaseResult.html" title="enum class in com.csse3200.game.components.player">CharmPurchaseResult</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/ConsumablePurchaseResult.html#SUCCESS" class="member-name-link">SUCCESS</a> - Enum constant in enum class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumablePurchaseResult.html" title="enum class in com.csse3200.game.components.player">ConsumablePurchaseResult</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/WeaponUpgradePurchaseResult.html#SUCCESS" class="member-name-link">SUCCESS</a> - Enum constant in enum class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/WeaponUpgradePurchaseResult.html" title="enum class in com.csse3200.game.components.player">WeaponUpgradePurchaseResult</a></dt>
@@ -9181,6 +9201,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/miniboss/snake/SnakeShieldComponent.html#tryBlock()" class="member-name-link">tryBlock()</a> - Method in class com.csse3200.game.components.miniboss.snake.<a href="com/csse3200/game/components/miniboss/snake/SnakeShieldComponent.html" title="class in com.csse3200.game.components.miniboss.snake">SnakeShieldComponent</a></dt>
 <dd>
 <div class="block">Consumes one point for a confirmed Snake attack, without damaging the player.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/player/InventoryComponent.html#tryPurchaseCharm(java.lang.String,int)" class="member-name-link">tryPurchaseCharm(String, int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
+<dd>
+<div class="block">Buys a fresh, unequipped charm, committing ownership and payment before notifying observers.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/player/InventoryComponent.html#tryPurchaseConsumable(java.lang.String,int)" class="member-name-link">tryPurchaseConsumable(String, int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></dt>
 <dd>
@@ -9797,6 +9821,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/player/CharmPurchaseResult.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/CharmPurchaseResult.html" title="enum class in com.csse3200.game.components.player">CharmPurchaseResult</a></dt>
+<dd>
+<div class="block">Returns the enum constant of this class with the specified name.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/player/ConsumablePurchaseResult.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumablePurchaseResult.html" title="enum class in com.csse3200.game.components.player">ConsumablePurchaseResult</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
@@ -9926,6 +9954,11 @@ the order they are declared.</div>
 the order they are declared.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/miniboss/snake/SnakeBurrowComponent.State.html#values()" class="member-name-link">values()</a> - Static method in enum class com.csse3200.game.components.miniboss.snake.<a href="com/csse3200/game/components/miniboss/snake/SnakeBurrowComponent.State.html" title="enum class in com.csse3200.game.components.miniboss.snake">SnakeBurrowComponent.State</a></dt>
+<dd>
+<div class="block">Returns an array containing the constants of this enum class, in
+the order they are declared.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/player/CharmPurchaseResult.html#values()" class="member-name-link">values()</a> - Static method in enum class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/CharmPurchaseResult.html" title="enum class in com.csse3200.game.components.player">CharmPurchaseResult</a></dt>
 <dd>
 <div class="block">Returns an array containing the constants of this enum class, in
 the order they are declared.</div>

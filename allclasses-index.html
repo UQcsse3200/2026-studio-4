@@ -200,6 +200,14 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A charm applies an effect on pickup and removes it when dropped.</div>
 </div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/components/shop/CharmPurchaseEffect.html" title="class in com.csse3200.game.components.shop">CharmPurchaseEffect</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Adds one independent charm through the inventory's gold transaction.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab3"><a href="com/csse3200/game/components/player/CharmPurchaseResult.html" title="enum class in com.csse3200.game.components.player">CharmPurchaseResult</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab3">
+<div class="block">Outcome of buying one charm; rejected purchases leave gold and ownership unchanged.</div>
+</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/entities/configs/ChaseEnemyConfig.html" title="class in com.csse3200.game.entities.configs">ChaseEnemyConfig</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Defines the properties stored in chase enemy config files to be loaded by the NPC Factory.</div>
@@ -259,7 +267,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/components/maingame/ConsumableHotbarDisplay.html" title="class in com.csse3200.game.components.maingame">ConsumableHotbarDisplay</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
-<div class="block">A compact consumable bar on the lower half of the right side of the game UI.</div>
+<div class="block">Four consumable slots along the bottom of the game UI, following the weapon slots.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/items/ConsumableItem.html" title="class in com.csse3200.game.items">ConsumableItem</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
@@ -799,7 +807,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/components/maingame/HotbarDisplay.html" title="class in com.csse3200.game.components.maingame">HotbarDisplay</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
-<div class="block">Displays two groups of three circular slots at the bottom of the UI stage.</div>
+<div class="block">Displays three weapon slots along the bottom, beside the four consumable slots.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/components/traps/IceTrapRenderComponent.html" title="class in com.csse3200.game.components.traps">IceTrapRenderComponent</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
@@ -1386,7 +1394,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab3"><a href="com/csse3200/game/components/shop/ShopProductKind.html" title="enum class in com.csse3200.game.components.shop">ShopProductKind</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab3">
-<div class="block">Purchase categories; only consumables have a handler in the first shop.</div>
+<div class="block">Purchase categories dispatched to the merchant's registered handlers.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="com/csse3200/game/components/shop/ShopPurchaseEffect.html" title="interface in com.csse3200.game.components.shop">ShopPurchaseEffect</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
