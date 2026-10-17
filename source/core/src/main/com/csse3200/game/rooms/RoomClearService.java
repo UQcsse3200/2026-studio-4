@@ -19,8 +19,6 @@ public class RoomClearService {
   public static final String ROOM_CLEARED = "RoomCleared";
   public static final String DUNGEON_CLEARED = "DungeonCleared";
 
-  public RoomClearService() {}
-
   /**
    * Provides listeners to room events to track the cleared rooms
    *

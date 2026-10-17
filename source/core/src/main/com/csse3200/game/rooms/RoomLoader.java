@@ -10,7 +10,6 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.services.ServiceLocator;
-
 import java.util.Objects;
 
 /** A facade for the WorldConfig, returns fully set up unintialised room entities */

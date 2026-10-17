@@ -1,9 +1,7 @@
 package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.rooms.configs.ExitConfig;
-import com.csse3200.game.rooms.RoomClearService;
 import com.csse3200.game.services.ServiceLocator;
-
 import java.util.Objects;
 
 /**

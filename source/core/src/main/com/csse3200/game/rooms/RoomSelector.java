@@ -60,9 +60,7 @@ public class RoomSelector {
   /** Switches the currently rendered room to the destination room declared in exit */
   public void switchRoom(ExitConfig exit) {
     boolean cleared = ServiceLocator.getRoomClearService().isRoomCleared(exit.destinationRoomId);
-    logger.debug(
-        "going to room: {}, isCleared: {}",
-        exit.destinationRoomId, cleared);
+    logger.debug("going to room: {}, isCleared: {}", exit.destinationRoomId, cleared);
 
     ServiceLocator.getEntityService().schedule(() -> setRoom(exit));
   }
