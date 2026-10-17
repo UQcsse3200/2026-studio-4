@@ -13,7 +13,6 @@ import com.csse3200.game.components.gamearea.TimerDisplay;
 import com.csse3200.game.components.maingame.*;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.rooms.RoomAssets;
-import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -53,7 +52,6 @@ import com.csse3200.game.ui.terminal.commands.UpgradeCommand;
 import com.csse3200.game.ui.terminal.commands.WeaponCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.csse3200.game.saving.RunSaveState;
 
 /**
  * The game screen containing the main game.
@@ -66,7 +64,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
-  private RoomManager roomManager = null; // Will be removed in the future
+  // Will be removed in the future
   private RoomSelector roomSelector;
   private Entity player;
   private final Terminal terminal;
@@ -129,6 +127,15 @@ public class MainGameScreen extends ScreenAdapter {
 
     roomSelector = new RoomSelector(player, renderer.getCamera());
     roomSelector.start();
+    if (loadedSave != null && loadedSave.resumePosition != null) {
+      roomSelector.startAt(
+        loadedSave.resumePosition.roomId,
+        loadedSave.resumePosition.x,
+        loadedSave.resumePosition.y);
+      } 
+      else {
+        roomSelector.start();
+      }
 
     // Unsure of how this interacts with current roomSelector implementation
     if (loadedSave != null) {
@@ -191,13 +198,13 @@ public class MainGameScreen extends ScreenAdapter {
     }
 
     // This should all just be one function call GameSave.save();
-    if (saveOnDispose && !runSaved && player != null && roomManager != null) {
+    if (saveOnDispose && !runSaved && player != null && roomSelector != null) {
       runSaved = true;
       try {
         runTimer.stopDungeon();
         GameSaveData save = GameSaveMapper.capture(player);
         GameSaveData.ResumePosition resume = new GameSaveData.ResumePosition();
-        resume.roomId =   RunSaveState.getCurrentRoomId();
+        resume.roomId = RunSaveState.getCurrentRoomId();
         resume.x = player.getPosition().x;
         resume.y = player.getPosition().y;
         save.resumePosition = resume;
