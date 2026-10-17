@@ -1,5 +1,6 @@
 package com.csse3200.game.files;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.player.InventoryComponent;
@@ -31,8 +32,12 @@ public final class GameSaveMapper {
 
     InventoryComponent inventory = required(player, InventoryComponent.class);
     GameSaveData.PlayerData data = save.playerData;
+    CombatStatsComponent stats = required(player, CombatStatsComponent.class);
+
+    data.health = stats.getHealth();
     data.gold = inventory.getGold();
     data.inventory.putAll(inventory.getConsumables());
+
     data.consumableSlots = new ArrayList<>();
     for (int i = 0; i < InventoryComponent.CONSUMABLE_SLOT_COUNT; i++) {
       data.consumableSlots.add(inventory.getConsumableSlot(i));
@@ -66,6 +71,10 @@ public final class GameSaveMapper {
   }
 
   public static void restore(Entity player, GameSaveData save) {
+    restore(player, save, false);
+  }
+
+  public static void restore(Entity player, GameSaveData save, boolean atCheckpoint) {
     validateSave(save);
 
     GameSaveData.PlayerData data = save.playerData;
@@ -77,7 +86,7 @@ public final class GameSaveMapper {
     restoreCharms(player, data.charms, data.charmEquipped);
     restoreSelectedWeapon(player, data.selectedWeapon);
     restoreUpgrades(player, data.upgradedWeapons);
-    restorePlayerHealth(player);
+    restorePlayerHealth(player, data.health, atCheckpoint);
   }
 
   private static void validateSave(GameSaveData save) {
@@ -198,10 +207,14 @@ public final class GameSaveMapper {
     }
   }
 
-  private static void restorePlayerHealth(Entity player) {
+  private static void restorePlayerHealth(Entity player, int savedHealth, boolean atCheckpoint) {
     CombatStatsComponent stats = required(player, CombatStatsComponent.class);
-    // Death restores the player alive at the checkpoint.
-    stats.setHealth(stats.getMaxHealth());
+
+    if (atCheckpoint) {
+      stats.setHealth(stats.getMaxHealth());
+    } else {
+      stats.setHealth(MathUtils.clamp(savedHealth, 0, stats.getMaxHealth()));
+    }
   }
 
   public static void restoreAchievements(GameSaveData save) {
