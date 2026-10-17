@@ -1,5 +1,6 @@
 package com.csse3200.game.components;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -254,8 +255,8 @@ class TouchAttackComponentTest {
     Fixture entityFixture = entity.getComponent(HitboxComponent.class).getFixture();
     Fixture targetFixture = target.getComponent(HitboxComponent.class).getFixture();
 
-    // This should not cause an exception, but the attack should be ignored
-    entity.getEvents().trigger("collisionStart", entityFixture, targetFixture);
+    assertDoesNotThrow(
+      () -> entity.getEvents().trigger("collisionStart", entityFixture, targetFixture));
   }
 
   Entity createAttacker(short targetLayer) {
