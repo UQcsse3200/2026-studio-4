@@ -21,16 +21,12 @@ import java.util.Set;
 public final class GameSaveMapper {
   private GameSaveMapper() {}
 
-  public static GameSaveData capture(Entity player, GameSaveData.Checkpoint checkpoint) {
-    return capture(player, checkpoint, null);
+  public static GameSaveData capture(Entity player) {
+    return capture(player, null);
   }
 
-  public static GameSaveData capture(
-      Entity player,
-      GameSaveData.Checkpoint checkpoint,
-      GameSaveData.ResumePosition resumePosition) {
+  public static GameSaveData capture(Entity player, GameSaveData.ResumePosition resumePosition) {
     GameSaveData save = new GameSaveData();
-    save.checkpoint = copyCheckpoint(checkpoint);
     save.resumePosition = copyResumePosition(resumePosition);
 
     InventoryComponent inventory = required(player, InventoryComponent.class);
@@ -234,16 +230,6 @@ public final class GameSaveMapper {
       case "speed" -> new SpeedCharm();
       default -> throw new IllegalArgumentException("Unknown saved charm: " + id);
     };
-  }
-
-  private static GameSaveData.Checkpoint copyCheckpoint(GameSaveData.Checkpoint source) {
-    if (source == null) throw new IllegalArgumentException("Checkpoint is required");
-    GameSaveData.Checkpoint copy = new GameSaveData.Checkpoint();
-    copy.roomId = source.roomId;
-    copy.entryPointId = source.entryPointId;
-    copy.tileX = source.tileX;
-    copy.tileY = source.tileY;
-    return copy;
   }
 
   private static GameSaveData.ResumePosition copyResumePosition(

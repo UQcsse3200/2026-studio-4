@@ -10,20 +10,12 @@ public class GameSaveData {
   public int version = 1;
   public float playTimeSeconds;
   public Map<String, Float> dungeonTimesSeconds = new LinkedHashMap<>();
-  public Checkpoint checkpoint = new Checkpoint();
   public ResumePosition resumePosition;
   public PlayerData playerData = new PlayerData();
 
   // Add these fields
   public List<String> unlockedAchievements = new ArrayList<>();
   public Map<String, Float> achievementProgress = new HashMap<>();
-
-  public static class Checkpoint {
-    public String roomId;
-    public String entryPointId;
-    public int tileX;
-    public int tileY;
-  }
 
   public static class ResumePosition {
     public String roomId;
