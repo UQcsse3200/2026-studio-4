@@ -226,9 +226,8 @@ public class LoadGameScreen extends ScreenAdapter {
     }
     String room;
     if (save.resumePosition == null || save.resumePosition.roomId == null) {
-       room = "Unknown";
-    } 
-    else {
+      room = "Unknown";
+    } else {
       room = displayRoom(save.resumePosition.roomId);
     }
     details.add(label(room, "font", TEXT, 1f)).left().row();
@@ -250,7 +249,6 @@ public class LoadGameScreen extends ScreenAdapter {
     details.add(label(stats, SMALL_FONT, MUTED, 0.95f)).left();
     return details;
   }
-
 
   private Texture loadPreview(int index) {
     int slot = index + 1;
