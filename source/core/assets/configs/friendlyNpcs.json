@@ -23,37 +23,6 @@
       "lockMovementDuringDialogue": true
     },
     {
-      "id": "wanderingSpirit",
-      "name": "Wandering Spirit",
-      "promptVerb": "Talk to",
-      "atlas": "images/ghost.atlas",
-      "animation": "float",
-      "width": 1.0,
-      "interactionRange": 1.5,
-      "dialogueId": "spirit_greeting",
-      "cutsceneId": "spirit_reveals_dungeons",
-      "cutsceneTiming": "AFTER_DIALOGUE",
-      "lockMovementDuringDialogue": true,
-      "lockMovementDuringCutscene": true,
-      "once": true,
-      "completedMessage": "The spirit has nothing more to say."
-    },
-    {
-      "id": "sealedGuardian",
-      "name": "Sealed Guardian",
-      "promptVerb": "Wake",
-      "atlas": "images/ghost.atlas",
-      "animation": "float",
-      "width": 1.2,
-      "interactionRange": 1.5,
-      "cutsceneId": "guardian_awakens",
-      "once": true,
-      "requiresRoomCleared": true,
-      "requiresCompleted": ["wanderingSpirit"],
-      "unavailableMessage": "The guardian will not stir. Perhaps the spirit knows why.",
-      "completedMessage": "The guardian watches over the dungeons."
-    },
-    {
       "id": "hecate",
       "name": "Hecate",
       "promptVerb": "Commune with",
