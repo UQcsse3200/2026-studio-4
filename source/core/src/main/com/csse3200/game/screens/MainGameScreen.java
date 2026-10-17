@@ -128,18 +128,10 @@ public class MainGameScreen extends ScreenAdapter {
     roomSelector = new RoomSelector(player, renderer.getCamera());
     RunSaveState.reset();
     roomSelector.start();
-    roomSelector.start();
     if (loadedSave != null) {
-      GameSaveMapper.restore(player, loadedSave);
+      GameSaveMapper.restore(player, loadedSave, loadAtCheckpoint);
       GameSaveMapper.restoreAchievements(loadedSave);
     }
-
-    // Unsure of how this interacts with current roomSelector implementation
-    if (loadedSave != null) {
-      GameSaveMapper.restore(player, loadedSave);
-      GameSaveMapper.restoreAchievements(loadedSave);
-    }
-
     createUI();
   }
 
