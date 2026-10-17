@@ -103,7 +103,6 @@ public class MainGameScreen extends ScreenAdapter {
 
     // load all game services
     logger.debug("Initialising main game screen services");
-    ServiceLocator.registerTimeSource(new GameTime());
     PhysicsService physicsService = new PhysicsService();
     ServiceLocator.registerPhysicsService(physicsService);
     physicsEngine = physicsService.getPhysics();
@@ -131,6 +130,8 @@ public class MainGameScreen extends ScreenAdapter {
     if (loadedSave != null) {
       GameSaveMapper.restore(player, loadedSave, loadAtCheckpoint);
       GameSaveMapper.restoreAchievements(loadedSave);
+    }else {
+      roomSelector.start();
     }
     createUI();
   }
