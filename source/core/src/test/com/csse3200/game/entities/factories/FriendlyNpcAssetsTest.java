@@ -80,8 +80,8 @@ class FriendlyNpcAssetsTest {
 
   @Test
   void hecateAtlasCarvesHerOwnFigureOutOfTheSharedRoguesSheet() {
-    FileHandle file = Gdx.files.internal("images/hecate.atlas");
-    assertTrue(file.exists(), "images/hecate.atlas is missing");
+    FileHandle file = Gdx.files.internal("images/friendly-npcs/hecate.atlas");
+    assertTrue(file.exists(), "images/friendly-npcs/hecate.atlas is missing");
 
     TextureAtlasData data = new TextureAtlasData(file, file.parent(), false);
     Region region = null;
