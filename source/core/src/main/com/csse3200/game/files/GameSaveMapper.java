@@ -90,7 +90,7 @@ public final class GameSaveMapper {
   }
 
   private static void validateSave(GameSaveData save) {
-    if (save == null || save.version != 1 || save.playerData == null) {
+    if (save == null || save.version != 2 || save.playerData == null) {
       throw new IllegalArgumentException("Invalid or unsupported save data");
     }
     GameSaveData.PlayerData data = save.playerData;
