@@ -126,16 +126,13 @@ public class MainGameScreen extends ScreenAdapter {
     player.getEvents().addListener("winScreenRequested", () -> winScreenRequested = true);
 
     roomSelector = new RoomSelector(player, renderer.getCamera());
+    RunSaveState.reset();
     roomSelector.start();
-    if (loadedSave != null && loadedSave.resumePosition != null) {
-      roomSelector.startAt(
-        loadedSave.resumePosition.roomId,
-        loadedSave.resumePosition.x,
-        loadedSave.resumePosition.y);
-      } 
-      else {
-        roomSelector.start();
-      }
+    roomSelector.start();
+    if (loadedSave != null) {
+      GameSaveMapper.restore(player, loadedSave);
+      GameSaveMapper.restoreAchievements(loadedSave);
+    }
 
     // Unsure of how this interacts with current roomSelector implementation
     if (loadedSave != null) {
@@ -208,9 +205,12 @@ public class MainGameScreen extends ScreenAdapter {
         resume.x = player.getPosition().x;
         resume.y = player.getPosition().y;
         save.resumePosition = resume;
+
         save.playTimeSeconds = runTimer.getTotalTime();
         save.dungeonTimesSeconds.putAll(runTimer.getDungeonTimes());
+
         FileLoader.save(save, saveSlot);
+        runSaved = true;
       } catch (RuntimeException exception) {
         logger.error("Failed to save game data for slot {}", saveSlot, exception);
       }
