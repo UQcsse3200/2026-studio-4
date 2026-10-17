@@ -180,6 +180,7 @@ public class TouchAttackComponent extends Component {
     if (repeatInterval > 0f && targetStats != null && targetStats.isDead()) {
       return;
     }
+    entity.getEvents().trigger("touchAttack");
     if (targetStats != null) {
       targetStats.hit(combatStats);
     }

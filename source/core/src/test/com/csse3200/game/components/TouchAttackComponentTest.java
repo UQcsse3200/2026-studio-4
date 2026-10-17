@@ -35,12 +35,16 @@ class TouchAttackComponentTest {
   void repeatsOnlyAfterIntervalAndStopsOnExit() {
     Entity attacker = repeatingAttacker();
     Entity target = durableTarget();
+    int[] attackEvents = {0};
+    attacker.getEvents().addListener("touchAttack", () -> attackEvents[0]++);
     contact(attacker, target, "collisionStart");
     assertEquals(90, health(target));
+    assertEquals(1, attackEvents[0]);
     tick(attacker, 0.5f);
     assertEquals(90, health(target));
     tick(attacker, 0.5f);
     assertEquals(80, health(target));
+    assertEquals(2, attackEvents[0]);
     contact(attacker, target, "collisionEnd");
     tick(attacker, 1f);
     assertEquals(80, health(target));

@@ -6,10 +6,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -60,6 +63,29 @@ class EnemyAnimationDisposalTest {
     controller.update();
 
     verify(entityService).scheduleDisposal(demon);
+  }
+
+  @Test
+  void shouldFaceHorizontalMovementDuringChase() {
+    AnimationRenderComponent animator = mock(AnimationRenderComponent.class);
+    PhysicsComponent physics = mock(PhysicsComponent.class);
+    Body body = mock(Body.class);
+    when(physics.getBody()).thenReturn(body);
+    when(body.getLinearVelocity()).thenReturn(new Vector2(-1f, 0f), new Vector2(1f, 0f));
+
+    Entity enemy =
+        new Entity()
+            .addComponent(animator)
+            .addComponent(physics)
+            .addComponent(new EnemyAnimationController());
+    enemy.create();
+
+    enemy.getEvents().trigger("chaseStart");
+    enemy.getComponent(EnemyAnimationController.class).update();
+    enemy.getComponent(EnemyAnimationController.class).update();
+
+    verify(animator).setFlipX(true);
+    verify(animator).setFlipX(false);
   }
 
   private static AnimationRenderComponent finishedAnimator() {
