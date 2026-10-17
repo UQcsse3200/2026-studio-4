@@ -92,7 +92,7 @@ public class LoadGameScreen extends ScreenAdapter {
       if (saveFiles[index]) {
         saves[index] = FileLoader.load(slot);
         if (saves[index] != null
-            && (saves[index].version != 1
+            && (saves[index].version != 2
                 || saves[index].playerData == null
                 || saves[index].resumePosition == null
                 || saves[index].resumePosition.roomId == null)) {
