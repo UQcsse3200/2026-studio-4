@@ -163,8 +163,14 @@ implements <a href="../../ai/movement/MovementController.html" title="interface 
 <div class="block">Set a target to move towards.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setTarget(com.badlogic.gdx.math.Vector2,boolean)" class="member-name-link">setTarget</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;target,
+ boolean&nbsp;limitToTarget)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets a movement target, optionally limiting each update's travel to the remaining distance.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called once per frame of the game, and should be used for most component logic.</div>
 </div>
 </div>
@@ -275,6 +281,22 @@ implements <a href="../../ai/movement/MovementController.html" title="interface 
 <dd><code><a href="../../ai/movement/MovementController.html#setTarget(com.badlogic.gdx.math.Vector2)">setTarget</a></code>&nbsp;in interface&nbsp;<code><a href="../../ai/movement/MovementController.html" title="interface in com.csse3200.game.ai.movement">MovementController</a></code></dd>
 <dt>Parameters:</dt>
 <dd><code>target</code> - target position</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setTarget(com.badlogic.gdx.math.Vector2,boolean)">
+<h3>setTarget</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setTarget</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;target,
+ boolean&nbsp;limitToTarget)</span></div>
+<div class="block">Sets a movement target, optionally limiting each update's travel to the remaining distance.
+ Navigation uses this to reach tight corners without overshooting on a long frame. Standard
+ movement and attacks retain their existing constant-speed behaviour through the one-argument
+ overload.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>target</code> - target position</dd>
+<dd><code>limitToTarget</code> - whether to slow down when the target is less than one update away</dd>
 </dl>
 </section>
 </li>

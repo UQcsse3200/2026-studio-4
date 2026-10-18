@@ -3300,6 +3300,14 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/rooms/FriendlyNpcManagerComponent.html#findNearestInRange(com.csse3200.game.entities.Entity)" class="member-name-link">findNearestInRange(Entity)</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/FriendlyNpcManagerComponent.html" title="class in com.csse3200.game.components.rooms">FriendlyNpcManagerComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ai/movement/ObstacleNavigation.html#findPath(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)" class="member-name-link">findPath(Entity, Vector2)</a> - Static method in class com.csse3200.game.ai.movement.<a href="com/csse3200/game/ai/movement/ObstacleNavigation.html" title="class in com.csse3200.game.ai.movement">ObstacleNavigation</a></dt>
+<dd>
+<div class="block">Finds a route around nearby obstacles.</div>
+</dd>
+<dt><a href="com/csse3200/game/ai/movement/ObstacleNavigation.html#findPath(com.csse3200.game.entities.Entity,com.csse3200.game.entities.Entity)" class="member-name-link">findPath(Entity, Entity)</a> - Static method in class com.csse3200.game.ai.movement.<a href="com/csse3200/game/ai/movement/ObstacleNavigation.html" title="class in com.csse3200.game.ai.movement">ObstacleNavigation</a></dt>
+<dd>
+<div class="block">Pursues a reachable approach position when the target stands too close to a wall or crowd.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/miniboss/snake/SnakeBurrowArena.html#findReachableCentre(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">findReachableCentre(Vector2, Vector2, Vector2)</a> - Method in class com.csse3200.game.components.miniboss.snake.<a href="com/csse3200/game/components/miniboss/snake/SnakeBurrowArena.html" title="class in com.csse3200.game.components.miniboss.snake">SnakeBurrowArena</a></dt>
 <dd>
 <div class="block">Finds a nearby emergence centre whose entire approach from <code>from</code> clears solid static
@@ -4088,6 +4096,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/EarthquakeAttackTask.html#getPriority()" class="member-name-link">getPriority()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/EarthquakeAttackTask.html" title="class in com.csse3200.game.components.tasks">EarthquakeAttackTask</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/GroundChaseTask.html#getPriority()" class="member-name-link">getPriority()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/GroundChaseTask.html" title="class in com.csse3200.game.components.tasks">GroundChaseTask</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/LungeAttackTask.html#getPriority()" class="member-name-link">getPriority()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/LungeAttackTask.html" title="class in com.csse3200.game.components.tasks">LungeAttackTask</a></dt>
 <dd>
 <div class="block">A pure query: the scheduler calls this repeatedly, so it never changes state.</div>
@@ -4564,6 +4574,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Contains additional utility constants and functions for common GridPoint2 operations.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/tasks/GroundChaseTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">GroundChaseTask</a> - Class in <a href="com/csse3200/game/components/tasks/package-summary.html">com.csse3200.game.components.tasks</a></dt>
+<dd>
+<div class="block">Ground pursuit for split enemies, retaining nearby targets while routing around obstacles.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/tasks/GroundChaseTask.html#%3Cinit%3E(com.csse3200.game.entities.Entity,int,float,float)" class="member-name-link">GroundChaseTask(Entity, int, float, float)</a> - Constructor for class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/GroundChaseTask.html" title="class in com.csse3200.game.components.tasks">GroundChaseTask</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainConfig.html#groundTexture" class="member-name-link">groundTexture</a> - Variable in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainConfig.html" title="class in com.csse3200.game.areas.terrain">TerrainConfig</a></dt>
 <dd>&nbsp;</dd>
 </dl>
@@ -5085,6 +5101,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/boss/FinalBossMovementComponent.html#isChargeWarningActive()" class="member-name-link">isChargeWarningActive()</a> - Method in class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossMovementComponent.html" title="class in com.csse3200.game.components.boss">FinalBossMovementComponent</a></dt>
 <dd>
 <div class="block">Returns whether the boss is currently warning about an imminent charge.</div>
+</dd>
+<dt><a href="com/csse3200/game/ai/movement/ObstacleNavigation.html#isClear(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)" class="member-name-link">isClear(Entity, Vector2)</a> - Static method in class com.csse3200.game.ai.movement.<a href="com/csse3200/game/ai/movement/ObstacleNavigation.html" title="class in com.csse3200.game.ai.movement">ObstacleNavigation</a></dt>
+<dd>
+<div class="block">Checks the entire collision box along a straight movement, ignoring walkable sensors.</div>
+</dd>
+<dt><a href="com/csse3200/game/ai/movement/ObstacleNavigation.html#isClear(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.csse3200.game.entities.Entity)" class="member-name-link">isClear(Entity, Vector2, Entity)</a> - Static method in class com.csse3200.game.ai.movement.<a href="com/csse3200/game/ai/movement/ObstacleNavigation.html" title="class in com.csse3200.game.ai.movement">ObstacleNavigation</a></dt>
+<dd>
+<div class="block">Includes solid bodies in pursuit checks, while allowing contact with the intended target.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/rooms/EnemyManagerComponent.html#isCleared()" class="member-name-link">isCleared()</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/EnemyManagerComponent.html" title="class in com.csse3200.game.components.rooms">EnemyManagerComponent</a></dt>
 <dd>
@@ -6113,6 +6137,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/factories/ObstacleFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">ObstacleFactory</a> - Class in <a href="com/csse3200/game/entities/factories/package-summary.html">com.csse3200.game.entities.factories</a></dt>
 <dd>
 <div class="block">Factory to create obstacle entities.</div>
+</dd>
+<dt><a href="com/csse3200/game/ai/movement/ObstacleNavigation.html" class="type-name-link" title="class in com.csse3200.game.ai.movement">ObstacleNavigation</a> - Class in <a href="com/csse3200/game/ai/movement/package-summary.html">com.csse3200.game.ai.movement</a></dt>
+<dd>
+<div class="block">Local ground navigation using solid obstacle fixtures and the mover's actual footprint.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/RoomConfig.html#obstacles" class="member-name-link">obstacles</a> - Variable in class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a></dt>
 <dd>&nbsp;</dd>
@@ -7670,6 +7698,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Set a target to move towards.</div>
 </dd>
+<dt><a href="com/csse3200/game/physics/components/PhysicsMovementComponent.html#setTarget(com.badlogic.gdx.math.Vector2,boolean)" class="member-name-link">setTarget(Vector2, boolean)</a> - Method in class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsMovementComponent.html" title="class in com.csse3200.game.physics.components">PhysicsMovementComponent</a></dt>
+<dd>
+<div class="block">Sets a movement target, optionally limiting each update's travel to the remaining distance.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/rooms/FollowingCameraComponent.html#setTarget(com.csse3200.game.entities.Entity)" class="member-name-link">setTarget(Entity)</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/FollowingCameraComponent.html" title="class in com.csse3200.game.components.rooms">FollowingCameraComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/spells/SpellComponent.html#setTargetingStrategy(com.csse3200.game.components.spells.targeting.EnemyTargetingStrategy)" class="member-name-link">setTargetingStrategy(EnemyTargetingStrategy)</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellComponent.html" title="class in com.csse3200.game.components.spells">SpellComponent</a></dt>
@@ -8316,6 +8348,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/CoilAttackTask.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/CoilAttackTask.html" title="class in com.csse3200.game.components.tasks">CoilAttackTask</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/GroundChaseTask.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/GroundChaseTask.html" title="class in com.csse3200.game.components.tasks">GroundChaseTask</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/LungeAttackTask.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/LungeAttackTask.html" title="class in com.csse3200.game.components.tasks">LungeAttackTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/MovementTask.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/MovementTask.html" title="class in com.csse3200.game.components.tasks">MovementTask</a></dt>
@@ -8524,6 +8558,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/tasks/ChaseTask.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/ChaseTask.html" title="class in com.csse3200.game.components.tasks">ChaseTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/CoilAttackTask.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/CoilAttackTask.html" title="class in com.csse3200.game.components.tasks">CoilAttackTask</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/GroundChaseTask.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/GroundChaseTask.html" title="class in com.csse3200.game.components.tasks">GroundChaseTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/LungeAttackTask.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/LungeAttackTask.html" title="class in com.csse3200.game.components.tasks">LungeAttackTask</a></dt>
 <dd>&nbsp;</dd>
@@ -9510,6 +9546,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/EarthquakeAttackTask.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/EarthquakeAttackTask.html" title="class in com.csse3200.game.components.tasks">EarthquakeAttackTask</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/GroundChaseTask.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/GroundChaseTask.html" title="class in com.csse3200.game.components.tasks">GroundChaseTask</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/LungeAttackTask.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/LungeAttackTask.html" title="class in com.csse3200.game.components.tasks">LungeAttackTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/MovementTask.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/MovementTask.html" title="class in com.csse3200.game.components.tasks">MovementTask</a></dt>
@@ -10377,6 +10415,10 @@ the order they are declared.</div>
 <dt><a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html#y()" class="member-name-link">y()</a> - Method in record class com.csse3200.game.components.miniboss.dragon.<a href="com/csse3200/game/components/miniboss/dragon/DragonStormZoneComponent.ZoneView.html" title="class in com.csse3200.game.components.miniboss.dragon">DragonStormZoneComponent.ZoneView</a></dt>
 <dd>
 <div class="block">Returns the value of the <code>y</code> record component.</div>
+</dd>
+<dt><a href="com/csse3200/game/ai/movement/ObstacleNavigation.html#yieldPosition(com.csse3200.game.entities.Entity,com.csse3200.game.entities.Entity)" class="member-name-link">yieldPosition(Entity, Entity)</a> - Static method in class com.csse3200.game.ai.movement.<a href="com/csse3200/game/ai/movement/ObstacleNavigation.html" title="class in com.csse3200.game.ai.movement">ObstacleNavigation</a></dt>
+<dd>
+<div class="block">Finds a short, collision-free retreat when a lower-id neighbour has right of way.</div>
 </dd>
 </dl>
 <h2 class="title" id="I:Z">Z</h2>
