@@ -53,8 +53,8 @@ public class NPCFactory {
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
 
   private static final float CHASE_SPEED = 2.5f;
-  private static final float MEDUSA_CONTACT_INTERVAL = 1.25f;
-  private static final float MEDUSA_LUNGE_COOLDOWN = 2.5f;
+  private static final float MEDUSA_CONTACT_INTERVAL = 1.5f;
+  private static final float MEDUSA_LUNGE_COOLDOWN = 3f;
   private static final String DEFAULT_ANIMATION = "default";
   private static final String DIE_ANIMATION = "dieAnimation";
   private static final String MOVE = "move";
