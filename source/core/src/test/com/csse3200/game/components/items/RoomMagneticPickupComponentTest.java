@@ -32,7 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-/** Exercises the two-second snapshot with real drops, input, inventory and physics bodies. */
+/** Exercises the one-second snapshot with real drops, input, inventory and physics bodies. */
 @ExtendWith(GameExtension.class)
 class RoomMagneticPickupComponentTest {
   private final AtomicLong now = new AtomicLong();
@@ -86,16 +86,16 @@ class RoomMagneticPickupComponentTest {
   }
 
   @Test
-  void capturesAtTwoSecondsAndFinishesAfterReleaseWithoutTakingLaterDrops() {
+  void capturesAtOneSecondAndFinishesAfterReleaseWithoutTakingLaterDrops() {
     Entity early = drop(ItemIds.GOLD_COIN, 3, 12f);
     Vector2 initialPosition = early.getPosition();
     input.keyDown(Keys.E);
-    now.set(1999);
+    now.set(999);
     entities.update();
     assertEquals(initialPosition, early.getPosition());
     Entity justBeforeThreshold = drop(ItemIds.HEALTH_POTION, 2, 15f);
 
-    now.set(2000);
+    now.set(1000);
     entities.update();
     input.keyUp(Keys.E);
     Entity later = drop(ItemIds.GOLD_COIN, 7, 9f);
@@ -159,7 +159,7 @@ class RoomMagneticPickupComponentTest {
     completeHold(true);
     Vector2 oldPosition = oldDrop.getPosition();
     input.keyDown(Keys.E);
-    now.addAndGet(1500);
+    now.addAndGet(500);
     player.getEvents().trigger(RoomMagneticPickupComponent.RESET_EVENT);
     oldDrop.dispose();
     Entity newRoomDrop = drop(ItemIds.GOLD_COIN, 9, 10f);
@@ -212,7 +212,7 @@ class RoomMagneticPickupComponentTest {
   void openingTerminalCancelsUnfinishedHoldButNotAnActiveBatch() {
     Entity gold = drop(ItemIds.GOLD_COIN, 2, 12f);
     input.keyDown(Keys.E);
-    now.set(1500);
+    now.set(500);
     Terminal terminal = new Terminal();
     terminal.setOpen();
     now.set(5000);
@@ -239,7 +239,7 @@ class RoomMagneticPickupComponentTest {
 
   private void completeHold(boolean release) {
     input.keyDown(Keys.E);
-    now.addAndGet(2000);
+    now.addAndGet(1000);
     input.update();
     if (release) {
       input.keyUp(Keys.E);

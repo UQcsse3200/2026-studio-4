@@ -16,10 +16,10 @@ import com.csse3200.game.utils.math.Vector2Utils;
  * keyboard input.
  */
 public class KeyboardPlayerInputComponent extends InputComponent {
-  /** Fired once when E has been held for two seconds. */
+  /** Fired once when E has been held for one second. */
   public static final String ROOM_MAGNETIC_PICKUP = "roomMagneticPickup";
 
-  private static final long MAGNETIC_PICKUP_HOLD_MILLIS = 2000L;
+  private static final long MAGNETIC_PICKUP_HOLD_MILLIS = 1000L;
   private static final String EQUIP_WEAPON_EVENT = "equipWeapon";
   private final Vector2 walkDirection = Vector2.Zero.cpy();
   private boolean ignoreStaleKeyUps;

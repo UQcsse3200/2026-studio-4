@@ -142,7 +142,7 @@ class KeyboardPlayerInputComponentTest {
     assertEquals(0, roomInteractions);
     assertEquals(0, itemPickups);
 
-    when(time.getTime()).thenReturn(1999L);
+    when(time.getTime()).thenReturn(999L);
     assertTrue(input.keyUp(Keys.E));
 
     assertEquals(1, roomInteractions);
@@ -159,7 +159,7 @@ class KeyboardPlayerInputComponentTest {
     config.dialogueId = "hello";
     interactor.beginInteraction(new Entity(), config);
     assertTrue(input.keyDown(Keys.E));
-    when(time.getTime()).thenReturn(2000L);
+    when(time.getTime()).thenReturn(1000L);
     input.update();
     assertTrue(input.keyUp(Keys.E));
 
@@ -187,14 +187,14 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void holdingETriggersOnlyAtTwoSecondsWithoutNormalInteractions() {
+  void holdingETriggersOnlyAtOneSecondWithoutNormalInteractions() {
     when(time.getTime()).thenReturn(500L);
     input.keyDown(Keys.E);
-    when(time.getTime()).thenReturn(2499L);
+    when(time.getTime()).thenReturn(1499L);
     input.update();
     assertEquals(0, magneticPickups);
 
-    when(time.getTime()).thenReturn(2500L);
+    when(time.getTime()).thenReturn(1500L);
     input.update();
     assertEquals(1, magneticPickups);
     assertEquals(0, roomInteractions);
@@ -211,9 +211,9 @@ class KeyboardPlayerInputComponentTest {
   @Test
   void eKeyRepeatsDoNotRestartTheTimerOrTriggerAnotherBatch() {
     input.keyDown(Keys.E);
-    when(time.getTime()).thenReturn(1000L);
+    when(time.getTime()).thenReturn(500L);
     input.keyDown(Keys.E);
-    when(time.getTime()).thenReturn(2000L);
+    when(time.getTime()).thenReturn(1000L);
     input.update();
     assertEquals(1, magneticPickups);
 
@@ -227,9 +227,9 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void releaseAtTwoSecondsTriggersTheBatchBeforeTheNextUpdate() {
+  void releaseAtOneSecondTriggersTheBatchBeforeTheNextUpdate() {
     input.keyDown(Keys.E);
-    when(time.getTime()).thenReturn(2000L);
+    when(time.getTime()).thenReturn(1000L);
 
     input.keyUp(Keys.E);
     input.update();
@@ -240,18 +240,18 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void aNewPressMustCompleteItsOwnTwoSecondHold() {
+  void aNewPressMustCompleteItsOwnOneSecondHold() {
     input.keyDown(Keys.E);
-    when(time.getTime()).thenReturn(2000L);
+    when(time.getTime()).thenReturn(1000L);
     input.update();
     input.keyUp(Keys.E);
 
-    when(time.getTime()).thenReturn(2500L);
+    when(time.getTime()).thenReturn(2000L);
     input.keyDown(Keys.E);
-    when(time.getTime()).thenReturn(4499L);
+    when(time.getTime()).thenReturn(2999L);
     input.update();
     assertEquals(1, magneticPickups);
-    when(time.getTime()).thenReturn(4500L);
+    when(time.getTime()).thenReturn(3000L);
     input.update();
     assertEquals(2, magneticPickups);
   }
@@ -268,7 +268,7 @@ class KeyboardPlayerInputComponentTest {
   void movementResetCancelsPendingHoldAndIgnoresTheStaleRelease() {
     input.keyDown(Keys.W);
     input.keyDown(Keys.E);
-    when(time.getTime()).thenReturn(1000L);
+    when(time.getTime()).thenReturn(500L);
     player.getEvents().trigger("resetMovementInput");
     input.keyDown(Keys.E); // A repeat from the cancelled press must not start a new hold.
     when(time.getTime()).thenReturn(5000L);
@@ -291,7 +291,7 @@ class KeyboardPlayerInputComponentTest {
   void roomChangeCancelsPendingHold() {
     input.keyDown(Keys.E);
     player.getEvents().trigger("roomPickupReset");
-    when(time.getTime()).thenReturn(2000L);
+    when(time.getTime()).thenReturn(1000L);
     input.update();
     input.keyUp(Keys.E);
 
@@ -306,7 +306,7 @@ class KeyboardPlayerInputComponentTest {
       when(time.getTime()).thenReturn(0L);
       input.keyDown(Keys.E);
       player.getEvents().trigger(event, "test-scene");
-      when(time.getTime()).thenReturn(2000L);
+      when(time.getTime()).thenReturn(1000L);
       input.update();
       input.keyUp(Keys.E);
     }
@@ -322,7 +322,7 @@ class KeyboardPlayerInputComponentTest {
     ServiceLocator.registerEntityService(entities);
     input.keyDown(Keys.E);
     when(entities.isFrozen()).thenReturn(true);
-    when(time.getTime()).thenReturn(2000L);
+    when(time.getTime()).thenReturn(1000L);
     input.keyUp(Keys.E);
 
     input.keyDown(Keys.E);
@@ -338,7 +338,7 @@ class KeyboardPlayerInputComponentTest {
     player.addComponent(inventory);
     input.keyDown(Keys.E);
     input.keyDown(Keys.I);
-    when(time.getTime()).thenReturn(2000L);
+    when(time.getTime()).thenReturn(1000L);
     input.update();
     input.keyUp(Keys.E);
 
