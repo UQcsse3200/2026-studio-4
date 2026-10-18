@@ -156,7 +156,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case LONGWEI:
         return NPCFactory.createLongwei(target);
       case DRAGON:
-        return DragonFactory.createDragon(target, this::spawnEntity);
+        return DragonFactory.createDragon(target);
 
       // Norse
       case WOLF:

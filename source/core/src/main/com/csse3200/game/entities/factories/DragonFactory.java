@@ -78,29 +78,55 @@ public final class DragonFactory {
   }
 
   /**
-   * Creates a dragon with its thunder orb skill.
+   * Creates a combat-ready dragon.
+   * The owning room must listen for NPCFactory.PROJECTILE_SPAWNED
+   * before registering the dragon.
    *
    * @param target player targeted by the dragon
-   * @param projectileSpawner callback that registers projectiles with the room
-   * @return an unregistered dragon with its thunder orb component attached
+   * @return an unregistered dragon
+   */
+  public static Entity createDragon(Entity target) {
+    if (target == null) {
+      throw new IllegalArgumentException("Target is required");
+    }
+
+    Entity dragon = createDragon();
+
+    dragon
+            .addComponent(
+                    new DragonThunderOrbComponent(
+                            target,
+                            projectile ->
+                                    dragon.getEvents().trigger(NPCFactory.PROJECTILE_SPAWNED, projectile)))
+            .addComponent(new DragonCloudDashComponent(target))
+            .addComponent(new DragonCloudDashMovementComponent())
+            .addComponent(new DragonCloudDashDamageComponent(target))
+            .addComponent(new DragonCloudDashVisualComponent())
+            .addComponent(new DragonStormZoneComponent(target))
+            .addComponent(new DragonStormZoneVisualComponent())
+            .addComponent(new DragonAttackCoordinatorComponent(target))
+            .addComponent(new DragonAnimationController())
+            .addComponent(new DragonEnrageVisualComponent());
+
+    return dragon;
+  }
+
+  /**
+   * Creates a dragon and connects its projectile events to the supplied spawner.
+   * Retained for existing callers.
    */
   public static Entity createDragon(Entity target, Consumer<Entity> projectileSpawner) {
     if (target == null || projectileSpawner == null) {
       throw new IllegalArgumentException("Target and projectile spawner are required");
     }
 
-    Entity dragon = createDragon();
+    Entity dragon = createDragon(target);
     dragon
-        .addComponent(new DragonThunderOrbComponent(target, projectileSpawner))
-        .addComponent(new DragonCloudDashComponent(target))
-        .addComponent(new DragonCloudDashMovementComponent())
-        .addComponent(new DragonCloudDashDamageComponent(target))
-        .addComponent(new DragonCloudDashVisualComponent())
-        .addComponent(new DragonStormZoneComponent(target))
-        .addComponent(new DragonStormZoneVisualComponent())
-        .addComponent(new DragonAttackCoordinatorComponent(target))
-        .addComponent(new DragonAnimationController())
-        .addComponent(new DragonEnrageVisualComponent());
+            .getEvents()
+            .<Entity>addListener(
+                    NPCFactory.PROJECTILE_SPAWNED,
+                    projectile -> projectileSpawner.accept(projectile));
+
     return dragon;
   }
 }
