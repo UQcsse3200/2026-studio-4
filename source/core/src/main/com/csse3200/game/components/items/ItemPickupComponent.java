@@ -4,10 +4,10 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.player.InteractionPrompt;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.items.Item;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.services.ServiceLocator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -52,7 +52,8 @@ public class ItemPickupComponent extends Component {
     }
 
     Entity itemEntity = ((BodyUserData) other.getBody().getUserData()).entity;
-    if (itemEntity.getComponent(ItemComponent.class) != null) {
+    ItemComponent itemComponent = itemEntity.getComponent(ItemComponent.class);
+    if (itemComponent != null && !itemComponent.isCollected()) {
       nearbyItems.add(itemEntity);
     }
   }
@@ -67,23 +68,17 @@ public class ItemPickupComponent extends Component {
 
   /** Picks up the first item currently in range, if any. */
   private void onItemPickup() {
+    removeUnavailableItems();
     if (nearbyItems.isEmpty()) {
       return;
     }
 
     Entity itemEntity = nearbyItems.iterator().next();
     ItemComponent itemComponent = itemEntity.getComponent(ItemComponent.class);
-    if (itemComponent == null) {
-      // Item entity was disposed of by something else between overlap and interact.
-      nearbyItems.remove(itemEntity);
-      return;
-    }
-
-    Item item = itemComponent.getItem();
-    item.pickUp(entity);
-
     nearbyItems.remove(itemEntity);
-    itemEntity.dispose();
+    if (itemComponent.tryPickUp(entity)) {
+      ServiceLocator.getEntityService().scheduleDisposal(itemEntity);
+    }
   }
 
   /**
@@ -92,14 +87,20 @@ public class ItemPickupComponent extends Component {
    * @return prompt text, or null if nothing is nearby
    */
   public String getPickupPrompt() {
+    removeUnavailableItems();
     if (nearbyItems.isEmpty()) {
       return null;
     }
     Entity itemEntity = nearbyItems.iterator().next();
     ItemComponent itemComponent = itemEntity.getComponent(ItemComponent.class);
-    if (itemComponent == null || itemComponent.getItem() == null) {
-      return null;
-    }
     return InteractionPrompt.forItem(itemComponent.getItem().getName());
+  }
+
+  private void removeUnavailableItems() {
+    nearbyItems.removeIf(
+        itemEntity -> {
+          ItemComponent itemComponent = itemEntity.getComponent(ItemComponent.class);
+          return itemComponent == null || itemComponent.isCollected();
+        });
   }
 }
