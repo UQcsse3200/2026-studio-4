@@ -10,7 +10,6 @@ import com.csse3200.game.physics.components.PhysicsMovementComponent;
  * point and the required height and width
  */
 public class PatrolTask extends DefaultTask implements PriorityTask {
-  private float POINT_DIST = 0.2f;
   private Vector2[] patrolPoints;
   private PhysicsMovementComponent movementComponent;
   private int currentPoint;
@@ -98,7 +97,8 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
   public void update() {
     Vector2 position = owner.getEntity().getPosition();
     int temp = currentPoint;
-    if (position.dst(patrolPoints[currentPoint]) <= POINT_DIST) {
+    float point_dist = 0.2f;
+    if (position.dst(patrolPoints[currentPoint]) <= point_dist) {
       currentPoint = (currentPoint + 1) % patrolPoints.length;
       updateDirection(patrolPoints[temp], patrolPoints[currentPoint]);
       setTarget();

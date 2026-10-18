@@ -22,7 +22,6 @@ class PatrolTaskTest {
   private PhysicsMovementComponent movementComponent;
   private EventHandler events;
   private final Vector2 spawnPoints = new Vector2(10, 10);
-  private int EXTRA = 10;
 
   @BeforeEach
   void setUp() {
@@ -69,9 +68,10 @@ class PatrolTaskTest {
   @Test
   void shouldPatrolFourPointsAndKeepProgress() {
     Vector2 bottomLeft = new Vector2(spawnPoints);
-    Vector2 bottomRight = new Vector2(spawnPoints.x + EXTRA, spawnPoints.y);
-    Vector2 topLeft = new Vector2(spawnPoints.x, spawnPoints.y + EXTRA);
-    Vector2 topRight = new Vector2(spawnPoints.x + EXTRA, spawnPoints.y + EXTRA);
+    int extra = 10;
+    Vector2 bottomRight = new Vector2(spawnPoints.x + extra, spawnPoints.y);
+    Vector2 topLeft = new Vector2(spawnPoints.x, spawnPoints.y + extra);
+    Vector2 topRight = new Vector2(spawnPoints.x + extra, spawnPoints.y + extra);
     PatrolTask patrolTask = new PatrolTask(spawnPoints, false);
     AITaskComponent aiTaskComponent = new AITaskComponent().addTask(patrolTask);
     PhysicsMovementComponent movement = new PhysicsMovementComponent();
@@ -161,7 +161,6 @@ class PatrolTaskTest {
 
   @Test
   void updateShouldMoveToNextPointWithinDistanceThreshold() {
-    Vector2 firstPoint = new Vector2(1, 1);
     Vector2 secondPoint = new Vector2(5, 1);
 
     PatrolTask task = new PatrolTask(spawnPoints, true);
