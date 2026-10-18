@@ -12,12 +12,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class FlyingEnemyPatrolComponentTest {
+  private Vector2 spawn = new Vector2(10f, 20f);
 
   @Test
   void shouldUsePositionAssignedBeforeComponentCreation() {
+
     AITaskComponent ai = new AITaskComponent();
     PhysicsMovementComponent movement = new PhysicsMovementComponent();
-    FlyingEnemyPatrolComponent patrol = new FlyingEnemyPatrolComponent();
+    FlyingEnemyPatrolComponent patrol = new FlyingEnemyPatrolComponent(spawn);
 
     Entity enemy = new Entity().addComponent(ai).addComponent(movement).addComponent(patrol);
 
@@ -37,7 +39,7 @@ class FlyingEnemyPatrolComponentTest {
   void shouldKeepSpawnOriginWhenMovedBeforePatrolStarts() {
     AITaskComponent ai = new AITaskComponent();
     PhysicsMovementComponent movement = new PhysicsMovementComponent();
-    FlyingEnemyPatrolComponent patrol = new FlyingEnemyPatrolComponent();
+    FlyingEnemyPatrolComponent patrol = new FlyingEnemyPatrolComponent(spawn);
 
     Entity enemy = new Entity().addComponent(ai).addComponent(movement).addComponent(patrol);
 

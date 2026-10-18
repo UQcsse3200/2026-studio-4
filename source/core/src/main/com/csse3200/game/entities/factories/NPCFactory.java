@@ -226,7 +226,6 @@ public class NPCFactory {
 
     AITaskComponent aiComponent =
         new AITaskComponent()
-            .addTask(new PatrolTask(spawn, true))
             .addTask(
                 new RangedAttackTask(
                     target,
@@ -234,7 +233,7 @@ public class NPCFactory {
                     configs.floatingDemon.baseAttack,
                     projectile -> enemy.getEvents().trigger(PROJECTILE_SPAWNED, projectile)));
 
-    enemy.addComponent(aiComponent).addComponent(new FlyingEnemyPatrolComponent());
+    enemy.addComponent(aiComponent).addComponent(new FlyingEnemyPatrolComponent(spawn));
 
     return enemy;
   }

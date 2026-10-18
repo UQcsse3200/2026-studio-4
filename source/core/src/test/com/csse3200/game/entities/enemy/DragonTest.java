@@ -220,10 +220,7 @@ class DragonTest {
     Entity orb = new Entity();
     List<Entity> emittedProjectiles = new ArrayList<>();
 
-    dragon
-        .getEvents()
-        .<Entity>addListener(
-            NPCFactory.PROJECTILE_SPAWNED, projectile -> emittedProjectiles.add(projectile));
+    dragon.getEvents().<Entity>addListener(NPCFactory.PROJECTILE_SPAWNED, emittedProjectiles::add);
 
     DragonThunderOrbComponent skill = dragon.getComponent(DragonThunderOrbComponent.class);
     skill.create();

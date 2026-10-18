@@ -122,8 +122,7 @@ public final class DragonFactory {
     Entity dragon = createDragon(target);
     dragon
         .getEvents()
-        .<Entity>addListener(
-            NPCFactory.PROJECTILE_SPAWNED, projectile -> projectileSpawner.accept(projectile));
+        .<Entity>addListener(NPCFactory.PROJECTILE_SPAWNED, projectileSpawner::accept);
 
     return dragon;
   }
