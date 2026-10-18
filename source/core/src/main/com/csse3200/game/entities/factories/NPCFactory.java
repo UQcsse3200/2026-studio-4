@@ -32,7 +32,6 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.function.Consumer;
 
 /**
  * Factory to create non-playable character (NPC) entities with predefined components.
@@ -187,40 +186,6 @@ public class NPCFactory {
     return chaseEnemy;
   }
 
-  /**
-   * Creates a floating demon which patrols in a straight horizontal line.
-   *
-   * @param target target entity to attack
-   * @param skin the atlas file path for the entity
-   * @return floating demon entity
-   */
-  public static Entity createFloatingDemon(Entity target, Vector2 spawnPoint, String skin) {
-    return createFloatingDemon(
-        target,
-        spawnPoint,
-        skin,
-        projectile -> ServiceLocator.getEntityService().register(projectile));
-  }
-
-  /**
-   * Creates a floating enemy with an explicitly supplied patrol origin. Retained for existing
-   * callers.
-   */
-  public static Entity createFloatingDemon(
-      Entity target, Vector2 spawn, String skin, Consumer<Entity> projectileSpawner) {
-    Entity demon = createFloatingDemonBase(skin);
-
-    AITaskComponent aiComponent =
-        new AITaskComponent()
-            .addTask(new PatrolTask(spawn, true))
-            .addTask(
-                new RangedAttackTask(
-                    target, 10, configs.floatingDemon.baseAttack, projectileSpawner));
-
-    demon.addComponent(aiComponent);
-    return demon;
-  }
-
   /** Builds the shared appearance and components of a floating enemy. */
   private static Entity createFloatingDemonBase(String skin) {
     FloatingDemonConfig config = configs.floatingDemon;
@@ -254,11 +219,12 @@ public class NPCFactory {
    * Creates a floating enemy with spawn-relative patrol and projectile events. The owning room must
    * listen for PROJECTILE_SPAWNED before registration.
    */
-  private static Entity createFloatingEnemy(Entity target, String skin) {
+  private static Entity createFloatingEnemy(Entity target, String skin, Vector2 spawn) {
     Entity enemy = createFloatingDemonBase(skin);
 
     AITaskComponent aiComponent =
         new AITaskComponent()
+            .addTask(new PatrolTask(spawn, true))
             .addTask(
                 new RangedAttackTask(
                     target,
@@ -318,6 +284,13 @@ public class NPCFactory {
     return snakeBoss;
   }
 
+  /**
+   * function to create the norse mini boss
+   *
+   * @param target - the player, used in tasks for chasing/ tracking
+   * @param spawn - the spawn position
+   * @return Sleipnir
+   */
   public static Entity createSleipnir(Entity target, Vector2 spawn) {
     Entity sleipnir = createBaseNPC();
     BaseEntityConfig config = configs.sleipnir;
@@ -388,8 +361,8 @@ public class NPCFactory {
   }
 
   /** Creates Jingwei with its standard appearance. */
-  public static Entity createJingwei(Entity target) {
-    return createFloatingEnemy(target, "images/jingwei.atlas");
+  public static Entity createJingwei(Entity target, Vector2 spawn) {
+    return createFloatingEnemy(target, "images/jingwei.atlas", spawn);
   }
 
   /** Creates Wukong with its standard scale and collision bounds. */
@@ -430,8 +403,8 @@ public class NPCFactory {
   }
 
   /** Creates a crow with its standard appearance. */
-  public static Entity createCrow(Entity target) {
-    return createFloatingEnemy(target, "images/crow.atlas");
+  public static Entity createCrow(Entity target, Vector2 spawn) {
+    return createFloatingEnemy(target, "images/crow.atlas", spawn);
   }
 
   /** Creates a Sandeye with its standard appearance and no splitting. */
@@ -468,8 +441,8 @@ public class NPCFactory {
   }
 
   /** Creates a wasp with its standard appearance. */
-  public static Entity createWasp(Entity target) {
-    return createFloatingEnemy(target, "images/wasp.atlas");
+  public static Entity createWasp(Entity target, Vector2 spawn) {
+    return createFloatingEnemy(target, "images/wasp.atlas", spawn);
   }
 
   /** Creates a minotaur with its standard appearance and scale. */
@@ -493,8 +466,8 @@ public class NPCFactory {
   }
 
   /** Creates a harpy with its standard appearance. */
-  public static Entity createHarpy(Entity target) {
-    return createFloatingEnemy(target, "images/harpy.atlas");
+  public static Entity createHarpy(Entity target, Vector2 spawn) {
+    return createFloatingEnemy(target, "images/harpy.atlas", spawn);
   }
 
   /** Creates a golem with its standard scale and collision bounds. */

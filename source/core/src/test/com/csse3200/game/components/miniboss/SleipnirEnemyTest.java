@@ -1,4 +1,4 @@
-package com.csse3200.game.entities.enemy;
+package com.csse3200.game.components.miniboss;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;

@@ -146,7 +146,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     switch (spawn.type) {
       // Chinese
       case JINGWEI:
-        return NPCFactory.createJingwei(target);
+        return NPCFactory.createJingwei(target, spawnPoints);
       case ZOMBIE:
         return NPCFactory.createZombie(target);
       case WUKONG:
@@ -162,7 +162,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case WOLF:
         return NPCFactory.createWolf(target);
       case CROW:
-        return NPCFactory.createCrow(target);
+        return NPCFactory.createCrow(target, spawnPoints);
       case KNIGHT:
         return NPCFactory.createKnight(target);
       case DARK_ELVES:
@@ -180,7 +180,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case CRAB:
         return NPCFactory.createCrab(target);
       case WASP:
-        return NPCFactory.createWasp(target);
+        return NPCFactory.createWasp(target, spawnPoints);
       case MUMMY:
         return NPCFactory.createMummy(target);
       case SNAKE_MINI_BOSS:
@@ -192,7 +192,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case MEDUSA:
         return NPCFactory.createMedusa(target);
       case HARPY:
-        return NPCFactory.createHarpy(target);
+        return NPCFactory.createHarpy(target, spawnPoints);
       case CYCLOPS:
         return NPCFactory.createCyclops(target);
       case GOLEM:
