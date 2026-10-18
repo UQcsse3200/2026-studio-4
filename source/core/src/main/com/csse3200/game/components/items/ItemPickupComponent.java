@@ -24,7 +24,7 @@ import java.util.Set;
  *
  * <p>Item entities are expected to carry an {@link ItemComponent} (see {@link
  * com.csse3200.game.entities.factories.ItemFactory}), which is where this component reads the
- * shared {@link Item} from.
+ * shared {@link com.csse3200.game.items.Item} from.
  *
  * <p>Requires {@link HitboxComponent} and {@link
  * com.csse3200.game.components.player.InventoryComponent} on this entity.
