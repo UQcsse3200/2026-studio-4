@@ -65,6 +65,7 @@ public class RoomAssets implements Disposable {
     "images/golem.atlas",
     "images/cyclops.atlas",
     "images/wasp.atlas",
+    "images/dust.atlas",
     "images/floatingDemon.atlas",
     "images/harpy.atlas",
     "images/cerberus/cerberus-modular.atlas",
