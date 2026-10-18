@@ -15,9 +15,6 @@ import com.csse3200.game.components.boss.FinalBossStageThreeComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoArenaComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
-import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
-import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
-import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
@@ -401,26 +398,15 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             });
   }
 
-  /** Connects the snake's abilities to this room's bounds and camera. */
+  /** Supplies the room bounds and camera to the snake factory. */
   private Entity createSnake(Entity target) {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
     Vector2 roomSize = terrain.tileToWorldPosition(terrain.getMapBounds(0));
 
-    Entity snake = NPCFactory.createSnakeMiniBoss(target);
-    snake
-        .getComponent(SnakeBurrowComponent.class)
-        .setArenaBounds(new Rectangle(0f, 0f, roomSize.x, roomSize.y));
-    snake
-        .getComponent(SnakePoisonVolleyComponent.class)
-        .setArenaBounds(new Rectangle(0f, 0f, roomSize.x, roomSize.y));
-    snake
-        .getComponent(SnakeShieldPickupComponent.class)
-        .setArenaBounds(new Rectangle(0f, 0f, roomSize.x, roomSize.y));
-
-    if (camera != null) {
-      snake.getComponent(SnakeShieldPickupComponent.class).setCamera(camera.getCamera());
-    }
-    return snake;
+    return NPCFactory.createSnakeMiniBoss(
+        target,
+        new Rectangle(0f, 0f, roomSize.x, roomSize.y),
+        camera == null ? null : camera.getCamera());
   }
 
   /** Creates Cerberus with the current room's movement and wall anchors. */

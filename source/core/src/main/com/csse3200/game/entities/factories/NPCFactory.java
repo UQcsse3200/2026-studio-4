@@ -1,7 +1,9 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.*;
@@ -282,6 +284,28 @@ public class NPCFactory {
         .setMaxSpeed(new Vector2(CHASE_SPEED, CHASE_SPEED));
 
     return snakeBoss;
+  }
+
+  /**
+   * Creates a snake configured for the current room.
+   *
+   * @param target player targeted by the snake
+   * @param arenaBounds room bounds in world coordinates
+   * @param camera gameplay camera, or null to use the existing fallback
+   * @return an unregistered snake
+   */
+  public static Entity createSnakeMiniBoss(Entity target, Rectangle arenaBounds, Camera camera) {
+    Entity snake = createSnakeMiniBoss(target);
+
+    snake.getComponent(SnakeBurrowComponent.class).setArenaBounds(new Rectangle(arenaBounds));
+    snake.getComponent(SnakePoisonVolleyComponent.class).setArenaBounds(new Rectangle(arenaBounds));
+    snake.getComponent(SnakeShieldPickupComponent.class).setArenaBounds(new Rectangle(arenaBounds));
+
+    if (camera != null) {
+      snake.getComponent(SnakeShieldPickupComponent.class).setCamera(camera);
+    }
+
+    return snake;
   }
 
   /**
