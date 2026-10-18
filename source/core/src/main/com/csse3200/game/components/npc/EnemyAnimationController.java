@@ -30,6 +30,7 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener("fuseStarted", this::animateFuse);
     entity.getEvents().addListener("default", this::animatePause);
     entity.getEvents().addListener("moving", this::animateMove);
+    entity.getEvents().addListener("stampede", this::dustCloud);
   }
 
   private void animateMove(Vector2 dir) {
@@ -64,6 +65,10 @@ public class EnemyAnimationController extends Component {
   private void animateDie() {
     dying = true;
     animator.startAnimation("dieAnimation");
+  }
+
+  private void dustCloud() {
+    animator.startAnimation("default");
   }
 
   private void animateEnemyDeath() {
