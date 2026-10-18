@@ -57,6 +57,46 @@ public class RoomSelector {
     ServiceLocator.getEntityService().register(player);
   }
 
+  public void startAt(String roomId, float worldX, float worldY) {
+    Entity savedRoom = roomLoader.getRoom(roomId, RoomClearService.isRoomCleared(roomId));
+
+    setRoomAtWorldPosition(savedRoom, worldX, worldY);
+    ServiceLocator.getEntityService().register(player);
+  }
+
+  private void setRoomAtWorldPosition(Entity newRoom, float worldX, float worldY) {
+    installRoom(newRoom, () -> player.setPosition(worldX, worldY));
+  }
+
+  private void installRoom(Entity newRoom, Runnable placePlayer) {
+    if (newRoom == null) {
+      throw new IllegalArgumentException("Room to install cannot be null");
+    }
+    if (this.room == newRoom) {
+      throw new IllegalArgumentException("Current room is same as the new room to set");
+    }
+    RoomConfig oldConfig = null;
+    if (this.room != null) {
+      oldConfig = this.room.getComponent(RoomDataComponent.class).getConfig();
+      this.room.dispose();
+    }
+
+    this.room = newRoom;
+    ServiceLocator.getEntityService().register(newRoom);
+
+    placePlayer.run();
+
+    room.getEvents().trigger("RoomCreated", player);
+    RoomClearService.attachListeners(room);
+    resetCamera();
+    room.getEvents().addListener(SWITCH_ROOM, this::switchRoom);
+
+    RoomConfig newConfig = room.getComponent(RoomDataComponent.class).getConfig();
+    room.getEvents().trigger(ROOM_SWITCHED_EVENT, oldConfig, newConfig);
+  }
+
+  // Implementation for installing the room
+
   /** Switches the currently rendered room to the destination room declared in exit */
   public void switchRoom(ExitConfig exit) {
     logger.debug(
