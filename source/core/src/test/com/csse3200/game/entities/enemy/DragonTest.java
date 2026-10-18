@@ -7,10 +7,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
-import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.entities.factories.NPCFactory;
-import com.csse3200.game.entities.factories.ThunderOrbFactory;
-import org.mockito.MockedStatic;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
@@ -18,8 +14,11 @@ import com.csse3200.game.components.miniboss.dragon.*;
 import com.csse3200.game.components.miniboss.dragon.DragonEnrageVisualComponent;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.configs.DragonConfig;
 import com.csse3200.game.entities.factories.DragonFactory;
+import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.entities.factories.ThunderOrbFactory;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
@@ -35,6 +34,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 
 @ExtendWith(GameExtension.class)
 class DragonTest {
@@ -212,8 +212,8 @@ class DragonTest {
               pendingActions.add(invocation.getArgument(0));
               return null;
             })
-            .when(entities)
-            .schedule(org.mockito.ArgumentMatchers.any(Runnable.class));
+        .when(entities)
+        .schedule(org.mockito.ArgumentMatchers.any(Runnable.class));
 
     Entity target = new Entity().addComponent(new CombatStatsComponent(100, 10));
     Entity dragon = DragonFactory.createDragon(target);
@@ -221,24 +221,21 @@ class DragonTest {
     List<Entity> emittedProjectiles = new ArrayList<>();
 
     dragon
-            .getEvents()
-            .<Entity>addListener(
-                    NPCFactory.PROJECTILE_SPAWNED,
-                    projectile -> emittedProjectiles.add(projectile));
+        .getEvents()
+        .<Entity>addListener(
+            NPCFactory.PROJECTILE_SPAWNED, projectile -> emittedProjectiles.add(projectile));
 
-    DragonThunderOrbComponent skill =
-            dragon.getComponent(DragonThunderOrbComponent.class);
+    DragonThunderOrbComponent skill = dragon.getComponent(DragonThunderOrbComponent.class);
     skill.create();
 
     try (MockedStatic<ThunderOrbFactory> factory = mockStatic(ThunderOrbFactory.class)) {
       factory
-              .when(
-                      () ->
-                              ThunderOrbFactory.createThunderOrb(
-                                      org.mockito.ArgumentMatchers.any(
-                                              com.badlogic.gdx.math.Vector2.class),
-                                      org.mockito.ArgumentMatchers.eq(target)))
-              .thenReturn(orb);
+          .when(
+              () ->
+                  ThunderOrbFactory.createThunderOrb(
+                      org.mockito.ArgumentMatchers.any(com.badlogic.gdx.math.Vector2.class),
+                      org.mockito.ArgumentMatchers.eq(target)))
+          .thenReturn(orb);
 
       assertTrue(skill.tryAttack());
       assertTrue(emittedProjectiles.isEmpty());
