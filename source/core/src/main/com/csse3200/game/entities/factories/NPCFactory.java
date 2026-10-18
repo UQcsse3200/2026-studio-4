@@ -52,6 +52,7 @@ public class NPCFactory {
   private static final String DIE_ANIMATION = "dieAnimation";
   private static final String MOVE = "move";
   private static final String CHASE_ANIMATION = "chase";
+  private static final String CONTACT_ATTACK = "contactAttack";
 
   public static Entity createGiantEnemy(Entity target, String skin) {
     Entity giantEnemy = createBaseNPC();
@@ -62,13 +63,16 @@ public class NPCFactory {
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new ChaseTask(target, 10, 3f, 10f));
 
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
+    TextureAtlas atlas = ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class);
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
     animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+
+    if (atlas.findRegion(CONTACT_ATTACK) != null) {
+      animator.addAnimation(CONTACT_ATTACK, 0.08f, Animation.PlayMode.NORMAL);
+    }
 
     giantEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
@@ -119,6 +123,10 @@ public class NPCFactory {
         .addComponent(new EnemyAnimationController())
         .addComponent(new EnemyStatDisplay(1.5f));
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
+    if ("images/zombie.atlas".equals(skin)) {
+      // The replacement frames are rectangular; retain the original square physics bounds.
+      bombEnemy.setScale(1f, 1f);
+    }
 
     return bombEnemy;
   }
@@ -142,13 +150,16 @@ public class NPCFactory {
             .addTask(new ChaseTask(target, 10, 3f, 10f))
             .addTask(new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy));
 
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
+    TextureAtlas atlas = ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class);
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
+
+    if (atlas.findRegion(CONTACT_ATTACK) != null) {
+      animator.addAnimation(CONTACT_ATTACK, 0.12f, Animation.PlayMode.NORMAL);
+    }
 
     chaseEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
@@ -309,14 +320,14 @@ public class NPCFactory {
             ServiceLocator.getResourceService().getAsset("images/horse.atlas", TextureAtlas.class));
     animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.09f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_up", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_down", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_right", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_left", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_NE", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_NW", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_SE", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_SW", 1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_up", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_down", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_right", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_left", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_NE", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_NW", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_SE", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_SW", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);

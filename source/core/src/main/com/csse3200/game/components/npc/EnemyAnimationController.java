@@ -3,6 +3,8 @@ package com.csse3200.game.components.npc;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
@@ -10,7 +12,10 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Plays available enemy animations in response to existing AI and combat events. */
 public class EnemyAnimationController extends Component {
+  private static final String CONTACT_ATTACK = "contactAttack";
   private AnimationRenderComponent animator;
+  private boolean hasContactAnimation;
+  private String locomotionAnimation = "default";
   private boolean dying = false;
   private boolean disposalQueued = false;
   private boolean followPlayer = false; // used by enemies to follow player
@@ -28,10 +33,21 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener("fuseStarted", this::animateFuse);
     entity.getEvents().addListener("default", this::animatePause);
     entity.getEvents().addListener("moving", this::animateMove);
+    hasContactAnimation = animator.hasAnimation(CONTACT_ATTACK);
+    if (hasContactAnimation) {
+      entity.getEvents().addListener(CONTACT_ATTACK, this::animateContactAttack);
+    }
   }
 
   private void animateMove(Vector2 dir) {
     if (dying) {
+      return;
+    }
+    if (hasContactAnimation) {
+      animateLocomotion("move", true);
+      if (!isPlayingContactAttack() && dir.x != 0f) {
+        animator.setFlipX(dir.x < 0f);
+      }
       return;
     }
     followPlayer = false;
@@ -84,6 +100,14 @@ public class EnemyAnimationController extends Component {
       }
       return;
     }
+    if (hasContactAnimation) {
+      if (StatusEffectsControllerComponent.isImmobilised(entity) || isPlayingContactAttack()) {
+        return;
+      }
+      updateFacingDirection(followPlayer);
+      updateLocomotion();
+      return;
+    }
     updateFacingDirection(followPlayer);
     if ("attack".equals(animator.getCurrentAnimation()) && animator.isFinished()) {
       animator.startAnimation("move");
@@ -107,25 +131,15 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateWander() {
-    if (dying) {
-      return;
-    }
-    followPlayer = true;
-    animator.startAnimation("move");
+    animateLocomotion("move", true);
   }
 
   private void animateChase() {
-    if (dying) {
-      return;
-    }
-    followPlayer = false;
-    animator.startAnimation("chase");
+    animateLocomotion("chase", hasContactAnimation);
   }
 
   private void animatePause() {
-    if (!dying) {
-      animator.startAnimation("default");
-    }
+    animateLocomotion("default", followPlayer);
   }
 
   private void animateFuse() {
@@ -135,15 +149,52 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animatePatrol() {
-    if (!dying) {
-      followPlayer = false;
-      animator.startAnimation("move");
-    }
+    animateLocomotion("move", hasContactAnimation);
   }
 
   private void animateAttack() {
     if (!dying && animator.hasAnimation("attack")) {
       animator.startAnimation("attack");
+    }
+  }
+
+  private void animateContactAttack(Entity target) {
+    if (dying
+        || StatusEffectsControllerComponent.isImmobilised(entity)
+        || isPlayingContactAttack()) {
+      return;
+    }
+    float direction = target.getCenterPosition().x - entity.getCenterPosition().x;
+    if (direction != 0f) {
+      animator.setFlipX(direction < 0f);
+    }
+    animator.startAnimation(CONTACT_ATTACK);
+  }
+
+  private boolean isPlayingContactAttack() {
+    return CONTACT_ATTACK.equals(animator.getCurrentAnimation()) && !animator.isFinished();
+  }
+
+  private void animateLocomotion(String animation, boolean followMovement) {
+    if (dying) {
+      return;
+    }
+    followPlayer = followMovement;
+    if (!hasContactAnimation) {
+      animator.startAnimation(animation);
+      return;
+    }
+    locomotionAnimation = animation;
+    if (!isPlayingContactAttack()) {
+      updateLocomotion();
+    }
+  }
+
+  private void updateLocomotion() {
+    PhysicsMovementComponent movement = entity.getComponent(PhysicsMovementComponent.class);
+    String animation = movement.getMoving() ? locomotionAnimation : "default";
+    if (!animation.equals(animator.getCurrentAnimation())) {
+      animator.startAnimation(animation);
     }
   }
 }

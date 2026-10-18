@@ -16,7 +16,11 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.rendering.RenderService;
@@ -69,13 +73,19 @@ class EnemyAnimationPlaybackTest {
           "images/knight.atlas",
           "images/zombie.atlas",
           "images/beetle.atlas",
-          "images/floatingDemon.atlas"
+          "images/floatingDemon.atlas",
+          "images/longwei.atlas",
+          "images/wukong.atlas"
         });
     resources.loadAll();
     ServiceLocator.registerResourceService(resources);
     entities = new EntityService();
     ServiceLocator.registerEntityService(entities);
-    player = new Entity().addComponent(new CombatStatsComponent(100, 5));
+    player =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 5))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER));
     player.setPosition(2f, 0f);
     entities.register(player);
     batch = mock(SpriteBatch.class);
@@ -148,13 +158,13 @@ class EnemyAnimationPlaybackTest {
     horse.getEvents().trigger("moving", direction);
     assertEquals(clip, animation.getCurrentAnimation());
     TextureRegion firstFrame = animation.getCurrentFrame();
-    renderFor(animation, 1.1f);
+    renderFor(animation, 0.11f);
     TextureRegion secondFrame = animation.getCurrentFrame();
     assertNotSame(firstFrame, secondFrame);
 
     horse.getEvents().trigger("moving", direction);
     assertSame(secondFrame, animation.getCurrentFrame());
-    renderFor(animation, 1f);
+    renderFor(animation, 0.1f);
     assertSame(firstFrame, animation.getCurrentFrame(), "The existing two-frame loop must wrap");
 
     horse.getEvents().trigger("moving", direction.cpy().scl(-1));
@@ -246,6 +256,93 @@ class EnemyAnimationPlaybackTest {
     enemy.getComponent(EnemyAnimationController.class).update();
     entities.update();
     assertFalse(entities.getEntities().contains(enemy, true));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"longwei,0.12,0.24", "wukong,0.08,0.48"})
+  void contactHitPlaysExistingAttackThenResumesLatestLocomotion(
+      String skin, float frameTime, float duration) {
+    Entity enemy = contactEnemy(skin);
+    AnimationRenderComponent animation = enemy.getComponent(AnimationRenderComponent.class);
+    EnemyAnimationController controller = enemy.getComponent(EnemyAnimationController.class);
+    enemy.getComponent(PhysicsMovementComponent.class).setMoving(true);
+    enemy.getEvents().trigger("wanderStart");
+    int damage = enemy.getComponent(CombatStatsComponent.class).getBaseAttack();
+    enemy
+        .getEvents()
+        .trigger(
+            "collisionStart",
+            enemy.getComponent(HitboxComponent.class).getFixture(),
+            player.getComponent(HitboxComponent.class).getFixture());
+    assertEquals(100 - damage, player.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals("contactAttack", animation.getCurrentAnimation());
+    TextureRegion first = animation.getCurrentFrame();
+    renderFor(animation, frameTime + 0.01f);
+    TextureRegion second = animation.getCurrentFrame();
+    assertNotSame(first, second, "The existing attack poses must actually advance");
+    enemy.getEvents().trigger("chaseStart");
+    enemy.getEvents().trigger("contactAttack", player);
+    controller.update();
+    assertEquals("contactAttack", animation.getCurrentAnimation());
+    assertSame(
+        second,
+        animation.getCurrentFrame(),
+        "AI events and another contact cannot restart the clip");
+    renderFor(animation, duration - frameTime);
+    controller.update();
+    assertEquals("chase", animation.getCurrentAnimation());
+    assertEquals(
+        100 - damage,
+        player.getComponent(CombatStatsComponent.class).getHealth(),
+        "Animation completion must not inflict another hit");
+    assertNoMissingAnimationRequests();
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"longwei", "wukong"})
+  void contactAnimationCannotInterruptDeathOrExtendItsOriginalDuration(String skin) {
+    Entity enemy = contactEnemy(skin);
+    AnimationRenderComponent animation = enemy.getComponent(AnimationRenderComponent.class);
+    enemy.getEvents().trigger("entityDied");
+    renderFor(animation, 0.49f);
+    TextureRegion frame = animation.getCurrentFrame();
+    enemy.getEvents().trigger("contactAttack", player);
+    assertEquals("dieAnimation", animation.getCurrentAnimation());
+    assertSame(frame, animation.getCurrentFrame());
+    renderFor(animation, 0.02f);
+    enemy.getComponent(EnemyAnimationController.class).update();
+    entities.update();
+    assertFalse(entities.getEntities().contains(enemy, true));
+  }
+
+  @Test
+  void zombieUsesExistingWalkingPosesWithoutChangingBodySizeOrDeathTime() {
+    Entity zombie = bombEnemy("zombie");
+    assertEquals(new Vector2(1f, 1f), zombie.getScale());
+    AnimationRenderComponent animation = zombie.getComponent(AnimationRenderComponent.class);
+    for (String event : new String[] {"wanderStart", "chaseStart"}) {
+      zombie.getEvents().trigger(event);
+      TextureRegion first = animation.getCurrentFrame();
+      renderFor(animation, event.equals("wanderStart") ? 0.71f : 0.11f);
+      assertNotSame(first, animation.getCurrentFrame(), "Walking must change the visible pose");
+    }
+    zombie.getEvents().trigger("entityDied");
+    assertEquals(2, animation.getCurrentFrame().getRegionX());
+    renderFor(animation, 0.49f);
+    assertFalse(animation.isFinished());
+    renderFor(animation, 0.02f);
+    zombie.getComponent(EnemyAnimationController.class).update();
+    entities.update();
+    assertFalse(entities.getEntities().contains(zombie, true));
+  }
+
+  private Entity contactEnemy(String skin) {
+    Entity enemy =
+        skin.equals("wukong")
+            ? NPCFactory.createGiantEnemy(player, "images/wukong.atlas")
+            : NPCFactory.createChaseEnemy(player, false, "images/longwei.atlas");
+    entities.register(enemy);
+    return enemy;
   }
 
   private Entity flyingEnemy(String skin) {

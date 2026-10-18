@@ -1,33 +1,89 @@
-chinese.png
-size: 512, 512
+zombie.png
+size: 256, 64
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 default
     rotate: false
-    xy: 320, 320
-    size: 128, 128
-    orig: 128, 128
+    xy: 101, 2
+    size: 31, 42
+    orig: 31, 42
     offset: 0, 0
     index: 0
 move
     rotate: false
-    xy: 320, 320
-    size: 128, 128
-    orig: 128, 128
+    xy: 101, 2
+    size: 31, 42
+    orig: 31, 42
+    offset: 0, 0
+    index: 0
+move
+    rotate: false
+    xy: 134, 2
+    size: 31, 42
+    orig: 31, 42
+    offset: 0, 0
+    index: 1
+move
+    rotate: false
+    xy: 167, 2
+    size: 31, 42
+    orig: 31, 42
+    offset: 0, 0
+    index: 2
+move
+    rotate: false
+    xy: 35, 2
+    size: 31, 42
+    orig: 31, 42
+    offset: 0, 0
+    index: 3
+move
+    rotate: false
+    xy: 68, 2
+    size: 31, 42
+    orig: 31, 42
+    offset: 0, 0
+    index: 4
+chase
+    rotate: false
+    xy: 101, 2
+    size: 31, 42
+    orig: 31, 42
     offset: 0, 0
     index: 0
 chase
     rotate: false
-    xy: 320, 320
-    size: 128, 128
-    orig: 128, 128
-    offset: 0, 0
-    index: 0
-dieAnimation
-    rotate: false
-    xy: 320, 320
-    size: 128, 128
-    orig: 128, 128
+    xy: 134, 2
+    size: 31, 42
+    orig: 31, 42
     offset: 0, 0
     index: 1
+chase
+    rotate: false
+    xy: 167, 2
+    size: 31, 42
+    orig: 31, 42
+    offset: 0, 0
+    index: 2
+chase
+    rotate: false
+    xy: 35, 2
+    size: 31, 42
+    orig: 31, 42
+    offset: 0, 0
+    index: 3
+chase
+    rotate: false
+    xy: 68, 2
+    size: 31, 42
+    orig: 31, 42
+    offset: 0, 0
+    index: 4
+dieAnimation
+    rotate: false
+    xy: 2, 2
+    size: 31, 42
+    orig: 31, 42
+    offset: 0, 0
+    index: 0

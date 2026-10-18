@@ -192,5 +192,8 @@ public class TouchAttackComponent extends Component {
       Vector2 impulse = direction.setLength(knockbackForce);
       targetBody.applyLinearImpulse(impulse, targetBody.getWorldCenter(), true);
     }
+    if (targetStats != null) {
+      entity.getEvents().trigger("contactAttack", target);
+    }
   }
 }
