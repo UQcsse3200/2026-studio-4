@@ -8,13 +8,11 @@ import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
-/**
- * This class listens to events relevant to a ghost entity's state and plays the animation when one
- * of the events is triggered.
- */
+/** Plays available enemy animations in response to existing AI and combat events. */
 public class EnemyAnimationController extends Component {
   private AnimationRenderComponent animator;
   private boolean dying = false;
+  private boolean disposalQueued = false;
   private boolean followPlayer = false; // used by enemies to follow player
 
   @Override
@@ -33,35 +31,40 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateMove(Vector2 dir) {
+    if (dying) {
+      return;
+    }
     followPlayer = false;
-    float x = dir.x;
-    float y = dir.y;
-    if (x > 0) {
-      if (y > 0) {
-        animator.startAnimation("move_NE");
-      } else if (y < 0) {
-        animator.startAnimation("move_SE");
-      } else {
-        animator.startAnimation("move_right");
+    String animation = directionAnimation(dir);
+    if (animator.hasAnimation(animation)) {
+      if (!animation.equals(animator.getCurrentAnimation())) {
+        animator.startAnimation(animation);
       }
-    } else if (x < 0) {
-      if (y > 0) {
-        animator.startAnimation("move_NW");
-      } else if (y < 0) {
-        animator.startAnimation("move_SW");
-      } else {
-        animator.startAnimation("move_left");
-      }
-    } else {
-      if (y > 0) {
-        animator.startAnimation("move_up");
-      } else {
-        animator.startAnimation("move_down");
-      }
+    } else if (animator.hasAnimation("move")
+        && !("attack".equals(animator.getCurrentAnimation()) && !animator.isFinished())
+        && !"move".equals(animator.getCurrentAnimation())) {
+      // Flying skins share one flight loop instead of eight directional clips.
+      animator.startAnimation("move");
     }
   }
 
+  private String directionAnimation(Vector2 dir) {
+    if (dir.x == 0f) {
+      return dir.y > 0f ? "move_up" : "move_down";
+    }
+    if (dir.y == 0f) {
+      return dir.x > 0f ? "move_right" : "move_left";
+    }
+    if (dir.x > 0f) {
+      return dir.y > 0f ? "move_NE" : "move_SE";
+    }
+    return dir.y > 0f ? "move_NW" : "move_SW";
+  }
+
   private void animateDie() {
+    if (dying) {
+      return;
+    }
     dying = true;
     animator.startAnimation("dieAnimation");
   }
@@ -74,12 +77,14 @@ public class EnemyAnimationController extends Component {
 
   @Override
   public void update() {
-    updateFacingDirection(followPlayer);
-
-    if (dying && animator.isFinished()) {
-      dying = false;
-      ServiceLocator.getEntityService().scheduleDisposal(entity);
+    if (dying) {
+      if (!disposalQueued && animator.isFinished()) {
+        disposalQueued = true;
+        ServiceLocator.getEntityService().scheduleDisposal(entity);
+      }
+      return;
     }
+    updateFacingDirection(followPlayer);
     if ("attack".equals(animator.getCurrentAnimation()) && animator.isFinished()) {
       animator.startAnimation("move");
     }
@@ -102,32 +107,42 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateWander() {
+    if (dying) {
+      return;
+    }
     followPlayer = true;
     animator.startAnimation("move");
   }
 
   private void animateChase() {
+    if (dying) {
+      return;
+    }
     followPlayer = false;
     animator.startAnimation("chase");
   }
 
   private void animatePause() {
-    animator.startAnimation("default");
+    if (!dying) {
+      animator.startAnimation("default");
+    }
   }
 
   private void animateFuse() {
-    animator.startAnimation("fuse");
+    if (!dying && animator.hasAnimation("fuse")) {
+      animator.startAnimation("fuse");
+    }
   }
 
   private void animatePatrol() {
-    followPlayer = false;
     if (!dying) {
+      followPlayer = false;
       animator.startAnimation("move");
     }
   }
 
   private void animateAttack() {
-    if (!dying) {
+    if (!dying && animator.hasAnimation("attack")) {
       animator.startAnimation("attack");
     }
   }

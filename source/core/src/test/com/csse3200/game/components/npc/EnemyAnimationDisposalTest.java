@@ -36,6 +36,9 @@ class EnemyAnimationDisposalTest {
 
     enemy.getEvents().trigger("dieAnimation");
     controller.update();
+    enemy.getEvents().trigger("dieAnimation");
+    controller.update();
+    controller.update();
 
     verify(entityService).scheduleDisposal(enemy);
     verify(animator, never()).dispose();
