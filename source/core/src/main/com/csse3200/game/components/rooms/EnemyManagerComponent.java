@@ -14,6 +14,7 @@ import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
 import com.csse3200.game.components.boss.FinalBossStageThreeComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoArenaComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
@@ -38,11 +39,15 @@ import org.slf4j.LoggerFactory;
 
 /** Spawns configured enemies and tracks when the room has been cleared. */
 public class EnemyManagerComponent extends EntityManagerComponent {
+  /** Player event carrying this room's collectible count after an enemy creates a new drop. */
+  public static final String ENEMY_DROPS_SPAWNED = "enemyDropsSpawned";
+
   private static final Logger logger = LoggerFactory.getLogger(EnemyManagerComponent.class);
   private final EnemySpawnConfig[] spawnConfigs;
   private final Set<Entity> activeEnemies = new HashSet<>();
   private final Set<Entity> lootOnlyEnemies = new HashSet<>();
   private final ItemFactory itemFactory;
+  private Entity player;
   private boolean disposed;
   private CameraComponent camera;
   private boolean notified = false;
@@ -121,6 +126,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
    * dungeons.
    */
   public void spawnEnemies(Entity target) {
+    player = target;
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
 
     if (spawnConfigs.length == 0) {
@@ -386,10 +392,30 @@ public class EnemyManagerComponent extends EntityManagerComponent {
               if (disposed) {
                 return;
               }
+              int collectibleDrops = 0;
               for (Entity item : itemFactory.createEnemyDrops(enemyType, position)) {
                 spawnEntity(item);
+                if (isAvailableDrop(item)) {
+                  collectibleDrops++;
+                }
+              }
+              if (player != null && collectibleDrops > 0) {
+                int roomDrops = 0;
+                for (Entity item : entities) {
+                  if (isAvailableDrop(item)) {
+                    roomDrops++;
+                  }
+                }
+                player.getEvents().trigger(ENEMY_DROPS_SPAWNED, roomDrops);
               }
             });
+  }
+
+  private boolean isAvailableDrop(Entity item) {
+    ItemComponent data = item.getComponent(ItemComponent.class);
+    return data != null
+        && !data.isCollected()
+        && ServiceLocator.getEntityService().getEntities().contains(item, true);
   }
 
   /** Creates a flying enemy with patrol points relative to its spawn tile. */

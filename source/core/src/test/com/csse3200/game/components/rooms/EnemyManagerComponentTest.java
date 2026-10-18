@@ -423,6 +423,175 @@ class EnemyManagerComponentTest {
   }
 
   @Test
+  void shouldReportEachEnemyDropBatchOnlyAfterItsItemsAreRegistered() {
+    LootTable table = new LootTable();
+    table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemIds.SPEED_CHARM, 1, 2, 2)};
+    enemyManager =
+        new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
+    enemyManager.setEntity(room);
+    Entity player = new Entity();
+    enemyManager.spawnEnemies(player);
+    List<Integer> counts = new ArrayList<>();
+    player
+        .getEvents()
+        .addListener(
+            EnemyManagerComponent.ENEMY_DROPS_SPAWNED,
+            (Integer count) -> {
+              assertEquals(2, entityService.getEntities().size);
+              counts.add(count);
+            });
+    Entity enemy = new Entity();
+    enemy.setPosition(3f, 4f);
+    enemyManager.track(enemy, "GOLEM");
+
+    enemy.getEvents().trigger("entityDied");
+    enemy.getEvents().trigger("entityDied");
+    assertTrue(counts.isEmpty());
+    entityService.update();
+
+    assertEquals(List.of(2), counts);
+  }
+
+  @Test
+  void shouldAccumulateRoomDropEntitiesRatherThanTheirStackQuantities() {
+    LootTable table = new LootTable();
+    table.entries = new LootTable.Entry[] {new LootTable.Entry(ItemIds.GOLD_COIN, 1, 5, 5)};
+    enemyManager =
+        new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
+    enemyManager.setEntity(room);
+    Entity player = new Entity();
+    enemyManager.spawnEnemies(player);
+    List<Integer> counts = new ArrayList<>();
+    player
+        .getEvents()
+        .addListener(
+            EnemyManagerComponent.ENEMY_DROPS_SPAWNED, (Integer count) -> counts.add(count));
+    for (int i = 0; i < 2; i++) {
+      Entity enemy = new Entity();
+      enemy.setPosition(3f, 4f);
+      enemyManager.track(enemy);
+      enemy.getEvents().trigger("entityDied");
+    }
+
+    entityService.update();
+
+    assertEquals(List.of(1, 2), counts);
+    assertEquals(
+        5, entityService.getEntities().first().getComponent(ItemComponent.class).getQuantity());
+  }
+
+  @Test
+  void shouldExcludeRejectedCollectedAndNonItemEntitiesFromTheDropCount() {
+    ItemFactory rewards = mock(ItemFactory.class);
+    Entity collectible = new Entity().addComponent(new ItemComponent(ItemIds.GOLD_COIN));
+    collectible.setPosition(3f, 4f);
+    Entity rejected = new Entity().addComponent(new ItemComponent(ItemIds.GOLD_COIN));
+    rejected.setPosition(-1f, 4f);
+    Entity collected = new Entity().addComponent(new ItemComponent(ItemIds.GOLD_COIN));
+    collected.setPosition(3f, 4f);
+    collected.getComponent(ItemComponent.class).dispose();
+    Entity scriptedObject = new Entity();
+    scriptedObject.setPosition(3f, 4f);
+    when(rewards.createEnemyDrops(anyString(), any(Vector2.class)))
+        .thenReturn(List.of(collectible, rejected, collected, scriptedObject));
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], rewards);
+    enemyManager.setEntity(room);
+    Entity player = new Entity();
+    enemyManager.spawnEnemies(player);
+    List<Integer> counts = new ArrayList<>();
+    player
+        .getEvents()
+        .addListener(
+            EnemyManagerComponent.ENEMY_DROPS_SPAWNED, (Integer count) -> counts.add(count));
+    Entity enemy = new Entity();
+    enemyManager.track(enemy, "GOLEM");
+
+    enemy.getEvents().trigger("entityDied");
+    entityService.update();
+
+    assertEquals(List.of(1), counts);
+    verify(entityService, never()).register(rejected);
+  }
+
+  @Test
+  void shouldCountOnlyRemainingDropsOwnedByThisRoom() {
+    Entity player = new Entity();
+    room.getEvents().trigger("RoomCreated", player);
+    List<Integer> counts = new ArrayList<>();
+    player
+        .getEvents()
+        .addListener(
+            EnemyManagerComponent.ENEMY_DROPS_SPAWNED, (Integer count) -> counts.add(count));
+    // An entity outside this room's ownership must not contribute to its hint.
+    entityService.register(new Entity().addComponent(new ItemComponent(ItemIds.GOLD_COIN)));
+    for (int i = 0; i < 4; i++) {
+      Entity enemy = new Entity();
+      enemy.setPosition(3f, 4f);
+      enemyManager.track(enemy);
+      enemy.getEvents().trigger("entityDied");
+      entityService.update();
+      Entity latest = enemyManager.entities.getLast();
+      if (i == 0) {
+        // Collected items can remain registered until deferred disposal runs.
+        latest.getComponent(ItemComponent.class).dispose();
+      } else if (i == 1) {
+        entityService.unregister(latest);
+      }
+    }
+
+    assertEquals(List.of(1, 1, 1, 2), counts);
+  }
+
+  @Test
+  void shouldNotReportADeathWithoutNewLootEvenWhenOtherDropsRemain() {
+    LootTable table = new LootTable();
+    table.noDropWeight = 1;
+    enemyManager =
+        new EnemyManagerComponent(new EnemySpawnConfig[0], new ItemFactory(table, fixedDrop(0)));
+    enemyManager.setEntity(room);
+    Entity player = new Entity();
+    enemyManager.spawnEnemies(player);
+    List<Integer> counts = new ArrayList<>();
+    player
+        .getEvents()
+        .addListener(
+            EnemyManagerComponent.ENEMY_DROPS_SPAWNED, (Integer count) -> counts.add(count));
+    enemyManager.spawnItem(ItemIds.SPEED_CHARM, 2, new Vector2(3f, 4f));
+    entityService.update();
+    Entity enemy = new Entity();
+    enemyManager.track(enemy);
+
+    enemy.getEvents().trigger("entityDied");
+    entityService.update();
+
+    assertEquals(2, entityService.getEntities().size);
+    assertTrue(counts.isEmpty());
+  }
+
+  @Test
+  void shouldNotReportDirectRoomItemSpawnsOrCancelledEnemyDrops() {
+    Entity player = new Entity();
+    room.getEvents().trigger("RoomCreated", player);
+    List<Integer> counts = new ArrayList<>();
+    player
+        .getEvents()
+        .addListener(
+            EnemyManagerComponent.ENEMY_DROPS_SPAWNED, (Integer count) -> counts.add(count));
+
+    enemyManager.spawnItem(ItemIds.SPEED_CHARM, 2, new Vector2(3f, 4f));
+    entityService.update();
+    assertEquals(2, entityService.getEntities().size);
+    assertTrue(counts.isEmpty());
+
+    Entity enemy = new Entity();
+    enemyManager.track(enemy);
+    enemy.getEvents().trigger("entityDied");
+    enemyManager.dispose();
+    entityService.update();
+    assertTrue(counts.isEmpty());
+  }
+
+  @Test
   void shouldSpawnChosenRoomItemWithoutEnemyDeath() {
     Vector2 position = new Vector2(3f, 4f);
 

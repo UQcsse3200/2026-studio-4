@@ -313,6 +313,7 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(abilityMenu)
         .addComponent(new KeyboardAbilityMenuInputComponent())
         .addComponent(new AbilityMenuDisplay(abilityMenu))
+        .addComponent(new MagneticPickupHintDisplay(player))
         .addComponent(new AchievementDisplay());
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     // The HUD keeps working while a dialogue or cutscene has the world frozen
