@@ -74,8 +74,11 @@ public final class DiceDuelGame {
     if (!canRoll()) {
       return null;
     }
-    inventory.addGold(-stake);
-    round = new Round(stake, rollDie(), rollDie(), rollDie(), rollDie(), false);
+    // Start the round before paying: paying refreshes the shop, which would otherwise clamp the
+    // stake
+    int paid = stake;
+    round = new Round(paid, rollDie(), rollDie(), rollDie(), rollDie(), false);
+    inventory.addGold(-paid);
     return round;
   }
 

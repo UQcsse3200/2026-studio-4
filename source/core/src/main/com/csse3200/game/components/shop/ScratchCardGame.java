@@ -88,13 +88,15 @@ public final class ScratchCardGame {
     if (!canBuy()) {
       return false;
     }
-    inventory.addGold(-stake);
-    cardStake = stake;
+    // Deal the card before paying: paying refreshes the shop, which would otherwise clamp the stake
+    int paid = stake;
+    cardStake = paid;
     card = new Symbol[SPOTS];
     for (int i = 0; i < SPOTS; i++) {
       card[i] = pickSymbol();
     }
     scratched = new boolean[SPOTS];
+    inventory.addGold(-paid);
     return true;
   }
 

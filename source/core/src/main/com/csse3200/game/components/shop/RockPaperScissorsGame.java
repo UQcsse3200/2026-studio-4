@@ -68,12 +68,15 @@ public final class RockPaperScissorsGame {
     if (!canStart()) {
       return false;
     }
-    inventory.addGold(-stake);
+    // Start the match before paying: paying refreshes the shop, which would otherwise clamp the
+    // stake
+    int paid = stake;
     matchActive = true;
-    matchStake = stake;
+    matchStake = paid;
     playerWins = 0;
     merchantWins = 0;
     roundsPlayed = 0;
+    inventory.addGold(-paid);
     return true;
   }
 
