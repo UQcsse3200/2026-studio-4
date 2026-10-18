@@ -14,7 +14,7 @@ public class GameSaveData {
   public PlayerData playerData = new PlayerData();
   public String checkpointRoomId;
   public String checkpointEntryPointId;
-  
+
   // Add these fields
   public List<String> unlockedAchievements = new ArrayList<>();
   public Map<String, Float> achievementProgress = new HashMap<>();
