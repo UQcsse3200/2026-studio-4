@@ -61,6 +61,10 @@ public class RoomMagneticPickupComponent extends Component {
     if (step <= 0f) {
       return;
     }
+    pullTargets(entities, step);
+  }
+
+  private void pullTargets(EntityService entities, float step) {
     Vector2 destination = entity.getCenterPosition();
     Iterator<Entity> iterator = targets.iterator();
     while (iterator.hasNext()) {
