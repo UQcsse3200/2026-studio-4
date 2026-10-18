@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -13,12 +14,17 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.csse3200.game.components.boss.FinalBossStageTwoComponent;
+import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.items.RoomMagneticPickupComponent;
-import com.csse3200.game.components.rooms.EnemyManagerComponent;
+import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
+import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.items.Item;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.RunTimer;
@@ -53,7 +59,8 @@ class MagneticPickupHintDisplayTest {
     RenderService renderer = new RenderService();
     renderer.setStage(stage);
     ServiceLocator.registerRenderService(renderer);
-    player = new Entity();
+    player = new Entity().addComponent(new RoomMagneticPickupComponent());
+    entities.register(player);
     createDisplay();
   }
 
@@ -67,28 +74,43 @@ class MagneticPickupHintDisplayTest {
 
   @AfterEach
   void tearDown() {
-    ui.dispose();
+    for (Entity entity : new Array<>(entities.getEntities())) {
+      entity.dispose();
+    }
     stage.dispose();
   }
 
-  private void drop(int count) {
-    player.getEvents().trigger(EnemyManagerComponent.ENEMY_DROPS_SPAWNED, count);
+  private ItemComponent item(int quantity) {
+    Item item = mock(Item.class);
+    when(item.getQuantity()).thenReturn(quantity);
+    return new ItemComponent(item);
+  }
+
+  private Entity drop(int quantity) {
+    Entity drop = new Entity().addComponent(item(quantity));
+    entities.register(drop);
+    return drop;
+  }
+
+  private void collect(Entity drop) {
+    assertTrue(drop.getComponent(ItemComponent.class).tryPickUp(player));
   }
 
   private void tick(float seconds) {
     when(time.getDeltaTime()).thenReturn(seconds);
+    // Exercise the hint inside the service's active libGDX Array iterator.
     entities.update();
   }
 
   @Test
-  void onlyShowsWhenAnEnemyDropLeavesMultipleItemsInTheRoom() {
+  void showsForTwoGroundEntitiesWithoutAnEnemyEventAndDoesNotCountStackQuantity() {
+    tick(0f);
     assertFalse(root.isVisible());
-    drop(0);
+    drop(7);
+    tick(0f);
     assertFalse(root.isVisible());
     drop(1);
-    assertFalse(root.isVisible());
-
-    drop(2);
+    tick(0f);
 
     assertTrue(root.isVisible());
     Label label = root.findActor("magnetic-pickup-hint-text");
@@ -97,112 +119,200 @@ class MagneticPickupHintDisplayTest {
   }
 
   @Test
-  void lastsSixSecondsAndLaterDropsDoNotExtendOrRepeatIt() {
-    drop(2);
-    tick(3f);
-    drop(5);
-    tick(2.5f);
+  void staysUntilTheLastItemIsCollectedEvenIfTheEntitiesAwaitDisposal() {
+    Entity first = drop(1);
+    Entity second = drop(1);
+    tick(0f);
+    tick(600f);
     assertTrue(root.isVisible());
 
-    tick(0.5f);
+    collect(first);
+    tick(0f);
+    assertTrue(root.isVisible(), "The hint must remain while one item is still on the ground");
+    collect(second);
+    tick(0f);
     assertFalse(root.isVisible());
-    drop(3);
+    assertTrue(entities.getEntities().contains(first, true));
+    assertTrue(entities.getEntities().contains(second, true));
+  }
+
+  @Test
+  void repeatsAfterAnEmptyRoomAndIncludesNewDropsWhileAlreadyVisible() {
+    Entity first = drop(1);
+    Entity second = drop(1);
+    tick(0f);
+    collect(first);
+    collect(second);
+    tick(0f);
+    assertFalse(root.isVisible());
+
+    Entity next = drop(1);
+    tick(0f);
+    assertFalse(root.isVisible());
+    Entity nextPartner = drop(1);
+    tick(0f);
+    assertTrue(root.isVisible());
+    Entity late = drop(1);
+    collect(next);
+    collect(nextPartner);
+    tick(0f);
+    assertTrue(root.isVisible(), "A later drop keeps the active reminder relevant");
+    collect(late);
+    tick(0f);
     assertFalse(root.isVisible());
   }
 
   @Test
-  void freezesHideTheHintAndPreserveItsRemainingTime() {
-    drop(2);
-    tick(2f);
+  void ignoresCollectedUnregisteredAndSpecialBossEntities() {
+    Entity collected = drop(1);
+    collect(collected);
+    Entity removed = drop(1);
+    entities.unregister(removed);
+    entities.register(new Entity().addComponent(mock(SnakeShieldPickupComponent.class)));
+    entities.register(new Entity().addComponent(mock(FinalBossStageTwoComponent.class)));
+    drop(1);
+    tick(0f);
+    assertFalse(root.isVisible());
+
+    drop(1);
+    tick(0f);
+    assertTrue(root.isVisible());
+  }
+
+  @Test
+  void neverCountsThePlayerAsAGroundItem() {
+    ui.dispose();
+    player.dispose();
+    player = new Entity().addComponent(item(1));
+    entities.register(player);
+    createDisplay();
+    drop(1);
+    tick(0f);
+    assertFalse(root.isVisible());
+  }
+
+  @Test
+  void removingTheLastGroundEntityAlsoClearsTheHint() {
+    Entity first = drop(1);
+    Entity second = drop(1);
+    tick(0f);
+    first.dispose();
+    tick(0f);
+    assertTrue(root.isVisible());
+    second.dispose();
+    tick(0f);
+    assertFalse(root.isVisible());
+  }
+
+  @Test
+  void freezesHideAnActiveHintWithoutLosingItsSingleItemContinuation() {
+    Entity first = drop(1);
+    Entity second = drop(1);
+    tick(0f);
     Object dialogue = new Object();
     entities.setFrozen(dialogue, true);
+    collect(first);
     tick(30f);
     assertFalse(root.isVisible());
 
     entities.setFrozen(dialogue, false);
-    tick(3.5f);
+    tick(0f);
     assertTrue(root.isVisible());
-    tick(0.5f);
+    collect(second);
+    tick(0f);
     assertFalse(root.isVisible());
   }
 
   @Test
-  void menuPausesHideTheHintAndPreserveItsRemainingTime() {
-    drop(2);
-    tick(2f);
+  void menuPausesHideTheHintAndNewDropsCanShowItAfterResuming() {
     timer.requestPause();
+    drop(1);
+    Entity second = drop(1);
     tick(30f);
     assertFalse(root.isVisible());
 
     timer.requestResume();
-    tick(3.5f);
+    tick(0f);
     assertTrue(root.isVisible());
-    tick(0.5f);
-    assertFalse(root.isVisible());
-  }
-
-  @Test
-  void aDropDuringPauseWaitsUntilGameplayResumes() {
     timer.requestPause();
-    drop(2);
-    assertFalse(root.isVisible());
+    collect(second);
     tick(30f);
-
+    assertFalse(root.isVisible());
     timer.requestResume();
-    tick(5.5f);
-    assertTrue(root.isVisible());
-    tick(0.5f);
-    assertFalse(root.isVisible());
-  }
-
-  @Test
-  void changingRoomsClearsTheHintWithoutAllowingItAgain() {
-    drop(2);
-    player.getEvents().trigger(RoomMagneticPickupComponent.RESET_EVENT);
-    assertFalse(root.isVisible());
-    drop(2);
-    tick(1f);
-    assertFalse(root.isVisible());
-  }
-
-  @Test
-  void changingRoomsBeforeTheFirstEligibleDropDoesNotSuppressTheHint() {
-    player.getEvents().trigger(RoomMagneticPickupComponent.RESET_EVENT);
-    drop(2);
+    tick(0f);
     assertTrue(root.isVisible());
   }
 
   @Test
-  void deathClearsTheHintAndIgnoresFurtherDrops() {
-    drop(2);
-    player.getEvents().trigger("entityDied");
+  void changingRoomsClearsTheActiveHintAndRequiresTwoNewRoomItems() {
+    Entity first = drop(1);
+    Entity second = drop(1);
+    tick(0f);
+    player.getEvents().trigger(RoomMagneticPickupComponent.RESET_EVENT);
     assertFalse(root.isVisible());
-    drop(3);
-    tick(1f);
+    first.dispose();
+    second.dispose();
+    drop(1);
+    tick(0f);
     assertFalse(root.isVisible());
+    drop(1);
+    tick(0f);
+    assertTrue(root.isVisible());
   }
 
   @Test
-  void deathBeforeTheFirstDropPreventsAPosthumousHint() {
+  void deathHidesTheHintAndDisposalRemovesItsPanel() {
+    drop(1);
+    drop(1);
+    tick(0f);
     player.getEvents().trigger("entityDied");
-    drop(2);
     assertFalse(root.isVisible());
-  }
-
-  @Test
-  void aNewRunCanShowTheHintAgainAndDisposalRemovesTheOldPanel() {
-    drop(2);
-    Table previousRoot = root;
+    drop(1);
+    tick(0f);
+    assertFalse(root.isVisible());
     ui.dispose();
     assertNull(stage.getRoot().findActor("magnetic-pickup-hint"));
-    player.getEvents().trigger(EnemyManagerComponent.ENEMY_DROPS_SPAWNED, 2);
-    assertFalse(previousRoot.isVisible());
+  }
 
+  @Test
+  void aNewRunCanDisplayTheHintAfterThePreviousPlayerDied() {
+    drop(1);
+    drop(1);
+    tick(0f);
+    player.getEvents().trigger("entityDied");
+    ui.dispose();
+    player.dispose();
     player = new Entity();
+    entities.register(player);
     createDisplay();
-    drop(2);
+    tick(0f);
     assertTrue(root.isVisible());
     assertEquals(1, stage.getActors().size);
+  }
+
+  @Test
+  void remainsVisibleDuringMagneticFlightAndHidesAfterTheLastAutomaticPickup() {
+    Entity near = drop(1);
+    near.setPosition(3f, 0f);
+    Entity far = drop(1);
+    far.setPosition(6f, 0f);
+    tick(0f);
+    assertTrue(root.isVisible());
+
+    player.getEvents().trigger(KeyboardPlayerInputComponent.ROOM_MAGNETIC_PICKUP);
+    tick(0.05f);
+    assertTrue(root.isVisible());
+    assertFalse(near.getComponent(ItemComponent.class).isCollected());
+    assertFalse(far.getComponent(ItemComponent.class).isCollected());
+    tick(0.5f);
+    assertTrue(near.getComponent(ItemComponent.class).isCollected());
+    assertFalse(far.getComponent(ItemComponent.class).isCollected());
+    assertTrue(root.isVisible());
+    tick(0.5f);
+    assertTrue(far.getComponent(ItemComponent.class).isCollected());
+    assertFalse(root.isVisible());
+    verify(near.getComponent(ItemComponent.class).getItem()).pickUp(player);
+    verify(far.getComponent(ItemComponent.class).getItem()).pickUp(player);
   }
 
   @Test

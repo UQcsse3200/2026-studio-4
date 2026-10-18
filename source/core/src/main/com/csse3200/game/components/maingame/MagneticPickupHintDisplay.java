@@ -7,26 +7,24 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.utils.Align;
+import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.items.RoomMagneticPickupComponent;
-import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import java.util.Objects;
 
-/** Explains magnetic pickup once, after an enemy drop leaves several items in the room. */
+/** Keeps magnetic pickup guidance visible until the room's accumulated drops are collected. */
 public class MagneticPickupHintDisplay extends UIComponent {
   private static final String HINT = "Hold E for 1 second to collect all room drops.";
-  private static final float DISPLAY_SECONDS = 6f;
   private final Entity player;
   private Table root;
-  private float remainingSeconds;
-  private boolean shown;
+  private boolean awaitingCollection;
   private boolean playerDead;
   private boolean disposed;
 
   /**
-   * @param player player receiving enemy-drop notifications throughout the current run
+   * @param player player whose death and room transitions clear the hint
    */
   public MagneticPickupHintDisplay(Entity player) {
     this.player = Objects.requireNonNull(player);
@@ -71,32 +69,41 @@ public class MagneticPickupHintDisplay extends UIComponent {
     root.setVisible(false);
     stage.addActor(root);
 
-    player.getEvents().addListener(EnemyManagerComponent.ENEMY_DROPS_SPAWNED, this::onEnemyDrops);
     player.getEvents().addListener(RoomMagneticPickupComponent.RESET_EVENT, this::clearHint);
     player.getEvents().addListener("entityDied", this::onPlayerDied);
   }
 
-  private void onEnemyDrops(int count) {
-    if (disposed || playerDead || shown || count <= 1) {
-      return;
-    }
-    shown = true;
-    remainingSeconds = DISPLAY_SECONDS;
-    root.setVisible(enabled && !gameplayPaused());
-  }
-
   @Override
   public void update() {
-    if (disposed || root == null || remainingSeconds <= 0f) {
+    if (disposed || root == null || playerDead) {
       return;
     }
     if (!enabled || gameplayPaused()) {
       root.setVisible(false);
       return;
     }
-    remainingSeconds =
-        Math.max(0f, remainingSeconds - ServiceLocator.getTimeSource().getDeltaTime());
-    root.setVisible(remainingSeconds > 0f);
+    int drops = countRoomDrops();
+    if (drops == 0) {
+      awaitingCollection = false;
+    } else if (drops >= 2) {
+      awaitingCollection = true;
+    }
+    root.setVisible(awaitingCollection);
+  }
+
+  private int countRoomDrops() {
+    var entities = ServiceLocator.getEntityService().getEntities();
+    int count = 0;
+    // RoomSelector keeps only the current room loaded. Use indices because EntityService is
+    // already iterating this array while updating the HUD.
+    for (int i = 0; i < entities.size; i++) {
+      Entity candidate = entities.get(i);
+      ItemComponent item = candidate.getComponent(ItemComponent.class);
+      if (candidate != player && item != null && !item.isCollected()) {
+        count++;
+      }
+    }
+    return count;
   }
 
   private boolean gameplayPaused() {
@@ -105,11 +112,10 @@ public class MagneticPickupHintDisplay extends UIComponent {
   }
 
   private void clearHint() {
-    remainingSeconds = 0f;
+    awaitingCollection = false;
     if (root != null) {
       root.setVisible(false);
     }
-    // Room transitions remove the visible prompt without teaching the same control again.
   }
 
   private void onPlayerDied() {
