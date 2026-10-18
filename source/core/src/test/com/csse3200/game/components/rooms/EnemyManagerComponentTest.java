@@ -20,9 +20,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.achievements.AchievementContext;
+import com.csse3200.game.components.boss.FinalBossExplosiveSummonComponent;
 import com.csse3200.game.components.items.ItemComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
+import com.csse3200.game.components.rooms.configs.EnemySpawnConfig.EnemyType;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
@@ -298,6 +300,102 @@ class EnemyManagerComponentTest {
   }
 
   @Test
+  void shouldRequestEachEnemyTypesLootOnceDespiteRepeatedDeathEvents() {
+    ItemFactory rewards = mock(ItemFactory.class);
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], rewards);
+    enemyManager.setEntity(room);
+    for (EnemyType type : EnemyType.values()) {
+      Entity enemy = new Entity();
+      enemyManager.track(enemy, type.name());
+      enemy.getEvents().trigger("entityDied");
+      enemy.getEvents().trigger("entityDied");
+      enemy.getEvents().trigger("finalBossEncounterCompleted");
+    }
+
+    entityService.update();
+
+    for (EnemyType type : EnemyType.values()) {
+      verify(rewards).createEnemyDrops(eq(type.name()), any(Vector2.class));
+    }
+  }
+
+  @Test
+  void shouldRewardExplosiveSummonsOnceWithoutHoldingTheBossRoomOpen() {
+    ItemFactory rewards = mock(ItemFactory.class);
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], rewards);
+    enemyManager.setEntity(room);
+    Entity boss = new Entity();
+    enemyManager.track(boss, "FINAL_BOSS");
+    Entity defeatedSummon = explosiveSummonMock();
+    Entity survivingSummon = explosiveSummonMock();
+    enemyManager.spawnFinalBossEntity(defeatedSummon);
+    enemyManager.spawnFinalBossEntity(survivingSummon);
+
+    defeatedSummon.getEvents().trigger("entityDied");
+    defeatedSummon.getEvents().trigger("entityDied");
+    assertFalse(enemyManager.isCleared());
+    verify(rewards, never()).createEnemyDrops(any(), any());
+    entityService.update();
+    verify(rewards).createEnemyDrops("FINAL_BOSS_SUMMON", new Vector2(0.5f, 0.5f));
+
+    boss.getEvents().trigger("finalBossEncounterCompleted");
+    assertTrue(enemyManager.isCleared(), "A living summon must not block encounter completion");
+    entityService.update();
+    verify(rewards).createEnemyDrops(eq("FINAL_BOSS"), any(Vector2.class));
+  }
+
+  @Test
+  void shouldNotRewardScriptedBossObjectsOrSummonCleanup() {
+    ItemFactory rewards = mock(ItemFactory.class);
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], rewards);
+    enemyManager.setEntity(room);
+    Entity scriptedObject = enemyMock();
+    Entity cleanedUpSummon = explosiveSummonMock();
+    enemyManager.spawnFinalBossEntity(scriptedObject);
+    enemyManager.spawnFinalBossEntity(cleanedUpSummon);
+
+    scriptedObject.getEvents().trigger("entityDied");
+    entityService.scheduleDisposal(cleanedUpSummon);
+    entityService.update();
+
+    verify(rewards, never()).createEnemyDrops(any(), any());
+  }
+
+  @Test
+  void shouldCancelSummonRewardsWhenTheRoomIsDisposed() {
+    ItemFactory rewards = mock(ItemFactory.class);
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], rewards);
+    enemyManager.setEntity(room);
+    Entity summon = explosiveSummonMock();
+    enemyManager.spawnFinalBossEntity(summon);
+    summon.getEvents().trigger("entityDied");
+
+    enemyManager.dispose();
+    entityService.update();
+    summon.getEvents().trigger("entityDied");
+    entityService.update();
+
+    verify(rewards, never()).createEnemyDrops(any(), any());
+  }
+
+  @Test
+  void splitChildrenShouldKeepTheirParentsLootType() {
+    ItemFactory rewards = mock(ItemFactory.class);
+    enemyManager = spy(new EnemyManagerComponent(new EnemySpawnConfig[0], rewards));
+    // Geometry is covered separately; isolate inheritance of the parent's loot rule here.
+    doReturn(false).when(enemyManager).outOfBounds(any(Vector2.class), any());
+    enemyManager.setEntity(room);
+    Entity parent = enemyMock();
+    Entity child = enemyMock();
+    enemyManager.track(parent, "CRAB");
+    parent.getEvents().trigger("spawnChildren", child);
+    child.getEvents().trigger("entityDied");
+    entityService.update();
+
+    verify(rewards).createEnemyDrops(eq("CRAB"), any(Vector2.class));
+  }
+
+  @Test
   void shouldSpawnRegisteredItemAtEnemyCentreAfterUpdate() {
     Entity enemy = new Entity();
     Vector2 deathPosition = new Vector2(3f, 4f);
@@ -498,6 +596,13 @@ class EnemyManagerComponentTest {
     when(enemy.getPosition()).thenReturn(new Vector2());
     when(enemy.getCenterPosition()).thenReturn(new Vector2(0.5f, 0.5f));
     return enemy;
+  }
+
+  private static Entity explosiveSummonMock() {
+    Entity summon = enemyMock();
+    FinalBossExplosiveSummonComponent explosive = mock(FinalBossExplosiveSummonComponent.class);
+    when(summon.getComponent(FinalBossExplosiveSummonComponent.class)).thenReturn(explosive);
+    return summon;
   }
 
   @Test
