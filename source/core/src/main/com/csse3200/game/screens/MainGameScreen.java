@@ -174,6 +174,9 @@ public class MainGameScreen extends ScreenAdapter {
   @Override
   public void pause() {
     logger.info("Game paused");
+    if (player != null) {
+      player.getEvents().trigger("resetMovementInput");
+    }
   }
 
   @Override

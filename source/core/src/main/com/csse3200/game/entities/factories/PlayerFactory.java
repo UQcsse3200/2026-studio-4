@@ -7,6 +7,7 @@ import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.achievements.AchievementProgressComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
+import com.csse3200.game.components.items.RoomMagneticPickupComponent;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.AbilityAttunementComponent;
 import com.csse3200.game.components.player.BurnVialFeedbackComponent;
@@ -106,6 +107,7 @@ public class PlayerFactory {
             .addComponent(new SpeedPotionAfterimageComponent())
             .addComponent(new BurnVialFeedbackComponent())
             .addComponent(new ItemPickupComponent())
+            .addComponent(new RoomMagneticPickupComponent())
             // Runs friendly NPC interactions and remembers which have been completed
             .addComponent(new NpcInteractorComponent())
             .addComponent(inputComponent)

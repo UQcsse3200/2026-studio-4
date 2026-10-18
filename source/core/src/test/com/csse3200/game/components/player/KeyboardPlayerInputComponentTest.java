@@ -3,17 +3,23 @@ package com.csse3200.game.components.player;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.cutscene.CutsceneEvents;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.configs.InteractableNpcConfig;
 import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.items.WeaponItem.WeaponType;
+import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.KeyboardTerminalInputComponent;
 import com.csse3200.game.ui.terminal.Terminal;
 import java.util.ArrayList;
@@ -26,6 +32,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class KeyboardPlayerInputComponentTest {
   private Entity player;
   private KeyboardPlayerInputComponent input;
+  private GameTime time;
+  private int roomInteractions;
+  private int itemPickups;
+  private int magneticPickups;
   private int walkCount;
   private int walkStopCount;
   private int attackCount;
@@ -37,9 +47,18 @@ class KeyboardPlayerInputComponentTest {
 
   @BeforeEach
   void setUp() {
+    time = mock(GameTime.class);
+    ServiceLocator.registerTimeSource(time);
+    ServiceLocator.registerInputService(mock(InputService.class));
     player = new Entity();
     input = new KeyboardPlayerInputComponent();
     player.addComponent(input);
+    input.create();
+    player.getEvents().addListener("interact", () -> roomInteractions++);
+    player.getEvents().addListener("itemPickup", () -> itemPickups++);
+    player
+        .getEvents()
+        .addListener(KeyboardPlayerInputComponent.ROOM_MAGNETIC_PICKUP, () -> magneticPickups++);
     player
         .getEvents()
         .addListener(
@@ -119,15 +138,16 @@ class KeyboardPlayerInputComponentTest {
 
   @Test
   void shouldKeepRoomAndItemInteractionsSeparateOnEKey() {
-    int[] roomInteractions = {0};
-    int[] itemPickups = {0};
-    player.getEvents().addListener("interact", () -> roomInteractions[0]++);
-    player.getEvents().addListener("itemPickup", () -> itemPickups[0]++);
-
     assertTrue(input.keyDown(Keys.E));
+    assertEquals(0, roomInteractions);
+    assertEquals(0, itemPickups);
 
-    assertEquals(1, roomInteractions[0]);
-    assertEquals(1, itemPickups[0]);
+    when(time.getTime()).thenReturn(1999L);
+    assertTrue(input.keyUp(Keys.E));
+
+    assertEquals(1, roomInteractions);
+    assertEquals(1, itemPickups);
+    assertEquals(0, magneticPickups);
   }
 
   @Test
@@ -138,15 +158,14 @@ class KeyboardPlayerInputComponentTest {
     config.id = "sage";
     config.dialogueId = "hello";
     interactor.beginInteraction(new Entity(), config);
-    int[] roomInteractions = {0};
-    int[] itemPickups = {0};
-    player.getEvents().addListener("interact", () -> roomInteractions[0]++);
-    player.getEvents().addListener("itemPickup", () -> itemPickups[0]++);
-
     assertTrue(input.keyDown(Keys.E));
+    when(time.getTime()).thenReturn(2000L);
+    input.update();
+    assertTrue(input.keyUp(Keys.E));
 
-    assertEquals(0, roomInteractions[0]);
-    assertEquals(0, itemPickups[0]);
+    assertEquals(0, roomInteractions);
+    assertEquals(0, itemPickups);
+    assertEquals(0, magneticPickups);
   }
 
   @Test
@@ -156,16 +175,193 @@ class KeyboardPlayerInputComponentTest {
     InteractableNpcConfig config = new InteractableNpcConfig();
     config.id = "sage";
     config.dialogueId = "hello";
-    int[] itemPickups = {0};
     player
         .getEvents()
         .addListener("interact", () -> interactor.beginInteraction(new Entity(), config));
-    player.getEvents().addListener("itemPickup", () -> itemPickups[0]++);
 
     assertTrue(input.keyDown(Keys.E));
+    assertTrue(input.keyUp(Keys.E));
 
     assertTrue(interactor.isInteracting());
-    assertEquals(0, itemPickups[0]);
+    assertEquals(0, itemPickups);
+  }
+
+  @Test
+  void holdingETriggersOnlyAtTwoSecondsWithoutNormalInteractions() {
+    when(time.getTime()).thenReturn(500L);
+    input.keyDown(Keys.E);
+    when(time.getTime()).thenReturn(2499L);
+    input.update();
+    assertEquals(0, magneticPickups);
+
+    when(time.getTime()).thenReturn(2500L);
+    input.update();
+    assertEquals(1, magneticPickups);
+    assertEquals(0, roomInteractions);
+    assertEquals(0, itemPickups);
+
+    when(time.getTime()).thenReturn(7000L);
+    input.update();
+    input.keyUp(Keys.E);
+    assertEquals(1, magneticPickups);
+    assertEquals(0, roomInteractions);
+    assertEquals(0, itemPickups);
+  }
+
+  @Test
+  void eKeyRepeatsDoNotRestartTheTimerOrTriggerAnotherBatch() {
+    input.keyDown(Keys.E);
+    when(time.getTime()).thenReturn(1000L);
+    input.keyDown(Keys.E);
+    when(time.getTime()).thenReturn(2000L);
+    input.update();
+    assertEquals(1, magneticPickups);
+
+    when(time.getTime()).thenReturn(5000L);
+    input.keyDown(Keys.E);
+    input.update();
+    input.keyUp(Keys.E);
+    assertEquals(1, magneticPickups);
+    assertEquals(0, roomInteractions);
+    assertEquals(0, itemPickups);
+  }
+
+  @Test
+  void releaseAtTwoSecondsTriggersTheBatchBeforeTheNextUpdate() {
+    input.keyDown(Keys.E);
+    when(time.getTime()).thenReturn(2000L);
+
+    input.keyUp(Keys.E);
+    input.update();
+
+    assertEquals(1, magneticPickups);
+    assertEquals(0, roomInteractions);
+    assertEquals(0, itemPickups);
+  }
+
+  @Test
+  void aNewPressMustCompleteItsOwnTwoSecondHold() {
+    input.keyDown(Keys.E);
+    when(time.getTime()).thenReturn(2000L);
+    input.update();
+    input.keyUp(Keys.E);
+
+    when(time.getTime()).thenReturn(2500L);
+    input.keyDown(Keys.E);
+    when(time.getTime()).thenReturn(4499L);
+    input.update();
+    assertEquals(1, magneticPickups);
+    when(time.getTime()).thenReturn(4500L);
+    input.update();
+    assertEquals(2, magneticPickups);
+  }
+
+  @Test
+  void unmatchedEReleaseDoesNotInteract() {
+    assertTrue(input.keyUp(Keys.E));
+    assertEquals(0, roomInteractions);
+    assertEquals(0, itemPickups);
+    assertEquals(0, magneticPickups);
+  }
+
+  @Test
+  void movementResetCancelsPendingHoldAndIgnoresTheStaleRelease() {
+    input.keyDown(Keys.W);
+    input.keyDown(Keys.E);
+    when(time.getTime()).thenReturn(1000L);
+    player.getEvents().trigger("resetMovementInput");
+    input.keyDown(Keys.E); // A repeat from the cancelled press must not start a new hold.
+    when(time.getTime()).thenReturn(5000L);
+    input.keyUp(Keys.E);
+    input.keyUp(Keys.W);
+    input.update();
+
+    assertEquals(0, roomInteractions);
+    assertEquals(0, itemPickups);
+    assertEquals(0, magneticPickups);
+    assertEquals(1, walkCount);
+    assertEquals(0, walkStopCount);
+
+    input.keyDown(Keys.E);
+    input.keyUp(Keys.E);
+    assertEquals(1, roomInteractions);
+  }
+
+  @Test
+  void roomChangeCancelsPendingHold() {
+    input.keyDown(Keys.E);
+    player.getEvents().trigger("roomPickupReset");
+    when(time.getTime()).thenReturn(2000L);
+    input.update();
+    input.keyUp(Keys.E);
+
+    assertEquals(0, magneticPickups);
+    assertEquals(0, roomInteractions);
+    assertEquals(0, itemPickups);
+  }
+
+  @Test
+  void dialogueAndCutsceneStartCancelPendingHolds() {
+    for (String event : List.of(CutsceneEvents.DIALOGUE_STARTED, CutsceneEvents.CUTSCENE_STARTED)) {
+      when(time.getTime()).thenReturn(0L);
+      input.keyDown(Keys.E);
+      player.getEvents().trigger(event, "test-scene");
+      when(time.getTime()).thenReturn(2000L);
+      input.update();
+      input.keyUp(Keys.E);
+    }
+
+    assertEquals(0, magneticPickups);
+    assertEquals(0, roomInteractions);
+    assertEquals(0, itemPickups);
+  }
+
+  @Test
+  void inputCannotStartOrFinishAnInteractionWhileTheWorldIsFrozen() {
+    EntityService entities = mock(EntityService.class);
+    ServiceLocator.registerEntityService(entities);
+    input.keyDown(Keys.E);
+    when(entities.isFrozen()).thenReturn(true);
+    when(time.getTime()).thenReturn(2000L);
+    input.keyUp(Keys.E);
+
+    input.keyDown(Keys.E);
+    input.keyUp(Keys.E);
+    assertEquals(0, magneticPickups);
+    assertEquals(0, roomInteractions);
+    assertEquals(0, itemPickups);
+  }
+
+  @Test
+  void openingInventoryCancelsPendingHold() {
+    InventoryComponent inventory = mock(InventoryComponent.class);
+    player.addComponent(inventory);
+    input.keyDown(Keys.E);
+    input.keyDown(Keys.I);
+    when(time.getTime()).thenReturn(2000L);
+    input.update();
+    input.keyUp(Keys.E);
+
+    assertEquals(0, magneticPickups);
+    assertEquals(0, roomInteractions);
+    assertEquals(0, itemPickups);
+  }
+
+  @Test
+  void explicitCancellationPreventsStaleReleaseAndAllowsAReleasedKeyToBeUsedAgain() {
+    input.keyDown(Keys.E);
+    input.cancelPickupHold();
+    when(time.getTime()).thenReturn(5000L);
+    // Headless input reports E released, simulating a release swallowed by a modal interface.
+    input.update();
+    input.keyUp(Keys.E);
+    assertEquals(0, magneticPickups);
+    assertEquals(0, roomInteractions);
+
+    input.keyDown(Keys.E);
+    input.keyUp(Keys.E);
+    assertEquals(1, roomInteractions);
+    assertEquals(1, itemPickups);
   }
 
   @Test
