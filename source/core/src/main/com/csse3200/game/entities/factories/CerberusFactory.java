@@ -134,6 +134,9 @@ public class CerberusFactory {
 
     leftHead.setPosition(mainHead.getPosition().cpy().add(leftOffset));
     rightHead.setPosition(mainHead.getPosition().cpy().add(rightOffset));
+
+    // bind the head entities to the layered renderer so the visual parts correspond to the correct
+    // gameplay entities.
     renderer.bindHeads(leftHead, mainHead, rightHead);
 
     mainHead
