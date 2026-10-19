@@ -4,14 +4,17 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.boss.FinalBossEvents;
-import com.csse3200.game.components.statuseffects.PetrificationEffect;
+import com.csse3200.game.components.statuseffects.FrozenEffect;
+import com.csse3200.game.components.statuseffects.Slow;
+import com.csse3200.game.components.statuseffects.StatusEffect;
+import com.csse3200.game.components.statuseffects.TimedStatusEffect;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Connects the Boss petrification events to the player's shared status-effect controller. */
 public class PlayerPetrificationComponent extends Component {
   private CombatStatsComponent stats;
   private StatusEffectsControllerComponent effects;
-  private PetrificationEffect petrification;
+  private TimedStatusEffect petrification;
   private boolean disposed;
 
   @Override
@@ -45,8 +48,8 @@ public class PlayerPetrificationComponent extends Component {
       return;
     }
     long durationMillis = Math.max(1L, Math.round(durationSeconds.doubleValue() * 1000d));
-    PetrificationEffect next =
-        new PetrificationEffect(ServiceLocator.getTimeSource(), durationMillis, multiplier);
+    TimedStatusEffect next =
+        new Slow(durationMillis, entity.getComponent(CombatStatsComponent.class), -1.5f);
     next.setOnEnded(
         () -> {
           if (petrification == next) {
@@ -73,7 +76,7 @@ public class PlayerPetrificationComponent extends Component {
   }
 
   private void clear() {
-    PetrificationEffect previous = petrification;
+    TimedStatusEffect previous = petrification;
     petrification = null;
     if (effects != null) {
       // Preserve unrelated effects such as Last Stand, slow stacks and invisibility.

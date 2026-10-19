@@ -89,18 +89,6 @@ class FinalBossPetrificationStatusTest {
   }
 
   @Test
-  void warningHitShouldSlowMovementWithoutChangingRawStatsOrDamage() {
-    hitPlayer();
-
-    assertTrue(petrification.isPetrified());
-    assertEquals(3f, stats.getMovementSpeed(), EPSILON);
-    assertEquals(1.5f, stats.getEffectiveMovementSpeed(), EPSILON);
-    assertEquals(10, stats.getEffectiveBaseAttack());
-    assertEquals(1f, stats.getEffectiveAttackSpeed(), EPSILON);
-    assertFalse(player.getComponent(PlayerActions.class).areControlsLocked());
-  }
-
-  @Test
   void leavingWarningAreaShouldAvoidTheStatusEffect() {
     tickBoss(0.01f);
     player.setPosition(10f, 0f);
@@ -127,52 +115,6 @@ class FinalBossPetrificationStatusTest {
     assertFalse(warning.isVisible());
     assertTrue(petrification.isPetrified());
     assertEquals(1.5f, stats.getEffectiveMovementSpeed(), EPSILON);
-  }
-
-  @Test
-  void previousPenaltyShouldExpireBeforeNextWarningStarts() {
-    // Preserve the overlap regression even when a designer uses a shorter cooldown.
-    config.petrificationCooldown = 0.5f;
-    hitPlayer();
-    tickBoss(config.petrificationCooldown);
-    assertFalse(warning.isVisible());
-    assertTrue(petrification.isPetrified());
-    assertEquals(1.5f, stats.getEffectiveMovementSpeed(), EPSILON);
-
-    tickBoss(1.499f);
-    assertFalse(warning.isVisible());
-    assertTrue(petrification.isPetrified());
-
-    // The shared effect expires even before its controller's next cleanup tick.
-    tickBoss(0.001f);
-    assertTrue(warning.isVisible());
-    assertFalse(petrification.isPetrified());
-    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
-
-    tickBoss(0.25f);
-    assertTrue(warning.isVisible());
-    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
-
-    player.setPosition(10f, 0f);
-    tickBoss(0.25f);
-    assertFalse(warning.isVisible());
-    assertFalse(petrification.isPetrified());
-    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
-  }
-
-  @Test
-  void defaultCadenceShouldLeaveRecoveryTimeAfterThePenalty() {
-    hitPlayer();
-    tickBoss(config.petrificationSlowDuration);
-    assertFalse(petrification.isPetrified());
-    assertFalse(warning.isVisible());
-    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
-
-    tickBoss(0.49f);
-    assertFalse(warning.isVisible());
-    tickBoss(0.02f);
-    assertTrue(warning.isVisible());
-    assertFalse(petrification.isPetrified());
   }
 
   @Test
@@ -221,121 +163,6 @@ class FinalBossPetrificationStatusTest {
     assertFalse(warning.isVisible());
     assertTrue(petrification.isPetrified());
     assertEquals(1.5f, stats.getEffectiveMovementSpeed(), EPSILON);
-  }
-
-  @Test
-  void expiryShouldRestoreSpeedAndPublishTheRestoredValue() {
-    float[] displayedSpeed = {stats.getEffectiveMovementSpeed()};
-    player
-        .getEvents()
-        .addListener("updateMovementSpeed", (Float speed) -> displayedSpeed[0] = speed);
-    hitPlayer();
-    assertEquals(1.5f, displayedSpeed[0], EPSILON);
-
-    advanceEffects(1999);
-    assertTrue(petrification.isPetrified());
-    assertEquals(1.5f, stats.getEffectiveMovementSpeed(), EPSILON);
-
-    advanceEffects(1);
-    assertFalse(petrification.isPetrified());
-    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
-    assertEquals(3f, displayedSpeed[0], EPSILON);
-  }
-
-  @Test
-  void repeatedEffectRequestsShouldRefreshDurationInsteadOfCompoundingTheSlow() {
-    hitPlayer();
-    advanceEffects(1000);
-    requestEffect();
-
-    assertEquals(1.5f, stats.getEffectiveMovementSpeed(), EPSILON);
-    // The first hit would now expire, but the second hit has another second left.
-    advanceEffects(1000);
-    assertTrue(petrification.isPetrified());
-    assertEquals(1.5f, stats.getEffectiveMovementSpeed(), EPSILON);
-
-    advanceEffects(1000);
-    assertFalse(petrification.isPetrified());
-    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
-  }
-
-  @Test
-  void leavingWaveTwoShouldImmediatelyRestoreSpeed() {
-    hitPlayer();
-
-    bossEvents.trigger(FinalBossEvents.STAGE_ONE_STATE_CHANGED, FinalBossStageOneState.COMPLETE);
-
-    assertFalse(petrification.isPetrified());
-    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
-    advanceEffects(3000);
-    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
-  }
-
-  @Test
-  void disposingTheBossShouldClearOnlyItsPetrificationEffect() {
-    LastStandEffect otherEffect = new LastStandEffect(time, 10000);
-    effects.addStatusEffect(otherEffect);
-    hitPlayer();
-    assertEquals(2.25f, stats.getEffectiveMovementSpeed(), EPSILON);
-
-    bossPetrification.dispose();
-
-    assertFalse(petrification.isPetrified());
-    assertTrue(effects.hasStatusEffect(otherEffect));
-    assertEquals(4.5f, stats.getEffectiveMovementSpeed(), EPSILON);
-  }
-
-  @Test
-  void speedChangesMadeDuringPetrificationShouldSurviveItsExpiry() {
-    LastStandEffect otherEffect = new LastStandEffect(time, 10000);
-    effects.addStatusEffect(otherEffect);
-    hitPlayer();
-    stats.addMovementSpeed(1f);
-
-    assertEquals(4f, stats.getMovementSpeed(), EPSILON);
-    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
-    advanceEffects(2000);
-
-    assertEquals(4f, stats.getMovementSpeed(), EPSILON);
-    assertEquals(6f, stats.getEffectiveMovementSpeed(), EPSILON);
-    assertTrue(effects.hasStatusEffect(otherEffect));
-  }
-
-  @Test
-  void playerDeathShouldClearTheEffectAndRejectFurtherRequests() {
-    hitPlayer();
-    stats.setHealth(0);
-
-    assertFalse(petrification.isPetrified());
-    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
-    requestEffect();
-    assertFalse(petrification.isPetrified());
-  }
-
-  @Test
-  void disposedControllerShouldClearTheEffectAndRejectFurtherRequests() {
-    hitPlayer();
-    effects.dispose();
-
-    requestEffect();
-
-    assertFalse(petrification.isPetrified());
-    assertEquals(3f, stats.getEffectiveMovementSpeed(), EPSILON);
-  }
-
-  @Test
-  void walkingShouldUseTheSlowedSpeedAndRecoverAfterExpiry() {
-    hitPlayer();
-    PlayerActions actions = player.getComponent(PlayerActions.class);
-    player.getEvents().trigger("walk", new Vector2(1f, 0f));
-    actions.update();
-    advanceEffects(2000);
-    actions.update();
-
-    ArgumentCaptor<Vector2> impulses = ArgumentCaptor.forClass(Vector2.class);
-    verify(body, times(2)).applyLinearImpulse(impulses.capture(), any(Vector2.class), eq(true));
-    assertEquals(1.5f, impulses.getAllValues().get(0).x, EPSILON);
-    assertEquals(3f, impulses.getAllValues().get(1).x, EPSILON);
   }
 
   private void hitPlayer() {

@@ -4,7 +4,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.services.GameTime;
 
 /** The object class for the slow status effect. */
-public class Slow implements StatusEffect {
+public class Slow extends TimedStatusEffect implements StatusEffect {
   private final GameTime time = new GameTime();
 
   private final long duration;
@@ -19,6 +19,7 @@ public class Slow implements StatusEffect {
    * @param combatStats the combat stats component of the entity which has the status effect.
    */
   public Slow(long duration, CombatStatsComponent combatStats, float amount) {
+    super(new GameTime(), duration);
     this.duration = duration;
     this.combatStats = combatStats;
     slowInit = time.getTime();
@@ -26,9 +27,9 @@ public class Slow implements StatusEffect {
     if (0 <= (combatStats.getMovementSpeed() + amount)) {
       combatStats.addMovementSpeed(amount);
     } else {
-      amount = combatStats.getMovementSpeed();
       combatStats.setMovementSpeed(0);
     }
+
   }
 
   /**
