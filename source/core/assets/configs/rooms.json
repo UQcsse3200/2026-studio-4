@@ -175,7 +175,7 @@
       ],
       "enemySpawns": [
         {
-          "type": "LONGWEI",
+          "type": "MEDUSA",
           "x": 30,
           "y": 6
         },

@@ -1,8 +1,11 @@
 package com.csse3200.game.components.npc;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.statuseffects.FlashEffect;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
@@ -14,7 +17,11 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public class EnemyAnimationController extends Component {
   private static final String ATTACK_ANIMATION = "attack";
+  private static final Color FUSE_FLASH_TINT = new Color(Color.WHITE);
+  private static final Color FUSE_FLASH_GLOW = new Color(1f, 1f, 1f, 0.5f);
   private AnimationRenderComponent animator;
+  private StatusEffectsControllerComponent statusEffects;
+  private FlashEffect fuseFlash;
   private boolean dying = false;
   private boolean followPlayer = false; // used by enemies to follow player
   private float deathRotationPerFrame;
@@ -34,6 +41,7 @@ public class EnemyAnimationController extends Component {
   @Override
   public void create() {
     animator = entity.getComponent(AnimationRenderComponent.class);
+    statusEffects = entity.getComponent(StatusEffectsControllerComponent.class);
 
     entity.getEvents().addListener("wanderStart", this::animateWander);
     entity.getEvents().addListener("chaseStart", this::animateChase);
@@ -137,8 +145,16 @@ public class EnemyAnimationController extends Component {
     animator.startAnimation("default");
   }
 
-  private void animateFuse() {
+  private void animateFuse(float fuseTime) {
     animator.startAnimation("fuse");
+    if (statusEffects != null) {
+      statusEffects.removeStatusEffect(fuseFlash);
+      long durationMillis = Math.max(1L, Math.round(fuseTime * 1000d));
+      fuseFlash =
+          new FlashEffect(
+              ServiceLocator.getTimeSource(), durationMillis, FUSE_FLASH_TINT, FUSE_FLASH_GLOW);
+      statusEffects.addStatusEffect(fuseFlash);
+    }
   }
 
   private void animatePatrol() {
