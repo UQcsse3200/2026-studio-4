@@ -13,4 +13,5 @@ public class AchievementConfig {
   public String dungeonId;
   public float maxSeconds;
   public String bossAchievementId;
+  public String category;
 }

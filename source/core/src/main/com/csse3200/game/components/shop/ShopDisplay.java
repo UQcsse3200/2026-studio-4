@@ -38,7 +38,7 @@ import java.util.Map;
 public class ShopDisplay extends UIComponent implements ShopView {
   private static final Color INK = Color.valueOf("2a1a08");
   private static final Color BRASS = Color.valueOf("c8963e");
-  private static final String MERCHANT_ATLAS = "images/shopkeeper.atlas";
+  private static final String MERCHANT_ATLAS = "images/friendly-npcs/shopkeeper.atlas";
   private static final String GOLD_TEXTURE = "images/gold_coin_pixel.png";
   private static final String SMALL_FONT = "font_small";
   private static final String CASINO_LABEL = "CASINO";
@@ -162,7 +162,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
 
   private void loadAssets(ResourceService resources, ItemGambleConfig gambleConfig) {
     for (ShopOffer offer : catalog.offers()) {
-      if (offer.kind() == ShopProductKind.CONSUMABLE) {
+      if (offer.kind() == ShopProductKind.CONSUMABLE || offer.kind() == ShopProductKind.CHARM) {
         addTexture(ItemCatalog.create(offer.productId(), 1).getTexture());
       }
     }
@@ -293,7 +293,8 @@ public class ShopDisplay extends UIComponent implements ShopView {
     offers.setName("shop-offers");
     offers.top();
     for (ShopOffer offer : catalog.offers()) {
-      if (offer.kind() != ShopProductKind.CONSUMABLE) continue;
+      if (offer.kind() != ShopProductKind.CONSUMABLE && offer.kind() != ShopProductKind.CHARM)
+        continue;
       offers
           .add(createOfferRow(offer, resources, parchment, iconFrame, buyStyle))
           .growX()
@@ -328,7 +329,6 @@ public class ShopDisplay extends UIComponent implements ShopView {
     String description =
         item.getEffectSummary().isBlank() ? item.getDescription() : item.getEffectSummary();
     Label effect = label(description, INK);
-    effect.setFontScale(0.85f);
     details.add(effect).growX().left().padTop(4f);
     details.row();
     Label owned = label("", INK);
@@ -597,10 +597,17 @@ public class ShopDisplay extends UIComponent implements ShopView {
           boolean affordable = inventoryData.getGold() >= offer.goldPrice();
           button.setDisabled(!affordable);
           button.setText(affordable ? "BUY" : "No gold");
-          ownedLabels
-              .get(offer)
-              .setText("Owned: " + inventoryData.getConsumableCount(offer.productId()));
+          ownedLabels.get(offer).setText("Owned: " + ownedCount(offer));
         });
+  }
+
+  private long ownedCount(ShopOffer offer) {
+    if (offer.kind() == ShopProductKind.CHARM) {
+      return inventoryData.getCharms().stream()
+          .filter(charm -> charm.getId().equals(offer.productId()))
+          .count();
+    }
+    return inventoryData.getConsumableCount(offer.productId());
   }
 
   @Override

@@ -7,18 +7,21 @@ import java.util.Set;
 public class AchievementsFactory {
 
   public static Achievement build(AchievementConfig c) {
-    return switch (c.type) {
-      case "dungeonClear" -> dungeonClear(c);
-      case "dungeonReached" -> dungeonReached(c);
-      case "gold" -> gold(c);
-      case "enemyKillCount" -> enemyKillCount(c);
-      case "killStreak" -> killStreak(c);
-      case "speedRun" -> speedRun(c);
-      case "enemySet" -> enemySet(c);
-      case "snake" -> snake(c);
-      case "finalBoss" -> finalBoss(c);
-      default -> throw new IllegalArgumentException("Unknown achievement type: " + c.type);
-    };
+    Achievement a =
+        switch (c.type) {
+          case "dungeonClear" -> dungeonClear(c);
+          case "dungeonReached" -> dungeonReached(c);
+          case "gold" -> gold(c);
+          case "enemyKillCount" -> enemyKillCount(c);
+          case "killStreak" -> killStreak(c);
+          case "speedRun" -> speedRun(c);
+          case "enemySet" -> enemySet(c);
+          case "snake" -> snake(c);
+          case "finalBoss" -> finalBoss(c);
+          default -> throw new IllegalArgumentException("Unknown achievement type: " + c.type);
+        };
+    a.setCategory(c.category);
+    return a;
   }
 
   private static Achievement snake(AchievementConfig c) {
@@ -41,20 +44,15 @@ public class AchievementsFactory {
   private static Achievement gold(AchievementConfig c) {
     Achievement a = new Achievement(c.name, c.description);
     a.setTarget(c.target);
-    boolean[] initial = {true};
-    float[] initialGold = {0f};
     a.setCondition(
-        ctx -> {
-          if (ctx.goldTotal == null) {
+        context -> {
+          if (context.goldCollected == null || context.goldCollected <= 0) {
             return false;
           }
-          if (initial[0]) {
-            initialGold[0] = ctx.goldTotal;
-            initial[0] = false;
-          }
-          a.setProgress(ctx.goldTotal - initialGold[0]);
+          a.addProgress(1);
           return a.getProgress() >= c.target;
         });
+
     return a;
   }
 

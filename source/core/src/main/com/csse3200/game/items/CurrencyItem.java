@@ -27,7 +27,7 @@ public final class CurrencyItem extends Item {
 
   @Override
   public void pickUp(Entity player) {
-    player.getComponent(InventoryComponent.class).addGold(quantity);
+    player.getComponent(InventoryComponent.class).addGoldFromPickup(quantity);
   }
 
   @Override

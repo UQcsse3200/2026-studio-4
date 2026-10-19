@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.boss.FinalBossPhase;
 import com.csse3200.game.components.friendlynpc.NpcInteractableComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
@@ -22,14 +21,18 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.files.GameSaveData;
-import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.minimap.Minimap;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
-/** Owns the active room and applies the room graph specified by {@link WorldConfig}. */
+/**
+ * Owns the active room and applies the room graph specified by {@link WorldConfig}.
+ *
+ * @deprecated Deprecated in favour of a new {@link com.csse3200.game.rooms.RoomSelector} and
+ *     related classes.
+ */
+@Deprecated(since = "14.10", forRemoval = true)
 public class RoomManager {
   /**
    * Triggered on the player with the room id, its dungeon id (null for the hub) and whether the
@@ -56,8 +59,6 @@ public class RoomManager {
   private PositionConfig pendingArrivalPosition;
   private FinalBossPhase pendingFinalBossStage;
   private boolean clearRequested;
-  private final RunTimer runTimer;
-  private String pendingDungeonCompletion;
 
   /** Creates the JSON-driven room manager. Call {@link #create()} to register the initial room. */
   public RoomManager(WorldConfig world, Entity player, CameraComponent camera) {
@@ -65,40 +66,30 @@ public class RoomManager {
     this.world = world;
     this.player = player;
     this.camera = camera;
-    this.runTimer = ServiceLocator.getRunTimer();
     currentConfig = world.getRoom(world.startRoomId);
     initialEntryPoint = currentConfig.getEntryPoint(world.startEntryPointId);
     currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
     currentConfig = world.getRoom(world.startRoomId);
-    for (RoomConfig room : world.rooms) {
-      if (room.dungeonId != null) {
-        runTimer.registerDungeon(room.dungeonId);
-      }
-    }
+
+    // Move save loading elsewhere
     checkpointRoomId = currentConfig.id;
     checkpointEntryPointId = world.startEntryPointId;
     checkpointPosition = new PositionConfig();
     checkpointPosition.x = initialEntryPoint.x;
     checkpointPosition.y = initialEntryPoint.y;
 
+    // Player setup code
     player.getEvents().addListener("interact", this::interact);
     FollowingCameraComponent cameraFollowingComponent =
         currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
     cameraFollowingComponent.setTarget(player);
     attachMinimap();
-
-    if (ServiceLocator.getAchievementService() != null) {
-      ServiceLocator.getAchievementService()
-          .getEvents()
-          .addListener("achievementUnlocked", this::onAchievementUnlocked);
-    }
   }
 
   /** Package private constructer to create empty room manager for testing */
   RoomManager(Entity player) {
     this.player = player;
-    this.runTimer = ServiceLocator.getRunTimer();
     this.world = null;
     this.camera = null;
     this.initialEntryPoint = null;
@@ -134,6 +125,7 @@ public class RoomManager {
     checkpointEntryPointId = checkpoint.entryPointId;
     checkpointPosition = spawn;
 
+    // If the room can query the player than this can be set in the component
     FollowingCameraComponent following = currentRoom.getComponent(FollowingCameraComponent.class);
     following.setCamera(camera);
     following.setTarget(player);
@@ -168,6 +160,7 @@ public class RoomManager {
 
   /** Registers the active room and player, then positions the player at its entry point. */
   public void create() {
+    // Figure out whats happening with constructor vs this function?
     currentRoom = RoomFactory.createRoom(currentConfig, camera, false);
     FollowingCameraComponent following = currentRoom.getComponent(FollowingCameraComponent.class);
     following.setCamera(camera);
@@ -181,9 +174,6 @@ public class RoomManager {
     } else {
       start(initialWorldPosition);
     }
-    if (runTimer != null) {
-      runTimer.startDungeon(currentConfig.dungeonId);
-    }
   }
 
   private void start(Vector2 worldPosition) {
@@ -196,6 +186,7 @@ public class RoomManager {
 
   /** Package private for testing */
   void start(PositionConfig entryPoint) {
+    // this should just use the function it is overloading
     currentRoom.getEvents().addListener("roomCleared", this::onRoomCleared);
     currentRoom.getEvents().trigger("RoomCreated", player);
     announceRoom();
@@ -227,8 +218,10 @@ public class RoomManager {
     if (pendingDestination == null) {
       return;
     }
+    // Try make this use the EntityService schedule.
     RoomConfig destination = pendingDestination;
     PositionConfig arrivalPosition = pendingArrivalPosition;
+    // iiuc this was done to prevent room switching from crashing box2d
     FinalBossPhase bossStage = pendingFinalBossStage;
     pendingDestination = null;
     pendingArrivalPosition = null;
@@ -265,30 +258,19 @@ public class RoomManager {
       return;
     }
     if (roomCleared) {
+      // The room ids are added twice.
       clearedRoomIds.add(currentConfig.id);
     }
     if (exit.completesDungeon) {
       completedDungeonIds.add(currentConfig.dungeonId);
-      completeDungeon();
     }
     pendingDestination = destination;
+    // If a specific exit destination is set use it, else use entry point????
     if (exit.destinationExitId != null) {
       pendingArrivalPosition = arrivalInsideDoor(destination.getExit(exit.destinationExitId));
     } else {
       pendingArrivalPosition = destination.getEntryPoint(exit.destinationEntryPointId);
     }
-  }
-
-  /** Records the current dungeon as completed and reports its clear time for achievements. */
-  private void completeDungeon() {
-    completedDungeonIds.add(currentConfig.dungeonId);
-    if (runTimer != null && ServiceLocator.getAchievementService() != null) {
-      AchievementContext ctx = new AchievementContext();
-      ctx.dungeonId = currentConfig.dungeonId;
-      ctx.dungeonSeconds = runTimer.getDungeonTime();
-      ServiceLocator.getAchievementService().update(ctx);
-    }
-    pendingDungeonCompletion = currentConfig.dungeonId; // defer the toast
   }
 
   private boolean interactWithNpc() {
@@ -322,6 +304,7 @@ public class RoomManager {
     EnemyManagerComponent enemies =
         currentRoom == null ? null : currentRoom.getComponent(EnemyManagerComponent.class);
     boolean cleared = enemies == null || enemies.isCleared();
+    //  I think the only place that uses this is the music stuff
     player.getEvents().trigger(ROOM_ENTERED, currentConfig.id, currentConfig.dungeonId, cleared);
   }
 
@@ -331,6 +314,7 @@ public class RoomManager {
   }
 
   private void onRoomCleared() {
+    // cleared room id is added
     if (clearedRoomIds.add(currentConfig.id)) {
       showStatus("Room cleared.");
     }
@@ -359,31 +343,20 @@ public class RoomManager {
 
   private void switchToRoom(
       RoomConfig destination, PositionConfig arrivalPosition, FinalBossPhase bossStage) {
-    String previousDungeonId = currentConfig.dungeonId;
     Entity nextRoom =
         RoomFactory.createRoom(
             destination, camera, bossStage == null && clearedRoomIds.contains(destination.id));
     currentRoom.dispose();
     currentConfig = destination;
     currentRoom = nextRoom;
-    if (runTimer != null && !Objects.equals(previousDungeonId, destination.dungeonId)) {
-      runTimer.stopDungeon();
-      if (destination.dungeonId != null) {
-        runTimer.startDungeon(destination.dungeonId);
-      }
-    }
+
     ServiceLocator.getEntityService().register(currentRoom);
     player.getEvents().trigger(Minimap.ROOM_CHANGE_EVENT, destination);
 
-    if (pendingDungeonCompletion != null && ServiceLocator.getAchievementService() != null) {
-      AchievementContext ctx = new AchievementContext();
-      ctx.dungeonCompletedId = pendingDungeonCompletion;
-      ServiceLocator.getAchievementService().update(ctx);
-      pendingDungeonCompletion = null;
-    }
-
     start(arrivalPosition);
     rememberCheckpoint(arrivalPosition, null);
+
+    // moves camera to new room?
     FollowingCameraComponent cameraFollowingComponent =
         currentRoom.getComponent(FollowingCameraComponent.class);
     cameraFollowingComponent.setCamera(camera);
@@ -394,14 +367,6 @@ public class RoomManager {
       // requested stage only now, using its scaled health and the destination room's camera view.
       cameraFollowingComponent.snapToTarget();
       currentRoom.getComponent(EnemyManagerComponent.class).startFinalBossStage(bossStage);
-    }
-    if (runTimer != null
-        && destination.dungeonId != null
-        && !Objects.equals(previousDungeonId, destination.dungeonId)
-        && ServiceLocator.getAchievementService() != null) {
-      AchievementContext ctx = new AchievementContext();
-      ctx.dungeonEnteredId = destination.dungeonId;
-      ServiceLocator.getAchievementService().update(ctx);
     }
   }
 
@@ -430,6 +395,7 @@ public class RoomManager {
 
   /** Package private for unit testing */
   void refreshInteractionPrompt() {
+    // not sure why the prompt is refreshed here and not internally
     InteractionPromptDisplay display = player.getComponent(InteractionPromptDisplay.class);
     if (display == null) {
       return;
@@ -447,6 +413,8 @@ public class RoomManager {
    * Each takes a lock of its own, so asking about the lock covers all of them.
    */
   private boolean cannotAct() {
+    // This should either exist in one of the players components
+    // Could introduce a new class that handles the player from a room perspective
     NpcInteractorComponent interactor = player.getComponent(NpcInteractorComponent.class);
     if (interactor != null && interactor.isInteracting()) {
       return true;
@@ -456,16 +424,19 @@ public class RoomManager {
   }
 
   private String getNpcPrompt() {
+    // See line457
     FriendlyNpcManagerComponent npcs = currentRoom.getComponent(FriendlyNpcManagerComponent.class);
     return npcs == null ? null : npcs.getPrompt(player);
   }
 
   private String getItemPrompt() {
+    // See line457
     ItemPickupComponent pickup = player.getComponent(ItemPickupComponent.class);
     return pickup == null ? null : pickup.getPickupPrompt();
   }
 
   private String getExitPrompt() {
+    // See line457
     ExitConfig exit = findNearestExit();
     if (exit == null) {
       return null;
@@ -481,17 +452,11 @@ public class RoomManager {
     return InteractionPrompt.forExit(exit, roomCleared, dungeonCompleted);
   }
 
+  // Used primarily by interact()
   private void showStatus(String message) {
     GameAreaDisplay display = currentRoom.getComponent(GameAreaDisplay.class);
     if (display != null) {
       display.showStatus(message);
-    }
-  }
-
-  private void onAchievementUnlocked(String name) {
-    GameAreaDisplay display = currentRoom.getComponent(GameAreaDisplay.class);
-    if (display != null) {
-      display.showAchievement(name);
     }
   }
 
@@ -569,7 +534,6 @@ public class RoomManager {
         destination.entryPoints.length > 0 ? destination.entryPoints[0] : debugArrival(destination);
     pendingFinalBossStage = stage;
     clearRequested = false;
-    pendingDungeonCompletion = null;
     return true;
   }
 

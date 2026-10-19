@@ -36,6 +36,8 @@ public class RoomAssets implements Disposable {
   /** Plays while the final boss is still alive. */
   private static final String BOSS_MUSIC = "sounds/boss_music.mp3";
 
+  private static final String ACHIEVEMENT_MUSIC = "sounds/achievementSound.mp3";
+
   /**
    * Dungeons that have a theme of their own. Anything not listed here fights to {@link
    * #FIGHT_MUSIC}, so giving a dungeon its own track is one entry rather than a new branch.
@@ -44,10 +46,9 @@ public class RoomAssets implements Disposable {
 
   private static final String IMPACT_SOUND = "sounds/Impact4.ogg";
   private static final String[] MUSIC = {CALM_MUSIC, FIGHT_MUSIC, BOSS_MUSIC};
-  private static final String[] SOUNDS = {IMPACT_SOUND};
+  private static final String[] SOUNDS = {IMPACT_SOUND, ACHIEVEMENT_MUSIC};
 
   private static final String[] ENEMY_TEXTURES = {
-    "images/hole.png",
     "images/dragon/smoke_sheet.png",
     SnakePlayerHitVisualComponent.HIT_SHEET,
     SnakeShieldComponent.SHIELD_TEXTURE,
@@ -77,6 +78,7 @@ public class RoomAssets implements Disposable {
     "images/horse.atlas",
     "images/crow.atlas",
     "images/minotaur.atlas",
+    "images/minotaur-combat/attacks.atlas",
     "images/sandeye.atlas",
     "images/dark_elves.atlas",
     "images/jingwei.atlas",
@@ -101,9 +103,7 @@ public class RoomAssets implements Disposable {
     "images/dungeons/fantasy_dreamland_door.png"
   };
 
-  private static final String[] OBSTACLE_TEXTURES = {
-    "images/hole.png", "images/rock.png",
-  };
+  private static final String[] OBSTACLE_TEXTURES = {"images/rock.png"};
 
   private static final String[] TRAP_TEXTURES = {
     FireTrapRenderComponent.START_TEXTURE,
@@ -113,7 +113,6 @@ public class RoomAssets implements Disposable {
   };
 
   private static final String[] ITEM_TEXTURES = {
-    "images/heart.png",
     "images/strength_charm_pixel.png",
     "images/attack_speed_charm.png",
     "images/speed_charm.png",

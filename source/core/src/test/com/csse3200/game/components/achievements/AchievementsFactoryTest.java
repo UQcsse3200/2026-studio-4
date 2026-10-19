@@ -79,7 +79,7 @@ class AchievementsFactoryTest {
 
   private static AchievementContext gold(Integer total) {
     AchievementContext ctx = new AchievementContext();
-    ctx.goldTotal = total;
+    ctx.goldCollected = total;
     return ctx;
   }
 
@@ -539,69 +539,10 @@ class AchievementsFactoryTest {
     }
 
     @Test
-    void update_goldEarnedAtOrAboveTarget_unlocks() {
-      for (int reading : new int[] {100, 500}) {
-        Achievement a = build(100);
-
-        a.update(gold(0)); // baseline
-
-        assertTrue(a.update(gold(reading)), "reading " + reading);
-      }
-    }
-
-    @Test
-    void update_firstReadingAlone_establishesBaselineWithoutUnlocking() {
-      Achievement a = build(100);
-
-      // The first reading becomes the baseline; progress against it starts at 0.
-      assertFalse(a.update(gold(100)));
-      assertEquals(0f, a.getProgress());
-    }
-
-    @Test
-    void update_earningGoldAfterBaseline_tracksTheDelta() {
-      Achievement a = build(100);
-
-      a.update(gold(50)); // baseline = 50
-      a.update(gold(90)); // earned 40 so far
-
-      assertEquals(40f, a.getProgress());
-    }
-
-    @Test
-    void update_startingWithExistingGold_onlyCountsFurtherEarnings() {
-      Achievement a = build(100);
-
-      a.update(gold(50)); // player started with 50; this becomes the baseline, not progress
-      assertFalse(a.update(gold(120))); // earned 70 so far, short of 100
-      assertTrue(a.update(gold(150))); // earned 100, unlocks
-    }
-
-    @Test
     void update_nullGoldTotal_staysLockedWithoutThrowing() {
       Achievement a = build(100);
 
       assertFalse(a.update(gold(null)));
-    }
-
-    @Test
-    void update_nullReadingBeforeBaseline_doesNotEstablishABaseline() {
-      Achievement a = build(100);
-
-      a.update(gold(null)); // ignored; no baseline set yet
-      a.update(gold(0)); // this becomes the baseline instead
-
-      assertTrue(a.update(gold(100))); // earned 100 relative to the real baseline
-    }
-
-    @Test
-    void update_goldReachesTargetOverSeveralUpdates_unlocksOnceTargetIsReached() {
-      Achievement a = build(100);
-
-      a.update(gold(0)); // baseline
-      assertFalse(a.update(gold(40)));
-      assertFalse(a.update(gold(80)));
-      assertTrue(a.update(gold(120)));
     }
   }
 
