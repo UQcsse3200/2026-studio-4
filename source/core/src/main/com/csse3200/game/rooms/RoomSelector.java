@@ -65,6 +65,19 @@ public class RoomSelector {
     ServiceLocator.getEntityService().schedule(() -> setRoom(exit));
   }
 
+  /** Debug function to quick travel to the given room */
+  boolean debugGotoRoom(String roomId) {
+    logger.info("Going to room: {}", roomId);
+    Entity room = roomLoader.getRoom(roomId, false);
+    if (room == null) {
+      return false;
+    }
+    GridPoint2 spawn = roomLoader.getAnyVaidSpawn(roomId);
+
+    ServiceLocator.getEntityService().schedule(() -> setRoom(room, spawn));
+    return true;
+  }
+
   /**
    * Converts the spawn from tile coord to position the set the player to it
    *
