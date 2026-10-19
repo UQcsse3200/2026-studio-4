@@ -68,11 +68,14 @@ public class ShopDisplay extends UIComponent implements ShopView {
   private ScrollPane itemScroll;
   private HigherLowerPanel higherLowerPanel;
   private ScrollPane higherLowerScroll;
+  private ShellGamePanel shellGamePanel;
+  private ScrollPane shellGameScroll;
   private Table casinoContent;
   private CasinoGame activeGame = CasinoGame.COIN_FLIP;
   private TextButton coinSelector;
   private TextButton itemSelector;
   private TextButton higherLowerSelector;
+  private TextButton shellGameSelector;
   private TextButton casinoButton;
   private Label sectionLabel;
   private Label hint;
@@ -422,6 +425,22 @@ public class ShopDisplay extends UIComponent implements ShopView {
     higherLowerScroll.setName("higher-lower-scroll");
     higherLowerScroll.setScrollingDisabled(true, false);
     higherLowerScroll.setFadeScrollBars(false);
+    shellGamePanel =
+        new ShellGamePanel(
+            new ShellGame(inventoryData, () -> MathUtils.random(0, ShellGame.CUP_COUNT - 1)),
+            appearance,
+            round -> {
+              feedback.setText(
+                  round.won()
+                      ? "Found it! Won " + round.payout() + GOLD_SUFFIX
+                      : "Wrong cup. Lost your stake.");
+              entity.getEvents().trigger("shellGameResolved", round);
+              refresh();
+            });
+    shellGameScroll = new ScrollPane(shellGamePanel);
+    shellGameScroll.setName("shell-game-scroll");
+    shellGameScroll.setScrollingDisabled(true, false);
+    shellGameScroll.setFadeScrollBars(false);
     casinoContent = new Table();
     Table selectors = new Table();
     coinSelector =
@@ -434,17 +453,26 @@ public class ShopDisplay extends UIComponent implements ShopView {
             "casino-select-higher-lower",
             appearance.wager(),
             CasinoGame.HIGHER_LOWER);
+    shellGameSelector =
+        gameSelector(
+            "Shell Game", "casino-select-shell-game", appearance.wager(), CasinoGame.SHELL_GAME);
     selectors.add(coinSelector).growX().height(38f).padRight(8f);
     selectors.add(itemSelector).growX().height(38f).padRight(8f);
-    selectors.add(higherLowerSelector).growX().height(38f);
+    selectors.add(higherLowerSelector).growX().height(38f).padRight(8f);
+    selectors.add(shellGameSelector).growX().height(38f);
     casinoContent.add(selectors).growX().padBottom(10f);
     casinoContent.row();
-    casinoContent.add(new Stack(casinoScroll, itemScroll, higherLowerScroll)).minHeight(0f).grow();
+    casinoContent
+        .add(new Stack(casinoScroll, itemScroll, higherLowerScroll, shellGameScroll))
+        .minHeight(0f)
+        .grow();
     casinoContent.setVisible(false);
     itemPanel.setVisible(false);
     itemScroll.setVisible(false);
     higherLowerPanel.setVisible(false);
     higherLowerScroll.setVisible(false);
+    shellGamePanel.setVisible(false);
+    shellGameScroll.setVisible(false);
   }
 
   private void addBody(
@@ -514,6 +542,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
     casinoPanel.close();
     itemPanel.close();
     higherLowerPanel.close();
+    shellGamePanel.close();
     productScroll.setVisible(false);
     casinoContent.setVisible(false);
     shopBody.setVisible(false);
@@ -531,7 +560,8 @@ public class ShopDisplay extends UIComponent implements ShopView {
   private enum CasinoGame {
     COIN_FLIP,
     ITEM_DRAW,
-    HIGHER_LOWER
+    HIGHER_LOWER,
+    SHELL_GAME
   }
 
   private TextButton gameSelector(
@@ -554,18 +584,23 @@ public class ShopDisplay extends UIComponent implements ShopView {
     casinoPanel.close();
     itemPanel.close();
     higherLowerPanel.close();
+    shellGamePanel.close();
     boolean coin = game == CasinoGame.COIN_FLIP;
     boolean item = game == CasinoGame.ITEM_DRAW;
     boolean higherLower = game == CasinoGame.HIGHER_LOWER;
+    boolean shellGame = game == CasinoGame.SHELL_GAME;
     casinoPanel.setVisible(casino && coin);
     casinoScroll.setVisible(casino && coin);
     itemPanel.setVisible(casino && item);
     itemScroll.setVisible(casino && item);
     higherLowerPanel.setVisible(casino && higherLower);
     higherLowerScroll.setVisible(casino && higherLower);
+    shellGamePanel.setVisible(casino && shellGame);
+    shellGameScroll.setVisible(casino && shellGame);
     coinSelector.setText(coin ? "[ Coin Flip ]" : "Coin Flip");
     itemSelector.setText(item ? "[ Item Draw ]" : "Item Draw");
     higherLowerSelector.setText(higherLower ? "[ Higher/Lower ]" : "Higher/Lower");
+    shellGameSelector.setText(shellGame ? "[ Shell Game ]" : "Shell Game");
     if (!casino) return;
     ScrollPane activeScroll;
     if (item) {
@@ -579,6 +614,11 @@ public class ShopDisplay extends UIComponent implements ShopView {
       sectionLabel.setText("HIGHER / LOWER");
       feedback.setText("Guess right to grow your multiplier. Cash out any time.");
       activeScroll = higherLowerScroll;
+    } else if (shellGame) {
+      shellGamePanel.open();
+      sectionLabel.setText("SHELL GAME");
+      feedback.setText("Pick the cup hiding the ball to double your stake.");
+      activeScroll = shellGameScroll;
     } else {
       casinoPanel.open();
       sectionLabel.setText("COIN FLIP");
@@ -652,6 +692,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
       casinoPanel.refresh();
       itemPanel.refresh();
       higherLowerPanel.refresh();
+      shellGamePanel.refresh();
     }
     buyButtons.forEach(
         (offer, button) -> {
@@ -672,6 +713,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
     if (casinoPanel != null) casinoPanel.close();
     if (itemPanel != null) itemPanel.close();
     if (higherLowerPanel != null) higherLowerPanel.close();
+    if (shellGamePanel != null) shellGamePanel.close();
     if (root != null) {
       // Cancel press ownership before hiding, so a later release cannot buy in a reopened shop.
       stage.cancelTouchFocus();
