@@ -14,8 +14,10 @@ import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
+import com.csse3200.game.components.npc.MinotaurAnimationController;
 import com.csse3200.game.components.tasks.*;
 import com.csse3200.game.components.tasks.ChaseTask;
+import com.csse3200.game.components.tasks.GroundChaseTask;
 import com.csse3200.game.components.tasks.LungeAttackTask;
 import com.csse3200.game.components.tasks.PatrolTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
@@ -30,6 +32,8 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.MinotaurAttackRenderComponent;
+import com.csse3200.game.rendering.MinotaurDashTrailComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.function.Consumer;
 
@@ -138,7 +142,7 @@ public class NPCFactory {
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(new WanderTask(config.movement, 1f))
-            .addTask(new ChaseTask(target, 10, 3f, 10f))
+            .addTask(new GroundChaseTask(target, 10, 3f, 10f))
             .addTask(new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy));
 
     AnimationRenderComponent animator =
@@ -151,12 +155,23 @@ public class NPCFactory {
 
     chaseEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f, 1f))
         .addComponent(aiComponent)
         .addComponent(animator)
         .addComponent(new EnemyDeathComponent(true, true))
-        .addComponent(new EnemyAnimationController())
         .addComponent(new EnemyStatDisplay(1.5f));
+    if ("images/minotaur.atlas".equals(skin)) {
+      chaseEnemy
+          .addComponent(
+              new MinotaurAttackRenderComponent(
+                  ServiceLocator.getResourceService()
+                      .getAsset(MinotaurAttackRenderComponent.ATLAS, TextureAtlas.class)))
+          .addComponent(new MinotaurAnimationController(target))
+          .addComponent(new MinotaurDashTrailComponent());
+    } else {
+      chaseEnemy
+          .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f, 1f))
+          .addComponent(new EnemyAnimationController());
+    }
     if (shouldSplit) {
       chaseEnemy.addComponent(new SplitComponent(target, skin));
     }
