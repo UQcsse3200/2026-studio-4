@@ -12,6 +12,7 @@ import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.traps.FireTrapRenderComponent;
 import com.csse3200.game.components.traps.IceTrapRenderComponent;
 import com.csse3200.game.entities.factories.RoomFactory;
+import com.csse3200.game.entities.factories.TutorialPropFactory;
 import com.csse3200.game.files.AudioLevels;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -135,6 +136,7 @@ public class RoomAssets implements Disposable {
               DUNGEON_TEXTURES,
               OBSTACLE_TEXTURES,
               TRAP_TEXTURES,
+              TutorialPropFactory.TEXTURES,
               ITEM_TEXTURES,
               ENEMY_TEXTURES,
               PLAYER_TEXTURES,

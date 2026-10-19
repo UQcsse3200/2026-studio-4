@@ -6,11 +6,16 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.rooms.*;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
+import com.csse3200.game.components.rooms.configs.PropSpawnConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
+import com.csse3200.game.components.tutorial.TrainingLoadoutComponent;
+import com.csse3200.game.components.tutorial.TutorialPropManagerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.InteractableNpcConfigs;
 import com.csse3200.game.files.FileLoader;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,20 +70,37 @@ public class RoomFactory {
     TerrainBuilder terrainBuilder = new TerrainBuilder(camera, mapSize, tileset);
 
     spawnMap(room, terrainBuilder);
-    return new Entity()
-        .addComponent(new GameAreaDisplay(room.title))
-        .addComponent(terrainBuilder.getTerrain())
-        .addComponent(new ExitComponent(room.exits))
-        .addComponent(new WallComponent())
-        .addComponent(new FollowingCameraComponent())
-        .addComponent(new ObstacleComponent(room, tileset))
-        .addComponent(new TrapManagerComponent(room.trapSpawns))
-        .addComponent(
-            new EnemyManagerComponent(
-                cleared ? new EnemySpawnConfig[0] : room.enemySpawns, room, camera))
-        .addComponent(new RoomDataComponent(room))
-        .addComponent(new RoomAcheivements())
-        .addComponent(new FriendlyNpcManagerComponent(room.npcSpawns, getFriendlyNpcs()));
+    Entity roomEntity =
+        new Entity()
+            .addComponent(new GameAreaDisplay(room.title))
+            .addComponent(terrainBuilder.getTerrain())
+            .addComponent(new ExitComponent(room.exits))
+            .addComponent(new WallComponent())
+            .addComponent(new FollowingCameraComponent())
+            .addComponent(new ObstacleComponent(room, tileset))
+            .addComponent(new TrapManagerComponent(room.trapSpawns))
+            .addComponent(
+                new EnemyManagerComponent(
+                    cleared ? new EnemySpawnConfig[0] : room.enemySpawns, room, camera))
+            .addComponent(new RoomDataComponent(room))
+            .addComponent(new RoomAcheivements())
+            .addComponent(new FriendlyNpcManagerComponent(room.npcSpawns, getFriendlyNpcs()))
+            .addComponent(new TutorialPropManagerComponent(room.propSpawns));
+    if (room.trainingGrounds) {
+      roomEntity.addComponent(new TrainingLoadoutComponent(supplyItemIds(room)));
+    }
+    return roomEntity;
+  }
+
+  /** The consumables a room's supply stands lend out. */
+  private static Set<String> supplyItemIds(RoomConfig room) {
+    Set<String> itemIds = new LinkedHashSet<>();
+    for (PropSpawnConfig prop : room.propSpawns) {
+      if (prop.type == PropSpawnConfig.PropType.SUPPLY_STAND && prop.itemId != null) {
+        itemIds.add(prop.itemId);
+      }
+    }
+    return itemIds;
   }
 
   private static InteractableNpcConfigs getFriendlyNpcs() {
