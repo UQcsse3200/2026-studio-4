@@ -69,7 +69,7 @@ public class CerberusMistComponent extends RenderComponent {
 
   @Override
   public void update() {
-    /**handle death and invalid targets**/
+    /** handle death and invalid targets* */
     if (stopped || stats.isDead()) {
       stop();
       return;
@@ -83,7 +83,7 @@ public class CerberusMistComponent extends RenderComponent {
 
     float delta = Math.max(0f, ServiceLocator.getTimeSource().getDeltaTime());
 
-    /**If mist is active, update its duration and check whether the player is inside.**/
+    /** If mist is active, update its duration and check whether the player is inside.* */
     if (active) {
       remaining -= delta;
       if (remaining <= 0f) {
@@ -96,7 +96,7 @@ public class CerberusMistComponent extends RenderComponent {
       return;
     }
 
-    /**Otherwise, reduce the cooldown and request attack permission.**/
+    /** Otherwise, reduce the cooldown and request attack permission.* */
     cooldownRemaining = Math.max(0f, cooldownRemaining - delta);
     if (!canStartAttack()) {
       return;
@@ -106,7 +106,7 @@ public class CerberusMistComponent extends RenderComponent {
       return;
     }
 
-    /**Otherwise, reduce the cooldown and request attack permission.**/
+    /** Otherwise, reduce the cooldown and request attack permission.* */
     centre.set(target.getCenterPosition());
     remaining = DURATION;
     active = true;
