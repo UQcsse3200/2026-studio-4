@@ -13,9 +13,8 @@ import org.slf4j.LoggerFactory;
  */
 public class RoomClearService {
   private static final Logger logger = LoggerFactory.getLogger(RoomClearService.class);
-  private static final Set<String> clearedRoomIds = new HashSet<>();
-  private static final Set<String> clearedDungeonIds = new HashSet<>();
-
+  private final Set<String> clearedRoomIds = new HashSet<>();
+  private final Set<String> clearedDungeonIds = new HashSet<>();
   public static final String ROOM_CLEARED = "RoomCleared";
   public static final String DUNGEON_CLEARED = "DungeonCleared";
 
@@ -29,7 +28,7 @@ public class RoomClearService {
    *
    * @param entity The room entity to attach lisners to
    */
-  static void attachListeners(Entity entity) {
+  public void attachListeners(Entity entity) {
     entity
         .getEvents()
         .addListener(
@@ -48,7 +47,7 @@ public class RoomClearService {
             });
   }
 
-  public static boolean isRoomCleared(String roomId) {
+  public boolean isRoomCleared(String roomId) {
     return clearedRoomIds.contains(roomId);
   }
 
