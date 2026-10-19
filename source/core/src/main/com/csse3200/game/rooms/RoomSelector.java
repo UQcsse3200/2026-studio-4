@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.boss.FinalBossPhase;
 import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.components.rooms.FollowingCameraComponent;
 import com.csse3200.game.components.rooms.RoomDataComponent;
@@ -140,6 +141,41 @@ public class RoomSelector {
     GridPoint2 spawn = roomLoader.getAnyVaidSpawn(roomId);
 
     ServiceLocator.getEntityService().schedule(() -> setRoom(queriedRoom, spawn));
+    return true;
+  }
+
+  /**
+   * Debug function to quick travel to the final room at the given stage.
+   *
+   * <p>Only works outside of the finalBossRoom. Only use for debugging purposes, maybe crash the
+   * game.
+   */
+  boolean debugFinalBossStage(String stage) {
+    String roomId = room.getComponent(RoomDataComponent.class).getConfig().id;
+    if (roomId.equals("finalBossRoom")) return false; // reject if not fb room
+
+    FinalBossPhase fbStage =
+        switch (stage) {
+          case "1" -> FinalBossPhase.STAGE_ONE;
+          case "2" -> FinalBossPhase.STAGE_TWO;
+          case "3" -> FinalBossPhase.STAGE_THREE;
+          default -> null;
+        };
+
+    if (fbStage == null) {
+      logger.error("Bad stage given: {}", stage);
+      return false;
+    }
+
+    var fbRoom = roomLoader.getRoom("finalBossRoom", false);
+    var fbSpawn = roomLoader.getAnyVaidSpawn("finalBossRoom");
+    ServiceLocator.getEntityService()
+        .schedule(
+            () -> {
+              setRoom(fbRoom, fbSpawn);
+              room.getComponent(EnemyManagerComponent.class).startFinalBossStage(fbStage);
+            });
+
     return true;
   }
 }
