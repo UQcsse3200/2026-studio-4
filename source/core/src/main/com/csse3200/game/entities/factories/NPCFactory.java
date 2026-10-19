@@ -12,6 +12,7 @@ import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
+import com.csse3200.game.components.npc.DustCloudAnimation;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.components.tasks.*;
@@ -324,6 +325,7 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(animator)
+        .addComponent(new DustCloudAnimation(sleipnir))
         .addComponent(new EnemyAnimationController())
         .addComponent(new EnemyStatDisplay(1.5f))
         .addComponent(new BossPhaseComponent());
