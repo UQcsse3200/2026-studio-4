@@ -150,9 +150,6 @@ public class MainGameScreen extends ScreenAdapter {
       physicsEngine.update();
     }
     ServiceLocator.getEntityService().update();
-    if (!frozen) {
-      // roomManager.update();
-    }
     roomAssets.applyMusicVolume();
     renderer.render();
     if (!frozen) {
