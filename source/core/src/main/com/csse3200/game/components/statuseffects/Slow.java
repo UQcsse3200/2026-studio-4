@@ -29,7 +29,6 @@ public class Slow extends TimedStatusEffect implements StatusEffect {
     } else {
       combatStats.setMovementSpeed(0);
     }
-
   }
 
   /**

@@ -4,11 +4,8 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.boss.FinalBossEvents;
-import com.csse3200.game.components.statuseffects.FrozenEffect;
 import com.csse3200.game.components.statuseffects.Slow;
-import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.components.statuseffects.TimedStatusEffect;
-import com.csse3200.game.services.ServiceLocator;
 
 /** Connects the Boss petrification events to the player's shared status-effect controller. */
 public class PlayerPetrificationComponent extends Component {
