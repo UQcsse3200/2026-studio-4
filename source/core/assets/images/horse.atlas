@@ -4,8 +4,8 @@ format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 dieAnimation
-  rotate: false
-  xy: 0, 64
+  rotate: true
+  xy: 64, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
