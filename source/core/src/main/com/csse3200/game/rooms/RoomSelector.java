@@ -151,8 +151,9 @@ public class RoomSelector {
    * game.
    */
   boolean debugFinalBossStage(String stage) {
+    final String FB_ROOM = "finalBossRoom";
     String roomId = room.getComponent(RoomDataComponent.class).getConfig().id;
-    if (roomId.equals("finalBossRoom")) return false; // reject if not fb room
+    if (roomId.equals(FB_ROOM)) return false; // reject if not fb room
 
     FinalBossPhase fbStage =
         switch (stage) {
@@ -167,8 +168,8 @@ public class RoomSelector {
       return false;
     }
 
-    var fbRoom = roomLoader.getRoom("finalBossRoom", false);
-    var fbSpawn = roomLoader.getAnyVaidSpawn("finalBossRoom");
+    var fbRoom = roomLoader.getRoom(FB_ROOM, false);
+    var fbSpawn = roomLoader.getAnyVaidSpawn(FB_ROOM);
     ServiceLocator.getEntityService()
         .schedule(
             () -> {
