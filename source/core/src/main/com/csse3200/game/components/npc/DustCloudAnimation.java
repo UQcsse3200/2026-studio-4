@@ -9,6 +9,7 @@ import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 
+/** animation for norse miniboss */
 public class DustCloudAnimation extends RenderComponent {
   private final Entity target;
   private static final int FRAME_COUNT = 7;
@@ -17,7 +18,7 @@ public class DustCloudAnimation extends RenderComponent {
   private GameTime time;
   private static final long FRAME_MILLIS = 100L;
   private final String atlas = "images/dust.png";
-  private TextureRegion[] frames;
+  private TextureRegion[] frames = new TextureRegion[7];
   private static final int CELL_SIZE = 64;
   private static final int ROW = 0;
   private boolean playing = false;
@@ -44,20 +45,13 @@ public class DustCloudAnimation extends RenderComponent {
   }
 
   @Override
-  public void render(SpriteBatch batch) {
-    draw(batch);
-  }
-
-  @Override
   protected void draw(SpriteBatch batch) {
-    if (!playing) {
-      return;
-    }
+    if (!playing) return;
     if (elapsedMillis() / FRAME_MILLIS >= FRAME_COUNT) {
       startedAt = time.getTime(); // reset the timer
     }
+    int frame = (int) (elapsedMillis() / FRAME_MILLIS);
 
-    int frame = Math.min(FRAME_COUNT - 1, (int) (elapsedMillis() / FRAME_MILLIS));
     Vector2 centre = target.getCenterPosition();
     Vector2 scale = target.getScale();
     float size = Math.max(scale.x, scale.y) * SIZE_MULTIPLIER;
@@ -71,12 +65,7 @@ public class DustCloudAnimation extends RenderComponent {
 
   /** populate frames */
   private void ensureFrames() {
-    if (frames != null) {
-      return;
-    }
     Texture sheet = ServiceLocator.getResourceService().getAsset(atlas, Texture.class);
-
-    frames = new TextureRegion[FRAME_COUNT];
     for (int i = 0; i < FRAME_COUNT; i++) {
       frames[i] = new TextureRegion(sheet, i * CELL_SIZE, ROW * CELL_SIZE, CELL_SIZE, CELL_SIZE);
     }
@@ -88,7 +77,7 @@ public class DustCloudAnimation extends RenderComponent {
 
   @Override
   public float getZIndex() {
-    // dust cloud exists behind entities
+    // dust cloud behind entities
     return Float.NEGATIVE_INFINITY;
   }
 }

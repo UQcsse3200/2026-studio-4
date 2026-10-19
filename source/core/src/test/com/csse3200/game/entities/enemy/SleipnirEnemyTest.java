@@ -3,7 +3,6 @@ package com.csse3200.game.entities.enemy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.BossPhaseComponent;
@@ -48,7 +47,7 @@ public class SleipnirEnemyTest {
 
     ResourceService resourceService = new ResourceService();
     resourceService.loadTextureAtlases(new String[] {"images/horse.atlas"});
-    resourceService.loadTextures(new  String[] {"images/dust.png"});
+    resourceService.loadTextures(new String[] {"images/dust.png"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
