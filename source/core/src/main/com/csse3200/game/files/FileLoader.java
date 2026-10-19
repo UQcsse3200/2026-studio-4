@@ -35,6 +35,16 @@ public class FileLoader {
     }
   }
 
+  /** Returns the first empty save slot, or slot 1 when every slot is occupied. */
+  public static int getNextSaveSlot() {
+    for (int slot = 1; slot <= SAVE_SLOT_COUNT; slot++) {
+      if (!saveExists(slot)) {
+        return slot;
+      }
+    }
+    return 1;
+  }
+
   /**
    * Read generic Java classes from a JSON file. Properties in the JSON file will override class
    * defaults.

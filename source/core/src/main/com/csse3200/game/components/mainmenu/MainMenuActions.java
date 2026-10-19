@@ -2,6 +2,7 @@ package com.csse3200.game.components.mainmenu;
 
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.files.FileLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,7 @@ public class MainMenuActions extends Component {
   /** Swaps to the Main Game screen. */
   private void onStart() {
     logger.info("Start game");
-    game.startGame(null, 1);
+    game.startGame(null, FileLoader.getNextSaveSlot());
   }
 
   /** Opens the save-slot list. */
