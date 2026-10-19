@@ -1,0 +1,10 @@
+{
+  "speakers": [
+    { "id": "board", "name": "Notice Board", "texture": "images/tutorial/sign.png" }
+  ],
+  "lines": [
+    { "speaker": "board", "text": "DODGE: the cannons fire harmless orbs down their lanes. In the dungeons, enemy attacks work the same way, except they hurt." },
+    { "speaker": "board", "text": "Cross the lanes without being touched. Press SPACE to dash in the direction you are moving, but it needs a moment to recharge, so time it." },
+    { "speaker": "board", "text": "The room keeps count of the orbs you dodge and the ones that clip you." }
+  ]
+}

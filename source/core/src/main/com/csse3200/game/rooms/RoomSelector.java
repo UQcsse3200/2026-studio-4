@@ -29,6 +29,15 @@ public class RoomSelector {
   public static final String ROOM_SWITCHED_EVENT = "RoomSwitched";
   public static final String SWITCH_ROOM = "SwitchRoom";
 
+  /**
+   * Request, triggered on the player with {@code (String roomId, String entryPointId)}, to move
+   * them to a named entry point of any room without using an exit, e.g. an NPC sending them away.
+   */
+  public static final String TELEPORT_REQUEST = "teleportToRoom";
+
+  /** Triggered on the room, with the player, when E is pressed, for props that can be used. */
+  public static final String PROP_INTERACT = "propInteract";
+
   RoomSelector(Entity room, Entity player, CameraComponent camera, RoomLoader roomLoader) {
     this.room = room;
     this.player = player;
@@ -39,6 +48,7 @@ public class RoomSelector {
   public RoomSelector(Entity player, CameraComponent camera) {
     this(null, player, camera, new RoomLoader(camera));
     player.getEvents().addListener("interact", this::onPlayerInteract);
+    player.getEvents().<String, String>addListener(TELEPORT_REQUEST, this::teleport);
   }
 
   /* Gives to the CameraComponent to the room
@@ -64,6 +74,16 @@ public class RoomSelector {
     logger.debug("going to room: {}, isCleared: {}", exit.destinationRoomId, cleared);
 
     ServiceLocator.getEntityService().schedule(() -> setRoom(exit));
+  }
+
+  /**
+   * Moves the player to a named entry point of a room, from anywhere. Applied at the next safe
+   * point in the frame, like any other room switch.
+   */
+  public void teleport(String roomId, String entryPointId) {
+    GridPoint2 spawn = roomLoader.getEntrySpawn(roomId, entryPointId);
+    logger.debug("teleporting to room: {}, entry point: {}", roomId, entryPointId);
+    ServiceLocator.getEntityService().schedule(() -> setRoom(roomLoader.getRoom(roomId), spawn));
   }
 
   /**
@@ -124,6 +144,7 @@ public class RoomSelector {
     // Handle room switch via hitbox events
     room.getEvents().trigger("requestExit", player.getCenterPosition());
     room.getEvents().trigger("npcInteract", player);
+    room.getEvents().trigger(PROP_INTERACT, player);
   }
 
   /** Debug function to clear the current room's enemies */

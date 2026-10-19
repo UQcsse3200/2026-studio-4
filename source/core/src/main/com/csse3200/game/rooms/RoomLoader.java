@@ -52,6 +52,25 @@ public class RoomLoader {
     return getRoom(exit.destinationRoomId, cleared);
   }
 
+  /** Returns an unintialised room for a teleport, cleared if the player has cleared it before. */
+  public Entity getRoom(String roomId) {
+    return getRoom(roomId, ServiceLocator.getRoomClearService().isRoomCleared(roomId));
+  }
+
+  /**
+   * Returns where a teleport into the room lands the player.
+   *
+   * @throws IllegalArgumentException if the room has no such entry point
+   */
+  public GridPoint2 getEntrySpawn(String roomId, String entryPointId) {
+    RoomConfig room = world.getRoom(roomId);
+    PositionConfig spawn = room == null ? null : room.getEntryPoint(entryPointId);
+    if (spawn == null) {
+      throw new IllegalArgumentException("Unknown entry point " + entryPointId + " in " + roomId);
+    }
+    return new GridPoint2(spawn.x, spawn.y);
+  }
+
   public GridPoint2 getStartingSpawn() {
     RoomConfig startRoom = world.getRoom(world.startRoomId);
     PositionConfig spawn = startRoom.getEntryPoint(world.startEntryPointId);
