@@ -16,7 +16,7 @@ class GameSaveDataTest {
     save.playerData.gold = 99;
     save.playerData.inventory.put("health_potion", 3);
 
-    assertEquals(1, save.version);
+    assertEquals(2, save.version);
     assertEquals(42f, save.playTimeSeconds);
     assertEquals("final_dungeon", save.resumePosition.roomId);
     assertEquals(12f, save.resumePosition.x);
