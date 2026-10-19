@@ -17,8 +17,7 @@ public class DustCloudAnimation extends RenderComponent {
   private long startedAt;
   private GameTime time;
   private static final long FRAME_MILLIS = 100L;
-  private final String atlas = "images/dust.png";
-  private TextureRegion[] frames = new TextureRegion[7];
+  private final TextureRegion[] frames = new TextureRegion[7];
   private static final int CELL_SIZE = 64;
   private static final int ROW = 0;
   private boolean playing = false;
@@ -65,6 +64,7 @@ public class DustCloudAnimation extends RenderComponent {
 
   /** populate frames */
   private void ensureFrames() {
+    String atlas = "images/dust.png";
     Texture sheet = ServiceLocator.getResourceService().getAsset(atlas, Texture.class);
     for (int i = 0; i < FRAME_COUNT; i++) {
       frames[i] = new TextureRegion(sheet, i * CELL_SIZE, ROW * CELL_SIZE, CELL_SIZE, CELL_SIZE);
