@@ -21,6 +21,7 @@ public final class WindowSize {
     throw new IllegalStateException("Instantiating static util class");
   }
 
+  /** The sizes shown in the window-size list. */
   public static Preset[] presets() {
     return PRESETS.clone();
   }
@@ -35,10 +36,24 @@ public final class WindowSize {
     return PRESETS[2];
   }
 
+  /**
+   * Width to apply. A missing or non-positive value uses the default. The result is never below
+   * 960.
+   *
+   * @param stored width saved in settings, in pixels
+   * @return width passed to the window
+   */
   public static int width(int stored) {
     return clamp(stored, DEFAULT_WIDTH, MIN_WIDTH);
   }
 
+  /**
+   * Height to apply. A missing or non-positive value uses the default. 540 is kept, so the 960 x
+   * 540 preset is not raised to 640.
+   *
+   * @param stored height saved in settings, in pixels
+   * @return height passed to the window
+   */
   public static int height(int stored) {
     return clamp(stored, DEFAULT_HEIGHT, MIN_HEIGHT);
   }

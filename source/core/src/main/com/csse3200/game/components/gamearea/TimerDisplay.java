@@ -116,6 +116,7 @@ public class TimerDisplay extends UIComponent {
     rootTable.setVisible(!hiddenByHotkey);
   }
 
+  /** Shows the timer when Settings allows it and the player has not hidden it with T. */
   private void applyVisibility() {
     if (rootTable == null) {
       return;

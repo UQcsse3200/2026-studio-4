@@ -30,6 +30,7 @@ public class UserSettings {
     return copy(cached);
   }
 
+  /** Opens settings.json once. A missing or unreadable file returns defaults. */
   private static Settings readStored() {
     diskReads++;
     String path = ROOT_DIR + File.separator + SETTINGS_FILE;
@@ -41,6 +42,12 @@ public class UserSettings {
     return fileSettings != null ? fileSettings : new Settings();
   }
 
+  /**
+   * A separate copy, so a caller cannot change the cached settings.
+   *
+   * @param source settings to copy; null returns defaults
+   * @return a new settings object
+   */
   private static Settings copy(Settings source) {
     Settings copy = new Settings();
     if (source == null) {

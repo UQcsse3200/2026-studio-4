@@ -54,6 +54,7 @@ public class DeathScreen extends ScreenAdapter {
     resourceService.loadAll();
   }
 
+  /** Plays the death sound at the effects volume from Settings. */
   private void playDeathSound() {
     ResourceService resourceService = ServiceLocator.getResourceService();
     if (resourceService != null && resourceService.containsAsset(DEATH_SOUND_C, Sound.class)) {

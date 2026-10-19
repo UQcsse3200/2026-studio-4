@@ -32,7 +32,12 @@ public final class UiScale {
     return Math.clamp(value, MIN, MAX);
   }
 
-  /** True while the in-game settings page is covering the HUD. */
+  /**
+   * True while the in-game settings page is covering the HUD.
+   *
+   * @param stage stage that may contain the settings backdrop
+   * @return true when that backdrop is on screen
+   */
   public static boolean settingsOpen(Stage stage) {
     if (stage == null) {
       return false;

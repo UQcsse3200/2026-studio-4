@@ -20,6 +20,7 @@ public class FpsOverlay extends UIComponent {
     applyVisibility();
   }
 
+  /** Re-reads Show FPS so Apply takes effect without leaving the run. */
   @Override
   public void update() {
     applyVisibility();

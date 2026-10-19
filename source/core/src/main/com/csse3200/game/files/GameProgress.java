@@ -58,6 +58,7 @@ public class GameProgress {
    * Records the latest attempt. An unfinished exit, such as saving and leaving, updates the last
    * run only. A time of zero never replaces a real best.
    *
+   * @param elapsedMs run length in milliseconds
    * @param finished when true, a shorter positive time can become the best
    */
   public static void recordRun(long elapsedMs, boolean finished) {
