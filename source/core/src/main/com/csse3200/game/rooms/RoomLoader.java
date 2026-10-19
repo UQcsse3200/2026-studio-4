@@ -65,7 +65,6 @@ public class RoomLoader {
     return new GridPoint2(position.x, position.y);
   }
 
-  /** Copied from RoomManager */
   private static PositionConfig arrivalInsideDoor(ExitConfig door) {
     PositionConfig arrival = new PositionConfig();
     arrival.x = door.x;

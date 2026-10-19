@@ -154,7 +154,6 @@ public class MainGameScreen extends ScreenAdapter {
     }
     ServiceLocator.getEntityService().update();
     if (!frozen) {
-      // roomManager.update();
     }
     roomAssets.applyMusicVolume();
     renderer.render();
