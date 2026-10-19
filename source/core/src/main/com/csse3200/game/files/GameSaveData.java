@@ -12,6 +12,8 @@ public class GameSaveData {
   public Map<String, Float> dungeonTimesSeconds = new LinkedHashMap<>();
   public ResumePosition resumePosition;
   public PlayerData playerData = new PlayerData();
+  public String checkpointRoomId;
+  public String checkpointEntryPointId;
 
   // Add these fields
   public List<String> unlockedAchievements = new ArrayList<>();
