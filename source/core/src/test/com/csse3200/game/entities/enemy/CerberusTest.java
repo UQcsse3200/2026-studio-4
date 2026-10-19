@@ -68,8 +68,7 @@ class CerberusTest {
   }
 
   private Entity createCerberusForAnimationTest() {
-    return CerberusFactory.createCerberus(
-        new Vector2(5f, 5f), entityService::register, "images/cerberus/cerberus-modular.atlas");
+    return CerberusFactory.createCerberus(null, new Vector2(5f, 5f), null, entityService::register);
   }
 
   @Test
@@ -126,7 +125,7 @@ class CerberusTest {
     Vector2 anchor = new Vector2(5f, 5f);
     String skin = "images/cerberus/cerberus-modular.atlas";
 
-    Entity cerberus = CerberusFactory.createCerberus(anchor, entityService::register, skin);
+    Entity cerberus = CerberusFactory.createCerberus(null, anchor, null, entityService::register);
     assertNotNull(cerberus);
     assertNotNull(cerberus.getComponent(ChainRestrictionComponent.class));
     assertNotNull(cerberus.getComponent(CombatStatsComponent.class));
@@ -141,9 +140,7 @@ class CerberusTest {
   void shouldAlignSideHeadsWithTheEnlargedSprite() {
     List<Entity> heads = new ArrayList<>();
 
-    Entity body =
-        CerberusFactory.createCerberus(
-            new Vector2(5f, 5f), heads::add, "images/cerberus/cerberus-modular.atlas");
+    Entity body = CerberusFactory.createCerberus(null, new Vector2(5f, 5f), null, heads::add);
 
     assertEquals(2f, body.getScale().x, 0.001f);
     assertEquals(2f, body.getScale().y, 0.001f);
@@ -172,11 +169,7 @@ class CerberusTest {
 
     Entity cerberus =
         CerberusFactory.createCerberus(
-            null,
-            new Vector2(5f, 5f),
-            wallAnchor,
-            entityService::register,
-            "images/cerberus/cerberus-modular.atlas");
+            null, new Vector2(5f, 5f), wallAnchor, entityService::register);
 
     CerberusChainComponent chain = cerberus.getComponent(CerberusChainComponent.class);
     CerberusChainRenderComponent renderer =

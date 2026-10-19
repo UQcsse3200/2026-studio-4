@@ -64,8 +64,7 @@ class CerberusStatusEffectsTest {
 
   private Entity createCerberus() {
     sideHeads.clear();
-    return CerberusFactory.createCerberus(
-        new Vector2(5f, 5f), sideHeads::add, "images/cerberus/cerberus-modular.atlas");
+    return CerberusFactory.createCerberus(null, new Vector2(5f, 5f), null, sideHeads::add);
   }
 
   @Test

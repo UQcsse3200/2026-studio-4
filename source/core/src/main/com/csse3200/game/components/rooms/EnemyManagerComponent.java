@@ -420,8 +420,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         target,
         anchorPoint,
         wallAnchor,
-        head -> spawnAndTrackCerberusHead(head, spawn.type.name()),
-        "images/cerberus/cerberus-modular.atlas");
+        head -> spawnAndTrackCerberusHead(head, spawn.type.name()));
   }
 
   /** Connects Final Boss movement and arena behaviour to the room camera. */
