@@ -25,7 +25,7 @@ import java.util.function.LongSupplier;
  * <p>Accepting asks {@link RoomSelector} to move the player, using {@link
  * RoomSelector#TELEPORT_REQUEST}.
  */
-public class TeleportMenu extends Component {
+public class TeleportMenu extends Component implements ModalMenu {
   /** The two rows on offer: going ahead, then staying put. */
   public static final int ACCEPT_ROW = 0;
 
@@ -101,6 +101,7 @@ public class TeleportMenu extends Component {
   }
 
   /** Closes the menu and gives the player back their controls. Closing a shut menu does nothing. */
+  @Override
   public void close() {
     if (offer == null) {
       return;
@@ -115,6 +116,7 @@ public class TeleportMenu extends Component {
    *
    * @param delta rows to move by, usually -1 or 1
    */
+  @Override
   public void moveSelection(int delta) {
     if (offer != null) {
       selected = Math.floorMod(selected + delta, 2);
@@ -128,6 +130,7 @@ public class TeleportMenu extends Component {
    *
    * @return whether the player is being teleported
    */
+  @Override
   public boolean confirm() {
     if (offer == null || clockMillis.getAsLong() - openedAtMillis < CONFIRM_GRACE_MS) {
       return false;
@@ -144,6 +147,7 @@ public class TeleportMenu extends Component {
   /**
    * @return whether the menu is on screen and taking input
    */
+  @Override
   public boolean isOpen() {
     return offer != null;
   }
@@ -158,6 +162,7 @@ public class TeleportMenu extends Component {
   /**
    * @return the highlighted row, {@link #ACCEPT_ROW} or {@link #DECLINE_ROW}
    */
+  @Override
   public int getSelectedIndex() {
     return selected;
   }
