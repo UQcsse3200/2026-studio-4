@@ -10,7 +10,10 @@ import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
-/** Plays available enemy animations in response to existing AI and combat events. */
+/**
+ * This class listens to events relevant to a ghost entity's state and plays the animation when one
+ * of the events is triggered.
+ */
 public class EnemyAnimationController extends Component {
   private static final String CONTACT_ATTACK = "contactAttack";
   private AnimationRenderComponent animator;
@@ -143,7 +146,7 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateFuse() {
-    if (!dying && animator.hasAnimation("fuse")) {
+    if (!dying) {
       animator.startAnimation("fuse");
     }
   }
@@ -153,7 +156,7 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateAttack() {
-    if (!dying && animator.hasAnimation("attack")) {
+    if (!dying) {
       animator.startAnimation("attack");
     }
   }

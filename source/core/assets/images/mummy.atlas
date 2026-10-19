@@ -54,8 +54,8 @@ chase
     index: 2
 dieAnimation
     rotate: false
-    xy: 0, 0
-    size: 1, 1
+    xy: 400, 400
+    size: 48, 64
     orig: 48, 64
     offset: 0, 0
     index: 2

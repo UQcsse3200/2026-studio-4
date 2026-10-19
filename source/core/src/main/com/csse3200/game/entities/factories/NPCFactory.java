@@ -104,15 +104,14 @@ public class NPCFactory {
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new ChaseTask(target, 10, 3f, 10f));
 
-    TextureAtlas atlas = ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class);
-    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    if (atlas.findRegion("fuse") != null) {
-      animator.addAnimation("fuse", 0.1f, Animation.PlayMode.LOOP);
-    }
+    animator.addAnimation("fuse", 0.1f, Animation.PlayMode.LOOP);
 
     bombEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
@@ -275,13 +274,12 @@ public class NPCFactory {
             .addTask(new PatrolTask(new Vector2[] {leftPoint, topPoint, rightPoint}))
             .addTask(new RangedAttackTask(target, 5, config.baseAttack, projectileSpawner));
 
-    TextureAtlas atlas = ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class);
-    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
 
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
-    if (atlas.findRegion("attack") != null) {
-      animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
-    }
+    animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
