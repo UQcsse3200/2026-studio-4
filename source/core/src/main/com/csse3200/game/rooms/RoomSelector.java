@@ -65,19 +65,6 @@ public class RoomSelector {
     ServiceLocator.getEntityService().schedule(() -> setRoom(exit));
   }
 
-  /** Debug function to quick travel to the given room */
-  boolean debugGotoRoom(String roomId) {
-    logger.info("Going to room: {}", roomId);
-    Entity room = roomLoader.getRoom(roomId, false);
-    if (room == null) {
-      return false;
-    }
-    GridPoint2 spawn = roomLoader.getAnyVaidSpawn(roomId);
-
-    ServiceLocator.getEntityService().schedule(() -> setRoom(room, spawn));
-    return true;
-  }
-
   /**
    * Converts the spawn from tile coord to position the set the player to it
    *
@@ -141,5 +128,18 @@ public class RoomSelector {
   /** Debug function to clear the current room's enemies */
   public void clearRoom() {
     room.getComponent(EnemyManagerComponent.class).clear();
+  }
+
+  /** Debug function to quick travel to the given room */
+  boolean debugGotoRoom(String roomId) {
+    logger.info("Going to room: {}", roomId);
+    Entity queriedRoom = roomLoader.getRoom(roomId, false);
+    if (queriedRoom == null) {
+      return false;
+    }
+    GridPoint2 spawn = roomLoader.getAnyVaidSpawn(roomId);
+
+    ServiceLocator.getEntityService().schedule(() -> setRoom(queriedRoom, spawn));
+    return true;
   }
 }
