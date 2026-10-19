@@ -15,7 +15,6 @@ public class RoomClearService {
   private static final Logger logger = LoggerFactory.getLogger(RoomClearService.class);
   private final Set<String> clearedRoomIds = new HashSet<>();
   private final Set<String> clearedDungeonIds = new HashSet<>();
-
   public static final String ROOM_CLEARED = "RoomCleared";
   public static final String DUNGEON_CLEARED = "DungeonCleared";
 
