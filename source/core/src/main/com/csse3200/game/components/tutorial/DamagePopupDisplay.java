@@ -1,6 +1,5 @@
 package com.csse3200.game.components.tutorial;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -41,8 +40,7 @@ public class DamagePopupDisplay extends UIComponent {
                 + MathUtils.random(-JITTER_WORLD_UNITS, JITTER_WORLD_UNITS),
             entity.getPosition().y + entity.getScale().y,
             0f);
-    camera.project(
-        point, 0f, 0f, (float) Gdx.graphics.getWidth(), (float) Gdx.graphics.getHeight());
+    camera.project(point);
 
     Label popup = new Label(String.valueOf(damage), skin, "large");
     popup.setColor(COLOUR);
