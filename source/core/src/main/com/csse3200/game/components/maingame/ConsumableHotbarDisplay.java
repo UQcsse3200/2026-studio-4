@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
@@ -76,6 +77,7 @@ public class ConsumableHotbarDisplay extends UIComponent {
         .getEvents()
         .addListener(ConsumableSelectionComponent.SELECTION_CHANGED, this::refreshSelection);
     player.getEvents().addListener("consumableInventoryChanged", this::refreshCount);
+    player.getEvents().addListener(ConsumableEffectComponent.USE_FAILED, this::flashFailed);
   }
 
   private void buildActors() {
@@ -220,6 +222,23 @@ public class ConsumableHotbarDisplay extends UIComponent {
       return;
     }
     refreshSlots();
+  }
+
+  /** Brief red flash on a slot whose use attempt was rejected, e.g. already at full health. */
+  private void flashFailed(String type) {
+    if (disposed) {
+      return;
+    }
+    for (int i = 0; i < InventoryComponent.CONSUMABLE_SLOT_COUNT; i++) {
+      if (type.equals(inventoryComponent.getConsumableSlot(i))) {
+        frames[i].clearActions();
+        frames[i].setColor(Color.WHITE);
+        frames[i].addAction(
+            Actions.sequence(
+                Actions.color(new Color(1f, 0.35f, 0.35f, 1f), 0.08f),
+                Actions.color(Color.WHITE, 0.25f)));
+      }
+    }
   }
 
   private void refreshSlots() {
