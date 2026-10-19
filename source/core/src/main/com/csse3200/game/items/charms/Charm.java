@@ -28,18 +28,29 @@ public abstract class Charm extends Item {
   /** Wraps the applyEffect component to also guard against applying twice */
   @Override
   public void pickUp(Entity player) {
-    if (applied) {
+    if (player.getComponent(InventoryComponent.class).hasCharm(this)) {
       logger.error("Attempted to apply effect twice");
       return;
     }
     player.getComponent(InventoryComponent.class).addCharm(this);
-    applyEffect(player);
-    applied = true;
+    setEquipped(player, true);
+  }
+
+  public boolean isEquipped() {
+    return applied;
+  }
+
+  /** Applies each equipment transition once; unequipped charms remain in inventory. */
+  public void setEquipped(Entity player, boolean equipped) {
+    if (applied == equipped) return;
+    if (equipped) applyEffect(player);
+    else removeEffect(player);
+    applied = equipped;
   }
 
   @Override
   public void drop(Entity player) {
-    removeEffect(player);
+    setEquipped(player, false);
     player.getComponent(InventoryComponent.class).removeCharm(this);
     // can make it drop on the floor in the future
   }

@@ -5,17 +5,15 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.achievements.AchievementConfig;
-import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.achievements.AchievementsFactory;
+import com.csse3200.game.components.gamearea.AchievementDisplay;
 import com.csse3200.game.components.gamearea.FpsOverlay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.gamearea.TimerDisplay;
 import com.csse3200.game.components.maingame.*;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.rooms.RoomAssets;
-import com.csse3200.game.components.rooms.RoomCommand;
 import com.csse3200.game.components.rooms.RoomManager;
-import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -36,13 +34,18 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
+import com.csse3200.game.rooms.RoomCommand;
+import com.csse3200.game.rooms.RoomSelector;
 import com.csse3200.game.services.*;
 import com.csse3200.game.ui.UiScale;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.ui.terminal.commands.AbilityCommand;
+import com.csse3200.game.ui.terminal.commands.BurnVialCommand;
+import com.csse3200.game.ui.terminal.commands.ConsumableCommand;
 import com.csse3200.game.ui.terminal.commands.CutsceneCommand;
 import com.csse3200.game.ui.terminal.commands.DialogueCommand;
+import com.csse3200.game.ui.terminal.commands.MagnetCommand;
 import com.csse3200.game.ui.terminal.commands.SpellCommand;
 import com.csse3200.game.ui.terminal.commands.StatusEffectCommand;
 import com.csse3200.game.ui.terminal.commands.UpgradeCommand;
@@ -61,7 +64,8 @@ public class MainGameScreen extends ScreenAdapter {
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
-  private RoomManager roomManager;
+  private RoomManager roomManager = null; // Will be removed in the future
+  private RoomSelector roomSelector;
   private Entity player;
   private final Terminal terminal;
   private final int saveSlot;
@@ -118,39 +122,17 @@ public class MainGameScreen extends ScreenAdapter {
     player = PlayerFactory.createPlayer();
     // trigger death screen via entity died event
     player.getEvents().addListener("entityDied", this::scheduleDeathScreen);
-    WorldConfig world = null;
-    world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     // trigger win screen via entity win event
     player.getEvents().addListener("winScreenRequested", () -> winScreenRequested = true);
-    // The hub and the dungeons have their own music; rooms announce which one they want.
-    player
-        .getEvents()
-        .addListener(
-            RoomManager.ROOM_ENTERED,
-            (String roomId, String dungeonId, Boolean cleared) ->
-                roomAssets.playMusicFor(dungeonId, Boolean.TRUE.equals(cleared)));
-    // notify damage
-    player
-        .getEvents()
-        .addListener(
-            "damageTaken",
-            (Entity attacker, Integer lost, Integer remaining) -> {
-              AchievementContext ctx = new AchievementContext();
-              ctx.playerDamaged = true;
-              ServiceLocator.getAchievementService().update(ctx);
-            });
-    roomManager = new RoomManager(world, player, renderer.getCamera());
-    if (loadedSave != null) {
-      roomManager.initializeFromSavedRun(loadedSave, loadAtCheckpoint);
-    }
-    roomManager.create();
 
+    roomSelector = new RoomSelector(player, renderer.getCamera());
+    roomSelector.start();
+
+    // Unsure of how this interacts with current roomSelector implementation
     if (loadedSave != null) {
       GameSaveMapper.restore(player, loadedSave);
       GameSaveMapper.restoreAchievements(loadedSave);
     }
-    RoomCommand roomCommand = new RoomCommand(roomManager);
-    terminal.addCommand("room", roomCommand);
 
     createUI();
   }
@@ -169,7 +151,7 @@ public class MainGameScreen extends ScreenAdapter {
     }
     ServiceLocator.getEntityService().update();
     if (!frozen) {
-      roomManager.update();
+      // roomManager.update();
     }
     roomAssets.applyMusicVolume();
     renderer.render();
@@ -206,6 +188,7 @@ public class MainGameScreen extends ScreenAdapter {
       GameProgress.recordRun((long) (runTimer.getTotalTime() * 1000f), winTransitionStarted);
     }
 
+    // This should all just be one function call GameSave.save();
     if (saveOnDispose && !runSaved && player != null && roomManager != null) {
       runSaved = true;
       try {
@@ -277,10 +260,13 @@ public class MainGameScreen extends ScreenAdapter {
     // constructor) must end up on the same Terminal instance that is attached to the UI below.
     terminal.addCommand("weapon", new WeaponCommand(player));
     terminal.addCommand("ability", new AbilityCommand(player));
+    terminal.addCommand("burnvial", new BurnVialCommand(player));
+    terminal.addCommand("con", new ConsumableCommand(player));
     terminal.addCommand("effect", new StatusEffectCommand(player));
     terminal.addCommand("upgrade", new UpgradeCommand(player));
+    terminal.addCommand("magnet", new MagnetCommand(player));
     terminal.addCommand("spell", new SpellCommand(player));
-    terminal.addCommand("room", new RoomCommand(roomManager));
+    terminal.addCommand("room", new RoomCommand(roomSelector));
     // QA for the dialogue and cutscene systems, e.g. "dialogue demo" / "cutscene demovideo"
     terminal.addCommand("dialogue", new DialogueCommand(player));
     terminal.addCommand("cutscene", new CutsceneCommand(player));
@@ -323,7 +309,8 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(settingsMenu)
         .addComponent(abilityMenu)
         .addComponent(new KeyboardAbilityMenuInputComponent())
-        .addComponent(new AbilityMenuDisplay(abilityMenu));
+        .addComponent(new AbilityMenuDisplay(abilityMenu))
+        .addComponent(new AchievementDisplay());
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     // The HUD keeps working while a dialogue or cutscene has the world frozen
     ui.setUpdatesWhilePaused(true);

@@ -19,6 +19,7 @@ import java.util.Random;
 
 /** Stage-two green gems, owned by the Snake encounter rather than separate physics entities. */
 public class SnakeShieldPickupComponent extends RenderComponent {
+  public static final String SHIELD_GEM_COLLECTED_EVENT = "snakeShieldGemCollected";
   public static final String GEM_TEXTURE =
       "images/snake-miniboss/pickup/GEM 1 - LIGHT GREEN - Spritesheet.png";
   public static final String SPAWN_TEXTURE =
@@ -44,6 +45,7 @@ public class SnakeShieldPickupComponent extends RenderComponent {
   private float spawnAge;
   private boolean active;
   private boolean stopped;
+  private boolean shieldGemCollected;
   private boolean fresh;
   private boolean preferNearby = true;
 
@@ -107,6 +109,14 @@ public class SnakeShieldPickupComponent extends RenderComponent {
     return gems.size();
   }
 
+  /**
+   * Returns whether the player collected a green shield gem during this encounter. Clearing,
+   * restarting or stopping the drops does not erase this pickup history.
+   */
+  public boolean hasCollectedShieldGem() {
+    return shieldGemCollected;
+  }
+
   /** Returns independent positions so callers cannot move live drops through the list. */
   public List<Vector2> getPickupPositions() {
     return gems.stream().map(gem -> gem.position.cpy()).toList();
@@ -133,12 +143,11 @@ public class SnakeShieldPickupComponent extends RenderComponent {
       if (gem.age >= config.shieldGemLifetime) {
         gems.remove(i);
       } else if (gem.age >= SPAWN_DURATION && canCollect(gem)) {
-        SnakeShieldComponent shield = entity.getComponent(SnakeShieldComponent.class);
-        if (shield != null) {
-          gems.remove(i);
-          shield.refill();
-          healIfLowHealth();
-        }
+        collectGem(i);
+      }
+      if (encounterEnded()) {
+        stop();
+        return;
       }
     }
     spawnAge += delta;
@@ -146,6 +155,20 @@ public class SnakeShieldPickupComponent extends RenderComponent {
       // At most one spawn after a long frame; missed intervals never pile up.
       spawnAge = 0f;
       spawnGem();
+    }
+  }
+
+  private void collectGem(int index) {
+    SnakeShieldComponent shield = entity.getComponent(SnakeShieldComponent.class);
+    if (shield == null) {
+      return;
+    }
+    gems.remove(index);
+    shieldGemCollected = true;
+    shield.refill();
+    entity.getEvents().trigger(SHIELD_GEM_COLLECTED_EVENT);
+    if (!encounterEnded()) {
+      healIfLowHealth();
     }
   }
 

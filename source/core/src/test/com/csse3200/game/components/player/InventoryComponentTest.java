@@ -269,4 +269,63 @@ class InventoryComponentTest {
     assertEquals(2, inventory.getConsumableCount(ItemIds.SPEED_POTION));
     assertEquals(0, inventory.getConsumableCount(ItemIds.SHIELD));
   }
+
+  @Test
+  void fourthSlotKeepsStockThroughEquipmentSwapsAndUnequipping() {
+    InventoryComponent inventory = new InventoryComponent(0);
+    inventory.addConsumable(ItemIds.HEALTH_POTION, 3);
+    inventory.addConsumable(ItemIds.SHIELD);
+    inventory.equipConsumable(ItemIds.HEALTH_POTION, 3);
+    assertEquals(ItemIds.HEALTH_POTION, inventory.getConsumableSlot(3));
+    inventory.equipConsumable(ItemIds.SHIELD, 3);
+    assertEquals(ItemIds.SHIELD, inventory.getConsumableSlot(3));
+    assertEquals(ItemIds.HEALTH_POTION, inventory.getConsumableSlot(1));
+    inventory.unequipConsumable(3);
+    assertEquals(null, inventory.getConsumableSlot(3));
+    assertEquals(1, inventory.getConsumableCount(ItemIds.SHIELD));
+    assertEquals(3, inventory.getConsumableCount(ItemIds.HEALTH_POTION));
+    inventory.equipConsumable(ItemIds.SHIELD, 3);
+    inventory.removeConsumable(ItemIds.SHIELD);
+    assertEquals(null, inventory.getConsumableSlot(3));
+  }
+
+  @Test
+  void fifthItemStaysInBackpackAndCanReplaceAnEquippedItemWithoutLosingStock() {
+    InventoryComponent inventory = new InventoryComponent(0);
+    String[] equipped = {
+      ItemIds.HEALTH_POTION, ItemIds.SHIELD, ItemIds.SPEED_POTION, ItemIds.STRENGTH_POTION
+    };
+    for (String id : equipped) inventory.addConsumable(id);
+    inventory.addConsumable(ItemIds.FREEZE_BOMB, 2);
+    for (int i = 0; i < equipped.length; i++) {
+      assertEquals(equipped[i], inventory.getConsumableSlot(i));
+    }
+    assertTrue(inventory.getConsumableIds().contains(ItemIds.FREEZE_BOMB));
+    assertEquals(2, inventory.getConsumableCount(ItemIds.FREEZE_BOMB));
+    inventory.equipConsumable(ItemIds.FREEZE_BOMB, 3);
+    assertEquals(ItemIds.FREEZE_BOMB, inventory.getConsumableSlot(3));
+    assertEquals(1, inventory.getConsumableCount(ItemIds.STRENGTH_POTION));
+    assertEquals(2, inventory.getConsumableCount(ItemIds.FREEZE_BOMB));
+  }
+
+  @Test
+  void charmEquipmentTransitionsApplyAndRemoveStatsExactlyOnce() {
+    InventoryComponent inventory = new InventoryComponent(0);
+    var stats = new com.csse3200.game.components.CombatStatsComponent(100, 10);
+    var player =
+        new com.csse3200.game.entities.Entity().addComponent(inventory).addComponent(stats);
+    var charm = new com.csse3200.game.items.charms.StrengthCharm();
+    charm.pickUp(player);
+    assertTrue(charm.isEquipped());
+    assertEquals(20, stats.getBaseAttack());
+    inventory.setCharmEquipped(charm, false);
+    inventory.setCharmEquipped(charm, false);
+    assertEquals(10, stats.getBaseAttack());
+    assertTrue(inventory.hasCharm(charm));
+    inventory.setCharmEquipped(charm, true);
+    inventory.setCharmEquipped(charm, true);
+    assertEquals(20, stats.getBaseAttack());
+    charm.drop(player);
+    assertEquals(10, stats.getBaseAttack());
+  }
 }

@@ -1,7 +1,6 @@
 package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.achievements.AchievementContext;
 import com.csse3200.game.components.maingame.InventoryDisplay;
 import com.csse3200.game.components.weapons.WeaponComponent;
 import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
@@ -20,9 +19,12 @@ import org.slf4j.LoggerFactory;
 public class InventoryComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(InventoryComponent.class);
   private static final String CONSUMABLE_INVENTORY_CHANGED = "consumableInventoryChanged";
+  public static final String GOLD_PICKED_UP = "goldPickedUp";
   private int gold;
   private final List<Charm> charms;
   private final Map<String, Integer> consumables;
+  public static final int CONSUMABLE_SLOT_COUNT = 4;
+  private final String[] consumableSlots = new String[CONSUMABLE_SLOT_COUNT];
 
   private InventoryDisplay display;
 
@@ -46,12 +48,8 @@ public class InventoryComponent extends Component {
   public void setGold(int gold) {
     int previous = this.gold;
     this.gold = Math.max(gold, 0);
+
     logger.debug("Setting gold to {}", this.gold);
-    if (ServiceLocator.getAchievementService() != null) {
-      AchievementContext ctx = new AchievementContext();
-      ctx.goldTotal = this.gold;
-      ServiceLocator.getAchievementService().update(ctx);
-    }
     if (previous != this.gold && entity != null) {
       entity.getEvents().trigger("goldChanged", this.gold);
     }
@@ -83,13 +81,34 @@ public class InventoryComponent extends Component {
       return ConsumablePurchaseResult.QUANTITY_LIMIT;
     }
     consumables.put(itemId, count + quantity);
-    // Commit stock first so both achievement and gold observers see the complete transaction.
+    // Commit stock first so gold observers see the complete transaction.
     setGold(gold - goldPrice);
     if (entity != null) {
       // A gold listener may synchronously add/remove items; publish the current final quantity.
       entity.getEvents().trigger(CONSUMABLE_INVENTORY_CHANGED, itemId, getConsumableCount(itemId));
     }
     return ConsumablePurchaseResult.SUCCESS;
+  }
+
+  /**
+   * Buys a fresh, unequipped charm, committing ownership and payment before notifying observers.
+   */
+  public CharmPurchaseResult tryPurchaseCharm(String itemId, int goldPrice) {
+    if (!ItemCatalog.contains(itemId) || !(ItemCatalog.create(itemId, 1) instanceof Charm charm)) {
+      return CharmPurchaseResult.INVALID_ITEM;
+    }
+    if (goldPrice <= 0) {
+      return CharmPurchaseResult.INVALID_PRICE;
+    }
+    if (gold < goldPrice) {
+      return CharmPurchaseResult.INSUFFICIENT_GOLD;
+    }
+    charms.add(charm);
+    setGold(gold - goldPrice);
+    if (entity != null) {
+      entity.getEvents().trigger("charmAdded", charm);
+    }
+    return CharmPurchaseResult.SUCCESS;
   }
 
   /**
@@ -117,8 +136,6 @@ public class InventoryComponent extends Component {
       gold += goldPrice;
       return WeaponUpgradePurchaseResult.INVALID_WEAPON;
     }
-    // The balance is already committed; retain the shared achievement notification without
-    // publishing an early goldChanged event before the weapon upgrade exists.
     setGold(gold);
     if (entity != null) {
       entity.getEvents().trigger("goldChanged", gold);
@@ -168,6 +185,51 @@ public class InventoryComponent extends Component {
     return consumables.getOrDefault(id, 0);
   }
 
+  /** Returns the item currently assigned to a physical HUD slot, or null when empty. */
+  public String getConsumableSlot(int index) {
+    if (index < 0 || index >= CONSUMABLE_SLOT_COUNT) {
+      throw new IllegalArgumentException(
+          "Slot must be between 0 and " + (CONSUMABLE_SLOT_COUNT - 1));
+    }
+    return consumableSlots[index];
+  }
+
+  /** Assigns owned stock to a HUD slot, swapping any previous assignment. */
+  public void equipConsumable(String type, int index) {
+    getConsumableSlot(index);
+    if (!hasConsumable(type)) return;
+    int previous = -1;
+    for (int i = 0; i < consumableSlots.length; i++) {
+      if (type.equals(consumableSlots[i])) previous = i;
+    }
+    if (previous >= 0) consumableSlots[previous] = consumableSlots[index];
+    consumableSlots[index] = type;
+    notifyConsumableChanged(type);
+  }
+
+  /** Removes a slot assignment while retaining the item quantity in the backpack. */
+  public void unequipConsumable(int index) {
+    String type = getConsumableSlot(index);
+    consumableSlots[index] = null;
+    if (type != null) notifyConsumableChanged(type);
+  }
+
+  private void notifyConsumableChanged(String type) {
+    if (entity != null) {
+      entity.getEvents().trigger(CONSUMABLE_INVENTORY_CHANGED, type, getConsumableCount(type));
+    }
+  }
+
+  /** Changes a charm's equipment state and applies/removes its effect on the owning player. */
+  public void setCharmEquipped(Charm charm, boolean equipped) {
+    if (entity != null && hasCharm(charm)) charm.setEquipped(entity, equipped);
+  }
+
+  /** Owned IDs, including custom healing potions, for the inventory book. */
+  public List<String> getConsumableIds() {
+    return consumables.keySet().stream().sorted().toList();
+  }
+
   public boolean hasConsumable(String id) {
     return getConsumableCount(id) > 0;
   }
@@ -181,6 +243,14 @@ public class InventoryComponent extends Component {
   public void addConsumable(String id, int quantity) {
     if (!isConsumable(id) || quantity <= 0) {
       return;
+    }
+    if (!hasConsumable(id)) {
+      for (int i = 0; i < consumableSlots.length; i++) {
+        if (consumableSlots[i] == null) {
+          consumableSlots[i] = id;
+          break;
+        }
+      }
     }
     int newCount = getConsumableCount(id) + quantity;
     consumables.put(id, newCount);
@@ -201,6 +271,12 @@ public class InventoryComponent extends Component {
     int newCount = currentCount - 1;
     if (newCount == 0) {
       consumables.remove(id);
+      for (int i = 0; i < consumableSlots.length; i++) {
+        if (id.equals(consumableSlots[i])) {
+          consumableSlots[i] = null;
+          break;
+        }
+      }
     } else {
       consumables.put(id, newCount);
     }
@@ -235,5 +311,17 @@ public class InventoryComponent extends Component {
 
   public Map<String, Integer> getConsumables() {
     return Map.copyOf(consumables);
+  }
+
+  public void addGoldFromPickup(int amount) {
+    if (amount <= 0) {
+      return;
+    }
+
+    addGold(amount);
+
+    if (entity != null) {
+      entity.getEvents().trigger(GOLD_PICKED_UP, amount);
+    }
   }
 }

@@ -84,8 +84,13 @@ class FreezeBombUseTest {
     KeyboardPlayerInputComponent input = new KeyboardPlayerInputComponent();
     player.addComponent(selection).addComponent(input);
     selection.create();
+    inventory.addConsumable(ItemIds.HEALTH_POTION);
+    inventory.addConsumable(ItemIds.SHIELD);
+    inventory.addConsumable(ItemIds.SPEED_POTION);
+    inventory.addConsumable(ItemIds.STRENGTH_POTION);
     inventory.addConsumable(ItemIds.FREEZE_BOMB, 2);
-    for (int i = 0; i < 4; i++) {
+    inventory.equipConsumable(ItemIds.FREEZE_BOMB, 3);
+    for (int i = 0; i < 3; i++) {
       input.keyDown(Keys.TAB);
     }
     assertEquals(ItemIds.FREEZE_BOMB, selection.getSelectedType());

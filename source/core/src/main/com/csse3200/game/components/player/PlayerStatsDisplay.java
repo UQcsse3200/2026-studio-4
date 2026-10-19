@@ -137,6 +137,7 @@ public class PlayerStatsDisplay extends UIComponent {
 
     panel.add(content).expand().top().center();
     table.add(panel).size(panelWidth, panelHeight).top().left().padTop(20f);
+    table.setScale(0.8f);
 
     if (stage == null) {
       return;

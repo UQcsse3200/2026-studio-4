@@ -12,7 +12,7 @@ public class AttackSpeedCharm extends Charm {
     super(
         ItemIds.ATTACK_SPEED_CHARM,
         "Attack Speed Charm",
-        "You feel yourself getting faster hands I guess?",
+        "You feel yourself getting faster hands I guess?\n\nIncreases attack speed while equipped.",
         TEXTURE);
   }
 

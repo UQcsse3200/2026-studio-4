@@ -4,10 +4,12 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.achievements.AchievementProgressComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.AbilityAttunementComponent;
+import com.csse3200.game.components.player.BurnVialFeedbackComponent;
 import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.ConsumableSelectionComponent;
 import com.csse3200.game.components.player.HealingPotionFeedbackComponent;
@@ -19,6 +21,7 @@ import com.csse3200.game.components.player.PlayerCerberusMistDebuffComponent;
 import com.csse3200.game.components.player.PlayerDamageFlashComponent;
 import com.csse3200.game.components.player.PlayerPetrificationComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
+import com.csse3200.game.components.player.ShieldPotionFeedbackComponent;
 import com.csse3200.game.components.player.SpeedPotionAfterimageComponent;
 import com.csse3200.game.components.spells.FreezeSpellComponent;
 import com.csse3200.game.components.spells.LightningSpellComponent;
@@ -99,7 +102,9 @@ public class PlayerFactory {
             .addComponent(new ConsumableSelectionComponent())
             .addComponent(new ConsumableEffectComponent())
             .addComponent(new HealingPotionFeedbackComponent())
+            .addComponent(new ShieldPotionFeedbackComponent())
             .addComponent(new SpeedPotionAfterimageComponent())
+            .addComponent(new BurnVialFeedbackComponent())
             .addComponent(new ItemPickupComponent())
             // Runs friendly NPC interactions and remembers which have been completed
             .addComponent(new NpcInteractorComponent())
@@ -127,7 +132,10 @@ public class PlayerFactory {
             .addComponent(
                 new LightningSpellComponent(5f, 25, 400L, new StrategyWithinRadius(SPELL_RADIUS)))
             .addComponent(
-                new FreezeSpellComponent(5f, 5000L, new StrategyWithinRadius(SPELL_RADIUS)));
+                new FreezeSpellComponent(5f, 5000L, new StrategyWithinRadius(SPELL_RADIUS)))
+
+            // progress player achievements using events
+            .addComponent(new AchievementProgressComponent());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);

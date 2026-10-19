@@ -35,6 +35,13 @@ public class GameSaveData {
     public int gold;
     public Map<String, Integer> inventory = new HashMap<>();
     public List<String> charms = new ArrayList<>();
+
+    /** Null in legacy saves; otherwise four ordered slots, with null for empty positions. */
+    public List<String> consumableSlots;
+
+    /** Null in legacy saves; otherwise one equipped flag per charm, including duplicates. */
+    public List<Boolean> charmEquipped;
+
     public List<String> upgradedWeapons = new ArrayList<>();
     public String selectedWeapon = "SWORD";
   }

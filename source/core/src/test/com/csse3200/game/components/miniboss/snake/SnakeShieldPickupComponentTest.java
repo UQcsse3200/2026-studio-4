@@ -1,6 +1,7 @@
 package com.csse3200.game.components.miniboss.snake;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -102,6 +103,7 @@ class SnakeShieldPickupComponentTest {
 
   @Test
   void waitsForStageTwoAndStartsOnlyOnceWithoutAgingNewDropsImmediately() {
+    assertFalse(pickups.hasCollectedShieldGem());
     tick(100f);
     assertEquals(0, pickups.getPickupCount());
     pickups.start();
@@ -112,6 +114,7 @@ class SnakeShieldPickupComponentTest {
     assertEquals(initial, pickups.getPickupPositions());
     tick(0.35f);
     assertEquals(2, pickups.getPickupCount());
+    assertFalse(pickups.hasCollectedShieldGem());
   }
 
   @Test
@@ -139,6 +142,7 @@ class SnakeShieldPickupComponentTest {
     assertEquals(2, pickups.getPickupCount());
     tick(0.2f);
     assertEquals(0, pickups.getPickupCount());
+    assertFalse(pickups.hasCollectedShieldGem());
   }
 
   @Test
@@ -152,10 +156,12 @@ class SnakeShieldPickupComponentTest {
     tick(0.34f);
     verify(shield, never()).refill();
     assertEquals(30, stats.getHealth());
+    assertFalse(pickups.hasCollectedShieldGem());
     tick(0.02f);
     assertEquals(1, pickups.getPickupCount());
     verify(shield).refill();
     assertEquals(45, stats.getHealth());
+    assertTrue(pickups.hasCollectedShieldGem());
     tick(0.1f);
     verify(shield).refill();
     placePlayerAt(positions.getLast());
@@ -238,10 +244,12 @@ class SnakeShieldPickupComponentTest {
     tick(0.4f);
     verify(shield, never()).refill();
     assertEquals(2, pickups.getPickupCount());
+    assertFalse(pickups.hasCollectedShieldGem());
     placePlayerAt(gem);
     tick(0.1f);
     verify(shield).refill();
     assertEquals(1, pickups.getPickupCount());
+    assertTrue(pickups.hasCollectedShieldGem());
   }
 
   @Test
@@ -376,6 +384,22 @@ class SnakeShieldPickupComponentTest {
     verify(renderer).unregister(pickups);
     assertTrue(resources.containsAsset(SnakeShieldPickupComponent.GEM_TEXTURE, Texture.class));
     assertTrue(resources.containsAsset(SnakeShieldPickupComponent.SPAWN_TEXTURE, Texture.class));
+    assertFalse(pickups.hasCollectedShieldGem());
+  }
+
+  @Test
+  void pickupHistorySurvivesClearingRestartingAndStoppingDrops() {
+    collectNewGem();
+    assertTrue(pickups.hasCollectedShieldGem());
+
+    pickups.clear();
+    assertTrue(pickups.hasCollectedShieldGem());
+    pickups.start();
+    assertTrue(pickups.hasCollectedShieldGem());
+    pickups.stop();
+    assertTrue(pickups.hasCollectedShieldGem());
+    pickups.dispose();
+    assertTrue(pickups.hasCollectedShieldGem());
   }
 
   @Test

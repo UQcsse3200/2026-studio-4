@@ -5,8 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.csse3200.game.ui.UIComponent;
-import java.util.ArrayDeque;
-import java.util.Queue;
 
 /** Displays the name of the current game area. */
 public class GameAreaDisplay extends UIComponent {
@@ -16,21 +14,20 @@ public class GameAreaDisplay extends UIComponent {
   private Table statusTable;
   private long statusExpiryMillis;
 
-  private Label achievement;
-  private Table achievementTable;
-  private long achievementExpiryMillis;
-  private final Queue<String> achievementQueue = new ArrayDeque<>();
-
   private Table titleTable;
 
   public GameAreaDisplay(String gameAreaName) {
     this.gameAreaName = gameAreaName;
   }
 
+  public static final String DISPLAY = "display";
+
   @Override
   public void create() {
     super.create();
     addActors();
+
+    entity.getEvents().addListener(DISPLAY, this::showStatus);
   }
 
   private void addActors() {
@@ -46,13 +43,6 @@ public class GameAreaDisplay extends UIComponent {
     statusTable.setFillParent(true);
     statusTable.center().top();
 
-    achievement = new Label("", skin);
-    achievementTable = new Table();
-    achievementTable.add(achievement);
-    achievementTable.setFillParent(true);
-    achievementTable.center().top().padTop(40f); // just below the status label
-
-    stage.addActor(achievementTable);
     stage.addActor(titleTable);
     stage.addActor(statusTable);
   }
@@ -63,41 +53,18 @@ public class GameAreaDisplay extends UIComponent {
     statusExpiryMillis = TimeUtils.millis() + 2500;
   }
 
-  /** Shows an achievement-unlocked toast below the status message. */
-  public void showAchievement(String name) {
-    achievementQueue.add(name);
-    if (achievementExpiryMillis == 0) {
-      showNextAchievement();
-    }
-  }
-
-  private void showNextAchievement() {
-    String next = achievementQueue.poll();
-    if (next != null) {
-      achievement.setText("Achievement Unlocked: " + next);
-      achievementExpiryMillis = TimeUtils.millis() + 2000;
-    }
-  }
-
   @Override
   public void draw(SpriteBatch batch) {
     if (statusExpiryMillis > 0 && TimeUtils.millis() >= statusExpiryMillis) {
       status.setText("");
       statusExpiryMillis = 0;
     }
-    if (achievementExpiryMillis > 0 && TimeUtils.millis() >= achievementExpiryMillis) {
-      achievement.setText("");
-      achievementExpiryMillis = 0;
-      showNextAchievement(); // immediately start the next queued toast, if any
-    }
   }
 
   @Override
   public void dispose() {
     super.dispose();
-    achievementQueue.clear();
     titleTable.remove();
     statusTable.remove();
-    achievementTable.remove();
   }
 }

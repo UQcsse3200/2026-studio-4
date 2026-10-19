@@ -14,6 +14,7 @@ import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
 import com.csse3200.game.components.boss.FinalBossProximityDamageComponent;
 import com.csse3200.game.components.boss.FinalBossStageOneComponent;
 import com.csse3200.game.components.boss.FinalBossStageOneState;
+import com.csse3200.game.components.statuseffects.Shield;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.FinalBossStageOneConfig;
 import com.csse3200.game.extensions.GameExtension;
@@ -79,7 +80,7 @@ class PlayerDamageFlashComponentTest {
     assertNull(effects.getTint());
 
     stats.setInvulnerable(false);
-    effects.activateTimed();
+    effects.addStatusEffect(new Shield(new GameTime(), 1000));
     stats.takeDamage(5);
     assertEquals(100, stats.getHealth());
     assertNull(effects.getTint());

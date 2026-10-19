@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.factories;
 
 import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.shop.CharmPurchaseEffect;
 import com.csse3200.game.components.shop.ConsumablePurchaseEffect;
 import com.csse3200.game.components.shop.ShopCatalog;
 import com.csse3200.game.components.shop.ShopDisplay;
@@ -26,7 +27,11 @@ public final class ShopFactory {
     ShopCatalog catalog = ShopCatalog.load("configs/shops/merchant.json");
     ShopService service =
         new ShopService(
-            inventory, catalog, Map.of(ShopProductKind.CONSUMABLE, new ConsumablePurchaseEffect()));
+            inventory,
+            catalog,
+            Map.of(
+                ShopProductKind.CONSUMABLE, new ConsumablePurchaseEffect(),
+                ShopProductKind.CHARM, new CharmPurchaseEffect()));
     WeaponUpgradeComponent upgrades = player.getComponent(WeaponUpgradeComponent.class);
     WeaponUpgradeCatalog upgradeCatalog =
         WeaponUpgradeCatalog.load("configs/shops/merchant-upgrades.json");

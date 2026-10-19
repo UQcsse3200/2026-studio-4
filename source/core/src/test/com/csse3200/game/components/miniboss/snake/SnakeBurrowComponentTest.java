@@ -22,6 +22,7 @@ import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.player.PlayerDamageFlashComponent;
 import com.csse3200.game.components.statuseffects.FrozenEffect;
 import com.csse3200.game.components.statuseffects.InvisibilityEffect;
+import com.csse3200.game.components.statuseffects.Shield;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.SnakeMiniBossConfig;
 import com.csse3200.game.extensions.GameExtension;
@@ -278,7 +279,7 @@ class SnakeBurrowComponentTest {
 
   @Test
   void fullyAbsorbedAttackDoesNotReceiveHitFeedback() {
-    playerEffects.activateTimed();
+    playerEffects.addStatusEffect(new Shield(new GameTime(), 1000));
     reachExposed();
 
     assertEquals(100, playerStats.getHealth());
@@ -659,6 +660,32 @@ class SnakeBurrowComponentTest {
     assertEquals(SnakeBurrowComponent.State.DEAD, burrow.getState());
     verify(poison).clear();
     verify(poison, never()).fireVolley(anyInt());
+  }
+
+  @Test
+  void shouldUseScaledHealthForStageTwoAfterDungeonProgress() {
+    // Three completed dungeons: 150 -> 375.
+    snakeStats.scale(3);
+    tick(0f);
+
+    assertEquals(375, snakeStats.getMaxHealth());
+    assertEquals(375, snakeStats.getHealth());
+    assertFalse(burrow.isStageTwo());
+
+    // Damage must be tested during the normal vulnerability window.
+    reachExposed();
+
+    snakeStats.takeDamage(187);
+    tick(0f);
+
+    assertEquals(188, snakeStats.getHealth());
+    assertFalse(burrow.isStageTwo());
+
+    snakeStats.takeDamage(1);
+    tick(0f);
+
+    assertEquals(187, snakeStats.getHealth());
+    assertTrue(burrow.isStageTwo());
   }
 
   private void reachSpitting() {

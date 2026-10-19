@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
@@ -24,25 +23,28 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import java.util.Objects;
 
-/** A compact consumable bar on the lower half of the right side of the game UI. */
+/** Four consumable slots along the bottom of the game UI, following the weapon slots. */
 public class ConsumableHotbarDisplay extends UIComponent {
   public static final String IDLE_FRAME_TEXTURE = "images/consumable-slot-idle.png";
   public static final String SELECTED_FRAME_TEXTURE = "images/consumable-slot-selected.png";
-  private static final float SLOT_SIZE = 72f;
-  private static final float SLOT_GAP = 6f;
-  private static final float RIGHT_INSET = 24f;
-  private static final float BOTTOM_FRACTION = 0.16f;
+  private static final float USE_HINT_HEIGHT = 20f;
+  private static final float USE_HINT_GAP = 4f;
   private final Entity player;
   private final InventoryComponent inventoryComponent;
   private final ConsumableSelectionComponent selection;
   private final ConsumableEffectComponent effects;
-  private final Image[] frames = new Image[ConsumableSelectionComponent.SLOTS.size()];
-  private final Image[] icons = new Image[ConsumableSelectionComponent.SLOTS.size()];
-  private final Label[] counts = new Label[ConsumableSelectionComponent.SLOTS.size()];
-  private final Label[] pointers = new Label[ConsumableSelectionComponent.SLOTS.size()];
-  private final Label[] useHints = new Label[ConsumableSelectionComponent.SLOTS.size()];
-  private final int[] slotCounts = new int[ConsumableSelectionComponent.SLOTS.size()];
+  private final Image[] frames = new Image[InventoryComponent.CONSUMABLE_SLOT_COUNT];
+  private final Image[] icons = new Image[InventoryComponent.CONSUMABLE_SLOT_COUNT];
+  private final Label[] counts = new Label[InventoryComponent.CONSUMABLE_SLOT_COUNT];
+  private final Label[] pointers = new Label[InventoryComponent.CONSUMABLE_SLOT_COUNT];
+  private final Label[] useHints = new Label[InventoryComponent.CONSUMABLE_SLOT_COUNT];
+  private final SpeedPotionTimerRing[] speedRings =
+      new SpeedPotionTimerRing[InventoryComponent.CONSUMABLE_SLOT_COUNT];
+  private final int[] slotCounts = new int[InventoryComponent.CONSUMABLE_SLOT_COUNT];
   private Table root;
+  private Label goldLabel;
+  private Label cycleHint;
+  private int displayedGold;
   private Texture regularFrame;
   private Texture selectedFrame;
   private Texture ringPixel;
@@ -69,12 +71,7 @@ public class ConsumableHotbarDisplay extends UIComponent {
     ringPixel = new Texture(pixmap);
     pixmap.dispose();
     buildActors();
-    refreshSelection(selection.getSelectedType());
-    for (int i = 0; i < ConsumableSelectionComponent.SLOTS.size(); i++) {
-      refreshCount(
-          ConsumableSelectionComponent.SLOTS.get(i),
-          inventoryComponent.getConsumableCount(ConsumableSelectionComponent.SLOTS.get(i)));
-    }
+    refreshSlots();
     player
         .getEvents()
         .addListener(ConsumableSelectionComponent.SELECTION_CHANGED, this::refreshSelection);
@@ -82,59 +79,106 @@ public class ConsumableHotbarDisplay extends UIComponent {
   }
 
   private void buildActors() {
-    root = new Table();
-    root.setName("consumable-hotbar");
-    root.setFillParent(true);
-    root.bottom().right().padRight(RIGHT_INSET);
-    root.padBottom(
+    root = BottomHotbarLayout.root("consumable-hotbar");
+    // The hint row sits below the shared frame baseline.
+    root.padBottom(BottomHotbarLayout.BOTTOM_INSET - USE_HINT_HEIGHT - USE_HINT_GAP);
+    root.padLeft(
         new Value() {
           @Override
           public float get(Actor context) {
-            return stage.getHeight() * BOTTOM_FRACTION;
+            return BottomHotbarLayout.consumableInset(BottomHotbarLayout.availableWidth(root));
           }
         });
-    root.setTouchable(Touchable.disabled);
 
     Table slots = new Table();
-    for (int i = 0; i < ConsumableSelectionComponent.SLOTS.size(); i++) {
-      String type = ConsumableSelectionComponent.SLOTS.get(i);
-      Stack slot = new Stack();
-      slot.setName("consumable-slot-" + type.toLowerCase());
-      frames[i] = new Image(regularFrame);
-      slot.add(frames[i]);
-      if (ItemIds.SPEED_POTION.equals(type)) {
-        slot.add(new SpeedPotionTimerRing(effects, ringPixel));
-      }
-
-      Texture texture =
-          ServiceLocator.getResourceService()
-              .getAsset(ItemCatalog.create(type, 1).getTexture(), Texture.class);
-      icons[i] = new Image(new TextureRegionDrawable(iconRegion(type, texture)));
-      icons[i].setScaling(Scaling.fit);
-      icons[i].setName("consumable-icon-" + type.toLowerCase());
-      Table iconLayer = new Table();
-      iconLayer.add(icons[i]).size(54f);
-      slot.add(iconLayer);
-
-      counts[i] = label("0", 0.55f);
-      counts[i].setName("consumable-count-" + type.toLowerCase());
-      Table countLayer = new Table();
-      countLayer.bottom().right().add(counts[i]).padRight(13f).padBottom(11f);
-      slot.add(countLayer);
-
-      pointers[i] = label(">", 0.8f);
-      useHints[i] = label("Q USE", 0.55f);
-      slots.add(pointers[i]).width(18f).padRight(3f);
-      slots.add(slot).size(SLOT_SIZE);
-      slots.add(useHints[i]).width(60f).padLeft(6f);
-      slots.row().padTop(i == 0 ? 0f : SLOT_GAP);
+    Value diameter = BottomHotbarLayout.slotSize(root);
+    Stack[] slotActors = new Stack[InventoryComponent.CONSUMABLE_SLOT_COUNT];
+    displayedGold = inventoryComponent.getGold();
+    goldLabel = label("Gold: " + displayedGold, 0.65f);
+    goldLabel.setName("consumable-gold");
+    for (int i = 0; i < InventoryComponent.CONSUMABLE_SLOT_COUNT; i++) {
+      slotActors[i] = createSlot(i);
     }
-    Label cycleHint = label("TAB NEXT", 0.5f);
+    cycleHint = label("TAB NEXT", 0.5f);
     cycleHint.setName("consumable-cycle-hint");
-    slots.add().colspan(1);
-    slots.add(cycleHint).padTop(8f);
+    slots.add(goldLabel).colspan(2).left().padBottom(8f);
+    slots.add(cycleHint).colspan(2).right().padBottom(8f);
+    slots.row();
+    for (int i = 0; i < slotActors.length; i++) {
+      slots
+          .add(pointers[i])
+          .width(diameter)
+          .height(14f)
+          .padRight(i < slotActors.length - 1 ? BottomHotbarLayout.SLOT_GAP : 0f);
+    }
+    slots.row();
+    for (int i = 0; i < slotActors.length; i++) {
+      slots
+          .add(slotActors[i])
+          .size(diameter)
+          .padRight(i < slotActors.length - 1 ? BottomHotbarLayout.SLOT_GAP : 0f);
+    }
+    slots.row();
+    for (int i = 0; i < slotActors.length; i++) {
+      slots
+          .add(useHints[i])
+          .width(diameter)
+          .height(USE_HINT_HEIGHT)
+          .padTop(USE_HINT_GAP)
+          .padRight(i < slotActors.length - 1 ? BottomHotbarLayout.SLOT_GAP : 0f);
+    }
     root.add(slots);
     stage.addActor(root);
+  }
+
+  private Stack createSlot(int index) {
+    String id = Integer.toString(index + 1);
+    Stack slot =
+        new Stack() {
+          @Override
+          protected void sizeChanged() {
+            super.sizeChanged();
+            if (counts[index] != null) {
+              float scale = getWidth() / 72f;
+              counts[index].setFontScale(0.55f * scale);
+              pointers[index].setFontScale(0.8f * Math.min(1f, scale));
+              useHints[index].setFontScale(0.55f * Math.min(1f, scale));
+              if (index == 0) {
+                goldLabel.setFontScale(0.65f * Math.min(1f, scale));
+                cycleHint.setFontScale(0.5f * Math.min(1f, scale));
+              }
+            }
+          }
+        };
+    slot.setName("consumable-slot-" + id);
+    frames[index] = new Image(regularFrame);
+    slot.add(frames[index]);
+    speedRings[index] = new SpeedPotionTimerRing(effects, ringPixel);
+    speedRings[index].setName("speed-potion-timer-ring-" + id);
+    slot.add(speedRings[index]);
+    icons[index] = new Image();
+    icons[index].setScaling(Scaling.fit);
+    icons[index].setName("consumable-icon-" + id);
+    Table iconLayer = new Table();
+    iconLayer.add(icons[index]).size(Value.percentWidth(0.75f, slot));
+    slot.add(iconLayer);
+
+    counts[index] = label("0", 0.55f);
+    counts[index].setName("consumable-count-" + id);
+    Table countLayer = new Table();
+    countLayer
+        .bottom()
+        .right()
+        .add(counts[index])
+        .padRight(Value.percentWidth(13f / 72f, slot))
+        .padBottom(Value.percentHeight(11f / 72f, slot));
+    slot.add(countLayer);
+
+    pointers[index] = label("v", 0.8f);
+    pointers[index].setName("consumable-pointer-" + id);
+    useHints[index] = label("Q USE", 0.55f);
+    useHints[index].setName("consumable-use-" + id);
+    return slot;
   }
 
   private Label label(String text, float scale) {
@@ -148,12 +192,14 @@ public class ConsumableHotbarDisplay extends UIComponent {
   /** Trim transparent padding from the source art without copying or altering its pixels. */
   private static TextureRegion iconRegion(String type, Texture texture) {
     return switch (type) {
-      case ItemIds.HEALTH_POTION -> new TextureRegion(texture, 377, 325, 519, 634);
+      case ItemIds.HEALTH_POTION -> new TextureRegion(texture, 441, 266, 370, 727);
+      case ItemIds.MEDIUM_HEALTH_POTION -> new TextureRegion(texture, 255, 131, 743, 1007);
+      case ItemIds.LARGE_HEALTH_POTION -> new TextureRegion(texture, 163, 122, 928, 1024);
+      case ItemIds.BURN_VIAL -> new TextureRegion(texture, 342, 101, 436, 1345);
       case ItemIds.SHIELD -> new TextureRegion(texture, 310, 322, 633, 653);
       case ItemIds.SPEED_POTION -> new TextureRegion(texture, 393, 220, 481, 784);
       case ItemIds.STRENGTH_POTION -> new TextureRegion(texture, 310, 173, 635, 928);
-      case ItemIds.FREEZE_BOMB -> new TextureRegion(texture);
-      default -> throw new IllegalArgumentException("Not a consumable: " + type);
+      default -> new TextureRegion(texture);
     };
   }
 
@@ -162,7 +208,7 @@ public class ConsumableHotbarDisplay extends UIComponent {
       return;
     }
     for (int i = 0; i < frames.length; i++) {
-      boolean active = ConsumableSelectionComponent.SLOTS.get(i).equals(selected);
+      boolean active = i == selection.getSelectedIndex();
       frames[i].setDrawable(new TextureRegionDrawable(active ? selectedFrame : regularFrame));
       pointers[i].setVisible(active);
       useHints[i].setVisible(active && slotCounts[i] > 0);
@@ -173,22 +219,52 @@ public class ConsumableHotbarDisplay extends UIComponent {
     if (disposed) {
       return;
     }
-    for (int i = 0; i < ConsumableSelectionComponent.SLOTS.size(); i++) {
-      if (ConsumableSelectionComponent.SLOTS.get(i).equals(type)) {
-        slotCounts[i] = count;
-        counts[i].setText(Integer.toString(count));
-        boolean occupied = count > 0;
-        counts[i].setVisible(occupied);
-        icons[i].setVisible(occupied);
-        useHints[i].setVisible(occupied && selection.getSelectedType().equals(type));
-        return;
+    refreshSlots();
+  }
+
+  private void refreshSlots() {
+    for (int i = 0; i < InventoryComponent.CONSUMABLE_SLOT_COUNT; i++) {
+      String type = inventoryComponent.getConsumableSlot(i);
+      int count = inventoryComponent.getConsumableCount(type);
+      slotCounts[i] = count;
+      boolean occupied = type != null && count > 0;
+      if (occupied) {
+        Texture texture =
+            ServiceLocator.getResourceService()
+                .getAsset(ItemCatalog.create(type, 1).getTexture(), Texture.class);
+        icons[i].setDrawable(new TextureRegionDrawable(iconRegion(type, texture)));
+      } else {
+        icons[i].setDrawable(null);
       }
+      counts[i].setText(Integer.toString(count));
+      counts[i].setVisible(occupied);
+      icons[i].setVisible(occupied);
+      speedRings[i].setVisible(ItemIds.SPEED_POTION.equals(type));
+    }
+    refreshSelection(selection.getSelectedType());
+  }
+
+  @Override
+  public void update() {
+    if (!disposed && inventoryComponent.getGold() != displayedGold) {
+      displayedGold = inventoryComponent.getGold();
+      goldLabel.setText("Gold: " + displayedGold);
     }
   }
 
   @Override
   public void draw(SpriteBatch batch) {
-    // The shared Scene2D stage draws this actor.
+    if (disposed || root == null) return;
+    // Resolve late-spawned health bars before the shared stage draws, moving only our HUD.
+    Actor book = stage.getRoot().findActor("inventory-book");
+    if (book != null && book.isVisible() && book.getParent() == root.getParent()) {
+      // Keep the open inventory above the HUD without changing the book's actor itself.
+      int index = book.getZIndex();
+      if (root.getZIndex() < index) index--;
+      root.setZIndex(index);
+    } else {
+      root.toFront();
+    }
   }
 
   @Override

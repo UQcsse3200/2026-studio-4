@@ -11,6 +11,7 @@ import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.traps.FireTrapRenderComponent;
 import com.csse3200.game.components.traps.IceTrapRenderComponent;
+import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.files.AudioLevels;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -35,6 +36,8 @@ public class RoomAssets implements Disposable {
   /** Plays while the final boss is still alive. */
   private static final String BOSS_MUSIC = "sounds/boss_music.mp3";
 
+  private static final String ACHIEVEMENT_MUSIC = "sounds/achievementSound.mp3";
+
   /**
    * Dungeons that have a theme of their own. Anything not listed here fights to {@link
    * #FIGHT_MUSIC}, so giving a dungeon its own track is one entry rather than a new branch.
@@ -43,7 +46,7 @@ public class RoomAssets implements Disposable {
 
   private static final String IMPACT_SOUND = "sounds/Impact4.ogg";
   private static final String[] MUSIC = {CALM_MUSIC, FIGHT_MUSIC, BOSS_MUSIC};
-  private static final String[] SOUNDS = {IMPACT_SOUND};
+  private static final String[] SOUNDS = {IMPACT_SOUND, ACHIEVEMENT_MUSIC};
 
   private static final String[] ENEMY_TEXTURES = {
     "images/hole.png",
@@ -75,6 +78,7 @@ public class RoomAssets implements Disposable {
     "images/horse.atlas",
     "images/crow.atlas",
     "images/minotaur.atlas",
+    "images/minotaur-combat/attacks.atlas",
     "images/sandeye.atlas",
     "images/dark_elves.atlas",
     "images/jingwei.atlas",
@@ -90,12 +94,12 @@ public class RoomAssets implements Disposable {
   private static final String[] PLAYER_TEXTURES = {Minimap.PLAYER_HEAD_PATH};
 
   private static final String[] DUNGEON_TEXTURES = {
-    "images/dungeons/tileSet0.png",
-    "images/dungeons/tileSet1.png",
-    "images/dungeons/tileSet2.png",
-    "images/dungeons/tileSet3.png",
-    "images/dungeons/tileSet4.png",
-    "images/dungeons/tileSet5.png",
+    RoomFactory.DEFAULT_TILESET,
+    RoomFactory.DUNGEON1_TILESET,
+    RoomFactory.DUNGEON2_TILESET,
+    RoomFactory.DUNGEON3_TILESET,
+    RoomFactory.DUNGEON4_TILESET,
+    RoomFactory.DUNGEON5_TILESET,
     "images/dungeons/fantasy_dreamland_door.png"
   };
 
@@ -116,10 +120,15 @@ public class RoomAssets implements Disposable {
     "images/attack_speed_charm.png",
     "images/speed_charm.png",
     "images/health_potion_pixel.png",
+    "images/health_potion_small_pixel.png",
+    "images/health_potion_medium_pixel.png",
+    "images/health_potion_large_pixel.png",
     "images/shield_consumable_pixel.png",
     "images/speed_potion_pixel.png",
     "images/strength_potion_pixel.png",
     "images/freeze_bomb_pixel.png",
+    "images/burn_vial_pixel.png",
+    "images/magnet_potion_pixel.png",
     "images/consumable-slot-idle.png",
     "images/consumable-slot-selected.png",
     "images/gold_coin_pixel.png"

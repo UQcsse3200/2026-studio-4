@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.HitboxFactory;
 import com.csse3200.game.entities.factories.HitboxSpec;
+import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -131,6 +132,7 @@ public class SwordWeaponComponent extends WeaponComponent {
             .rotationOffset(SPRITE_ANGLE_OFFSET);
 
     Entity hitbox = HitboxFactory.createHitbox(spec);
+    hitbox.addComponent(new WeaponAttackSourceComponent(entity, WeaponType.SWORD));
     hitbox.addComponent(new SweepComponent(lifetime, startAngle, endAngle, reach));
     ServiceLocator.getEntityService().register(hitbox);
   }

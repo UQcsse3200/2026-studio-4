@@ -65,6 +65,14 @@ timer_back
   orig: 246, 254
   offset: 0, 0
   index: -1
+achievement
+  rotate: false
+  xy: 972,32
+  size: 469,75
+  split: 0,0,0,0
+  orig: 469, 75
+  offset: 0, 0
+  index: -1
 
 book.png
   size: 1683, 1026

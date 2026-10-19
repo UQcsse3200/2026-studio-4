@@ -48,8 +48,14 @@ public class CombatStatsComponent extends Component {
    */
   public void scale(int amount) {
     maxHealth += scaleStat(maxHealth, healthScaleFactor, amount);
-    setHealth(maxHealth);
+    health = maxHealth;
     baseAttack += scaleStat(baseAttack, attackScaleFactor, amount);
+
+    // Finish updating both values before notifying UI and phase listeners.
+    if (entity != null) {
+      entity.getEvents().trigger("updateMaxHealth", maxHealth);
+      entity.getEvents().trigger("updateHealth", health);
+    }
   }
 
   /**
@@ -349,8 +355,6 @@ public class CombatStatsComponent extends Component {
           entity.getComponent(StatusEffectsControllerComponent.class);
 
       if (effects != null) {
-        remainingDamage = effects.modifyIncomingDamage(damage);
-
         Damage damageObject = new Damage(remainingDamage, attacker);
         effects.damage(damageObject);
         remainingDamage = damageObject.getDamage();

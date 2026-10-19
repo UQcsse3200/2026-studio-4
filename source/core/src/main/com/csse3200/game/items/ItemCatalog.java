@@ -3,8 +3,10 @@ package com.csse3200.game.items;
 import com.csse3200.game.items.charms.AttackSpeedCharm;
 import com.csse3200.game.items.charms.SpeedCharm;
 import com.csse3200.game.items.charms.StrengthCharm;
+import com.csse3200.game.items.consumables.BurnVial;
 import com.csse3200.game.items.consumables.FreezeBomb;
 import com.csse3200.game.items.consumables.InstantHealingPotion;
+import com.csse3200.game.items.consumables.MagnetPotion;
 import com.csse3200.game.items.consumables.ShieldPotion;
 import com.csse3200.game.items.consumables.SpeedPotion;
 import com.csse3200.game.items.consumables.StrengthPotion;
@@ -29,6 +31,8 @@ public final class ItemCatalog {
           Map.entry(ItemIds.SPEED_POTION, SpeedPotion::new),
           Map.entry(ItemIds.STRENGTH_POTION, StrengthPotion::new),
           Map.entry(ItemIds.FREEZE_BOMB, FreezeBomb::new),
+          Map.entry(ItemIds.BURN_VIAL, BurnVial::new),
+          Map.entry(ItemIds.MAGNET_POTION, MagnetPotion::new),
           Map.entry(ItemIds.GOLD_COIN, CurrencyItem::new));
 
   private ItemCatalog() {

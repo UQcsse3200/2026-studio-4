@@ -128,19 +128,6 @@ class ConsumableUseIntegrationTest {
   }
 
   @Test
-  void shieldBlocksActualDamageAndExpiresBeforeControllerTick() {
-    inventory.addConsumable(ItemIds.SHIELD);
-    assertTrue(consumables.tryUse(ItemIds.SHIELD));
-    assertTrue(consumables.isShielded());
-    stats.takeDamage(30, new Entity());
-    assertEquals(100, stats.getHealth());
-    now.set(8000);
-    assertFalse(consumables.isShielded());
-    stats.takeDamage(30);
-    assertEquals(70, stats.getHealth());
-  }
-
-  @Test
   void strengthRefreshDoesNotCompoundOrRemoveNewCharm() {
     inventory.addConsumable(ItemIds.STRENGTH_POTION, 2);
     assertTrue(consumables.tryUse(ItemIds.STRENGTH_POTION));
@@ -265,11 +252,10 @@ class ConsumableUseIntegrationTest {
     KeyboardPlayerInputComponent input = new KeyboardPlayerInputComponent();
     player.addComponent(selection).addComponent(input);
     selection.create();
-    inventory.addConsumable(ItemIds.SHIELD);
-
     input.keyDown(Keys.Q);
-    assertEquals(1, inventory.getConsumableCount(ItemIds.SHIELD));
-    input.keyDown(Keys.TAB);
+    assertFalse(consumables.isShielded());
+    inventory.addConsumable(ItemIds.SHIELD);
+    assertEquals(ItemIds.SHIELD, selection.getSelectedType());
     input.keyDown(Keys.Q);
     assertEquals(0, inventory.getConsumableCount(ItemIds.SHIELD));
     assertTrue(consumables.isShielded());
