@@ -123,8 +123,6 @@ class CerberusTest {
   @Test
   void shouldCreateCerberusWithCorrectComponents() {
     Vector2 anchor = new Vector2(5f, 5f);
-    String skin = "images/cerberus/cerberus-modular.atlas";
-
     Entity cerberus = CerberusFactory.createCerberus(null, anchor, null, entityService::register);
     assertNotNull(cerberus);
     assertNotNull(cerberus.getComponent(ChainRestrictionComponent.class));

@@ -341,18 +341,12 @@ public class NPCFactory {
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    AnimationRenderComponent dust =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/dustCloud.atlas", TextureAtlas.class));
-    animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     sleipnir
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(aiComponent)
         .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(animator)
-        .addComponent(dust)
         .addComponent(new EnemyAnimationController())
         .addComponent(new EnemyStatDisplay(1.5f))
         .addComponent(new BossPhaseComponent());
