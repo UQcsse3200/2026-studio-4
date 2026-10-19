@@ -39,6 +39,7 @@ import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.items.LootTable;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.rooms.RoomClearService;
 import com.csse3200.game.services.AchievementService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.RunTimer;
@@ -86,6 +87,7 @@ class EnemyManagerComponentTest {
     ServiceLocator.registerPhysicsService(new PhysicsService());
     ServiceLocator.registerRenderService(mock(RenderService.class));
     ResourceService resourceService = spy(ResourceService.class);
+    ServiceLocator.registerRoomClearService(new RoomClearService());
     ServiceLocator.registerResourceService(resourceService);
     WorldConfig worldConfig = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
 

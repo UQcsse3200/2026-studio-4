@@ -99,10 +99,8 @@ public class RoomSelector {
 
   /** Switches the currently rendered room to the destination room declared in exit */
   public void switchRoom(ExitConfig exit) {
-    logger.debug(
-        "going to room: {}, isCleared: {}",
-        exit.destinationRoomId,
-        RoomClearService.isRoomCleared(exit.destinationRoomId));
+    boolean cleared = ServiceLocator.getRoomClearService().isRoomCleared(exit.destinationRoomId);
+    logger.debug("going to room: {}, isCleared: {}", exit.destinationRoomId, cleared);
 
     ServiceLocator.getEntityService().schedule(() -> setRoom(exit));
   }
@@ -149,7 +147,7 @@ public class RoomSelector {
     ServiceLocator.getEntityService().register(newRoom);
     spawnPlayer(spawn);
     room.getEvents().trigger("RoomCreated", this.player);
-    RoomClearService.attachListeners(room);
+    ServiceLocator.getRoomClearService().attachListeners(room);
     resetCamera();
     room.getEvents().addListener(SWITCH_ROOM, this::switchRoom);
 

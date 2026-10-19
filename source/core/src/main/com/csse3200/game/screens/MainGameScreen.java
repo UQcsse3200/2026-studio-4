@@ -33,6 +33,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
+import com.csse3200.game.rooms.RoomClearService;
 import com.csse3200.game.rooms.RoomCommand;
 import com.csse3200.game.rooms.RoomSelector;
 import com.csse3200.game.saving.RunSaveState;
@@ -110,6 +111,7 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.registerResourceService(new ResourceService());
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
+    ServiceLocator.registerRoomClearService(new RoomClearService());
     renderer = RenderFactory.createRenderer();
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
     ServiceLocator.registerRunTimer(runTimer);
