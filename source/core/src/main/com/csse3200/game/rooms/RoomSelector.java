@@ -10,6 +10,7 @@ import com.csse3200.game.components.rooms.RoomDataComponent;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,8 @@ public class RoomSelector {
   }
 
   public void startAt(String roomId, float worldX, float worldY) {
-    Entity savedRoom = roomLoader.getRoom(roomId, RoomClearService.isRoomCleared(roomId));
+    Entity savedRoom =
+        roomLoader.getRoom(roomId, ServiceLocator.getRoomClearService().isRoomCleared(roomId));
 
     setRoomAtWorldPosition(savedRoom, worldX, worldY);
     ServiceLocator.getEntityService().register(player);
@@ -87,7 +89,7 @@ public class RoomSelector {
     placePlayer.run();
 
     room.getEvents().trigger("RoomCreated", player);
-    RoomClearService.attachListeners(room);
+    ServiceLocator.getRoomClearService().attachListeners(room);
     resetCamera();
     room.getEvents().addListener(SWITCH_ROOM, this::switchRoom);
 

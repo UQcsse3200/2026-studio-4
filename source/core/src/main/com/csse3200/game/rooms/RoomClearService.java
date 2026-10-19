@@ -29,7 +29,7 @@ public class RoomClearService {
    *
    * @param entity The room entity to attach lisners to
    */
-  void attachListeners(Entity entity) {
+  public void attachListeners(Entity entity) {
     entity
         .getEvents()
         .addListener(
