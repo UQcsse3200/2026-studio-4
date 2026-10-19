@@ -169,13 +169,13 @@ public class TouchAttackComponent extends Component {
       }
       if (retainAttackCooldown) {
         attack(entry.getKey());
-        continue;
-      }
-      contact.remaining -= delta;
-      if (contact.remaining <= 0f) {
-        // No burst of catch-up hits after a long frame.
-        contact.remaining = repeatInterval;
-        attack(entry.getKey());
+      } else {
+        contact.remaining -= delta;
+        if (contact.remaining <= 0f) {
+          // No burst of catch-up hits after a long frame.
+          contact.remaining = repeatInterval;
+          attack(entry.getKey());
+        }
       }
     }
   }
