@@ -27,9 +27,9 @@ import java.util.function.LongSupplier;
  */
 public class TeleportMenu extends Component {
   /** The two rows on offer: going ahead, then staying put. */
-  public static final int CONFIRM = 0;
+  public static final int ACCEPT_ROW = 0;
 
-  public static final int DECLINE = 1;
+  public static final int DECLINE_ROW = 1;
 
   /** Triggered with no arguments when the menu opens. */
   public static final String MENU_OPENED = "teleportMenuOpened";
@@ -92,7 +92,7 @@ public class TeleportMenu extends Component {
       return false;
     }
     this.offer = Objects.requireNonNull(offer);
-    selected = CONFIRM;
+    selected = ACCEPT_ROW;
     openedAtMillis = clockMillis.getAsLong();
     setControlsLocked(true);
     stopPlayerWalking();
@@ -133,7 +133,7 @@ public class TeleportMenu extends Component {
       return false;
     }
     TeleportOffer chosen = offer;
-    boolean teleport = selected == CONFIRM;
+    boolean teleport = selected == ACCEPT_ROW;
     close();
     if (teleport) {
       player.getEvents().trigger(RoomSelector.TELEPORT_REQUEST, chosen.roomId, chosen.entryPointId);
@@ -156,7 +156,7 @@ public class TeleportMenu extends Component {
   }
 
   /**
-   * @return the highlighted row, {@link #CONFIRM} or {@link #DECLINE}
+   * @return the highlighted row, {@link #ACCEPT_ROW} or {@link #DECLINE_ROW}
    */
   public int getSelectedIndex() {
     return selected;

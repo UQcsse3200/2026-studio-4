@@ -104,7 +104,7 @@ class TeleportMenuTest {
 
     assertTrue(menu.isOpen());
     assertEquals("tutorialRoom", menu.getOffer().roomId);
-    assertEquals(TeleportMenu.CONFIRM, menu.getSelectedIndex());
+    assertEquals(TeleportMenu.ACCEPT_ROW, menu.getSelectedIndex());
     assertEquals(List.of("opened"), events);
   }
 
@@ -178,11 +178,11 @@ class TeleportMenuTest {
     menu.open(offer());
 
     menu.moveSelection(1);
-    assertEquals(TeleportMenu.DECLINE, menu.getSelectedIndex());
+    assertEquals(TeleportMenu.DECLINE_ROW, menu.getSelectedIndex());
     menu.moveSelection(1);
-    assertEquals(TeleportMenu.CONFIRM, menu.getSelectedIndex());
+    assertEquals(TeleportMenu.ACCEPT_ROW, menu.getSelectedIndex());
     menu.moveSelection(-1);
-    assertEquals(TeleportMenu.DECLINE, menu.getSelectedIndex());
+    assertEquals(TeleportMenu.DECLINE_ROW, menu.getSelectedIndex());
   }
 
   @Test
@@ -193,7 +193,7 @@ class TeleportMenuTest {
 
     menu.open(offer());
 
-    assertEquals(TeleportMenu.CONFIRM, menu.getSelectedIndex());
+    assertEquals(TeleportMenu.ACCEPT_ROW, menu.getSelectedIndex());
   }
 
   @Test
@@ -202,7 +202,7 @@ class TeleportMenuTest {
     assertFalse(menu.confirm());
     menu.close();
 
-    assertEquals(TeleportMenu.CONFIRM, menu.getSelectedIndex());
+    assertEquals(TeleportMenu.ACCEPT_ROW, menu.getSelectedIndex());
     assertTrue(events.isEmpty());
     assertTrue(requests.isEmpty());
   }

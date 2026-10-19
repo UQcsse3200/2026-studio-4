@@ -41,7 +41,8 @@ public class DamagePopupDisplay extends UIComponent {
                 + MathUtils.random(-JITTER_WORLD_UNITS, JITTER_WORLD_UNITS),
             entity.getPosition().y + entity.getScale().y,
             0f);
-    camera.project(point, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    camera.project(
+        point, 0f, 0f, (float) Gdx.graphics.getWidth(), (float) Gdx.graphics.getHeight());
 
     Label popup = new Label(String.valueOf(damage), skin, "large");
     popup.setColor(COLOUR);

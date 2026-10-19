@@ -116,7 +116,7 @@ public class RoomAssets implements Disposable {
               DUNGEON_TEXTURES,
               OBSTACLE_TEXTURES,
               TRAP_TEXTURES,
-              TutorialPropFactory.TEXTURES,
+              TutorialPropFactory.textures(),
               ITEM_TEXTURES,
               ENEMY_TEXTURES,
               PLAYER_TEXTURES,

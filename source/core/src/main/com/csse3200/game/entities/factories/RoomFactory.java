@@ -13,9 +13,12 @@ import com.csse3200.game.components.tutorial.TutorialPropManagerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.InteractableNpcConfigs;
 import com.csse3200.game.files.FileLoader;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,13 +98,11 @@ public class RoomFactory {
 
   /** The consumables a room's supply stands lend out. */
   private static Set<String> supplyItemIds(RoomConfig room) {
-    Set<String> itemIds = new LinkedHashSet<>();
-    for (PropSpawnConfig prop : room.propSpawns) {
-      if (prop.type == PropSpawnConfig.PropType.SUPPLY_STAND && prop.itemId != null) {
-        itemIds.add(prop.itemId);
-      }
-    }
-    return itemIds;
+    return Arrays.stream(room.propSpawns)
+        .filter(prop -> prop.type == PropSpawnConfig.PropType.SUPPLY_STAND)
+        .map(prop -> prop.itemId)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
   private static InteractableNpcConfigs getFriendlyNpcs() {

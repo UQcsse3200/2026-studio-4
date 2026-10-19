@@ -32,7 +32,7 @@ class TutorialPropFactoryTest {
 
   @Test
   void everyStandItemHasAnIconThatIsLoadedWithTheRoom() {
-    List<String> textures = Arrays.asList(TutorialPropFactory.TEXTURES);
+    List<String> textures = Arrays.asList(TutorialPropFactory.textures());
     for (String itemId : STAND_ITEMS) {
       assertTrue(textures.contains(TutorialPropFactory.iconPath(itemId)), itemId);
     }
@@ -40,7 +40,7 @@ class TutorialPropFactoryTest {
 
   @Test
   void everyPropTextureExistsOnDisk() {
-    for (String texture : TutorialPropFactory.TEXTURES) {
+    for (String texture : TutorialPropFactory.textures()) {
       assertTrue(Gdx.files.internal(texture).exists(), texture);
     }
   }

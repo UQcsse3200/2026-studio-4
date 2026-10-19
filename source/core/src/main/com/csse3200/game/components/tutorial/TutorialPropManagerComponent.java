@@ -140,8 +140,8 @@ public class TutorialPropManagerComponent extends EntityManagerComponent {
     }
   }
 
-  private void onDodgeResult(Boolean dodged) {
-    if (dodged) {
+  private void onDodgeResult(Boolean result) {
+    if (Boolean.TRUE.equals(result)) {
       dodges++;
       showStatus("Dodged! " + dodges + " dodged, " + dodgeHits + " hit.");
     } else {

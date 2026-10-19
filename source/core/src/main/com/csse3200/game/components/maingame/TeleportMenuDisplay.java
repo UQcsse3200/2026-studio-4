@@ -95,8 +95,8 @@ public class TeleportMenuDisplay extends UIComponent {
     TeleportOffer offer = menu.getOffer();
     title.setText(offer.title == null ? "" : offer.title);
     question.setText(offer.prompt == null ? "" : offer.prompt);
-    rowLabels[TeleportMenu.CONFIRM].setText(offer.confirmLabel);
-    rowLabels[TeleportMenu.DECLINE].setText(offer.declineLabel);
+    rowLabels[TeleportMenu.ACCEPT_ROW].setText(offer.confirmLabel);
+    rowLabels[TeleportMenu.DECLINE_ROW].setText(offer.declineLabel);
     highlightSelected();
     root.setVisible(true);
     root.toFront();

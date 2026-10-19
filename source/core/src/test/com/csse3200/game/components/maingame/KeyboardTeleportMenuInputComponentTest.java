@@ -101,13 +101,13 @@ class KeyboardTeleportMenuInputComponentTest {
     openAndWaitOutTheGracePeriod();
 
     assertTrue(input.keyDown(Keys.DOWN));
-    assertEquals(TeleportMenu.DECLINE, menu.getSelectedIndex());
+    assertEquals(TeleportMenu.DECLINE_ROW, menu.getSelectedIndex());
     assertTrue(input.keyDown(Keys.UP));
-    assertEquals(TeleportMenu.CONFIRM, menu.getSelectedIndex());
+    assertEquals(TeleportMenu.ACCEPT_ROW, menu.getSelectedIndex());
     assertTrue(input.keyDown(Keys.S));
-    assertEquals(TeleportMenu.DECLINE, menu.getSelectedIndex());
+    assertEquals(TeleportMenu.DECLINE_ROW, menu.getSelectedIndex());
     assertTrue(input.keyDown(Keys.W));
-    assertEquals(TeleportMenu.CONFIRM, menu.getSelectedIndex());
+    assertEquals(TeleportMenu.ACCEPT_ROW, menu.getSelectedIndex());
   }
 
   @Test

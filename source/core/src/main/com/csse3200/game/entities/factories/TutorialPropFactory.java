@@ -44,8 +44,7 @@ public final class TutorialPropFactory {
     ItemIds.MAGNET_POTION
   };
 
-  /** Every texture the props need, for the room's asset loader. */
-  public static final String[] TEXTURES =
+  private static final String[] TEXTURES =
       Stream.concat(
               Stream.of(
                   DUMMY_TEXTURE,
@@ -62,6 +61,13 @@ public final class TutorialPropFactory {
 
   /** Lifts a stand's interaction marker clear of the item floating over it. */
   private static final float STAND_MARKER_LIFT = 0.55f;
+
+  /**
+   * @return every texture the props need, for the room's asset loader
+   */
+  public static String[] textures() {
+    return TEXTURES.clone();
+  }
 
   private TutorialPropFactory() {
     throw new IllegalStateException("Instantiating static util class");
