@@ -668,39 +668,24 @@
       ],
       "enemySpawns": [
         {
-          "type": "SANDEYE",
-          "x": 30,
-          "y": 6
-        },
-        {
-          "type": "SANDEYE",
-          "x": 41,
-          "y": 14
-        },
-        {
-          "type": "SANDEYE",
+          "type": "CRAB",
           "x": 34,
-          "y": 20
+          "y": 10
         },
         {
           "type": "SANDEYE",
-          "x": 28,
-          "y": 14
-        },
-        {
-          "type": "CRAB",
-          "x": 28,
-          "y": 29
-        },
-        {
-          "type": "CRAB",
-          "x": 41,
-          "y": 29
+          "x": 38,
+          "y": 10
         },
         {
           "type": "CRAB",
           "x": 34,
-          "y": 5
+          "y": 29
+        },
+        {
+          "type": "SANDEYE",
+          "x": 38,
+          "y": 29
         },
         {
           "type": "CRAB",
@@ -711,11 +696,6 @@
           "type": "CRAB",
           "x": 58,
           "y": 13
-        },
-        {
-          "type": "CRAB",
-          "x": 54,
-          "y": 5
         },
         {
           "type": "CRAB",
@@ -1171,54 +1151,64 @@
       ],
       "enemySpawns": [
         {
-          "type": "WOLF",
-          "x": 30,
-          "y": 6
+          "type": "DARK_ELVES",
+          "x": 31,
+          "y": 7
+        },
+        {
+          "type": "DARK_ELVES",
+          "x": 39,
+          "y": 7
         },
         {
           "type": "WOLF",
+          "x": 31,
+          "y": 12
+        },
+        {
+          "type": "WOLF",
+          "x": 39,
+          "y": 12
+        },
+        {
+          "type": "DARK_ELVES",
+          "x": 28,
+          "y": 29
+        },
+        {
+          "type": "DARK_ELVES",
           "x": 41,
-          "y": 14
+          "y": 29
         },
         {
           "type": "WOLF",
-          "x": 34,
+          "x": 32,
           "y": 20
         },
         {
           "type": "WOLF",
-          "x": 28,
-          "y": 14
+          "x": 38,
+          "y": 20
         },
         {
-          "type": "DARK_ELVES",
-          "x": 28,
-          "y": 29
+          "type": "WOLF",
+          "x": 54,
+          "y": 4
         },
         {
-          "type": "DARK_ELVES",
-          "x": 41,
-          "y": 29
-        },
-        {
-          "type": "DARK_ELVES",
-          "x": 34,
+          "type": "WOLF",
+          "x": 59,
           "y": 5
         },
         {
-          "type": "DARK_ELVES",
-          "x": 55,
-          "y": 9
-        },
-        {
-          "type": "DARK_ELVES",
-          "x": 58,
+          "type": "WOLF",
+          "x": 59,
           "y": 13
         },
         {
           "type": "DARK_ELVES",
           "x": 54,
-          "y": 5
+          "y": 10
         },
         {
           "type": "DARK_ELVES",
@@ -1760,6 +1750,11 @@
         },
         {
           "type": "LONGWEI",
+          "x": 59,
+          "y": 5
+        },
+        {
+          "type": "LONGWEI",
           "x": 30,
           "y": 44
         },
@@ -1784,6 +1779,11 @@
           "y": 50
         },
         {
+          "type": "BUG",
+          "x": 55,
+          "y": 46
+        },
+        {
           "type": "LONGWEI",
           "x": 8,
           "y": 43
@@ -1792,6 +1792,11 @@
           "type": "LONGWEI",
           "x": 12,
           "y": 50
+        },
+        {
+          "type": "BUG",
+          "x": 9,
+          "y": 49
         }
       ],
       "npcSpawns": [],
