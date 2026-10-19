@@ -5,6 +5,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.ai.movement.MovementController;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.physics.PhysicsEngine;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.Vector2Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   private PhysicsComponent physicsComponent;
   private StatusEffectsControllerComponent statusEffects;
   private Vector2 targetPosition;
+  private boolean limitToTarget;
   private boolean movementEnabled = true;
 
   @Override
@@ -76,8 +79,22 @@ public class PhysicsMovementComponent extends Component implements MovementContr
    */
   @Override
   public void setTarget(Vector2 target) {
+    setTarget(target, false);
+  }
+
+  /**
+   * Sets a movement target, optionally limiting each update's travel to the remaining distance.
+   * Navigation uses this to reach tight corners without overshooting on a long frame. Standard
+   * movement and attacks retain their existing constant-speed behaviour through the one-argument
+   * overload.
+   *
+   * @param target target position
+   * @param limitToTarget whether to slow down when the target is less than one update away
+   */
+  public void setTarget(Vector2 target, boolean limitToTarget) {
     logger.trace("Setting target to {}", target);
     this.targetPosition = target;
+    this.limitToTarget = limitToTarget;
   }
 
   /**
@@ -90,7 +107,14 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   }
 
   private void updateDirection(Body body) {
-    Vector2 desiredVelocity = getDirection().scl(maxSpeed);
+    Vector2 offset = targetPosition.cpy().sub(entity.getPosition());
+    Vector2 desiredVelocity = offset.cpy().nor().scl(maxSpeed);
+    if (limitToTarget) {
+      // Physics may also consume a remainder accumulated in the preceding render frame.
+      float travelTime =
+          ServiceLocator.getTimeSource().getDeltaTime() + PhysicsEngine.PHYSICS_TIMESTEP;
+      desiredVelocity.limit(offset.len() / travelTime);
+    }
     setToVelocity(body, desiredVelocity);
   }
 
@@ -99,10 +123,5 @@ public class PhysicsMovementComponent extends Component implements MovementContr
     Vector2 velocity = body.getLinearVelocity();
     Vector2 impulse = desiredVelocity.cpy().sub(velocity).scl(body.getMass());
     body.applyLinearImpulse(impulse, body.getWorldCenter(), true);
-  }
-
-  private Vector2 getDirection() {
-    // Move towards targetPosition based on our current position
-    return targetPosition.cpy().sub(entity.getPosition()).nor();
   }
 }

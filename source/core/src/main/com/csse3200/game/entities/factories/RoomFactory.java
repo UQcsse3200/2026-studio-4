@@ -68,11 +68,11 @@ public class RoomFactory {
     return new Entity()
         .addComponent(new GameAreaDisplay(room.title))
         .addComponent(terrainBuilder.getTerrain())
+        .addComponent(new ExitComponent(room.exits))
         .addComponent(new WallComponent())
         .addComponent(new FollowingCameraComponent())
         .addComponent(new ObstacleComponent(room, tileset))
         .addComponent(new TrapManagerComponent(room.trapSpawns))
-        .addComponent(new ExitComponent(room.exits))
         .addComponent(
             new EnemyManagerComponent(
                 cleared ? new EnemySpawnConfig[0] : room.enemySpawns, room, camera))
