@@ -5,6 +5,7 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.rooms.RoomClearService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,7 @@ public class ServiceLocator {
   private static Camera worldCamera;
   private static RunTimer runTimer;
   private static AchievementService achievementService;
+  private static RoomClearService roomClearService;
 
   public static EntityService getEntityService() {
     return entityService;
@@ -62,6 +64,10 @@ public class ServiceLocator {
 
   public static AchievementService getAchievementService() {
     return achievementService;
+  }
+
+  public static RoomClearService getRoomClearService() {
+    return roomClearService;
   }
 
   public static void registerEntityService(EntityService service) {
@@ -109,6 +115,11 @@ public class ServiceLocator {
     achievementService = source;
   }
 
+  public static void registerRoomClearService(RoomClearService source) {
+    logger.debug("Registering Room Clear serivce {}", source);
+    roomClearService = source;
+  }
+
   public static void clear() {
     entityService = null;
     renderService = null;
@@ -119,6 +130,7 @@ public class ServiceLocator {
     worldCamera = null;
     runTimer = null;
     achievementService = null;
+    roomClearService = null;
   }
 
   private ServiceLocator() {
