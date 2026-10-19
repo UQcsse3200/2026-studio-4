@@ -14,6 +14,7 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public class EnemyAnimationController extends Component {
   private AnimationRenderComponent animator;
+  private String DEFAULT = "default";
   private boolean dying = false;
   private boolean followPlayer = false; // used by enemies to follow player
 
@@ -28,7 +29,7 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener("patrolStart", this::animatePatrol);
     entity.getEvents().addListener("rangedAttack", this::animateAttack);
     entity.getEvents().addListener("fuseStarted", this::animateFuse);
-    entity.getEvents().addListener("default", this::animatePause);
+    entity.getEvents().addListener(DEFAULT, this::animatePause);
     entity.getEvents().addListener("moving", this::animateMove);
     entity.getEvents().addListener("stampede", this::dustCloud);
   }
@@ -68,7 +69,7 @@ public class EnemyAnimationController extends Component {
   }
 
   private void dustCloud() {
-    animator.startAnimation("default");
+    animator.startAnimation(DEFAULT);
   }
 
   private void animateEnemyDeath() {
@@ -117,7 +118,7 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animatePause() {
-    animator.startAnimation("default");
+    animator.startAnimation(DEFAULT);
   }
 
   private void animateFuse() {
