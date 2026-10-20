@@ -73,8 +73,8 @@ class MinotaurCombatIntegrationTest {
     ResourceService resources = new ResourceService();
     resources.loadTextureAtlases(
         new String[] {
-                "images/chase-enemy/minotaur.atlas",
-                "images/chase-enemy/minotaur-combat/attacks.atlas",
+          "images/chase-enemy/minotaur.atlas",
+          "images/chase-enemy/minotaur-combat/attacks.atlas",
           "images/split-enemy/crab.atlas"
         });
     resources.loadAll();
