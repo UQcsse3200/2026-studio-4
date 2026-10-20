@@ -12,7 +12,6 @@ import com.csse3200.game.ui.UiScale;
 public class FpsOverlay extends UIComponent {
   private Table table;
   private Label label;
-  private boolean showReadout;
 
   @Override
   public void create() {
@@ -31,7 +30,7 @@ public class FpsOverlay extends UIComponent {
     if (UiScale.settingsOpen(stage)) {
       return;
     }
-    showReadout = UserSettings.get().showFps;
+    boolean showReadout = UserSettings.get().showFps;
     if (showReadout && table == null && stage != null) {
       label = new Label("FPS 0", skin, "caption");
       table = new Table();
