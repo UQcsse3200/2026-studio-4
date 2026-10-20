@@ -100,7 +100,7 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
     float pointDist = 0.2f;
     if (position.dst(patrolPoints[currentPoint]) <= pointDist) {
       currentPoint = (currentPoint + 1) % patrolPoints.length;
-      updateDirection(patrolPoints[temp], patrolPoints[currentPoint]);
+      if (!flying) updateDirection(patrolPoints[temp], patrolPoints[currentPoint]);
       setTarget();
     }
   }
