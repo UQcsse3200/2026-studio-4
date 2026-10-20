@@ -170,11 +170,9 @@ public class NPCFactory {
 
     chaseEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f, 1f))
         .addComponent(aiComponent)
         .addComponent(animator)
         .addComponent(new EnemyDeathComponent(true, true))
-        .addComponent(new EnemyAnimationController())
         .addComponent(new EnemyStatDisplay(1.5f));
     if ("images/minotaur.atlas".equals(skin)) {
       chaseEnemy
