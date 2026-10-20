@@ -11,7 +11,9 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.physics.BodyUserData;
+import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -34,7 +36,8 @@ class ThunderOrbHitComponentTest {
   void setUp() {
     entities = mock(EntityService.class);
     ServiceLocator.registerEntityService(entities);
-
+    PhysicsEngine physics = mock(PhysicsEngine.class);
+    ServiceLocator.registerPhysicsService(new PhysicsService(physics));
     playerStats = new CombatStatsComponent(100, 0);
     player = new Entity().addComponent(playerStats);
     player.setPosition(10f, 0f);
@@ -191,5 +194,34 @@ class ThunderOrbHitComponentTest {
     assertTrue(movement.isStopped());
     verify(animator, never()).startAnimation(anyString());
     verify(entities, times(1)).scheduleDisposal(orb);
+  }
+
+  @Test
+  void shouldPlayImpactOnBlockedEventWithoutDamagingPlayer() {
+    orb.getEvents().trigger(ThunderOrbMovementComponent.BLOCKED);
+    orb.getEvents().trigger(ThunderOrbMovementComponent.BLOCKED);
+    collide();
+
+    assertEquals(100, playerStats.getHealth());
+    assertTrue(movement.isStopped());
+    verify(animator, times(1)).startAnimation(ThunderOrbHitComponent.IMPACT_ANIMATION);
+    verify(entities, never()).scheduleDisposal(orb);
+
+    hit.update(0.6f);
+    hit.update(0.6f);
+
+    verify(entities, times(1)).scheduleDisposal(orb);
+  }
+
+  @Test
+  void shouldHandleObstacleContactWithoutDamagingPlayer() {
+    Fixture wallFixture = createFixture(new Entity(), PhysicsLayer.OBSTACLE);
+
+    orb.getEvents().trigger("collisionStart", orbFixture, wallFixture);
+    collide();
+
+    assertEquals(100, playerStats.getHealth());
+    assertTrue(movement.isStopped());
+    verify(animator, times(1)).startAnimation(ThunderOrbHitComponent.IMPACT_ANIMATION);
   }
 }

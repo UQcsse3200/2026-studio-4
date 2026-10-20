@@ -30,6 +30,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class FloatingDemonTest {
+
+  private final Vector2 spawnPoints = new Vector2(10, 10);
+
   @BeforeEach
   void beforeEach() {
     ServiceLocator.registerPhysicsService(new PhysicsService());
@@ -46,20 +49,8 @@ class FloatingDemonTest {
 
   @Test
   void shouldHaveFlyingEnemyAnimation() {
-    Entity harpy =
-        NPCFactory.createFloatingDemon(
-            new Entity(),
-            new Vector2(1f, 3f),
-            new Vector2(5f, 5f),
-            new Vector2(10f, 3f),
-            "images/harpy.atlas");
-    Entity wasp =
-        NPCFactory.createFloatingDemon(
-            new Entity(),
-            new Vector2(1f, 3f),
-            new Vector2(5f, 5f),
-            new Vector2(10f, 3f),
-            "images/wasp.atlas");
+    Entity harpy = NPCFactory.createHarpy(new Entity(), spawnPoints);
+    Entity wasp = NPCFactory.createWasp(new Entity(), spawnPoints);
 
     AnimationRenderComponent harpyAnimator = harpy.getComponent(AnimationRenderComponent.class);
     AnimationRenderComponent waspAnimator = wasp.getComponent(AnimationRenderComponent.class);
@@ -77,13 +68,7 @@ class FloatingDemonTest {
   @Test
   void shouldTakeDamageFromPlayerWeapon() {
     Entity player = new Entity();
-    Entity demon =
-        NPCFactory.createFloatingDemon(
-            player,
-            new Vector2(1f, 3f),
-            new Vector2(5f, 5f),
-            new Vector2(10f, 3f),
-            "images/harpy.atlas");
+    Entity demon = NPCFactory.createHarpy(player, spawnPoints);
     demon.create();
 
     HitboxComponent demonHitbox = demon.getComponent(HitboxComponent.class);
@@ -118,13 +103,7 @@ class FloatingDemonTest {
 
   @Test
   void shouldStartDeathAnimationWhenHealthReachesZero() {
-    Entity demon =
-        NPCFactory.createFloatingDemon(
-            new Entity(),
-            new Vector2(1f, 3f),
-            new Vector2(5f, 5f),
-            new Vector2(10f, 3f),
-            "images/harpy.atlas");
+    Entity demon = NPCFactory.createHarpy(new Entity(), spawnPoints);
     demon.create();
 
     demon.getComponent(CombatStatsComponent.class).setHealth(0);

@@ -32,6 +32,24 @@ public final class UiScale {
     return Math.clamp(value, MIN, MAX);
   }
 
+  /**
+   * True while the in-game settings page is covering the HUD.
+   *
+   * @param stage stage that may contain the settings backdrop
+   * @return true when that backdrop is on screen
+   */
+  public static boolean settingsOpen(Stage stage) {
+    if (stage == null) {
+      return false;
+    }
+    Group root = stage.getRoot();
+    if (root == null) {
+      return false;
+    }
+    Actor backdrop = root.findActor(SETTINGS_BACKDROP);
+    return backdrop != null && backdrop.isVisible();
+  }
+
   /** Scales one group downward from its top edge. */
   public static void apply(Group group, float scale) {
     apply(group, scale, Align.top);

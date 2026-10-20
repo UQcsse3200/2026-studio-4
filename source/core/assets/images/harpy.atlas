@@ -178,23 +178,9 @@ move
   orig: 42, 44
   offset: 0, 0
   index: 23
-move
-  rotate: false
-  xy: 0, 132
-  size: 42, 44
-  orig: 42, 44
-  offset: 0, 0
-  index: 24
-move
-  rotate: false
-  xy: 46, 132
-  size: 42, 44
-  orig: 42, 44
-  offset: 0, 0
-  index: 25
 attack
   rotate: false
-  xy: 46, 132
+  xy: 0,0
   size: 42, 44
   orig: 42, 44
   offset: 0, 0
@@ -367,13 +353,6 @@ chase
   orig: 42, 44
   offset: 0, 0
   index: 23
-chase
-  rotate: false
-  xy: 0, 132
-  size: 42, 44
-  orig: 42, 44
-  offset: 0, 0
-  index: 24
 chase
   rotate: false
   xy: 46, 132

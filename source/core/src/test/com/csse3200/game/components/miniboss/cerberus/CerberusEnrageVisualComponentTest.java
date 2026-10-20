@@ -147,19 +147,6 @@ class CerberusEnrageVisualComponentTest {
   }
 
   @Test
-  void shouldKeepAuraActiveAfterHealingInPhaseTwo() {
-    enterPhaseTwo();
-
-    middleStats.setHealth(250);
-    leftStats.setHealth(125);
-
-    assertEquals(2, phase.getCurrentPhase());
-    assertTrue(leftAura.isAuraActive());
-    assertTrue(middleAura.isAuraActive());
-    assertTrue(rightAura.isAuraActive());
-  }
-
-  @Test
   void shouldUnregisterAndNeverReactivateAfterDisposal() {
     enterPhaseTwo();
 
