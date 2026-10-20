@@ -51,7 +51,7 @@ public class SplashScreen extends ScreenAdapter {
     // Switch only after rendering, so this screen is never disposed while the stage is updating.
     if (!leaving && display.isFinished()) {
       leaving = true;
-      game.setScreen(GdxGame.ScreenType.MAIN_MENU);
+      game.setScreen(GdxGame.ScreenType.INTRO);
     }
   }
 
