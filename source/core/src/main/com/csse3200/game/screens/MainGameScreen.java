@@ -207,7 +207,6 @@ public class MainGameScreen extends ScreenAdapter {
         save.dungeonTimesSeconds.putAll(runTimer.getDungeonTimes());
 
         FileLoader.save(save, saveSlot);
-        runSaved = true;
       } catch (RuntimeException exception) {
         logger.error("Failed to save game data for slot {}", saveSlot, exception);
       }
