@@ -83,7 +83,7 @@ class ExitComponentPromptTest {
     door.requiresClear = requiresClear;
 
     TerrainComponent terrain = mock(TerrainComponent.class);
-    when(terrain.tileToWorldPosition(x, y)).thenReturn(new Vector2(x, y));
+    when(terrain.tileToWorldPosition(x, y)).thenReturn(new Vector2((float) x, (float) y));
 
     ExitComponent exits = new ExitComponent(new ExitConfig[] {door});
     new Entity().addComponent(terrain).addComponent(exits);
