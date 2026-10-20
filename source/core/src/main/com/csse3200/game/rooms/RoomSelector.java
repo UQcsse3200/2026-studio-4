@@ -152,8 +152,6 @@ public class RoomSelector {
    */
   boolean debugFinalBossStage(String stage) {
     final String FB_ROOM = "finalBossRoom";
-    String roomId = room.getComponent(RoomDataComponent.class).getConfig().id;
-    if (roomId.equals(FB_ROOM)) return false; // reject if not fb room
 
     FinalBossPhase fbStage =
         switch (stage) {
