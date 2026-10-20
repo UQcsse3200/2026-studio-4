@@ -7,6 +7,7 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.achievements.AchievementContext;
+import com.csse3200.game.components.boss.FinalBossExplosiveSummonComponent;
 import com.csse3200.game.components.boss.FinalBossMovementComponent;
 import com.csse3200.game.components.boss.FinalBossPhase;
 import com.csse3200.game.components.boss.FinalBossPhaseControllerComponent;
@@ -14,17 +15,12 @@ import com.csse3200.game.components.boss.FinalBossStageThreeComponent;
 import com.csse3200.game.components.boss.FinalBossStageTwoArenaComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
-import com.csse3200.game.components.miniboss.snake.SnakeBurrowComponent;
-import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
-import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
 import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemCatalog;
-import com.csse3200.game.physics.PhysicsUtils;
-import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.rooms.RoomClearService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -40,6 +36,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   private static final Logger logger = LoggerFactory.getLogger(EnemyManagerComponent.class);
   private final EnemySpawnConfig[] spawnConfigs;
   private final Set<Entity> activeEnemies = new HashSet<>();
+  private final Set<Entity> lootOnlyEnemies = new HashSet<>();
   private final ItemFactory itemFactory;
   private boolean disposed;
   private CameraComponent camera;
@@ -138,65 +135,67 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       spawnEntityAt(enemy, new GridPoint2(spawn.x, spawn.y), true, true);
     }
 
-    scale(RoomClearService.getDungeonClearedCount());
+    scale(ServiceLocator.getRoomClearService().getDungeonClearedCount());
   }
 
   private Entity createEnemy(EnemySpawnConfig spawn, Entity target) {
+    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
+    Vector2 spawnPoints = terrain.tileToWorldPosition(spawn.x, spawn.y);
 
     switch (spawn.type) {
       // Chinese
       case JINGWEI:
-        return createFlyingEnemy(spawn, target, "images/jingwei.atlas");
+        return NPCFactory.createJingwei(target, spawnPoints);
       case ZOMBIE:
-        return NPCFactory.createBombEnemy(target, "images/zombie.atlas", 2f);
+        return NPCFactory.createZombie(target);
       case WUKONG:
-        return createScaledGiant(target, "images/wukong.atlas", 3f);
+        return NPCFactory.createWukong(target);
       case BUG:
-        return NPCFactory.createChaseEnemy(target, true, "images/bug.atlas");
+        return NPCFactory.createBug(target);
       case LONGWEI:
-        return NPCFactory.createChaseEnemy(target, false, "images/longwei.atlas");
+        return NPCFactory.createLongwei(target);
       case DRAGON:
-        return DragonFactory.createDragon(target, this::spawnEntity);
+        return DragonFactory.createDragon(target);
 
       // Norse
       case WOLF:
-        return NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas");
+        return NPCFactory.createWolf(target);
       case CROW:
-        return createFlyingEnemy(spawn, target, "images/crow.atlas");
+        return NPCFactory.createCrow(target, spawnPoints);
       case KNIGHT:
-        return createScaledBombEnemy(target, "images/knight.atlas", 0.75f, 1f);
+        return NPCFactory.createKnight(target);
       case DARK_ELVES:
-        return NPCFactory.createChaseEnemy(target, true, "images/dark_elves.atlas");
+        return NPCFactory.createDarkElves(target);
       case JOTUNN:
-        return createScaledGiant(target, "images/jotunn.atlas", 3f);
+        return NPCFactory.createJotunn(target);
       case SLEIPNIR:
-        return createSleipnir(target);
+        return NPCFactory.createSleipnir(target, spawnPoints);
 
       // Egyptian
       case SANDEYE:
-        return NPCFactory.createChaseEnemy(target, false, "images/sandeye.atlas");
+        return NPCFactory.createSandeye(target);
       case BEETLE:
-        return createScaledBombEnemy(target, "images/beetle.atlas", 0.75f, 0.75f);
+        return NPCFactory.createBeetle(target);
       case CRAB:
-        return createCrab(target);
+        return NPCFactory.createCrab(target);
       case WASP:
-        return createFlyingEnemy(spawn, target, "images/wasp.atlas");
+        return NPCFactory.createWasp(target, spawnPoints);
       case MUMMY:
-        return createMummy(target);
+        return NPCFactory.createMummy(target);
       case SNAKE_MINI_BOSS:
         return createSnake(target);
 
       // Greek
       case MINOTAUR:
-        return createMinotaur(target);
-      case GOLEM:
-        return createGolem(target);
+        return NPCFactory.createMinotaur(target);
       case MEDUSA:
-        return createMedusa(target);
+        return NPCFactory.createMedusa(target);
       case HARPY:
-        return createFlyingEnemy(spawn, target, "images/harpy.atlas");
+        return NPCFactory.createHarpy(target, spawnPoints);
       case CYCLOPS:
-        return createScaledGiant(target, "images/cyclops.atlas", 1.5f);
+        return NPCFactory.createCyclops(target);
+      case GOLEM:
+        return NPCFactory.createGolem(target);
       case CERBERUS:
         return createCerberus(spawn, target);
 
@@ -213,6 +212,27 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     spawnEntity(head);
   }
 
+  /** Summons receive death loot without becoming additional room-clear requirements. */
+  void spawnFinalBossEntity(Entity spawnedEntity) {
+    if (disposed) {
+      return;
+    }
+    if (spawnedEntity.getComponent(FinalBossExplosiveSummonComponent.class) != null
+        && lootOnlyEnemies.add(spawnedEntity)) {
+      spawnedEntity
+          .getEvents()
+          .addListener(
+              "entityDied",
+              () -> {
+                if (disposed || !lootOnlyEnemies.remove(spawnedEntity)) {
+                  return;
+                }
+                spawnEnemyDrops("FINAL_BOSS_SUMMON", spawnedEntity.getCenterPosition());
+              });
+    }
+    spawnEntity(spawnedEntity);
+  }
+
   /** Tracks an enemy and any children it spawns. Package-private for testing. */
   void track(Entity enemy) {
     track(enemy, null);
@@ -222,6 +242,15 @@ public class EnemyManagerComponent extends EntityManagerComponent {
     if (disposed || !activeEnemies.add(enemy)) {
       return;
     }
+    enemy
+        .getEvents()
+        .<Entity>addListener(
+            NPCFactory.PROJECTILE_SPAWNED,
+            projectile -> {
+              if (!disposed) {
+                spawnEntity(projectile);
+              }
+            });
     enemy.getEvents().<Entity>addListener("cerberusProjectileSpawned", this::spawnEntity);
     enemy.getEvents().addListener("entityDied", () -> onEnemyDefeated(enemy, enemyType));
     if (enemy.getComponent(CerberusDeathComponent.class) != null) {
@@ -369,100 +398,15 @@ public class EnemyManagerComponent extends EntityManagerComponent {
             });
   }
 
-  /** Creates a flying enemy with patrol points relative to its spawn tile. */
-  private Entity createFlyingEnemy(EnemySpawnConfig spawn, Entity target, String atlasPath) {
-    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
-    Vector2 leftPoint = terrain.tileToWorldPosition(spawn.x - 4, spawn.y);
-    Vector2 topPoint = terrain.tileToWorldPosition(spawn.x, spawn.y + 3);
-    Vector2 rightPoint = terrain.tileToWorldPosition(spawn.x + 4, spawn.y);
-
-    return NPCFactory.createFloatingDemon(
-        target, leftPoint, topPoint, rightPoint, this::spawnEntity, atlasPath);
-  }
-
-  /** Applies the existing visual scale for bomb-type enemies. */
-  private Entity createScaledBombEnemy(Entity target, String atlasPath, float width, float height) {
-    Entity enemy = NPCFactory.createBombEnemy(target, atlasPath, 2f);
-    enemy.setScale(width, height);
-    return enemy;
-  }
-
-  /** Shared setup for Wukong, Jotunn and Cyclops. */
-  private Entity createScaledGiant(Entity target, String atlasPath, float size) {
-    Entity enemy = NPCFactory.createGiantEnemy(target, atlasPath);
-    enemy.setScale(size, size);
-    enemy
-        .getComponent(HitboxComponent.class)
-        .setAsBox(
-            new Vector2(1f, 1f),
-            new Vector2(enemy.getCenterPosition().x, enemy.getCenterPosition().y / 2f));
-    PhysicsUtils.setScaledCollider(enemy, 0.3f, 0.3f);
-    return enemy;
-  }
-
-  private Entity createCrab(Entity target) {
-    Entity crab = NPCFactory.createChaseEnemy(target, true, "images/crab.atlas");
-    crab.setScale(1.5f, 1f);
-    crab.getComponent(HitboxComponent.class)
-        .setAsBox(
-            new Vector2(1f, 0.5f),
-            new Vector2(crab.getCenterPosition().x, crab.getCenterPosition().y / 2f));
-    return crab;
-  }
-
-  private Entity createMummy(Entity target) {
-    Entity mummy = NPCFactory.createGiantEnemy(target, "images/mummy.atlas");
-    mummy
-        .getComponent(HitboxComponent.class)
-        .setAsBox(new Vector2(1f, 1.5f), mummy.getCenterPosition());
-    PhysicsUtils.setScaledCollider(mummy, 0.3f, 0.3f);
-    return mummy;
-  }
-
-  /** Connects the snake's abilities to this room's bounds and camera. */
+  /** Supplies the room bounds and camera to the snake factory. */
   private Entity createSnake(Entity target) {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
     Vector2 roomSize = terrain.tileToWorldPosition(terrain.getMapBounds(0));
 
-    Entity snake = NPCFactory.createSnakeMiniBoss(target);
-    snake
-        .getComponent(SnakeBurrowComponent.class)
-        .setArenaBounds(new Rectangle(0f, 0f, roomSize.x, roomSize.y));
-    snake
-        .getComponent(SnakePoisonVolleyComponent.class)
-        .setArenaBounds(new Rectangle(0f, 0f, roomSize.x, roomSize.y));
-    snake
-        .getComponent(SnakeShieldPickupComponent.class)
-        .setArenaBounds(new Rectangle(0f, 0f, roomSize.x, roomSize.y));
-
-    if (camera != null) {
-      snake.getComponent(SnakeShieldPickupComponent.class).setCamera(camera.getCamera());
-    }
-    return snake;
-  }
-
-  private Entity createMinotaur(Entity target) {
-    Entity minotaur = NPCFactory.createChaseEnemy(target, false, "images/minotaur.atlas");
-    minotaur.setScale(1.5f, 1.5f);
-    return minotaur;
-  }
-
-  private Entity createGolem(Entity target) {
-    Entity golem = createScaledBombEnemy(target, "images/golem.atlas", 0.9f, 0.7f);
-    golem
-        .getComponent(HitboxComponent.class)
-        .setAsBox(
-            new Vector2(1f, 1f),
-            new Vector2(golem.getCenterPosition().x, golem.getCenterPosition().y / 2f));
-    PhysicsUtils.setScaledCollider(golem, 0.3f, 0.3f);
-    return golem;
-  }
-
-  private Entity createMedusa(Entity target) {
-    Entity medusa = NPCFactory.createChaseEnemy(target, true, "images/medusa.atlas");
-    medusa.setScale(1f, 1f);
-    medusa.getComponent(HitboxComponent.class).setAsBox(new Vector2(1f, 1f));
-    return medusa;
+    return NPCFactory.createSnakeMiniBoss(
+        target,
+        new Rectangle(0f, 0f, roomSize.x, roomSize.y),
+        camera == null ? null : camera.getCamera());
   }
 
   /** Creates Cerberus with the current room's movement and wall anchors. */
@@ -476,19 +420,12 @@ public class EnemyManagerComponent extends EntityManagerComponent {
         target,
         anchorPoint,
         wallAnchor,
-        head -> spawnAndTrackCerberusHead(head, spawn.type.name()),
-        "images/cerberus/cerberus-modular.atlas");
-  }
-
-  /** Preserves Sleipnir's existing patrol bounds. */
-  private Entity createSleipnir(Entity target) {
-    Vector2[] mapBounds = {new Vector2(0f, 0f), new Vector2(10f, 10f)};
-    return NPCFactory.createSleipnir(target, mapBounds);
+        head -> spawnAndTrackCerberusHead(head, spawn.type.name()));
   }
 
   /** Connects Final Boss movement and arena behaviour to the room camera. */
   private Entity createFinalBoss(Entity target) {
-    Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnEntity);
+    Entity boss = FinalBossFactory.createFinalBoss(target, this::spawnFinalBossEntity);
     if (camera != null) {
       boss.getComponent(FinalBossMovementComponent.class).setCamera(camera.getCamera());
       boss.getComponent(FinalBossStageTwoArenaComponent.class)
@@ -551,6 +488,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
   public void dispose() {
     disposed = true;
     activeEnemies.clear();
+    lootOnlyEnemies.clear();
     super.dispose();
   }
 }

@@ -135,6 +135,7 @@ public class CerberusLayeredRenderComponent extends RenderComponent {
     return stats;
   }
 
+  /** reads game time and delegates to the overload */
   @Override
   public void update() {
     update(ServiceLocator.getTimeSource().getDeltaTime());

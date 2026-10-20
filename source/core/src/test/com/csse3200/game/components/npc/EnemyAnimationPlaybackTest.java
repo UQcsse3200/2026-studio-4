@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -176,6 +177,18 @@ class EnemyAnimationPlaybackTest {
   }
 
   @Test
+  void stampedeStillSelectsTheExistingDefaultAnimation() {
+    Entity horse = sleipnir();
+    AnimationRenderComponent animation = horse.getComponent(AnimationRenderComponent.class);
+    horse.getEvents().trigger("moving", new Vector2(1, 0));
+    assertEquals("move_right", animation.getCurrentAnimation());
+
+    horse.getEvents().trigger("stampede");
+
+    assertEquals("default", animation.getCurrentAnimation());
+  }
+
+  @Test
   void beetleStillPlaysItsExistingFuseAnimation() {
     Entity beetle = bombEnemy("beetle");
     AnimationRenderComponent animation = beetle.getComponent(AnimationRenderComponent.class);
@@ -188,9 +201,18 @@ class EnemyAnimationPlaybackTest {
 
   @Test
   void availableAttackClipCompletesBeforeFlightFallbackResumes() {
-    // Horse supplies a real attack strip to exercise this shared factory's attack playback.
-    Entity enemy = flyingEnemy("horse");
-    AnimationRenderComponent animation = enemy.getComponent(AnimationRenderComponent.class);
+    // Exercise a one-shot attack using the real horse strip without changing a production factory.
+    AnimationRenderComponent animation =
+        new AnimationRenderComponent(resources.getAsset("images/horse.atlas", TextureAtlas.class));
+    animation.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
+    animation.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
+    Entity enemy =
+        NPCFactory.createBaseNPC()
+            .addComponent(new CombatStatsComponent(100, 5))
+            .addComponent(animation)
+            .addComponent(new EnemyAnimationController());
+    entities.register(enemy);
+    animation.startAnimation("move");
     enemy.getEvents().trigger("rangedAttack");
     renderFor(animation, 0.15f);
     TextureRegion frame = animation.getCurrentFrame();
@@ -212,6 +234,7 @@ class EnemyAnimationPlaybackTest {
         "moving",
         "rangedAttack",
         "fuseStarted",
+        "stampede",
         "default",
         "dieAnimation",
         "enemyDeathAnimation",
@@ -330,17 +353,22 @@ class EnemyAnimationPlaybackTest {
   }
 
   private Entity flyingEnemy(String skin) {
+    Vector2 spawn = new Vector2();
     Entity enemy =
-        NPCFactory.createFloatingDemon(
-            player,
-            new Vector2(-2, 0),
-            new Vector2(0, 2),
-            new Vector2(2, 0),
-            projectile -> {
+        switch (skin) {
+          case "wasp" -> NPCFactory.createWasp(player, spawn);
+          case "crow" -> NPCFactory.createCrow(player, spawn);
+          case "jingwei" -> NPCFactory.createJingwei(player, spawn);
+          default -> throw new IllegalArgumentException("Unsupported flying skin: " + skin);
+        };
+    enemy
+        .getEvents()
+        .addListener(
+            NPCFactory.PROJECTILE_SPAWNED,
+            (Entity projectile) -> {
               projectiles.add(projectile);
               entities.register(projectile);
-            },
-            "images/" + skin + ".atlas");
+            });
     entities.register(enemy);
     return enemy;
   }
@@ -352,8 +380,7 @@ class EnemyAnimationPlaybackTest {
   }
 
   private Entity sleipnir() {
-    Entity enemy =
-        NPCFactory.createSleipnir(player, new Vector2[] {new Vector2(-5, -5), new Vector2(5, 5)});
+    Entity enemy = NPCFactory.createSleipnir(player, new Vector2(-5, -5));
     entities.register(enemy);
     return enemy;
   }

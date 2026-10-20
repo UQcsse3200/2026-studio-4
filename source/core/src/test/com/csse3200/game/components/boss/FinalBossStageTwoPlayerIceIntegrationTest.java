@@ -3,7 +3,6 @@ package com.csse3200.game.components.boss;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -78,7 +77,6 @@ class FinalBossStageTwoPlayerIceIntegrationTest {
     playerStats = new CombatStatsComponent(100, 10);
     playerActions = new PlayerActions();
     playerEffects = mock(StatusEffectsControllerComponent.class);
-    when(playerEffects.modifyIncomingDamage(anyInt())).thenAnswer(call -> call.getArgument(0));
     when(playerEffects.getStatMultiplier(Stat.ATTACK)).thenReturn(1f);
     player =
         new Entity()

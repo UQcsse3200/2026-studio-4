@@ -24,6 +24,7 @@ import java.util.Random;
 public class FinalBossStageTwoComponent extends Component {
   private static final float ARRIVAL_DISTANCE = 0.15f;
   private static final int DESTINATION_ATTEMPTS = 4;
+  private static final int FIREBALL_DAMAGE = 3;
 
   private final FinalBossStageTwoConfig stageTwoConfig;
   private final Entity target;
@@ -38,8 +39,6 @@ public class FinalBossStageTwoComponent extends Component {
   private boolean disposed;
   private boolean isAttacking;
   private double cycleTimer;
-  private double fireDamageRemainder;
-  private double shieldFireDamageRemainder;
   private boolean fireDamageInProgress;
   private float retargetRemaining;
   private Vector2 roamDestination;
@@ -206,7 +205,6 @@ public class FinalBossStageTwoComponent extends Component {
   @Override
   public void update() {
     if (disposed || phaseController.getCurrentPhase() != FinalBossPhase.STAGE_TWO) {
-      clearFireDamage();
       return;
     }
     if (!encounterStarted
@@ -223,7 +221,6 @@ public class FinalBossStageTwoComponent extends Component {
       stopRoaming();
       return;
     }
-    if (!isPlayerShieldActive()) shieldFireDamageRemainder = 0d;
     updateRoaming(deltaTime);
     updateFire(deltaTime);
     if (!canContinueFire()) return;
@@ -444,14 +441,7 @@ public class FinalBossStageTwoComponent extends Component {
         || (consumables != null && consumables.isShielded())) return;
     float damage = stageTwoConfig.fireballDamage;
     if (!Float.isFinite(damage) || damage <= 0f) return;
-    boolean shieldActive = isPlayerShieldActive();
-    if (!shieldActive) shieldFireDamageRemainder = 0d;
-    double accumulated = (shieldActive ? shieldFireDamageRemainder : fireDamageRemainder) + damage;
-    double wholeDamage = Math.floor(accumulated);
-    // Consume before dispatch: damage callbacks may dispose this encounter or throw.
-    if (shieldActive) shieldFireDamageRemainder = accumulated - wholeDamage;
-    else fireDamageRemainder = accumulated - wholeDamage;
-    if (wholeDamage < 1d) return;
+    double wholeDamage = FIREBALL_DAMAGE;
     fireDamageInProgress = true;
     try {
       stats.takeDamage((int) Math.min(wholeDamage, Integer.MAX_VALUE), entity);
@@ -459,17 +449,6 @@ public class FinalBossStageTwoComponent extends Component {
       fireDamageInProgress = false;
       if (!canContinueFire()) clearEffects();
     }
-  }
-
-  private boolean isPlayerShieldActive() {
-    StatusEffectsControllerComponent effects =
-        target == null ? null : target.getComponent(StatusEffectsControllerComponent.class);
-    return effects != null && effects.isShieldActive();
-  }
-
-  private void clearFireDamage() {
-    fireDamageRemainder = 0d;
-    shieldFireDamageRemainder = 0d;
   }
 
   private record WallHit(Fixture fixture, float fraction) {}
@@ -503,7 +482,6 @@ public class FinalBossStageTwoComponent extends Component {
   }
 
   private void clearEffects() {
-    clearFireDamage();
     if (fire != null) fire.clear();
     if (ice != null) ice.clear();
     if (pickups != null) pickups.clear();
