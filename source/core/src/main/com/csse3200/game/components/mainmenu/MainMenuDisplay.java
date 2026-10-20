@@ -27,8 +27,7 @@ public class MainMenuDisplay extends UIComponent {
   private void addActors() {
     Image background =
         new Image(
-            ServiceLocator.getResourceService()
-                .getAsset("images/main_game2.png", Texture.class));
+            ServiceLocator.getResourceService().getAsset("images/main_game2.png", Texture.class));
 
     background.setFillParent(true);
     background.setScaling(Scaling.fill); // stretch/crop to fill screen, keeps aspect
@@ -94,14 +93,19 @@ public class MainMenuDisplay extends UIComponent {
     // from the top of the image, then converted because Scene2D's origin is bottom-left.
     float width = stage.getWidth();
     float height = stage.getHeight();
-    placeFromTop(startBtn, 0.119f, 0.369f, 0.127f, 0.078f, width, height);
-    placeFromTop(loadBtn, 0.119f, 0.473f, 0.127f, 0.078f, width, height);
-    placeFromTop(settingsBtn, 0.119f, 0.576f, 0.127f, 0.078f, width, height);
-    placeFromTop(exitBtn, 0.759f, 0.653f, 0.135f, 0.088f, width, height);
+    placeFromTop(startBtn, 0.13f, 0.432f, 0.13f, 0.075f, width, height);
+    placeFromTop(loadBtn, 0.13f, 0.539f, 0.13f, 0.075f, width, height);
+    placeFromTop(settingsBtn, 0.13f, 0.644f, 0.13f, 0.075f, width, height);
+    placeFromTop(exitBtn, 0.775f, 0.675f, 0.12f, 0.078f, width, height);
   }
 
   private void placeFromTop(
-      Actor actor, float x, float top, float actorWidth, float actorHeight, float stageWidth,
+      Actor actor,
+      float x,
+      float top,
+      float actorWidth,
+      float actorHeight,
+      float stageWidth,
       float stageHeight) {
     actor.setBounds(
         x * stageWidth,

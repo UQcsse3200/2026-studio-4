@@ -2,22 +2,22 @@ package com.csse3200.game.components.splash;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
-import com.badlogic.gdx.Input;
+
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
@@ -103,9 +103,7 @@ public class IntroDisplay extends UIComponent {
   protected void draw(SpriteBatch batch) {
     if (triggered && !isRepeatPass()) animationTime += Gdx.graphics.getDeltaTime();
     TextureRegion frame =
-        triggered
-            ? triggeredAnimation.getKeyFrame(animationTime, false)
-            : idleFrame;
+        triggered ? triggeredAnimation.getKeyFrame(animationTime, false) : idleFrame;
     book.setDrawable(new TextureRegionDrawable(frame));
     // Keep the sprite centred horizontally after a resize while preserving its float offset.
     book.setX((stage.getWidth() - book.getWidth()) / 2f);
