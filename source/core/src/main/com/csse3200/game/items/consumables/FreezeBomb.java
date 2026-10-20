@@ -27,7 +27,7 @@ public final class FreezeBomb extends ConsumableItem {
         "Freezes all enemies currently on screen for "
             + formatAmount(durationMs / 1000f)
             + " seconds.",
-        "images/freeze_bomb_pixel.png",
+        "images/items/consumables/freeze_bomb_pixel.png",
         quantity);
     if (durationMs <= 0) {
       throw new IllegalArgumentException("durationMs must be positive");

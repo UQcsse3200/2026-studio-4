@@ -16,7 +16,7 @@ public final class SpeedPotion extends StatBoostPotion {
         ItemIds.SPEED_POTION,
         "Speed Potion",
         "Temporarily increases movement speed.",
-        "images/speed_potion_pixel.png",
+        "images/items/consumables/speed_potion_pixel.png",
         quantity,
         new Boost(Stat.MOVEMENT_SPEED, 1.5f, durationMs));
   }

@@ -26,7 +26,7 @@ class RegenerationPotionTest {
             ItemIds.HEALTH_POTION,
             "Regeneration Potion",
             "Restores health over time.",
-            "images/health_potion_pixel.png",
+            "images/items/consumables/health_potion_pixel.png",
             1,
             5,
             3000) {};

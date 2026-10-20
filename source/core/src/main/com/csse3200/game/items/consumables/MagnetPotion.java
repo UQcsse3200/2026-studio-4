@@ -35,7 +35,7 @@ public final class MagnetPotion extends ConsumableItem {
         "Pulls nearby Gold and consumables towards you for "
             + formatAmount(durationMs / 1000f)
             + " seconds.",
-        "images/magnet_potion_pixel.png",
+        "images/items/consumables/magnet_potion_pixel.png",
         quantity);
     if (durationMs <= 0) {
       throw new IllegalArgumentException("durationMs must be positive");

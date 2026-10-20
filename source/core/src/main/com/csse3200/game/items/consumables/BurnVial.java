@@ -36,7 +36,7 @@ public final class BurnVial extends ConsumableItem {
         "Sets all enemies currently on screen alight for "
             + formatAmount(durationMs / 1000f)
             + " seconds.",
-        "images/burn_vial_pixel.png",
+        "images/items/consumables/burn_vial_pixel.png",
         quantity);
     if (durationMs <= 0) {
       throw new IllegalArgumentException("durationMs must be positive");
