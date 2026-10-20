@@ -93,8 +93,8 @@ class AchievementsTest {
       AchievementContext context = new AchievementContext();
       context.goldCollected = 50;
       Achievement achievement =
-              new Achievement(
-                      "Rich", DESC, ctx -> ctx.goldCollected != null && ctx.goldCollected == 50);
+          new Achievement(
+              "Rich", DESC, ctx -> ctx.goldCollected != null && ctx.goldCollected == 50);
 
       assertTrue(achievement.update(context));
     }
@@ -114,8 +114,8 @@ class AchievementsTest {
       AchievementContext poor = new AchievementContext();
       poor.goldCollected = 0;
       Achievement achievement =
-              new Achievement(
-                      "Rich", DESC, ctx -> ctx.goldCollected != null && ctx.goldCollected >= 100);
+          new Achievement(
+              "Rich", DESC, ctx -> ctx.goldCollected != null && ctx.goldCollected >= 100);
 
       achievement.update(rich);
       achievement.update(poor);
@@ -127,13 +127,13 @@ class AchievementsTest {
     void update_afterUnlocking_doesNotEvaluateConditionAgain() {
       AtomicInteger evaluations = new AtomicInteger();
       Achievement achievement =
-              new Achievement(
-                      "Counted",
-                      DESC,
-                      ctx -> {
-                        evaluations.incrementAndGet();
-                        return true;
-                      });
+          new Achievement(
+              "Counted",
+              DESC,
+              ctx -> {
+                evaluations.incrementAndGet();
+                return true;
+              });
 
       achievement.update(ANY_CONTEXT);
       achievement.update(ANY_CONTEXT);
@@ -147,7 +147,7 @@ class AchievementsTest {
       AchievementContext now = new AchievementContext();
       now.dungeonCompletedId = "forest";
       Achievement achievement =
-              new Achievement("Forest", DESC, ctx -> "forest".equals(ctx.dungeonCompletedId));
+          new Achievement("Forest", DESC, ctx -> "forest".equals(ctx.dungeonCompletedId));
 
       assertFalse(achievement.update(new AchievementContext()));
       assertTrue(achievement.update(now));
@@ -197,8 +197,7 @@ class AchievementsTest {
 
     @Test
     void unknownTypeThrows() {
-      assertThrows(
-              IllegalArgumentException.class, () -> AchievementsFactory.build(config("nope")));
+      assertThrows(IllegalArgumentException.class, () -> AchievementsFactory.build(config("nope")));
     }
 
     @Test
@@ -372,7 +371,7 @@ class AchievementsTest {
         assertFalse(config.name.isBlank(), "Achievement name must not be blank");
         assertTrue(names.add(config.name), "Duplicate achievement name: " + config.name);
         assertNotNull(
-                AchievementsFactory.build(config), "Could not build achievement: " + config.name);
+            AchievementsFactory.build(config), "Could not build achievement: " + config.name);
       }
     }
 
@@ -386,7 +385,7 @@ class AchievementsTest {
 
     private void verifyAchievement(String name, EnemyType expectedType) {
       List<AchievementConfig> matches =
-              Arrays.stream(configs).filter(config -> name.equals(config.name)).toList();
+          Arrays.stream(configs).filter(config -> name.equals(config.name)).toList();
 
       assertEquals(1, matches.size(), "Expected exactly one entry for " + name);
 
