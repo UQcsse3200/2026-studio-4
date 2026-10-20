@@ -24,7 +24,7 @@ import java.util.Set;
  * <p>Charms are deliberately left alone: picking a charm is a build choice the player should make
  * themselves with the pickup key. While active, the player is drawn with a soft golden glow.
  */
-public class MagnetEffect extends TimedStatusEffect {
+public class MagnetEffect extends StatusEffect {
   /** Golden glow added on top of the player's sprite while the magnet is active. */
   private static final Color GLOW = new Color(1f, 0.82f, 0.2f, 0.35f);
 

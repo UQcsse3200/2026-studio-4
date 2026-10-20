@@ -2,7 +2,7 @@ package com.csse3200.game.items.consumables;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.services.GameTime;
 
@@ -36,11 +36,11 @@ public abstract class RegenerationPotion extends ConsumableItem {
   }
 
   @Override
-  public TimedStatusEffect use(CombatStatsComponent stats, GameTime time) {
+  public StatusEffect use(CombatStatsComponent stats, GameTime time) {
     return new HealingOverTime(time, durationMs, stats, healingPerTick);
   }
 
-  private static final class HealingOverTime extends TimedStatusEffect {
+  private static final class HealingOverTime extends StatusEffect {
     private final GameTime time;
     private final CombatStatsComponent stats;
     private final int healingPerTick;

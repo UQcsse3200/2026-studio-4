@@ -3,7 +3,7 @@ package com.csse3200.game.items;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.player.InventoryComponent;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.GameTime;
 
@@ -35,8 +35,10 @@ public abstract class ConsumableItem extends Item {
         && time != null;
   }
 
-  /** Applies the item's effect; timed effects are registered by the use component. */
-  public abstract TimedStatusEffect use(CombatStatsComponent stats, GameTime time);
+  /**
+   * Applies the item's effect; timed effects are registered by the use component.
+   */
+  public abstract StatusEffect use(CombatStatsComponent stats, GameTime time);
 
   @Override
   public void pickUp(Entity player) {

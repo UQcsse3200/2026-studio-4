@@ -1,7 +1,8 @@
 package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.StatusEffectsControllerComponent;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.components.statuseffects.StatusEffect;
+
 import java.util.function.Supplier;
 
 /**
@@ -15,10 +16,10 @@ import java.util.function.Supplier;
  * other than the player, extends {@link PlayerAbility} directly instead and never touches this.
  */
 public abstract class TimedPlayerAbility extends PlayerAbility {
-  private final Supplier<TimedStatusEffect> effectFactory;
+  private final Supplier<StatusEffect> effectFactory;
   private StatusEffectsControllerComponent effects;
   private Runnable onEnded;
-  private TimedStatusEffect current;
+  private StatusEffect current;
 
   /**
    * @param name name carried by the abilityUsed, abilityEnded and abilityFailed events
@@ -30,13 +31,13 @@ public abstract class TimedPlayerAbility extends PlayerAbility {
       String name,
       long cooldown,
       boolean unlockedByDefault,
-      Supplier<TimedStatusEffect> effectFactory) {
+      Supplier<StatusEffect> effectFactory) {
     super(name, cooldown, unlockedByDefault);
     this.effectFactory = effectFactory;
   }
 
   /** Returns the condition currently on the player, or null when the ability is not running. */
-  protected TimedStatusEffect getEffect() {
+  protected StatusEffect getEffect() {
     return isRunning() ? current : null;
   }
 
@@ -53,7 +54,7 @@ public abstract class TimedPlayerAbility extends PlayerAbility {
     }
     // Restarting mid-run replaces the old condition so only one countdown ends this ability.
     stop();
-    TimedStatusEffect effect = effectFactory.get();
+    StatusEffect effect = effectFactory.get();
     current = effect;
     effect.setOnEnded(
         () -> {

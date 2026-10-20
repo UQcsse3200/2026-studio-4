@@ -7,7 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.services.GameTime;
 import java.util.concurrent.atomic.AtomicLong;
@@ -31,7 +31,7 @@ class RegenerationPotionTest {
             5,
             3000) {};
 
-    TimedStatusEffect effect = potion.use(stats, time);
+    StatusEffect effect = potion.use(stats, time);
     assertFalse(effect.update());
     assertEquals(40, stats.getHealth());
     now.set(999);

@@ -10,7 +10,7 @@ import com.csse3200.game.services.GameTime;
  * <p>It changes no raw combat stats of its own. Nothing here is specific to the player, so putting
  * one of these on an enemy hides that enemy in exactly the same way.
  */
-public class InvisibilityEffect extends TimedStatusEffect {
+public class InvisibilityEffect extends StatusEffect {
   /**
    * Opacity the wearer is drawn at, low enough to read as hidden but still visible to the owner.
    */

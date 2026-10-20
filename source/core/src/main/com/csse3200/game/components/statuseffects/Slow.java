@@ -4,7 +4,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.services.GameTime;
 
 /** The object class for the slow status effect. */
-public class Slow extends TimedStatusEffect implements StatusEffect {
+public class Slow extends StatusEffect {
   private final GameTime time = new GameTime();
 
   private final long duration;

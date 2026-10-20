@@ -60,7 +60,7 @@ public class StatusEffectsFactory {
    * @param duration how long the wearer stays hidden, in milliseconds.
    * @return The invisibility status effect.
    */
-  public static TimedStatusEffect createInvisibility(GameTime time, long duration) {
+  public static StatusEffect createInvisibility(GameTime time, long duration) {
     return new InvisibilityEffect(time, duration);
   }
 
@@ -71,7 +71,7 @@ public class StatusEffectsFactory {
    * @param duration how long the wearer stays amplified, in milliseconds.
    * @return The last stand status effect.
    */
-  public static TimedStatusEffect createLastStand(GameTime time, long duration) {
+  public static StatusEffect createLastStand(GameTime time, long duration) {
     return new LastStandEffect(time, duration);
   }
 
@@ -82,7 +82,7 @@ public class StatusEffectsFactory {
    * @param duration how long the owner stays frozen, in milliseconds
    * @return a new frozen effect
    */
-  public static TimedStatusEffect createFrozen(GameTime time, long duration) {
+  public static StatusEffect createFrozen(GameTime time, long duration) {
     return new FrozenEffect(time, duration);
   }
 

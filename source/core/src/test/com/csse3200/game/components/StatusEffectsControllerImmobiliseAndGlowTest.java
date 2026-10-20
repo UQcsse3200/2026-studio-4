@@ -38,7 +38,7 @@ class StatusEffectsControllerImmobiliseAndGlowTest {
 
   /** An effect that only glows, so glow combining can be tested apart from anything else. */
   private static StatusEffect glowing(Color glow, long remaining) {
-    return new StatusEffect() {
+    return new StatusEffect(new GameTime(), 5000) {
       @Override
       public boolean update() {
         return false;

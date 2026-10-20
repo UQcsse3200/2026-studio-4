@@ -4,8 +4,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.services.GameTime;
 
 /** The object class for the regeneration status effect. */
-public class Regeneration implements StatusEffect {
-  private final GameTime time = new GameTime();
+public class Regeneration extends StatusEffect {
 
   private final int healing;
   private final long healCooldown;
@@ -25,6 +24,7 @@ public class Regeneration implements StatusEffect {
    */
   public Regeneration(
       int healing, long healCooldown, long duration, CombatStatsComponent combatStats) {
+    super(new GameTime(), duration);
     this.healing = healing;
     this.healCooldown = healCooldown;
     this.duration = duration;

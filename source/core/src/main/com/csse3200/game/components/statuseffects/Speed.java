@@ -4,8 +4,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.services.GameTime;
 
 /** The object class for the speed status effect. */
-public class Speed implements StatusEffect {
-  private final GameTime time = new GameTime();
+public class Speed extends StatusEffect {
 
   private final long duration;
   private final long speedInit;
@@ -19,7 +18,8 @@ public class Speed implements StatusEffect {
    * @param combatStats the combat stats component of the entity which has the status effect.
    */
   public Speed(long duration, CombatStatsComponent combatStats) {
-    this.duration = duration;
+      super(new GameTime(), duration);
+      this.duration = duration;
     this.combatStats = combatStats;
     speedInit = time.getTime();
     combatStats.addMovementSpeed(0.5f);
