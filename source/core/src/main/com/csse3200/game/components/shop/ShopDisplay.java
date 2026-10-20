@@ -444,7 +444,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
     casinoContent.setVisible(false);
   }
 
-  /** Creates Sumith's Dice Duel, Rock-Paper-Scissors and Scratch Card panels. */
+  /** Creates Sumith's Dice Duel, Rock-Paper-Scissors and Scratch Card panels, and Slot Machine. */
   private void createMinigamePanels(CoinFlipPanel.Appearance appearance) {
     DiceDuelPanel dicePanel =
         new DiceDuelPanel(
@@ -513,6 +513,28 @@ public class ShopDisplay extends UIComponent implements ShopView {
         scratchPanel::close,
         scratchPanel::refresh,
         appearance);
+
+    SlotMachinePanel slotPanel =
+        new SlotMachinePanel(
+            new SlotMachineGame(
+                inventoryData, () -> MathUtils.random(SlotMachineGame.Symbol.values().length - 1)),
+            appearance,
+            outcome -> {
+              feedback.setText(
+                  outcome.won()
+                      ? "Jackpot! Won " + outcome.goldDelta() + GOLD_SUFFIX
+                      : "No match. Lost " + Math.abs(outcome.goldDelta()) + GOLD_SUFFIX);
+              entity.getEvents().trigger("slotMachineResolved", outcome);
+              refresh();
+            });
+    registerGame(
+        CasinoGame.SLOT_MACHINE,
+        slotPanel,
+        gameScroll(slotPanel, "slot-machine-scroll"),
+        slotPanel::open,
+        slotPanel::close,
+        slotPanel::refresh,
+        appearance);
   }
 
   private static ScrollPane gameScroll(Table panel, String name) {
@@ -562,7 +584,13 @@ public class ShopDisplay extends UIComponent implements ShopView {
         "Scratch Card",
         "casino-select-scratch",
         "SCRATCH CARD",
-        "Scratch three spots. Three of a kind wins; a pair returns half your stake.");
+        "Scratch three spots. Three of a kind wins; a pair returns half your stake."),
+    SLOT_MACHINE(
+        "Slot Machine",
+        "casino-select-slot",
+        "SLOT MACHINE",
+        "Spin three reels. Three matching symbols pay out the symbol's multiplier on your"
+            + " stake.");
 
     private final String label;
     private final String selectorName;
