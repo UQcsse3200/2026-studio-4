@@ -1,5 +1,6 @@
 package com.csse3200.game.rooms;
 
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.commands.Command;
 import java.util.ArrayList;
 
@@ -18,8 +19,19 @@ public class RoomCommand implements Command {
       case "clear":
         roomSelector.clearRoom();
         return true;
-      case "goto":
+      case "unlock_final":
+        ServiceLocator.getRoomClearService().clearAllDungeons();
         return true;
+      case "goto":
+        if (args.size() < 2) {
+          return false;
+        }
+        return roomSelector.debugGotoRoom(args.get(1));
+      case "fb_stage":
+        if (args.size() < 2) {
+          return false;
+        }
+        return roomSelector.debugFinalBossStage(args.get(1));
       default:
         return false;
     }

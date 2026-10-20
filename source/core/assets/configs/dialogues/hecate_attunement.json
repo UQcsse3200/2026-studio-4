@@ -4,7 +4,7 @@
     {
       "id": "hecate",
       "name": "Hecate",
-      "atlas": "images/hecate.atlas",
+      "atlas": "images/friendly-npcs/hecate.atlas",
       "animation": "default"
     }
   ],
