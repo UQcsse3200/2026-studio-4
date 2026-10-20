@@ -417,10 +417,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Event-compatible use request.</div>
 </dd>
-<dt><a href="com/csse3200/game/components/rooms/RoomAssets.html#applyMusicVolume()" class="member-name-link">applyMusicVolume()</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomAssets.html" title="class in com.csse3200.game.components.rooms">RoomAssets</a></dt>
-<dd>
-<div class="block">Keeps the playing track on the saved volume, including mute-when-unfocused.</div>
-</dd>
 <dt><a href="com/csse3200/game/files/UserSettings.html#applySettings(com.csse3200.game.files.UserSettings.Settings)" class="member-name-link">applySettings(UserSettings.Settings)</a> - Static method in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.html" title="class in com.csse3200.game.files">UserSettings</a></dt>
 <dd>
 <div class="block">Apply the given settings without storing them.</div>
@@ -440,6 +436,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/ui/UiScale.html#applyToStage(com.badlogic.gdx.scenes.scene2d.Stage,float)" class="member-name-link">applyToStage(Stage, float)</a> - Static method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/UiScale.html" title="class in com.csse3200.game.ui">UiScale</a></dt>
 <dd>
 <div class="block">Scales each panel on the stage from its own edge.</div>
+</dd>
+<dt><a href="com/csse3200/game/rooms/MusicManager.html#applyVolume()" class="member-name-link">applyVolume()</a> - Method in class com.csse3200.game.rooms.<a href="com/csse3200/game/rooms/MusicManager.html" title="class in com.csse3200.game.rooms">MusicManager</a></dt>
+<dd>
+<div class="block">Keeps the tracks on the saved volume, including mute-when-unfocused.</div>
 </dd>
 <dt><a href="com/csse3200/game/areas/GameArea.html#areaEntities" class="member-name-link">areaEntities</a> - Variable in class com.csse3200.game.areas.<a href="com/csse3200/game/areas/GameArea.html" title="class in com.csse3200.game.areas">GameArea</a></dt>
 <dd>&nbsp;</dd>
@@ -1611,6 +1611,8 @@ loadScripts(document, 'script');</script>
 <div class="deprecation-block"><span class="deprecated-label">Deprecated.</span></div>
 <div class="block">Registers the active room and player, then positions the player at its entry point.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/rooms/RoomMusicComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomMusicComponent.html" title="class in com.csse3200.game.components.rooms">RoomMusicComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/TrapManagerComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/TrapManagerComponent.html" title="class in com.csse3200.game.components.rooms">TrapManagerComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/WallComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/WallComponent.html" title="class in com.csse3200.game.components.rooms">WallComponent</a></dt>
@@ -2438,6 +2440,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/RenderService.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RenderService.html" title="class in com.csse3200.game.rendering">RenderService</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/rooms/MusicManager.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.rooms.<a href="com/csse3200/game/rooms/MusicManager.html" title="class in com.csse3200.game.rooms">MusicManager</a></dt>
+<dd>
+<div class="block">Stops whatever is playing and unloads every track.</div>
+</dd>
 <dt><a href="com/csse3200/game/screens/DeathScreen.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.screens.<a href="com/csse3200/game/screens/DeathScreen.html" title="class in com.csse3200.game.screens">DeathScreen</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/screens/LoadGameScreen.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.screens.<a href="com/csse3200/game/screens/LoadGameScreen.html" title="class in com.csse3200.game.screens">LoadGameScreen</a></dt>
@@ -4065,6 +4071,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/physics/components/PhysicsMovementComponent.html#getMoving()" class="member-name-link">getMoving()</a> - Method in class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsMovementComponent.html" title="class in com.csse3200.game.physics.components">PhysicsMovementComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html#getMultiplier()" class="member-name-link">getMultiplier()</a> - Method in class com.csse3200.game.components.weapons.<a href="com/csse3200/game/components/weapons/WeaponStatsComponent.html" title="class in com.csse3200.game.components.weapons">WeaponStatsComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/ServiceLocator.html#getMusicManager()" class="member-name-link">getMusicManager()</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/achievements/Achievement.html#getName()" class="member-name-link">getName()</a> - Method in class com.csse3200.game.components.achievements.<a href="com/csse3200/game/components/achievements/Achievement.html" title="class in com.csse3200.game.components.achievements">Achievement</a></dt>
 <dd>&nbsp;</dd>
@@ -5730,6 +5738,10 @@ loadScripts(document, 'script');</script>
 <div class="block">The lines of text shown in an item's tooltip, top to bottom: its name, its effect summary when
  it has one, then its description.</div>
 </dd>
+<dt><a href="com/csse3200/game/rooms/MusicManager.html#load()" class="member-name-link">load()</a> - Method in class com.csse3200.game.rooms.<a href="com/csse3200/game/rooms/MusicManager.html" title="class in com.csse3200.game.rooms">MusicManager</a></dt>
+<dd>
+<div class="block">Queues every track on the resource service and waits for them to finish loading.</div>
+</dd>
 <dt><a href="com/csse3200/game/files/FileLoader.html#load(int)" class="member-name-link">load(int)</a> - Static method in class com.csse3200.game.files.<a href="com/csse3200/game/files/FileLoader.html" title="class in com.csse3200.game.files">FileLoader</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/cutscene/CutsceneScript.html#load(java.lang.String)" class="member-name-link">load(String)</a> - Static method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/CutsceneScript.html" title="class in com.csse3200.game.components.cutscene">CutsceneScript</a></dt>
@@ -6059,6 +6071,13 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html#MUMMY" class="member-name-link">MUMMY</a> - Enum constant in enum class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html" title="enum class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig.EnemyType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/AudioLevels.html#music()" class="member-name-link">music()</a> - Static method in class com.csse3200.game.files.<a href="com/csse3200/game/files/AudioLevels.html" title="class in com.csse3200.game.files">AudioLevels</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/rooms/MusicManager.html" class="type-name-link" title="class in com.csse3200.game.rooms">MusicManager</a> - Class in <a href="com/csse3200/game/rooms/package-summary.html">com.csse3200.game.rooms</a></dt>
+<dd>
+<div class="block">Owns the background music for the main game: loads the tracks, picks which one fits the current
+ room, keeps its volume in line with the settings, and releases everything on dispose.</div>
+</dd>
+<dt><a href="com/csse3200/game/rooms/MusicManager.html#%3Cinit%3E()" class="member-name-link">MusicManager()</a> - Constructor for class com.csse3200.game.rooms.<a href="com/csse3200/game/rooms/MusicManager.html" title="class in com.csse3200.game.rooms">MusicManager</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/UserSettings.Settings.html#musicVolume" class="member-name-link">musicVolume</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.Settings.html" title="class in com.csse3200.game.files">UserSettings.Settings</a></dt>
 <dd>
@@ -6543,6 +6562,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Starts an animation without changing any other layer.</div>
 </dd>
+<dt><a href="com/csse3200/game/rooms/MusicManager.html#play(java.lang.String,boolean)" class="member-name-link">play(String, boolean)</a> - Method in class com.csse3200.game.rooms.<a href="com/csse3200/game/rooms/MusicManager.html" title="class in com.csse3200.game.rooms">MusicManager</a></dt>
+<dd>
+<div class="block">Switches to the track the player's situation calls for: the calm hub track whenever there is
+ nothing left to fight, and otherwise whatever the dungeon fights to, which is the boss theme in
+ the final dungeon and the ordinary fight theme everywhere else.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html#playCutscene(com.csse3200.game.components.cutscene.CutsceneScript)" class="member-name-link">playCutscene(CutsceneScript)</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/NarrativeManagerComponent.html" title="class in com.csse3200.game.components.cutscene">NarrativeManagerComponent</a></dt>
 <dd>
 <div class="block">Plays a cutscene.</div>
@@ -6655,12 +6680,6 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/files/PlayMode.html" class="type-name-link" title="class in com.csse3200.game.files">PlayMode</a> - Class in <a href="com/csse3200/game/files/package-summary.html">com.csse3200.game.files</a></dt>
 <dd>
 <div class="block">Display name and online preference saved from the settings menu.</div>
-</dd>
-<dt><a href="com/csse3200/game/components/rooms/RoomAssets.html#playMusicFor(java.lang.String,boolean)" class="member-name-link">playMusicFor(String, boolean)</a> - Method in class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomAssets.html" title="class in com.csse3200.game.components.rooms">RoomAssets</a></dt>
-<dd>
-<div class="block">Switches to the track the player's situation calls for: the calm hub track whenever there is
- nothing left to fight, and otherwise whatever the dungeon fights to, which is the boss theme in
- the final dungeon and the ordinary fight theme everywhere else.</div>
 </dd>
 <dt><a href="com/csse3200/game/files/GameSaveData.html#playTimeSeconds" class="member-name-link">playTimeSeconds</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/GameSaveData.html" title="class in com.csse3200.game.files">GameSaveData</a></dt>
 <dd>&nbsp;</dd>
@@ -6967,6 +6986,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/ServiceLocator.html#registerInputService(com.csse3200.game.input.InputService)" class="member-name-link">registerInputService(InputService)</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/ServiceLocator.html#registerMusicManager(com.csse3200.game.rooms.MusicManager)" class="member-name-link">registerMusicManager(MusicManager)</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/ServiceLocator.html#registerPhysicsService(com.csse3200.game.physics.PhysicsService)" class="member-name-link">registerPhysicsService(PhysicsService)</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/ServiceLocator.html#registerRenderService(com.csse3200.game.rendering.RenderService)" class="member-name-link">registerRenderService(RenderService)</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
@@ -7261,7 +7282,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/RoomAssets.html" class="type-name-link" title="class in com.csse3200.game.components.rooms">RoomAssets</a> - Class in <a href="com/csse3200/game/components/rooms/package-summary.html">com.csse3200.game.components.rooms</a></dt>
 <dd>
-<div class="block">Loads the terrain, fixtures, audio, and enemy assets used by a room.</div>
+<div class="block">Loads the terrain, fixtures, sound effects, and enemy assets used by a room.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/rooms/RoomAssets.html#%3Cinit%3E()" class="member-name-link">RoomAssets()</a> - Constructor for class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomAssets.html" title="class in com.csse3200.game.components.rooms">RoomAssets</a></dt>
 <dd>&nbsp;</dd>
@@ -7315,6 +7336,13 @@ loadScripts(document, 'script');</script>
 <div class="deprecation-block"><span class="deprecated-label">Deprecated.</span></div>
 <div class="block">Creates the JSON-driven room manager.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/rooms/RoomMusicComponent.html" class="type-name-link" title="class in com.csse3200.game.components.rooms">RoomMusicComponent</a> - Class in <a href="com/csse3200/game/components/rooms/package-summary.html">com.csse3200.game.components.rooms</a></dt>
+<dd>
+<div class="block">Tells the <a href="com/csse3200/game/rooms/MusicManager.html" title="class in com.csse3200.game.rooms"><code>MusicManager</code></a> which track this room wants: when the player arrives, and again
+ once the room is cleared.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/rooms/RoomMusicComponent.html#%3Cinit%3E()" class="member-name-link">RoomMusicComponent()</a> - Constructor for class com.csse3200.game.components.rooms.<a href="com/csse3200/game/components/rooms/RoomMusicComponent.html" title="class in com.csse3200.game.components.rooms">RoomMusicComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/WorldConfig.html#rooms" class="member-name-link">rooms</a> - Variable in class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/WorldConfig.html" title="class in com.csse3200.game.components.rooms.configs">WorldConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rooms/RoomSelector.html" class="type-name-link" title="class in com.csse3200.game.rooms">RoomSelector</a> - Class in <a href="com/csse3200/game/rooms/package-summary.html">com.csse3200.game.rooms</a></dt>
