@@ -14,7 +14,7 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public class EnemyAnimationController extends Component {
   private AnimationRenderComponent animator;
-  private final String DEFAULT = "default";
+  private static final String DEFAULT = "default";
   private boolean dying = false;
   private boolean followPlayer = false; // used by enemies to follow player
 
