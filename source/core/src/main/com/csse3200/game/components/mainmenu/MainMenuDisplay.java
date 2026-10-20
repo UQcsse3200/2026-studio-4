@@ -33,12 +33,6 @@ public class MainMenuDisplay extends UIComponent {
     background.setFillParent(true);
     background.setScaling(Scaling.fill); // stretch/crop to fill screen, keeps aspect
 
-    Image logo =
-        new Image(
-            ServiceLocator.getResourceService()
-                .getAsset("images/Bookboy_icon.png", Texture.class));
-    logo.setScaling(Scaling.fit);
-
     // Keep the skin's button shape, but recolour its states to match the parchment artwork.
     TextButton.TextButtonStyle buttonStyle =
         new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
@@ -91,7 +85,6 @@ public class MainMenuDisplay extends UIComponent {
         });
 
     stage.addActor(background);
-    stage.addActor(logo);
     stage.addActor(startBtn);
     stage.addActor(loadBtn);
     stage.addActor(settingsBtn);
@@ -101,7 +94,6 @@ public class MainMenuDisplay extends UIComponent {
     // from the top of the image, then converted because Scene2D's origin is bottom-left.
     float width = stage.getWidth();
     float height = stage.getHeight();
-    placeFromTop(logo, 0.12f, 0.17f, 0.29f, 0.15f, width, height);
     placeFromTop(startBtn, 0.125f, 0.376f, 0.115f, 0.066f, width, height);
     placeFromTop(loadBtn, 0.125f, 0.481f, 0.115f, 0.066f, width, height);
     placeFromTop(settingsBtn, 0.125f, 0.585f, 0.115f, 0.066f, width, height);
