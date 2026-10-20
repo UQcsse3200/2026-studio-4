@@ -26,6 +26,7 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener("chaseStart", this::animateChase);
     entity.getEvents().addListener("enemyDeathAnimation", this::animateEnemyDeath);
     entity.getEvents().addListener("patrolStart", this::animatePatrol);
+    entity.getEvents().addListener("dieAnimation", this::animateDie);
     entity.getEvents().addListener("rangedAttack", this::animateAttack);
     entity.getEvents().addListener("fuseStarted", this::animateFuse);
     entity.getEvents().addListener(DEFAULT, this::animatePause);
