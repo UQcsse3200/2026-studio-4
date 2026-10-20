@@ -46,13 +46,21 @@ public class ThunderOrbHitComponent extends Component {
 
     entity.getEvents().addListener("collisionStart", this::onCollision);
     entity.getEvents().addListener(ThunderOrbMovementComponent.EXPIRED, this::onExpired);
+    entity.getEvents().addListener(ThunderOrbMovementComponent.BLOCKED, this::onBlocked);
   }
 
   private void onCollision(Fixture me, Fixture other) {
     if (impacted || removalQueued || me != hitbox.getFixture()) {
       return;
     }
-    if (!PhysicsLayer.contains(PhysicsLayer.PLAYER, other.getFilterData().categoryBits)) {
+    short otherLayer = other.getFilterData().categoryBits;
+
+    if (PhysicsLayer.contains(PhysicsLayer.OBSTACLE, otherLayer)) {
+      onBlocked();
+      return;
+    }
+
+    if (!PhysicsLayer.contains(PhysicsLayer.PLAYER, otherLayer)) {
       return;
     }
 
@@ -89,6 +97,16 @@ public class ThunderOrbHitComponent extends Component {
     if (!impacted) {
       cancel();
     }
+  }
+
+  private void onBlocked() {
+    if (impacted || removalQueued) {
+      return;
+    }
+
+    impacted = true;
+    movement.stop();
+    playImpactIfActive();
   }
 
   @Override
