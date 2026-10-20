@@ -62,6 +62,8 @@ public class SettingsMenuDisplay extends UIComponent {
   private Label lastRunLabel;
   private Label bestRunLabel;
   private Label resetStatusLabel;
+  private WindowSize.Preset loadedWindow;
+  private StringDecorator<DisplayMode> loadedResolution;
 
   public SettingsMenuDisplay(GdxGame game) {
     this(game, null, false);
@@ -187,6 +189,7 @@ public class SettingsMenuDisplay extends UIComponent {
     windowSizeSelect = readableSelect();
     windowSizeSelect.setItems(new Array<>(WindowSize.presets()));
     windowSizeSelect.setSelected(WindowSize.matching(settings.windowWidth, settings.windowHeight));
+    rememberLoadedSelection();
 
     form.section("Display", "Window size is used when fullscreen is off.");
     form.row("FPS cap", fpsText);
@@ -386,7 +389,16 @@ public class SettingsMenuDisplay extends UIComponent {
     if (fpsVal != null) {
       settings.fps = fpsVal;
     }
-    settings.fullscreen = fullScreenCheck.isChecked();
+    boolean windowChanged = windowSelectionChanged();
+    boolean resolutionChanged = resolutionSelectionChanged();
+    boolean fullscreen = fullScreenCheck.isChecked();
+    if (windowChanged && !resolutionChanged) {
+      fullscreen = false;
+    } else if (resolutionChanged && !windowChanged) {
+      fullscreen = true;
+    }
+    fullScreenCheck.setChecked(fullscreen);
+    settings.fullscreen = fullscreen;
     DisplaySettings chosen = chosenDisplaySettings(displayModeSelect.getSelected());
     if (chosen != null) {
       settings.displayMode = chosen;
@@ -405,7 +417,56 @@ public class SettingsMenuDisplay extends UIComponent {
     settings.uiScale = UiScale.clamp(uiScaleSlider.getValue());
 
     UserSettings.set(settings, true);
+    rememberLoadedSelection();
     applyUiScale(settings.uiScale);
+  }
+
+  /** Remembers the dropdowns currently shown, so a later Apply can tell what the player changed. */
+  private void rememberLoadedSelection() {
+    loadedWindow = windowSizeSelect.getSelected();
+    loadedResolution = displayModeSelect.getSelected();
+  }
+
+  /**
+   * True when the player picked a different window size from the one shown when the page opened.
+   *
+   * @return whether the window-size dropdown changed
+   */
+  private boolean windowSelectionChanged() {
+    WindowSize.Preset selected = windowSizeSelect.getSelected();
+    if (selected == null || loadedWindow == null) {
+      return selected != loadedWindow;
+    }
+    return selected.width != loadedWindow.width || selected.height != loadedWindow.height;
+  }
+
+  /**
+   * True when the player picked a different resolution from the one shown when the page opened.
+   *
+   * @return whether the resolution dropdown changed
+   */
+  private boolean resolutionSelectionChanged() {
+    return !sameMode(loadedResolution, displayModeSelect.getSelected());
+  }
+
+  /**
+   * True when two dropdown entries describe the same width, height, and refresh rate.
+   *
+   * @param first one resolution entry
+   * @param second another resolution entry
+   * @return whether the two modes match
+   */
+  private static boolean sameMode(
+      StringDecorator<DisplayMode> first, StringDecorator<DisplayMode> second) {
+    if (first == second) {
+      return true;
+    }
+    if (first == null || second == null || first.object == null || second.object == null) {
+      return false;
+    }
+    DisplayMode a = first.object;
+    DisplayMode b = second.object;
+    return a.width == b.width && a.height == b.height && a.refreshRate == b.refreshRate;
   }
 
   /**
@@ -442,6 +503,7 @@ public class SettingsMenuDisplay extends UIComponent {
     musicSlider.setValue(settings.musicVolume);
     soundSlider.setValue(settings.soundVolume);
     muteUnfocusedCheck.setChecked(settings.muteUnfocused);
+    rememberLoadedSelection();
   }
 
   private void refreshProgressLabel() {
