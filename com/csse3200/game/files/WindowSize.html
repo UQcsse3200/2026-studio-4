@@ -144,7 +144,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#height(int)" class="member-name-link">height</a><wbr>(int&nbsp;stored)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Height to apply.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="WindowSize.Preset.html" title="class in com.csse3200.game.files">WindowSize.Preset</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#matching(int,int)" class="member-name-link">matching</a><wbr>(int&nbsp;width,
  int&nbsp;height)</code></div>
@@ -153,10 +155,14 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="WindowSize.Preset.html" title="class in com.csse3200.game.files">WindowSize.Preset</a>[]</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#presets()" class="member-name-link">presets</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">The sizes shown in the window-size list.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#width(int)" class="member-name-link">width</a><wbr>(int&nbsp;stored)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Width to apply.</div>
+</div>
 </div>
 </div>
 </div>
@@ -214,6 +220,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="presets()">
 <h3>presets</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="WindowSize.Preset.html" title="class in com.csse3200.game.files">WindowSize.Preset</a>[]</span>&nbsp;<span class="element-name">presets</span>()</div>
+<div class="block">The sizes shown in the window-size list.</div>
 </section>
 </li>
 <li>
@@ -228,12 +235,28 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="width(int)">
 <h3>width</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">width</span><wbr><span class="parameters">(int&nbsp;stored)</span></div>
+<div class="block">Width to apply. A missing or non-positive value uses the default. The result is never below
+ 960.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>stored</code> - width saved in settings, in pixels</dd>
+<dt>Returns:</dt>
+<dd>width passed to the window</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="height(int)">
 <h3>height</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">height</span><wbr><span class="parameters">(int&nbsp;stored)</span></div>
+<div class="block">Height to apply. A missing or non-positive value uses the default. 540 is kept, so the 960 x
+ 540 preset is not raised to 640.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>stored</code> - height saved in settings, in pixels</dd>
+<dt>Returns:</dt>
+<dd>height passed to the window</dd>
+</dl>
 </section>
 </li>
 </ul>
