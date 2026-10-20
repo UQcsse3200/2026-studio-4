@@ -73,27 +73,38 @@ public class RoomFactory {
     TerrainBuilder terrainBuilder = new TerrainBuilder(camera, mapSize, tileset);
 
     spawnMap(room, terrainBuilder);
-    Entity roomEntity =
-        new Entity()
-            .addComponent(new GameAreaDisplay(room.title))
-            .addComponent(terrainBuilder.getTerrain())
-            .addComponent(new ExitComponent(room.exits))
-            .addComponent(new WallComponent())
-            .addComponent(new FollowingCameraComponent())
-            .addComponent(new ObstacleComponent(room, tileset))
-            .addComponent(new TrapManagerComponent(room.trapSpawns))
-            .addComponent(
-                new EnemyManagerComponent(
-                    cleared ? new EnemySpawnConfig[0] : room.enemySpawns, room, camera))
-            .addComponent(new RoomDataComponent(room))
-            .addComponent(new RoomAcheivements())
-            .addComponent(new RoomMusicComponent())
-            .addComponent(new FriendlyNpcManagerComponent(room.npcSpawns, getFriendlyNpcs()))
-            .addComponent(new TutorialPropManagerComponent(room.propSpawns));
-    if (room.trainingGrounds) {
-      roomEntity.addComponent(new TrainingLoadoutComponent(supplyItemIds(room)));
-    }
-    return roomEntity;
+    return new Entity()
+        .addComponent(new GameAreaDisplay(room.title))
+        .addComponent(terrainBuilder.getTerrain())
+        .addComponent(new ExitComponent(room.exits))
+        .addComponent(new WallComponent())
+        .addComponent(new FollowingCameraComponent())
+        .addComponent(new ObstacleComponent(room, tileset))
+        .addComponent(new TrapManagerComponent(room.trapSpawns))
+        .addComponent(
+            new EnemyManagerComponent(
+                cleared ? new EnemySpawnConfig[0] : room.enemySpawns, room, camera))
+        .addComponent(new RoomDataComponent(room))
+        .addComponent(new RoomAcheivements())
+        .addComponent(new RoomMusicComponent())
+        .addComponent(new FriendlyNpcManagerComponent(room.npcSpawns, getFriendlyNpcs()));
+  }
+
+  /**
+   * Creates a training grounds room: an ordinary room with its practice props and the loadout that
+   * enchants the player's weapons and takes back anything lent to them. Only rooms flagged {@link
+   * RoomConfig#trainingGrounds} get these, so every other room is built exactly as before.
+   *
+   * @param room The rooms declarative definition.
+   * @param camera The camera for the room.
+   * @param cleared Whether the room has been cleared.
+   * @return The room entity.
+   */
+  public static Entity createTrainingRoom(
+      RoomConfig room, CameraComponent camera, boolean cleared) {
+    return createRoom(room, camera, cleared)
+        .addComponent(new TutorialPropManagerComponent(room.propSpawns))
+        .addComponent(new TrainingLoadoutComponent(supplyItemIds(room)));
   }
 
   /** The consumables a room's supply stands lend out. */

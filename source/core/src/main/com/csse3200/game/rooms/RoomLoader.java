@@ -33,14 +33,23 @@ public class RoomLoader {
   /** Returns an unintialised starting room as decalred in config */
   public Entity getStartingRoom() {
     RoomConfig room = world.getRoom(world.startRoomId);
-    return RoomFactory.createRoom(room, camera, false);
+    return buildRoom(room, false);
   }
 
   public Entity getRoom(String roomId, boolean cleared) {
     var config = world.getRoom(roomId);
     if (config == null) return null;
 
-    return RoomFactory.createRoom(config, camera, cleared);
+    return buildRoom(config, cleared);
+  }
+
+  /**
+   * Training grounds are built by their own factory function, every other room by the usual one.
+   */
+  private Entity buildRoom(RoomConfig config, boolean cleared) {
+    return config.trainingGrounds
+        ? RoomFactory.createTrainingRoom(config, camera, cleared)
+        : RoomFactory.createRoom(config, camera, cleared);
   }
 
   public Entity getRoom(ExitConfig exit, boolean cleared) {

@@ -210,6 +210,16 @@ class TrainingGroundsConfigTest {
   }
 
   @Test
+  void propsAreOnlyAllowedInTrainingGrounds() {
+    RoomConfig hub = world.getRoom(HUB_ID);
+    hub.propSpawns = room.propSpawns;
+    assertThrows(IllegalArgumentException.class, world::validate);
+
+    hub.trainingGrounds = true;
+    assertDoesNotThrow(world::validate);
+  }
+
+  @Test
   void teleportOffersNeedADestination() {
     InteractableNpcConfigs configs = new InteractableNpcConfigs();
     InteractableNpcConfig npc = new InteractableNpcConfig();
