@@ -3,6 +3,7 @@ package com.csse3200.game.components.settingsmenu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Graphics.Monitor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -171,19 +172,19 @@ public class SettingsMenuDisplay extends UIComponent {
     UserSettings.Settings settings = UserSettings.get();
     SettingsForm form = new SettingsForm(skin);
 
-    fpsText = new TextField(Integer.toString(settings.fps), skin);
+    fpsText = new TextField(Integer.toString(settings.fps), readableField());
     fullScreenCheck = new CheckBox("", skin);
     fullScreenCheck.setChecked(settings.fullscreen);
     vsyncCheck = new CheckBox("", skin);
     vsyncCheck.setChecked(settings.vsync);
     uiScaleSlider = new Slider(UiScale.MIN, UiScale.MAX, 0.1f, false, skin);
     uiScaleSlider.setValue(UiScale.clamp(settings.uiScale));
-    displayModeSelect = new SelectBox<>(skin);
+    displayModeSelect = readableSelect();
     Monitor selectedMonitor = Gdx.graphics.getMonitor();
     displayModeSelect.setItems(getDisplayModes(selectedMonitor));
     displayModeSelect.setSelected(getActiveMode(displayModeSelect.getItems()));
 
-    windowSizeSelect = new SelectBox<>(skin);
+    windowSizeSelect = readableSelect();
     windowSizeSelect.setItems(new Array<>(WindowSize.presets()));
     windowSizeSelect.setSelected(WindowSize.matching(settings.windowWidth, settings.windowHeight));
 
@@ -270,6 +271,34 @@ public class SettingsMenuDisplay extends UIComponent {
 
   private String prettyPrint(DisplayMode displayMode) {
     return displayMode.width + "x" + displayMode.height + ", " + displayMode.refreshRate + "hz";
+  }
+
+  /**
+   * Text field style with black text and a black cursor. The shared skin draws white text on the
+   * gold field, which cannot be read.
+   *
+   * @return a copy of the default field style
+   */
+  private TextField.TextFieldStyle readableField() {
+    TextField.TextFieldStyle style =
+        new TextField.TextFieldStyle(skin.get(TextField.TextFieldStyle.class));
+    Color ink = skin.getColor("black");
+    style.fontColor = ink;
+    style.cursor = skin.newDrawable("white", ink);
+    return style;
+  }
+
+  /**
+   * Dropdown with black text. The shared skin draws white text on the gold box.
+   *
+   * @param <T> item type
+   * @return an empty dropdown whose current value is black
+   */
+  private <T> SelectBox<T> readableSelect() {
+    SelectBox.SelectBoxStyle style =
+        new SelectBox.SelectBoxStyle(skin.get(SelectBox.SelectBoxStyle.class));
+    style.fontColor = skin.getColor("black");
+    return new SelectBox<>(style);
   }
 
   private Table makeMenuBtns() {
