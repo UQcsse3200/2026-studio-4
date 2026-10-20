@@ -8,7 +8,7 @@ import java.io.File;
 
 /** Reading, Writing, and applying user settings in the game. */
 public class UserSettings {
-  private static final String ROOT_DIR = "DECO2800Game";
+  private static final String ROOT_DIR = "CSSE3200Game";
   private static final String SETTINGS_FILE = "settings.json";
 
   private static Settings cached;

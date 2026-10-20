@@ -7,7 +7,7 @@ import java.util.List;
 
 /** Persist last/best run time and unlocked achievements next to user settings. */
 public class GameProgress {
-  private static final String ROOT_DIR = "DECO2800Game";
+  private static final String ROOT_DIR = "CSSE3200Game";
   private static final String SAVE_FILE = "game-save.json";
 
   /**
