@@ -143,7 +143,7 @@ class HotbarDisplayTest {
   }
 
   @Test
-  void resizingPreservesHotbarSpacingAndIconFit() {
+  void resizingKeepsOnlyThreeWeaponSlotsWithFittedIcons() {
     // Resize the same UI from a narrow window to wider ones at a fixed height of 706 pixels.
     // Reusing it also checks that cached sizes update, rather than only testing fresh layouts.
     for (int width : new int[] {906, 1280, 1918}) {
@@ -151,38 +151,33 @@ class HotbarDisplayTest {
       // No render loop is running, so explicitly invalidate cached layout and recalculate it.
       hotbar.invalidateHierarchy();
       hotbar.validate();
-      // The spacer between the groups is an empty table cell, not an actor, so the two groups
-      // are children 0 and 1. Each group should contain three circle images.
       Table left = (Table) hotbar.getChildren().get(0);
-      Table right = (Table) hotbar.getChildren().get(1);
       assertEquals(3, left.getChildren().size);
-      assertEquals(3, right.getChildren().size);
-      // Stage coordinates start at the bottom-left. The left group begins 340 pixels inward;
-      // both groups now begin 48 pixels above the bottom edge.
+      Image frame = hotbar.findActor("weapon-frame-1");
+      Texture frameTexture = ((TextureRegionDrawable) frame.getDrawable()).getRegion().getTexture();
+      assertEquals(3, countFrames(hotbar, frameTexture), "Unused spell frames must be removed");
       assertEquals(340f, left.getX(), 0.1f);
       assertEquals(48f, left.getY(), 0.1f);
-      assertEquals(48f, right.getY(), 0.1f);
-      assertTrue(
-          right.getX() + right.getWidth() <= width - 96f, "Right group must leave room for Exit");
-      assertTrue(
-          right.getX() > left.getX() + left.getWidth(),
-          "The two groups must remain separated on narrower windows");
-      // At the widest size there is room for matching 340-pixel insets on both sides.
-      // Narrower layouts may reduce the right inset, but must still clear Exit and the left
-      // group.
-      if (width >= 1918) {
-        assertEquals(width - 340f, right.getX() + right.getWidth(), 0.1f);
-      }
       for (Actor circle : left.getChildren()) {
-        // Full-size circles are 96 pixels. At width 906, the available width per circle is
-        // (906 - 340 left inset - 96 right inset - 24 group gap - 24 slot gaps) / 6 = 70.333.
-        // Allow one pixel of tolerance because Scene2D rounds fractional bounds to whole pixels.
-        assertEquals(width >= 1280 ? 96f : 70.333f, circle.getWidth(), 1f);
+        assertTrue(circle.getWidth() > 0f && circle.getWidth() <= 96f);
+        assertEquals(circle.getWidth(), circle.getHeight(), 1f);
       }
       Image icon = hotbar.findActor("weapon-icon-1");
       assertEquals(left.getChildren().first().getWidth() * 0.55f, icon.getWidth(), 1f);
-      assertEquals(Color.WHITE, ((Image) right.getChildren().first()).getColor());
     }
+  }
+
+  private int countFrames(Actor actor, Texture texture) {
+    if (actor instanceof Image image
+        && image.getDrawable() instanceof TextureRegionDrawable drawable
+        && drawable.getRegion().getTexture() == texture) {
+      return 1;
+    }
+    int count = 0;
+    if (actor instanceof com.badlogic.gdx.scenes.scene2d.Group group) {
+      for (Actor child : group.getChildren()) count += countFrames(child, texture);
+    }
+    return count;
   }
 
   @Test

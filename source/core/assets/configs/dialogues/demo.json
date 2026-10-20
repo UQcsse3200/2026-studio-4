@@ -2,7 +2,7 @@
   "speakers": [
     { "id": "spirit", "name": "Wandering Spirit", "atlas": "images/ghost.atlas", "animation": "float" },
     { "id": "hero", "name": "You", "atlas": "images/idle_down.atlas", "animation": "idle_down" },
-    { "id": "merchant", "name": "Travelling Merchant", "atlas": "images/shopkeeper.atlas", "animation": "default" }
+    { "id": "merchant", "name": "Travelling Merchant", "atlas": "images/friendly-npcs/shopkeeper.atlas", "animation": "default" }
   ],
   "lines": [
     { "speaker": "spirit", "text": "Ooooh... a living soul. It has been a long time since anyone wandered down here." },

@@ -27,6 +27,7 @@ import com.csse3200.game.components.player.ConsumableEffectComponent;
 import com.csse3200.game.components.player.ConsumableSelectionComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.components.weapons.*;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -37,6 +38,7 @@ import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.UiScale;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -329,20 +331,80 @@ class ConsumableHotbarDisplayTest {
   }
 
   @Test
-  void resizingKeepsSlotsOnScreenAboveTheBottomHotbar() {
+  void resizingKeepsFourConsumablesInOneBottomRowBesideWeapons() {
+    Entity weaponPlayer =
+        new Entity()
+            .addComponent(new WeaponAssetsComponent())
+            .addComponent(new WeaponStatsComponent(0.5f, 1f, 2f))
+            .addComponent(new SwordWeaponComponent())
+            .addComponent(new KnifeWeaponComponent())
+            .addComponent(new BowWeaponComponent())
+            .addComponent(new WeaponSelectionComponent());
+    weaponPlayer.create();
+    Entity weaponUi = new Entity().addComponent(new HotbarDisplay(weaponPlayer));
+    weaponUi.create();
     Table root = stage.getRoot().findActor("consumable-hotbar");
-    for (int[] size : new int[][] {{1920, 1080}, {1280, 720}, {906, 600}}) {
-      stage.getViewport().update(size[0], size[1], true);
-      root.invalidateHierarchy();
-      root.validate();
-      Actor first = actor("consumable-slot-1");
-      Actor last = actor("consumable-slot-4");
-      Vector2 top = first.localToStageCoordinates(new Vector2(first.getWidth(), first.getHeight()));
-      Vector2 bottom = last.localToStageCoordinates(new Vector2());
-      assertTrue(top.x <= size[0], "Slots must fit horizontally");
-      assertTrue(top.y <= size[1], "Slots must fit vertically");
-      assertTrue(bottom.y > 144f, "Slots must clear the existing 48+96px bottom hotbar");
+    Table weapons = stage.getRoot().findActor("inventory-hotbar");
+    try {
+      inventory.addConsumable(ItemIds.SPEED_POTION, 2);
+      for (int[] size :
+          new int[][] {{1920, 1080}, {1280, 720}, {960, 540}, {906, 600}, {1920, 1080}}) {
+        for (float uiScale : new float[] {1f, 0.5f, 2f, 1f}) {
+          stage.getViewport().update(size[0], size[1], true);
+          UiScale.applyToStage(stage, uiScale);
+          weapons.validate();
+          root.validate();
+          Actor weapon = actor("weapon-frame-3");
+          Vector2 weaponPosition = weapon.localToStageCoordinates(new Vector2());
+          float previousRight =
+              weapon.localToStageCoordinates(new Vector2(weapon.getWidth(), 0f)).x;
+          for (int i = 1; i <= 4; i++) {
+            Actor slot = actor("consumable-slot-" + i);
+            Vector2 bottom = slot.localToStageCoordinates(new Vector2());
+            assertEquals(weaponPosition.y, bottom.y, 1f, "All seven slots share a baseline");
+            assertEquals(48f * uiScale, bottom.y, 1f);
+            assertTrue(bottom.x > previousRight, "Slots must run left to right without overlap");
+            assertEquals(weapon.getWidth(), slot.getWidth(), 1f, "Frames use the same diameter");
+            previousRight = slot.localToStageCoordinates(new Vector2(slot.getWidth(), 0f)).x;
+            assertTrue(previousRight <= size[0] - 24f, "All four consumables fit on screen");
+            assertTrue(
+                slot.localToStageCoordinates(new Vector2(0f, slot.getHeight())).y <= size[1]);
+            Actor hint = actor("consumable-use-" + i);
+            Vector2 hintPosition = hint.localToStageCoordinates(new Vector2());
+            assertTrue(hintPosition.y >= 0f);
+            assertTrue(
+                hint.localToStageCoordinates(new Vector2(0f, hint.getHeight())).y <= bottom.y,
+                "Use hint stays below slot");
+          }
+          Actor icon = actor("consumable-icon-1");
+          Actor first = actor("consumable-slot-1");
+          assertTrue(icon.getWidth() < first.getWidth(), "Icon stays within its frame");
+        }
+      }
+    } finally {
+      weaponUi.dispose();
+      weaponPlayer.dispose();
     }
+  }
+
+  @Test
+  void timerRingScalesInsideSmallSlots() {
+    inventory.addConsumable(ItemIds.SPEED_POTION, 2);
+    input.keyDown(Keys.Q);
+    Actor ring = actor("speed-potion-timer-ring-1");
+    ring.setSize(42f, 42f);
+    Batch batch = mock(Batch.class);
+    ring.draw(batch, 1f);
+    assertEquals(48, drawCalls(batch));
+    mockingDetails(batch).getInvocations().stream()
+        .filter(inv -> inv.getMethod().getName().equals("draw"))
+        .forEach(
+            inv -> {
+              float x = inv.getArgument(1);
+              float y = inv.getArgument(2);
+              assertTrue(x >= 0f && x < 42f, "Timer arc must stay inside resized slot");
+              assertTrue(y >= 0f && y < 42f, "Timer arc must stay inside resized slot");
+            });
   }
 
   @Test

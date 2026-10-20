@@ -44,6 +44,16 @@ public class InventoryDisplay extends UIComponent {
   private static final String RIGHT_PAGE_NAME = "inventory-page-right";
   private static final String ACTIVE_SLOT = "active";
 
+  private static final String DARK_COLOR = "8b0000ff";
+
+  private final List<Achievement> achievementItems = new ArrayList<>();
+  private static final List<String> CATEGORY_ORDER =
+      List.of("Dungeons", "Bosses", "Final Boss", "Monsters", "Sets", "Combat");
+  private static final String OTHER_CATEGORY = "Other";
+  private final List<String> categories = new ArrayList<>();
+  private String currentCategory = CATEGORY_ORDER.get(0);
+  private final List<Label> achievementLabels = new ArrayList<>();
+
   private enum Page {
     CHARMS,
     CONSUMABLES,
@@ -91,6 +101,10 @@ public class InventoryDisplay extends UIComponent {
         }
 
         private void moveSelection(int dx, int dy) {
+          if (currentPage == Page.ACHIEVEMENTS) {
+            moveAchievementSelection(dx, dy);
+            return;
+          }
           if (selectedSlots().isEmpty()) return;
           tooltipManager.hideAll();
           int columns = selectedEquipped ? 3 : 4;
@@ -140,7 +154,30 @@ public class InventoryDisplay extends UIComponent {
           // Pre-existing movement releases must still reach the player input handler.
           return capturedKeys.remove(keycode);
         }
+
+        private void moveAchievementSelection(int dx, int dy) {
+          if (dx != 0) {
+            changeCategory(dx);
+            return;
+          }
+          if (achievementItems.isEmpty()) return;
+          selectedIndex = Math.clamp((long) selectedIndex + dy, 0, achievementItems.size() - 1);
+          updateSelection();
+          table.validate();
+          Label row = achievementLabels.get(selectedIndex);
+          if (row.getParent().getParent() instanceof ScrollPane scroll) {
+            scroll.scrollTo(row.getX(), row.getY(), row.getWidth(), row.getHeight());
+            scroll.updateVisualScroll();
+          }
+        }
+
+        private void changeCategory(int delta) {
+          if (categories.isEmpty()) return;
+          int index = categories.indexOf(currentCategory);
+          showCategory(categories.get(Math.floorMod(index + delta, categories.size())));
+        }
       };
+
   private final Supplier<DragAndDrop> dragAndDropFactory;
   private DragAndDrop dragAndDrop;
   private InventoryComponent inventoryComponent;
@@ -200,6 +237,8 @@ public class InventoryDisplay extends UIComponent {
     stage.addActor(table);
     equippedSlots.clear();
     storedSlots.clear();
+    achievementItems.clear();
+    achievementLabels.clear();
 
     selectionDetails = new Label("", skin);
     selectionDetails.setName("inventory-selection-details");
@@ -397,23 +436,40 @@ public class InventoryDisplay extends UIComponent {
     Table pagesContainer = new Table();
     pagesContainer.pad(30, 40, 30, 40);
 
+    // Unlocked first, then locked
     List<Achievement> all = new ArrayList<>();
     AchievementService achievementService = ServiceLocator.getAchievementService();
     if (achievementService != null) {
-      all.addAll(achievementService.getAchievements());
+      achievementService.getAchievements().stream()
+          .filter(Achievement::isUnlocked)
+          .forEach(all::add);
+      achievementService.getAchievements().stream().filter(a -> !a.isUnlocked()).forEach(all::add);
     }
 
-    List<Achievement> locked = all.stream().filter(a -> !a.isUnlocked()).toList();
-    List<Achievement> unlocked = all.stream().filter(Achievement::isUnlocked).toList();
+    categories.clear();
+    categories.addAll(CATEGORY_ORDER);
+    if (all.stream().anyMatch(a -> OTHER_CATEGORY.equals(categoryOf(a)))) {
+      categories.add(OTHER_CATEGORY);
+    }
+    if (!categories.contains(currentCategory)) currentCategory = categories.get(0);
+
+    for (Achievement a : all) {
+      if (categoryOf(a).equals(currentCategory)) achievementItems.add(a);
+    }
+    long unlockedCount = all.stream().filter(Achievement::isUnlocked).count();
 
     Table leftPage = new Table().background(inventory.getDrawable(LEFT_PAGE)).top();
     leftPage.setName(LEFT_PAGE_NAME);
     leftPage.pad(20);
-    leftPage.add(pageTabs()).padBottom(10).growX().row();
-    leftPage.add(createDarkLabel("Locked achievements")).top().pad(15f).row();
-    leftPage.add(achievementList(locked, false)).grow();
-    leftPage.row();
-    Label hints = createDarkLabel("Q / E : Category    I / Esc : Close");
+    leftPage.add(pageTabs()).padBottom(6).growX().row();
+    leftPage.add(categoryTabs(all)).padBottom(6).growX().row();
+    leftPage
+        .add(createDarkLabel("Unlocked " + unlockedCount + " / " + all.size()))
+        .top()
+        .pad(4f)
+        .row();
+    leftPage.add(achievementList()).grow().row();
+    Label hints = createDarkLabel("W/S:Select A/D:Tab\nQ/E:Page I/Esc:Close");
     hints.setFontScale(0.8f);
     leftPage.add(hints).padTop(10);
     pagesContainer.add(leftPage).size(350, 500).padRight(20);
@@ -421,35 +477,46 @@ public class InventoryDisplay extends UIComponent {
     Table rightPage = new Table().background(inventory.getDrawable(RIGHT_PAGE)).top();
     rightPage.setName(RIGHT_PAGE_NAME);
     rightPage.pad(20);
-    rightPage.add(createDarkLabel("Unlocked achievements")).top().pad(15f).row();
-    rightPage.add(achievementList(unlocked, true)).grow();
+    rightPage.add(createDarkLabel("Details")).padBottom(10).row();
+    Table detailsTable = new Table();
+    detailsTable.top().left();
+    detailsTable.add(selectionDetails).width(270).top().left();
+    rightPage.add(scrollGrid(detailsTable)).grow();
     pagesContainer.add(rightPage).size(350, 500);
 
     return pagesContainer;
   }
 
-  /** Builds a scrollable column of achievement names, styled for locked or unlocked. */
-  private ScrollPane achievementList(List<Achievement> achievements, boolean unlockedStyle) {
+  /** One row per achievement; hovering or clicking a row selects it. */
+  private ScrollPane achievementList() {
     Table list = new Table();
     list.top();
-    for (Achievement a : achievements) {
-      Label name = createDarkLabel("> " + a.getName());
+    for (int i = 0; i < achievementItems.size(); i++) {
+      Achievement a = achievementItems.get(i);
+      final int index = i;
+      Label row = createDarkLabel((a.isUnlocked() ? "[x] " : "[ ] ") + a.getName());
+      row.setName("achievement-" + a.getName());
+      row.setWrap(true);
+      row.addListener(
+          new InputListener() {
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+              if (pointer != -1) return;
+              selectedIndex = index;
+              updateSelection();
+            }
 
-      name.setName("achievement-" + a.getName());
-      name.setWrap(true);
-      list.add(name).left().width(280f).pad(6).row();
-
-      if (!unlockedStyle && a.getTarget() > 0) {
-        int shown = (int) Math.min(a.getProgress(), a.getTarget());
-        Label progress = new Label(shown + " / " + (int) a.getTarget(), skin, "achievements_lock");
-        progress.setColor(Color.valueOf(DARK_TEXT_COLOR));
-        list.add(progress).left().padLeft(6).padBottom(20).row();
-      }
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+              selectedIndex = index;
+              updateSelection();
+              return true;
+            }
+          });
+      achievementLabels.add(row);
+      list.add(row).left().width(280f).pad(6).row();
     }
-    ScrollPane scrollPane = new ScrollPane(list, skin);
-    scrollPane.setScrollingDisabled(true, false);
-    scrollPane.setFadeScrollBars(false);
-    return scrollPane;
+    return scrollGrid(list);
   }
 
   /**
@@ -562,14 +629,14 @@ public class InventoryDisplay extends UIComponent {
     style.down = null;
     style.over = null;
     style.checked = null;
-    style.fontColor = Color.valueOf(currentPage == page ? "8b0000ff" : DARK_TEXT_COLOR);
+    style.fontColor = Color.valueOf(currentPage == page ? DARK_COLOR : DARK_TEXT_COLOR);
     style.overFontColor = style.fontColor;
     style.downFontColor = style.fontColor;
 
     TextButton tab = new TextButton(text, style);
     tab.setName("inventory-tab-" + page.name().toLowerCase(java.util.Locale.ROOT));
     tab.setColor(Color.WHITE);
-    tab.getLabel().setFontScale(0.65f);
+    tab.getLabel().setFontScale(0.675f);
     tab.addListener(
         new ChangeListener() {
           @Override
@@ -589,6 +656,10 @@ public class InventoryDisplay extends UIComponent {
   }
 
   private void updateSelection() {
+    if (currentPage == Page.ACHIEVEMENTS) {
+      updateAchievementSelection();
+      return;
+    }
     if (selectedSlots().isEmpty()) return;
     selectedIndex = Math.clamp(selectedIndex, 0, selectedSlots().size() - 1);
     for (Stack slot : equippedSlots) slot.getChildren().first().setColor(Color.WHITE);
@@ -607,6 +678,102 @@ public class InventoryDisplay extends UIComponent {
               + "\n"
               + String.join("\n", lines.subList(1, lines.size())));
     }
+  }
+
+  private void updateAchievementSelection() {
+    if (achievementItems.isEmpty()) {
+      selectionDetails.setText("No achievements yet.");
+      return;
+    }
+    selectedIndex = Math.clamp(selectedIndex, 0, achievementItems.size() - 1);
+    for (int i = 0; i < achievementLabels.size(); i++) {
+      achievementLabels
+          .get(i)
+          .setColor(Color.valueOf(i == selectedIndex ? DARK_COLOR : DARK_TEXT_COLOR));
+    }
+    Achievement a = achievementItems.get(selectedIndex);
+    StringBuilder text =
+        new StringBuilder(a.getName())
+            .append("\n\n")
+            .append(a.isUnlocked() ? "---Unlocked---" : "?---Locked---?")
+            .append("\n\n")
+            .append(displayText(a));
+    if (!a.isUnlocked() && a.getTarget() > 0) {
+      int shown = (int) Math.min(a.getProgress(), a.getTarget());
+      text.append("\n\nProgress: ").append(shown).append(" / ").append((int) a.getTarget());
+    } else if (!a.isUnlocked()
+        && a.getTarget() <= 0
+        && a.getProgress() > 0
+        && a.getProgress() < Float.MAX_VALUE) {
+      // Only the speed run stores a time here (its "nothing recorded" value is MAX_VALUE).
+      text.append("\n\nLast time: ").append(String.format("%.1f", a.getProgress())).append("s");
+    }
+    selectionDetails.setText(text.toString());
+  }
+
+  /** Returns the achievement's description as written. */
+  static String displayText(Achievement a) {
+    String description = a.getDescription();
+    return description == null ? "" : description.trim();
+  }
+
+  private static String categoryOf(Achievement a) {
+    String category = a.getCategory();
+    return category != null && CATEGORY_ORDER.contains(category) ? category : OTHER_CATEGORY;
+  }
+
+  /** Two rows of three tabs, each showing unlocked/total for its category. */
+  private Table categoryTabs(List<Achievement> all) {
+    Table tabs = new Table();
+    for (int i = 0; i < categories.size(); i++) {
+      String category = categories.get(i);
+      long total = all.stream().filter(a -> categoryOf(a).equals(category)).count();
+      long done =
+          all.stream().filter(a -> categoryOf(a).equals(category) && a.isUnlocked()).count();
+
+      String color = categoryColor(category, done, total);
+      TextButton.TextButtonStyle style =
+          new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
+      style.up = null;
+      style.down = null;
+      style.over = null;
+      style.checked = null;
+      style.fontColor = Color.valueOf(color);
+      style.overFontColor = style.fontColor;
+      style.downFontColor = style.fontColor;
+
+      TextButton tab = new TextButton(category, style);
+      tab.setName(
+          "achievement-category-" + category.toLowerCase(java.util.Locale.ROOT).replace(' ', '-'));
+      tab.getLabel().setFontScale(0.8f);
+      tab.addListener(
+          new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+              showCategory(category);
+            }
+          });
+      tabs.add(tab).expandX().fillX().height(26).pad(1);
+      if ((i + 1) % 3 == 0) tabs.row();
+    }
+    return tabs;
+  }
+
+  private String categoryColor(String category, long done, long total) {
+    if (category.equals(currentCategory)) {
+      return DARK_COLOR;
+    }
+    if (total > 0 && done == total) {
+      return "b8860bff";
+    }
+    return DARK_TEXT_COLOR;
+  }
+
+  private void showCategory(String category) {
+    if (category.equals(currentCategory)) return;
+    currentCategory = category;
+    selectedIndex = 0;
+    refreshPage();
   }
 
   private static Texture getTexture(Item item) {

@@ -9,116 +9,504 @@
       "enemyType": "CRAB",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 45, "minQuantity": 1, "maxQuantity": 2 },
+          { "itemId": "GOLD_COIN", "weight": 30, "minQuantity": 1, "maxQuantity": 2 },
           { "itemId": "SHIELD", "weight": 20 },
           { "itemId": "HEALTH_POTION", "weight": 4 },
           { "itemId": "MEDIUM_HEALTH_POTION", "weight": 3 },
           { "itemId": "LARGE_HEALTH_POTION", "weight": 3 },
-          { "itemId": "FREEZE_BOMB", "weight": 25 }
-        ]
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
       }
     },
     {
       "enemyType": "WASP",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 25, "minQuantity": 1, "maxQuantity": 2 },
+          { "itemId": "GOLD_COIN", "weight": 15, "minQuantity": 1, "maxQuantity": 2 },
           { "itemId": "SHIELD", "weight": 10 },
           { "itemId": "HEALTH_POTION", "weight": 4 },
           { "itemId": "MEDIUM_HEALTH_POTION", "weight": 3 },
           { "itemId": "LARGE_HEALTH_POTION", "weight": 3 },
           { "itemId": "SPEED_POTION", "weight": 25 },
           { "itemId": "ATTACK_SPEED_CHARM", "weight": 5 },
-          { "itemId": "FREEZE_BOMB", "weight": 25 }
-        ]
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
       }
     },
     {
       "enemyType": "BEETLE",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 40, "minQuantity": 1, "maxQuantity": 2 },
+          { "itemId": "GOLD_COIN", "weight": 25, "minQuantity": 1, "maxQuantity": 2 },
           { "itemId": "SHIELD", "weight": 15 },
           { "itemId": "HEALTH_POTION", "weight": 4 },
           { "itemId": "MEDIUM_HEALTH_POTION", "weight": 3 },
           { "itemId": "LARGE_HEALTH_POTION", "weight": 3 },
           { "itemId": "STRENGTH_POTION", "weight": 10 },
-          { "itemId": "FREEZE_BOMB", "weight": 25 }
-        ]
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
       }
     },
     {
       "enemyType": "MUMMY",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 30, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 1, "maxQuantity": 3 },
           { "itemId": "SHIELD", "weight": 10 },
           { "itemId": "HEALTH_POTION", "weight": 9 },
           { "itemId": "MEDIUM_HEALTH_POTION", "weight": 8 },
           { "itemId": "LARGE_HEALTH_POTION", "weight": 8 },
           { "itemId": "STRENGTH_POTION", "weight": 5 },
           { "itemId": "STRENGTH_CHARM", "weight": 5 },
-          { "itemId": "FREEZE_BOMB", "weight": 25 }
-        ]
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
       }
     },
     {
       "enemyType": "MEDUSA",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 30, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 1, "maxQuantity": 3 },
           { "itemId": "SHIELD", "weight": 10 },
           { "itemId": "HEALTH_POTION", "weight": 7 },
           { "itemId": "MEDIUM_HEALTH_POTION", "weight": 7 },
           { "itemId": "LARGE_HEALTH_POTION", "weight": 6 },
           { "itemId": "SPEED_POTION", "weight": 10 },
           { "itemId": "SPEED_CHARM", "weight": 5 },
-          { "itemId": "FREEZE_BOMB", "weight": 25 }
-        ]
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
       }
     },
     {
       "enemyType": "HARPY",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 30, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 1, "maxQuantity": 3 },
           { "itemId": "SPEED_POTION", "weight": 20 },
           { "itemId": "SHIELD", "weight": 10 },
           { "itemId": "HEALTH_POTION", "weight": 4 },
           { "itemId": "MEDIUM_HEALTH_POTION", "weight": 3 },
           { "itemId": "LARGE_HEALTH_POTION", "weight": 3 },
           { "itemId": "ATTACK_SPEED_CHARM", "weight": 5 },
-          { "itemId": "FREEZE_BOMB", "weight": 25 }
-        ]
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
       }
     },
     {
       "enemyType": "GOLEM",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 25, "minQuantity": 2, "maxQuantity": 4 },
+          { "itemId": "GOLD_COIN", "weight": 15, "minQuantity": 2, "maxQuantity": 4 },
           { "itemId": "SHIELD", "weight": 20 },
           { "itemId": "HEALTH_POTION", "weight": 4 },
           { "itemId": "MEDIUM_HEALTH_POTION", "weight": 3 },
           { "itemId": "LARGE_HEALTH_POTION", "weight": 3 },
           { "itemId": "STRENGTH_POTION", "weight": 15 },
           { "itemId": "STRENGTH_CHARM", "weight": 5 },
-          { "itemId": "FREEZE_BOMB", "weight": 25 }
-        ]
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
       }
     },
     {
       "enemyType": "CYCLOPS",
       "table": {
         "entries": [
-          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 2, "maxQuantity": 5 },
+          { "itemId": "GOLD_COIN", "weight": 10, "minQuantity": 2, "maxQuantity": 5 },
           { "itemId": "SHIELD", "weight": 10 },
           { "itemId": "HEALTH_POTION", "weight": 7 },
           { "itemId": "MEDIUM_HEALTH_POTION", "weight": 7 },
           { "itemId": "LARGE_HEALTH_POTION", "weight": 6 },
           { "itemId": "STRENGTH_POTION", "weight": 20 },
           { "itemId": "STRENGTH_CHARM", "weight": 5 },
-          { "itemId": "FREEZE_BOMB", "weight": 25 }
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
+      }
+    },
+    {
+      "enemyType": "WOLF",
+      "table": {
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "SHIELD", "weight": 10 },
+          { "itemId": "HEALTH_POTION", "weight": 7 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 7 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 6 },
+          { "itemId": "SPEED_POTION", "weight": 10 },
+          { "itemId": "SPEED_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
+      }
+    },
+    {
+      "enemyType": "CROW",
+      "table": {
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 15, "minQuantity": 1, "maxQuantity": 2 },
+          { "itemId": "SHIELD", "weight": 10 },
+          { "itemId": "HEALTH_POTION", "weight": 4 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 3 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 3 },
+          { "itemId": "SPEED_POTION", "weight": 25 },
+          { "itemId": "ATTACK_SPEED_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
+      }
+    },
+    {
+      "enemyType": "JINGWEI",
+      "table": {
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "SPEED_POTION", "weight": 20 },
+          { "itemId": "SHIELD", "weight": 10 },
+          { "itemId": "HEALTH_POTION", "weight": 4 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 3 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 3 },
+          { "itemId": "ATTACK_SPEED_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
+      }
+    },
+    {
+      "enemyType": "ZOMBIE",
+      "table": {
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 25, "minQuantity": 1, "maxQuantity": 2 },
+          { "itemId": "SHIELD", "weight": 15 },
+          { "itemId": "HEALTH_POTION", "weight": 4 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 3 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 3 },
+          { "itemId": "STRENGTH_POTION", "weight": 10 },
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
+      }
+    },
+    {
+      "enemyType": "WUKONG",
+      "table": {
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "SHIELD", "weight": 10 },
+          { "itemId": "HEALTH_POTION", "weight": 9 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 8 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 8 },
+          { "itemId": "STRENGTH_POTION", "weight": 5 },
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
+      }
+    },
+    {
+      "enemyType": "LONGWEI",
+      "table": {
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "SHIELD", "weight": 10 },
+          { "itemId": "HEALTH_POTION", "weight": 7 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 7 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 6 },
+          { "itemId": "SPEED_POTION", "weight": 10 },
+          { "itemId": "SPEED_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
+      }
+    },
+    {
+      "enemyType": "BUG",
+      "table": {
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 30, "minQuantity": 1, "maxQuantity": 2 },
+          { "itemId": "SHIELD", "weight": 20 },
+          { "itemId": "HEALTH_POTION", "weight": 4 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 3 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 3 },
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
+      }
+    },
+    {
+      "enemyType": "KNIGHT",
+      "table": {
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 15, "minQuantity": 2, "maxQuantity": 4 },
+          { "itemId": "SHIELD", "weight": 20 },
+          { "itemId": "HEALTH_POTION", "weight": 4 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 3 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 3 },
+          { "itemId": "STRENGTH_POTION", "weight": 15 },
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
+      }
+    },
+    {
+      "enemyType": "MINOTAUR",
+      "table": {
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "SHIELD", "weight": 10 },
+          { "itemId": "HEALTH_POTION", "weight": 7 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 7 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 6 },
+          { "itemId": "SPEED_POTION", "weight": 10 },
+          { "itemId": "SPEED_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
+      }
+    },
+    {
+      "enemyType": "SANDEYE",
+      "table": {
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 1, "maxQuantity": 3 },
+          { "itemId": "SHIELD", "weight": 10 },
+          { "itemId": "HEALTH_POTION", "weight": 7 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 7 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 6 },
+          { "itemId": "SPEED_POTION", "weight": 10 },
+          { "itemId": "SPEED_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
+      }
+    },
+    {
+      "enemyType": "DARK_ELVES",
+      "table": {
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 30, "minQuantity": 1, "maxQuantity": 2 },
+          { "itemId": "SHIELD", "weight": 20 },
+          { "itemId": "HEALTH_POTION", "weight": 4 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 3 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 3 },
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
+      }
+    },
+    {
+      "enemyType": "JOTUNN",
+      "table": {
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 10, "minQuantity": 2, "maxQuantity": 5 },
+          { "itemId": "SHIELD", "weight": 10 },
+          { "itemId": "HEALTH_POTION", "weight": 7 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 7 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 6 },
+          { "itemId": "STRENGTH_POTION", "weight": 20 },
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 25 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 }
+        ],
+        "rolls": 1,
+        "noDropWeight": 0
+      }
+    },
+    {
+      "enemyType": "CERBERUS",
+      "table": {
+        "rolls": 1,
+        "noDropWeight": 0,
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 2, "maxQuantity": 5 },
+          { "itemId": "SHIELD", "weight": 10 },
+          { "itemId": "HEALTH_POTION", "weight": 7 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 7 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 6 },
+          { "itemId": "SPEED_POTION", "weight": 5 },
+          { "itemId": "STRENGTH_POTION", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 15 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 },
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "SPEED_CHARM", "weight": 5 },
+          { "itemId": "ATTACK_SPEED_CHARM", "weight": 5 }
+        ]
+      }
+    },
+    {
+      "enemyType": "DRAGON",
+      "table": {
+        "rolls": 1,
+        "noDropWeight": 0,
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 2, "maxQuantity": 5 },
+          { "itemId": "SHIELD", "weight": 10 },
+          { "itemId": "HEALTH_POTION", "weight": 7 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 7 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 6 },
+          { "itemId": "SPEED_POTION", "weight": 5 },
+          { "itemId": "STRENGTH_POTION", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 15 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 },
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "SPEED_CHARM", "weight": 5 },
+          { "itemId": "ATTACK_SPEED_CHARM", "weight": 5 }
+        ]
+      }
+    },
+    {
+      "enemyType": "SLEIPNIR",
+      "table": {
+        "rolls": 1,
+        "noDropWeight": 0,
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 2, "maxQuantity": 5 },
+          { "itemId": "SHIELD", "weight": 10 },
+          { "itemId": "HEALTH_POTION", "weight": 7 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 7 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 6 },
+          { "itemId": "SPEED_POTION", "weight": 5 },
+          { "itemId": "STRENGTH_POTION", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 15 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 },
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "SPEED_CHARM", "weight": 5 },
+          { "itemId": "ATTACK_SPEED_CHARM", "weight": 5 }
+        ]
+      }
+    },
+    {
+      "enemyType": "SNAKE_MINI_BOSS",
+      "table": {
+        "rolls": 1,
+        "noDropWeight": 0,
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 2, "maxQuantity": 5 },
+          { "itemId": "SHIELD", "weight": 10 },
+          { "itemId": "HEALTH_POTION", "weight": 7 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 7 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 6 },
+          { "itemId": "SPEED_POTION", "weight": 5 },
+          { "itemId": "STRENGTH_POTION", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 15 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 },
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "SPEED_CHARM", "weight": 5 },
+          { "itemId": "ATTACK_SPEED_CHARM", "weight": 5 }
+        ]
+      }
+    },
+    {
+      "enemyType": "FINAL_BOSS",
+      "table": {
+        "rolls": 1,
+        "noDropWeight": 0,
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 20, "minQuantity": 2, "maxQuantity": 5 },
+          { "itemId": "SHIELD", "weight": 10 },
+          { "itemId": "HEALTH_POTION", "weight": 7 },
+          { "itemId": "MEDIUM_HEALTH_POTION", "weight": 7 },
+          { "itemId": "LARGE_HEALTH_POTION", "weight": 6 },
+          { "itemId": "SPEED_POTION", "weight": 5 },
+          { "itemId": "STRENGTH_POTION", "weight": 5 },
+          { "itemId": "FREEZE_BOMB", "weight": 15 },
+          { "itemId": "BURN_VIAL", "weight": 5 },
+          { "itemId": "MAGNET_POTION", "weight": 5 },
+          { "itemId": "STRENGTH_CHARM", "weight": 5 },
+          { "itemId": "SPEED_CHARM", "weight": 5 },
+          { "itemId": "ATTACK_SPEED_CHARM", "weight": 5 }
+        ]
+      }
+    },
+    {
+      "enemyType": "FINAL_BOSS_SUMMON",
+      "table": {
+        "rolls": 1,
+        "noDropWeight": 80,
+        "entries": [
+          { "itemId": "GOLD_COIN", "weight": 8 },
+          { "itemId": "HEALTH_POTION", "weight": 3 },
+          { "itemId": "SHIELD", "weight": 2 },
+          { "itemId": "FREEZE_BOMB", "weight": 2 },
+          { "itemId": "BURN_VIAL", "weight": 1 },
+          { "itemId": "MAGNET_POTION", "weight": 1 },
+          { "itemId": "STRENGTH_CHARM", "weight": 1 },
+          { "itemId": "SPEED_CHARM", "weight": 1 },
+          { "itemId": "ATTACK_SPEED_CHARM", "weight": 1 }
         ]
       }
     }

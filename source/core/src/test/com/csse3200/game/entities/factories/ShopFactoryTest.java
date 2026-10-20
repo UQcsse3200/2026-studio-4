@@ -16,6 +16,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.components.friendlynpc.NpcInteractionEvents;
 import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.shop.ShopCatalog;
+import com.csse3200.game.components.shop.ShopProductKind;
 import com.csse3200.game.components.shop.ShopSessionComponent;
 import com.csse3200.game.components.weapons.KnifeWeaponComponent;
 import com.csse3200.game.components.weapons.SwordWeaponComponent;
@@ -96,6 +98,57 @@ class ShopFactoryTest {
     buy(ItemIds.HEALTH_POTION).fire(new ChangeEvent());
     assertEquals(5, inventory.getGold());
     assertEquals(2, inventory.getConsumableCount(ItemIds.HEALTH_POTION));
+  }
+
+  @Test
+  void everyConfiguredItemCanBeBoughtThroughItsVisibleShopButton() {
+    inventory.setGold(1000);
+    open();
+    int remaining = inventory.getGold();
+    for (var offer : ShopCatalog.load("configs/shops/merchant.json").offers()) {
+      TextButton button = buy(offer.offerId());
+      assertNotNull(button, offer.offerId());
+      assertTrue(button.isVisible());
+      assertFalse(button.isDisabled());
+      button.fire(new ChangeEvent());
+      remaining -= offer.goldPrice();
+      assertEquals(remaining, inventory.getGold(), offer.offerId());
+      Label owned = stage.getRoot().findActor("shop-owned-" + offer.offerId());
+      assertEquals("Owned: 1", owned.getText().toString(), offer.offerId());
+      if (offer.kind() == ShopProductKind.CHARM) {
+        assertEquals(
+            1,
+            inventory.getCharms().stream()
+                .filter(charm -> charm.getId().equals(offer.productId()))
+                .count());
+      } else {
+        assertEquals(1, inventory.getConsumableCount(offer.productId()));
+      }
+    }
+  }
+
+  @Test
+  void charmButtonsRefreshCountsAndRejectUnaffordableOrHiddenPurchases() {
+    inventory.setGold(80);
+    open();
+    TextButton charm = buy(ItemIds.STRENGTH_CHARM);
+    charm.fire(new ChangeEvent());
+    charm.fire(new ChangeEvent());
+    assertEquals(0, inventory.getGold());
+    assertEquals(2, inventory.getCharmCount());
+    Label owned = stage.getRoot().findActor("shop-owned-" + ItemIds.STRENGTH_CHARM);
+    assertEquals("Owned: 2", owned.getText().toString());
+    assertTrue(charm.isDisabled());
+    charm.fire(new ChangeEvent());
+    assertEquals(2, inventory.getCharmCount());
+    inventory.setGold(40);
+    button("shop-close").fire(new ChangeEvent());
+    charm.fire(new ChangeEvent());
+    assertEquals(40, inventory.getGold());
+    assertEquals(2, inventory.getCharmCount());
+    open();
+    assertEquals("Owned: 2", owned.getText().toString());
+    assertFalse(charm.isDisabled());
   }
 
   @Test

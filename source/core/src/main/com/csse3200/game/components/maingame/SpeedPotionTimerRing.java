@@ -32,17 +32,20 @@ class SpeedPotionTimerRing extends Actor {
     batch.setColor(0.25f, 0.72f, 1f, parentAlpha);
     float centreX = getX() + getWidth() / 2f;
     float centreY = getY() + getHeight() / 2f;
+    float scale = Math.min(getWidth(), getHeight()) / 72f;
+    float radius = RADIUS * scale;
+    float thickness = THICKNESS * scale;
     for (int i = 0; i < visible; i++) {
       float start = MathUtils.PI / 2f - i * STEP;
       float end = start - STEP;
-      float x = centreX + RADIUS * MathUtils.cos(start);
-      float y = centreY + RADIUS * MathUtils.sin(start);
-      float nextX = centreX + RADIUS * MathUtils.cos(end);
-      float nextY = centreY + RADIUS * MathUtils.sin(end);
-      float length = (float) Math.hypot(nextX - x, nextY - y) + 0.5f;
+      float x = centreX + radius * MathUtils.cos(start);
+      float y = centreY + radius * MathUtils.sin(start);
+      float nextX = centreX + radius * MathUtils.cos(end);
+      float nextY = centreY + radius * MathUtils.sin(end);
+      float length = (float) Math.hypot(nextX - x, nextY - y) + 0.5f * scale;
       float angle = MathUtils.atan2(nextY - y, nextX - x) * MathUtils.radiansToDegrees;
       batch.draw(
-          pixel, x, y - THICKNESS / 2f, 0f, THICKNESS / 2f, length, THICKNESS, 1f, 1f, angle);
+          pixel, x, y - thickness / 2f, 0f, thickness / 2f, length, thickness, 1f, 1f, angle);
     }
     batch.setPackedColor(originalColour);
   }

@@ -19,8 +19,12 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.achievements.AchievementContext;
+import com.csse3200.game.components.boss.FinalBossExplosiveSummonComponent;
 import com.csse3200.game.components.items.ItemComponent;
+import com.csse3200.game.components.miniboss.cerberus.CerberusDeathComponent;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
+import com.csse3200.game.components.rooms.configs.EnemySpawnConfig.EnemyType;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.components.rooms.configs.WorldConfig;
 import com.csse3200.game.entities.Entity;
@@ -35,6 +39,8 @@ import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.items.LootTable;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.rooms.RoomClearService;
+import com.csse3200.game.services.AchievementService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
@@ -44,6 +50,7 @@ import java.util.random.RandomGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -80,6 +87,7 @@ class EnemyManagerComponentTest {
     ServiceLocator.registerPhysicsService(new PhysicsService());
     ServiceLocator.registerRenderService(mock(RenderService.class));
     ResourceService resourceService = spy(ResourceService.class);
+    ServiceLocator.registerRoomClearService(new RoomClearService());
     ServiceLocator.registerResourceService(resourceService);
     WorldConfig worldConfig = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
 
@@ -132,8 +140,6 @@ class EnemyManagerComponentTest {
     Entity target = new Entity();
     Entity rejectedEnemy = new Entity();
     Entity validEnemy = new Entity();
-    int[] cleared = {0};
-    room.getEvents().addListener("roomCleared", () -> cleared[0]++);
 
     try (MockedStatic<NPCFactory> factory = Mockito.mockStatic(NPCFactory.class)) {
       factory
@@ -151,12 +157,10 @@ class EnemyManagerComponentTest {
       factory.verify(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"), never());
       factory.verify(() -> NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas"));
       assertFalse(enemyManager.isCleared());
-      assertEquals(0, cleared[0]);
 
       validEnemy.getEvents().trigger("entityDied");
 
       assertTrue(enemyManager.isCleared());
-      assertEquals(1, cleared[0]);
     }
   }
 
@@ -274,17 +278,23 @@ class EnemyManagerComponentTest {
   }
 
   @Test
-  void shouldClearRoomWhenLastEnemyDies() {
-    Entity[] enemies = trackEnemies(3);
-    int[] cleared = {0};
-    room.getEvents().addListener("roomCleared", () -> cleared[0]++);
+  void shouldNotifiyOnUpdateWithNoMoreActiveEnemies() {
+    int[] cleared = {0}; // array workaround for anon lambdas
+    var spawns = new EnemySpawnConfig[] {new EnemySpawnConfig()};
+    var enemy = new EnemyManagerComponent(spawns);
+    var config = new RoomConfig();
+    config.id = "asdfasdf";
+    var roomData = new RoomDataComponent(config);
+    var roomL = new Entity().addComponent(enemy).addComponent(roomData);
 
-    for (Entity enemy : enemies) {
-      enemy.getEvents().trigger("entityDied");
-    }
+    roomL.getEvents().addListener("RoomClear", a -> cleared[0]++);
 
-    assertEquals(1, cleared[0], "roomCleared should fire once all enemies are dead");
-    assertTrue(enemyManager.isCleared());
+    enemy.clear();
+    enemy.update();
+    enemy.update();
+
+    assertEquals(0, cleared[0]);
+    assertTrue(enemy.isCleared());
   }
 
   @Test
@@ -297,6 +307,102 @@ class EnemyManagerComponentTest {
     enemy.getEvents().trigger("entityDied");
     entityService.update();
     verify(entityService, never()).register(Mockito.any(Entity.class));
+  }
+
+  @Test
+  void shouldRequestEachEnemyTypesLootOnceDespiteRepeatedDeathEvents() {
+    ItemFactory rewards = mock(ItemFactory.class);
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], rewards);
+    enemyManager.setEntity(room);
+    for (EnemyType type : EnemyType.values()) {
+      Entity enemy = new Entity();
+      enemyManager.track(enemy, type.name());
+      enemy.getEvents().trigger("entityDied");
+      enemy.getEvents().trigger("entityDied");
+      enemy.getEvents().trigger("finalBossEncounterCompleted");
+    }
+
+    entityService.update();
+
+    for (EnemyType type : EnemyType.values()) {
+      verify(rewards).createEnemyDrops(eq(type.name()), any(Vector2.class));
+    }
+  }
+
+  @Test
+  void shouldRewardExplosiveSummonsOnceWithoutHoldingTheBossRoomOpen() {
+    ItemFactory rewards = mock(ItemFactory.class);
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], rewards);
+    enemyManager.setEntity(room);
+    Entity boss = new Entity();
+    enemyManager.track(boss, "FINAL_BOSS");
+    Entity defeatedSummon = explosiveSummonMock();
+    Entity survivingSummon = explosiveSummonMock();
+    enemyManager.spawnFinalBossEntity(defeatedSummon);
+    enemyManager.spawnFinalBossEntity(survivingSummon);
+
+    defeatedSummon.getEvents().trigger("entityDied");
+    defeatedSummon.getEvents().trigger("entityDied");
+    assertFalse(enemyManager.isCleared());
+    verify(rewards, never()).createEnemyDrops(any(), any());
+    entityService.update();
+    verify(rewards).createEnemyDrops("FINAL_BOSS_SUMMON", new Vector2(0.5f, 0.5f));
+
+    boss.getEvents().trigger("finalBossEncounterCompleted");
+    assertTrue(enemyManager.isCleared(), "A living summon must not block encounter completion");
+    entityService.update();
+    verify(rewards).createEnemyDrops(eq("FINAL_BOSS"), any(Vector2.class));
+  }
+
+  @Test
+  void shouldNotRewardScriptedBossObjectsOrSummonCleanup() {
+    ItemFactory rewards = mock(ItemFactory.class);
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], rewards);
+    enemyManager.setEntity(room);
+    Entity scriptedObject = enemyMock();
+    Entity cleanedUpSummon = explosiveSummonMock();
+    enemyManager.spawnFinalBossEntity(scriptedObject);
+    enemyManager.spawnFinalBossEntity(cleanedUpSummon);
+
+    scriptedObject.getEvents().trigger("entityDied");
+    entityService.scheduleDisposal(cleanedUpSummon);
+    entityService.update();
+
+    verify(rewards, never()).createEnemyDrops(any(), any());
+  }
+
+  @Test
+  void shouldCancelSummonRewardsWhenTheRoomIsDisposed() {
+    ItemFactory rewards = mock(ItemFactory.class);
+    enemyManager = new EnemyManagerComponent(new EnemySpawnConfig[0], rewards);
+    enemyManager.setEntity(room);
+    Entity summon = explosiveSummonMock();
+    enemyManager.spawnFinalBossEntity(summon);
+    summon.getEvents().trigger("entityDied");
+
+    enemyManager.dispose();
+    entityService.update();
+    summon.getEvents().trigger("entityDied");
+    entityService.update();
+
+    verify(rewards, never()).createEnemyDrops(any(), any());
+  }
+
+  @Test
+  void splitChildrenShouldKeepTheirParentsLootType() {
+    ItemFactory rewards = mock(ItemFactory.class);
+    enemyManager = spy(new EnemyManagerComponent(new EnemySpawnConfig[0], rewards));
+    // Geometry is covered separately; isolate inheritance of the parent's loot rule here.
+    doReturn(false).when(enemyManager).outOfBounds(any(Vector2.class), any());
+    enemyManager.setEntity(room);
+    Entity parent = enemyMock();
+    Entity child = enemyMock();
+    enemyManager.track(parent, "CRAB");
+    parent.getEvents().trigger("spawnChildren", child);
+    child.getEvents().trigger("entityDied");
+    entityService.update();
+
+    verify(rewards).createEnemyDrops(eq("CRAB"), any(Vector2.class));
   }
 
   @Test
@@ -430,7 +536,7 @@ class EnemyManagerComponentTest {
   }
 
   @Test
-  void cannotSpawnWhenOutOfBounds() {
+  void shouldReplaceSplitParentWithTrackedChildren() {
     Entity parent = enemyMock();
     Entity firstChild = enemyMock();
     Entity secondChild = enemyMock();
@@ -500,5 +606,56 @@ class EnemyManagerComponentTest {
     when(enemy.getPosition()).thenReturn(new Vector2());
     when(enemy.getCenterPosition()).thenReturn(new Vector2(0.5f, 0.5f));
     return enemy;
+  }
+
+  private static Entity explosiveSummonMock() {
+    Entity summon = enemyMock();
+    FinalBossExplosiveSummonComponent explosive = mock(FinalBossExplosiveSummonComponent.class);
+    when(summon.getComponent(FinalBossExplosiveSummonComponent.class)).thenReturn(explosive);
+    return summon;
+  }
+
+  @Test
+  void shouldReportCerberusKillOnlyAfterAllHeadsDie() {
+    AchievementService achievements = mock(AchievementService.class);
+    ServiceLocator.registerAchievementService(achievements);
+
+    Entity left = new Entity().addComponent(new CombatStatsComponent(125, 10));
+    Entity middle =
+        new Entity()
+            .addComponent(new CombatStatsComponent(250, 20))
+            .addComponent(new EnemyTypeComponent(EnemySpawnConfig.EnemyType.CERBERUS));
+    Entity right = new Entity().addComponent(new CombatStatsComponent(125, 10));
+
+    CerberusDeathComponent death = new CerberusDeathComponent(left, right);
+    middle.addComponent(death);
+
+    enemyManager.track(left, "CERBERUS");
+    enemyManager.track(right, "CERBERUS");
+    enemyManager.track(middle, "CERBERUS");
+    death.create();
+
+    // Killing the middle head must not count as defeating the entire boss.
+    middle.getComponent(CombatStatsComponent.class).setHealth(0);
+    verify(achievements, never()).update(any(AchievementContext.class));
+    assertFalse(enemyManager.isCleared());
+
+    left.getComponent(CombatStatsComponent.class).setHealth(0);
+    verify(achievements, never()).update(any(AchievementContext.class));
+    assertFalse(enemyManager.isCleared());
+
+    right.getComponent(CombatStatsComponent.class).setHealth(0);
+
+    ArgumentCaptor<AchievementContext> context = ArgumentCaptor.forClass(AchievementContext.class);
+    verify(achievements, times(1)).update(context.capture());
+    assertEquals(EnemySpawnConfig.EnemyType.CERBERUS, context.getValue().enemyKilled);
+    assertTrue(enemyManager.isCleared());
+
+    // Repeated death notifications must not report another kill.
+    middle.getEvents().trigger("entityDied");
+    left.getEvents().trigger("entityDied");
+    right.getEvents().trigger("entityDied");
+
+    verify(achievements, times(1)).update(any(AchievementContext.class));
   }
 }

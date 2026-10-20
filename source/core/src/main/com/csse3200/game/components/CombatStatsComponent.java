@@ -48,8 +48,14 @@ public class CombatStatsComponent extends Component {
    */
   public void scale(int amount) {
     maxHealth += scaleStat(maxHealth, healthScaleFactor, amount);
-    setHealth(maxHealth);
+    health = maxHealth;
     baseAttack += scaleStat(baseAttack, attackScaleFactor, amount);
+
+    // Finish updating both values before notifying UI and phase listeners.
+    if (entity != null) {
+      entity.getEvents().trigger("updateMaxHealth", maxHealth);
+      entity.getEvents().trigger("updateHealth", health);
+    }
   }
 
   /**
