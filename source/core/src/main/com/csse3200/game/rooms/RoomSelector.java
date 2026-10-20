@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.boss.FinalBossPhase;
+import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.components.rooms.FollowingCameraComponent;
 import com.csse3200.game.components.rooms.RoomDataComponent;
@@ -117,13 +118,25 @@ public class RoomSelector {
   }
 
   /**
-   * Callback function for the interact event when player presses E. If the room is cleared, will
-   * request the room entity for any potential exits.
+   * Handles a short press of E. A drop already in pickup range is collected by {@code itemPickup}
+   * and must not also open a door or show the locked-door message. An NPC interaction is still
+   * offered.
    */
-  private void onPlayerInteract() {
-    // Handle room switch via hitbox events
-    room.getEvents().trigger("requestExit", player.getCenterPosition());
+  void onPlayerInteract() {
+    if (!dropInPickupRange()) {
+      room.getEvents().trigger("requestExit", player.getCenterPosition());
+    }
     room.getEvents().trigger("npcInteract", player);
+  }
+
+  /**
+   * Whether E will pick up a drop on this press.
+   *
+   * @return true when the player is standing on a drop
+   */
+  private boolean dropInPickupRange() {
+    ItemPickupComponent pickup = player.getComponent(ItemPickupComponent.class);
+    return pickup != null && pickup.getPickupPrompt() != null;
   }
 
   /** Debug function to clear the current room's enemies */
