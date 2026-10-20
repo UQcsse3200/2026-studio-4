@@ -193,7 +193,7 @@ public class MainGameScreen extends ScreenAdapter {
   public void dispose() {
     logger.debug("Disposing main game screen");
     if (runTimer != null) {
-      GameProgress.recordRun((long) (runTimer.getTotalTime() * 1000f));
+      GameProgress.recordRun((long) (runTimer.getTotalTime() * 1000f), winTransitionStarted);
     }
 
     // This should all just be one function call GameSave.save();
