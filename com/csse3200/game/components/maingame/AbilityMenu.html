@@ -91,9 +91,14 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <section class="class-description" id="class-description">
+<dl class="notes">
+<dt>All Implemented Interfaces:</dt>
+<dd><code><a href="ModalMenu.html" title="interface in com.csse3200.game.components.maingame">ModalMenu</a></code></dd>
+</dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">AbilityMenu</span>
-<span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
+<span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a>
+implements <a href="ModalMenu.html" title="interface in com.csse3200.game.components.maingame">ModalMenu</a></span></div>
 <div class="block">What the player is choosing between while Hecate's menu is open, and nothing about how it looks.
 
  <p>Keeping the state here rather than in the display means the whole flow can be tested without a
@@ -335,6 +340,10 @@ loadScripts(document, 'script');</script>
 <h3>close</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()</div>
 <div class="block">Closes the menu and gives the player back their controls. Closing a shut menu does nothing.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="ModalMenu.html#close()">close</a></code>&nbsp;in interface&nbsp;<code><a href="ModalMenu.html" title="interface in com.csse3200.game.components.maingame">ModalMenu</a></code></dd>
+</dl>
 </section>
 </li>
 <li>
@@ -343,6 +352,8 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">moveSelection</span><wbr><span class="parameters">(int&nbsp;delta)</span></div>
 <div class="block">Moves the highlight, wrapping at both ends so holding a direction never dead-ends.</div>
 <dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="ModalMenu.html#moveSelection(int)">moveSelection</a></code>&nbsp;in interface&nbsp;<code><a href="ModalMenu.html" title="interface in com.csse3200.game.components.maingame">ModalMenu</a></code></dd>
 <dt>Parameters:</dt>
 <dd><code>delta</code> - rows to move by, usually -1 or 1</dd>
 </dl>
@@ -355,6 +366,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Attunes the highlighted ability and closes. The menu closes either way, so a refusal cannot
  leave the player stuck behind it.</div>
 <dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="ModalMenu.html#confirm()">confirm</a></code>&nbsp;in interface&nbsp;<code><a href="ModalMenu.html" title="interface in com.csse3200.game.components.maingame">ModalMenu</a></code></dd>
 <dt>Returns:</dt>
 <dd>whether the ability was actually attuned</dd>
 </dl>
@@ -365,6 +378,8 @@ loadScripts(document, 'script');</script>
 <h3>isOpen</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isOpen</span>()</div>
 <dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="ModalMenu.html#isOpen()">isOpen</a></code>&nbsp;in interface&nbsp;<code><a href="ModalMenu.html" title="interface in com.csse3200.game.components.maingame">ModalMenu</a></code></dd>
 <dt>Returns:</dt>
 <dd>whether the menu is on screen and taking input</dd>
 </dl>
@@ -386,6 +401,8 @@ loadScripts(document, 'script');</script>
 <h3>getSelectedIndex</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getSelectedIndex</span>()</div>
 <dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="ModalMenu.html#getSelectedIndex()">getSelectedIndex</a></code>&nbsp;in interface&nbsp;<code><a href="ModalMenu.html" title="interface in com.csse3200.game.components.maingame">ModalMenu</a></code></dd>
 <dt>Returns:</dt>
 <dd>the highlighted row</dd>
 </dl>

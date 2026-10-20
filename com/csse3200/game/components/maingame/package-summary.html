@@ -84,7 +84,8 @@ loadScripts(document, 'script');</script>
 </li>
 <li>
 <div id="class-summary">
-<div class="caption"><span>Classes</span></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="class-summary-tab0" role="tab" aria-selected="true" aria-controls="class-summary.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary', 2)" class="active-table-tab">All Classes and Interfaces</button><button id="class-summary-tab1" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab1', 2)" class="table-tab">Interfaces</button><button id="class-summary-tab2" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab2', 2)" class="table-tab">Classes</button></div>
+<div id="class-summary.tabpanel" role="tabpanel" aria-labelledby="class-summary-tab0">
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
@@ -120,21 +121,49 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="KeyboardAbilityMenuInputComponent.html" title="class in com.csse3200.game.components.maingame">KeyboardAbilityMenuInputComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">Drives <a href="AbilityMenu.html" title="class in com.csse3200.game.components.maingame"><code>AbilityMenu</code></a> from the keyboard and, while it is open, stops anything else seeing
- input.</div>
+<div class="block">Drives <a href="AbilityMenu.html" title="class in com.csse3200.game.components.maingame"><code>AbilityMenu</code></a> from the keyboard.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="MagneticPickupHintDisplay.html" title="class in com.csse3200.game.components.maingame">MagneticPickupHintDisplay</a></div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="KeyboardTeleportMenuInputComponent.html" title="class in com.csse3200.game.components.maingame">KeyboardTeleportMenuInputComponent</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">Drives <a href="TeleportMenu.html" title="class in com.csse3200.game.components.maingame"><code>TeleportMenu</code></a> from the keyboard.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="MagneticPickupHintDisplay.html" title="class in com.csse3200.game.components.maingame">MagneticPickupHintDisplay</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Keeps magnetic pickup guidance visible until the room's accumulated drops are collected.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="MainGameActions.html" title="class in com.csse3200.game.components.maingame">MainGameActions</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="MainGameActions.html" title="class in com.csse3200.game.components.maingame">MainGameActions</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">This class listens to events relevant to the Main Game Screen and does something when one of the
  events is triggered.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="MainGameExitDisplay.html" title="class in com.csse3200.game.components.maingame">MainGameExitDisplay</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="MainGameExitDisplay.html" title="class in com.csse3200.game.components.maingame">MainGameExitDisplay</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Displays a button to exit the Main Game screen to the Main Menu screen.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="ModalMenu.html" title="interface in com.csse3200.game.components.maingame">ModalMenu</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
+<div class="block">A menu the player picks from with the keyboard while it is open, such as Hecate's gifts or an
+ NPC's offer to teleport.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="ModalMenuDisplay.html" title="class in com.csse3200.game.components.maingame">ModalMenuDisplay</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">The look shared by the game's modal menus: a cream panel centred on screen with a title, some
+ rows and a key hint, and a highlighted row.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="ModalMenuInputComponent.html" title="class in com.csse3200.game.components.maingame">ModalMenuInputComponent</a>&lt;M extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a> &amp; <a href="ModalMenu.html" title="interface in com.csse3200.game.components.maingame">ModalMenu</a>&gt;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">Drives a <a href="ModalMenu.html" title="interface in com.csse3200.game.components.maingame"><code>ModalMenu</code></a> from the keyboard and, while it is open, stops anything else seeing
+ input.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="TeleportMenu.html" title="class in com.csse3200.game.components.maingame">TeleportMenu</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">What the player is being asked when an NPC offers to send them to another room, and nothing about
+ how it looks.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="TeleportMenuDisplay.html" title="class in com.csse3200.game.components.maingame">TeleportMenuDisplay</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">Draws the question an NPC puts to the player when offering to teleport them, from what <a href="TeleportMenu.html" title="class in com.csse3200.game.components.maingame"><code>TeleportMenu</code></a> says.</div>
+</div>
 </div>
 </div>
 </div>

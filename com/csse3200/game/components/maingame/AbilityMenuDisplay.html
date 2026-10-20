@@ -89,7 +89,9 @@ loadScripts(document, 'script');</script>
 <div class="inheritance"><a href="../Component.html" title="class in com.csse3200.game.components">com.csse3200.game.components.Component</a>
 <div class="inheritance"><a href="../../rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">com.csse3200.game.rendering.RenderComponent</a>
 <div class="inheritance"><a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">com.csse3200.game.ui.UIComponent</a>
+<div class="inheritance"><a href="ModalMenuDisplay.html" title="class in com.csse3200.game.components.maingame">com.csse3200.game.components.maingame.ModalMenuDisplay</a>
 <div class="inheritance">com.csse3200.game.components.maingame.AbilityMenuDisplay</div>
+</div>
 </div>
 </div>
 </div>
@@ -101,7 +103,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">AbilityMenuDisplay</span>
-<span class="extends-implements">extends <a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></span></div>
+<span class="extends-implements">extends <a href="ModalMenuDisplay.html" title="class in com.csse3200.game.components.maingame">ModalMenuDisplay</a></span></div>
 <div class="block">Draws Hecate's menu. It owns no state: every frame it shows what <a href="AbilityMenu.html" title="class in com.csse3200.game.components.maingame"><code>AbilityMenu</code></a> says, so the
  choosing can be tested without a GL context and this only has to be looked at.</div>
 </section>
@@ -111,6 +113,9 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="field-summary" id="field-summary">
 <h2>Field Summary</h2>
+<div class="inherited-list">
+<h3 id="fields-inherited-from-class-com.csse3200.game.components.maingame.ModalMenuDisplay">Fields inherited from class&nbsp;com.csse3200.game.components.maingame.<a href="ModalMenuDisplay.html" title="class in com.csse3200.game.components.maingame">ModalMenuDisplay</a></h3>
+<code><a href="ModalMenuDisplay.html#BODY_TEXT">BODY_TEXT</a>, <a href="ModalMenuDisplay.html#CAPTION_STYLE">CAPTION_STYLE</a>, <a href="ModalMenuDisplay.html#UNSELECTED_TEXT">UNSELECTED_TEXT</a></code></div>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-com.csse3200.game.ui.UIComponent">Fields inherited from class&nbsp;com.csse3200.game.ui.<a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></h3>
 <code><a href="../../ui/UIComponent.html#hud">hud</a>, <a href="../../ui/UIComponent.html#inventory">inventory</a>, <a href="../../ui/UIComponent.html#skin">skin</a>, <a href="../../ui/UIComponent.html#stage">stage</a></code></div>
@@ -143,34 +148,33 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#buildPanel(com.badlogic.gdx.scenes.scene2d.ui.Table)" class="member-name-link">buildPanel</a><wbr>(com.badlogic.gdx.scenes.scene2d.ui.Table&nbsp;panel)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called when the entity is created and registered.</div>
+<div class="block">Adds the title, any supporting text and the rows.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#highlight(int)" class="member-name-link">highlight</a><wbr>(int&nbsp;selected)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called when the component is disposed.</div>
+<div class="block">Draws the highlight on one row and takes it off the others.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw</a><wbr>(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Draw the renderable.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getZIndex()" class="member-name-link">getZIndex</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hintText()" class="member-name-link">hintText</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onOpened()" class="member-name-link">onOpened</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Z index controls rendering order within a layer.</div>
+<div class="block">Rebuilt on every open, because which ability is carried changes between visits.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called once per frame of the game, and should be used for most component logic.</div>
-</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#selectedIndex()" class="member-name-link">selectedIndex</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-com.csse3200.game.components.maingame.ModalMenuDisplay">Methods inherited from class&nbsp;com.csse3200.game.components.maingame.<a href="ModalMenuDisplay.html" title="class in com.csse3200.game.components.maingame">ModalMenuDisplay</a></h3>
+<code><a href="ModalMenuDisplay.html#addCaption(com.badlogic.gdx.scenes.scene2d.ui.Table,java.lang.String)">addCaption</a>, <a href="ModalMenuDisplay.html#addTitle(com.badlogic.gdx.scenes.scene2d.ui.Table,java.lang.String)">addTitle</a>, <a href="ModalMenuDisplay.html#create()">create</a>, <a href="ModalMenuDisplay.html#dispose()">dispose</a>, <a href="ModalMenuDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">draw</a>, <a href="ModalMenuDisplay.html#getZIndex()">getZIndex</a>, <a href="ModalMenuDisplay.html#styleRow(com.badlogic.gdx.scenes.scene2d.ui.Table,com.badlogic.gdx.scenes.scene2d.ui.Label,boolean)">styleRow</a>, <a href="ModalMenuDisplay.html#update()">update</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.ui.UIComponent">Methods inherited from class&nbsp;com.csse3200.game.ui.<a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></h3>
 <code><a href="../../ui/UIComponent.html#getLayer()">getLayer</a></code></div>
@@ -219,72 +223,61 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="create()">
-<h3>create</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#create()">Component</a></code></span></div>
-<div class="block">Called when the entity is created and registered. Initial logic such as calls to GetComponent
- should be made here, not in the constructor which is called before an entity is finished.</div>
-<dl class="notes">
-<dt>Overrides:</dt>
-<dd><code><a href="../../ui/UIComponent.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="update()">
-<h3>update</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#update()">Component</a></code></span></div>
-<div class="block">Called once per frame of the game, and should be used for most component logic. Not called if
- component is disabled.</div>
-<dl class="notes">
-<dt>Overrides:</dt>
-<dd><code><a href="../Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">
-<h3>draw</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">draw</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</span></div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../../rendering/RenderComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">RenderComponent</a></code></span></div>
-<div class="block">Draw the renderable. Should be called only by the renderer, not manually.</div>
+<section class="detail" id="buildPanel(com.badlogic.gdx.scenes.scene2d.ui.Table)">
+<h3>buildPanel</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">buildPanel</span><wbr><span class="parameters">(com.badlogic.gdx.scenes.scene2d.ui.Table&nbsp;panel)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="ModalMenuDisplay.html#buildPanel(com.badlogic.gdx.scenes.scene2d.ui.Table)">ModalMenuDisplay</a></code></span></div>
+<div class="block">Adds the title, any supporting text and the rows. The key hint is added after.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../../rendering/RenderComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">draw</a></code>&nbsp;in class&nbsp;<code><a href="../../rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></code></dd>
-<dt>Parameters:</dt>
-<dd><code>batch</code> - Batch to render to.</dd>
+<dd><code><a href="ModalMenuDisplay.html#buildPanel(com.badlogic.gdx.scenes.scene2d.ui.Table)">buildPanel</a></code>&nbsp;in class&nbsp;<code><a href="ModalMenuDisplay.html" title="class in com.csse3200.game.components.maingame">ModalMenuDisplay</a></code></dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="getZIndex()">
-<h3>getZIndex</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getZIndex</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../rendering/Renderable.html#getZIndex()">Renderable</a></code></span></div>
-<div class="block">Z index controls rendering order within a layer. Higher Z index is drawn on top.</div>
+<section class="detail" id="hintText()">
+<h3>hintText</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">hintText</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../../rendering/Renderable.html#getZIndex()">getZIndex</a></code>&nbsp;in interface&nbsp;<code><a href="../../rendering/Renderable.html" title="interface in com.csse3200.game.rendering">Renderable</a></code></dd>
-<dt>Overrides:</dt>
-<dd><code><a href="../../ui/UIComponent.html#getZIndex()">getZIndex</a></code>&nbsp;in class&nbsp;<code><a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></code></dd>
+<dd><code><a href="ModalMenuDisplay.html#hintText()">hintText</a></code>&nbsp;in class&nbsp;<code><a href="ModalMenuDisplay.html" title="class in com.csse3200.game.components.maingame">ModalMenuDisplay</a></code></dd>
 <dt>Returns:</dt>
-<dd>Z index</dd>
+<dd>the line of key hints along the bottom of the panel</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="dispose()">
-<h3>dispose</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">dispose</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#dispose()">Component</a></code></span></div>
-<div class="block">Called when the component is disposed. Dispose of any internal resources here.</div>
+<section class="detail" id="onOpened()">
+<h3>onOpened</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">onOpened</span>()</div>
+<div class="block">Rebuilt on every open, because which ability is carried changes between visits.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code>dispose</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.utils.Disposable</code></dd>
-<dt>Overrides:</dt>
-<dd><code><a href="../../rendering/RenderComponent.html#dispose()">dispose</a></code>&nbsp;in class&nbsp;<code><a href="../../rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></code></dd>
+<dd><code><a href="ModalMenuDisplay.html#onOpened()">onOpened</a></code>&nbsp;in class&nbsp;<code><a href="ModalMenuDisplay.html" title="class in com.csse3200.game.components.maingame">ModalMenuDisplay</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="selectedIndex()">
+<h3>selectedIndex</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">selectedIndex</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="ModalMenuDisplay.html#selectedIndex()">selectedIndex</a></code>&nbsp;in class&nbsp;<code><a href="ModalMenuDisplay.html" title="class in com.csse3200.game.components.maingame">ModalMenuDisplay</a></code></dd>
+<dt>Returns:</dt>
+<dd>the row the menu has highlighted</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="highlight(int)">
+<h3>highlight</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">highlight</span><wbr><span class="parameters">(int&nbsp;selected)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="ModalMenuDisplay.html#highlight(int)">ModalMenuDisplay</a></code></span></div>
+<div class="block">Draws the highlight on one row and takes it off the others.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="ModalMenuDisplay.html#highlight(int)">highlight</a></code>&nbsp;in class&nbsp;<code><a href="ModalMenuDisplay.html" title="class in com.csse3200.game.components.maingame">ModalMenuDisplay</a></code></dd>
 </dl>
 </section>
 </li>

@@ -106,11 +106,22 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#ROOM_SWITCHED_EVENT" class="member-name-link">ROOM_SWITCHED_EVENT</a></code></div>
+<div class="col-second even-row-color"><code><a href="#PROP_INTERACT" class="member-name-link">PROP_INTERACT</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Triggered on the room, with the player, when E is pressed, for props that can be used.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#ROOM_SWITCHED_EVENT" class="member-name-link">ROOM_SWITCHED_EVENT</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#SWITCH_ROOM" class="member-name-link">SWITCH_ROOM</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#SWITCH_ROOM" class="member-name-link">SWITCH_ROOM</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-second odd-row-color"><code><a href="#TELEPORT_REQUEST" class="member-name-link">TELEPORT_REQUEST</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Request, triggered on the player with <code>(String roomId, String entryPointId)</code>, to move
+ them to a named entry point of any room without using an exit, e.g.</div>
+</div>
 </div>
 </section>
 </li>
@@ -151,6 +162,12 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#switchRoom(com.csse3200.game.components.rooms.configs.ExitConfig)" class="member-name-link">switchRoom</a><wbr>(<a href="../components/rooms/configs/ExitConfig.html" title="class in com.csse3200.game.components.rooms.configs">ExitConfig</a>&nbsp;exit)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Switches the currently rendered room to the destination room declared in exit</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#teleport(java.lang.String,java.lang.String)" class="member-name-link">teleport</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;entryPointId)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Moves the player to a named entry point of a room, from anywhere.</div>
 </div>
 </div>
 </div>
@@ -197,6 +214,37 @@ loadScripts(document, 'script');</script>
 </dl>
 </section>
 </li>
+<li>
+<section class="detail" id="TELEPORT_REQUEST">
+<h3>TELEPORT_REQUEST</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">TELEPORT_REQUEST</span></div>
+<div class="block">Request, triggered on the player with <code>(String roomId, String entryPointId)</code>, to move
+ them to a named entry point of any room without using an exit, e.g. an NPC sending them away.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../constant-values.html#com.csse3200.game.rooms.RoomSelector.TELEPORT_REQUEST">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="PROP_INTERACT">
+<h3>PROP_INTERACT</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">PROP_INTERACT</span></div>
+<div class="block">Triggered on the room, with the player, when E is pressed, for props that can be used.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../constant-values.html#com.csse3200.game.rooms.RoomSelector.PROP_INTERACT">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -231,6 +279,15 @@ loadScripts(document, 'script');</script>
 <h3>switchRoom</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">switchRoom</span><wbr><span class="parameters">(<a href="../components/rooms/configs/ExitConfig.html" title="class in com.csse3200.game.components.rooms.configs">ExitConfig</a>&nbsp;exit)</span></div>
 <div class="block">Switches the currently rendered room to the destination room declared in exit</div>
+</section>
+</li>
+<li>
+<section class="detail" id="teleport(java.lang.String,java.lang.String)">
+<h3>teleport</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">teleport</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;entryPointId)</span></div>
+<div class="block">Moves the player to a named entry point of a room, from anywhere. Applied at the next safe
+ point in the frame, like any other room switch.</div>
 </section>
 </li>
 <li>

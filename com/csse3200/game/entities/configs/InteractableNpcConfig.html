@@ -114,6 +114,11 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">When the cutscene plays relative to the dialogue, if the NPC has both.</div>
 </div>
+<div class="col-first odd-row-color"><code>static class&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="InteractableNpcConfig.TeleportOffer.html" class="type-name-link" title="class in com.csse3200.game.entities.configs">InteractableNpcConfig.TeleportOffer</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Once the interaction finishes, asks the player whether they want to be sent to another room.</div>
+</div>
 </div>
 </section>
 </li>
@@ -201,19 +206,24 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">If true, the NPC only responds once every enemy in its room has been defeated.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#texture" class="member-name-link">texture</a></code></div>
+<div class="col-first odd-row-color"><code><a href="InteractableNpcConfig.TeleportOffer.html" title="class in com.csse3200.game.entities.configs">InteractableNpcConfig.TeleportOffer</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#teleportOffer" class="member-name-link">teleportOffer</a></code></div>
 <div class="col-last odd-row-color">
-<div class="block">Static texture for NPCs without an atlas.</div>
+<div class="block">Offer to teleport the player once the interaction finishes, or null for none.</div>
 </div>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#unavailableMessage" class="member-name-link">unavailableMessage</a></code></div>
+<div class="col-second even-row-color"><code><a href="#texture" class="member-name-link">texture</a></code></div>
 <div class="col-last even-row-color">
+<div class="block">Static texture for NPCs without an atlas.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#unavailableMessage" class="member-name-link">unavailableMessage</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">Prompt shown in range while conditions are unmet; null shows nothing.</div>
 </div>
-<div class="col-first odd-row-color"><code>float</code></div>
-<div class="col-second odd-row-color"><code><a href="#width" class="member-name-link">width</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>float</code></div>
+<div class="col-second even-row-color"><code><a href="#width" class="member-name-link">width</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">Sprite width in world units; height follows the art's aspect ratio.</div>
 </div>
 </div>
@@ -376,6 +386,13 @@ loadScripts(document, 'script');</script>
 <h3>requiresCompleted</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]</span>&nbsp;<span class="element-name">requiresCompleted</span></div>
 <div class="block">Ids of NPCs whose interactions must have been completed first.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="teleportOffer">
+<h3>teleportOffer</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="InteractableNpcConfig.TeleportOffer.html" title="class in com.csse3200.game.entities.configs">InteractableNpcConfig.TeleportOffer</a></span>&nbsp;<span class="element-name">teleportOffer</span></div>
+<div class="block">Offer to teleport the player once the interaction finishes, or null for none.</div>
 </section>
 </li>
 <li>

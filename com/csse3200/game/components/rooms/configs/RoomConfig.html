@@ -132,9 +132,17 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code><a href="RoomSpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomSpawnConfig</a></code></div>
 <div class="col-second even-row-color"><code><a href="#obstacles" class="member-name-link">obstacles</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#title" class="member-name-link">title</a></code></div>
+<div class="col-first odd-row-color"><code><a href="PropSpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">PropSpawnConfig</a>[]</code></div>
+<div class="col-second odd-row-color"><code><a href="#propSpawns" class="member-name-link">propSpawns</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#title" class="member-name-link">title</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>boolean</code></div>
+<div class="col-second odd-row-color"><code><a href="#trainingGrounds" class="member-name-link">trainingGrounds</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Whether this room is a safe practice space.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="TrapSpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">TrapSpawnConfig</a>[]</code></div>
 <div class="col-second even-row-color"><code><a href="#trapSpawns" class="member-name-link">trapSpawns</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
@@ -247,6 +255,12 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="propSpawns">
+<h3>propSpawns</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="PropSpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">PropSpawnConfig</a>[]</span>&nbsp;<span class="element-name">propSpawns</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="exits">
 <h3>exits</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ExitConfig.html" title="class in com.csse3200.game.components.rooms.configs">ExitConfig</a>[]</span>&nbsp;<span class="element-name">exits</span></div>
@@ -256,6 +270,15 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="obstacles">
 <h3>obstacles</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="RoomSpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomSpawnConfig</a></span>&nbsp;<span class="element-name">obstacles</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="trainingGrounds">
+<h3>trainingGrounds</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">trainingGrounds</span></div>
+<div class="block">Whether this room is a safe practice space. While the player is in it their weapons count as
+ upgraded, so heavy attacks can be tried, and anything lent to them by its supply stands is
+ taken back when they leave.</div>
 </section>
 </li>
 </ul>

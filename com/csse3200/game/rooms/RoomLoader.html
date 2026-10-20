@@ -123,13 +123,24 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.math.GridPoint2</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getEntrySpawn(java.lang.String,java.lang.String)" class="member-name-link">getEntrySpawn</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;entryPointId)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns where a teleport into the room lands the player.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRoom(com.csse3200.game.components.rooms.configs.ExitConfig)" class="member-name-link">getRoom</a><wbr>(<a href="../components/rooms/configs/ExitConfig.html" title="class in com.csse3200.game.components.rooms.configs">ExitConfig</a>&nbsp;exit)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRoom(com.csse3200.game.components.rooms.configs.ExitConfig)" class="member-name-link">getRoom</a><wbr>(<a href="../components/rooms/configs/ExitConfig.html" title="class in com.csse3200.game.components.rooms.configs">ExitConfig</a>&nbsp;exit)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRoom(com.csse3200.game.components.rooms.configs.ExitConfig,boolean)" class="member-name-link">getRoom</a><wbr>(<a href="../components/rooms/configs/ExitConfig.html" title="class in com.csse3200.game.components.rooms.configs">ExitConfig</a>&nbsp;exit,
+ boolean&nbsp;cleared)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRoom(com.csse3200.game.components.rooms.configs.ExitConfig,boolean)" class="member-name-link">getRoom</a><wbr>(<a href="../components/rooms/configs/ExitConfig.html" title="class in com.csse3200.game.components.rooms.configs">ExitConfig</a>&nbsp;exit,
- boolean&nbsp;cleared)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRoom(java.lang.String)" class="member-name-link">getRoom</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns an unintialised room for a teleport, cleared if the player has cleared it before.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRoom(java.lang.String,boolean)" class="member-name-link">getRoom</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId,
  boolean&nbsp;cleared)</code></div>
@@ -208,6 +219,25 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getRoom(com.csse3200.game.components.rooms.configs.ExitConfig)">
 <h3>getRoom</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">getRoom</span><wbr><span class="parameters">(<a href="../components/rooms/configs/ExitConfig.html" title="class in com.csse3200.game.components.rooms.configs">ExitConfig</a>&nbsp;exit)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="getRoom(java.lang.String)">
+<h3>getRoom</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">getRoom</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId)</span></div>
+<div class="block">Returns an unintialised room for a teleport, cleared if the player has cleared it before.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getEntrySpawn(java.lang.String,java.lang.String)">
+<h3>getEntrySpawn</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.GridPoint2</span>&nbsp;<span class="element-name">getEntrySpawn</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;roomId,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;entryPointId)</span></div>
+<div class="block">Returns where a teleport into the room lands the player.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if the room has no such entry point</dd>
+</dl>
 </section>
 </li>
 <li>

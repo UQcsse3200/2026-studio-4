@@ -145,15 +145,23 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates a room from its declarative definition, camera component and the boolean value of its
  cleared state.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getTileSet(java.lang.String)" class="member-name-link">getTileSet</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;dungeonId)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createTrainingRoom(com.csse3200.game.components.rooms.configs.RoomConfig,com.csse3200.game.components.CameraComponent,boolean)" class="member-name-link">createTrainingRoom</a><wbr>(<a href="../../components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room,
+ <a href="../../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera,
+ boolean&nbsp;cleared)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a training grounds room: an ordinary room with its practice props and the loadout that
+ enchants the player's weapons and takes back anything lent to them.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getTileSet(java.lang.String)" class="member-name-link">getTileSet</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;dungeonId)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Get the tileset to use based it's dungeon.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#spawnMap(com.csse3200.game.components.rooms.configs.RoomConfig,com.csse3200.game.areas.terrain.TerrainBuilder)" class="member-name-link">spawnMap</a><wbr>(<a href="../../components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#spawnMap(com.csse3200.game.components.rooms.configs.RoomConfig,com.csse3200.game.areas.terrain.TerrainBuilder)" class="member-name-link">spawnMap</a><wbr>(<a href="../../components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room,
  <a href="../../areas/terrain/TerrainBuilder.html" title="class in com.csse3200.game.areas.terrain">TerrainBuilder</a>&nbsp;terrain)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Spawns the terrain of the map based upon the room config definition.</div>
 </div>
 </div>
@@ -280,6 +288,24 @@ loadScripts(document, 'script');</script>
  boolean&nbsp;cleared)</span></div>
 <div class="block">Creates a room from its declarative definition, camera component and the boolean value of its
  cleared state.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>room</code> - The rooms declarative definition.</dd>
+<dd><code>camera</code> - The camera for the room.</dd>
+<dd><code>cleared</code> - Whether the room has been cleared.</dd>
+<dt>Returns:</dt>
+<dd>The room entity.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createTrainingRoom(com.csse3200.game.components.rooms.configs.RoomConfig,com.csse3200.game.components.CameraComponent,boolean)">
+<h3>createTrainingRoom</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createTrainingRoom</span><wbr><span class="parameters">(<a href="../../components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room,
+ <a href="../../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera,
+ boolean&nbsp;cleared)</span></div>
+<div class="block">Creates a training grounds room: an ordinary room with its practice props and the loadout that
+ enchants the player's weapons and takes back anything lent to them. Only rooms flagged <a href="../../components/rooms/configs/RoomConfig.html#trainingGrounds"><code>RoomConfig.trainingGrounds</code></a> get these, so every other room is built exactly as before.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>room</code> - The rooms declarative definition.</dd>
