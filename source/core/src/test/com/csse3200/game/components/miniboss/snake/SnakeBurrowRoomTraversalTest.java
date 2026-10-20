@@ -63,7 +63,7 @@ class SnakeBurrowRoomTraversalTest {
     ServiceLocator.registerTimeSource(time);
 
     resources = spy(new ResourceService());
-    resources.loadTextureAtlases(new String[] {"images/snake.atlas"});
+    resources.loadTextureAtlases(new String[] {"images/snake-miniboss/snake.atlas"});
     resources.loadTextures(SnakePoisonAssets.paths());
     resources.loadTextures(
         new String[] {

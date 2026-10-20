@@ -50,13 +50,14 @@ class SplitComponentTest {
     ServiceLocator.registerEntityService(entityService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/crab.atlas", "images/medusa.atlas"});
+    resourceService.loadTextureAtlases(
+        new String[] {"images/split-enemy/crab.atlas", "images/split-enemy/medusa.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
 
   private Entity createSplitEnemy() {
-    return createSplitEnemy("images/crab.atlas");
+    return createSplitEnemy("images/split-enemy/crab.atlas");
   }
 
   private Entity createSplitEnemy(String skin) {
@@ -108,12 +109,12 @@ class SplitComponentTest {
 
   @Test
   void shouldSplitCrabAfterFourNormalHits() {
-    assertSplitAfterFourNormalHits("images/crab.atlas");
+    assertSplitAfterFourNormalHits("images/split-enemy/crab.atlas");
   }
 
   @Test
   void shouldSplitMedusaAfterFourNormalHits() {
-    assertSplitAfterFourNormalHits("images/medusa.atlas");
+    assertSplitAfterFourNormalHits("images/split-enemy/medusa.atlas");
   }
 
   private void assertSplitAfterFourNormalHits(String skin) {

@@ -27,7 +27,7 @@ public class FloatingDemonProjectileFactory {
       Vector2 position, int damage, Component movement) {
     TextureAtlas atlas =
         ServiceLocator.getResourceService()
-            .getAsset("images/floatingDemon.atlas", TextureAtlas.class);
+            .getAsset("images/flying-enemy/floating-demon-projectile.atlas", TextureAtlas.class);
     AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
     animator.addAnimation("projectile", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("projectileHit", 0.1f);
