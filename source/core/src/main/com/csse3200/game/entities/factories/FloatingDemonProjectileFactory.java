@@ -15,6 +15,7 @@ public class FloatingDemonProjectileFactory {
   private static final float PROJECTILE_SPEED = 5f;
   private static final float PROJECTILE_RANGE = 7f;
   private static final float PROJECTILE_LIFETIME = 1.8f;
+  private static final String PROJECTILE = "projectile";
   private static final String DEFAULT_ATLAS = "images/floatingDemon.atlas";
 
   public static Entity createProjectile(Vector2 position, Vector2 direction, int damage) {
@@ -41,7 +42,7 @@ public class FloatingDemonProjectileFactory {
   private static Entity createProjectileWithMovement(
       Vector2 position, int damage, Component movement, String atlasPath) {
     AnimationRenderComponent animator = new AnimationRenderComponent(resolveAtlas(atlasPath));
-    animator.addAnimation("projectile", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(PROJECTILE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("projectileHit", 0.1f);
 
     HitboxSpec spec =
@@ -59,7 +60,7 @@ public class FloatingDemonProjectileFactory {
     projectile
         .getEvents()
         .addListener("projectileRangeReached", () -> animator.startAnimation("projectileHit"));
-    animator.startAnimation("projectile");
+    animator.startAnimation(PROJECTILE);
     return projectile;
   }
 
@@ -70,7 +71,7 @@ public class FloatingDemonProjectileFactory {
   private static TextureAtlas resolveAtlas(String atlasPath) {
     TextureAtlas atlas =
         ServiceLocator.getResourceService().getAsset(atlasPath, TextureAtlas.class);
-    if (atlas.findRegion("projectile") != null) {
+    if (atlas.findRegion(PROJECTILE) != null) {
       return atlas;
     }
     return ServiceLocator.getResourceService().getAsset(DEFAULT_ATLAS, TextureAtlas.class);
