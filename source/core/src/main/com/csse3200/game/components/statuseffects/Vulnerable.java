@@ -7,10 +7,9 @@ public class Vulnerable extends StatusEffect implements Damageable {
   private final long duration;
   private final long vulnerableInit;
 
-
   public Vulnerable(long duration) {
-      super(new GameTime(), duration);
-      this.duration = duration;
+    super(new GameTime(), duration);
+    this.duration = duration;
     vulnerableInit = time.getTime();
   }
 

@@ -18,8 +18,8 @@ public class Speed extends StatusEffect {
    * @param combatStats the combat stats component of the entity which has the status effect.
    */
   public Speed(long duration, CombatStatsComponent combatStats) {
-      super(new GameTime(), duration);
-      this.duration = duration;
+    super(new GameTime(), duration);
+    this.duration = duration;
     this.combatStats = combatStats;
     speedInit = time.getTime();
     combatStats.addMovementSpeed(0.5f);

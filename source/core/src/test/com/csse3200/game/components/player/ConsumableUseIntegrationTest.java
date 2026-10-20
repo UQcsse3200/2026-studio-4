@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 import com.badlogic.gdx.Input.Keys;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
-import com.csse3200.game.components.miniboss.cerberus.CerberusMistComponent;
 import com.csse3200.game.components.statuseffects.Stat;
 import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.entities.Entity;

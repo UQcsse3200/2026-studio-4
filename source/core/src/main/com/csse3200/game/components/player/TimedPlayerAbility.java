@@ -2,7 +2,6 @@ package com.csse3200.game.components.player;
 
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.statuseffects.StatusEffect;
-
 import java.util.function.Supplier;
 
 /**
@@ -28,10 +27,7 @@ public abstract class TimedPlayerAbility extends PlayerAbility {
    * @param effectFactory makes the condition this ability puts on the player, once per start
    */
   protected TimedPlayerAbility(
-      String name,
-      long cooldown,
-      boolean unlockedByDefault,
-      Supplier<StatusEffect> effectFactory) {
+      String name, long cooldown, boolean unlockedByDefault, Supplier<StatusEffect> effectFactory) {
     super(name, cooldown, unlockedByDefault);
     this.effectFactory = effectFactory;
   }

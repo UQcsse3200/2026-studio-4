@@ -23,8 +23,8 @@ public class Burning extends StatusEffect {
    * @param combatStats the combat stats component of the entity which has the status effect.
    */
   public Burning(int damage, long burnCooldown, long duration, CombatStatsComponent combatStats) {
-      super(new GameTime(), duration);
-      this.damage = damage;
+    super(new GameTime(), duration);
+    this.damage = damage;
     this.burnCooldown = burnCooldown;
     this.duration = duration;
     this.combatStats = combatStats;

@@ -35,9 +35,7 @@ public abstract class ConsumableItem extends Item {
         && time != null;
   }
 
-  /**
-   * Applies the item's effect; timed effects are registered by the use component.
-   */
+  /** Applies the item's effect; timed effects are registered by the use component. */
   public abstract StatusEffect use(CombatStatsComponent stats, GameTime time);
 
   @Override
