@@ -161,6 +161,28 @@ class TimerDisplayTest {
   }
 
   @Test
+  void updateAppliesShowTimerAfterThePanelExists() {
+    Table rootTable = field("rootTable", Table.class);
+    assertTrue(rootTable.isVisible());
+
+    Settings original = UserSettings.get();
+    Settings hidden = new Settings();
+    hidden.showTimer = false;
+    try {
+      UserSettings.set(hidden, false);
+      display.update();
+      assertFalse(rootTable.isVisible());
+
+      hidden.showTimer = true;
+      UserSettings.set(hidden, false);
+      display.update();
+      assertTrue(rootTable.isVisible());
+    } finally {
+      UserSettings.set(original, false);
+    }
+  }
+
+  @Test
   void hidesPanelWhenShowTimerIsOff() {
     Settings original = UserSettings.get();
     Settings hidden = new Settings();

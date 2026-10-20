@@ -1,4 +1,4 @@
-package com.csse3200.game.entities.enemy;
+package com.csse3200.game.components.miniboss;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -28,8 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 public class SleipnirEnemyTest {
-
-  private final Vector2[] mapBounds = {new Vector2(10, 10), new Vector2(2, 2)};
+  private final Vector2 spawnPoints = new Vector2(10, 10);
 
   @BeforeEach
   void setUp() {
@@ -54,7 +53,7 @@ public class SleipnirEnemyTest {
 
   @Test
   void shouldCreateSleipnirWithDefaultCombatStats() {
-    Entity sleipnir = NPCFactory.createSleipnir(new Entity(), mapBounds);
+    Entity sleipnir = NPCFactory.createSleipnir(new Entity(), spawnPoints);
     sleipnir.create();
     CombatStatsComponent stats = sleipnir.getComponent(CombatStatsComponent.class);
     assertEquals(250, stats.getHealth());
@@ -64,7 +63,7 @@ public class SleipnirEnemyTest {
 
   @Test
   void shouldHaveAITasks() {
-    Entity sleipnir = NPCFactory.createSleipnir(new Entity(), mapBounds);
+    Entity sleipnir = NPCFactory.createSleipnir(new Entity(), spawnPoints);
     sleipnir.create();
     AITaskComponent aiTaskComponent = sleipnir.getComponent(AITaskComponent.class);
 
@@ -76,7 +75,7 @@ public class SleipnirEnemyTest {
   void shouldCreateSleipnir() {
     Entity target = new Entity();
 
-    Entity sleipnir = NPCFactory.createSleipnir(target, mapBounds);
+    Entity sleipnir = NPCFactory.createSleipnir(target, spawnPoints);
 
     Assertions.assertNotNull(sleipnir);
   }
@@ -85,7 +84,7 @@ public class SleipnirEnemyTest {
   void shouldHaveRequiredComponents() {
     Entity target = new Entity();
 
-    Entity sleipnir = NPCFactory.createSleipnir(target, mapBounds);
+    Entity sleipnir = NPCFactory.createSleipnir(target, spawnPoints);
 
     Assertions.assertNotNull(sleipnir.getComponent(PhysicsMovementComponent.class));
     Assertions.assertNotNull(sleipnir.getComponent(AITaskComponent.class));
@@ -99,7 +98,7 @@ public class SleipnirEnemyTest {
   void shouldSetMaximumMovementSpeed() {
     Entity target = new Entity();
 
-    Entity sleipnir = NPCFactory.createSleipnir(target, mapBounds);
+    Entity sleipnir = NPCFactory.createSleipnir(target, spawnPoints);
 
     PhysicsMovementComponent movementComponent =
         sleipnir.getComponent(PhysicsMovementComponent.class);
@@ -110,7 +109,7 @@ public class SleipnirEnemyTest {
 
   @Test
   void shouldEnterPhaseTwoOnlyBelowHalfOfScaledHealth() {
-    Entity horse = NPCFactory.createSleipnir(new Entity(), mapBounds);
+    Entity horse = NPCFactory.createSleipnir(new Entity(), spawnPoints);
     horse.create();
 
     try {
