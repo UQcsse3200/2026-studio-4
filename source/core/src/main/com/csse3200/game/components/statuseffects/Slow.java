@@ -5,7 +5,6 @@ import com.csse3200.game.services.GameTime;
 
 /** The object class for the slow status effect. */
 public class Slow extends StatusEffect {
-  private final GameTime time = new GameTime();
 
   private final long duration;
   private final long slowInit;
@@ -45,6 +44,7 @@ public class Slow extends StatusEffect {
   }
 
   /** Returns the time left until the status effect should be removed (in milliseconds). */
+  @Override
   public long getRemainingDuration() {
     return duration - time.getTimeSince(slowInit);
   }

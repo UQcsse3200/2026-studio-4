@@ -39,6 +39,7 @@ public class Speed extends StatusEffect {
   }
 
   /** Returns the time left until the status effect should be removed (in milliseconds). */
+  @Override
   public long getRemainingDuration() {
     return duration - time.getTimeSince(speedInit);
   }

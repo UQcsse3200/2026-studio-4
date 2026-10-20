@@ -41,6 +41,7 @@ public final class VialBurning extends Burning {
     return pulseRemaining / PULSE_SECONDS;
   }
 
+  @Override
   public Color getGlow() {
     if (pulseRemaining <= 0f) return null;
     glow.a = 0.55f * getPulseStrength();

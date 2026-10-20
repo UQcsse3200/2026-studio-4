@@ -2,6 +2,7 @@ package com.csse3200.game.items.consumables;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.statuseffects.Regeneration;
 import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.services.GameTime;
@@ -37,34 +38,7 @@ public abstract class RegenerationPotion extends ConsumableItem {
 
   @Override
   public StatusEffect use(CombatStatsComponent stats, GameTime time) {
-    return new HealingOverTime(time, durationMs, stats, healingPerTick);
+    return new Regeneration(healingPerTick, TICK_MS, durationMs, stats);
   }
 
-  private static final class HealingOverTime extends StatusEffect {
-    private final GameTime time;
-    private final CombatStatsComponent stats;
-    private final int healingPerTick;
-    private final long endsAt;
-    private long nextTick;
-
-    HealingOverTime(
-        GameTime time, long durationMs, CombatStatsComponent stats, int healingPerTick) {
-      super(time, durationMs);
-      this.time = time;
-      this.stats = stats;
-      this.healingPerTick = healingPerTick;
-      endsAt = time.getTime() + durationMs;
-      nextTick = time.getTime() + TICK_MS;
-    }
-
-    @Override
-    public boolean update() {
-      long through = Math.min(time.getTime(), endsAt);
-      while (nextTick <= through && !stats.isDead()) {
-        stats.addHealth(healingPerTick);
-        nextTick += TICK_MS;
-      }
-      return super.update();
-    }
-  }
 }

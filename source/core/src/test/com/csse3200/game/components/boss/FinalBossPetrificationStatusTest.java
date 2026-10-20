@@ -159,28 +159,10 @@ class FinalBossPetrificationStatusTest {
     assertEquals(1.5f, stats.getEffectiveMovementSpeed(), EPSILON);
   }
 
-  private void hitPlayer() {
-    tickBoss(0.01f);
-    tickBoss(config.petrificationWarningDuration);
-  }
-
   private void tickBoss(float seconds) {
     now += Math.round(seconds * 1000f);
     when(time.getDeltaTime()).thenReturn(seconds);
     bossPetrification.update();
   }
 
-  private void advanceEffects(long milliseconds) {
-    now += milliseconds;
-    effects.update();
-  }
-
-  private void requestEffect() {
-    player
-        .getEvents()
-        .trigger(
-            FinalBossEvents.PETRIFICATION_EFFECT_REQUESTED,
-            config.petrificationSlowMultiplier,
-            config.petrificationSlowDuration);
-  }
 }

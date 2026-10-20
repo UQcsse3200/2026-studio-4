@@ -77,6 +77,9 @@ public class StatusEffect {
    * effect cannot leave a rounding remainder behind.
    */
   public float getStatMultiplier(Stat stat) {
+    if (stat == null) {
+      throw new IllegalArgumentException();
+    }
     return 1f;
   }
 
