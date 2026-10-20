@@ -1,10 +1,13 @@
 package com.csse3200.game.components;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
 import com.csse3200.game.entities.Entity;
@@ -14,6 +17,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
@@ -252,6 +256,66 @@ class TouchAttackComponentTest {
 
     // This should not cause an exception, but the attack should be ignored
     entity.getEvents().trigger("collisionStart", entityFixture, targetFixture);
+  }
+
+  @Test
+  void knockbackPushesEnemyAwayFromWielderAndStaggersIt() {
+    Entity wielder = new Entity();
+    wielder.setPosition(0f, 0f);
+    // Swing hitbox centred beyond the enemy, so pushing from the hitbox would pull it back.
+    Entity hitbox =
+        attackerWith(
+            new TouchAttackComponent(PhysicsLayer.NPC, 2f).setKnockbackSource(wielder));
+    hitbox.setPosition(2f, 0f);
+    Entity enemy = steeredEnemy();
+    enemy.setPosition(1f, 0f);
+    PhysicsMovementComponent movement = enemy.getComponent(PhysicsMovementComponent.class);
+    movement.setTarget(new Vector2(0f, 0f)); // chasing the wielder
+
+    contact(hitbox, enemy, "collisionStart");
+
+    assertTrue(enemy.getComponent(PhysicsComponent.class).getBody().getLinearVelocity().x > 0f);
+    assertTrue(movement.isStaggered());
+  }
+
+  @Test
+  void enemyResumesChasingAfterKnockbackStagger() {
+    Entity hitbox = attackerWith(new TouchAttackComponent(PhysicsLayer.NPC, 2f));
+    hitbox.setPosition(0f, 0f);
+    Entity enemy = steeredEnemy();
+    enemy.setPosition(1f, 0f);
+    PhysicsMovementComponent movement = enemy.getComponent(PhysicsMovementComponent.class);
+    movement.setTarget(new Vector2(-10f, 0f));
+
+    contact(hitbox, enemy, "collisionStart");
+    when(time.getDeltaTime()).thenReturn(TouchAttackComponent.KNOCKBACK_STAGGER + 0.01f);
+    movement.update(); // stagger expires
+    movement.update(); // steering applies again
+
+    assertFalse(movement.isStaggered());
+    assertTrue(enemy.getComponent(PhysicsComponent.class).getBody().getLinearVelocity().x < 0f);
+  }
+
+  @Test
+  void noKnockbackMeansNoStagger() {
+    Entity hitbox = attackerWith(new TouchAttackComponent(PhysicsLayer.NPC, 0f));
+    Entity enemy = steeredEnemy();
+    enemy.setPosition(1f, 0f);
+
+    contact(hitbox, enemy, "collisionStart");
+
+    assertFalse(enemy.getComponent(PhysicsMovementComponent.class).isStaggered());
+  }
+
+  private Entity steeredEnemy() {
+    Entity enemy =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 0))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new PhysicsMovementComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC));
+    enemy.create();
+    return enemy;
   }
 
   Entity createAttacker(short targetLayer) {
