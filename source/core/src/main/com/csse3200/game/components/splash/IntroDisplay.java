@@ -38,7 +38,7 @@ public class IntroDisplay extends UIComponent {
   private Image book;
   private Image whiteOverlay;
   private Label continuePrompt;
-  private Animation<TextureRegion> idleAnimation;
+  private TextureRegion idleFrame;
   private Animation<TextureRegion> triggeredAnimation;
   private float animationTime;
   private boolean triggered;
@@ -50,10 +50,8 @@ public class IntroDisplay extends UIComponent {
 
     Texture texture = ServiceLocator.getResourceService().getAsset(INTRO_TEXTURE, Texture.class);
     TextureRegion[] bottom = getBottomRow(texture);
-    TextureRegion[] idleFrames = getFrames(bottom, IDLE_START_COLUMN);
+    idleFrame = bottom[IDLE_START_COLUMN];
     TextureRegion[] openingFrames = getFrames(bottom, OPENING_START_COLUMN);
-    idleAnimation = new Animation<>(FRAME_DURATION, idleFrames);
-    idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
     triggeredAnimation = new Animation<>(FRAME_DURATION, openingFrames);
     triggeredAnimation.setPlayMode(Animation.PlayMode.NORMAL);
 
@@ -61,8 +59,8 @@ public class IntroDisplay extends UIComponent {
     background.setFillParent(true);
     stage.addActor(background);
 
-    book = new Image(bottom[0]);
-    book.setSize(bottom[0].getRegionWidth() * 4f, bottom[0].getRegionHeight() * 4f);
+    book = new Image(idleFrame);
+    book.setSize(idleFrame.getRegionWidth() * 4f, idleFrame.getRegionHeight() * 4f);
     book.setOrigin(Align.center);
     centreBook();
     stage.addActor(book);
@@ -95,11 +93,11 @@ public class IntroDisplay extends UIComponent {
 
   @Override
   protected void draw(SpriteBatch batch) {
-    if (!isRepeatPass()) animationTime += Gdx.graphics.getDeltaTime();
+    if (triggered && !isRepeatPass()) animationTime += Gdx.graphics.getDeltaTime();
     TextureRegion frame =
         triggered
             ? triggeredAnimation.getKeyFrame(animationTime, false)
-            : idleAnimation.getKeyFrame(animationTime, true);
+            : idleFrame;
     book.setDrawable(new TextureRegionDrawable(frame));
     // Keep the sprite centred horizontally after a resize while preserving its float offset.
     book.setX((stage.getWidth() - book.getWidth()) / 2f);
