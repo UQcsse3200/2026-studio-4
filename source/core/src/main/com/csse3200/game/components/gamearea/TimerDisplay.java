@@ -66,6 +66,22 @@ public class TimerDisplay extends UIComponent {
     rootTable.toFront();
   }
 
+  /**
+   * Follows Show run timer after Apply. Pressing T still hides the panel while that setting is on.
+   */
+  @Override
+  public void update() {
+    if (rootTable == null) {
+      return;
+    }
+    if (!UserSettings.get().showTimer) {
+      visible = true;
+      rootTable.setVisible(false);
+      return;
+    }
+    rootTable.setVisible(visible);
+  }
+
   /** Refreshes the time text and accent animation every frame. */
   @Override
   public void draw(SpriteBatch batch) {
