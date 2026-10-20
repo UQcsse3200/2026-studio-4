@@ -14,6 +14,7 @@ import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
+import com.csse3200.game.components.npc.DustCloudAnimation;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.components.npc.FlyingEnemyPatrolComponent;
@@ -342,16 +343,16 @@ public class NPCFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset("images/horse.atlas", TextureAtlas.class));
-    animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
-    animator.addAnimation("attack", 0.09f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_up", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_down", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_right", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_left", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_NE", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_NW", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_SE", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_SW", 1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("attack", 0.3f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_up", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_down", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_right", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_left", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_NE", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_NW", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_SE", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_SW", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
@@ -361,6 +362,7 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(animator)
+        .addComponent(new DustCloudAnimation(sleipnir))
         .addComponent(new EnemyAnimationController())
         .addComponent(new EnemyStatDisplay(1.5f))
         .addComponent(new BossPhaseComponent());
