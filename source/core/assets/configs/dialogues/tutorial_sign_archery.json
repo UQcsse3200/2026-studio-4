@@ -1,0 +1,10 @@
+{
+  "speakers": [
+    { "id": "board", "name": "Notice Board", "texture": "images/tutorial/sign.png" }
+  ],
+  "lines": [
+    { "speaker": "board", "text": "ARCHERY: press 3 to draw the bow, face a target and press J to shoot. Arrows fly in a straight line, so line yourself up first." },
+    { "speaker": "board", "text": "Stand on the red line. The near targets are about 8 tiles away and the far ones about 14." },
+    { "speaker": "board", "text": "K fires three arrows in a spread. An arrow stops at the first thing it hits, so a near target can shield a far one." }
+  ]
+}
