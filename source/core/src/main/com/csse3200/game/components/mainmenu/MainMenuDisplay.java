@@ -94,10 +94,10 @@ public class MainMenuDisplay extends UIComponent {
     // from the top of the image, then converted because Scene2D's origin is bottom-left.
     float width = stage.getWidth();
     float height = stage.getHeight();
-    placeFromTop(startBtn, 0.125f, 0.376f, 0.115f, 0.066f, width, height);
-    placeFromTop(loadBtn, 0.125f, 0.481f, 0.115f, 0.066f, width, height);
-    placeFromTop(settingsBtn, 0.125f, 0.585f, 0.115f, 0.066f, width, height);
-    placeFromTop(exitBtn, 0.768f, 0.659f, 0.116f, 0.073f, width, height);
+    placeFromTop(startBtn, 0.119f, 0.369f, 0.127f, 0.078f, width, height);
+    placeFromTop(loadBtn, 0.119f, 0.473f, 0.127f, 0.078f, width, height);
+    placeFromTop(settingsBtn, 0.119f, 0.576f, 0.127f, 0.078f, width, height);
+    placeFromTop(exitBtn, 0.759f, 0.653f, 0.135f, 0.088f, width, height);
   }
 
   private void placeFromTop(
