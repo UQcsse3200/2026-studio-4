@@ -1,6 +1,7 @@
 package com.csse3200.game.components.tasks;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.ai.movement.ObstacleNavigation;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
@@ -114,7 +115,8 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
     if (now < cooldownEndTime) {
       return -1;
     }
-    if (getDistanceToTarget() <= TRIGGER_RANGE) {
+    if (getDistanceToTarget() <= TRIGGER_RANGE
+        && ObstacleNavigation.isClear(owner.getEntity(), target.getPosition(), target)) {
       return this.priority;
     }
     return -1;
@@ -140,6 +142,12 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
   }
 
   private void beginDash(long now) {
+    // The target may have stepped behind a wall during the telegraph.
+    if (!ObstacleNavigation.isClear(owner.getEntity(), target.getPosition(), target)) {
+      movementComponent.setMoving(false);
+      phase = Phase.DONE;
+      return;
+    }
     Vector2 direction = target.getPosition().cpy().sub(owner.getEntity().getPosition()).nor();
     dashTargetPoint = owner.getEntity().getPosition().cpy().add(direction.scl(DASH_DISTANCE));
 

@@ -1,6 +1,6 @@
 {
   "speakers": [
-    { "id": "merchant", "name": "Travelling Merchant", "atlas": "images/shopkeeper.atlas", "animation": "default" }
+    { "id": "merchant", "name": "Travelling Merchant", "atlas": "images/friendly-npcs/shopkeeper.atlas", "animation": "default" }
   ],
   "lines": [
     { "speaker": "merchant", "text": "Welcome, welcome! Only the finest wares for brave adventurers." },

@@ -44,6 +44,20 @@ class GameProgressTest {
   }
 
   @Test
+  void unfinishedRunDoesNotReplaceBest() {
+    GameProgress.recordRun(90_000L);
+    GameProgress.recordRun(10_000L, false);
+    SaveData abandoned = GameProgress.get();
+    assertEquals(10_000L, abandoned.lastRunMs);
+    assertEquals(90_000L, abandoned.bestRunMs);
+
+    GameProgress.recordRun(0L);
+    SaveData empty = GameProgress.get();
+    assertEquals(0L, empty.lastRunMs);
+    assertEquals(90_000L, empty.bestRunMs);
+  }
+
+  @Test
   void shouldUnlockAchievementsOnceAndClearThem() {
     GameProgress.unlock("first-blood");
     GameProgress.unlock("first-blood");

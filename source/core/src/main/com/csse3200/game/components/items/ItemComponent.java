@@ -1,6 +1,7 @@
 package com.csse3200.game.components.items;
 
 import com.csse3200.game.components.Component;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.ItemDropSpec;
@@ -10,6 +11,7 @@ import java.util.Objects;
 /** Stores the item data represented by an item entity. */
 public class ItemComponent extends Component {
   private final Item item;
+  private boolean collected;
 
   /** Creates an item component for a single item. */
   public ItemComponent(Item item) {
@@ -33,6 +35,31 @@ public class ItemComponent extends Component {
   /** Returns the item represented by the entity. */
   public Item getItem() {
     return item;
+  }
+
+  /**
+   * Applies the item's normal pickup effect at most once across all collection methods.
+   *
+   * @param collector entity receiving the item
+   * @return true if this call collected the item; false if it was collected or disposed earlier
+   */
+  public boolean tryPickUp(Entity collector) {
+    if (collected) {
+      return false;
+    }
+    collected = true;
+    item.pickUp(collector);
+    return true;
+  }
+
+  /** Returns whether this world item has already been collected or disposed. */
+  public boolean isCollected() {
+    return collected;
+  }
+
+  @Override
+  public void dispose() {
+    collected = true;
   }
 
   /** Returns the stable item ID, or {@code null} for unrelated item implementations. */

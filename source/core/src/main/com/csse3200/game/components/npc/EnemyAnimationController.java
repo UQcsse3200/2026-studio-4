@@ -22,6 +22,7 @@ public class EnemyAnimationController extends Component {
   private AnimationRenderComponent animator;
   private StatusEffectsControllerComponent statusEffects;
   private FlashEffect fuseFlash;
+  private static final String DEFAULT = "default";
   private boolean dying = false;
   private boolean followPlayer = false; // used by enemies to follow player
   private float deathRotationPerFrame;
@@ -45,14 +46,15 @@ public class EnemyAnimationController extends Component {
 
     entity.getEvents().addListener("wanderStart", this::animateWander);
     entity.getEvents().addListener("chaseStart", this::animateChase);
-    entity.getEvents().addListener("dieAnimation", this::animateDie);
     entity.getEvents().addListener("enemyDeathAnimation", this::animateEnemyDeath);
     entity.getEvents().addListener("patrolStart", this::animatePatrol);
+    entity.getEvents().addListener("dieAnimation", this::animateDie);
     entity.getEvents().addListener("rangedAttack", this::animateAttack);
     entity.getEvents().addListener("touchAttack", this::animateAttack);
     entity.getEvents().addListener("fuseStarted", this::animateFuse);
-    entity.getEvents().addListener("default", this::animatePause);
+    entity.getEvents().addListener(DEFAULT, this::animatePause);
     entity.getEvents().addListener("moving", this::animateMove);
+    entity.getEvents().addListener("stampede", this::dustCloud);
   }
 
   private void animateMove(Vector2 dir) {
@@ -87,6 +89,10 @@ public class EnemyAnimationController extends Component {
   private void animateDie() {
     dying = true;
     animator.startAnimation("dieAnimation");
+  }
+
+  private void dustCloud() {
+    animator.startAnimation(DEFAULT);
   }
 
   private void animateEnemyDeath() {
@@ -142,7 +148,7 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animatePause() {
-    animator.startAnimation("default");
+    animator.startAnimation(DEFAULT);
   }
 
   private void animateFuse(float fuseTime) {
