@@ -83,7 +83,12 @@ public class RoomSelector {
   public void teleport(String roomId, String entryPointId) {
     GridPoint2 spawn = roomLoader.getEntrySpawn(roomId, entryPointId);
     logger.debug("teleporting to room: {}, entry point: {}", roomId, entryPointId);
-    ServiceLocator.getEntityService().schedule(() -> setRoom(roomLoader.getRoom(roomId), spawn));
+    scheduleRoomSwitch(roomLoader.getRoom(roomId), spawn);
+  }
+
+  /** Queues a switch to an unregistered room for the next safe point in the frame. */
+  private void scheduleRoomSwitch(Entity newRoom, GridPoint2 spawn) {
+    ServiceLocator.getEntityService().schedule(() -> setRoom(newRoom, spawn));
   }
 
   /**
@@ -161,7 +166,7 @@ public class RoomSelector {
     }
     GridPoint2 spawn = roomLoader.getAnyVaidSpawn(roomId);
 
-    ServiceLocator.getEntityService().schedule(() -> setRoom(queriedRoom, spawn));
+    scheduleRoomSwitch(queriedRoom, spawn);
     return true;
   }
 
