@@ -1,10 +1,19 @@
 package com.csse3200.game.components.items;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.items.Item;
 import com.csse3200.game.items.ItemDropSpec;
 import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.items.charms.Charm;
@@ -55,5 +64,37 @@ class ItemComponentTest {
     assertThrows(NullPointerException.class, () -> new ItemComponent((String) null));
     assertThrows(NullPointerException.class, () -> new ItemComponent((ItemDropSpec) null));
     assertEquals(ItemIds.STRENGTH_CHARM, new ItemComponent(ItemIds.STRENGTH_CHARM).getItemId());
+  }
+
+  @Test
+  void shouldApplyPickupOnlyOnceAcrossCollectors() {
+    Item item = mock(Item.class);
+    when(item.getQuantity()).thenReturn(1);
+    ItemComponent component = new ItemComponent(item);
+    Entity firstCollector = new Entity();
+    Entity secondCollector = new Entity();
+
+    assertFalse(component.isCollected());
+    assertTrue(component.tryPickUp(firstCollector));
+    assertTrue(component.isCollected());
+    assertFalse(component.tryPickUp(firstCollector));
+    assertFalse(component.tryPickUp(secondCollector));
+
+    verify(item, times(1)).pickUp(firstCollector);
+    verify(item, never()).pickUp(secondCollector);
+  }
+
+  @Test
+  void shouldRejectPickupAfterDisposal() {
+    Item item = mock(Item.class);
+    when(item.getQuantity()).thenReturn(1);
+    ItemComponent component = new ItemComponent(item);
+    Entity collector = new Entity();
+
+    component.dispose();
+
+    assertTrue(component.isCollected());
+    assertFalse(component.tryPickUp(collector));
+    verify(item, never()).pickUp(collector);
   }
 }

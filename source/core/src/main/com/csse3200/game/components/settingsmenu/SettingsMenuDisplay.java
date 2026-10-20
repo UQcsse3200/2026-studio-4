@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Settings menu display and logic. If you bork the settings, they can be changed manually in
- * DECO2800Game/settings.json under your home directory (This is C:/users/[username] on Windows).
+ * CSSE3200Game/settings.json under your home directory (This is C:/users/[username] on Windows).
  */
 public class SettingsMenuDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(SettingsMenuDisplay.class);

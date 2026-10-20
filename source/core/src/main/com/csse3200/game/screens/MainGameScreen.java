@@ -34,6 +34,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
+import com.csse3200.game.rooms.MusicManager;
 import com.csse3200.game.rooms.RoomClearService;
 import com.csse3200.game.rooms.RoomCommand;
 import com.csse3200.game.rooms.RoomSelector;
@@ -73,6 +74,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final GameSaveData loadedSave;
   private boolean runSaved;
   private final RoomAssets roomAssets = new RoomAssets();
+  private final MusicManager musicManager = new MusicManager();
   private final RunTimer runTimer;
   private boolean winScreenRequested;
   private boolean winTransitionStarted; // add this
@@ -110,6 +112,7 @@ public class MainGameScreen extends ScreenAdapter {
     physicsEngine = physicsService.getPhysics();
     ServiceLocator.registerInputService(new InputService());
     ServiceLocator.registerResourceService(new ResourceService());
+    ServiceLocator.registerMusicManager(musicManager);
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
     ServiceLocator.registerRoomClearService(new RoomClearService());
@@ -155,7 +158,7 @@ public class MainGameScreen extends ScreenAdapter {
     if (!frozen) {
       // roomManager.update();
     }
-    roomAssets.applyMusicVolume();
+    musicManager.applyVolume();
     renderer.render();
     if (!frozen) {
       runTimer.update();
@@ -176,6 +179,9 @@ public class MainGameScreen extends ScreenAdapter {
   @Override
   public void pause() {
     logger.info("Game paused");
+    if (player != null) {
+      player.getEvents().trigger("resetMovementInput");
+    }
   }
 
   @Override
@@ -241,10 +247,12 @@ public class MainGameScreen extends ScreenAdapter {
   private void loadAssets() {
     logger.debug("Loading assets");
     roomAssets.loadAll();
+    musicManager.load();
   }
 
   private void unloadAssets() {
     logger.debug("Unloading assets");
+    musicManager.dispose();
     roomAssets.dispose();
   }
 
@@ -312,6 +320,7 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(abilityMenu)
         .addComponent(new KeyboardAbilityMenuInputComponent())
         .addComponent(new AbilityMenuDisplay(abilityMenu))
+        .addComponent(new MagneticPickupHintDisplay(player))
         .addComponent(new AchievementDisplay());
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     // The HUD keeps working while a dialogue or cutscene has the world frozen

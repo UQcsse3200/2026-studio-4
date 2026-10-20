@@ -23,7 +23,7 @@ public class TimerDisplay extends UIComponent {
   private static final float EDGE_MARGIN = 20f;
 
   private RunTimer runTimer;
-  private boolean visible = true;
+  private boolean hiddenByHotkey;
 
   private Table rootTable;
   private Label runTime;
@@ -61,26 +61,18 @@ public class TimerDisplay extends UIComponent {
     rootTable.setTransform(true);
     rootTable.setScale(0.9f);
 
-    visible = UserSettings.get().showTimer;
-    rootTable.setVisible(visible);
+    applyVisibility();
     stage.addActor(rootTable);
     rootTable.toFront();
   }
 
-  /**
-   * Follows Show run timer after Apply. Pressing T still hides the panel while that setting is on.
-   */
+  /** Follows Show run timer after Apply, including when the menu closes over the same run. */
   @Override
   public void update() {
     if (rootTable == null || UiScale.settingsOpen(stage)) {
       return;
     }
-    if (!UserSettings.get().showTimer) {
-      visible = true;
-      rootTable.setVisible(false);
-      return;
-    }
-    rootTable.setVisible(visible);
+    applyVisibility();
   }
 
   /** Refreshes the time text and accent animation every frame. */
@@ -117,8 +109,23 @@ public class TimerDisplay extends UIComponent {
 
   /** Fades the panel in or out without stopping the timers. */
   public void toggle() {
-    visible = !visible;
-    rootTable.setVisible(visible);
+    if (rootTable == null || !UserSettings.get().showTimer) {
+      return;
+    }
+    hiddenByHotkey = !hiddenByHotkey;
+    rootTable.setVisible(!hiddenByHotkey);
+  }
+
+  /** Shows the timer when Settings allows it and the player has not hidden it with T. */
+  private void applyVisibility() {
+    if (rootTable == null) {
+      return;
+    }
+    boolean allowed = UserSettings.get().showTimer;
+    if (!allowed) {
+      hiddenByHotkey = false;
+    }
+    rootTable.setVisible(allowed && !hiddenByHotkey);
   }
 
   /** Handles the T key used to toggle the timer display. */

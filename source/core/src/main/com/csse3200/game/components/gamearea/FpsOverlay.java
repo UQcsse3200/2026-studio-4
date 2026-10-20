@@ -26,15 +26,15 @@ public class FpsOverlay extends UIComponent {
   }
 
   /**
-   * Shows or hides the counter from the saved setting, and creates it the first time Show FPS is
-   * turned on.
+   * Shows or hides the counter from the saved setting, including after Apply in the same run. It
+   * stays hidden while the settings page is open.
    */
   private void applyVisibility() {
     if (stage == null || UiScale.settingsOpen(stage)) {
       return;
     }
-    boolean show = UserSettings.get().showFps;
-    if (show && table == null) {
+    boolean showReadout = UserSettings.get().showFps;
+    if (showReadout && table == null) {
       label = new Label("FPS 0", skin, "caption");
       table = new Table();
       table.setFillParent(true);
@@ -43,9 +43,9 @@ public class FpsOverlay extends UIComponent {
       stage.addActor(table);
     }
     if (table != null) {
-      table.setVisible(show);
+      table.setVisible(showReadout);
     }
-    if (!show || label == null || Gdx.graphics == null) {
+    if (!showReadout || label == null || Gdx.graphics == null) {
       return;
     }
     label.setText("FPS " + Gdx.graphics.getFramesPerSecond());

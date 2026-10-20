@@ -7,7 +7,7 @@ import java.util.List;
 
 /** Persist last/best run time and unlocked achievements next to user settings. */
 public class GameProgress {
-  private static final String ROOT_DIR = "DECO2800Game";
+  private static final String ROOT_DIR = "CSSE3200Game";
   private static final String SAVE_FILE = "game-save.json";
 
   /**
@@ -55,8 +55,8 @@ public class GameProgress {
   }
 
   /**
-   * Records the latest attempt. An unfinished exit, such as dying or leaving, updates the last run
-   * only. A time of zero never replaces a real best.
+   * Records the latest attempt. An unfinished exit, such as dying, saving, or leaving, updates the
+   * last run only. A time of zero never replaces a real best.
    *
    * @param elapsedMs run length in milliseconds
    * @param finished when true, a shorter positive time can become the best

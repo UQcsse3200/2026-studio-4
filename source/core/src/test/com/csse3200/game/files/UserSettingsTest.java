@@ -50,6 +50,28 @@ class UserSettingsTest {
   }
 
   @Test
+  void keepsThe540PresetHeight() {
+    Gdx.graphics = mock(Graphics.class);
+    Settings settings = new Settings();
+    settings.fullscreen = false;
+    settings.windowWidth = 960;
+    settings.windowHeight = 540;
+
+    UserSettings.applySettings(settings);
+
+    verify(Gdx.graphics).setWindowedMode(960, 540);
+  }
+
+  @Test
+  void readsTheSettingsFileOnce() {
+    UserSettings.get();
+    int reads = UserSettings.diskReads;
+    UserSettings.get();
+    UserSettings.get();
+    assertEquals(reads, UserSettings.diskReads);
+  }
+
+  @Test
   void keepsDefaultWindowWhenSizeIsMissing() {
     Gdx.graphics = mock(Graphics.class);
     Settings settings = new Settings();
