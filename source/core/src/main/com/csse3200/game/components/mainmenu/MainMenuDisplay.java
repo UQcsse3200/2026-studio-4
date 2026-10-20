@@ -36,7 +36,7 @@ public class MainMenuDisplay extends UIComponent {
     Image logo =
         new Image(
             ServiceLocator.getResourceService()
-                .getAsset("images/box_boy_title.png", Texture.class));
+                .getAsset("images/Bookboy_icon.png", Texture.class));
     logo.setScaling(Scaling.fit);
 
     // Keep the skin's button shape, but recolour its states to match the parchment artwork.
