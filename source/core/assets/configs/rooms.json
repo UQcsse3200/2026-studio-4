@@ -2607,8 +2607,8 @@
       "enemySpawns": [
         {
           "type": "SLEIPNIR",
-          "x": 40,
-          "y": 24
+          "x": 15,
+          "y": 10
         }
       ],
       "npcSpawns": [],
