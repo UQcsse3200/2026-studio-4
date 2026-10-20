@@ -18,7 +18,7 @@ import com.csse3200.game.services.ServiceLocator;
 public class EnemyAnimationController extends Component {
   private static final String ATTACK_ANIMATION = "attack";
   private static final Color FUSE_FLASH_TINT = new Color(Color.WHITE);
-  private static final Color FUSE_FLASH_GLOW = new Color(1f, 1f, 1f, 0.5f);
+  private static final Color FUSE_FLASH_GLOW = new Color(1f, 0f, 0f, 1f);
   private AnimationRenderComponent animator;
   private StatusEffectsControllerComponent statusEffects;
   private FlashEffect fuseFlash;
