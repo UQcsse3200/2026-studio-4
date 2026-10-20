@@ -10,6 +10,8 @@ import com.csse3200.game.components.player.InteractionPrompt;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.rooms.RoomClearService;
+import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -35,6 +37,41 @@ class ExitComponentPromptTest {
     ExitComponent exits = exitsAt(1, 2, true);
 
     assertEquals(InteractionPrompt.CLEAR_REQUIRED, exits.promptAt(new Vector2(1f, 2f), false));
+  }
+
+  @Test
+  void asksForTheOtherDungeonsBeforeTheBossShelf() {
+    ServiceLocator.registerRoomClearService(new RoomClearService());
+    ExitComponent exits = bookshelf("dungeonFiveShelf");
+
+    assertEquals(
+        InteractionPrompt.CLEAR_ALL_DUNGEONS_REQUIRED, exits.promptAt(new Vector2(1f, 2f), true));
+  }
+
+  @Test
+  void offersTheBossShelfOnceFourDungeonsAreCleared() {
+    RoomClearService clears = new RoomClearService();
+    clears.clearAllDungeons();
+    ServiceLocator.registerRoomClearService(clears);
+    ExitComponent exits = bookshelf("dungeonFiveShelf");
+
+    assertEquals(InteractionPrompt.ENTER_DUNGEON, exits.promptAt(new Vector2(1f, 2f), true));
+  }
+
+  private static ExitComponent bookshelf(String id) {
+    ExitConfig shelf = new ExitConfig();
+    shelf.x = 1;
+    shelf.y = 2;
+    shelf.id = id;
+    shelf.kind = "BOOKSHELF";
+    shelf.available = true;
+
+    TerrainComponent terrain = mock(TerrainComponent.class);
+    when(terrain.tileToWorldPosition(1, 2)).thenReturn(new Vector2(1f, 2f));
+
+    ExitComponent exits = new ExitComponent(new ExitConfig[] {shelf});
+    new Entity().addComponent(terrain).addComponent(exits);
+    return exits;
   }
 
   private static ExitComponent exitsAt(int x, int y, boolean requiresClear) {

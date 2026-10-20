@@ -6,30 +6,42 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.ui.UIComponent;
+import com.csse3200.game.ui.UiScale;
 
 /** Small FPS readout. Hidden unless Settings → Show FPS is on. */
 public class FpsOverlay extends UIComponent {
   private Table table;
   private Label label;
-  private boolean showReadout;
 
   @Override
   public void create() {
     super.create();
-    showReadout = UserSettings.get().showFps;
-    if (!showReadout || stage == null) {
-      return;
-    }
-    label = new Label("FPS 0", skin, "caption");
-    table = new Table();
-    table.setFillParent(true);
-    table.bottom().right().padBottom(16f).padRight(16f);
-    table.add(label);
-    stage.addActor(table);
+    applyVisibility();
   }
 
+  /** Re-reads Show FPS so Apply takes effect without leaving the run. */
   @Override
   public void update() {
+    applyVisibility();
+  }
+
+  /** Shows or hides the counter from the saved setting, including after Apply in the same run. */
+  private void applyVisibility() {
+    if (UiScale.settingsOpen(stage)) {
+      return;
+    }
+    boolean showReadout = UserSettings.get().showFps;
+    if (showReadout && table == null && stage != null) {
+      label = new Label("FPS 0", skin, "caption");
+      table = new Table();
+      table.setFillParent(true);
+      table.bottom().right().padBottom(16f).padRight(16f);
+      table.add(label);
+      stage.addActor(table);
+    }
+    if (table != null) {
+      table.setVisible(showReadout);
+    }
     if (!showReadout || label == null || Gdx.graphics == null) {
       return;
     }

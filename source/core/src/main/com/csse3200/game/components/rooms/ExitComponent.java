@@ -16,6 +16,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,7 @@ public class ExitComponent extends EntityManagerComponent {
    * Shows the exit prompt while the player is near a door, and hides it after they walk away.
    *
    * <p>Pressing E is handled separately. The prompt has to be refreshed every frame because it
-   * depends on where the player is standing.
+   * depends on where the player is standing. The boss shelf uses the same sentence as the E key.
    */
   @Override
   public void update() {
@@ -141,6 +142,13 @@ public class ExitComponent extends EntityManagerComponent {
     if (!entity.getComponent(EnemyManagerComponent.class).isCleared()) {
       // room is not yet cleared
       entity.getEvents().trigger(GameAreaDisplay.DISPLAY, "Defeat all enemies to progress");
+      return;
+    } else if (Objects.equals(nearest.id, "dungeonFiveShelf")
+        && ServiceLocator.getRoomClearService().getDungeonClearedCount() < 4) {
+      // Access boss room before all other dungeons are cleared
+      entity
+          .getEvents()
+          .trigger(GameAreaDisplay.DISPLAY, InteractionPrompt.CLEAR_ALL_DUNGEONS_REQUIRED);
       return;
     }
 

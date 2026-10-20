@@ -7,7 +7,7 @@ import java.util.List;
 
 /** Persist last/best run time and unlocked achievements next to user settings. */
 public class GameProgress {
-  private static final String ROOT_DIR = "DECO2800Game";
+  private static final String ROOT_DIR = "CSSE3200Game";
   private static final String SAVE_FILE = "game-save.json";
 
   /**
@@ -49,12 +49,23 @@ public class GameProgress {
     set(data);
   }
 
-  /** Records a finished run time and keeps the best. */
+  /** Records a finished run. A shorter time replaces the best. */
   public static void recordRun(long elapsedMs) {
+    recordRun(elapsedMs, true);
+  }
+
+  /**
+   * Records the latest attempt. An unfinished exit, such as saving and leaving, updates the last
+   * run only. A time of zero never replaces a real best.
+   *
+   * @param elapsedMs run length in milliseconds
+   * @param finished when true, a shorter positive time can become the best
+   */
+  public static void recordRun(long elapsedMs, boolean finished) {
     SaveData data = get();
     long safe = Math.max(0L, elapsedMs);
     data.lastRunMs = safe;
-    if (data.bestRunMs <= 0L || safe < data.bestRunMs) {
+    if (finished && safe > 0L && (data.bestRunMs <= 0L || safe < data.bestRunMs)) {
       data.bestRunMs = safe;
     }
     set(data);
