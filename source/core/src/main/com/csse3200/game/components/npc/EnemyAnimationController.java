@@ -14,7 +14,7 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public class EnemyAnimationController extends Component {
   private AnimationRenderComponent animator;
-  private String DEFAULT = "default";
+  private final String DEFAULT = "default";
   private boolean dying = false;
   private boolean followPlayer = false; // used by enemies to follow player
 
@@ -24,7 +24,6 @@ public class EnemyAnimationController extends Component {
 
     entity.getEvents().addListener("wanderStart", this::animateWander);
     entity.getEvents().addListener("chaseStart", this::animateChase);
-    entity.getEvents().addListener("dieAnimation", this::animateDie);
     entity.getEvents().addListener("enemyDeathAnimation", this::animateEnemyDeath);
     entity.getEvents().addListener("patrolStart", this::animatePatrol);
     entity.getEvents().addListener("rangedAttack", this::animateAttack);
