@@ -164,5 +164,4 @@ class FinalBossPetrificationStatusTest {
     when(time.getDeltaTime()).thenReturn(seconds);
     bossPetrification.update();
   }
-
 }
