@@ -133,10 +133,15 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates an unregistered dragon with the supplied settings.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createDragon(com.csse3200.game.entities.Entity,java.util.function.Consumer)" class="member-name-link">createDragon</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&nbsp;projectileSpawner)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createDragon(com.csse3200.game.entities.Entity)" class="member-name-link">createDragon</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a dragon with its thunder orb skill.</div>
+<div class="block">Creates a combat-ready dragon.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createDragon(com.csse3200.game.entities.Entity,java.util.function.Consumer)" class="member-name-link">createDragon</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&nbsp;projectileSpawner)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a dragon and connects its projectile events to the supplied spawner.</div>
 </div>
 </div>
 </div>
@@ -204,18 +209,26 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="createDragon(com.csse3200.game.entities.Entity)">
+<h3>createDragon</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createDragon</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates a combat-ready dragon. The owning room must listen for NPCFactory.PROJECTILE_SPAWNED
+ before registering the dragon.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>target</code> - player targeted by the dragon</dd>
+<dt>Returns:</dt>
+<dd>an unregistered dragon</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="createDragon(com.csse3200.game.entities.Entity,java.util.function.Consumer)">
 <h3>createDragon</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createDragon</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&nbsp;projectileSpawner)</span></div>
-<div class="block">Creates a dragon with its thunder orb skill.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>target</code> - player targeted by the dragon</dd>
-<dd><code>projectileSpawner</code> - callback that registers projectiles with the room</dd>
-<dt>Returns:</dt>
-<dd>an unregistered dragon with its thunder orb component attached</dd>
-</dl>
+<div class="block">Creates a dragon and connects its projectile events to the supplied spawner. Retained for
+ existing callers.</div>
 </section>
 </li>
 </ul>

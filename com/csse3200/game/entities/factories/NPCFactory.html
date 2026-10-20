@@ -39,7 +39,7 @@ loadScripts(document, 'script');</script>
 <p>Summary:</p>
 <ul>
 <li>Nested</li>
-<li>Field</li>
+<li><a href="#field-summary">Field</a></li>
 <li>Constr</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
@@ -47,7 +47,7 @@ loadScripts(document, 'script');</script>
 <li>
 <p>Detail:</p>
 <ul>
-<li>Field</li>
+<li><a href="#field-detail">Field</a></li>
 <li>Constr</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -59,13 +59,13 @@ loadScripts(document, 'script');</script>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
 <ul class="sub-nav-list">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-detail">Field</a>&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -103,6 +103,21 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#PROJECTILE_SPAWNED" class="member-name-link">PROJECTILE_SPAWNED</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
 <!-- ========== METHOD SUMMARY =========== -->
 <li>
 <section class="method-summary" id="method-summary">
@@ -120,11 +135,21 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates a generic NPC to be used as a base entity by more specific NPC creation methods.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createBombEnemy(com.csse3200.game.entities.Entity,java.lang.String,float)" class="member-name-link">createBombEnemy</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createBeetle(com.csse3200.game.entities.Entity)" class="member-name-link">createBeetle</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a beetle with its standard appearance, fuse and scale.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createBombEnemy(com.csse3200.game.entities.Entity,java.lang.String,float)" class="member-name-link">createBombEnemy</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skin,
  float&nbsp;fuseTime)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates a bomb Enemy entity.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createBug(com.csse3200.game.entities.Entity)" class="member-name-link">createBug</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a bug with its standard appearance and splitting behaviour.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createChaseEnemy(com.csse3200.game.entities.Entity,boolean,java.lang.String)" class="member-name-link">createChaseEnemy</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
@@ -134,37 +159,121 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates a chase enemy entity.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createFloatingDemon(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,java.lang.String)" class="member-name-link">createFloatingDemon</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
- com.badlogic.gdx.math.Vector2&nbsp;leftPoint,
- com.badlogic.gdx.math.Vector2&nbsp;topPoint,
- com.badlogic.gdx.math.Vector2&nbsp;rightPoint,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skin)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createCrab(com.csse3200.game.entities.Entity)" class="member-name-link">createCrab</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a floating demon which patrols in a straight horizontal line.</div>
+<div class="block">Creates a crab with its standard scale and hitbox.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createFloatingDemon(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,java.util.function.Consumer,java.lang.String)" class="member-name-link">createFloatingDemon</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
- com.badlogic.gdx.math.Vector2&nbsp;leftPoint,
- com.badlogic.gdx.math.Vector2&nbsp;topPoint,
- com.badlogic.gdx.math.Vector2&nbsp;rightPoint,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&nbsp;projectileSpawner,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skin)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createCrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)" class="member-name-link">createCrow</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ com.badlogic.gdx.math.Vector2&nbsp;spawn)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a floating demon and delegates ownership of its projectiles to the given spawner.</div>
+<div class="block">Creates a crow with its standard appearance.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createCyclops(com.csse3200.game.entities.Entity)" class="member-name-link">createCyclops</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a cyclops with its standard scale and collision bounds.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createDarkElves(com.csse3200.game.entities.Entity)" class="member-name-link">createDarkElves</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a dark elf with its standard appearance and splitting behaviour.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createGiantEnemy(com.csse3200.game.entities.Entity,java.lang.String)" class="member-name-link">createGiantEnemy</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skin)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSleipnir(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2%5B%5D)" class="member-name-link">createSleipnir</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
- com.badlogic.gdx.math.Vector2[]&nbsp;mapBounds)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createGolem(com.csse3200.game.entities.Entity)" class="member-name-link">createGolem</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a golem with its standard scale and collision bounds.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createHarpy(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)" class="member-name-link">createHarpy</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ com.badlogic.gdx.math.Vector2&nbsp;spawn)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a harpy with its standard appearance.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createJingwei(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)" class="member-name-link">createJingwei</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ com.badlogic.gdx.math.Vector2&nbsp;spawn)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates Jingwei with its standard appearance.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createJotunn(com.csse3200.game.entities.Entity)" class="member-name-link">createJotunn</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates Jotunn with its standard scale and collision bounds.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createKnight(com.csse3200.game.entities.Entity)" class="member-name-link">createKnight</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a knight with its standard appearance, fuse and scale.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createLongwei(com.csse3200.game.entities.Entity)" class="member-name-link">createLongwei</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a Longwei with its standard appearance and no splitting.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createMedusa(com.csse3200.game.entities.Entity)" class="member-name-link">createMedusa</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates Medusa with splitting behaviour and its standard hitbox.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createMinotaur(com.csse3200.game.entities.Entity)" class="member-name-link">createMinotaur</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a minotaur with its standard appearance and scale.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createMummy(com.csse3200.game.entities.Entity)" class="member-name-link">createMummy</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a mummy with its standard hitbox and collider.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSandeye(com.csse3200.game.entities.Entity)" class="member-name-link">createSandeye</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a Sandeye with its standard appearance and no splitting.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSleipnir(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)" class="member-name-link">createSleipnir</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ com.badlogic.gdx.math.Vector2&nbsp;spawn)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">function to create the norse mini boss</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSnakeMiniBoss(com.csse3200.game.entities.Entity)" class="member-name-link">createSnakeMiniBoss</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates the snake mini-boss with an invulnerable underground approach, a fixed ground warning,
  one emergence strike and a brief vulnerable recovery.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSnakeMiniBoss(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Rectangle,com.badlogic.gdx.graphics.Camera)" class="member-name-link">createSnakeMiniBoss</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ com.badlogic.gdx.math.Rectangle&nbsp;arenaBounds,
+ com.badlogic.gdx.graphics.Camera&nbsp;camera)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a snake configured for the current room.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createWasp(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)" class="member-name-link">createWasp</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ com.badlogic.gdx.math.Vector2&nbsp;spawn)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a wasp with its standard appearance.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createWolf(com.csse3200.game.entities.Entity)" class="member-name-link">createWolf</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a wolf with its standard appearance and no splitting.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createWukong(com.csse3200.game.entities.Entity)" class="member-name-link">createWukong</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates Wukong with its standard scale and collision bounds.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createZombie(com.csse3200.game.entities.Entity)" class="member-name-link">createZombie</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a zombie with its standard appearance and explosion fuse.</div>
 </div>
 </div>
 </div>
@@ -178,6 +287,28 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="PROJECTILE_SPAWNED">
+<h3>PROJECTILE_SPAWNED</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">PROJECTILE_SPAWNED</span></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.NPCFactory.PROJECTILE_SPAWNED">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ============ METHOD DETAIL ========== -->
 <li>
 <section class="method-details" id="method-detail">
@@ -239,51 +370,197 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="createFloatingDemon(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,java.lang.String)">
-<h3>createFloatingDemon</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createFloatingDemon</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
- com.badlogic.gdx.math.Vector2&nbsp;leftPoint,
- com.badlogic.gdx.math.Vector2&nbsp;topPoint,
- com.badlogic.gdx.math.Vector2&nbsp;rightPoint,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skin)</span></div>
-<div class="block">Creates a floating demon which patrols in a straight horizontal line.</div>
+<section class="detail" id="createSnakeMiniBoss(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Rectangle,com.badlogic.gdx.graphics.Camera)">
+<h3>createSnakeMiniBoss</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSnakeMiniBoss</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ com.badlogic.gdx.math.Rectangle&nbsp;arenaBounds,
+ com.badlogic.gdx.graphics.Camera&nbsp;camera)</span></div>
+<div class="block">Creates a snake configured for the current room.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>target</code> - target entity to attack</dd>
-<dd><code>leftPoint</code> - left point of its patrol path</dd>
-<dd><code>topPoint</code> - top point of its patrol path</dd>
-<dd><code>rightPoint</code> - right point of its patrol path</dd>
-<dd><code>skin</code> - the atlas file path for the entity</dd>
+<dd><code>target</code> - player targeted by the snake</dd>
+<dd><code>arenaBounds</code> - room bounds in world coordinates</dd>
+<dd><code>camera</code> - gameplay camera, or null to use the existing fallback</dd>
 <dt>Returns:</dt>
-<dd>floating demon entity</dd>
+<dd>an unregistered snake</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="createFloatingDemon(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,java.util.function.Consumer,java.lang.String)">
-<h3>createFloatingDemon</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createFloatingDemon</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
- com.badlogic.gdx.math.Vector2&nbsp;leftPoint,
- com.badlogic.gdx.math.Vector2&nbsp;topPoint,
- com.badlogic.gdx.math.Vector2&nbsp;rightPoint,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&nbsp;projectileSpawner,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skin)</span></div>
-<div class="block">Creates a floating demon and delegates ownership of its projectiles to the given spawner.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>leftPoint</code> - left point of its patrol path</dd>
-<dd><code>topPoint</code> - top point of its patrol path</dd>
-<dd><code>rightPoint</code> - right point of its patrol path</dd>
-<dt>Returns:</dt>
-<dd>floating demon entity</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="createSleipnir(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2[])">
+<section class="detail" id="createSleipnir(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)">
 <h3>createSleipnir</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSleipnir</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
- com.badlogic.gdx.math.Vector2[]&nbsp;mapBounds)</span></div>
+ com.badlogic.gdx.math.Vector2&nbsp;spawn)</span></div>
+<div class="block">function to create the norse mini boss</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>target</code> - - the player, used in tasks for chasing/ tracking</dd>
+<dd><code>spawn</code> - - the spawn position</dd>
+<dt>Returns:</dt>
+<dd>Sleipnir</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createZombie(com.csse3200.game.entities.Entity)">
+<h3>createZombie</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createZombie</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates a zombie with its standard appearance and explosion fuse.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>target</code> - entity to chase</dd>
+<dt>Returns:</dt>
+<dd>zombie entity</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createBug(com.csse3200.game.entities.Entity)">
+<h3>createBug</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createBug</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates a bug with its standard appearance and splitting behaviour.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createLongwei(com.csse3200.game.entities.Entity)">
+<h3>createLongwei</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createLongwei</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates a Longwei with its standard appearance and no splitting.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createJingwei(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)">
+<h3>createJingwei</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createJingwei</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ com.badlogic.gdx.math.Vector2&nbsp;spawn)</span></div>
+<div class="block">Creates Jingwei with its standard appearance.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createWukong(com.csse3200.game.entities.Entity)">
+<h3>createWukong</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createWukong</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates Wukong with its standard scale and collision bounds.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createWolf(com.csse3200.game.entities.Entity)">
+<h3>createWolf</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createWolf</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates a wolf with its standard appearance and no splitting.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>target</code> - entity to chase</dd>
+<dt>Returns:</dt>
+<dd>wolf entity</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createDarkElves(com.csse3200.game.entities.Entity)">
+<h3>createDarkElves</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createDarkElves</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates a dark elf with its standard appearance and splitting behaviour.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>target</code> - entity to chase</dd>
+<dt>Returns:</dt>
+<dd>dark elf entity</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createKnight(com.csse3200.game.entities.Entity)">
+<h3>createKnight</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createKnight</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates a knight with its standard appearance, fuse and scale.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createJotunn(com.csse3200.game.entities.Entity)">
+<h3>createJotunn</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createJotunn</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates Jotunn with its standard scale and collision bounds.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createCrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)">
+<h3>createCrow</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createCrow</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ com.badlogic.gdx.math.Vector2&nbsp;spawn)</span></div>
+<div class="block">Creates a crow with its standard appearance.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createSandeye(com.csse3200.game.entities.Entity)">
+<h3>createSandeye</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSandeye</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates a Sandeye with its standard appearance and no splitting.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createBeetle(com.csse3200.game.entities.Entity)">
+<h3>createBeetle</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createBeetle</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates a beetle with its standard appearance, fuse and scale.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createCrab(com.csse3200.game.entities.Entity)">
+<h3>createCrab</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createCrab</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates a crab with its standard scale and hitbox.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createMummy(com.csse3200.game.entities.Entity)">
+<h3>createMummy</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createMummy</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates a mummy with its standard hitbox and collider.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createWasp(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)">
+<h3>createWasp</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createWasp</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ com.badlogic.gdx.math.Vector2&nbsp;spawn)</span></div>
+<div class="block">Creates a wasp with its standard appearance.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createMinotaur(com.csse3200.game.entities.Entity)">
+<h3>createMinotaur</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createMinotaur</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates a minotaur with its standard appearance and scale.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createMedusa(com.csse3200.game.entities.Entity)">
+<h3>createMedusa</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createMedusa</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates Medusa with splitting behaviour and its standard hitbox.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createCyclops(com.csse3200.game.entities.Entity)">
+<h3>createCyclops</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createCyclops</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates a cyclops with its standard scale and collision bounds.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createHarpy(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)">
+<h3>createHarpy</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createHarpy</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ com.badlogic.gdx.math.Vector2&nbsp;spawn)</span></div>
+<div class="block">Creates a harpy with its standard appearance.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createGolem(com.csse3200.game.entities.Entity)">
+<h3>createGolem</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createGolem</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target)</span></div>
+<div class="block">Creates a golem with its standard scale and collision bounds.</div>
 </section>
 </li>
 <li>
