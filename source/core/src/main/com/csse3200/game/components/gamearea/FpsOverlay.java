@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.ui.UIComponent;
+import com.csse3200.game.ui.UiScale;
 
 /** Small FPS readout. Hidden unless Settings → Show FPS is on. */
 public class FpsOverlay extends UIComponent {
@@ -29,7 +30,7 @@ public class FpsOverlay extends UIComponent {
    * turned on.
    */
   private void applyVisibility() {
-    if (stage == null) {
+    if (stage == null || UiScale.settingsOpen(stage)) {
       return;
     }
     boolean show = UserSettings.get().showFps;

@@ -10,6 +10,7 @@ import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+import com.csse3200.game.ui.UiScale;
 
 /**
  * Displays the total run time and current dungeon time in a HUD panel in the upper-right corner.
@@ -71,7 +72,7 @@ public class TimerDisplay extends UIComponent {
    */
   @Override
   public void update() {
-    if (rootTable == null) {
+    if (rootTable == null || UiScale.settingsOpen(stage)) {
       return;
     }
     if (!UserSettings.get().showTimer) {

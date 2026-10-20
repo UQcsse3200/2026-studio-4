@@ -3,7 +3,6 @@ package com.csse3200.game.components.settingsmenu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Graphics.Monitor;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -20,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
-import com.csse3200.game.files.AudioLevels;
 import com.csse3200.game.files.GameProgress;
 import com.csse3200.game.files.GameProgress.SaveData;
 import com.csse3200.game.files.UserSettings;
@@ -66,7 +64,6 @@ public class SettingsMenuDisplay extends UIComponent {
   private Label resetStatusLabel;
   private WindowSize.Preset loadedWindow;
   private StringDecorator<DisplayMode> loadedResolution;
-  private Sound previewSound;
 
   public SettingsMenuDisplay(GdxGame game) {
     this(game, null, false);
@@ -118,6 +115,7 @@ public class SettingsMenuDisplay extends UIComponent {
     ScrollPane pane = new ScrollPane(settingsTable, skin);
     pane.setFadeScrollBars(false);
     pane.setScrollingDisabled(true, false);
+    pane.setCancelTouchFocus(false);
     Table menuBtns = makeMenuBtns();
 
     backdrop = new Table();
@@ -210,7 +208,7 @@ public class SettingsMenuDisplay extends UIComponent {
     muteUnfocusedCheck = new CheckBox("", skin);
     muteUnfocusedCheck.setChecked(settings.muteUnfocused);
     form.section(
-        "Audio", "Apply plays a short effect at the new volume. Music during a run follows Apply.");
+        "Audio", "Music during a run follows Apply. Effects use the new volume on the next sound.");
     form.percent("Music", musicSlider);
     form.percent("Effects", soundSlider);
     form.row("Mute in background", muteUnfocusedCheck);
@@ -428,7 +426,6 @@ public class SettingsMenuDisplay extends UIComponent {
     rememberLoadedSelection();
     applyUiScale(settings.uiScale);
     showScaleOnSettingsPage(settings.uiScale);
-    previewEffects();
   }
 
   /**
@@ -440,23 +437,6 @@ public class SettingsMenuDisplay extends UIComponent {
   private void showScaleOnSettingsPage(float scale) {
     if (rootTable != null) {
       UiScale.apply(rootTable, scale);
-    }
-  }
-
-  /** Plays one effect at the saved effects volume, so a volume change can be heard on this page. */
-  private void previewEffects() {
-    if (Gdx.audio == null || Gdx.files == null) {
-      return;
-    }
-    try {
-      if (previewSound == null) {
-        previewSound = Gdx.audio.newSound(Gdx.files.internal("sounds/achievementSound.mp3"));
-      }
-      if (previewSound != null) {
-        previewSound.play(AudioLevels.effects());
-      }
-    } catch (RuntimeException ex) {
-      logger.debug("Effect preview is unavailable");
     }
   }
 
@@ -615,10 +595,6 @@ public class SettingsMenuDisplay extends UIComponent {
     }
     if (actionsTable != null) {
       actionsTable.clear();
-    }
-    if (previewSound != null) {
-      previewSound.dispose();
-      previewSound = null;
     }
     super.dispose();
   }
