@@ -1,11 +1,10 @@
 package com.csse3200.game.components.mainmenu;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Scaling;
@@ -29,27 +28,29 @@ public class MainMenuDisplay extends UIComponent {
     Image background =
         new Image(
             ServiceLocator.getResourceService()
-                .getAsset("CutScreens/main_menu.jpg", Texture.class));
+                .getAsset("images/main_game2.png", Texture.class));
 
     background.setFillParent(true);
     background.setScaling(Scaling.fill); // stretch/crop to fill screen, keeps aspect
 
-    Label title = new Label("Book Boy", skin, "title");
-    title.setFontScale(5f);
+    Image logo =
+        new Image(
+            ServiceLocator.getResourceService()
+                .getAsset("images/box_boy_title.png", Texture.class));
+    logo.setScaling(Scaling.fit);
 
-    Table rootTable = new Table();
-    rootTable.setFillParent(true); // always matches current stage size, any screen
+    // Keep the skin's button shape, but recolour its states to match the parchment artwork.
+    TextButton.TextButtonStyle buttonStyle =
+        new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
+    buttonStyle.up = skin.newDrawable(buttonStyle.up, Color.valueOf("D9B66D"));
+    buttonStyle.down = skin.newDrawable(buttonStyle.down, Color.valueOf("C6A052"));
+    buttonStyle.over = skin.newDrawable(buttonStyle.over, Color.valueOf("E8C875"));
+    buttonStyle.fontColor = Color.valueOf("3A2115");
 
-    rootTable.top().padTop(50f); // title near the top
-    rootTable.add(title).center();
-    rootTable.row();
-
-    Table buttonRow = new Table();
-
-    TextButton startBtn = new TextButton("Start", skin);
-    TextButton loadBtn = new TextButton("Load", skin);
-    TextButton settingsBtn = new TextButton("Settings", skin);
-    TextButton exitBtn = new TextButton("Exit", skin);
+    TextButton startBtn = new TextButton("Start", buttonStyle);
+    TextButton loadBtn = new TextButton("Load", buttonStyle);
+    TextButton settingsBtn = new TextButton("Settings", buttonStyle);
+    TextButton exitBtn = new TextButton("Exit", buttonStyle);
 
     // Triggers an event when the button is pressed
     startBtn.addListener(
@@ -89,16 +90,32 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    buttonRow.add(startBtn);
-    buttonRow.add(loadBtn).padLeft(250f);
-    buttonRow.add(settingsBtn).padLeft(250f);
-    buttonRow.add(exitBtn).padLeft(250f);
-
-    rootTable.row().expand().bottom().padBottom(150f);
-    rootTable.add(buttonRow);
-
     stage.addActor(background);
-    stage.addActor(rootTable);
+    stage.addActor(logo);
+    stage.addActor(startBtn);
+    stage.addActor(loadBtn);
+    stage.addActor(settingsBtn);
+    stage.addActor(exitBtn);
+
+    // Coordinates are percentages of the background image. Y positions below are measured
+    // from the top of the image, then converted because Scene2D's origin is bottom-left.
+    float width = stage.getWidth();
+    float height = stage.getHeight();
+    placeFromTop(logo, 0.12f, 0.17f, 0.29f, 0.15f, width, height);
+    placeFromTop(startBtn, 0.125f, 0.376f, 0.115f, 0.066f, width, height);
+    placeFromTop(loadBtn, 0.125f, 0.481f, 0.115f, 0.066f, width, height);
+    placeFromTop(settingsBtn, 0.125f, 0.585f, 0.115f, 0.066f, width, height);
+    placeFromTop(exitBtn, 0.768f, 0.659f, 0.116f, 0.073f, width, height);
+  }
+
+  private void placeFromTop(
+      Actor actor, float x, float top, float actorWidth, float actorHeight, float stageWidth,
+      float stageHeight) {
+    actor.setBounds(
+        x * stageWidth,
+        stageHeight - (top + actorHeight) * stageHeight,
+        actorWidth * stageWidth,
+        actorHeight * stageHeight);
   }
 
   @Override

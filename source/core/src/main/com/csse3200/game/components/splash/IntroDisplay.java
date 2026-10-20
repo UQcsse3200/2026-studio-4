@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -27,11 +28,15 @@ public class IntroDisplay extends UIComponent {
   // The supplied sheet appears to have 24 frames per row. Change this if your sheet differs.
   private static final int COLUMNS = 24;
   private static final int BOTTOM_ROW = 2;
-  private static final int ANIMATION_FRAME_COUNT = 8;
+  private static final int OPENING_FRAME_COUNT = 8;
   private static final int IDLE_START_COLUMN = 0;
-  private static final int OPENING_START_COLUMN = 8;
-  // The reference clip holds each of its 8 frames for about 0.12 seconds (~8.3 FPS).
-  private static final float FRAME_DURATION = 0.12f;
+  // Each animation step is a group of three side-by-side book poses; use the middle pose.
+  private static final int OPENING_START_COLUMN = 1;
+  private static final int OPENING_FRAME_STRIDE = 3;
+  private static final int FRAME_RIGHT_GUTTER = 4;
+  // 8 frames per second: each selected frame stays visible for 1/8 second.
+  private static final float FRAME_DURATION = 1f / 8f;
+  private static final float OPEN_BOOK_HOLD = 0.6f;
   private static final String CONTINUE_TEXT = "PRESS SPACE TO CONTINUE";
 
   private Image background;
@@ -49,9 +54,12 @@ public class IntroDisplay extends UIComponent {
     super.create();
 
     Texture texture = ServiceLocator.getResourceService().getAsset(INTRO_TEXTURE, Texture.class);
+    // Nearest filtering keeps pixel-art frames from sampling neighboring sprites.
+    texture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
     TextureRegion[] bottom = getBottomRow(texture);
     idleFrame = bottom[IDLE_START_COLUMN];
-    TextureRegion[] openingFrames = getFrames(bottom, OPENING_START_COLUMN);
+    TextureRegion[] openingFrames =
+        getFrames(bottom, OPENING_START_COLUMN, OPENING_FRAME_COUNT, OPENING_FRAME_STRIDE);
     triggeredAnimation = new Animation<>(FRAME_DURATION, openingFrames);
     triggeredAnimation.setPlayMode(Animation.PlayMode.NORMAL);
 
@@ -119,15 +127,18 @@ public class IntroDisplay extends UIComponent {
     float duration = triggeredAnimation.getAnimationDuration();
     whiteOverlay.addAction(
         sequence(
-            Actions.delay(duration),
+            Actions.delay(duration + OPEN_BOOK_HOLD),
             Actions.fadeIn(0.6f),
             run(() -> finished = true)));
   }
 
-  /** Returns one 8-frame animation section from the bottom row. */
-  private static TextureRegion[] getFrames(TextureRegion[] row, int startColumn) {
-    TextureRegion[] frames = new TextureRegion[ANIMATION_FRAME_COUNT];
-    System.arraycopy(row, startColumn, frames, 0, ANIMATION_FRAME_COUNT);
+  /** Selects the middle sprite from each of the eight 3-sprite groups in the bottom row. */
+  private static TextureRegion[] getFrames(
+      TextureRegion[] row, int startColumn, int frameCount, int stride) {
+    TextureRegion[] frames = new TextureRegion[frameCount];
+    for (int i = 0; i < frameCount; i++) {
+      frames[i] = row[startColumn + i * stride];
+    }
     return frames;
   }
 
@@ -140,7 +151,7 @@ public class IntroDisplay extends UIComponent {
 
     for (int column = 0; column < COLUMNS; column++) {
       int x0 = column * texture.getWidth() / COLUMNS;
-      int x1 = (column + 1) * texture.getWidth() / COLUMNS;
+      int x1 = (column + 1) * texture.getWidth() / COLUMNS - FRAME_RIGHT_GUTTER;
       frames[column] = new TextureRegion(texture, x0, y, x1 - x0, height);
     }
     return frames;
