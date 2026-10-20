@@ -1,7 +1,5 @@
 package com.csse3200.game.components.splash;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.forever;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveBy;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 import com.badlogic.gdx.Input;
@@ -12,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -30,18 +27,16 @@ public class IntroDisplay extends UIComponent {
   // The supplied sheet appears to have 24 frames per row. Change this if your sheet differs.
   private static final int COLUMNS = 24;
   private static final int BOTTOM_ROW = 2;
-  private static final int IDLE_FRAME_COUNT = 3;
-  private static final float IDLE_FRAME_DURATION = 0.12f;
-  private static final float OPEN_FRAME_DURATION = IDLE_FRAME_DURATION * 4f;
+  private static final int OPENING_FRAME_COUNT = 8;
+  private static final float FRAME_DURATION = 1f / 8f;
   private static final String CONTINUE_TEXT = "PRESS SPACE TO CONTINUE";
 
   private Image background;
   private Image book;
   private Image whiteOverlay;
   private Label continuePrompt;
-  private Animation<TextureRegion> idleAnimation;
   private Animation<TextureRegion> triggeredAnimation;
-  private float animationTime;
+  private float triggeredAnimationTime;
   private boolean triggered;
   private boolean finished;
 
@@ -51,12 +46,9 @@ public class IntroDisplay extends UIComponent {
 
     Texture texture = ServiceLocator.getResourceService().getAsset(INTRO_TEXTURE, Texture.class);
     TextureRegion[] bottom = getBottomRow(texture);
-    TextureRegion[] idleFrames = new TextureRegion[IDLE_FRAME_COUNT];
-    System.arraycopy(bottom, 0, idleFrames, 0, IDLE_FRAME_COUNT);
-    idleAnimation = new Animation<>(IDLE_FRAME_DURATION, idleFrames);
-    // Four times the frame duration plays the opening animation at one quarter speed.
-    triggeredAnimation = new Animation<>(OPEN_FRAME_DURATION, bottom);
-    idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
+    TextureRegion[] openingFrames = new TextureRegion[OPENING_FRAME_COUNT];
+    System.arraycopy(bottom, 0, openingFrames, 0, OPENING_FRAME_COUNT);
+    triggeredAnimation = new Animation<>(FRAME_DURATION, openingFrames);
     triggeredAnimation.setPlayMode(Animation.PlayMode.NORMAL);
 
     background = new Image(skin.newDrawable("white", Color.BLACK));
@@ -67,11 +59,6 @@ public class IntroDisplay extends UIComponent {
     book.setSize(bottom[0].getRegionWidth() * 4f, bottom[0].getRegionHeight() * 4f);
     book.setOrigin(Align.center);
     centreBook();
-    book.addAction(
-        forever(
-            sequence(
-                moveBy(0f, 14f, 1f, Interpolation.sine),
-                moveBy(0f, -14f, 1f, Interpolation.sine))));
     stage.addActor(book);
 
     continuePrompt = new Label(CONTINUE_TEXT, skin);
@@ -102,11 +89,13 @@ public class IntroDisplay extends UIComponent {
 
   @Override
   protected void draw(SpriteBatch batch) {
-    if (!isRepeatPass()) animationTime += Gdx.graphics.getDeltaTime();
+    if (triggered && !isRepeatPass()) {
+      triggeredAnimationTime += Gdx.graphics.getDeltaTime();
+    }
     TextureRegion frame =
         triggered
-            ? triggeredAnimation.getKeyFrame(animationTime, false)
-            : idleAnimation.getKeyFrame(animationTime, true);
+            ? triggeredAnimation.getKeyFrame(triggeredAnimationTime, false)
+            : triggeredAnimation.getKeyFrame(0f);
     book.setDrawable(new TextureRegionDrawable(frame));
     // Keep the sprite centred horizontally after a resize while preserving its float offset.
     book.setX((stage.getWidth() - book.getWidth()) / 2f);
@@ -121,7 +110,8 @@ public class IntroDisplay extends UIComponent {
 
   private void startTriggeredAnimation() {
     triggered = true;
-    animationTime = 0f;
+    triggeredAnimationTime = 0f;
+    continuePrompt.setVisible(false);
     book.clearActions();
     book.setPosition(stage.getWidth() / 2f, stage.getHeight() / 2f, Align.center);
     float duration = triggeredAnimation.getAnimationDuration();
