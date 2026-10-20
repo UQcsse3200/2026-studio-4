@@ -8,6 +8,7 @@ import com.csse3200.game.areas.terrain.DreamlandTile;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TileSheet;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InteractionPrompt;
 import com.csse3200.game.components.player.PlayerActions;
@@ -62,7 +63,8 @@ public class ExitComponent extends EntityManagerComponent {
    * Shows the exit prompt while the player is near a door, and hides it after they walk away.
    *
    * <p>Pressing E is handled separately. The prompt has to be refreshed every frame because it
-   * depends on where the player is standing. The boss shelf uses the same sentence as the E key.
+   * depends on where the player is standing. A drop already in pickup range keeps "Press E — Pick
+   * up …" instead of the door sentence. The boss shelf uses the same sentence as the E key.
    */
   @Override
   public void update() {
@@ -76,6 +78,12 @@ public class ExitComponent extends EntityManagerComponent {
     PlayerActions actions = player.getComponent(PlayerActions.class);
     if (actions != null && actions.areControlsLocked()) {
       display.clearPrompt();
+      return;
+    }
+    ItemPickupComponent pickup = player.getComponent(ItemPickupComponent.class);
+    String itemPrompt = pickup == null ? null : pickup.getPickupPrompt();
+    if (itemPrompt != null) {
+      display.setPrompt(itemPrompt);
       return;
     }
     EnemyManagerComponent enemies = entity.getComponent(EnemyManagerComponent.class);
