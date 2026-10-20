@@ -73,13 +73,18 @@ public class NPCFactory {
       animator.addAnimation(ATTACK_ANIMATION, 0.08f, Animation.PlayMode.NORMAL);
     }
 
+    EnemyAnimationController animationController = new EnemyAnimationController();
+    if ("images/jotunn.atlas".equals(skin)) {
+      animationController.setDeathRotation(30f, 90f);
+    }
+
     giantEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f, 1f))
         .addComponent(aiComponent)
         .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(animator)
-        .addComponent(new EnemyAnimationController())
+        .addComponent(animationController)
         .addComponent(new EnemyStatDisplay(2.0f));
     giantEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
     giantEnemy.setScale(3f, 3f);

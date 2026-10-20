@@ -164,7 +164,7 @@ public class EnemyManagerComponent extends EntityManagerComponent {
       case CROW:
         return createFlyingEnemy(spawn, target, "images/crow.atlas");
       case KNIGHT:
-        return createScaledBombEnemy(target, "images/knight.atlas", 0.75f, 1f);
+        return createScaledBombEnemy(target, "images/knight.atlas", 0.75f, 0.75f * 150f / 70f);
       case DARK_ELVES:
         return NPCFactory.createChaseEnemy(target, true, "images/dark_elves.atlas");
       case JOTUNN:

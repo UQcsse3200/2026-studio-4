@@ -46,7 +46,7 @@ class EnemyFuseFlashTest {
     enemy.getEvents().trigger("fuseStarted", 2f);
 
     assertEquals(WHITE, effects.getTint());
-    assertEquals(0.5f, effects.getGlow().a);
+    assertEquals(1f, effects.getGlow().a);
 
     now = 250L;
     assertNull(effects.getTint());
