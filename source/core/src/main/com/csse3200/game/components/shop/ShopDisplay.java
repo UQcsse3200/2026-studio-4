@@ -38,7 +38,7 @@ import java.util.Map;
 public class ShopDisplay extends UIComponent implements ShopView {
   private static final Color INK = Color.valueOf("2a1a08");
   private static final Color BRASS = Color.valueOf("c8963e");
-  private static final String MERCHANT_ATLAS = "images/shopkeeper.atlas";
+  private static final String MERCHANT_ATLAS = "images/friendly-npcs/shopkeeper.atlas";
   private static final String GOLD_TEXTURE = "images/gold_coin_pixel.png";
   private static final String SMALL_FONT = "font_small";
   private static final String CASINO_LABEL = "CASINO";

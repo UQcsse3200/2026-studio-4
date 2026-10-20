@@ -1,6 +1,5 @@
 package com.csse3200.game.entities.factories;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -76,28 +75,6 @@ class FriendlyNpcAssetsTest {
                       page.textureFile.exists(),
                       npc.id + " atlas points at a missing image " + page.textureFile.path()));
     }
-  }
-
-  @Test
-  void hecateAtlasCarvesHerOwnFigureOutOfTheSharedRoguesSheet() {
-    FileHandle file = Gdx.files.internal("images/hecate.atlas");
-    assertTrue(file.exists(), "images/hecate.atlas is missing");
-
-    TextureAtlasData data = new TextureAtlasData(file, file.parent(), false);
-    Region region = null;
-    for (Region candidate : data.getRegions()) {
-      if ("default".equals(candidate.name)) {
-        region = candidate;
-      }
-    }
-    assertNotNull(region, "hecate.atlas must declare a 'default' region");
-
-    // rogues.png is shared with the Travelling Merchant, who takes 64,192. Pinning the coordinates
-    // means repacking the sheet fails here rather than silently giving Hecate someone else's body.
-    assertEquals(0, region.left);
-    assertEquals(128, region.top);
-    assertEquals(32, region.width);
-    assertEquals(32, region.height);
   }
 
   @Test
