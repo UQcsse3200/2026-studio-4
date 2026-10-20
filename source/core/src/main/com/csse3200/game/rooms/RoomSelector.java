@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.boss.FinalBossPhase;
 import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.components.rooms.FollowingCameraComponent;
 import com.csse3200.game.components.rooms.RoomDataComponent;
@@ -128,5 +129,52 @@ public class RoomSelector {
   /** Debug function to clear the current room's enemies */
   public void clearRoom() {
     room.getComponent(EnemyManagerComponent.class).clear();
+  }
+
+  /** Debug function to quick travel to the given room */
+  boolean debugGotoRoom(String roomId) {
+    logger.info("Going to room: {}", roomId);
+    Entity queriedRoom = roomLoader.getRoom(roomId, false);
+    if (queriedRoom == null) {
+      return false;
+    }
+    GridPoint2 spawn = roomLoader.getAnyVaidSpawn(roomId);
+
+    ServiceLocator.getEntityService().schedule(() -> setRoom(queriedRoom, spawn));
+    return true;
+  }
+
+  /**
+   * Debug function to quick travel to the final room at the given stage.
+   *
+   * <p>Only works outside of the finalBossRoom. Only use for debugging purposes, maybe crash the
+   * game.
+   */
+  boolean debugFinalBossStage(String stage) {
+    final String FB_ROOM = "finalBossRoom";
+
+    FinalBossPhase fbStage =
+        switch (stage) {
+          case "1" -> FinalBossPhase.STAGE_ONE;
+          case "2" -> FinalBossPhase.STAGE_TWO;
+          case "3" -> FinalBossPhase.STAGE_THREE;
+          default -> null;
+        };
+
+    if (fbStage == null) {
+      logger.error("Bad stage given: {}", stage);
+      return false;
+    }
+
+    var fbRoom = roomLoader.getRoom(FB_ROOM, false);
+    var fbSpawn = roomLoader.getAnyVaidSpawn(FB_ROOM);
+    ServiceLocator.getEntityService()
+        .schedule(
+            () -> {
+              setRoom(fbRoom, fbSpawn);
+              room.getComponent(EnemyManagerComponent.class).startFinalBossStage(fbStage);
+            });
+
+    return true;
   }
 }
