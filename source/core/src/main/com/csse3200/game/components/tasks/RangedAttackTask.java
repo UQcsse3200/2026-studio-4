@@ -27,15 +27,15 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
   public RangedAttackTask(Entity target, int priority, int damage) {
     this(
-            target,
-            priority,
-            damage,
-            projectile -> ServiceLocator.getEntityService().register(projectile));
+        target,
+        priority,
+        damage,
+        projectile -> ServiceLocator.getEntityService().register(projectile));
   }
 
   /** Creates a ranged attack whose projectiles are registered by the supplied owner. */
   public RangedAttackTask(
-          Entity target, int priority, int damage, Consumer<Entity> projectileSpawner) {
+      Entity target, int priority, int damage, Consumer<Entity> projectileSpawner) {
     this(target, priority, damage, projectileSpawner, DEFAULT_ATLAS);
   }
 
@@ -45,11 +45,11 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
    * matching its own look instead of the generic floating demon's.
    */
   public RangedAttackTask(
-          Entity target,
-          int priority,
-          int damage,
-          Consumer<Entity> projectileSpawner,
-          String atlasPath) {
+      Entity target,
+      int priority,
+      int damage,
+      Consumer<Entity> projectileSpawner,
+      String atlasPath) {
     this.target = target;
     this.damage = damage;
     this.priority = priority;
@@ -77,7 +77,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   public void start() {
     super.start();
     PhysicsMovementComponent movementComponent =
-            owner.getEntity().getComponent(PhysicsMovementComponent.class);
+        owner.getEntity().getComponent(PhysicsMovementComponent.class);
     movementComponent.setMoving(false);
     cooldownLeft = 0f;
   }
@@ -108,16 +108,15 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
   private void createProjectile(Vector2 position, Vector2 direction) {
     ServiceLocator.getEntityService()
-            .runAfterUpdate(
-                    () -> {
-                      if (StatusEffectsControllerComponent.isConcealed(target)) {
-                        return;
-                      }
-                      Entity projectile =
-                              FloatingDemonProjectileFactory.createProjectile(
-                                      position, direction, damage, atlasPath);
-                      projectileSpawner.accept(projectile);
-                    });
+        .runAfterUpdate(
+            () -> {
+              if (StatusEffectsControllerComponent.isConcealed(target)) {
+                return;
+              }
+              Entity projectile =
+                  FloatingDemonProjectileFactory.createProjectile(
+                      position, direction, damage, atlasPath);
+              projectileSpawner.accept(projectile);
+            });
   }
 }
-

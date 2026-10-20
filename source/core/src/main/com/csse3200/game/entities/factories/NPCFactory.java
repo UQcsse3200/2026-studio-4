@@ -50,7 +50,7 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public class NPCFactory {
   private static final NPCConfigs configs =
-          FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
+      FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
 
   public static final String PROJECTILE_SPAWNED = "enemyProjectileSpawned";
   private static final float CHASE_SPEED = 2.5f;
@@ -64,26 +64,26 @@ public class NPCFactory {
     GiantEnemyConfig config = configs.giantEnemy;
 
     AITaskComponent aiComponent =
-            new AITaskComponent()
-                    .addTask(new WanderTask(config.movement, 1f))
-                    .addTask(new ChaseTask(target, 10, 3f, 10f));
+        new AITaskComponent()
+            .addTask(new WanderTask(config.movement, 1f))
+            .addTask(new ChaseTask(target, 10, 3f, 10f));
 
     AnimationRenderComponent animator =
-            new AnimationRenderComponent(
-                    ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     giantEnemy
-            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
-            .addComponent(aiComponent)
-            .addComponent(new EnemyDeathComponent(true, true))
-            .addComponent(animator)
-            .addComponent(new EnemyAnimationController())
-            .addComponent(new EnemyStatDisplay(2.0f));
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
+        .addComponent(aiComponent)
+        .addComponent(new EnemyDeathComponent(true, true))
+        .addComponent(animator)
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(2.0f));
     giantEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
     giantEnemy.setScale(3f, 3f);
     giantEnemy.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(0.5f, 0.5f));
@@ -96,10 +96,10 @@ public class NPCFactory {
     Entity enemy = createGiantEnemy(target, skin);
     enemy.setScale(size, size);
     enemy
-            .getComponent(HitboxComponent.class)
-            .setAsBox(
-                    new Vector2(1f, 1f),
-                    new Vector2(enemy.getCenterPosition().x, enemy.getCenterPosition().y / 2f));
+        .getComponent(HitboxComponent.class)
+        .setAsBox(
+            new Vector2(1f, 1f),
+            new Vector2(enemy.getCenterPosition().x, enemy.getCenterPosition().y / 2f));
     PhysicsUtils.setScaledCollider(enemy, 0.3f, 0.3f);
     return enemy;
   }
@@ -115,13 +115,13 @@ public class NPCFactory {
     BombEnemyConfig config = configs.bombEnemy;
 
     AITaskComponent aiComponent =
-            new AITaskComponent()
-                    .addTask(new WanderTask(config.movement, 1f))
-                    .addTask(new ChaseTask(target, 10, 3f, 10f));
+        new AITaskComponent()
+            .addTask(new WanderTask(config.movement, 1f))
+            .addTask(new ChaseTask(target, 10, 3f, 10f));
 
     AnimationRenderComponent animator =
-            new AnimationRenderComponent(
-                    ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
@@ -129,13 +129,13 @@ public class NPCFactory {
     animator.addAnimation("fuse", 0.1f, Animation.PlayMode.LOOP);
 
     bombEnemy
-            .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
-            .addComponent(aiComponent)
-            .addComponent(new EnemyDeathComponent(true, true))
-            .addComponent(animator)
-            .addComponent(new ExplodeComponent(target, fuseTime))
-            .addComponent(new EnemyAnimationController())
-            .addComponent(new EnemyStatDisplay(1.5f));
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
+        .addComponent(aiComponent)
+        .addComponent(new EnemyDeathComponent(true, true))
+        .addComponent(animator)
+        .addComponent(new ExplodeComponent(target, fuseTime))
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f));
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
 
     return bombEnemy;
@@ -155,37 +155,37 @@ public class NPCFactory {
     ChaseEnemyConfig config = configs.chaseEnemy;
 
     AITaskComponent aiComponent =
-            new AITaskComponent()
-                    .addTask(new WanderTask(config.movement, 1f))
-                    .addTask(new GroundChaseTask(target, 10, 3f, 10f))
-                    .addTask(new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy));
+        new AITaskComponent()
+            .addTask(new WanderTask(config.movement, 1f))
+            .addTask(new GroundChaseTask(target, 10, 3f, 10f))
+            .addTask(new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy));
 
     AnimationRenderComponent animator =
-            new AnimationRenderComponent(
-                    ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
 
     chaseEnemy
-            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-            .addComponent(aiComponent)
-            .addComponent(animator)
-            .addComponent(new EnemyDeathComponent(true, true))
-            .addComponent(new EnemyStatDisplay(1.5f));
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(aiComponent)
+        .addComponent(animator)
+        .addComponent(new EnemyDeathComponent(true, true))
+        .addComponent(new EnemyStatDisplay(1.5f));
     if ("images/minotaur.atlas".equals(skin)) {
       chaseEnemy
-              .addComponent(
-                      new MinotaurAttackRenderComponent(
-                              ServiceLocator.getResourceService()
-                                      .getAsset(MinotaurAttackRenderComponent.ATLAS, TextureAtlas.class)))
-              .addComponent(new MinotaurAnimationController(target))
-              .addComponent(new MinotaurDashTrailComponent());
+          .addComponent(
+              new MinotaurAttackRenderComponent(
+                  ServiceLocator.getResourceService()
+                      .getAsset(MinotaurAttackRenderComponent.ATLAS, TextureAtlas.class)))
+          .addComponent(new MinotaurAnimationController(target))
+          .addComponent(new MinotaurDashTrailComponent());
     } else {
       chaseEnemy
-              .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f, 1f))
-              .addComponent(new EnemyAnimationController());
+          .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f, 1f))
+          .addComponent(new EnemyAnimationController());
     }
     if (shouldSplit) {
       chaseEnemy.addComponent(new SplitComponent(target, skin));
@@ -195,9 +195,9 @@ public class NPCFactory {
     animator.startAnimation(DEFAULT_ANIMATION);
 
     chaseEnemy
-            .getComponent(PhysicsComponent.class)
-            .getBody()
-            .setLinearVelocity(CHASE_SPEED, CHASE_SPEED);
+        .getComponent(PhysicsComponent.class)
+        .getBody()
+        .setLinearVelocity(CHASE_SPEED, CHASE_SPEED);
 
     return chaseEnemy;
   }
@@ -208,8 +208,8 @@ public class NPCFactory {
     Entity demon = createBaseNPC();
 
     AnimationRenderComponent animator =
-            new AnimationRenderComponent(
-                    ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
 
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
@@ -218,11 +218,11 @@ public class NPCFactory {
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     demon
-            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-            .addComponent(animator)
-            .addComponent(new EnemyDeathComponent(true, true))
-            .addComponent(new EnemyAnimationController())
-            .addComponent(new EnemyStatDisplay(1.5f));
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(animator)
+        .addComponent(new EnemyDeathComponent(true, true))
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f));
 
     animator.scaleEntity();
     animator.startAnimation(MOVE);
@@ -239,14 +239,14 @@ public class NPCFactory {
     Entity enemy = createFloatingDemonBase(skin);
 
     AITaskComponent aiComponent =
-            new AITaskComponent()
-                    .addTask(
-                            new RangedAttackTask(
-                                    target,
-                                    10,
-                                    configs.floatingDemon.baseAttack,
-                                    projectile -> enemy.getEvents().trigger(PROJECTILE_SPAWNED, projectile),
-                                    skin));
+        new AITaskComponent()
+            .addTask(
+                new RangedAttackTask(
+                    target,
+                    10,
+                    configs.floatingDemon.baseAttack,
+                    projectile -> enemy.getEvents().trigger(PROJECTILE_SPAWNED, projectile),
+                    skin));
 
     enemy.addComponent(aiComponent).addComponent(new FlyingEnemyPatrolComponent(spawn));
 
@@ -267,26 +267,26 @@ public class NPCFactory {
 
     // Shravika's own hand-drawn snake sprite sheet.
     AnimationRenderComponent animator =
-            new AnimationRenderComponent(
-                    ServiceLocator.getResourceService().getAsset("images/snake.atlas", TextureAtlas.class));
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset("images/snake.atlas", TextureAtlas.class));
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
 
     snakeBoss
-            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-            .addComponent(new SnakeBurrowComponent(target, config))
-            .addComponent(new SnakeBurrowVisualComponent())
-            .addComponent(new SnakePlayerHitVisualComponent(target))
-            .addComponent(new SnakeShieldComponent(target, config))
-            .addComponent(new SnakeShieldPickupComponent(target, config))
-            .addComponent(new SnakePoisonVolleyComponent(target, config))
-            .addComponent(new SnakeAchievementComponent(target))
-            .addComponent(animator)
-            .addComponent(new EnemyDeathComponent(true))
-            .addComponent(new EnemyAnimationController())
-            .addComponent(new EnemyStatDisplay(1.5f));
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(new SnakeBurrowComponent(target, config))
+        .addComponent(new SnakeBurrowVisualComponent())
+        .addComponent(new SnakePlayerHitVisualComponent(target))
+        .addComponent(new SnakeShieldComponent(target, config))
+        .addComponent(new SnakeShieldPickupComponent(target, config))
+        .addComponent(new SnakePoisonVolleyComponent(target, config))
+        .addComponent(new SnakeAchievementComponent(target))
+        .addComponent(animator)
+        .addComponent(new EnemyDeathComponent(true))
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f));
 
     animator.scaleEntity();
     snakeBoss.scaleWidth(2f);
@@ -294,8 +294,8 @@ public class NPCFactory {
     animator.startAnimation(DEFAULT_ANIMATION);
 
     snakeBoss
-            .getComponent(PhysicsMovementComponent.class)
-            .setMaxSpeed(new Vector2(CHASE_SPEED, CHASE_SPEED));
+        .getComponent(PhysicsMovementComponent.class)
+        .setMaxSpeed(new Vector2(CHASE_SPEED, CHASE_SPEED));
 
     return snakeBoss;
   }
@@ -334,15 +334,15 @@ public class NPCFactory {
     BaseEntityConfig config = configs.sleipnir;
 
     AITaskComponent aiComponent =
-            new AITaskComponent()
-                    .addTask(new PatrolTask(spawn, false))
-                    .addTask(new StampedeTask(target, sleipnir))
-                    .addTask(new EarthquakeAttackTask(target, 5f, sleipnir))
-                    .addTask(new OneAttackTask(target, 2f, 5, new Vector2(8f, 8f)));
+        new AITaskComponent()
+            .addTask(new PatrolTask(spawn, false))
+            .addTask(new StampedeTask(target, sleipnir))
+            .addTask(new EarthquakeAttackTask(target, 5f, sleipnir))
+            .addTask(new OneAttackTask(target, 2f, 5, new Vector2(8f, 8f)));
 
     AnimationRenderComponent animator =
-            new AnimationRenderComponent(
-                    ServiceLocator.getResourceService().getAsset("images/horse.atlas", TextureAtlas.class));
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset("images/horse.atlas", TextureAtlas.class));
     animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.09f, Animation.PlayMode.LOOP);
     animator.addAnimation("move_up", 1f, Animation.PlayMode.LOOP);
@@ -358,19 +358,19 @@ public class NPCFactory {
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     sleipnir
-            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-            .addComponent(aiComponent)
-            .addComponent(new EnemyDeathComponent(true, true))
-            .addComponent(animator)
-            .addComponent(new EnemyAnimationController())
-            .addComponent(new EnemyStatDisplay(1.5f))
-            .addComponent(new BossPhaseComponent());
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(aiComponent)
+        .addComponent(new EnemyDeathComponent(true, true))
+        .addComponent(animator)
+        .addComponent(new EnemyAnimationController())
+        .addComponent(new EnemyStatDisplay(1.5f))
+        .addComponent(new BossPhaseComponent());
     sleipnir.getComponent(AnimationRenderComponent.class).scaleEntity();
     animator.startAnimation(MOVE);
     sleipnir.setScale(3f, 3f);
     sleipnir
-            .getComponent(HitboxComponent.class)
-            .setAsBox(new Vector2(2f, 2f), sleipnir.getCenterPosition());
+        .getComponent(HitboxComponent.class)
+        .setAsBox(new Vector2(2f, 2f), sleipnir.getCenterPosition());
     PhysicsUtils.setScaledCollider(sleipnir, 0.3f, 0.3f);
 
     sleipnir.getComponent(PhysicsMovementComponent.class).setMaxSpeed(new Vector2(8f, 8f));
@@ -462,9 +462,9 @@ public class NPCFactory {
     Entity crab = createChaseEnemy(target, true, "images/crab.atlas");
     crab.setScale(1.5f, 1f);
     crab.getComponent(HitboxComponent.class)
-            .setAsBox(
-                    new Vector2(1f, 0.5f),
-                    new Vector2(crab.getCenterPosition().x, crab.getCenterPosition().y / 2f));
+        .setAsBox(
+            new Vector2(1f, 0.5f),
+            new Vector2(crab.getCenterPosition().x, crab.getCenterPosition().y / 2f));
     return crab;
   }
 
@@ -472,8 +472,8 @@ public class NPCFactory {
   public static Entity createMummy(Entity target) {
     Entity mummy = createGiantEnemy(target, "images/mummy.atlas");
     mummy
-            .getComponent(HitboxComponent.class)
-            .setAsBox(new Vector2(1f, 1.5f), mummy.getCenterPosition());
+        .getComponent(HitboxComponent.class)
+        .setAsBox(new Vector2(1f, 1.5f), mummy.getCenterPosition());
     PhysicsUtils.setScaledCollider(mummy, 0.3f, 0.3f);
     return mummy;
   }
@@ -513,10 +513,10 @@ public class NPCFactory {
     Entity golem = createBombEnemy(target, "images/golem.atlas", 2f);
     golem.setScale(0.9f, 0.7f);
     golem
-            .getComponent(HitboxComponent.class)
-            .setAsBox(
-                    new Vector2(1f, 1f),
-                    new Vector2(golem.getCenterPosition().x, golem.getCenterPosition().y / 2f));
+        .getComponent(HitboxComponent.class)
+        .setAsBox(
+            new Vector2(1f, 1f),
+            new Vector2(golem.getCenterPosition().x, golem.getCenterPosition().y / 2f));
     PhysicsUtils.setScaledCollider(golem, 0.3f, 0.3f);
     return golem;
   }
@@ -528,12 +528,12 @@ public class NPCFactory {
    */
   public static Entity createBaseNPC() {
     Entity npc =
-            new Entity()
-                    .addComponent(new PhysicsComponent())
-                    .addComponent(new PhysicsMovementComponent())
-                    .addComponent(new ColliderComponent())
-                    .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-                    .addComponent(new StatusEffectsControllerComponent());
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new PhysicsMovementComponent())
+            .addComponent(new ColliderComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new StatusEffectsControllerComponent());
 
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);
     return npc;
@@ -543,4 +543,3 @@ public class NPCFactory {
     throw new IllegalStateException("Instantiating static util class");
   }
 }
-
