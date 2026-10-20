@@ -39,10 +39,10 @@ class RoomManagerTest {
     RoomConfig entrance = world.getRoom("dungeonOneEntrance");
     RoomConfig side = world.getRoom("dungeonOneSide");
 
-    // sideDoor (53, 52) RIGHT in the entrance, returnDoor (20, 65) LEFT in the side room
-    Entity firstEntrance = room(true, new GridPoint2(53, 52));
+    // sideDoor (55, 52) RIGHT in the entrance, returnDoor (20, 65) LEFT in the side room
+    Entity firstEntrance = room(true, new GridPoint2(55, 52));
     Entity sideRoom = room(true, new GridPoint2(20, 65));
-    Entity revisitedEntrance = room(true, new GridPoint2(53, 52));
+    Entity revisitedEntrance = room(true, new GridPoint2(55, 52));
 
     Entity player = mock(Entity.class);
     CameraComponent camera = mock(CameraComponent.class);
@@ -82,8 +82,8 @@ class RoomManagerTest {
       // Entrance was cleared, so it is rebuilt as a revisit
       roomFactory.verify(() -> RoomFactory.createRoom(entrance, camera, true));
 
-      // Arrive back at the entrance's sideDoor (53, 52, RIGHT)
-      verify(player).setPosition(new Vector2(52, 50));
+      // Arrive back at the entrance's sideDoor (55, 52, RIGHT)
+      verify(player).setPosition(new Vector2(54, 50));
       verify(firstEntrance).dispose();
       verify(sideRoom).dispose();
     }
