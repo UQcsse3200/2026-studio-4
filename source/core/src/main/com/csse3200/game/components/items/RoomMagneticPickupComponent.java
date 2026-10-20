@@ -24,7 +24,6 @@ public class RoomMagneticPickupComponent extends Component {
     entity
         .getEvents()
         .addListener(KeyboardPlayerInputComponent.ROOM_MAGNETIC_PICKUP, this::capture);
-    entity.getEvents().addListener(RESET_EVENT, targets::clear);
   }
 
   /**

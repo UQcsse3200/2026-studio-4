@@ -5,7 +5,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.boss.FinalBossPhase;
-import com.csse3200.game.components.items.RoomMagneticPickupComponent;
 import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.components.rooms.FollowingCameraComponent;
 import com.csse3200.game.components.rooms.RoomDataComponent;
@@ -99,7 +98,6 @@ public class RoomSelector {
     if (this.room == newRoom) {
       throw new IllegalArgumentException("Current room is same as the new room to set");
     }
-    player.getEvents().trigger(RoomMagneticPickupComponent.RESET_EVENT);
     RoomConfig oldConfig = null;
     if (this.room != null) {
       oldConfig = room.getComponent(RoomDataComponent.class).getConfig();
