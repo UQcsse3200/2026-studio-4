@@ -39,6 +39,7 @@ import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.items.LootTable;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.rooms.RoomClearService;
 import com.csse3200.game.services.AchievementService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.RunTimer;
@@ -86,6 +87,7 @@ class EnemyManagerComponentTest {
     ServiceLocator.registerPhysicsService(new PhysicsService());
     ServiceLocator.registerRenderService(mock(RenderService.class));
     ResourceService resourceService = spy(ResourceService.class);
+    ServiceLocator.registerRoomClearService(new RoomClearService());
     ServiceLocator.registerResourceService(resourceService);
     WorldConfig worldConfig = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
 
@@ -140,20 +142,16 @@ class EnemyManagerComponentTest {
     Entity validEnemy = new Entity();
 
     try (MockedStatic<NPCFactory> factory = Mockito.mockStatic(NPCFactory.class)) {
-      factory
-          .when(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"))
-          .thenReturn(rejectedEnemy);
-      factory
-          .when(() -> NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas"))
-          .thenReturn(validEnemy);
+      factory.when(() -> NPCFactory.createBug(target)).thenReturn(rejectedEnemy);
+      factory.when(() -> NPCFactory.createWolf(target)).thenReturn(validEnemy);
 
       enemyManager.spawnEnemies(target);
 
       assertEquals(1, entityService.getEntities().size);
       verify(entityService).register(validEnemy);
       verify(entityService, never()).register(rejectedEnemy);
-      factory.verify(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"), never());
-      factory.verify(() -> NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas"));
+      factory.verify(() -> NPCFactory.createBug(target), never());
+      factory.verify(() -> NPCFactory.createWolf(target));
       assertFalse(enemyManager.isCleared());
 
       validEnemy.getEvents().trigger("entityDied");
@@ -181,19 +179,15 @@ class EnemyManagerComponentTest {
     Entity validEnemy = new Entity();
 
     try (MockedStatic<NPCFactory> factory = Mockito.mockStatic(NPCFactory.class)) {
-      factory
-          .when(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"))
-          .thenReturn(blockedEnemy);
-      factory
-          .when(() -> NPCFactory.createChaseEnemy(target, false, "images/wolf.atlas"))
-          .thenReturn(validEnemy);
+      factory.when(() -> NPCFactory.createBug(target)).thenReturn(blockedEnemy);
+      factory.when(() -> NPCFactory.createWolf(target)).thenReturn(validEnemy);
 
       enemyManager.spawnEnemies(target);
 
       assertEquals(1, entityService.getEntities().size);
       verify(entityService).register(validEnemy);
       verify(entityService, never()).register(blockedEnemy);
-      factory.verify(() -> NPCFactory.createChaseEnemy(target, true, "images/bug.atlas"), never());
+      factory.verify(() -> NPCFactory.createBug(target), never());
     }
   }
 
