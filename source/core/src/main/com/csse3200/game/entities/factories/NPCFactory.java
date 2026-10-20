@@ -226,7 +226,7 @@ public class NPCFactory {
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
 
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(ATTACK_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
