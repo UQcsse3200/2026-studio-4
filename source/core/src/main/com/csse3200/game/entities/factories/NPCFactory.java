@@ -14,9 +14,11 @@ import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
+import com.csse3200.game.components.npc.DustCloudAnimation;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.components.npc.FlyingEnemyPatrolComponent;
+import com.csse3200.game.components.npc.MedusaHitRecoveryComponent;
 import com.csse3200.game.components.npc.MinotaurAnimationController;
 import com.csse3200.game.components.tasks.*;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -54,6 +56,8 @@ public class NPCFactory {
 
   public static final String PROJECTILE_SPAWNED = "enemyProjectileSpawned";
   private static final float CHASE_SPEED = 2.5f;
+  private static final float MEDUSA_CONTACT_INTERVAL = 1.5f;
+  private static final float MEDUSA_LUNGE_COOLDOWN = 3f;
   private static final String DEFAULT_ANIMATION = "default";
   private static final String DIE_ANIMATION = "dieAnimation";
   private static final String MOVE = "move";
@@ -153,12 +157,17 @@ public class NPCFactory {
   public static Entity createChaseEnemy(Entity target, boolean shouldSplit, String skin) {
     Entity chaseEnemy = createBaseNPC();
     ChaseEnemyConfig config = configs.chaseEnemy;
+    boolean isMedusa = "images/split-enemy/medusa.atlas".equals(skin);
+    LungeAttackTask lunge =
+        isMedusa
+            ? new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy, MEDUSA_LUNGE_COOLDOWN)
+            : new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy);
 
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new GroundChaseTask(target, 10, 3f, 10f))
-            .addTask(new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy));
+            .addTask(lunge);
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -184,8 +193,13 @@ public class NPCFactory {
           .addComponent(new MinotaurDashTrailComponent());
     } else {
       chaseEnemy
-          .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f, 1f))
+          .addComponent(
+              new TouchAttackComponent(
+                  PhysicsLayer.PLAYER, 1.5f, isMedusa ? MEDUSA_CONTACT_INTERVAL : 1f, isMedusa))
           .addComponent(new EnemyAnimationController());
+    }
+    if (isMedusa) {
+      chaseEnemy.addComponent(new MedusaHitRecoveryComponent(target, lunge));
     }
     if (shouldSplit) {
       chaseEnemy.addComponent(new SplitComponent(target, skin));
@@ -245,7 +259,8 @@ public class NPCFactory {
                     target,
                     10,
                     configs.floatingDemon.baseAttack,
-                    projectile -> enemy.getEvents().trigger(PROJECTILE_SPAWNED, projectile)));
+                    projectile -> enemy.getEvents().trigger(PROJECTILE_SPAWNED, projectile),
+                    skin));
 
     enemy.addComponent(aiComponent).addComponent(new FlyingEnemyPatrolComponent(spawn));
 
@@ -343,16 +358,16 @@ public class NPCFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset("images/horse.atlas", TextureAtlas.class));
-    animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
-    animator.addAnimation("attack", 0.09f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_up", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_down", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_right", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_left", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_NE", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_NW", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_SE", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("move_SW", 1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("attack", 0.3f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_up", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_down", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_right", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_left", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_NE", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_NW", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_SE", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("move_SW", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
@@ -362,6 +377,7 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(animator)
+        .addComponent(new DustCloudAnimation(sleipnir))
         .addComponent(new EnemyAnimationController())
         .addComponent(new EnemyStatDisplay(1.5f))
         .addComponent(new BossPhaseComponent());
@@ -447,7 +463,7 @@ public class NPCFactory {
 
   /** Creates a Sandeye with its standard appearance and no splitting. */
   public static Entity createSandeye(Entity target) {
-    return createChaseEnemy(target, false, "images/minotaur/sandeye.atlas");
+    return createChaseEnemy(target, false, "images/chase-enemy/sandeye.atlas");
   }
 
   /** Creates a beetle with its standard appearance, fuse and scale. */

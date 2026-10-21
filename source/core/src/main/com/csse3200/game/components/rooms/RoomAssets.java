@@ -11,6 +11,7 @@ import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.traps.FireTrapRenderComponent;
 import com.csse3200.game.components.traps.IceTrapRenderComponent;
 import com.csse3200.game.entities.factories.RoomFactory;
+import com.csse3200.game.entities.factories.TutorialPropFactory;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.minimap.Minimap;
@@ -45,6 +46,17 @@ public class RoomAssets implements Disposable {
     "images/bomb-enemy/golem.atlas",
     "images/giant-enemy/cyclops.atlas",
     "images/flying-enemy/wasp.atlas",
+    "images/flying-enemy/floating-demon-projectile.atlas",
+    "images/flying-enemy/harpy.atlas",
+    "images/bomb-enemy/beetle.atlas",
+    "images/snake-miniboss/snake.atlas",
+    "images/split-enemy/medusa.atlas",
+    "images/giant-enemy/mummy.atlas",
+    "images/split-enemy/crab.atlas",
+    "images/bomb-enemy/golem.atlas",
+    "images/giant-enemy/cyclops.atlas",
+    "images/flying-enemy/wasp.atlas",
+    "images/dust.atlas",
     "images/flying-enemy/floating-demon-projectile.atlas",
     "images/flying-enemy/harpy.atlas",
     "images/cerberus/cerberus-modular.atlas",
@@ -114,6 +126,7 @@ public class RoomAssets implements Disposable {
               DUNGEON_TEXTURES,
               OBSTACLE_TEXTURES,
               TRAP_TEXTURES,
+              TutorialPropFactory.textures(),
               ITEM_TEXTURES,
               ENEMY_TEXTURES,
               PLAYER_TEXTURES,

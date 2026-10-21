@@ -1,6 +1,7 @@
 package com.csse3200.game.components.tasks;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
@@ -227,5 +228,130 @@ class LungeAttackTaskTest {
 
     when(gameTime.getTime()).thenReturn(3200L);
     assertEquals(20, task.getPriority());
+  }
+
+  @Test
+  void shouldUseConfiguredCooldownAfterCompletedDash() {
+    target.setPosition(1f, 0f);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f, owner, 2.5f);
+    task.create(taskRunner);
+    task.start();
+    when(gameTime.getTime()).thenReturn(500L);
+    task.update();
+    when(gameTime.getTime()).thenReturn(900L);
+    task.update();
+    task.stop();
+
+    when(gameTime.getTime()).thenReturn(3399L);
+    assertEquals(-1, task.getPriority());
+    when(gameTime.getTime()).thenReturn(3400L);
+    assertEquals(20, task.getPriority());
+  }
+
+  @Test
+  void shouldInterruptTelegraphWithoutStartingOrEndingADash() {
+    target.setPosition(1f, 0f);
+    int[] dashEvents = {0};
+    owner.getEvents().addListener("lungeDashStart", () -> dashEvents[0]++);
+    owner.getEvents().addListener("lungeDashEnd", () -> dashEvents[0]++);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f, owner, 2.5f);
+    task.create(taskRunner);
+    task.start();
+    clearInvocations(movementComponent);
+
+    when(gameTime.getTime()).thenReturn(200L);
+    task.interrupt();
+    verify(movementComponent).setMoving(false);
+    verify(movementComponent).setMaxSpeed(new Vector2(2.5f, 2.5f));
+    assertEquals(-1, task.getPriority());
+
+    when(gameTime.getTime()).thenReturn(1000L);
+    task.update();
+    verify(movementComponent, never()).setMoving(true);
+    assertEquals(0, dashEvents[0]);
+    task.stop();
+    when(gameTime.getTime()).thenReturn(2699L);
+    assertEquals(-1, task.getPriority());
+    when(gameTime.getTime()).thenReturn(2700L);
+    assertEquals(20, task.getPriority());
+  }
+
+  @Test
+  void shouldInterruptDashOnceAndRestoreMovementSpeed() {
+    target.setPosition(1f, 0f);
+    int[] dashEnds = {0};
+    owner.getEvents().addListener("lungeDashEnd", () -> dashEnds[0]++);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f, owner, 2.5f);
+    task.create(taskRunner);
+    task.start();
+    when(gameTime.getTime()).thenReturn(500L);
+    task.update();
+    clearInvocations(movementComponent);
+
+    when(gameTime.getTime()).thenReturn(600L);
+    task.interrupt();
+    task.interrupt();
+    verify(movementComponent).setMoving(false);
+    verify(movementComponent).setMaxSpeed(new Vector2(2.5f, 2.5f));
+    assertEquals(1, dashEnds[0]);
+    assertEquals(-1, task.getPriority());
+    clearInvocations(movementComponent);
+
+    when(gameTime.getTime()).thenReturn(1000L);
+    task.update();
+    verifyNoInteractions(movementComponent);
+    assertEquals(1, dashEnds[0]);
+    task.stop();
+    when(gameTime.getTime()).thenReturn(3099L);
+    assertEquals(-1, task.getPriority());
+    when(gameTime.getTime()).thenReturn(3100L);
+    assertEquals(20, task.getPriority());
+  }
+
+  @Test
+  void shouldDelayInactiveLungeWithoutChangingAnotherTasksMovement() {
+    target.setPosition(1f, 0f);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f, owner, 2.5f);
+    task.create(taskRunner);
+    clearInvocations(movementComponent);
+
+    when(gameTime.getTime()).thenReturn(100L);
+    task.interrupt();
+    assertEquals(-1, task.getPriority());
+    assertEquals(-1, task.getPriority());
+    when(gameTime.getTime()).thenReturn(2599L);
+    assertEquals(-1, task.getPriority());
+    when(gameTime.getTime()).thenReturn(2600L);
+    assertEquals(20, task.getPriority());
+    verifyNoInteractions(movementComponent);
+  }
+
+  @Test
+  void shouldRefreshCooldownWhenHitAgainDuringRecovery() {
+    target.setPosition(1f, 0f);
+    LungeAttackTask task = new LungeAttackTask(target, 20, 2.5f, owner, 2.5f);
+    task.create(taskRunner);
+    task.start();
+    when(gameTime.getTime()).thenReturn(100L);
+    task.interrupt();
+    task.stop();
+    when(gameTime.getTime()).thenReturn(400L);
+    task.interrupt();
+
+    when(gameTime.getTime()).thenReturn(2600L);
+    assertEquals(-1, task.getPriority());
+    when(gameTime.getTime()).thenReturn(2899L);
+    assertEquals(-1, task.getPriority());
+    when(gameTime.getTime()).thenReturn(2900L);
+    assertEquals(20, task.getPriority());
+  }
+
+  @Test
+  void shouldRejectInvalidCooldown() {
+    for (float cooldown : new float[] {0f, -1f, Float.NaN, Float.POSITIVE_INFINITY}) {
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> new LungeAttackTask(target, 20, 2.5f, owner, cooldown));
+    }
   }
 }

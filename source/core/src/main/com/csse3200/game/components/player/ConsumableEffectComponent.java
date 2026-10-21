@@ -3,7 +3,7 @@ package com.csse3200.game.components.player;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.ItemIds;
@@ -20,7 +20,7 @@ import java.util.Map;
 public class ConsumableEffectComponent extends Component {
   public static final String USE_REQUEST = "useConsumable";
   public static final String USED = "itemUsed";
-  private final Map<String, TimedStatusEffect> active = new HashMap<>();
+  private final Map<String, StatusEffect> active = new HashMap<>();
   private CombatStatsComponent stats;
   private InventoryComponent inventory;
   private StatusEffectsControllerComponent effects;
@@ -63,7 +63,7 @@ public class ConsumableEffectComponent extends Component {
     if (!inventory.removeConsumable(id)) {
       return false;
     }
-    TimedStatusEffect effect = item.use(stats, time);
+    StatusEffect effect = item.use(stats, time);
     if (effect != null) {
       refresh(id, effect);
     }
@@ -71,7 +71,7 @@ public class ConsumableEffectComponent extends Component {
     return true;
   }
 
-  private void refresh(String id, TimedStatusEffect effect) {
+  private void refresh(String id, StatusEffect effect) {
     effects.removeStatusEffect(active.remove(id));
     active.put(id, effect);
     effect.setOnEnded(
@@ -95,7 +95,7 @@ public class ConsumableEffectComponent extends Component {
 
   /** Remaining duration of a real active consumable effect; zero when absent or removed. */
   public long getRemainingMs(String id) {
-    TimedStatusEffect effect = id == null ? null : active.get(id);
+    StatusEffect effect = id == null ? null : active.get(id);
     return effects != null && effect != null && effects.hasStatusEffect(effect)
         ? effect.getRemainingDuration()
         : 0;
@@ -103,7 +103,7 @@ public class ConsumableEffectComponent extends Component {
 
   /** Portion of an active timed consumable still remaining, from zero to one. */
   public float getRemainingFraction(String id) {
-    TimedStatusEffect effect = id == null ? null : active.get(id);
+    StatusEffect effect = id == null ? null : active.get(id);
     long remaining = getRemainingMs(id);
     return effect == null || effect.getDuration() <= 0
         ? 0f
@@ -114,7 +114,7 @@ public class ConsumableEffectComponent extends Component {
   public void dispose() {
     disposed = true;
     if (effects != null) {
-      for (TimedStatusEffect effect : active.values().toArray(TimedStatusEffect[]::new)) {
+      for (StatusEffect effect : active.values().toArray(StatusEffect[]::new)) {
         effects.removeStatusEffect(effect);
       }
     }
