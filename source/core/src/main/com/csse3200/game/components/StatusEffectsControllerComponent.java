@@ -261,16 +261,10 @@ public class StatusEffectsControllerComponent extends Component {
    * @param damage The damage object to be interacted with.
    */
   public void damage(Damage damage) {
-    ArrayList<StatusEffect> removal = new ArrayList<>();
-
-    for (StatusEffect effect : new ArrayList<>(statusEffects)) {
-      if (effect instanceof Damageable damageable && damageable.damage(damage)) {
-        removal.addLast(effect);
-      }
-    }
-
-    statusEffects.removeAll(removal);
-    notifyRemoved(removal);
+    statusEffects.stream()
+            .filter(effect -> effect instanceof Damageable damageable && damageable.damage(damage))
+            .toList()
+            .forEach(statusEffects::remove);
   }
 
   /**
