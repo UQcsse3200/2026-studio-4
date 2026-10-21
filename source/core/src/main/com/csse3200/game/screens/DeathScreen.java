@@ -25,7 +25,9 @@ import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 
-/** Screen shown when the player dies, with options to load a savepoint or return to the main menu. */
+/**
+ * Screen shown when the player dies, with options to load a savepoint or return to the main menu.
+ */
 public class DeathScreen extends ScreenAdapter {
   private final GdxGame game;
   private Renderer renderer;

@@ -32,6 +32,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     TRIGGERED,
     CANCELLED
   }
+
   private boolean winComboHeld;
 
   public KeyboardPlayerInputComponent() {
@@ -261,10 +262,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
 
   private static boolean isWinCombo() {
     boolean ctrl =
-            Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT);
+        Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT);
     boolean shift =
-            Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT);
+        Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT);
     return ctrl && shift;
   }
-
 }

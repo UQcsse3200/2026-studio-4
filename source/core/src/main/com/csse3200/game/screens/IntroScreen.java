@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Displays the intro animation between the studio splash and main menu.
  *
- * The screen loads its own rendering and input services, then transitions to the main menu when
+ * <p>The screen loads its own rendering and input services, then transitions to the main menu when
  * the intro display reports that its animation has finished.
  */
 public class IntroScreen extends ScreenAdapter {
