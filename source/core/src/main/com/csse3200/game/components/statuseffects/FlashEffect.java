@@ -9,7 +9,7 @@ import com.csse3200.game.services.GameTime;
  * <p>The blink is derived from the time remaining rather than driven by a timer of its own, so a
  * flash short enough to cover only the first half period simply shows once and ends.
  */
-public class FlashEffect extends TimedStatusEffect {
+public class FlashEffect extends StatusEffect {
   private static final long BLINK_HALF_PERIOD_MILLIS = 250L;
 
   private final Color tint;

@@ -10,7 +10,7 @@ import com.csse3200.game.services.GameTime;
  * <p>It reads raw combat stats rather than changing them, so the burst cannot leak into the
  * wearer's real stats and adjustments made during it, such as picking up a charm, survive it.
  */
-public class LastStandEffect extends TimedStatusEffect {
+public class LastStandEffect extends StatusEffect {
   /** Applied to effective strength, movement speed and attack speed while the effect runs. */
   public static final float MULTIPLIER = 1.5f;
 

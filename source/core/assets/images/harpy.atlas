@@ -416,3 +416,81 @@ dieAnimation
   orig: 44, 39
   offset: 0, 0
   index: 7
+
+themed_projectiles/harpy/projectile_1.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectile
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 0
+
+themed_projectiles/harpy/projectile_2.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectile
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 1
+
+themed_projectiles/harpy/projectile_3.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectile
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 2
+
+themed_projectiles/harpy/projectileHit_1.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectileHit
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 0
+
+themed_projectiles/harpy/projectileHit_2.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectileHit
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 1
+
+themed_projectiles/harpy/projectileHit_3.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectileHit
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 2
