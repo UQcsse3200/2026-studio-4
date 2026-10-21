@@ -3,7 +3,7 @@ package com.csse3200.game.components.statuseffects;
 import com.csse3200.game.components.Damage;
 import com.csse3200.game.services.GameTime;
 
-public class Shield extends TimedStatusEffect implements StatusEffect, Damageable {
+public class Shield extends StatusEffect implements Damageable {
 
   public Shield(GameTime time, long duration) {
     super(time, duration);

@@ -10,6 +10,13 @@ default
     orig: 32, 32
     offset: 0, 0
     index: 0
+attack
+    rotate: false
+    xy: 32, 0
+    size: 32, 32
+    orig: 32, 32
+    offset: 0, 0
+    index: 1
 move
     rotate: false
     xy: 32, 0
@@ -122,3 +129,81 @@ dieAnimation
     orig: 32, 32
     offset: 0, 0
     index: 6
+
+themed_projectiles/jingwei/projectile_1.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectile
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 0
+
+themed_projectiles/jingwei/projectile_2.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectile
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 1
+
+themed_projectiles/jingwei/projectile_3.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectile
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 2
+
+themed_projectiles/jingwei/projectileHit_1.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectileHit
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 0
+
+themed_projectiles/jingwei/projectileHit_2.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectileHit
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 1
+
+themed_projectiles/jingwei/projectileHit_3.png
+size: 50, 50
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+projectileHit
+  rotate: false
+  xy: 0, 0
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: 2

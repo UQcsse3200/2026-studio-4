@@ -21,11 +21,10 @@ import java.util.Objects;
  * <p>Charms are deliberately left alone: picking a charm is a build choice the player should make
  * themselves with the pickup key. While active, the player is drawn with a soft golden glow.
  */
-public class MagnetEffect extends TimedStatusEffect {
+public class MagnetEffect extends StatusEffect {
   /** Golden glow added on top of the player's sprite while the magnet is active. */
   private static final Color GLOW = new Color(1f, 0.82f, 0.2f, 0.35f);
 
-  private final GameTime time;
   private final Entity owner;
   private final float radius;
   private final float pullSpeed;
@@ -50,7 +49,6 @@ public class MagnetEffect extends TimedStatusEffect {
     if (radius <= 0 || pullSpeed <= 0 || collectDistance <= 0) {
       throw new IllegalArgumentException("Magnet radius, speed and collect distance must be > 0");
     }
-    this.time = time;
     this.owner = Objects.requireNonNull(owner, "owner cannot be null");
     this.radius = radius;
     this.pullSpeed = pullSpeed;

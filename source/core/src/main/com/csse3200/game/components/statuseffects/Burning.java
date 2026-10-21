@@ -4,8 +4,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.services.GameTime;
 
 /** The object class for the burning status effect. */
-public class Burning implements StatusEffect {
-  private final GameTime time = new GameTime();
+public class Burning extends StatusEffect {
 
   private final int damage;
   private final long burnCooldown;
@@ -24,6 +23,7 @@ public class Burning implements StatusEffect {
    * @param combatStats the combat stats component of the entity which has the status effect.
    */
   public Burning(int damage, long burnCooldown, long duration, CombatStatsComponent combatStats) {
+    super(new GameTime(), duration);
     this.damage = damage;
     this.burnCooldown = burnCooldown;
     this.duration = duration;
@@ -46,6 +46,7 @@ public class Burning implements StatusEffect {
   }
 
   /** Returns the time left until the status effect should be removed (in milliseconds). */
+  @Override
   public long getRemainingDuration() {
     return duration - time.getTimeSince(burnInit);
   }

@@ -11,6 +11,7 @@ import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
 import com.csse3200.game.components.traps.FireTrapRenderComponent;
 import com.csse3200.game.components.traps.IceTrapRenderComponent;
 import com.csse3200.game.entities.factories.RoomFactory;
+import com.csse3200.game.entities.factories.TutorialPropFactory;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.minimap.Minimap;
@@ -30,6 +31,7 @@ public class RoomAssets implements Disposable {
 
   private static final String[] ENEMY_TEXTURES = {
     "images/dragon/smoke_sheet.png",
+    "images/sleipnir/dust.png",
     SnakePlayerHitVisualComponent.HIT_SHEET,
     SnakeShieldComponent.SHIELD_TEXTURE,
     SnakeShieldPickupComponent.GEM_TEXTURE,
@@ -53,7 +55,7 @@ public class RoomAssets implements Disposable {
     "images/dragon/dragon.atlas",
     "images/dragon/thunder-orb.atlas",
     "images/chase-enemy/wolf.atlas",
-    "images/horse.atlas",
+    "images/sleipnir/horse.atlas",
     "images/flying-enemy/crow.atlas",
     "images/chase-enemy/minotaur.atlas",
     "images/chase-enemy/minotaur-combat/attacks.atlas",
@@ -114,6 +116,7 @@ public class RoomAssets implements Disposable {
               DUNGEON_TEXTURES,
               OBSTACLE_TEXTURES,
               TRAP_TEXTURES,
+              TutorialPropFactory.textures(),
               ITEM_TEXTURES,
               ENEMY_TEXTURES,
               PLAYER_TEXTURES,

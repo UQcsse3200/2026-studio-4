@@ -1,7 +1,9 @@
 package com.csse3200.game.components;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -146,6 +148,35 @@ class SplitComponentTest {
       assertEquals(1, childStats.getBaseAttack());
       assertNull(child.getComponent(SplitComponent.class));
     }
+  }
+
+  @Test
+  void medusaAndItsChildrenRecoverFromPlayerHitsWithoutChangingCrab() {
+    Entity player = new Entity();
+    Entity medusa = NPCFactory.createChaseEnemy(player, true, "images/split-enemy/medusa.atlas");
+    medusa.create();
+    EventListener1<Entity> childListener = addChildListener(medusa);
+    CombatStatsComponent stats = medusa.getComponent(CombatStatsComponent.class);
+
+    stats.takeDamage(1, player);
+    assertTrue(StatusEffectsControllerComponent.isImmobilised(medusa));
+    stats.takeDamage(100, player);
+    assertFalse(StatusEffectsControllerComponent.isImmobilised(medusa));
+    entityService.update();
+
+    ArgumentCaptor<Entity> children = ArgumentCaptor.forClass(Entity.class);
+    verify(childListener, times(2)).handle(children.capture());
+    for (Entity child : children.getAllValues()) {
+      // The room normally registers each entity emitted by spawnChildren.
+      entityService.register(child);
+      child.getComponent(CombatStatsComponent.class).takeDamage(1, player);
+      assertTrue(StatusEffectsControllerComponent.isImmobilised(child));
+    }
+
+    Entity crab = NPCFactory.createChaseEnemy(player, true, "images/crab.atlas");
+    crab.create();
+    crab.getComponent(CombatStatsComponent.class).takeDamage(1, player);
+    assertFalse(StatusEffectsControllerComponent.isImmobilised(crab));
   }
 
   @Test

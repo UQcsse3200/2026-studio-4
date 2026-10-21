@@ -2,7 +2,7 @@ package com.csse3200.game.items.consumables;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.services.GameTime;
@@ -98,7 +98,7 @@ public final class InstantHealingPotion extends ConsumableItem {
   }
 
   @Override
-  public TimedStatusEffect use(CombatStatsComponent stats, GameTime time) {
+  public StatusEffect use(CombatStatsComponent stats, GameTime time) {
     stats.addHealth(Math.min(healing, stats.getMaxHealth() - stats.getHealth()));
     return null;
   }
