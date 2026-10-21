@@ -16,7 +16,8 @@ import java.util.List;
 /** Draws green burrowing dust and a fixed warning circle without external effect textures. */
 public class SnakeBurrowVisualComponent extends RenderComponent {
   private static final int MAX_PARTICLES = 128;
-  private static final float PIXEL_SIZE = 0.065f;
+  private static final float DUST_SCALE = 1.5f;
+  private static final float PIXEL_SIZE = 0.065f * DUST_SCALE;
   private final List<Particle> particles = new ArrayList<>();
   private final Vector2 warningCentre = new Vector2();
   private Texture pixel;
@@ -72,7 +73,7 @@ public class SnakeBurrowVisualComponent extends RenderComponent {
         particles.removeFirst();
       }
       float angle = MathUtils.PI2 * i / count + MathUtils.random(0.3f);
-      particles.add(new Particle(centre, angle, spread * MathUtils.random(0.5f, 1f)));
+      particles.add(new Particle(centre, angle, spread * DUST_SCALE * MathUtils.random(0.5f, 1f)));
     }
   }
 
