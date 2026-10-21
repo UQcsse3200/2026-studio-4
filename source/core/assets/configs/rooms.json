@@ -181,63 +181,18 @@
       "enemySpawns": [
         {
           "type": "MEDUSA",
-          "x": 30,
-          "y": 6
-        },
-        {
-          "type": "MEDUSA",
-          "x": 41,
-          "y": 14
+          "x": 34,
+          "y": 10
         },
         {
           "type": "MEDUSA",
           "x": 34,
-          "y": 20
-        },
-        {
-          "type": "MEDUSA",
-          "x": 28,
-          "y": 14
-        },
-        {
-          "type": "MEDUSA",
-          "x": 28,
           "y": 29
-        },
-        {
-          "type": "MEDUSA",
-          "x": 41,
-          "y": 29
-        },
-        {
-          "type": "MEDUSA",
-          "x": 34,
-          "y": 5
         },
         {
           "type": "MEDUSA",
           "x": 55,
           "y": 9
-        },
-        {
-          "type": "MEDUSA",
-          "x": 58,
-          "y": 13
-        },
-        {
-          "type": "MEDUSA",
-          "x": 54,
-          "y": 5
-        },
-        {
-          "type": "MEDUSA",
-          "x": 30,
-          "y": 44
-        },
-        {
-          "type": "MEDUSA",
-          "x": 38,
-          "y": 44
         },
         {
           "type": "MEDUSA",
