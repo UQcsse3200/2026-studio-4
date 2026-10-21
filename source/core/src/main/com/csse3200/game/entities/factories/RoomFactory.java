@@ -1,6 +1,10 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.areas.attic.AtticLighting;
+import com.csse3200.game.areas.attic.AtticTerrain;
 import com.csse3200.game.areas.terrain.TerrainBuilder;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
@@ -13,6 +17,7 @@ import com.csse3200.game.components.tutorial.TutorialPropManagerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.InteractableNpcConfigs;
 import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.rendering.RoomLightingComponent;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -34,8 +39,16 @@ public class RoomFactory {
   public static final String DUNGEON4_TILESET = "images/dungeons/tileSet4.png";
   public static final String DUNGEON5_TILESET = "images/dungeons/tileSet5.png";
 
+  /** {@link RoomConfig#theme} value for home-library rooms such as dungeon selection. */
+  public static final String LIBRARY_THEME = "library";
+
   private RoomFactory() {
     throw new IllegalStateException("Instantiating static utility class");
+  }
+
+  /** The tileset for a room: its own override if it has one, otherwise its dungeon's. */
+  public static String getTileSet(RoomConfig room) {
+    return room.tileset != null ? room.tileset : getTileSet(room.dungeonId);
   }
 
   /** Get the tileset to use based it's dungeon. */
@@ -67,13 +80,24 @@ public class RoomFactory {
    * @return The room entity.
    */
   public static Entity createRoom(RoomConfig room, CameraComponent camera, boolean cleared) {
+    if (isLibrary(room)) {
+      return createLibraryRoom(room, camera);
+    }
 
     GridPoint2 mapSize = new GridPoint2(room.mapWidth, room.mapHeight);
-    String tileset = getTileSet(room.dungeonId);
+    String tileset = getTileSet(room);
     TerrainBuilder terrainBuilder = new TerrainBuilder(camera, mapSize, tileset);
 
     spawnMap(room, terrainBuilder);
-    return new Entity()
+    Entity entity = new Entity();
+    // Optional extras for decorated rooms (e.g. the attic): furniture props and dark lighting.
+    if (room.props.length > 0) {
+      entity.addComponent(new AtticFurnitureComponent(room, false));
+    }
+    if (room.darkness > 0f) {
+      entity.addComponent(createLighting(room));
+    }
+    return entity
         .addComponent(new GameAreaDisplay(room.title))
         .addComponent(terrainBuilder.getTerrain())
         .addComponent(new ExitComponent(room.exits))
@@ -114,6 +138,63 @@ public class RoomFactory {
         .map(prop -> prop.itemId)
         .filter(Objects::nonNull)
         .collect(Collectors.toCollection(LinkedHashSet::new));
+  }
+
+  /** Whether a room uses the home-library theme instead of a dungeon tileset. */
+  public static boolean isLibrary(RoomConfig room) {
+    return LIBRARY_THEME.equals(room.theme);
+  }
+
+  /**
+   * Builds a home-library room: library floor and walls, furniture props, and exits drawn as their
+   * configured sprites (the dungeon tomes). Gameplay components match a dungeon room.
+   */
+  private static Entity createLibraryRoom(RoomConfig room, CameraComponent camera) {
+    Entity entity = new Entity();
+    if (room.darkness > 0f) {
+      entity.addComponent(createLighting(room));
+    }
+    return entity
+        .addComponent(new GameAreaDisplay(room.title))
+        .addComponent(
+            AtticTerrain.build(room.obstacles.spawns, room.mapWidth, room.mapHeight, camera))
+        .addComponent(new ExitComponent(room.exits))
+        .addComponent(new WallComponent())
+        .addComponent(new FollowingCameraComponent())
+        .addComponent(new AtticFurnitureComponent(room))
+        .addComponent(new TrapManagerComponent(room.trapSpawns))
+        .addComponent(new EnemyManagerComponent(room.enemySpawns, room, camera))
+        .addComponent(new RoomDataComponent(room))
+        .addComponent(new RoomAcheivements())
+        .addComponent(new RoomMusicComponent())
+        .addComponent(new FriendlyNpcManagerComponent(room.npcSpawns, getFriendlyNpcs()));
+  }
+
+  /** Darkness over the room's walled area, lit by its candles, lamps, tomes and explicit lights. */
+  private static RoomLightingComponent createLighting(RoomConfig room) {
+    List<String> grid = room.obstacles.spawns;
+    int minX = Integer.MAX_VALUE;
+    int minY = Integer.MAX_VALUE;
+    int maxX = -1;
+    int maxY = -1;
+    for (int y = 0; y < grid.size(); y++) {
+      String row = grid.get(y);
+      for (int x = 0; x < row.length(); x++) {
+        if (row.charAt(x) != AtticTerrain.VOID) {
+          minX = Math.min(minX, x);
+          minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x);
+          maxY = Math.max(maxY, y);
+        }
+      }
+    }
+    float tile = 0.5f;
+    return new RoomLightingComponent(
+        room.darkness,
+        Color.valueOf(room.shadowColor),
+        AtticLighting.lightsFor(room),
+        new Vector2(minX * tile, minY * tile),
+        new Vector2((maxX + 1) * tile, (maxY + 1) * tile));
   }
 
   private static InteractableNpcConfigs getFriendlyNpcs() {

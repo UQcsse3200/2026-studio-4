@@ -4,165 +4,92 @@
   "rooms": [
     {
       "id": "selection",
-      "title": "Dungeon Selection",
-      "mapWidth": 41,
-      "mapHeight": 61,
+      "title": "The Attic",
+      "tileset": "images/dungeons/tileSet0.png",
+      "darkness": 0.5,
+      "shadowColor": "#050309",
+      "mapWidth": 40,
+      "mapHeight": 24,
       "entryPoints": [
-        {
-          "id": "start",
-          "x": 16,
-          "y": 21
-        },
-        {
-          "id": "fromDungeonOne",
-          "x": 16,
-          "y": 21
-        },
-        {
-          "id": "fromDungeonTwo",
-          "x": 16,
-          "y": 21
-        },
-        {
-          "id": "fromDungeonThree",
-          "x": 16,
-          "y": 21
-        },
-        {
-          "id": "fromDungeonFour",
-          "x": 16,
-          "y": 21
-        },
-        {
-          "id": "fromTutorial",
-          "x": 12,
-          "y": 24
-        }
+        {"id": "start", "x": 22, "y": 10},
+        {"id": "fromDungeonOne", "x": 22, "y": 10},
+        {"id": "fromDungeonTwo", "x": 22, "y": 10},
+        {"id": "fromDungeonThree", "x": 22, "y": 10},
+        {"id": "fromDungeonFour", "x": 22, "y": 10},
+        {"id": "fromTutorial", "x": 22, "y": 10}
       ],
       "enemySpawns": [],
       "npcSpawns": [
-        {
-          "npcId": "merchant",
-          "x": 16,
-          "y": 16
-        },
-        {
-          "npcId": "hecate",
-          "x": 11,
-          "y": 18
-        },
-        {
-          "npcId": "tutorialGuide",
-          "x": 12,
-          "y": 22
-        }
+        {"npcId": "merchant", "x": 26, "y": 9},
+        {"npcId": "hecate", "x": 13, "y": 13},
+        {"npcId": "tutorialGuide", "x": 21, "y": 7}
       ],
       "obstacles": {
         "spawns": [
-          "                                         ",
-          " ################################        ",
-          " #33B3B33B322222233B333B333B3333#        ",
-          " #33B333B3322222233B333B3B33B3B3#        ",
-          " #333B33B3322222233B3B3B3B3333B3#        ",
-          " #33B3B3B3322222233B33B33B33333B#######  ",
-          " #33B333B33222222222222222222222SSSSSS#  ",
-          " #33B333B3B222222222222222222222222222#  ",
-          " #333B33B3B222222222222222222222222222#  ",
-          " #333B3333B222222222222222222222222222#  ",
-          " #33B3B3333222222B333B33B3333B3333B33B#  ",
-          " #33B33B33B222222B333333B3B33333#######  ",
-          " #33333B3B3222222B33B3B3B33B3B33#        ",
-          " #333B33333222222333B3B333B3B33B#        ",
-          " #333B3333B222222B3B33B333333B33#######  ",
-          " #3333B333B222222222222222222222SSSSSS#  ",
-          " #3333B3332222222222222222222222222222#  ",
-          " #333B3B322222222222222222222222222222#  ",
-          " #333B3B222222222222222222222222222222#  ",
-          " #33B33B222222222222333B3B33B3B333B3B3#  ",
-          " #33B3332222222222223B3B33B33B3B#######  ",
-          " #333B3B2222222222223B3333B33B33#        ",
-          " #333B3B22222222222233B333B3B3B3#        ",
-          " #33333B222222222222B3B33B33B333#######  ",
-          " #3B3B33222222222222222222222222SSSSSS#  ",
-          " #3333B3322222222222222222222222222222#  ",
-          " #33333B332222222222222222222222222222#  ",
-          " #3B3B3B3B3222222222222222222222222222#  ",
-          " #33B333B332222223B33B3B3B33B3B333B33B#  ",
-          " #333333B3B222222B33B333B33B3333#######  ",
-          " #3333B33B3222222B33B33B3B33B3B3#        ",
-          " #333B3333B2222223B333B3333B333B#        ",
-          " #33B3B3B3B222222B333B3B3333B3B3#######  ",
-          " #3B333B33B222222222222222222222SSSSSS#  ",
-          " #3333B33B3222222222222222222222222222#  ",
-          " #3B33B333B222222222222222222222222222#  ",
-          " #3B33B3B3B222222222222222222222222222#  ",
-          " #33B333B3322222233B33333B33B3B333B3B3#  ",
-          " #3333B3B3B2222223333B3333B33B3B#######  ",
-          " #3B33B333B222222B33B3B33B3B3333#        ",
-          " #333B333B32222223B3333B333B33B3#        ",
-          " ###########2222#################        ",
-          "           #2222#                        ",
-          "           #2222#                        ",
-          "           #2222#                        ",
-          "           #2222#                        ",
-          "           #2222#                        ",
-          "  ##########2222##########               ",
-          "  #8888888882222888888888#               ",
-          "  #8888888882222888888888#######         ",
-          "  #8888888882222222222222SSSSSS#         ",
-          "  #888###8882222222222222222222#         ",
-          "  #888# #8882222222222222222222#         ",
-          "  #888###8882222222222222222222#         ",
-          "  #8888888888888888888888888888#         ",
-          "  #888###8888###888###888#######         ",
-          "  #888# #8888# #888# #888#               ",
-          "  #888###8888###888###888#               ",
-          "  #8888888888888888888888#               ",
-          "  ########################               ",
-          "                                         "
+          "                                        ",
+          "                                        ",
+          "                                        ",
+          "                                        ",
+          "                                        ",
+          "         %%%%%%%%%%%%%%%%%%%%%          ",
+          "         %7777777777777777777%          ",
+          "         %7777777777777777777%          ",
+          "         %7777777777777777777%          ",
+          "         %7777777777777777777%          ",
+          "         %7777777777777777777%          ",
+          "         %7777777777777777777%          ",
+          "         %7777777777777777777%          ",
+          "         %7777777777777777777%          ",
+          "         %7777777777777777777%          ",
+          "         %7777777777777777777%          ",
+          "         %7777777777777777777%          ",
+          "         %7777777777777777777%          ",
+          "         %%%%%%%%%%%%%%%%%%%%%          ",
+          "                                        ",
+          "                                        ",
+          "                                        ",
+          "                                        ",
+          "                                        "
         ]
       },
+      "props": [
+        {"prop": "DUSTY_BOOKSHELF", "x": 10, "y": 15},
+        {"prop": "DUSTY_BOOKSHELF_HALF", "x": 12, "y": 15},
+        {"prop": "DUSTY_BOOKSHELF_NARROW", "x": 14, "y": 15},
+        {"prop": "CANDLE_STAND", "x": 16, "y": 15},
+        {"prop": "PEDESTAL_TABLE", "x": 19, "y": 14},
+        {"prop": "CANDLE_STAND", "x": 22, "y": 15},
+        {"prop": "DUSTY_BOOKSHELF_NARROW", "x": 24, "y": 15},
+        {"prop": "DUSTY_SHELF_EMPTY", "x": 25, "y": 15},
+        {"prop": "DUSTY_BOOKSHELF", "x": 27, "y": 15},
+        {"prop": "RUG", "x": 18, "y": 7},
+        {"prop": "CHAIR", "x": 17, "y": 12},
+        {"prop": "CHAIR", "x": 21, "y": 12},
+        {"prop": "READING_TABLE", "x": 15, "y": 10, "length": 9},
+        {"prop": "CANDLE", "x": 15, "y": 10, "elevation": 14},
+        {"prop": "CANDLE", "x": 23, "y": 10, "elevation": 14},
+        {"prop": "WOOD_STOVE", "x": 10, "y": 11},
+        {"prop": "ARMCHAIR_GREEN", "x": 12, "y": 7},
+        {"prop": "CRATE_PILE", "x": 10, "y": 6},
+        {"prop": "BOOK_STACK", "x": 14, "y": 6},
+        {"prop": "OPEN_BOOK", "x": 13, "y": 9},
+        {"prop": "CANDLE", "x": 10, "y": 6, "elevation": 26},
+        {"prop": "HANGING_LANTERN", "x": 12, "y": 16, "elevation": 24},
+        {"prop": "HANGING_LANTERN", "x": 26, "y": 16, "elevation": 24},
+        {"prop": "STAIRS_DOWN", "x": 27, "y": 6},
+        {"prop": "BARREL_PILE", "x": 24, "y": 6},
+        {"prop": "CRATE_STACK", "x": 27, "y": 11},
+        {"prop": "OLD_TABLE", "x": 24, "y": 12},
+        {"prop": "CRYSTAL_BALL", "x": 24, "y": 12, "elevation": 16},
+        {"prop": "BOOK_STACK", "x": 25, "y": 12, "elevation": 16}
+      ],
+      "lights": [],
       "exits": [
-        {
-          "id": "dungeonOneShelf",
-          "kind": "BOOKSHELF",
-          "x": 32,
-          "y": 36,
-          "destinationRoomId": "dungeonOneEntrance",
-          "destinationEntryPointId": "fromSelection"
-        },
-        {
-          "id": "dungeonTwoShelf",
-          "kind": "BOOKSHELF",
-          "x": 32,
-          "y": 27,
-          "destinationRoomId": "dungeonTwoEntrance",
-          "destinationEntryPointId": "fromSelection"
-        },
-        {
-          "id": "dungeonThreeShelf",
-          "kind": "BOOKSHELF",
-          "x": 32,
-          "y": 18,
-          "destinationRoomId": "dungeonThreeEntrance",
-          "destinationEntryPointId": "fromSelection"
-        },
-        {
-          "id": "dungeonFourShelf",
-          "kind": "BOOKSHELF",
-          "x": 32,
-          "y": 9,
-          "destinationRoomId": "dungeonFourEntrance",
-          "destinationEntryPointId": "fromSelection"
-        },
-        {
-          "id": "dungeonFiveShelf",
-          "kind": "BOOKSHELF",
-          "x": 25,
-          "y": 53,
-          "destinationRoomId": "finalBossRoom",
-          "destinationEntryPointId": "fromSelection"
-        }
+        {"id": "dungeonOneShelf", "kind": "BOOKSHELF", "sprite": "TOME_TEMPLE", "x": 16, "y": 10, "elevation": 14, "destinationRoomId": "dungeonOneEntrance", "destinationEntryPointId": "fromSelection"},
+        {"id": "dungeonTwoShelf", "kind": "BOOKSHELF", "sprite": "TOME_DESERT", "x": 18, "y": 10, "elevation": 14, "destinationRoomId": "dungeonTwoEntrance", "destinationEntryPointId": "fromSelection"},
+        {"id": "dungeonThreeShelf", "kind": "BOOKSHELF", "sprite": "TOME_FROST", "x": 20, "y": 10, "elevation": 14, "destinationRoomId": "dungeonThreeEntrance", "destinationEntryPointId": "fromSelection"},
+        {"id": "dungeonFourShelf", "kind": "BOOKSHELF", "sprite": "TOME_DRAGON", "x": 22, "y": 10, "elevation": 14, "destinationRoomId": "dungeonFourEntrance", "destinationEntryPointId": "fromSelection"},
+        {"id": "dungeonFiveShelf", "kind": "BOOKSHELF", "sprite": "TOME_FINAL", "x": 19, "y": 14, "elevation": 20, "destinationRoomId": "finalBossRoom", "destinationEntryPointId": "fromSelection"}
       ]
     },
     {

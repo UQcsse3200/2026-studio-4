@@ -1,9 +1,12 @@
 package com.csse3200.game.components.rooms;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.areas.attic.AtticProp;
+import com.csse3200.game.areas.attic.AtticSprites;
 import com.csse3200.game.areas.terrain.DreamlandTile;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TileSheet;
@@ -14,10 +17,12 @@ import com.csse3200.game.components.player.InteractionPrompt;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.rendering.GlowRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +37,12 @@ public class ExitComponent extends EntityManagerComponent {
   private static final int TILE_SIZE = 16;
   private static final int DOOR_FRAME_SIZE = 32;
   private static final float INTERACTION_RANGE = 1f;
+  private static final String FINAL_DUNGEON_EXIT = "dungeonFiveShelf";
+  private static final int DUNGEONS_BEFORE_FINAL = 4;
+  private static final float GLOW_RADIUS = 0.45f;
+  // Centre of the book on the 16px tome sprite, in sprite pixels from its bottom-left.
+  private static final float TOME_CENTRE_X = 8.5f;
+  private static final float TOME_CENTRE_Y = 5f;
 
   private final ExitConfig[] exits;
   private Entity player;
@@ -48,7 +59,9 @@ public class ExitComponent extends EntityManagerComponent {
     doorTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     TileSheet tileSheet = new TileSheet(texture, TILE_SIZE);
     for (ExitConfig exit : exits) {
-      if ("BOOKSHELF".equals(exit.kind)) {
+      if (exit.sprite != null) {
+        spawnSprite(exit);
+      } else if ("BOOKSHELF".equals(exit.kind)) {
         spawnBookshelf(exit, tileSheet);
       } else if ("DOOR".equals(exit.kind)) {
         spawnDoor(exit, doorTexture);
@@ -151,8 +164,7 @@ public class ExitComponent extends EntityManagerComponent {
       // room is not yet cleared
       entity.getEvents().trigger(GameAreaDisplay.DISPLAY, "Defeat all enemies to progress");
       return;
-    } else if (Objects.equals(nearest.id, "dungeonFiveShelf")
-        && ServiceLocator.getRoomClearService().getDungeonClearedCount() < 4) {
+    } else if (Objects.equals(nearest.id, FINAL_DUNGEON_EXIT) && !finalDungeonUnlocked()) {
       // Access boss room before all other dungeons are cleared
       entity
           .getEvents()
@@ -172,6 +184,36 @@ public class ExitComponent extends EntityManagerComponent {
                     new TextureRegion(doorTexture, 0, 0, DOOR_FRAME_SIZE, DOOR_FRAME_SIZE)));
     door.getComponent(TextureRenderComponent.class).scaleEntity();
     spawnEntityAt(door, new GridPoint2(exit.x, exit.y), false, false);
+  }
+
+  /**
+   * Draws an exit as a library prop (e.g. a dungeon tome on the reading table). Magical props get a
+   * pulsing halo in their colour; the final tome's halo only lights once the other dungeons are
+   * cleared, mirroring the lock in {@link #onExitRequest}.
+   */
+  private void spawnSprite(ExitConfig exit) {
+    AtticProp prop = AtticProp.fromName(exit.sprite);
+    GridPoint2 tile = new GridPoint2(exit.x, exit.y);
+    spawnEntityAt(AtticFurnitureComponent.createProp(prop, 0, exit.elevation), tile, false, false);
+
+    Color glow = prop.getGlow();
+    if (glow != null) {
+      BooleanSupplier lit =
+          FINAL_DUNGEON_EXIT.equals(exit.id) ? ExitComponent::finalDungeonUnlocked : () -> true;
+      Vector2 centre =
+          new Vector2(AtticSprites.toWorld(TOME_CENTRE_X), AtticSprites.toWorld(TOME_CENTRE_Y));
+      Entity halo =
+          new Entity()
+              .addComponent(
+                  new GlowRenderComponent(
+                      glow, GLOW_RADIUS, centre, AtticSprites.toWorld(exit.elevation), lit));
+      spawnEntityAt(halo, tile, false, false);
+    }
+  }
+
+  private static boolean finalDungeonUnlocked() {
+    return ServiceLocator.getRoomClearService() != null
+        && ServiceLocator.getRoomClearService().getDungeonClearedCount() >= DUNGEONS_BEFORE_FINAL;
   }
 
   private void spawnBookshelf(ExitConfig exit, TileSheet tileSheet) {

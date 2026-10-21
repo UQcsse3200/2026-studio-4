@@ -92,9 +92,10 @@ public class LoadGameScreen extends ScreenAdapter {
       if (saveFiles[index]) {
         saves[index] = FileLoader.load(slot);
         if (saves[index] != null
-            && (saves[index].version != 1
-                || saves[index].checkpoint == null
-                || saves[index].playerData == null)) {
+            && (saves[index].version != 2
+                || saves[index].playerData == null
+                || saves[index].resumePosition == null
+                || saves[index].resumePosition.roomId == null)) {
           saves[index] = null;
         }
       }
@@ -175,7 +176,7 @@ public class LoadGameScreen extends ScreenAdapter {
     Table details = createDetails(index, save);
     content.add(details).expandX().fillX().left();
 
-    addCheckpoint(content, save);
+    addResumePosition(content, save);
 
     row.add(content).expand().fill();
     row.addListener(
@@ -204,6 +205,16 @@ public class LoadGameScreen extends ScreenAdapter {
     content.add(placeholder).size(138f, rowHeight - 22f).padRight(18f);
   }
 
+  private void addResumePosition(Table content, GameSaveData save) {
+    if (save == null || save.resumePosition == null || save.resumePosition.roomId == null) {
+      content.add(new Label("Last location: Unknown", skin)).left().row();
+      return;
+    }
+
+    String roomName = displayRoom(save.resumePosition.roomId);
+    content.add(new Label("Last location: " + roomName, skin)).left().row();
+  }
+
   private Table createDetails(int index, GameSaveData save) {
     Table details = new Table();
     details.left();
@@ -214,12 +225,10 @@ public class LoadGameScreen extends ScreenAdapter {
       return details;
     }
     String room;
-    if (save.resumePosition != null) {
-      room = displayRoom(save.resumePosition.roomId);
-    } else if (save.checkpoint == null) {
-      room = "Unknown location";
+    if (save.resumePosition == null || save.resumePosition.roomId == null) {
+      room = "Unknown";
     } else {
-      room = displayRoom(save.checkpoint.roomId);
+      room = displayRoom(save.resumePosition.roomId);
     }
     details.add(label(room, "font", TEXT, 1f)).left().row();
     details
@@ -239,16 +248,6 @@ public class LoadGameScreen extends ScreenAdapter {
             + count(save.playerData.upgradedWeapons);
     details.add(label(stats, SMALL_FONT, MUTED, 0.95f)).left();
     return details;
-  }
-
-  private void addCheckpoint(Table content, GameSaveData save) {
-    if (save == null || Gdx.graphics.getWidth() < 900) return;
-    Table location = new Table();
-    location.right();
-    location.add(label("LAST CHECKPOINT", SMALL_FONT, MUTED, 0.82f)).right().row();
-    String checkpoint = save.checkpoint == null ? "Unknown" : displayRoom(save.checkpoint.roomId);
-    location.add(label(checkpoint, "font", TEXT, 0.95f)).right();
-    content.add(location).width(230f).right().padLeft(12f);
   }
 
   private Texture loadPreview(int index) {
