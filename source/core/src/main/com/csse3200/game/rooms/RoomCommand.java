@@ -27,6 +27,11 @@ public class RoomCommand implements Command {
           return false;
         }
         return roomSelector.debugGotoRoom(args.get(1));
+      case "fb_stage":
+        if (args.size() < 2) {
+          return false;
+        }
+        return roomSelector.debugFinalBossStage(args.get(1));
       default:
         return false;
     }

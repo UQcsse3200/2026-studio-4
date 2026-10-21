@@ -1,11 +1,14 @@
 package com.csse3200.game.components.player;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.cutscene.CutsceneEvents;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.items.WeaponItem.WeaponType;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.Vector2Utils;
 
 /**
@@ -13,9 +16,22 @@ import com.csse3200.game.utils.math.Vector2Utils;
  * keyboard input.
  */
 public class KeyboardPlayerInputComponent extends InputComponent {
+  /** Fired once when E has been held for one second. */
+  public static final String ROOM_MAGNETIC_PICKUP = "roomMagneticPickup";
+
+  private static final long MAGNETIC_PICKUP_HOLD_MILLIS = 1000L;
   private static final String EQUIP_WEAPON_EVENT = "equipWeapon";
   private final Vector2 walkDirection = Vector2.Zero.cpy();
   private boolean ignoreStaleKeyUps;
+  private InteractionPress interactionPress = InteractionPress.IDLE;
+  private long interactionPressedAt;
+
+  private enum InteractionPress {
+    IDLE,
+    HOLDING,
+    TRIGGERED,
+    CANCELLED
+  }
 
   public KeyboardPlayerInputComponent() {
     super(5);
@@ -31,7 +47,26 @@ public class KeyboardPlayerInputComponent extends InputComponent {
             () -> {
               walkDirection.setZero();
               ignoreStaleKeyUps = true;
+              cancelPickupHold();
             });
+    entity.getEvents().addListener("roomPickupReset", this::cancelPickupHold);
+    entity
+        .getEvents()
+        .addListener(CutsceneEvents.DIALOGUE_STARTED, (String id) -> cancelPickupHold());
+    entity
+        .getEvents()
+        .addListener(CutsceneEvents.CUTSCENE_STARTED, (String id) -> cancelPickupHold());
+  }
+
+  @Override
+  public void update() {
+    if (interactionPress == InteractionPress.CANCELLED
+        && Gdx.input != null
+        && !Gdx.input.isKeyPressed(Keys.E)) {
+      // A modal interface may have consumed the release while it was open.
+      interactionPress = InteractionPress.IDLE;
+    }
+    tryTriggerMagneticPickup();
   }
 
   /**
@@ -83,17 +118,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("heavyAttack");
         return true;
       case Keys.E:
-        if (isNpcInteractionRunning()) {
-          // A dialogue or cutscene is running so E must not re-trigger it, pick up items or leave.
-          return true;
-        }
-        // Keep Room navigation and Team 5 item pickup on separate event contracts.
-        entity.getEvents().trigger("interact");
-        if (!isNpcInteractionRunning()) {
-          entity.getEvents().trigger("itemPickup");
-        }
+        beginInteractionHold();
         return true;
       case Keys.I:
+        cancelPickupHold();
         entity.getComponent(InventoryComponent.class).toggleDisplay();
         return true;
       case Keys.TAB:
@@ -140,9 +168,71 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         walkDirection.sub(Vector2Utils.RIGHT);
         triggerWalkEvent();
         return true;
+      case Keys.E:
+        finishInteractionHold();
+        return true;
       default:
         return false;
     }
+  }
+
+  private void beginInteractionHold() {
+    if (interactionPress != InteractionPress.IDLE) {
+      return; // Keyboard repeats must not restart the timer or capture another batch.
+    }
+    if (isInteractionBlocked()) {
+      interactionPress = InteractionPress.CANCELLED;
+      return;
+    }
+    interactionPressedAt = ServiceLocator.getTimeSource().getTime();
+    interactionPress = InteractionPress.HOLDING;
+  }
+
+  private void finishInteractionHold() {
+    // A release at the threshold may arrive before this frame's update.
+    tryTriggerMagneticPickup();
+    boolean shortPress = interactionPress == InteractionPress.HOLDING;
+    interactionPress = InteractionPress.IDLE;
+    if (!shortPress || isInteractionBlocked()) {
+      return;
+    }
+    // Delay the normal interaction until release so a long hold cannot open an exit or NPC.
+    entity.getEvents().trigger("interact");
+    if (!isInteractionBlocked()) {
+      entity.getEvents().trigger("itemPickup");
+    }
+  }
+
+  private void tryTriggerMagneticPickup() {
+    if (interactionPress != InteractionPress.HOLDING) {
+      return;
+    }
+    if (isInteractionBlocked()) {
+      cancelPickupHold();
+      return;
+    }
+    if (ServiceLocator.getTimeSource().getTime() - interactionPressedAt
+        >= MAGNETIC_PICKUP_HOLD_MILLIS) {
+      interactionPress = InteractionPress.TRIGGERED;
+      entity.getEvents().trigger(ROOM_MAGNETIC_PICKUP);
+    }
+  }
+
+  /**
+   * Cancels this E press when gameplay input is interrupted. An already triggered attraction batch
+   * is owned by the pickup component and continues independently.
+   */
+  public void cancelPickupHold() {
+    if (interactionPress != InteractionPress.IDLE) {
+      interactionPress = InteractionPress.CANCELLED;
+    }
+  }
+
+  private boolean isInteractionBlocked() {
+    return isNpcInteractionRunning()
+        || (ServiceLocator.getEntityService() != null
+            && ServiceLocator.getEntityService().isFrozen())
+        || (ServiceLocator.getRunTimer() != null && ServiceLocator.getRunTimer().isPaused());
   }
 
   private boolean isNpcInteractionRunning() {

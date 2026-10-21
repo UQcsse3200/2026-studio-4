@@ -5,7 +5,8 @@ public final class WindowSize {
   public static final int DEFAULT_WIDTH = 1280;
   public static final int DEFAULT_HEIGHT = 800;
 
-  private static final int MIN = 640;
+  private static final int MIN_WIDTH = 960;
+  private static final int MIN_HEIGHT = 540;
   private static final int MAX = 3840;
 
   private static final Preset[] PRESETS = {
@@ -20,6 +21,7 @@ public final class WindowSize {
     throw new IllegalStateException("Instantiating static util class");
   }
 
+  /** The sizes shown in the window-size list. */
   public static Preset[] presets() {
     return PRESETS.clone();
   }
@@ -34,19 +36,33 @@ public final class WindowSize {
     return PRESETS[2];
   }
 
+  /**
+   * Width to apply. A missing or non-positive value uses the default. The result is never below
+   * 960.
+   *
+   * @param stored width saved in settings, in pixels
+   * @return width passed to the window
+   */
   public static int width(int stored) {
-    return clamp(stored, DEFAULT_WIDTH);
+    return clamp(stored, DEFAULT_WIDTH, MIN_WIDTH);
   }
 
+  /**
+   * Height to apply. A missing or non-positive value uses the default. 540 is kept, so the 960 x
+   * 540 preset is not raised to 640.
+   *
+   * @param stored height saved in settings, in pixels
+   * @return height passed to the window
+   */
   public static int height(int stored) {
-    return clamp(stored, DEFAULT_HEIGHT);
+    return clamp(stored, DEFAULT_HEIGHT, MIN_HEIGHT);
   }
 
-  private static int clamp(int value, int fallback) {
+  private static int clamp(int value, int fallback, int min) {
     if (value <= 0) {
       return fallback;
     }
-    return Math.clamp(value, MIN, MAX);
+    return Math.clamp(value, min, MAX);
   }
 
   /** One labelled window size. The menu prints {@link #toString()}. */

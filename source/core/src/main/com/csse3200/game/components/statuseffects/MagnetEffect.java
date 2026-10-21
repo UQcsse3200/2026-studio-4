@@ -11,10 +11,7 @@ import com.csse3200.game.items.ItemCategory;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * The condition the Magnet Potion puts on the player. While it runs, every Gold coin and consumable
@@ -24,16 +21,14 @@ import java.util.Set;
  * <p>Charms are deliberately left alone: picking a charm is a build choice the player should make
  * themselves with the pickup key. While active, the player is drawn with a soft golden glow.
  */
-public class MagnetEffect extends TimedStatusEffect {
+public class MagnetEffect extends StatusEffect {
   /** Golden glow added on top of the player's sprite while the magnet is active. */
   private static final Color GLOW = new Color(1f, 0.82f, 0.2f, 0.35f);
 
-  private final GameTime time;
   private final Entity owner;
   private final float radius;
   private final float pullSpeed;
   private final float collectDistance;
-  private final Set<Entity> collected = Collections.newSetFromMap(new IdentityHashMap<>());
 
   /**
    * @param time game clock used for the countdown and per-frame movement
@@ -54,7 +49,6 @@ public class MagnetEffect extends TimedStatusEffect {
     if (radius <= 0 || pullSpeed <= 0 || collectDistance <= 0) {
       throw new IllegalArgumentException("Magnet radius, speed and collect distance must be > 0");
     }
-    this.time = time;
     this.owner = Objects.requireNonNull(owner, "owner cannot be null");
     this.radius = radius;
     this.pullSpeed = pullSpeed;
@@ -96,11 +90,13 @@ public class MagnetEffect extends TimedStatusEffect {
   }
 
   private void pullItem(Entity entity, Vector2 target, float step, EntityService entityService) {
-    if (entity == null || entity == owner || collected.contains(entity)) {
+    if (entity == null || entity == owner) {
       return;
     }
     ItemComponent itemComponent = entity.getComponent(ItemComponent.class);
-    if (itemComponent == null || !isMagnetic(itemComponent.getItem())) {
+    if (itemComponent == null
+        || itemComponent.isCollected()
+        || !isMagnetic(itemComponent.getItem())) {
       return;
     }
     Vector2 offset = target.cpy().sub(entity.getCenterPosition());
@@ -109,7 +105,7 @@ public class MagnetEffect extends TimedStatusEffect {
       return;
     }
     if (distance <= collectDistance || distance <= step) {
-      collect(entity, itemComponent.getItem(), entityService);
+      collect(entity, itemComponent, entityService);
     } else {
       // The magnet owns movement now; fountain-drop momentum must not add a second step.
       PhysicsComponent physics = entity.getComponent(PhysicsComponent.class);
@@ -120,10 +116,11 @@ public class MagnetEffect extends TimedStatusEffect {
     }
   }
 
-  private void collect(Entity itemEntity, Item item, EntityService entityService) {
-    collected.add(itemEntity);
-    item.pickUp(owner);
-    // Deferred: we are inside the entity update loop, so the item is disposed once it finishes.
-    entityService.scheduleDisposal(itemEntity);
+  private void collect(
+      Entity itemEntity, ItemComponent itemComponent, EntityService entityService) {
+    if (itemComponent.tryPickUp(owner)) {
+      // Deferred: we are inside the entity update loop, so the item is disposed once it finishes.
+      entityService.scheduleDisposal(itemEntity);
+    }
   }
 }

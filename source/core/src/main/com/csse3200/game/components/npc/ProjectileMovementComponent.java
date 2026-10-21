@@ -2,6 +2,8 @@ package com.csse3200.game.components.npc;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Moves a floating demon projectile in one direction. */
@@ -24,24 +26,37 @@ public class ProjectileMovementComponent extends Component {
   }
 
   public void update(float deltaTime) {
-    if (reachedMaxDistance || deltaTime < 0f) {
+    if (reachedMaxDistance || !Float.isFinite(deltaTime) || deltaTime <= 0f) {
       return;
     }
 
-    float moveDistance = speed * deltaTime;
     float distanceLeft = maxDistance - distanceTravelled;
+    float moveDistance = Math.min(speed * deltaTime, distanceLeft);
+    Vector2 displacement = direction.cpy().scl(moveDistance);
 
-    if (moveDistance >= distanceLeft) {
-      moveDistance = distanceLeft;
-      reachedMaxDistance = true;
+    if (displacement.isZero()) {
+      return;
     }
 
-    Vector2 newPosition = entity.getPosition();
-    newPosition.mulAdd(direction, moveDistance);
-    entity.setPosition(newPosition);
+    Vector2 from = entity.getCenterPosition();
+    Vector2 to = from.cpy().add(displacement);
+
+    boolean blocked =
+        ServiceLocator.getPhysicsService()
+            .getPhysics()
+            .raycast(from, to, PhysicsLayer.OBSTACLE, new RaycastHit());
+
+    if (blocked) {
+      reachedMaxDistance = true;
+      ServiceLocator.getEntityService().scheduleDisposal(entity);
+      return;
+    }
+
+    entity.setPosition(entity.getPosition().add(displacement));
     distanceTravelled += moveDistance;
 
-    if (reachedMaxDistance) {
+    if (moveDistance >= distanceLeft) {
+      reachedMaxDistance = true;
       entity.getEvents().trigger("projectileRangeReached");
     }
   }
