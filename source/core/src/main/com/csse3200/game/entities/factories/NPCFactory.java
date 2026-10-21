@@ -84,7 +84,7 @@ public class NPCFactory {
     }
 
     EnemyAnimationController animationController = new EnemyAnimationController();
-    if ("images/jotunn.atlas".equals(skin)) {
+    if ("images/giant-enemy/jotunn.atlas".equals(skin)) {
       animationController.setDeathRotation(30f, 90f);
     }
 
@@ -140,7 +140,7 @@ public class NPCFactory {
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("fuse", 0.1f, Animation.PlayMode.LOOP);
     EnemyAnimationController animationController = new EnemyAnimationController();
-    if ("images/zombie.atlas".equals(skin)) {
+    if ("images/bomb-enemy/zombie.atlas".equals(skin)) {
       animationController.setDeathRotation(30f, 90f);
     }
 

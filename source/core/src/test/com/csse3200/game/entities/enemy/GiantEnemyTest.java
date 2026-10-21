@@ -42,7 +42,11 @@ class GiantEnemyTest {
 
     ResourceService resourceService = new ResourceService();
     resourceService.loadTextureAtlases(
-        new String[] {"images/giant-enemy/cyclops.atlas", "images/giant-enemy/mummy.atlas"});
+        new String[] {
+          "images/giant-enemy/cyclops.atlas",
+          "images/giant-enemy/mummy.atlas",
+          "images/giant-enemy/jotunn.atlas"
+        });
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
@@ -84,7 +88,7 @@ class GiantEnemyTest {
     when(time.getDeltaTime()).thenReturn(0.5f);
     ServiceLocator.registerTimeSource(time);
 
-    Entity jotunn = NPCFactory.createGiantEnemy(new Entity(), "images/jotunn.atlas");
+    Entity jotunn = NPCFactory.createGiantEnemy(new Entity(), "images/giant-enemy/jotunn.atlas");
     jotunn.create();
     AnimationRenderComponent animator = jotunn.getComponent(AnimationRenderComponent.class);
     SpriteBatch batch = mock(SpriteBatch.class);
