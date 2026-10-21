@@ -2,6 +2,7 @@ package com.csse3200.game.files;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
+import com.badlogic.gdx.Graphics.Monitor;
 import com.badlogic.gdx.files.FileHandle;
 import com.csse3200.game.files.FileLoader.Location;
 import java.io.File;
@@ -114,18 +115,42 @@ public class UserSettings {
   }
 
   private static DisplayMode findMatching(DisplaySettings desiredSettings) {
-    if (desiredSettings == null) {
+    DisplayMode match = matchSize(desiredSettings, Gdx.graphics.getDisplayModes());
+    if (match != null) {
+      return match;
+    }
+    Monitor monitor = Gdx.graphics.getMonitor();
+    if (monitor == null) {
       return null;
     }
-    for (DisplayMode displayMode : Gdx.graphics.getDisplayModes()) {
-      if (displayMode.refreshRate == desiredSettings.refreshRate
-          && displayMode.height == desiredSettings.height
-          && displayMode.width == desiredSettings.width) {
-        return displayMode;
+    return matchSize(desiredSettings, Gdx.graphics.getDisplayModes(monitor));
+  }
+
+  /**
+   * A display mode of the requested size. An exact refresh rate wins. Otherwise the first mode of
+   * that size is used, so a 59 Hz panel still accepts a 60 Hz choice.
+   *
+   * @param desired width, height, and refresh rate chosen in the menu
+   * @param modes modes to search; null is treated as none
+   * @return a matching mode, or null when the size is absent
+   */
+  static DisplayMode matchSize(DisplaySettings desired, DisplayMode[] modes) {
+    if (desired == null || modes == null) {
+      return null;
+    }
+    DisplayMode sameSize = null;
+    for (DisplayMode mode : modes) {
+      if (mode == null || mode.width != desired.width || mode.height != desired.height) {
+        continue;
+      }
+      if (mode.refreshRate == desired.refreshRate) {
+        return mode;
+      }
+      if (sameSize == null) {
+        sameSize = mode;
       }
     }
-
-    return null;
+    return sameSize;
   }
 
   /** Stores game settings, can be serialised/deserialised. */

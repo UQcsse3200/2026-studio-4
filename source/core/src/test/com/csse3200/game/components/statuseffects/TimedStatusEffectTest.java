@@ -8,19 +8,19 @@ import java.util.List;
 import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 
-class TimedStatusEffectTest {
+class StatusEffectTest {
   @Test
   void shouldCountDownFromCreationOnTheInjectedClock() {
     GameTime time = mock(GameTime.class);
     Runnable ended = mock(Runnable.class);
-    List<Function<GameTime, TimedStatusEffect>> makers =
+    List<Function<GameTime, StatusEffect>> makers =
         List.of(
-            clock -> new TimedStatusEffect(clock, 15_000),
+            clock -> new StatusEffect(clock, 15_000),
             clock -> StatusEffectsFactory.createInvisibility(clock, 15_000),
             clock -> StatusEffectsFactory.createLastStand(clock, 10_000));
-    for (Function<GameTime, TimedStatusEffect> maker : makers) {
+    for (Function<GameTime, StatusEffect> maker : makers) {
       when(time.getTime()).thenReturn(1_000L);
-      TimedStatusEffect effect = maker.apply(time);
+      StatusEffect effect = maker.apply(time);
       effect.setOnEnded(ended);
       long duration = effect.getDuration();
       assertFalse(effect.isExpired());
@@ -42,7 +42,7 @@ class TimedStatusEffectTest {
 
   @Test
   void shouldRunTheEndCallbackOnlyWhenRemovedAndOnlyWhenSet() {
-    TimedStatusEffect effect = new TimedStatusEffect(mock(GameTime.class), 1_000);
+    StatusEffect effect = new StatusEffect(mock(GameTime.class), 1_000);
     assertDoesNotThrow(effect::onRemoved);
     Runnable ended = mock(Runnable.class);
     effect.setOnEnded(ended);
@@ -53,21 +53,21 @@ class TimedStatusEffectTest {
   @Test
   void shouldDescribeWhatEachEffectDoesWithoutTouchingRawStats() {
     GameTime time = mock(GameTime.class);
-    TimedStatusEffect plain = new TimedStatusEffect(time, 1_000);
+    StatusEffect plain = new StatusEffect(time, 1_000);
     assertFalse(plain.concealsOwner());
     assertNull(plain.getTint());
     for (Stat stat : Stat.values()) {
       assertEquals(1f, plain.getStatMultiplier(stat));
     }
 
-    TimedStatusEffect hidden = StatusEffectsFactory.createInvisibility(time, 1_000);
+    StatusEffect hidden = StatusEffectsFactory.createInvisibility(time, 1_000);
     assertTrue(hidden.concealsOwner());
     assertEquals(0.35f, hidden.getTint().a);
     for (Stat stat : Stat.values()) {
       assertEquals(1f, hidden.getStatMultiplier(stat));
     }
 
-    TimedStatusEffect amplified = StatusEffectsFactory.createLastStand(time, 1_000);
+    StatusEffect amplified = StatusEffectsFactory.createLastStand(time, 1_000);
     assertFalse(amplified.concealsOwner());
     assertEquals(1f, amplified.getTint().r);
     for (Stat stat : Stat.values()) {

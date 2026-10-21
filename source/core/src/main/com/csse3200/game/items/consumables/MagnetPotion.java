@@ -3,7 +3,7 @@ package com.csse3200.game.items.consumables;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.statuseffects.MagnetEffect;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.services.GameTime;
@@ -52,7 +52,7 @@ public final class MagnetPotion extends ConsumableItem {
   }
 
   @Override
-  public TimedStatusEffect use(CombatStatsComponent stats, GameTime time) {
+  public StatusEffect use(CombatStatsComponent stats, GameTime time) {
     return new MagnetEffect(
         time, durationMs, stats.getEntity(), RADIUS, PULL_SPEED, COLLECT_DISTANCE);
   }

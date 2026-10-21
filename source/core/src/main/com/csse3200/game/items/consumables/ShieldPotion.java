@@ -26,7 +26,7 @@ public final class ShieldPotion extends ConsumableItem {
   }
 
   @Override
-  public TimedStatusEffect use(CombatStatsComponent stats, GameTime time) {
+  public StatusEffect use(CombatStatsComponent stats, GameTime time) {
     return new Shield(time, durationMs);
   }
 }

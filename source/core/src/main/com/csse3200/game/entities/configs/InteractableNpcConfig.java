@@ -22,6 +22,30 @@ public class InteractableNpcConfig {
     DURING_DIALOGUE
   }
 
+  /**
+   * Once the interaction finishes, asks the player whether they want to be sent to another room.
+   * See TeleportMenu.
+   */
+  public static class TeleportOffer {
+    /** Id of the room to send the player to. */
+    public String roomId;
+
+    /** Entry point in that room where the player arrives. */
+    public String entryPointId;
+
+    /** Heading of the choice panel, e.g. "Training Grounds". */
+    public String title;
+
+    /** The question put to the player, e.g. "Shall I send you there?". */
+    public String prompt;
+
+    /** Label of the option that goes ahead with the teleport. */
+    public String confirmLabel = "Yes";
+
+    /** Label of the option that stays where the player is. */
+    public String declineLabel = "Not now";
+  }
+
   /** Stable id. Used by rooms to place the NPC and to remember completed interactions. */
   public String id;
 
@@ -69,6 +93,9 @@ public class InteractableNpcConfig {
 
   /** Ids of NPCs whose interactions must have been completed first. */
   public String[] requiresCompleted = new String[0];
+
+  /** Offer to teleport the player once the interaction finishes, or null for none. */
+  public TeleportOffer teleportOffer;
 
   /** Prompt shown in range while conditions are unmet; null shows nothing. */
   public String unavailableMessage;

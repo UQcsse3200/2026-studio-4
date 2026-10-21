@@ -103,7 +103,7 @@ class StatusEffectsFactoryTest {
   void createInvisibilityReturnsAnInvisibilityEffectInstance() {
     GameTime time = mock(GameTime.class);
 
-    TimedStatusEffect effect = StatusEffectsFactory.createInvisibility(time, 5000L);
+    StatusEffect effect = StatusEffectsFactory.createInvisibility(time, 5000L);
 
     assertNotNull(effect);
     assertInstanceOf(InvisibilityEffect.class, effect);
@@ -113,8 +113,8 @@ class StatusEffectsFactoryTest {
   void createInvisibilityReturnsANewInstanceEachCall() {
     GameTime time = mock(GameTime.class);
 
-    TimedStatusEffect first = StatusEffectsFactory.createInvisibility(time, 5000L);
-    TimedStatusEffect second = StatusEffectsFactory.createInvisibility(time, 5000L);
+    StatusEffect first = StatusEffectsFactory.createInvisibility(time, 5000L);
+    StatusEffect second = StatusEffectsFactory.createInvisibility(time, 5000L);
 
     assertNotSame(first, second);
   }
@@ -127,7 +127,7 @@ class StatusEffectsFactoryTest {
   void createLastStandReturnsALastStandEffectInstance() {
     GameTime time = mock(GameTime.class);
 
-    TimedStatusEffect effect = StatusEffectsFactory.createLastStand(time, 8000L);
+    StatusEffect effect = StatusEffectsFactory.createLastStand(time, 8000L);
 
     assertNotNull(effect);
     assertInstanceOf(LastStandEffect.class, effect);
@@ -141,7 +141,7 @@ class StatusEffectsFactoryTest {
   void createFrozenReturnsAFrozenEffectInstance() {
     GameTime time = mock(GameTime.class);
 
-    TimedStatusEffect effect = StatusEffectsFactory.createFrozen(time, 5000L);
+    StatusEffect effect = StatusEffectsFactory.createFrozen(time, 5000L);
 
     assertNotNull(effect);
     assertInstanceOf(FrozenEffect.class, effect);

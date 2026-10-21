@@ -1,10 +1,13 @@
 package com.csse3200.game.components.settingsmenu;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import java.util.function.Function;
 
 /** Builds the labelled cards inside the settings menu. */
@@ -43,9 +46,26 @@ public class SettingsForm {
     root.add(card).growX().pad(0f, 8f, 0f, 8f);
   }
 
+  /**
+   * Adds one labelled control. Clicking the name of a checkbox toggles that checkbox, not only the
+   * small square.
+   *
+   * @param name text shown beside the control
+   * @param control widget for this setting
+   */
   public void row(String name, Actor control) {
+    Label label = new Label(name, skin);
+    if (control instanceof CheckBox checkBox) {
+      label.addListener(
+          new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+              checkBox.setChecked(!checkBox.isChecked());
+            }
+          });
+    }
     card.row().padTop(8f);
-    card.add(new Label(name, skin)).right().padRight(18f).top();
+    card.add(label).right().padRight(18f).top();
     card.add(control).left().growX();
   }
 

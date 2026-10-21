@@ -4,7 +4,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusMistComponent;
-import com.csse3200.game.components.miniboss.cerberus.CerberusMistSlowEffect;
+import com.csse3200.game.components.statuseffects.Slow;
 import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
 import com.csse3200.game.entities.Entity;
@@ -45,7 +45,7 @@ public class PlayerCerberusMistDebuffComponent extends Component {
 
     clearAll();
 
-    slow = new CerberusMistSlowEffect();
+    slow = new Slow(5000, effects.getEntity().getComponent(CombatStatsComponent.class), -1.5f);
     vulnerable = StatusEffectsFactory.createVulnerable();
     mistSource = source;
 
