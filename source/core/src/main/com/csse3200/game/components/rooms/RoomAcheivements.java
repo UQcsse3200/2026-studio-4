@@ -36,7 +36,7 @@ public class RoomAcheivements extends Component {
       return;
     }
 
-    RunSaveState.setCurrentRoomId(newConfig.id);
+    RunSaveState.setCurrentRoomId(newConfig.idd);
     String oldDungeonId = oldConfig == null ? null : oldConfig.dungeonId;
     String newDungeonId = newConfig.dungeonId;
 
