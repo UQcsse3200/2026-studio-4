@@ -50,15 +50,24 @@ public abstract class EntityManagerComponent extends Component {
     return oobX || oobY;
   }
 
-  /** Places, registers, and records an entity at a terrain tile. */
+  /** Places, registers, and records an entity at a terrain tile.
+   * @param spawnedEntity The entity to spawn
+   * @param tilePosition The tile position to spawn it at.
+   * @param centerX Whether to center it on an x tile.
+   * @param centerY Whether to center it on a y tile.
+   */
   protected void spawnEntityAt(
-      Entity spawnedEntity, GridPoint2 tilePosition, boolean centerX, boolean centerY) {
+          Entity spawnedEntity, GridPoint2 tilePosition, boolean centerX, boolean centerY) {
     TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
     if (terrain == null) {
       logger.error("Cannot spawn an entity in a room without terrain");
       return;
     }
     Vector2 worldPosition = terrain.tileToWorldPosition(tilePosition);
+    if (worldPosition == null) {
+      logger.error("Cannot spawn an entity: tile-to-world position is null");
+      return;
+    }
     float tileSize = terrain.getTileSize();
     if (centerX) {
       worldPosition.x += (tileSize / 2) - spawnedEntity.getCenterPosition().x;
@@ -69,6 +78,7 @@ public abstract class EntityManagerComponent extends Component {
     spawnedEntity.setPosition(worldPosition);
     spawnEntity(spawnedEntity);
   }
+
 
   /** Returns the largest safe tile position for random room content. */
   protected Optional<GridPoint2> spawnableArea() {
