@@ -18,6 +18,7 @@ import com.csse3200.game.components.npc.DustCloudAnimation;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.components.npc.FlyingEnemyPatrolComponent;
+import com.csse3200.game.components.npc.MedusaHitRecoveryComponent;
 import com.csse3200.game.components.npc.MinotaurAnimationController;
 import com.csse3200.game.components.tasks.*;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -55,6 +56,8 @@ public class NPCFactory {
 
   public static final String PROJECTILE_SPAWNED = "enemyProjectileSpawned";
   private static final float CHASE_SPEED = 2.5f;
+  private static final float MEDUSA_CONTACT_INTERVAL = 1.5f;
+  private static final float MEDUSA_LUNGE_COOLDOWN = 3f;
   private static final String DEFAULT_ANIMATION = "default";
   private static final String DIE_ANIMATION = "dieAnimation";
   private static final String MOVE = "move";
@@ -154,12 +157,17 @@ public class NPCFactory {
   public static Entity createChaseEnemy(Entity target, boolean shouldSplit, String skin) {
     Entity chaseEnemy = createBaseNPC();
     ChaseEnemyConfig config = configs.chaseEnemy;
+    boolean isMedusa = "images/medusa.atlas".equals(skin);
+    LungeAttackTask lunge =
+        isMedusa
+            ? new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy, MEDUSA_LUNGE_COOLDOWN)
+            : new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy);
 
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new GroundChaseTask(target, 10, 3f, 10f))
-            .addTask(new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy));
+            .addTask(lunge);
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -185,8 +193,13 @@ public class NPCFactory {
           .addComponent(new MinotaurDashTrailComponent());
     } else {
       chaseEnemy
-          .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f, 1f))
+          .addComponent(
+              new TouchAttackComponent(
+                  PhysicsLayer.PLAYER, 1.5f, isMedusa ? MEDUSA_CONTACT_INTERVAL : 1f, isMedusa))
           .addComponent(new EnemyAnimationController());
+    }
+    if (isMedusa) {
+      chaseEnemy.addComponent(new MedusaHitRecoveryComponent(target, lunge));
     }
     if (shouldSplit) {
       chaseEnemy.addComponent(new SplitComponent(target, skin));
