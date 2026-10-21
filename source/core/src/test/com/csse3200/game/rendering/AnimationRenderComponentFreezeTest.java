@@ -110,6 +110,20 @@ class AnimationRenderComponentFreezeTest {
   }
 
   @Test
+  void aStoppedClockHoldsTheSpriteOnItsCurrentFrame() {
+    when(time.getDeltaTime()).thenReturn(0f);
+    AnimationRenderComponent animator = animatorOn(null);
+
+    animator.draw(batch);
+    animator.draw(batch);
+    animator.draw(batch);
+
+    assertSame(regions.get(0), drawn.get(0));
+    assertSame(regions.get(0), drawn.get(1));
+    assertSame(regions.get(0), drawn.get(2));
+  }
+
+  @Test
   void aNormalEnemyAnimatesOnFrameByFrame() {
     AnimationRenderComponent animator = animatorOn(new StatusEffectsControllerComponent());
 

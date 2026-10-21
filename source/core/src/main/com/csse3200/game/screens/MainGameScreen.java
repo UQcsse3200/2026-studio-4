@@ -79,7 +79,7 @@ public class MainGameScreen extends ScreenAdapter {
   private boolean winScreenRequested;
   private boolean winTransitionStarted; // add this
   private boolean saveOnDispose = true;
-  private boolean worldFrozen;
+  private boolean timeStopped;
 
   public MainGameScreen(GdxGame game) {
     this(game, null, 1);
@@ -145,14 +145,18 @@ public class MainGameScreen extends ScreenAdapter {
   @Override
   public void render(float delta) {
     // A dialogue, cutscene, or the settings menu freezes the world. The inventory pause is
-    // separate: entity updates already stop, and physics has to stop with them.
+    // separate: entity updates and physics already stop, and scaled time has to stop with them
+    // so sprites hold the frame they were on. Releasing one hold must not restart time while the
+    // other is still held.
     boolean frozen = ServiceLocator.getEntityService().isFrozen();
-    if (frozen != worldFrozen) {
-      worldFrozen = frozen;
-      // Scaled time also stops sprite animations, status effects and other timers
-      ServiceLocator.getTimeSource().setTimeScale(frozen ? 0f : 1f);
+    boolean paused = ServiceLocator.getEntityService().isPaused();
+    float timeScale = timeScaleWhileHeld(frozen, paused);
+    boolean stopTime = timeScale == 0f;
+    if (stopTime != timeStopped) {
+      timeStopped = stopTime;
+      ServiceLocator.getTimeSource().setTimeScale(timeScale);
     }
-    if (!frozen && !ServiceLocator.getEntityService().isPaused()) {
+    if (!frozen && !paused) {
       physicsEngine.update();
     }
     ServiceLocator.getEntityService().update();
@@ -344,6 +348,18 @@ public class MainGameScreen extends ScreenAdapter {
     if (physics != null && physics.getBody() != null) {
       physics.getBody().setLinearVelocity(0f, 0f);
     }
+  }
+
+  /**
+   * Scaled time while the world is held. Sprite animations advance on this clock, so either hold
+   * stops them.
+   *
+   * @param frozen dialogue, a cutscene, or the settings menu
+   * @param paused the inventory, or another caller of {@link EntityService#toggleUpdate()}
+   * @return {@code 0} while either hold is active, otherwise normal speed
+   */
+  static float timeScaleWhileHeld(boolean frozen, boolean paused) {
+    return frozen || paused ? 0f : 1f;
   }
 
   /* Schedule the death screen to be shown */
