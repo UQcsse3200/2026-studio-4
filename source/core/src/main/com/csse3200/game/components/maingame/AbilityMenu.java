@@ -24,7 +24,7 @@ import java.util.Objects;
  * box. While it is open it holds a control lock of its own, which is separate from the lock the
  * interaction itself took and so outlives it.
  */
-public class AbilityMenu extends Component {
+public class AbilityMenu extends Component implements ModalMenu {
   /** The friendly NPC whose interaction opens this menu. */
   public static final String NPC_ID = "hecate";
 
@@ -84,6 +84,7 @@ public class AbilityMenu extends Component {
   }
 
   /** Closes the menu and gives the player back their controls. Closing a shut menu does nothing. */
+  @Override
   public void close() {
     if (!open) {
       return;
@@ -98,6 +99,7 @@ public class AbilityMenu extends Component {
    *
    * @param delta rows to move by, usually -1 or 1
    */
+  @Override
   public void moveSelection(int delta) {
     if (open && !options.isEmpty()) {
       selected = Math.floorMod(selected + delta, options.size());
@@ -110,6 +112,7 @@ public class AbilityMenu extends Component {
    *
    * @return whether the ability was actually attuned
    */
+  @Override
   public boolean confirm() {
     if (!open) {
       return false;
@@ -124,6 +127,7 @@ public class AbilityMenu extends Component {
   /**
    * @return whether the menu is on screen and taking input
    */
+  @Override
   public boolean isOpen() {
     return open;
   }
@@ -140,6 +144,7 @@ public class AbilityMenu extends Component {
   /**
    * @return the highlighted row
    */
+  @Override
   public int getSelectedIndex() {
     return selected;
   }

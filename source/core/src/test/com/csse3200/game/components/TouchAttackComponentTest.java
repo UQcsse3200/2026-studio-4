@@ -73,6 +73,37 @@ class TouchAttackComponentTest {
   }
 
   @Test
+  void retainedCooldownSurvivesExitAndResumesAtDeadlineWhileTouching() {
+    Entity attacker = attackerWith(new TouchAttackComponent(PhysicsLayer.PLAYER, 0f, 1.25f, true));
+    Entity target = durableTarget();
+    contact(attacker, target, "collisionStart");
+    assertEquals(90, health(target));
+
+    when(time.getTime()).thenReturn(200L);
+    contact(attacker, target, "collisionEnd");
+    contact(attacker, target, "collisionStart");
+    assertEquals(90, health(target));
+
+    when(time.getTime()).thenReturn(1249L);
+    tick(attacker, 1.049f);
+    assertEquals(90, health(target));
+    when(time.getTime()).thenReturn(1250L);
+    tick(attacker, 0.001f);
+    assertEquals(80, health(target));
+
+    when(time.getTime()).thenReturn(10000L);
+    tick(attacker, 8.75f);
+    tick(attacker, 0f);
+    assertEquals(70, health(target));
+    contact(attacker, target, "collisionEnd");
+    when(time.getTime()).thenReturn(12000L);
+    tick(attacker, 2f);
+    assertEquals(70, health(target));
+    contact(attacker, target, "collisionStart");
+    assertEquals(60, health(target));
+  }
+
+  @Test
   void existingConstructorsRemainEntryOnly() {
     for (TouchAttackComponent attack :
         new TouchAttackComponent[] {

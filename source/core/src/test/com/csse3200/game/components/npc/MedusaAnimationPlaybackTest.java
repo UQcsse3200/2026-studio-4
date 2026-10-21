@@ -65,7 +65,8 @@ class MedusaAnimationPlaybackTest {
     renderService.setDebug(mock(DebugRenderer.class));
     ServiceLocator.registerRenderService(renderService);
     resources = new ResourceService();
-    resources.loadTextureAtlases(new String[] {"images/medusa.atlas", "images/crab.atlas"});
+    resources.loadTextureAtlases(
+        new String[] {"images/split-enemy/medusa.atlas", "images/split-enemy/crab.atlas"});
     resources.loadAll();
     ServiceLocator.registerResourceService(resources);
     entities = new EntityService();
@@ -76,7 +77,7 @@ class MedusaAnimationPlaybackTest {
             .addComponent(new StatusEffectsControllerComponent());
     player.setPosition(2f, 0f);
     entities.register(player);
-    medusa = NPCFactory.createChaseEnemy(player, false, "images/medusa.atlas");
+    medusa = NPCFactory.createChaseEnemy(player, false, "images/split-enemy/medusa.atlas");
     entities.register(medusa);
     animator = medusa.getComponent(AnimationRenderComponent.class);
     controller = medusa.getComponent(EnemyAnimationController.class);
@@ -116,9 +117,9 @@ class MedusaAnimationPlaybackTest {
     assertEquals("default", animator.getCurrentAnimation());
     aiAt(901L);
     assertEquals("chase", animator.getCurrentAnimation());
-    aiAt(2899L);
+    aiAt(3899L);
     assertEquals("chase", animator.getCurrentAnimation());
-    aiAt(2900L);
+    aiAt(3900L);
     assertEquals("lungeTelegraph", animator.getCurrentAnimation());
   }
 
@@ -161,6 +162,10 @@ class MedusaAnimationPlaybackTest {
         .hit(player.getComponent(CombatStatsComponent.class));
     assertEquals(35, medusa.getComponent(CombatStatsComponent.class).getHealth());
     assertEquals("hurt", animator.getCurrentAnimation());
+    // The 350ms hit recovery freezes playback, so the hurt pose is held rather than skipped.
+    renderFor(0.2f);
+    assertEquals(1, frameIndex());
+    when(time.getTime()).thenReturn(400L);
     renderFor(0.2f);
     controller.update();
     assertEquals(3, frameIndex());
@@ -249,7 +254,7 @@ class MedusaAnimationPlaybackTest {
 
   @Test
   void splittingStillCreatesTwoWeakerChildrenWithTheSameAnimationWiring() {
-    Entity parent = NPCFactory.createChaseEnemy(player, true, "images/medusa.atlas");
+    Entity parent = NPCFactory.createChaseEnemy(player, true, "images/split-enemy/medusa.atlas");
     entities.register(parent);
     List<Entity> children = new ArrayList<>();
     parent
@@ -280,7 +285,7 @@ class MedusaAnimationPlaybackTest {
 
   @Test
   void otherChaseSkinsKeepTheirExistingPlayback() {
-    Entity crab = NPCFactory.createChaseEnemy(player, false, "images/crab.atlas");
+    Entity crab = NPCFactory.createChaseEnemy(player, false, "images/split-enemy/crab.atlas");
     entities.register(crab);
     crab.getEvents().trigger("chaseStart");
     crab.getEvents().trigger("lungeTelegraphStart");

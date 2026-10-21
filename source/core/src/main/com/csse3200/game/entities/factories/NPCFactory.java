@@ -14,9 +14,11 @@ import com.csse3200.game.components.miniboss.snake.SnakePlayerHitVisualComponent
 import com.csse3200.game.components.miniboss.snake.SnakePoisonVolleyComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldComponent;
 import com.csse3200.game.components.miniboss.snake.SnakeShieldPickupComponent;
+import com.csse3200.game.components.npc.DustCloudAnimation;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.EnemyStatDisplay;
 import com.csse3200.game.components.npc.FlyingEnemyPatrolComponent;
+import com.csse3200.game.components.npc.MedusaHitRecoveryComponent;
 import com.csse3200.game.components.npc.MinotaurAnimationController;
 import com.csse3200.game.components.tasks.*;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -54,6 +56,8 @@ public class NPCFactory {
 
   public static final String PROJECTILE_SPAWNED = "enemyProjectileSpawned";
   private static final float CHASE_SPEED = 2.5f;
+  private static final float MEDUSA_CONTACT_INTERVAL = 1.5f;
+  private static final float MEDUSA_LUNGE_COOLDOWN = 3f;
   private static final String DEFAULT_ANIMATION = "default";
   private static final String DIE_ANIMATION = "dieAnimation";
   private static final String MOVE = "move";
@@ -141,7 +145,7 @@ public class NPCFactory {
         .addComponent(new EnemyAnimationController())
         .addComponent(new EnemyStatDisplay(1.5f));
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
-    if ("images/zombie.atlas".equals(skin)) {
+    if ("images/bomb-enemy/zombie.atlas".equals(skin)) {
       // The replacement frames are rectangular; retain the original square physics bounds.
       bombEnemy.setScale(1f, 1f);
     }
@@ -161,12 +165,17 @@ public class NPCFactory {
   public static Entity createChaseEnemy(Entity target, boolean shouldSplit, String skin) {
     Entity chaseEnemy = createBaseNPC();
     ChaseEnemyConfig config = configs.chaseEnemy;
+    boolean isMedusa = "images/split-enemy/medusa.atlas".equals(skin);
+    LungeAttackTask lunge =
+        isMedusa
+            ? new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy, MEDUSA_LUNGE_COOLDOWN)
+            : new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy);
 
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(new WanderTask(config.movement, 1f))
             .addTask(new GroundChaseTask(target, 10, 3f, 10f))
-            .addTask(new LungeAttackTask(target, 20, CHASE_SPEED, chaseEnemy));
+            .addTask(lunge);
 
     TextureAtlas atlas = ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class);
     AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
@@ -174,10 +183,9 @@ public class NPCFactory {
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
-    boolean medusa = "images/medusa.atlas".equals(skin);
     // Keep the original one-second death and the AI's 0.5s telegraph / 0.4s dash timings.
-    animator.addAnimation(DIE_ANIMATION, medusa ? 1f / 3f : 0.5f, Animation.PlayMode.NORMAL);
-    if (medusa) {
+    animator.addAnimation(DIE_ANIMATION, isMedusa ? 1f / 3f : 0.5f, Animation.PlayMode.NORMAL);
+    if (isMedusa) {
       animator.addAnimation("lungeTelegraph", 0.5f / 6f, Animation.PlayMode.NORMAL);
       animator.addAnimation("lungeDash", 0.1f, Animation.PlayMode.NORMAL);
       animator.addAnimation("hurt", 0.1f, Animation.PlayMode.NORMAL);
@@ -196,7 +204,7 @@ public class NPCFactory {
         .addComponent(animator)
         .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(new EnemyStatDisplay(1.5f));
-    if ("images/minotaur.atlas".equals(skin)) {
+    if ("images/chase-enemy/minotaur.atlas".equals(skin)) {
       chaseEnemy
           .addComponent(
               new MinotaurAttackRenderComponent(
@@ -206,8 +214,13 @@ public class NPCFactory {
           .addComponent(new MinotaurDashTrailComponent());
     } else {
       chaseEnemy
-          .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f, 1f))
+          .addComponent(
+              new TouchAttackComponent(
+                  PhysicsLayer.PLAYER, 1.5f, isMedusa ? MEDUSA_CONTACT_INTERVAL : 1f, isMedusa))
           .addComponent(new EnemyAnimationController());
+    }
+    if (isMedusa) {
+      chaseEnemy.addComponent(new MedusaHitRecoveryComponent(target, lunge));
     }
     if (shouldSplit) {
       chaseEnemy.addComponent(new SplitComponent(target, skin));
@@ -267,7 +280,8 @@ public class NPCFactory {
                     target,
                     10,
                     configs.floatingDemon.baseAttack,
-                    projectile -> enemy.getEvents().trigger(PROJECTILE_SPAWNED, projectile)));
+                    projectile -> enemy.getEvents().trigger(PROJECTILE_SPAWNED, projectile),
+                    skin));
 
     enemy.addComponent(aiComponent).addComponent(new FlyingEnemyPatrolComponent(spawn));
 
@@ -289,7 +303,8 @@ public class NPCFactory {
     // Shravika's own hand-drawn snake sprite sheet.
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset("images/snake.atlas", TextureAtlas.class));
+            ServiceLocator.getResourceService()
+                .getAsset("images/snake-miniboss/snake.atlas", TextureAtlas.class));
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
@@ -310,7 +325,7 @@ public class NPCFactory {
         .addComponent(new EnemyStatDisplay(1.5f));
 
     animator.scaleEntity();
-    snakeBoss.scaleWidth(2f);
+    snakeBoss.scaleWidth(3f);
     PhysicsUtils.setScaledCollider(snakeBoss, 0.9f, 0.4f);
     animator.startAnimation(DEFAULT_ANIMATION);
 
@@ -363,9 +378,10 @@ public class NPCFactory {
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset("images/horse.atlas", TextureAtlas.class));
-    animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
-    animator.addAnimation("attack", 0.09f, Animation.PlayMode.LOOP);
+            ServiceLocator.getResourceService()
+                .getAsset("images/sleipnir/horse.atlas", TextureAtlas.class));
+    animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("attack", 0.3f, Animation.PlayMode.LOOP);
     animator.addAnimation("move_up", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("move_down", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("move_right", 0.1f, Animation.PlayMode.LOOP);
@@ -383,6 +399,7 @@ public class NPCFactory {
         .addComponent(aiComponent)
         .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(animator)
+        .addComponent(new DustCloudAnimation(sleipnir))
         .addComponent(new EnemyAnimationController())
         .addComponent(new EnemyStatDisplay(1.5f))
         .addComponent(new BossPhaseComponent());
@@ -406,27 +423,27 @@ public class NPCFactory {
    * @return zombie entity
    */
   public static Entity createZombie(Entity target) {
-    return createBombEnemy(target, "images/zombie.atlas", 2f);
+    return createBombEnemy(target, "images/bomb-enemy/zombie.atlas", 2f);
   }
 
   /** Creates a bug with its standard appearance and splitting behaviour. */
   public static Entity createBug(Entity target) {
-    return createChaseEnemy(target, true, "images/bug.atlas");
+    return createChaseEnemy(target, true, "images/split-enemy/bug.atlas");
   }
 
   /** Creates a Longwei with its standard appearance and no splitting. */
   public static Entity createLongwei(Entity target) {
-    return createChaseEnemy(target, false, "images/longwei.atlas");
+    return createChaseEnemy(target, false, "images/chase-enemy/longwei.atlas");
   }
 
   /** Creates Jingwei with its standard appearance. */
   public static Entity createJingwei(Entity target, Vector2 spawn) {
-    return createFloatingEnemy(target, "images/jingwei.atlas", spawn);
+    return createFloatingEnemy(target, "images/flying-enemy/jingwei.atlas", spawn);
   }
 
   /** Creates Wukong with its standard scale and collision bounds. */
   public static Entity createWukong(Entity target) {
-    return createScaledGiant(target, "images/wukong.atlas", 3f);
+    return createScaledGiant(target, "images/giant-enemy/wukong.atlas", 3f);
   }
 
   /**
@@ -436,7 +453,7 @@ public class NPCFactory {
    * @return wolf entity
    */
   public static Entity createWolf(Entity target) {
-    return createChaseEnemy(target, false, "images/wolf.atlas");
+    return createChaseEnemy(target, false, "images/chase-enemy/wolf.atlas");
   }
 
   /**
@@ -446,41 +463,41 @@ public class NPCFactory {
    * @return dark elf entity
    */
   public static Entity createDarkElves(Entity target) {
-    return createChaseEnemy(target, true, "images/dark_elves.atlas");
+    return createChaseEnemy(target, true, "images/split-enemy/dark_elves.atlas");
   }
 
   /** Creates a knight with its standard appearance, fuse and scale. */
   public static Entity createKnight(Entity target) {
-    Entity knight = createBombEnemy(target, "images/knight.atlas", 2f);
+    Entity knight = createBombEnemy(target, "images/bomb-enemy/knight.atlas", 2f);
     knight.setScale(0.75f, 1f);
     return knight;
   }
 
   /** Creates Jotunn with its standard scale and collision bounds. */
   public static Entity createJotunn(Entity target) {
-    return createScaledGiant(target, "images/jotunn.atlas", 3f);
+    return createScaledGiant(target, "images/giant-enemy/jotunn.atlas", 3f);
   }
 
   /** Creates a crow with its standard appearance. */
   public static Entity createCrow(Entity target, Vector2 spawn) {
-    return createFloatingEnemy(target, "images/crow.atlas", spawn);
+    return createFloatingEnemy(target, "images/flying-enemy/crow.atlas", spawn);
   }
 
   /** Creates a Sandeye with its standard appearance and no splitting. */
   public static Entity createSandeye(Entity target) {
-    return createChaseEnemy(target, false, "images/sandeye.atlas");
+    return createChaseEnemy(target, false, "images/chase-enemy/sandeye.atlas");
   }
 
   /** Creates a beetle with its standard appearance, fuse and scale. */
   public static Entity createBeetle(Entity target) {
-    Entity beetle = createBombEnemy(target, "images/beetle.atlas", 2f);
+    Entity beetle = createBombEnemy(target, "images/bomb-enemy/beetle.atlas", 2f);
     beetle.setScale(0.75f, 0.75f);
     return beetle;
   }
 
   /** Creates a crab with its standard scale and hitbox. */
   public static Entity createCrab(Entity target) {
-    Entity crab = createChaseEnemy(target, true, "images/crab.atlas");
+    Entity crab = createChaseEnemy(target, true, "images/split-enemy/crab.atlas");
     crab.setScale(1.5f, 1f);
     crab.getComponent(HitboxComponent.class)
         .setAsBox(
@@ -491,7 +508,7 @@ public class NPCFactory {
 
   /** Creates a mummy with its standard hitbox and collider. */
   public static Entity createMummy(Entity target) {
-    Entity mummy = createGiantEnemy(target, "images/mummy.atlas");
+    Entity mummy = createGiantEnemy(target, "images/giant-enemy/mummy.atlas");
     mummy
         .getComponent(HitboxComponent.class)
         .setAsBox(new Vector2(1f, 1.5f), mummy.getCenterPosition());
@@ -501,19 +518,19 @@ public class NPCFactory {
 
   /** Creates a wasp with its standard appearance. */
   public static Entity createWasp(Entity target, Vector2 spawn) {
-    return createFloatingEnemy(target, "images/wasp.atlas", spawn);
+    return createFloatingEnemy(target, "images/flying-enemy/wasp.atlas", spawn);
   }
 
   /** Creates a minotaur with its standard appearance and scale. */
   public static Entity createMinotaur(Entity target) {
-    Entity minotaur = createChaseEnemy(target, false, "images/minotaur.atlas");
+    Entity minotaur = createChaseEnemy(target, false, "images/chase-enemy/minotaur.atlas");
     minotaur.setScale(1.5f, 1.5f);
     return minotaur;
   }
 
   /** Creates Medusa with splitting behaviour and its standard hitbox. */
   public static Entity createMedusa(Entity target) {
-    Entity medusa = createChaseEnemy(target, true, "images/medusa.atlas");
+    Entity medusa = createChaseEnemy(target, true, "images/split-enemy/medusa.atlas");
     medusa.setScale(1f, 1f);
     medusa.getComponent(HitboxComponent.class).setAsBox(new Vector2(1f, 1f));
     return medusa;
@@ -521,17 +538,17 @@ public class NPCFactory {
 
   /** Creates a cyclops with its standard scale and collision bounds. */
   public static Entity createCyclops(Entity target) {
-    return createScaledGiant(target, "images/cyclops.atlas", 1.5f);
+    return createScaledGiant(target, "images/giant-enemy/cyclops.atlas", 1.5f);
   }
 
   /** Creates a harpy with its standard appearance. */
   public static Entity createHarpy(Entity target, Vector2 spawn) {
-    return createFloatingEnemy(target, "images/harpy.atlas", spawn);
+    return createFloatingEnemy(target, "images/flying-enemy/harpy.atlas", spawn);
   }
 
   /** Creates a golem with its standard scale and collision bounds. */
   public static Entity createGolem(Entity target) {
-    Entity golem = createBombEnemy(target, "images/golem.atlas", 2f);
+    Entity golem = createBombEnemy(target, "images/bomb-enemy/golem.atlas", 2f);
     golem.setScale(0.9f, 0.7f);
     golem
         .getComponent(HitboxComponent.class)

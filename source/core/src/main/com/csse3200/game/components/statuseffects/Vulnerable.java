@@ -3,13 +3,12 @@ package com.csse3200.game.components.statuseffects;
 import com.csse3200.game.components.Damage;
 import com.csse3200.game.services.GameTime;
 
-public class Vulnerable implements StatusEffect, Damageable {
+public class Vulnerable extends StatusEffect implements Damageable {
   private final long duration;
   private final long vulnerableInit;
 
-  private final GameTime time = new GameTime();
-
   public Vulnerable(long duration) {
+    super(new GameTime(), duration);
     this.duration = duration;
     vulnerableInit = time.getTime();
   }

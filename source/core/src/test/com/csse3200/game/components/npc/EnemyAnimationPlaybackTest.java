@@ -61,17 +61,17 @@ class EnemyAnimationPlaybackTest {
     resources = new ResourceService();
     resources.loadTextureAtlases(
         new String[] {
-          "images/wasp.atlas",
-          "images/crow.atlas",
-          "images/jingwei.atlas",
-          "images/horse.atlas",
-          "images/knight.atlas",
-          "images/zombie.atlas",
-          "images/beetle.atlas",
-          "images/floatingDemon.atlas",
-          "images/longwei.atlas",
-          "images/wukong.atlas"
+          "images/flying-enemy/wasp.atlas",
+          "images/flying-enemy/crow.atlas",
+          "images/flying-enemy/jingwei.atlas",
+          "images/sleipnir/horse.atlas",
+          "images/bomb-enemy/knight.atlas",
+          "images/bomb-enemy/zombie.atlas",
+          "images/bomb-enemy/beetle.atlas",
+          "images/chase-enemy/longwei.atlas",
+          "images/giant-enemy/wukong.atlas"
         });
+    resources.loadTextures(new String[] {"images/sleipnir/dust.png"});
     resources.loadAll();
     ServiceLocator.registerResourceService(resources);
     entities = new EntityService();
@@ -125,14 +125,14 @@ class EnemyAnimationPlaybackTest {
     when(time.getDeltaTime()).thenReturn(0f);
     ai.update();
     assertEquals(3, projectiles.size());
-    assertSame(frame, animation.getCurrentFrame());
+    assertFlightResumes(animation, enemy, frame);
     when(time.getDeltaTime()).thenReturn(1.79f);
     ai.update();
     assertEquals(3, projectiles.size());
     when(time.getDeltaTime()).thenReturn(0.02f);
     ai.update();
     assertEquals(6, projectiles.size());
-    assertSame(frame, animation.getCurrentFrame());
+    assertFlightResumes(animation, enemy, frame);
   }
 
   @ParameterizedTest
@@ -154,12 +154,23 @@ class EnemyAnimationPlaybackTest {
 
     horse.getEvents().trigger("moving", direction);
     assertSame(secondFrame, animation.getCurrentFrame());
-    renderFor(animation, 0.1f);
-    assertSame(firstFrame, animation.getCurrentFrame(), "The existing two-frame loop must wrap");
 
-    horse.getEvents().trigger("moving", direction.cpy().scl(-1));
+    boolean wrapped = false;
+    for (int i = 0; i < 24 && !wrapped; i++) {
+      renderFor(animation, 0.1f);
+      wrapped = firstFrame == animation.getCurrentFrame();
+    }
+    assertTrue(wrapped, "The direction loop must keep cycling instead of pinning its first frame");
+
+    Vector2 reversed = direction.cpy().scl(-1);
+    horse.getEvents().trigger("moving", reversed);
     assertNotEquals(clip, animation.getCurrentAnimation(), "A new direction still selects new art");
-    assertEquals(0, ((TextureAtlas.AtlasRegion) animation.getCurrentFrame()).index);
+    TextureRegion reversedFirst = animation.getCurrentFrame();
+    horse.getEvents().trigger("moving", reversed);
+    assertSame(
+        reversedFirst,
+        animation.getCurrentFrame(),
+        "Repeated events must not restart the new clip");
   }
 
   @ParameterizedTest
@@ -203,7 +214,8 @@ class EnemyAnimationPlaybackTest {
   void availableAttackClipCompletesBeforeFlightFallbackResumes() {
     // Exercise a one-shot attack using the real horse strip without changing a production factory.
     AnimationRenderComponent animation =
-        new AnimationRenderComponent(resources.getAsset("images/horse.atlas", TextureAtlas.class));
+        new AnimationRenderComponent(
+            resources.getAsset("images/sleipnir/horse.atlas", TextureAtlas.class));
     animation.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
     animation.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
     Entity enemy =
@@ -346,8 +358,8 @@ class EnemyAnimationPlaybackTest {
   private Entity contactEnemy(String skin) {
     Entity enemy =
         skin.equals("wukong")
-            ? NPCFactory.createGiantEnemy(player, "images/wukong.atlas")
-            : NPCFactory.createChaseEnemy(player, false, "images/longwei.atlas");
+            ? NPCFactory.createGiantEnemy(player, "images/giant-enemy/wukong.atlas")
+            : NPCFactory.createChaseEnemy(player, false, "images/chase-enemy/longwei.atlas");
     entities.register(enemy);
     return enemy;
   }
@@ -374,7 +386,7 @@ class EnemyAnimationPlaybackTest {
   }
 
   private Entity bombEnemy(String skin) {
-    Entity enemy = NPCFactory.createBombEnemy(player, "images/" + skin + ".atlas", 2f);
+    Entity enemy = NPCFactory.createBombEnemy(player, "images/bomb-enemy/" + skin + ".atlas", 2f);
     entities.register(enemy);
     return enemy;
   }
@@ -390,6 +402,20 @@ class EnemyAnimationPlaybackTest {
       new Vector2(0, 1), new Vector2(0, -1), new Vector2(1, 0), new Vector2(-1, 0),
       new Vector2(1, 1), new Vector2(-1, 1), new Vector2(1, -1), new Vector2(-1, -1)
     };
+  }
+
+  /**
+   * A ranged attack must leave the flight loop running, whether or not the skin has an attack pose.
+   */
+  private void assertFlightResumes(
+      AnimationRenderComponent animation, Entity enemy, TextureRegion flightFrame) {
+    if (!animation.hasAnimation("attack")) {
+      assertSame(flightFrame, animation.getCurrentFrame());
+      return;
+    }
+    renderFor(animation, 0.11f);
+    enemy.getComponent(EnemyAnimationController.class).update();
+    assertEquals("move", animation.getCurrentAnimation());
   }
 
   private void renderFor(AnimationRenderComponent animation, float delta) {

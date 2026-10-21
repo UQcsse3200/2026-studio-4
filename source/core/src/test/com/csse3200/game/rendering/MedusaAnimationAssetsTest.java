@@ -33,8 +33,8 @@ class MedusaAnimationAssetsTest {
   })
   void clipsLoadEveryOriginalFrameWithoutCropping(
       String clip, String sheet, int firstFrame, int frameCount) throws Exception {
-    BufferedImage original = ImageIO.read(new File("images/Medusa/" + sheet + ".png"));
-    TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("images/medusa.atlas"));
+    BufferedImage original = ImageIO.read(new File("images/split-enemy/medusa/" + sheet + ".png"));
+    TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("images/split-enemy/medusa.atlas"));
     try {
       var frames = atlas.findRegions(clip);
       assertEquals(frameCount, frames.size, clip + " must retain every source frame");
@@ -76,14 +76,15 @@ class MedusaAnimationAssetsTest {
     "Dead,451c0a4f6391f2c03b8ef6bf5b52ef74994e1647f2c7afc9bb321ea85df30121"
   })
   void originalSheetsRetainTheirUnmodifiedPixels(String sheet, String sha256) throws Exception {
-    byte[] bytes = Files.readAllBytes(new File("images/Medusa/" + sheet + ".png").toPath());
+    byte[] bytes =
+        Files.readAllBytes(new File("images/split-enemy/medusa/" + sheet + ".png").toPath());
     assertEquals(
         sha256, HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes)));
   }
 
   @Test
   void atlasContainsOnlyTheCompletePlaybackClips() {
-    TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("images/medusa.atlas"));
+    TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("images/split-enemy/medusa.atlas"));
     try {
       assertEquals(43, atlas.getRegions().size);
     } finally {

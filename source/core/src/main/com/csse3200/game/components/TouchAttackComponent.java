@@ -29,6 +29,8 @@ public class TouchAttackComponent extends Component {
   private CombatStatsComponent combatStats;
   private HitboxComponent hitboxComponent;
   private float repeatInterval;
+  private boolean retainAttackCooldown;
+  private long nextAttackTime;
   private boolean disposed;
   private final Map<Entity, Contact> contacts = new HashMap<>();
 
@@ -75,11 +77,25 @@ public class TouchAttackComponent extends Component {
    * @param repeatInterval seconds between hits; must be finite and positive
    */
   public TouchAttackComponent(short targetLayer, float knockback, float repeatInterval) {
+    this(targetLayer, knockback, repeatInterval, false);
+  }
+
+  /**
+   * Creates a repeating attack with an optional shared cooldown that survives contact exit.
+   *
+   * @param targetLayer target physics layers
+   * @param knockback knockback impulse
+   * @param repeatInterval seconds between hits; must be finite and positive
+   * @param retainAttackCooldown whether all contacts share a cooldown, including after re-entry
+   */
+  public TouchAttackComponent(
+      short targetLayer, float knockback, float repeatInterval, boolean retainAttackCooldown) {
     this(targetLayer, knockback);
     if (!Float.isFinite(repeatInterval) || repeatInterval <= 0f) {
       throw new IllegalArgumentException("Repeat interval must be finite and positive");
     }
     this.repeatInterval = repeatInterval;
+    this.retainAttackCooldown = retainAttackCooldown;
   }
 
   /**
@@ -151,11 +167,15 @@ public class TouchAttackComponent extends Component {
       if (contacts.get(entry.getKey()) != contact) {
         continue;
       }
-      contact.remaining -= delta;
-      if (contact.remaining <= 0f) {
-        // No burst of catch-up hits after a long frame.
-        contact.remaining = repeatInterval;
+      if (retainAttackCooldown) {
         attack(entry.getKey());
+      } else {
+        contact.remaining -= delta;
+        if (contact.remaining <= 0f) {
+          // No burst of catch-up hits after a long frame.
+          contact.remaining = repeatInterval;
+          attack(entry.getKey());
+        }
       }
     }
   }
@@ -167,6 +187,9 @@ public class TouchAttackComponent extends Component {
   }
 
   private void attack(Entity target) {
+    if (retainAttackCooldown && ServiceLocator.getTimeSource().getTime() < nextAttackTime) {
+      return;
+    }
     if (repeatInterval > 0f
         && (combatStats.isDead() || StatusEffectsControllerComponent.isImmobilised(entity))) {
       return;
@@ -179,6 +202,10 @@ public class TouchAttackComponent extends Component {
     CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
     if (repeatInterval > 0f && targetStats != null && targetStats.isDead()) {
       return;
+    }
+    if (retainAttackCooldown) {
+      nextAttackTime =
+          ServiceLocator.getTimeSource().getTime() + Math.round(repeatInterval * 1000f);
     }
     if (targetStats != null) {
       targetStats.hit(combatStats);

@@ -228,10 +228,7 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateHurt(Entity attacker) {
-    if (!dying
-        && !lunging
-        && !StatusEffectsControllerComponent.isImmobilised(entity)
-        && animator.hasAnimation(HURT)) {
+    if (!dying && !lunging && animator.hasAnimation(HURT)) {
       animator.startAnimation(HURT);
     }
   }
