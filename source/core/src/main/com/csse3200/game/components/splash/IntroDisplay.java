@@ -21,7 +21,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.ui.UIComponent;
 
-/** Black intro screen with an idle book animation and a Space-triggered sequence. */
+/** Black intro screen with an idle myBook animation and a Space-triggered sequence. */
 public class IntroDisplay extends UIComponent {
 
   private static final String BOOK = "pentagram"; // or "moon" / "chain"
@@ -31,7 +31,7 @@ public class IntroDisplay extends UIComponent {
   private static final String CONTINUE_TEXT = "PRESS SPACE TO CONTINUE";
 
   private final TextureRegionDrawable bookDrawable = new TextureRegionDrawable();
-  private Image book;
+  private Image myBook;
   private Image whiteOverlay;
   private Label continuePrompt;
   private AtlasRegion idleFrame;
@@ -59,10 +59,11 @@ public class IntroDisplay extends UIComponent {
     stage.addActor(background);
 
     bookDrawable.setRegion(idleFrame);
-    book = new Image(bookDrawable);
-    book.setSize(idleFrame.getRegionWidth() * BOOK_SCALE, idleFrame.getRegionHeight() * BOOK_SCALE);
-    book.setOrigin(Align.center);
-    stage.addActor(book);
+    myBook = new Image(bookDrawable);
+    myBook.setSize(
+        idleFrame.getRegionWidth() * BOOK_SCALE, idleFrame.getRegionHeight() * BOOK_SCALE);
+    myBook.setOrigin(Align.center);
+    stage.addActor(myBook);
 
     continuePrompt = new Label(CONTINUE_TEXT, skin);
     continuePrompt.setAlignment(Align.center);
@@ -93,7 +94,7 @@ public class IntroDisplay extends UIComponent {
     bookDrawable.setRegion(triggered ? openingAnimation.getKeyFrame(animationTime) : idleFrame);
 
     // Re-centre every frame so window resizes are handled.
-    book.setPosition(stage.getWidth() / 2f, stage.getHeight() / 2f, Align.center);
+    myBook.setPosition(stage.getWidth() / 2f, stage.getHeight() / 2f, Align.center);
     continuePrompt.setBounds(
         0f, stage.getHeight() * 0.08f, stage.getWidth(), continuePrompt.getHeight());
   }
@@ -103,7 +104,7 @@ public class IntroDisplay extends UIComponent {
     animationTime = 0f;
     continuePrompt.setVisible(false);
     float open = openingAnimation.getAnimationDuration();
-    book.addAction(
+    myBook.addAction(
         sequence(
             Actions.delay(open),
             Actions.scaleTo(2f, 2f, OPEN_BOOK_HOLD + 0.5f, Interpolation.pow2In)));
