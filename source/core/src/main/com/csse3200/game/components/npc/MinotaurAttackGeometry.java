@@ -34,7 +34,8 @@ public final class MinotaurAttackGeometry {
     private static Map<String, Map<Integer, int[][]>> load() {
       JsonValue json =
           new JsonReader()
-              .parse(Gdx.files.internal("images/minotaur-combat/attacks-hit-masks.json"));
+              .parse(
+                  Gdx.files.internal("images/chase-enemy/minotaur-combat/attacks-hit-masks.json"));
       Map<String, Map<Integer, int[][]>> result = new HashMap<>();
       for (String name : new String[] {"normalAttack", "chargeAttack"}) {
         Map<Integer, int[][]> frames = new HashMap<>();

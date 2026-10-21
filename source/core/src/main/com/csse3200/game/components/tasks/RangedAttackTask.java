@@ -17,7 +17,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   private static final float ATTACK_COOLDOWN = 1.8f;
   private int priority;
 
-  private static final String DEFAULT_ATLAS = "images/floatingDemon.atlas";
+  private static final String DEFAULT_ATLAS = "images/flying-enemy/floating-demon-projectile.atlas";
 
   private final Entity target;
   private final int damage;
