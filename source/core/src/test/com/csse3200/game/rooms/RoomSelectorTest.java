@@ -1,5 +1,7 @@
 package com.csse3200.game.rooms;
 
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -9,6 +11,7 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.rooms.FollowingCameraComponent;
 import com.csse3200.game.components.rooms.RoomDataComponent;
+import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -40,14 +43,16 @@ public class RoomSelectorTest {
   void setup() {
     ServiceLocator.registerEntityService(entityService);
     ServiceLocator.registerRoomClearService(roomClear);
-    when(mockedRoom.getComponent(FollowingCameraComponent.class)).thenReturn(followingCamera);
-    when(mockedRoom.getComponent(TerrainComponent.class)).thenReturn(terrain);
-    when(mockedRoom.getComponent(RoomDataComponent.class)).thenReturn(roomData);
-    when(mockedRoom.getEvents()).thenReturn(events);
+    lenient()
+        .when(mockedRoom.getComponent(FollowingCameraComponent.class))
+        .thenReturn(followingCamera);
+    lenient().when(mockedRoom.getComponent(TerrainComponent.class)).thenReturn(terrain);
+    lenient().when(mockedRoom.getComponent(RoomDataComponent.class)).thenReturn(roomData);
+    lenient().when(mockedRoom.getEvents()).thenReturn(events);
   }
 
   @Test
-  void shouldRegisterPlayerOnStart() {
+  void shouldRegisterPlayerAndRoomOnStart() {
     RoomSelector roomSelector = new RoomSelector(null, player, camera, roomLoader);
 
     when(mockedRoom.getEvents()).thenReturn(mock(EventHandler.class));
@@ -57,6 +62,53 @@ public class RoomSelectorTest {
     roomSelector.start();
 
     verify(entityService).register(player);
+    verify(entityService).register(mockedRoom);
+  }
+
+  @Test
+  void shouldDisposeOldRoomWhenSwitching() {
+    Entity room = mock(Entity.class);
+    RoomSelector roomSelector = new RoomSelector(room, player, camera, roomLoader);
+    when(room.getComponent(RoomDataComponent.class)).thenReturn(roomData);
+
+    roomSelector.setRoom(mockedRoom, new GridPoint2());
+    verify(room).dispose();
+  }
+
+  @Test
+  void shouldRegisterNewRoomWhenSwitching() {
+    Entity room = mock(Entity.class);
+    RoomSelector roomSelector = new RoomSelector(room, player, camera, roomLoader);
+    when(room.getComponent(RoomDataComponent.class)).thenReturn(roomData);
+
+    roomSelector.setRoom(mockedRoom, new GridPoint2());
+    verify(entityService).register(mockedRoom);
+  }
+
+  @Test
+  void shouldNotifyRoomOfItsCreation() {
+    RoomSelector roomSelector = new RoomSelector(null, player, camera, roomLoader);
+
+    EventHandler events = new EventHandler();
+    when(mockedRoom.getEvents()).thenReturn(events);
+    Entity[] recievedPlayer = new Entity[1];
+
+    events.addListener(
+        "RoomCreated",
+        (Entity playerSent) -> {
+          recievedPlayer[0] = playerSent;
+        });
+
+    roomSelector.setRoom(mockedRoom, new GridPoint2());
+    assertSame(player, recievedPlayer[0]);
+  }
+
+  @Test
+  void shouldThrowOnSwitchingToSameRoom() {
+    Entity room = mock(Entity.class);
+    RoomSelector roomSelector = new RoomSelector(room, player, camera, roomLoader);
+    assertThrows(
+        IllegalArgumentException.class, () -> roomSelector.setRoom(room, new GridPoint2()));
   }
 
   @Test
@@ -90,6 +142,18 @@ public class RoomSelectorTest {
     when(terrain.tileToWorldPosition(any())).thenReturn(new Vector2(2f, 2f));
     roomSelector.setRoom(mockedRoom, new GridPoint2());
 
+    verify(player).setPosition(new Vector2(2f, 2f));
+  }
+
+  @Test
+  void shouldMovePlayerToExit() {
+    RoomSelector roomSelector = new RoomSelector(null, player, camera, roomLoader);
+    ExitConfig exit = new ExitConfig();
+    when(terrain.tileToWorldPosition(any())).thenReturn(new Vector2(2f, 2f));
+    when(roomLoader.getSpawnPoint(any(ExitConfig.class))).thenReturn(new GridPoint2());
+    when(roomLoader.getRoom(any(ExitConfig.class))).thenReturn(mockedRoom);
+
+    roomSelector.setRoom(exit);
     verify(player).setPosition(new Vector2(2f, 2f));
   }
 }

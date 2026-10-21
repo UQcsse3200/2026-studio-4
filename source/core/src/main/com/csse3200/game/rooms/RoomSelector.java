@@ -104,7 +104,7 @@ public class RoomSelector {
   }
 
   /** Transitions to a new room pointed to in the given exit. */
-  private void setRoom(ExitConfig exit) {
+  void setRoom(ExitConfig exit) {
     setRoom(roomLoader.getRoom(exit), roomLoader.getSpawnPoint(exit));
   }
 
