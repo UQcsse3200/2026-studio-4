@@ -357,7 +357,8 @@ public class NPCFactory {
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset("images/horse.atlas", TextureAtlas.class));
+            ServiceLocator.getResourceService()
+                .getAsset("images/sleipnir/horse.atlas", TextureAtlas.class));
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.3f, Animation.PlayMode.LOOP);
     animator.addAnimation("move_up", 0.1f, Animation.PlayMode.LOOP);
