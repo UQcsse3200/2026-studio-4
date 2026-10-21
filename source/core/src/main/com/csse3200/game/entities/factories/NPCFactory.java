@@ -447,7 +447,7 @@ public class NPCFactory {
 
   /** Creates a Sandeye with its standard appearance and no splitting. */
   public static Entity createSandeye(Entity target) {
-    return createChaseEnemy(target, false, "images/minotaur/sandeye.atlas");
+    return createChaseEnemy(target, false, "images/chase-enemy/sandeye.atlas");
   }
 
   /** Creates a beetle with its standard appearance, fuse and scale. */
