@@ -16,7 +16,12 @@ import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Intro animation shown between the studio splash and main menu. */
+/**
+ * Displays the intro animation between the studio splash and main menu.
+ *
+ * <p>The screen loads its own rendering and input services, then transitions to the main menu when
+ * the intro display reports that its animation has finished.
+ */
 public class IntroScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(IntroScreen.class);
   private static final String INTRO_TEXTURE = "images/intro.png";
@@ -26,6 +31,12 @@ public class IntroScreen extends ScreenAdapter {
   private IntroDisplay display;
   private boolean leaving;
 
+  /**
+   * Creates the intro screen, loads its background texture, and registers its display and input
+   * handling.
+   *
+   * @param game game instance used to transition to the main menu
+   */
   public IntroScreen(GdxGame game) {
     this.game = game;
 
@@ -45,6 +56,11 @@ public class IntroScreen extends ScreenAdapter {
     ServiceLocator.getEntityService().register(ui);
   }
 
+  /**
+   * Updates the screen entities, renders the intro, and moves to the main menu once it finishes.
+   *
+   * @param delta time in seconds since the previous frame
+   */
   @Override
   public void render(float delta) {
     ServiceLocator.getEntityService().update();
@@ -57,11 +73,18 @@ public class IntroScreen extends ScreenAdapter {
     }
   }
 
+  /**
+   * Updates the renderer's viewport after the window size changes.
+   *
+   * @param width new screen width in pixels
+   * @param height new screen height in pixels
+   */
   @Override
   public void resize(int width, int height) {
     renderer.resize(width, height);
   }
 
+  /** Releases the renderer, screen services, and loaded intro texture. */
   @Override
   public void dispose() {
     logger.debug("Disposing intro screen");
