@@ -1,8 +1,8 @@
 package com.csse3200.game.rooms;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.math.GridPoint2;
@@ -37,7 +37,7 @@ public class RoomSelectorTest {
   @Mock RoomClearService roomClear;
   @Mock TerrainComponent terrain;
   @Mock RoomDataComponent roomData;
-  @Mock EventHandler events;
+  @Mock EventHandler mockedEvents;
 
   @BeforeEach
   void setup() {
@@ -48,14 +48,13 @@ public class RoomSelectorTest {
         .thenReturn(followingCamera);
     lenient().when(mockedRoom.getComponent(TerrainComponent.class)).thenReturn(terrain);
     lenient().when(mockedRoom.getComponent(RoomDataComponent.class)).thenReturn(roomData);
-    lenient().when(mockedRoom.getEvents()).thenReturn(events);
+    lenient().when(mockedRoom.getEvents()).thenReturn(mockedEvents);
   }
 
   @Test
   void shouldRegisterPlayerAndRoomOnStart() {
     RoomSelector roomSelector = new RoomSelector(null, player, camera, roomLoader);
 
-    when(mockedRoom.getEvents()).thenReturn(mock(EventHandler.class));
     when(roomLoader.getStartingRoom()).thenReturn(mockedRoom);
     when(roomLoader.getStartingSpawn()).thenReturn(new GridPoint2());
 
@@ -107,8 +106,8 @@ public class RoomSelectorTest {
   void shouldThrowOnSwitchingToSameRoom() {
     Entity room = mock(Entity.class);
     RoomSelector roomSelector = new RoomSelector(room, player, camera, roomLoader);
-    assertThrows(
-        IllegalArgumentException.class, () -> roomSelector.setRoom(room, new GridPoint2()));
+    var spawn = new GridPoint2();
+    assertThrows(IllegalArgumentException.class, () -> roomSelector.setRoom(room, spawn));
   }
 
   @Test
