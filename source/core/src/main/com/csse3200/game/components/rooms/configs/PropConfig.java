@@ -11,6 +11,8 @@ public class PropConfig extends PositionConfig {
   /** Length in tiles, for stretchable props such as the reading table. 0 keeps the sprite size. */
   public int length;
 
-  /** Pixels to lift the sprite by, e.g. to stand a candle on a table top. Does not affect sorting. */
+  /**
+   * Pixels to lift the sprite by, e.g. to stand a candle on a table top. Does not affect sorting.
+   */
   public float elevation;
 }

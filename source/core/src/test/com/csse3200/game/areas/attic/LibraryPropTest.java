@@ -14,9 +14,6 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
 
-import com.csse3200.game.areas.attic.AtticSprites;
-import com.csse3200.game.areas.attic.AtticProp;
-
 /** Checks the prop catalogue against the real sheets (tests run from core/assets). */
 class LibraryPropTest {
   private final Map<String, BufferedImage> sheets = new HashMap<>();

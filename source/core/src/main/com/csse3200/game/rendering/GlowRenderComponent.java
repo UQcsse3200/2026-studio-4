@@ -70,7 +70,8 @@ public class GlowRenderComponent extends RenderComponent {
     if (texture == null || !lit.getAsBoolean()) {
       return;
     }
-    long now = ServiceLocator.getTimeSource() == null ? 0L : ServiceLocator.getTimeSource().getTime();
+    long now =
+        ServiceLocator.getTimeSource() == null ? 0L : ServiceLocator.getTimeSource().getTime();
     Vector2 position = entity.getPosition();
     float cx = position.x + offset.x;
     float cy = position.y + offset.y + elevation;

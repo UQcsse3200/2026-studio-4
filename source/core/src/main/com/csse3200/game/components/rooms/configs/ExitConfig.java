@@ -14,8 +14,8 @@ public class ExitConfig extends PositionConfig {
   public String message;
 
   /**
-   * Optional {@link com.csse3200.game.areas.attic.AtticProp} to draw instead of the default
-   * door or bookshelf, e.g. a dungeon tome lying on the library table.
+   * Optional {@link com.csse3200.game.areas.attic.AtticProp} to draw instead of the default door or
+   * bookshelf, e.g. a dungeon tome lying on the library table.
    */
   public String sprite;
 

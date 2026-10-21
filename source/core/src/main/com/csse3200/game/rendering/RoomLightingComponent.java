@@ -16,19 +16,22 @@ import java.util.List;
  * Darkens a room and lets its lights shine through, giving a candle-lit, pixel-art look.
  *
  * <p>The room is covered with small square cells of darkness. Each cell's opacity is the room's
- * darkness reduced by the light reaching it, then stepped into a few bands so light pools have crisp
- * pixel-art rings instead of a smooth gradient. A faint additive glow in each light's colour then
- * warms the lit areas. The player carries a small lantern light once the room is entered.
+ * darkness reduced by the light reaching it, then stepped into a few bands so light pools have
+ * crisp pixel-art rings instead of a smooth gradient. A faint additive glow in each light's colour
+ * then warms the lit areas. The player carries a small lantern light once the room is entered.
  *
  * <p>Sits first in render layer 2, so it covers terrain, furniture and characters but not flames,
  * floating effects or the HUD.
  */
 public class RoomLightingComponent extends RenderComponent {
   private static final int LAYER = 2;
+
   /** Cell edge in world units: 4 sprite pixels. */
   static final float CELL = 0.125f;
+
   /** Number of brightness bands; fewer reads as chunkier, more retro lighting. */
   static final int BANDS = 6;
+
   private static final float TINT_STRENGTH = 0.16f;
   private static final float PLAYER_LIGHT_RADIUS = 2.2f;
   private static final Color PLAYER_LIGHT_COLOR = new Color(1f, 0.85f, 0.6f, 1f);

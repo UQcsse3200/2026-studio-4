@@ -1,6 +1,8 @@
 package com.csse3200.game.components.rooms.configs;
 
-/** A free-standing light in a dark room, such as moonlight through a window. Centred on its tile. */
+/**
+ * A free-standing light in a dark room, such as moonlight through a window. Centred on its tile.
+ */
 public class LightConfig extends PositionConfig {
   /** Reach of the light in world units (a tile is 0.5). */
   public float radius = 2f;

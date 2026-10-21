@@ -55,8 +55,7 @@ class LibraryRoomConfigTest {
         for (int[] d : new int[][] {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
           char next = at(x + d[0], y + d[1]);
           assertTrue(
-              isFloor(next) || isWall(next),
-              "floor at (" + x + "," + y + ") leaks into the void");
+              isFloor(next) || isWall(next), "floor at (" + x + "," + y + ") leaks into the void");
         }
       }
     }

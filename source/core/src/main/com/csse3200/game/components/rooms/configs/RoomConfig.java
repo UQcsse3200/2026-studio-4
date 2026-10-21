@@ -18,6 +18,7 @@ public class RoomConfig {
 
   /** Tileset for the floor and walls, overriding the one chosen from {@link #dungeonId}. */
   public String tileset;
+
   public EntryPointConfig[] entryPoints = new EntryPointConfig[0];
   public EnemySpawnConfig[] enemySpawns = new EnemySpawnConfig[0];
   public NpcSpawnConfig[] npcSpawns = new NpcSpawnConfig[0];
@@ -29,8 +30,8 @@ public class RoomConfig {
   public PropConfig[] props = new PropConfig[0];
 
   /**
-   * How dark unlit parts of the room are, 0 (normal) to 1 (black). Above 0 the room is lit only
-   * by its light-giving props, its {@link #lights} and the player's lantern.
+   * How dark unlit parts of the room are, 0 (normal) to 1 (black). Above 0 the room is lit only by
+   * its light-giving props, its {@link #lights} and the player's lantern.
    */
   public float darkness;
 

@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.csse3200.game.areas.attic.AtticSprites;
 import com.csse3200.game.areas.attic.AtticProp;
+import com.csse3200.game.areas.attic.AtticSprites;
 import com.csse3200.game.areas.attic.AtticTerrain;
 import com.csse3200.game.components.rooms.configs.PropConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
@@ -75,8 +75,7 @@ public class AtticFurnitureComponent extends EntityManagerComponent {
    * @param elevationPixels how far to lift the sprite, in sprite pixels
    */
   public static Entity createProp(AtticProp prop, int lengthTiles, float elevationPixels) {
-    Texture texture =
-        ServiceLocator.getResourceService().getAsset(prop.getSheet(), Texture.class);
+    Texture texture = ServiceLocator.getResourceService().getAsset(prop.getSheet(), Texture.class);
     texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     TextureRegion region =
         new TextureRegion(texture, prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight());

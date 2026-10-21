@@ -13,8 +13,8 @@ import java.util.Map;
 
 /**
  * Which library props give off light, and how. Used to light dark rooms (see {@link
- * RoomConfig#darkness}): every candle, lamp, stove and tome placed in the room becomes a light, plus
- * any explicit {@link RoomConfig#lights} such as moonlight from a window.
+ * RoomConfig#darkness}): every candle, lamp, stove and tome placed in the room becomes a light,
+ * plus any explicit {@link RoomConfig#lights} such as moonlight from a window.
  */
 public final class AtticLighting {
   private static final float TILE = 0.5f;

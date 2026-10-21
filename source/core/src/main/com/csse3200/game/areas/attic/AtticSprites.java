@@ -1,8 +1,6 @@
 package com.csse3200.game.areas.attic;
 
-/**
- * Texture paths for the home-library art used by the dungeon selection room.
- */
+/** Texture paths for the home-library art used by the dungeon selection room. */
 public final class AtticSprites {
   /** Width and height of one tile on every library sheet, in pixels. */
   public static final int TILE_PIXELS = 16;

@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.areas.attic.AtticSprites;
 import com.csse3200.game.areas.attic.AtticProp;
+import com.csse3200.game.areas.attic.AtticSprites;
 import com.csse3200.game.areas.terrain.DreamlandTile;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TileSheet;
@@ -119,8 +119,7 @@ public class ExitComponent extends EntityManagerComponent {
   private void spawnSprite(ExitConfig exit) {
     AtticProp prop = AtticProp.fromName(exit.sprite);
     GridPoint2 tile = new GridPoint2(exit.x, exit.y);
-    spawnEntityAt(
-        AtticFurnitureComponent.createProp(prop, 0, exit.elevation), tile, false, false);
+    spawnEntityAt(AtticFurnitureComponent.createProp(prop, 0, exit.elevation), tile, false, false);
 
     Color glow = prop.getGlow();
     if (glow != null) {

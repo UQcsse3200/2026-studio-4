@@ -5,11 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.csse3200.game.areas.attic.AtticTerrain.WallPiece;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-
-import com.csse3200.game.areas.attic.AtticTerrain;
-import com.csse3200.game.areas.attic.AtticTerrain.WallPiece;
 
 class LibraryTerrainTest {
   // Row 0 is the bottom of the room.

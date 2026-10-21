@@ -125,7 +125,8 @@ public final class AtticTerrain {
           int columns = origin[2];
           int rows = origin[3];
           int column = origin[0] / tilePixels + Math.floorMod(x, columns);
-          // Sheet rows run downwards while room rows run upwards; flip so the pattern stays upright.
+          // Sheet rows run downwards while room rows run upwards; flip so the pattern stays
+          // upright.
           int sheetRow = origin[1] / tilePixels + rows - 1 - Math.floorMod(y, rows);
           tile = new TerrainTile(floors.tile(column, sheetRow));
         } else if (isWall(c)) {
