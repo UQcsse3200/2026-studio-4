@@ -63,7 +63,7 @@ public class LightSource {
         0.5f * MathUtils.sin(seconds * 7.3f + phase)
             + 0.3f * MathUtils.sin(seconds * 13.1f + phase * 2f)
             + 0.2f * MathUtils.sin(seconds * 23.7f + phase * 3f);
-    return 1f - flicker * 0.18f * (1f + wobble);
+    return 1f - flicker * 0.05f * (1f + wobble);
   }
 
   /**
