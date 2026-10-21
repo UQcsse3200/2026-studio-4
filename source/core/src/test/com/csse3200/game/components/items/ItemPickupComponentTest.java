@@ -5,13 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.statuseffects.MagnetEffect;
 import com.csse3200.game.entities.Entity;
@@ -129,6 +132,40 @@ class ItemPickupComponentTest {
   }
 
   @Test
+  void showsThePickupPromptWhileTheDropIsInRange() {
+    InteractionPromptDisplay display = mock(InteractionPromptDisplay.class);
+    Entity coin = drop(ItemIds.GOLD_COIN, 7);
+    enterPickupRange(coin);
+
+    pickup.refreshPickupPrompt(display);
+
+    verify(display).setPrompt("Press E — Pick up Gold Coin");
+  }
+
+  @Test
+  void hidesThePickupPromptAfterThePlayerWalksAway() {
+    InteractionPromptDisplay display = mock(InteractionPromptDisplay.class);
+    Entity coin = drop(ItemIds.GOLD_COIN, 7);
+    enterPickupRange(coin);
+    pickup.refreshPickupPrompt(display);
+    leavePickupRange(coin);
+
+    pickup.refreshPickupPrompt(display);
+
+    verify(display).clearPrompt();
+  }
+
+  @Test
+  void leavesAnotherPromptAloneWhenNoDropIsInRange() {
+    InteractionPromptDisplay display = mock(InteractionPromptDisplay.class);
+
+    pickup.refreshPickupPrompt(display);
+
+    verify(display, never()).setPrompt(any());
+    verify(display, never()).clearPrompt();
+  }
+
+  @Test
   void disposedItemDoesNotRemainAvailableThroughStaleCollisionOverlap() {
     Entity coin = drop(ItemIds.GOLD_COIN, 7);
     enterPickupRange(coin);
@@ -159,5 +196,14 @@ class ItemPickupComponentTest {
             player.getComponent(HitboxComponent.class).getFixture(),
             item.getComponent(HitboxComponent.class).getFixture());
     assertNotNull(pickup.getPickupPrompt());
+  }
+
+  private void leavePickupRange(Entity item) {
+    player
+        .getEvents()
+        .trigger(
+            "collisionEnd",
+            player.getComponent(HitboxComponent.class).getFixture(),
+            item.getComponent(HitboxComponent.class).getFixture());
   }
 }

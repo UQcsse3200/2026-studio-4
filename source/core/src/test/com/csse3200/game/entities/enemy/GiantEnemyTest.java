@@ -42,15 +42,15 @@ class GiantEnemyTest {
 
     ResourceService resourceService = new ResourceService();
     resourceService.loadTextureAtlases(
-        new String[] {"images/cyclops.atlas", "images/mummy.atlas", "images/jotunn.atlas"});
+        new String[] {"images/giant-enemy/cyclops.atlas", "images/giant-enemy/mummy.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
 
   @Test
   void shouldHaveGiantAnimations() {
-    Entity cyclops = NPCFactory.createGiantEnemy(new Entity(), "images/cyclops.atlas");
-    Entity mummy = NPCFactory.createGiantEnemy(new Entity(), "images/mummy.atlas");
+    Entity cyclops = NPCFactory.createGiantEnemy(new Entity(), "images/giant-enemy/cyclops.atlas");
+    Entity mummy = NPCFactory.createGiantEnemy(new Entity(), "images/giant-enemy/mummy.atlas");
     AnimationRenderComponent cyclopsAnimator = cyclops.getComponent(AnimationRenderComponent.class);
     AnimationRenderComponent mummyAnimator = mummy.getComponent(AnimationRenderComponent.class);
 
@@ -64,13 +64,14 @@ class GiantEnemyTest {
 
   @Test
   void getGiantEnemySize() {
-    Entity giantEnemy = NPCFactory.createGiantEnemy(new Entity(), "images/cyclops.atlas");
+    Entity giantEnemy =
+        NPCFactory.createGiantEnemy(new Entity(), "images/giant-enemy/cyclops.atlas");
     assertEquals(giantEnemy.getScale(), new Vector2(3f, 3f));
   }
 
   @Test
   void shouldUseConfiguredBaseCombatStats() {
-    Entity giant = NPCFactory.createGiantEnemy(new Entity(), "images/cyclops.atlas");
+    Entity giant = NPCFactory.createGiantEnemy(new Entity(), "images/giant-enemy/cyclops.atlas");
     CombatStatsComponent stats = giant.getComponent(CombatStatsComponent.class);
 
     assertEquals(30, stats.getHealth());

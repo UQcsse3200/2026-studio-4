@@ -62,18 +62,18 @@ class NPCFactoryTest {
     ResourceService resourceService = new ResourceService();
     resourceService.loadTextureAtlases(
         new String[] {
-          "images/beetle.atlas",
-          "images/crab.atlas",
-          "images/cyclops.atlas",
-          "images/floatingDemon.atlas",
-          "images/jingwei.atlas",
-          "images/golem.atlas",
-          "images/knight.atlas",
-          "images/jotunn.atlas",
-          "images/crow.atlas",
-          "images/medusa.atlas",
-          "images/mummy.atlas",
-          "images/snake.atlas"
+          "images/bomb-enemy/beetle.atlas",
+          "images/split-enemy/crab.atlas",
+          "images/giant-enemy/cyclops.atlas",
+          "images/flying-enemy/floating-demon-projectile.atlas",
+          "images/flying-enemy/jingwei.atlas",
+          "images/bomb-enemy/golem.atlas",
+          "images/bomb-enemy/knight.atlas",
+          "images/giant-enemy/jotunn.atlas",
+          "images/flying-enemy/crow.atlas",
+          "images/split-enemy/medusa.atlas",
+          "images/giant-enemy/mummy.atlas",
+          "images/snake-miniboss/snake.atlas"
         });
     resourceService.loadTextures(new String[] {SnakePlayerHitVisualComponent.HIT_SHEET});
     resourceService.loadTextures(SnakePoisonAssets.paths());
@@ -89,19 +89,19 @@ class NPCFactoryTest {
 
   @Test
   void giantEnemyHasHealthBar() {
-    Entity enemy = NPCFactory.createGiantEnemy(new Entity(), "images/mummy.atlas");
+    Entity enemy = NPCFactory.createGiantEnemy(new Entity(), "images/giant-enemy/mummy.atlas");
     assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
   }
 
   @Test
   void bombEnemyHasHealthBar() {
-    Entity enemy = NPCFactory.createBombEnemy(new Entity(), "images/beetle.atlas", 2f);
+    Entity enemy = NPCFactory.createBombEnemy(new Entity(), "images/bomb-enemy/beetle.atlas", 2f);
     assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
   }
 
   @Test
   void chaseEnemyHasHealthBar() {
-    Entity enemy = NPCFactory.createChaseEnemy(new Entity(), true, "images/crab.atlas");
+    Entity enemy = NPCFactory.createChaseEnemy(new Entity(), true, "images/split-enemy/crab.atlas");
     assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
   }
 

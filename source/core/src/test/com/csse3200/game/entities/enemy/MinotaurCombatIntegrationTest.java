@@ -73,7 +73,9 @@ class MinotaurCombatIntegrationTest {
     ResourceService resources = new ResourceService();
     resources.loadTextureAtlases(
         new String[] {
-          "images/minotaur.atlas", "images/minotaur-combat/attacks.atlas", "images/crab.atlas"
+          "images/chase-enemy/minotaur.atlas",
+          "images/chase-enemy/minotaur-combat/attacks.atlas",
+          "images/split-enemy/crab.atlas"
         });
     resources.loadAll();
     ServiceLocator.registerResourceService(resources);
@@ -86,7 +88,7 @@ class MinotaurCombatIntegrationTest {
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER));
     player.setPosition(1f, 0f);
     player.create();
-    minotaur = NPCFactory.createChaseEnemy(player, false, "images/minotaur.atlas");
+    minotaur = NPCFactory.createChaseEnemy(player, false, "images/chase-enemy/minotaur.atlas");
     // EnemyManagerComponent uses this square world size for the minotaur room spawn.
     minotaur.setScale(1.5f, 1.5f);
     ServiceLocator.getEntityService().register(minotaur);
@@ -366,7 +368,7 @@ class MinotaurCombatIntegrationTest {
 
   @Test
   void otherChaseSkinsRetainImmediateSharedTouchAttackWithoutMinotaurAttackLayer() {
-    Entity crab = NPCFactory.createChaseEnemy(player, false, "images/crab.atlas");
+    Entity crab = NPCFactory.createChaseEnemy(player, false, "images/split-enemy/crab.atlas");
     crab.create();
     assertNull(minotaur.getComponent(EnemyAnimationController.class));
     assertTrue(
@@ -599,7 +601,7 @@ class MinotaurCombatIntegrationTest {
     player.setPosition(1.1655406f, 0.5653846f);
     player.setScale(0.6081081f, 0.23076923f);
     player.create();
-    minotaur = NPCFactory.createChaseEnemy(player, false, "images/minotaur.atlas");
+    minotaur = NPCFactory.createChaseEnemy(player, false, "images/chase-enemy/minotaur.atlas");
     minotaur.setScale(1.5f, 1.5f);
     minotaur.create();
   }
@@ -619,7 +621,7 @@ class MinotaurCombatIntegrationTest {
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER));
     player.setScale(0.04f, 0.04f);
     player.create();
-    minotaur = NPCFactory.createChaseEnemy(player, false, "images/minotaur.atlas");
+    minotaur = NPCFactory.createChaseEnemy(player, false, "images/chase-enemy/minotaur.atlas");
     minotaur.setPosition(x, y);
     minotaur.setScale(width, height);
     minotaur.create();
@@ -645,7 +647,7 @@ class MinotaurCombatIntegrationTest {
   private void assertFrame(String animation, int index) {
     TextureRegion expected =
         ServiceLocator.getResourceService()
-            .getAsset("images/minotaur-combat/attacks.atlas", TextureAtlas.class)
+            .getAsset("images/chase-enemy/minotaur-combat/attacks.atlas", TextureAtlas.class)
             .findRegions(animation)
             .get(index);
     TextureRegion actual = attackRenderer().getCurrentFrame();

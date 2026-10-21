@@ -9,6 +9,21 @@ public class StatusEffectsFactory {
     throw new IllegalStateException("Instantiating static utility class");
   }
 
+  public static StatusEffect createStatusEffect(
+      CombatStatsComponent combatStats, char statusEffect) {
+    return switch (statusEffect) {
+      case 'b' -> new Burning(1, 1000, 10000, combatStats);
+      case 'r' -> new Regeneration(1, 1000, 10000, combatStats);
+      case 's' -> new Slow(10000, combatStats, -0.5f);
+      case 'S' -> new Speed(10000, combatStats);
+      case 'v' -> new Vulnerable(5000);
+      case 'f' -> new FrozenEffect(new GameTime(), 3000);
+      default ->
+          throw new IllegalArgumentException(
+              "statusEffect must be a valid character representation of a status effect.");
+    };
+  }
+
   /**
    * Create a burning status effect
    *
@@ -45,7 +60,7 @@ public class StatusEffectsFactory {
    * @param duration how long the wearer stays hidden, in milliseconds.
    * @return The invisibility status effect.
    */
-  public static TimedStatusEffect createInvisibility(GameTime time, long duration) {
+  public static StatusEffect createInvisibility(GameTime time, long duration) {
     return new InvisibilityEffect(time, duration);
   }
 
@@ -56,7 +71,7 @@ public class StatusEffectsFactory {
    * @param duration how long the wearer stays amplified, in milliseconds.
    * @return The last stand status effect.
    */
-  public static TimedStatusEffect createLastStand(GameTime time, long duration) {
+  public static StatusEffect createLastStand(GameTime time, long duration) {
     return new LastStandEffect(time, duration);
   }
 
@@ -67,7 +82,7 @@ public class StatusEffectsFactory {
    * @param duration how long the owner stays frozen, in milliseconds
    * @return a new frozen effect
    */
-  public static TimedStatusEffect createFrozen(GameTime time, long duration) {
+  public static StatusEffect createFrozen(GameTime time, long duration) {
     return new FrozenEffect(time, duration);
   }
 

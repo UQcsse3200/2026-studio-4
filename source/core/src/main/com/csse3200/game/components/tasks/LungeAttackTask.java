@@ -21,7 +21,7 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
   private static final float DASH_SPEED = 6f;
   private static final float DASH_DISTANCE = 4f;
   private static final float DASH_DURATION = 0.4f;
-  private static final float COOLDOWN_DURATION = 2f;
+  private static final float DEFAULT_COOLDOWN_DURATION = 2f;
 
   private enum Phase {
     TELEGRAPH,
@@ -31,6 +31,7 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
 
   private final Entity target;
   private final float restoreSpeed;
+  private final long cooldownDurationMillis;
   private final GameTime gameTime;
   private PhysicsMovementComponent movementComponent;
   private Phase phase;
@@ -42,11 +43,32 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
 
   /**
    * @param target Entity to lunge toward (usually the player).
+   * @param priority task priority when a lunge is available
    * @param restoreSpeed Normal movement speed to return to after the dash ends.
+   * @param enemy entity performing the lunge
    */
   public LungeAttackTask(Entity target, int priority, float restoreSpeed, Entity enemy) {
+    this(target, priority, restoreSpeed, enemy, DEFAULT_COOLDOWN_DURATION);
+  }
+
+  /**
+   * Creates a lunge with a configurable recovery between attacks.
+   *
+   * @param target entity to lunge toward
+   * @param priority task priority when a lunge is available
+   * @param restoreSpeed normal movement speed after a dash ends
+   * @param enemy entity performing the lunge
+   * @param cooldownDuration seconds before another lunge after finishing or interrupting one
+   * @throws IllegalArgumentException if the cooldown is not finite and positive
+   */
+  public LungeAttackTask(
+      Entity target, int priority, float restoreSpeed, Entity enemy, float cooldownDuration) {
+    if (!Float.isFinite(cooldownDuration) || cooldownDuration <= 0f) {
+      throw new IllegalArgumentException("Lunge cooldown must be finite and positive");
+    }
     this.target = target;
     this.restoreSpeed = restoreSpeed;
+    this.cooldownDurationMillis = (long) (cooldownDuration * 1000);
     this.priority = priority;
     this.enemy = enemy;
     this.gameTime = ServiceLocator.getTimeSource();
@@ -94,6 +116,25 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
     if (movementComponent != null) {
       movementComponent.setMoving(false);
       movementComponent.setMaxSpeed(new Vector2(restoreSpeed, restoreSpeed));
+    }
+  }
+
+  /**
+   * Cancels a pending or active lunge and starts its cooldown again from now.
+   *
+   * <p>A dash announces its end only if it had started. When another task owns movement, this only
+   * delays the next lunge and leaves that task's movement settings alone.
+   */
+  public void interrupt() {
+    boolean wasDashing = status == Status.ACTIVE && phase == Phase.DASH;
+    if (status == Status.ACTIVE && phase != Phase.DONE) {
+      movementComponent.setMoving(false);
+      movementComponent.setMaxSpeed(new Vector2(restoreSpeed, restoreSpeed));
+    }
+    cooldownEndTime = gameTime.getTime() + cooldownDurationMillis;
+    phase = Phase.DONE;
+    if (wasDashing) {
+      enemy.getEvents().trigger("lungeDashEnd");
     }
   }
 
@@ -165,7 +206,7 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
     movementComponent.setMoving(false);
     movementComponent.setMaxSpeed(new Vector2(restoreSpeed, restoreSpeed));
 
-    cooldownEndTime = now + (long) (COOLDOWN_DURATION * 1000);
+    cooldownEndTime = now + cooldownDurationMillis;
     phase = Phase.DONE;
     owner.getEntity().getEvents().trigger("lungeDashEnd");
   }

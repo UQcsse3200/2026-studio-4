@@ -2,6 +2,7 @@ package com.csse3200.game.components.items;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InteractionPrompt;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.BodyUserData;
@@ -32,6 +33,7 @@ import java.util.Set;
 public class ItemPickupComponent extends Component {
   private HitboxComponent hitboxComponent;
   private final Set<Entity> nearbyItems = new LinkedHashSet<>();
+  private boolean showingPickupPrompt;
 
   @Override
   public void create() {
@@ -39,6 +41,36 @@ public class ItemPickupComponent extends Component {
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
     entity.getEvents().addListener("collisionEnd", this::onCollisionEnd);
     entity.getEvents().addListener("itemPickup", this::onItemPickup);
+  }
+
+  /**
+   * Shows "Press E — Pick up …" while a drop is in range, and hides that sentence after the player
+   * walks away or picks it up. Another interaction's prompt is left as it is.
+   */
+  @Override
+  public void update() {
+    refreshPickupPrompt(entity.getComponent(InteractionPromptDisplay.class));
+  }
+
+  /**
+   * Puts the current pickup sentence on the HUD.
+   *
+   * @param display the player's prompt, or null when this entity has none
+   */
+  void refreshPickupPrompt(InteractionPromptDisplay display) {
+    if (display == null) {
+      return;
+    }
+    String prompt = getPickupPrompt();
+    if (prompt != null) {
+      display.setPrompt(prompt);
+      showingPickupPrompt = true;
+      return;
+    }
+    if (showingPickupPrompt) {
+      display.clearPrompt();
+      showingPickupPrompt = false;
+    }
   }
 
   private void onCollisionStart(Fixture me, Fixture other) {
