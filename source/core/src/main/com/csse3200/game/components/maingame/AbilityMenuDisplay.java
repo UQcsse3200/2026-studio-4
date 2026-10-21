@@ -50,7 +50,7 @@ public class AbilityMenuDisplay extends ModalMenuDisplay {
   @Override
   protected void buildPanel(Table panel) {
     addTitle(panel, "Hecate's Gifts");
-    addCaption(panel, "You may carry only one.").padBottom(18f).row();
+    addCaption(panel, "You may carry only one. Press L to use it.").padBottom(18f).row();
 
     rowHolder = new Table();
     rowHolder.setName("ability-menu-rows");
