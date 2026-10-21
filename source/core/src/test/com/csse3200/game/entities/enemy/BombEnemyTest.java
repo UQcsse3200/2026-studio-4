@@ -48,15 +48,16 @@ class BombEnemyTest {
 
     ResourceService resourceService = new ResourceService();
     resourceService.loadTextureAtlases(
-        new String[] {"images/golem.atlas", "images/bombEnemy.atlas", "images/beetle.atlas"});
+        new String[] {"images/bomb-enemy/golem.atlas", "images/bomb-enemy/beetle.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
 
   @Test
   void shouldHaveBombEnemyAnimations() {
-    Entity golem = NPCFactory.createBombEnemy(new Entity(), "images/golem.atlas", 0.05f);
-    Entity beetle = NPCFactory.createBombEnemy(new Entity(), "images/beetle.atlas", 0.05f);
+    Entity golem = NPCFactory.createBombEnemy(new Entity(), "images/bomb-enemy/golem.atlas", 0.05f);
+    Entity beetle =
+        NPCFactory.createBombEnemy(new Entity(), "images/bomb-enemy/beetle.atlas", 0.05f);
     AnimationRenderComponent golemAnimator = golem.getComponent(AnimationRenderComponent.class);
     AnimationRenderComponent beetleAnimator = beetle.getComponent(AnimationRenderComponent.class);
 
@@ -76,7 +77,7 @@ class BombEnemyTest {
         new Entity().addComponent(new PhysicsComponent()).addComponent(new HitboxComponent());
     player.create();
 
-    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas", 0.05f);
+    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bomb-enemy/golem.atlas", 0.05f);
     bombEnemy.create();
 
     Fixture bombFixture = bombEnemy.getComponent(HitboxComponent.class).getFixture();
@@ -100,7 +101,7 @@ class BombEnemyTest {
             .addComponent(new CombatStatsComponent(100, 10));
     player.create();
 
-    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas", 0.05f);
+    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bomb-enemy/golem.atlas", 0.05f);
     bombEnemy.create();
 
     Fixture bombFixture = bombEnemy.getComponent(HitboxComponent.class).getFixture();
@@ -123,7 +124,7 @@ class BombEnemyTest {
             .addComponent(new CombatStatsComponent(100, 10));
     player.create();
 
-    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas", 0.05f);
+    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bomb-enemy/golem.atlas", 0.05f);
     bombEnemy.create();
 
     Fixture bombFixture = bombEnemy.getComponent(HitboxComponent.class).getFixture();
@@ -145,7 +146,7 @@ class BombEnemyTest {
         new Entity().addComponent(new PhysicsComponent()).addComponent(new HitboxComponent());
     player.create();
 
-    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas", 0.05f);
+    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bomb-enemy/golem.atlas", 0.05f);
     bombEnemy.create();
 
     ExplodeComponent explodeComponent = bombEnemy.getComponent(ExplodeComponent.class);
@@ -183,7 +184,7 @@ class BombEnemyTest {
             .addComponent(abilities);
     player.create();
 
-    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bombEnemy.atlas", 0.05f);
+    Entity bombEnemy = NPCFactory.createBombEnemy(player, "images/bomb-enemy/golem.atlas", 0.05f);
     bombEnemy.create();
 
     Fixture bombFixture = bombEnemy.getComponent(HitboxComponent.class).getFixture();

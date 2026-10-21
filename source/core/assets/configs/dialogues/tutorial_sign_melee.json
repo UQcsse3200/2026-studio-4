@@ -1,0 +1,11 @@
+{
+  "speakers": [
+    { "id": "board", "name": "Notice Board", "texture": "images/tutorial/sign.png" }
+  ],
+  "lines": [
+    { "speaker": "board", "text": "MELEE: walk up to a dummy, face it and press J to strike. The number that floats up is the damage you dealt." },
+    { "speaker": "board", "text": "K is the heavy attack. The sword spins all the way around you, the knife lands a three-hit flurry, and the bow fires three arrows at once." },
+    { "speaker": "board", "text": "Heavy attacks need a weapon upgrade from the merchant. In here your weapons are enchanted so you can try them first." },
+    { "speaker": "board", "text": "Swap weapons with 1, 2 and 3 and compare how each one feels." }
+  ]
+}

@@ -17,6 +17,9 @@ public class WorldConfig {
         "Unknown start entry point: " + startEntryPointId);
 
     for (RoomConfig room : rooms) {
+      require(
+          room.trainingGrounds || room.propSpawns.length == 0,
+          "Only training grounds can have props: " + room.id);
       for (ExitConfig exit : room.exits) {
         validateExit(room, exit);
       }

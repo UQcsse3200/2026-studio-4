@@ -14,6 +14,7 @@
     { "speaker": "sage", "text": "Hecate offers gifts, but she only lets you hold one at a time. Once you've chosen, press L to use it." },
     { "speaker": "sage", "text": "And these bookshelves aren't for reading. Four lead into the dungeons. The last one leads to the end of it all." },
     { "speaker": "hero", "text": "That's a lot to remember." },
-    { "speaker": "sage", "text": "Then come back and ask again. I'm not going anywhere." }
+    { "speaker": "sage", "text": "Then don't just listen, practise. I keep a training ground nearby, with dummies to hit, targets to shoot and potions to try." },
+    { "speaker": "sage", "text": "Shall I send you there? You can come back by talking to me, and you can always ask me again here." }
   ]
 }

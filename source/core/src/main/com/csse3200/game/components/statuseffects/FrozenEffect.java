@@ -11,7 +11,7 @@ import com.csse3200.game.services.GameTime;
  * controller whether their entity is immobilised, and damage falls out of the zeroed attack stat,
  * so nothing in movement, AI or combat needs to know that a freeze spell exists.
  */
-public class FrozenEffect extends TimedStatusEffect {
+public class FrozenEffect extends StatusEffect {
   /** Light blue: the red channel is cut hardest, leaving the sprite reading as ice. */
   private static final Color TINT = new Color(0.45f, 0.75f, 1f, 1f);
 

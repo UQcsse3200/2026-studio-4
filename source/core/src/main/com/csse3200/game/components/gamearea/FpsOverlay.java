@@ -25,13 +25,16 @@ public class FpsOverlay extends UIComponent {
     applyVisibility();
   }
 
-  /** Shows or hides the counter from the saved setting, including after Apply in the same run. */
+  /**
+   * Shows or hides the counter from the saved setting, including after Apply in the same run. It
+   * stays hidden while the settings page is open.
+   */
   private void applyVisibility() {
-    if (UiScale.settingsOpen(stage)) {
+    if (stage == null || UiScale.settingsOpen(stage)) {
       return;
     }
     boolean showReadout = UserSettings.get().showFps;
-    if (showReadout && table == null && stage != null) {
+    if (showReadout && table == null) {
       label = new Label("FPS 0", skin, "caption");
       table = new Table();
       table.setFillParent(true);

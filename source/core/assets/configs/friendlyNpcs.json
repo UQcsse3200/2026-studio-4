@@ -9,7 +9,34 @@
       "width": 1.0,
       "interactionRange": 1.5,
       "dialogueId": "tutorial_guide",
-      "lockMovementDuringDialogue": true
+      "lockMovementDuringDialogue": true,
+      "teleportOffer": {
+        "roomId": "tutorialRoom",
+        "entryPointId": "fromSage",
+        "title": "Training Grounds",
+        "prompt": "The Old Sage can send you to his training grounds, where you can practise everything he taught you.",
+        "confirmLabel": "Take me to the training grounds",
+        "declineLabel": "Not right now"
+      }
+    },
+    {
+      "id": "trainingGuide",
+      "name": "Old Sage",
+      "promptVerb": "Talk to",
+      "atlas": "images/friendly-npcs/old-sage.atlas",
+      "animation": "default",
+      "width": 1.0,
+      "interactionRange": 1.5,
+      "dialogueId": "training_guide",
+      "lockMovementDuringDialogue": true,
+      "teleportOffer": {
+        "roomId": "selection",
+        "entryPointId": "fromTutorial",
+        "title": "Leave the Training Grounds",
+        "prompt": "Ready to go back to the village? Anything lent to you here stays behind.",
+        "confirmLabel": "Return to the village",
+        "declineLabel": "Keep practising"
+      }
     },
     {
       "id": "merchant",

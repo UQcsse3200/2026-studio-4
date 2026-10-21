@@ -80,14 +80,15 @@ class StatusEffectControllerComponentTest {
 
       // Each stack is a separate effect, so hand out a fresh mock per call.
       factory
-          .when(() -> StatusEffectsFactory.createBurn(combatStatsComponent))
+          .when(() -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 'b'))
           .thenAnswer(invocation -> mock(StatusEffect.class));
 
       StatusEffectsControllerComponent controller = createController();
 
       controller.addStatusEffect(3, 'b');
 
-      factory.verify(() -> StatusEffectsFactory.createBurn(combatStatsComponent), times(3));
+      factory.verify(
+          () -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 'b'), times(3));
     }
   }
 
@@ -96,14 +97,15 @@ class StatusEffectControllerComponentTest {
     try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
       factory
-          .when(() -> StatusEffectsFactory.createRegeneration(combatStatsComponent))
+          .when(() -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 'r'))
           .thenAnswer(invocation -> mock(StatusEffect.class));
 
       StatusEffectsControllerComponent controller = createController();
 
       controller.addStatusEffect(4, 'r');
 
-      factory.verify(() -> StatusEffectsFactory.createRegeneration(combatStatsComponent), times(4));
+      factory.verify(
+          () -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 'r'), times(4));
     }
   }
 
@@ -112,14 +114,15 @@ class StatusEffectControllerComponentTest {
     try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
       factory
-          .when(() -> StatusEffectsFactory.createSlow(combatStatsComponent))
+          .when(() -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 's'))
           .thenAnswer(invocation -> mock(StatusEffect.class));
 
       StatusEffectsControllerComponent controller = createController();
 
       controller.addStatusEffect(2, 's');
 
-      factory.verify(() -> StatusEffectsFactory.createSlow(combatStatsComponent), times(2));
+      factory.verify(
+          () -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 's'), times(2));
     }
   }
 
@@ -128,14 +131,15 @@ class StatusEffectControllerComponentTest {
     try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
       factory
-          .when(() -> StatusEffectsFactory.createSpeed(combatStatsComponent))
+          .when(() -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 'S'))
           .thenAnswer(invocation -> mock(StatusEffect.class));
 
       StatusEffectsControllerComponent controller = createController();
 
       controller.addStatusEffect(5, 'S');
 
-      factory.verify(() -> StatusEffectsFactory.createSpeed(combatStatsComponent), times(5));
+      factory.verify(
+          () -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 'S'), times(5));
     }
   }
 
@@ -144,14 +148,15 @@ class StatusEffectControllerComponentTest {
     try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
       factory
-          .when(StatusEffectsFactory::createVulnerable)
+          .when(() -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 'v'))
           .thenAnswer(invocation -> mock(StatusEffect.class));
 
       StatusEffectsControllerComponent controller = createController();
 
       controller.addStatusEffect(3, 'v');
 
-      factory.verify(StatusEffectsFactory::createVulnerable, times(3));
+      factory.verify(
+          () -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 'v'), times(3));
     }
   }
 
@@ -162,7 +167,7 @@ class StatusEffectControllerComponentTest {
     try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
       factory
-          .when(() -> StatusEffectsFactory.createFreeze(combatStatsComponent))
+          .when(() -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 'f'))
           .thenReturn(freeze);
 
       StatusEffectsControllerComponent controller = createController();
@@ -173,7 +178,8 @@ class StatusEffectControllerComponentTest {
        * Notice that the implementation currently only creates
        * ONE freeze regardless of the number of stacks.
        */
-      factory.verify(() -> StatusEffectsFactory.createFreeze(combatStatsComponent), times(1));
+      factory.verify(
+          () -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 'f'), times(1));
     }
   }
 
@@ -218,7 +224,7 @@ class StatusEffectControllerComponentTest {
     try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
       factory
-          .when(() -> StatusEffectsFactory.createBurn(combatStatsComponent))
+          .when(() -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 'b'))
           .thenAnswer(
               invocation -> {
                 StatusEffect effect = mock(StatusEffect.class);
@@ -248,11 +254,11 @@ class StatusEffectControllerComponentTest {
     try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
       factory
-          .when(() -> StatusEffectsFactory.createBurn(combatStatsComponent))
+          .when(() -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 'b'))
           .thenReturn(removedEffect);
 
       factory
-          .when(() -> StatusEffectsFactory.createRegeneration(combatStatsComponent))
+          .when(() -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 'r'))
           .thenReturn(remainingEffect);
 
       StatusEffectsControllerComponent controller = createController();
@@ -295,11 +301,11 @@ class StatusEffectControllerComponentTest {
     try (MockedStatic<StatusEffectsFactory> factory = mockStatic(StatusEffectsFactory.class)) {
 
       factory
-          .when(() -> StatusEffectsFactory.createBurn(combatStatsComponent))
+          .when(() -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 'b'))
           .thenReturn(normalEffect);
 
       factory
-          .when(() -> StatusEffectsFactory.createRegeneration(combatStatsComponent))
+          .when(() -> StatusEffectsFactory.createStatusEffect(combatStatsComponent, 'r'))
           .thenReturn(damageableEffect);
 
       StatusEffectsControllerComponent controller = createController();

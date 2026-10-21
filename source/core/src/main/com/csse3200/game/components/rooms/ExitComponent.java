@@ -11,6 +11,10 @@ import com.csse3200.game.areas.terrain.DreamlandTile;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TileSheet;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.items.ItemPickupComponent;
+import com.csse3200.game.components.maingame.InteractionPromptDisplay;
+import com.csse3200.game.components.player.InteractionPrompt;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.rendering.GlowRenderComponent;
@@ -22,7 +26,10 @@ import java.util.function.BooleanSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Spawns the visible door and bookshelf forms of a room's configured exits. */
+/**
+ * Spawns the visible door and bookshelf forms of a room's configured exits, and keeps the
+ * interaction prompt in step with the nearest one.
+ */
 public class ExitComponent extends EntityManagerComponent {
   private static final Logger logger = LoggerFactory.getLogger(ExitComponent.class);
   private static final String FANTASY_DUNGEON_TILESET = "images/dungeons/tileSet0.png";
@@ -38,6 +45,7 @@ public class ExitComponent extends EntityManagerComponent {
   private static final float TOME_CENTRE_Y = 5f;
 
   private final ExitConfig[] exits;
+  private Entity player;
 
   public ExitComponent(ExitConfig[] exits) {
     this.exits = exits;
@@ -61,23 +69,90 @@ public class ExitComponent extends EntityManagerComponent {
     }
 
     entity.getEvents().addListener("requestExit", this::onExitRequest);
+    entity.getEvents().addListener("RoomCreated", this::rememberPlayer);
   }
 
-  // This is kind of an anti pattern since it is kinda forcing a "return value" for the listener
-  private void onExitRequest(Vector2 playerPosition) {
+  /**
+   * Shows the exit prompt while the player is near a door, and hides it after they walk away.
+   *
+   * <p>Pressing E is handled separately. The prompt has to be refreshed every frame because it
+   * depends on where the player is standing. A drop already in pickup range keeps "Press E — Pick
+   * up …" instead of the door sentence. The boss shelf uses the same sentence as the E key.
+   */
+  @Override
+  public void update() {
+    if (player == null) {
+      return;
+    }
+    InteractionPromptDisplay display = player.getComponent(InteractionPromptDisplay.class);
+    if (display == null) {
+      return;
+    }
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    if (actions != null && actions.areControlsLocked()) {
+      display.clearPrompt();
+      return;
+    }
+    ItemPickupComponent pickup = player.getComponent(ItemPickupComponent.class);
+    String itemPrompt = pickup == null ? null : pickup.getPickupPrompt();
+    if (itemPrompt != null) {
+      display.setPrompt(itemPrompt);
+      return;
+    }
+    EnemyManagerComponent enemies = entity.getComponent(EnemyManagerComponent.class);
+    boolean roomCleared = enemies != null && enemies.isCleared();
+    display.setPrompt(promptAt(player.getCenterPosition(), roomCleared));
+  }
+
+  /**
+   * Remembers the player announced by {@code RoomCreated}, so later frames can read their position.
+   *
+   * @param player the player who entered this room
+   */
+  private void rememberPlayer(Entity player) {
+    this.player = player;
+  }
+
+  /**
+   * Text for the exit the player is close enough to use.
+   *
+   * @param playerPosition centre of the player, in world units
+   * @param roomCleared whether this room has no enemies left
+   * @return the prompt to show, or an empty string when no exit is in range
+   */
+  String promptAt(Vector2 playerPosition, boolean roomCleared) {
+    ExitConfig nearest = nearestExit(playerPosition);
+    if (nearest == null) {
+      return "";
+    }
+    return InteractionPrompt.forExit(nearest, roomCleared, false);
+  }
+
+  /**
+   * The closest configured exit within {@link #INTERACTION_RANGE}, or null when the player is
+   * farther away than that.
+   *
+   * @param playerPosition centre of the player, in world units
+   * @return the nearest exit in range, or null
+   */
+  private ExitConfig nearestExit(Vector2 playerPosition) {
     ExitConfig nearest = null;
     float nearestDistance = INTERACTION_RANGE;
-
-    // Finds the nearest exit
+    TerrainComponent terrain = entity.getComponent(TerrainComponent.class);
     for (ExitConfig exit : exits) {
-      Vector2 exitPos =
-          entity.getComponent(TerrainComponent.class).tileToWorldPosition(exit.x, exit.y);
+      Vector2 exitPos = terrain.tileToWorldPosition(exit.x, exit.y);
       float distance = playerPosition.dst(exitPos);
       if (distance <= nearestDistance) {
         nearest = exit;
         nearestDistance = distance;
       }
     }
+    return nearest;
+  }
+
+  // This is kind of an anti pattern since it is kinda forcing a "return value" for the listener
+  private void onExitRequest(Vector2 playerPosition) {
+    ExitConfig nearest = nearestExit(playerPosition);
 
     if (nearest == null) {
       logger.debug("No exits found in range");
@@ -93,7 +168,7 @@ public class ExitComponent extends EntityManagerComponent {
       // Access boss room before all other dungeons are cleared
       entity
           .getEvents()
-          .trigger(GameAreaDisplay.DISPLAY, "Clear all other dungeons before attempting.");
+          .trigger(GameAreaDisplay.DISPLAY, InteractionPrompt.CLEAR_ALL_DUNGEONS_REQUIRED);
       return;
     }
 

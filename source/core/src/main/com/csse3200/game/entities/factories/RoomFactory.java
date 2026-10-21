@@ -10,12 +10,20 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.rooms.*;
 import com.csse3200.game.components.rooms.configs.EnemySpawnConfig;
+import com.csse3200.game.components.rooms.configs.PropSpawnConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
+import com.csse3200.game.components.tutorial.TrainingLoadoutComponent;
+import com.csse3200.game.components.tutorial.TutorialPropManagerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.InteractableNpcConfigs;
 import com.csse3200.game.files.FileLoader;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import com.csse3200.game.rendering.RoomLightingComponent;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +112,32 @@ public class RoomFactory {
         .addComponent(new RoomAcheivements())
         .addComponent(new RoomMusicComponent())
         .addComponent(new FriendlyNpcManagerComponent(room.npcSpawns, getFriendlyNpcs()));
+  }
+
+  /**
+   * Creates a training grounds room: an ordinary room with its practice props and the loadout that
+   * enchants the player's weapons and takes back anything lent to them. Only rooms flagged {@link
+   * RoomConfig#trainingGrounds} get these, so every other room is built exactly as before.
+   *
+   * @param room The rooms declarative definition.
+   * @param camera The camera for the room.
+   * @param cleared Whether the room has been cleared.
+   * @return The room entity.
+   */
+  public static Entity createTrainingRoom(
+      RoomConfig room, CameraComponent camera, boolean cleared) {
+    return createRoom(room, camera, cleared)
+        .addComponent(new TutorialPropManagerComponent(room.propSpawns))
+        .addComponent(new TrainingLoadoutComponent(supplyItemIds(room)));
+  }
+
+  /** The consumables a room's supply stands lend out. */
+  private static Set<String> supplyItemIds(RoomConfig room) {
+    return Arrays.stream(room.propSpawns)
+        .filter(prop -> prop.type == PropSpawnConfig.PropType.SUPPLY_STAND)
+        .map(prop -> prop.itemId)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
   /** Whether a room uses the home-library theme instead of a dungeon tileset. */
