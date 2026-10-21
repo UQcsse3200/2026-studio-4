@@ -24,7 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * and lit by candles. Its layout must be consistent and fully reachable.
  */
 @ExtendWith(GameExtension.class)
-class LibraryRoomConfigTest {
+class AtticRoomConfigTest {
   private RoomConfig room;
   private List<String> grid;
 

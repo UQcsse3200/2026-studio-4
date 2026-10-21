@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
 
 /** Checks the prop catalogue against the real sheets (tests run from core/assets). */
-class LibraryPropTest {
+class AtticPropTest {
   private final Map<String, BufferedImage> sheets = new HashMap<>();
 
   private BufferedImage sheet(String path) throws IOException {

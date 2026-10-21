@@ -9,7 +9,7 @@ import com.csse3200.game.areas.attic.AtticTerrain.WallPiece;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class LibraryTerrainTest {
+class AtticTerrainTest {
   // Row 0 is the bottom of the room.
   private static final List<String> ROOM =
       List.of(
