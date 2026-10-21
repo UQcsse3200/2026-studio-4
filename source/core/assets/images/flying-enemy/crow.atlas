@@ -96,7 +96,7 @@ dieAnimation
   index: 0
 
 
-../themed_projectiles/crow/projectile_1.png
+themed_projectiles/crow/projectile_1.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
@@ -109,7 +109,7 @@ projectile
   offset: 0, 0
   index: 0
 
-../themed_projectiles/crow/projectile_2.png
+themed_projectiles/crow/projectile_2.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
@@ -122,7 +122,7 @@ projectile
   offset: 0, 0
   index: 1
 
-../themed_projectiles/crow/projectile_3.png
+themed_projectiles/crow/projectile_3.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
@@ -135,7 +135,7 @@ projectile
   offset: 0, 0
   index: 2
 
-../themed_projectiles/crow/projectileHit_1.png
+themed_projectiles/crow/projectileHit_1.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
@@ -148,7 +148,7 @@ projectileHit
   offset: 0, 0
   index: 0
 
-../themed_projectiles/crow/projectileHit_2.png
+themed_projectiles/crow/projectileHit_2.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
@@ -161,7 +161,7 @@ projectileHit
   offset: 0, 0
   index: 1
 
-../themed_projectiles/crow/projectileHit_3.png
+themed_projectiles/crow/projectileHit_3.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest

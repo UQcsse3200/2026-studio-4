@@ -130,7 +130,7 @@ dieAnimation
     offset: 0, 0
     index: 6
 
-../themed_projectiles/jingwei/projectile_1.png
+themed_projectiles/jingwei/projectile_1.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
@@ -143,7 +143,7 @@ projectile
   offset: 0, 0
   index: 0
 
-../themed_projectiles/jingwei/projectile_2.png
+themed_projectiles/jingwei/projectile_2.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
@@ -156,7 +156,7 @@ projectile
   offset: 0, 0
   index: 1
 
-../themed_projectiles/jingwei/projectile_3.png
+themed_projectiles/jingwei/projectile_3.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
@@ -169,7 +169,7 @@ projectile
   offset: 0, 0
   index: 2
 
-../themed_projectiles/jingwei/projectileHit_1.png
+themed_projectiles/jingwei/projectileHit_1.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
@@ -182,7 +182,7 @@ projectileHit
   offset: 0, 0
   index: 0
 
-../themed_projectiles/jingwei/projectileHit_2.png
+themed_projectiles/jingwei/projectileHit_2.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
@@ -195,7 +195,7 @@ projectileHit
   offset: 0, 0
   index: 1
 
-../themed_projectiles/jingwei/projectileHit_3.png
+themed_projectiles/jingwei/projectileHit_3.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest

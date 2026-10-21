@@ -53,7 +53,7 @@ dieAnimation
   offset: 0, 0
   index: 1
 
-../themed_projectiles/wasp/projectile_1.png
+themed_projectiles/wasp/projectile_1.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
@@ -66,7 +66,7 @@ projectile
   offset: 0, 0
   index: 0
 
-../themed_projectiles/wasp/projectile_2.png
+themed_projectiles/wasp/projectile_2.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
@@ -79,7 +79,7 @@ projectile
   offset: 0, 0
   index: 1
 
-../themed_projectiles/wasp/projectile_3.png
+themed_projectiles/wasp/projectile_3.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
@@ -92,7 +92,7 @@ projectile
   offset: 0, 0
   index: 2
 
-../themed_projectiles/wasp/projectileHit_1.png
+themed_projectiles/wasp/projectileHit_1.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
@@ -105,7 +105,7 @@ projectileHit
   offset: 0, 0
   index: 0
 
-../themed_projectiles/wasp/projectileHit_2.png
+themed_projectiles/wasp/projectileHit_2.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
@@ -118,7 +118,7 @@ projectileHit
   offset: 0, 0
   index: 1
 
-../themed_projectiles/wasp/projectileHit_3.png
+themed_projectiles/wasp/projectileHit_3.png
 size: 50, 50
 format: RGBA8888
 filter: Nearest,Nearest
