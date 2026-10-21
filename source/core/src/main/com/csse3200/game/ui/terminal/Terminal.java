@@ -1,6 +1,9 @@
 package com.csse3200.game.ui.terminal;
 
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.commands.Command;
 import com.csse3200.game.ui.terminal.commands.DebugCommand;
 import java.util.ArrayList;
@@ -57,6 +60,15 @@ public class Terminal extends Component {
   public void setOpen() {
     logger.debug("Opening terminal");
     isOpen = true;
+    if (ServiceLocator.getEntityService() != null) {
+      for (Entity candidate : ServiceLocator.getEntityService().getEntities()) {
+        KeyboardPlayerInputComponent input =
+            candidate.getComponent(KeyboardPlayerInputComponent.class);
+        if (input != null) {
+          input.cancelPickupHold();
+        }
+      }
+    }
   }
 
   /** Closes the terminal and clears the stored message. */

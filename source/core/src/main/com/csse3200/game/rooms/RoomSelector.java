@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.boss.FinalBossPhase;
+import com.csse3200.game.components.items.ItemPickupComponent;
 import com.csse3200.game.components.rooms.EnemyManagerComponent;
 import com.csse3200.game.components.rooms.FollowingCameraComponent;
 import com.csse3200.game.components.rooms.RoomDataComponent;
@@ -28,6 +30,15 @@ public class RoomSelector {
   public static final String ROOM_SWITCHED_EVENT = "RoomSwitched";
   public static final String SWITCH_ROOM = "SwitchRoom";
 
+  /**
+   * Request, triggered on the player with {@code (String roomId, String entryPointId)}, to move
+   * them to a named entry point of any room without using an exit, e.g. an NPC sending them away.
+   */
+  public static final String TELEPORT_REQUEST = "teleportToRoom";
+
+  /** Triggered on the room, with the player, when E is pressed, for props that can be used. */
+  public static final String PROP_INTERACT = "propInteract";
+
   RoomSelector(Entity room, Entity player, CameraComponent camera, RoomLoader roomLoader) {
     this.room = room;
     this.player = player;
@@ -38,6 +49,7 @@ public class RoomSelector {
   public RoomSelector(Entity player, CameraComponent camera) {
     this(null, player, camera, new RoomLoader(camera));
     player.getEvents().addListener("interact", this::onPlayerInteract);
+    player.getEvents().<String, String>addListener(TELEPORT_REQUEST, this::teleport);
   }
 
   /* Gives to the CameraComponent to the room
@@ -59,12 +71,25 @@ public class RoomSelector {
 
   /** Switches the currently rendered room to the destination room declared in exit */
   public void switchRoom(ExitConfig exit) {
-    logger.debug(
-        "going to room: {}, isCleared: {}",
-        exit.destinationRoomId,
-        RoomClearService.isRoomCleared(exit.destinationRoomId));
+    boolean cleared = ServiceLocator.getRoomClearService().isRoomCleared(exit.destinationRoomId);
+    logger.debug("going to room: {}, isCleared: {}", exit.destinationRoomId, cleared);
 
     ServiceLocator.getEntityService().schedule(() -> setRoom(exit));
+  }
+
+  /**
+   * Moves the player to a named entry point of a room, from anywhere. Applied at the next safe
+   * point in the frame, like any other room switch.
+   */
+  public void teleport(String roomId, String entryPointId) {
+    GridPoint2 spawn = roomLoader.getEntrySpawn(roomId, entryPointId);
+    logger.debug("teleporting to room: {}, entry point: {}", roomId, entryPointId);
+    scheduleRoomSwitch(roomLoader.getRoom(roomId), spawn);
+  }
+
+  /** Queues a switch to an unregistered room for the next safe point in the frame. */
+  private void scheduleRoomSwitch(Entity newRoom, GridPoint2 spawn) {
+    ServiceLocator.getEntityService().schedule(() -> setRoom(newRoom, spawn));
   }
 
   /**
@@ -109,7 +134,7 @@ public class RoomSelector {
     ServiceLocator.getEntityService().register(newRoom);
     spawnPlayer(spawn);
     room.getEvents().trigger("RoomCreated", this.player);
-    RoomClearService.attachListeners(room);
+    ServiceLocator.getRoomClearService().attachListeners(room);
     resetCamera();
     room.getEvents().addListener(SWITCH_ROOM, this::switchRoom);
 
@@ -118,17 +143,77 @@ public class RoomSelector {
   }
 
   /**
-   * Callback function for the interact event when player presses E. If the room is cleared, will
-   * request the room entity for any potential exits.
+   * Handles a short press of E. A drop already in pickup range is collected by {@code itemPickup}
+   * and must not also open a door or show the locked-door message. An NPC interaction is still
+   * offered.
    */
-  private void onPlayerInteract() {
-    // Handle room switch via hitbox events
-    room.getEvents().trigger("requestExit", player.getCenterPosition());
+  void onPlayerInteract() {
+    if (!dropInPickupRange()) {
+      room.getEvents().trigger("requestExit", player.getCenterPosition());
+    }
     room.getEvents().trigger("npcInteract", player);
+    room.getEvents().trigger(PROP_INTERACT, player);
+  }
+
+  /**
+   * Whether E will pick up a drop on this press.
+   *
+   * @return true when the player is standing on a drop
+   */
+  private boolean dropInPickupRange() {
+    ItemPickupComponent pickup = player.getComponent(ItemPickupComponent.class);
+    return pickup != null && pickup.getPickupPrompt() != null;
   }
 
   /** Debug function to clear the current room's enemies */
   public void clearRoom() {
     room.getComponent(EnemyManagerComponent.class).clear();
+  }
+
+  /** Debug function to quick travel to the given room */
+  boolean debugGotoRoom(String roomId) {
+    logger.info("Going to room: {}", roomId);
+    Entity queriedRoom = roomLoader.getRoom(roomId, false);
+    if (queriedRoom == null) {
+      return false;
+    }
+    GridPoint2 spawn = roomLoader.getAnyVaidSpawn(roomId);
+
+    scheduleRoomSwitch(queriedRoom, spawn);
+    return true;
+  }
+
+  /**
+   * Debug function to quick travel to the final room at the given stage.
+   *
+   * <p>Only works outside of the finalBossRoom. Only use for debugging purposes, maybe crash the
+   * game.
+   */
+  boolean debugFinalBossStage(String stage) {
+    final String FB_ROOM = "finalBossRoom";
+
+    FinalBossPhase fbStage =
+        switch (stage) {
+          case "1" -> FinalBossPhase.STAGE_ONE;
+          case "2" -> FinalBossPhase.STAGE_TWO;
+          case "3" -> FinalBossPhase.STAGE_THREE;
+          default -> null;
+        };
+
+    if (fbStage == null) {
+      logger.error("Bad stage given: {}", stage);
+      return false;
+    }
+
+    var fbRoom = roomLoader.getRoom(FB_ROOM, false);
+    var fbSpawn = roomLoader.getAnyVaidSpawn(FB_ROOM);
+    ServiceLocator.getEntityService()
+        .schedule(
+            () -> {
+              setRoom(fbRoom, fbSpawn);
+              room.getComponent(EnemyManagerComponent.class).startFinalBossStage(fbStage);
+            });
+
+    return true;
   }
 }

@@ -203,38 +203,11 @@ public class StatusEffectsControllerComponent extends Component {
     if (stacks <= 0) {
       throw new IllegalArgumentException("Stacks must be > 0");
     }
-    switch (statusEffect) {
-      case 'b':
-        for (int i = 0; i < stacks; i++) {
-          addStatusEffect(StatusEffectsFactory.createBurn(combatStatsComponent));
-        }
-        break;
-      case 'r':
-        for (int i = 0; i < stacks; i++) {
-          addStatusEffect(StatusEffectsFactory.createRegeneration(combatStatsComponent));
-        }
-        break;
-      case 's':
-        for (int i = 0; i < stacks; i++) {
-          addStatusEffect(StatusEffectsFactory.createSlow(combatStatsComponent));
-        }
-        break;
-      case 'S':
-        for (int i = 0; i < stacks; i++) {
-          addStatusEffect(StatusEffectsFactory.createSpeed(combatStatsComponent));
-        }
-        break;
-      case 'v':
-        for (int i = 0; i < stacks; i++) {
-          addStatusEffect(StatusEffectsFactory.createVulnerable());
-        }
-        break;
-      case 'f':
-        addStatusEffect(StatusEffectsFactory.createFreeze(combatStatsComponent));
-        break;
-      default:
-        throw new IllegalArgumentException(
-            "statusEffect must be a valid character representation of a status effect.");
+    for (int i = 0; i < stacks; i++) {
+      addStatusEffect(StatusEffectsFactory.createStatusEffect(combatStatsComponent, statusEffect));
+      if (statusEffect == 'f') {
+        break; // Breaks loop if status effect can only have one stack.
+      }
     }
   }
 

@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 /** Factory for creating Cerberus and its individual heads. */
 public class CerberusFactory {
   public static final String CHAIN_ATLAS_PATH = "images/cerberus/cerberus-chain.atlas";
+  public static final String ATLAS_PATH = "images/cerberus/cerberus-modular.atlas";
 
   private static final float VISUAL_SIZE = 2f;
   private static final float SIDE_HEAD_WIDTH = VISUAL_SIZE * 0.28f;
@@ -82,39 +83,16 @@ public class CerberusFactory {
   }
 
   /**
-   * Creates Cerberus, consisting of the middle head/body and two independent side heads.
-   *
-   * @param anchorPoint center point used by the chain restriction
-   * @param sideHeadSpawner callback used to spawn and track the side heads
-   * @param skin animation atlas path
-   * @return Cerberus main entity
-   */
-  public static Entity createCerberus(
-      Vector2 anchorPoint, Consumer<Entity> sideHeadSpawner, String skin) {
-    return createCerberus(null, anchorPoint, sideHeadSpawner, skin);
-  }
-
-  public static Entity createCerberus(
-      Entity target, Vector2 anchorPoint, Consumer<Entity> sideHeadSpawner, String skin) {
-    return createCerberus(target, anchorPoint, null, sideHeadSpawner, skin);
-  }
-
-  /**
    * Creates Cerberus with an optional visible chain.
    *
    * @param target player targeted by attacks
    * @param anchorPoint centre of the existing movement restriction
    * @param wallAnchor fixed chain attachment, or null to omit the visible chain
    * @param sideHeadSpawner callback for spawning the side heads
-   * @param skin Cerberus animation atlas path
    * @return Cerberus main entity
    */
   public static Entity createCerberus(
-      Entity target,
-      Vector2 anchorPoint,
-      Vector2 wallAnchor,
-      Consumer<Entity> sideHeadSpawner,
-      String skin) {
+      Entity target, Vector2 anchorPoint, Vector2 wallAnchor, Consumer<Entity> sideHeadSpawner) {
     Entity mainHead = createBaseCerberusPart();
     mainHead.setScale(VISUAL_SIZE, VISUAL_SIZE);
     mainHead
@@ -132,7 +110,7 @@ public class CerberusFactory {
 
     CerberusLayeredRenderComponent renderer =
         new CerberusLayeredRenderComponent(
-            ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
+            ServiceLocator.getResourceService().getAsset(ATLAS_PATH, TextureAtlas.class));
 
     mainHead
         .addComponent(new CombatStatsComponent(conf.health, conf.baseAttack))
@@ -156,6 +134,9 @@ public class CerberusFactory {
 
     leftHead.setPosition(mainHead.getPosition().cpy().add(leftOffset));
     rightHead.setPosition(mainHead.getPosition().cpy().add(rightOffset));
+
+    // bind the head entities to the layered renderer so the visual parts correspond to the correct
+    // gameplay entities.
     renderer.bindHeads(leftHead, mainHead, rightHead);
 
     mainHead

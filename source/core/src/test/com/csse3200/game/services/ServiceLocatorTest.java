@@ -8,6 +8,7 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.rooms.MusicManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -35,5 +36,16 @@ class ServiceLocatorTest {
     assertNull(ServiceLocator.getRenderService());
     assertNull(ServiceLocator.getPhysicsService());
     assertNull(ServiceLocator.getTimeSource());
+  }
+
+  @Test
+  void shouldGetSetAndClearMusicManager() {
+    MusicManager musicManager = new MusicManager();
+
+    ServiceLocator.registerMusicManager(musicManager);
+    assertEquals(musicManager, ServiceLocator.getMusicManager());
+
+    ServiceLocator.clear();
+    assertNull(ServiceLocator.getMusicManager());
   }
 }

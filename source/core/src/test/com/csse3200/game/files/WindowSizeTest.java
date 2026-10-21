@@ -28,6 +28,8 @@ class WindowSizeTest {
     assertEquals(WindowSize.DEFAULT_WIDTH, WindowSize.width(0));
     assertEquals(WindowSize.DEFAULT_HEIGHT, WindowSize.height(-1));
     assertEquals(3840, WindowSize.width(9000));
-    assertEquals(640, WindowSize.height(100));
+    assertEquals(540, WindowSize.height(100));
+    assertEquals(960, WindowSize.width(960));
+    assertEquals(540, WindowSize.height(540));
   }
 }

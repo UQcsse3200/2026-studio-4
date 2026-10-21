@@ -17,9 +17,12 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   private static final float ATTACK_COOLDOWN = 1.8f;
   private int priority;
 
+  private static final String DEFAULT_ATLAS = "images/floatingDemon.atlas";
+
   private final Entity target;
   private final int damage;
   private final Consumer<Entity> projectileSpawner;
+  private final String atlasPath;
   private float cooldownLeft;
 
   public RangedAttackTask(Entity target, int priority, int damage) {
@@ -33,10 +36,25 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   /** Creates a ranged attack whose projectiles are registered by the supplied owner. */
   public RangedAttackTask(
       Entity target, int priority, int damage, Consumer<Entity> projectileSpawner) {
+    this(target, priority, damage, projectileSpawner, DEFAULT_ATLAS);
+  }
+
+  /**
+   * Creates a ranged attack whose projectiles are registered by the supplied owner and rendered
+   * from the given atlas, so a themed enemy (e.g. harpy, wasp, crow, jingwei) fires a projectile
+   * matching its own look instead of the generic floating demon's.
+   */
+  public RangedAttackTask(
+      Entity target,
+      int priority,
+      int damage,
+      Consumer<Entity> projectileSpawner,
+      String atlasPath) {
     this.target = target;
     this.damage = damage;
     this.priority = priority;
     this.projectileSpawner = projectileSpawner;
+    this.atlasPath = atlasPath;
   }
 
   @Override
@@ -96,7 +114,8 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
                 return;
               }
               Entity projectile =
-                  FloatingDemonProjectileFactory.createProjectile(position, direction, damage);
+                  FloatingDemonProjectileFactory.createProjectile(
+                      position, direction, damage, atlasPath);
               projectileSpawner.accept(projectile);
             });
   }

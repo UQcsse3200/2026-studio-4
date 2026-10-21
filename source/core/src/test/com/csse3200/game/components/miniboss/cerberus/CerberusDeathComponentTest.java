@@ -32,6 +32,7 @@ class CerberusDeathComponentTest {
     }
   }
 
+  // creates a fresh setup for each death order and counts defeat events
   private void verifyDeathOrder(int[] order) {
     EntityService service = mock(EntityService.class);
     ServiceLocator.registerEntityService(service);

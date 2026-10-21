@@ -13,13 +13,11 @@ import org.slf4j.LoggerFactory;
  */
 public class RoomClearService {
   private static final Logger logger = LoggerFactory.getLogger(RoomClearService.class);
-  private static final Set<String> clearedRoomIds = new HashSet<>();
-  private static final Set<String> clearedDungeonIds = new HashSet<>();
+  private final Set<String> clearedRoomIds = new HashSet<>();
+  private final Set<String> clearedDungeonIds = new HashSet<>();
 
   public static final String ROOM_CLEARED = "RoomCleared";
   public static final String DUNGEON_CLEARED = "DungeonCleared";
-
-  private RoomClearService() {}
 
   /**
    * Provides listeners to room events to track the cleared rooms
@@ -31,7 +29,7 @@ public class RoomClearService {
    *
    * @param entity The room entity to attach lisners to
    */
-  static void attachListeners(Entity entity) {
+  void attachListeners(Entity entity) {
     entity
         .getEvents()
         .addListener(
@@ -50,15 +48,26 @@ public class RoomClearService {
             });
   }
 
-  public static boolean isRoomCleared(String roomId) {
+  public boolean isRoomCleared(String roomId) {
     return clearedRoomIds.contains(roomId);
   }
 
-  public static int getDungeonClearedCount() {
+  public int getDungeonClearedCount() {
     return clearedDungeonIds.size();
   }
 
-  public static boolean isDungeonCleared(String dungeonId) {
+  public boolean isDungeonCleared(String dungeonId) {
     return clearedDungeonIds.contains(dungeonId);
+  }
+
+  /**
+   * A debug functino to mark all dungeons as cleared to unlock final boss. Do not call outside
+   * debug terminal.
+   */
+  public void clearAllDungeons() {
+    clearedDungeonIds.add("dungeonOne");
+    clearedDungeonIds.add("dungeonTwo");
+    clearedDungeonIds.add("dungeonThree");
+    clearedDungeonIds.add("dungeonFour");
   }
 }

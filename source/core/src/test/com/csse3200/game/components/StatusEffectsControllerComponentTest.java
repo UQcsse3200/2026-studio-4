@@ -13,7 +13,6 @@ import com.csse3200.game.components.statuseffects.Regeneration;
 import com.csse3200.game.components.statuseffects.Stat;
 import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.components.statuseffects.StatusEffectsFactory;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
@@ -139,7 +138,7 @@ class StatusEffectsControllerComponentTest {
     assertEquals(List.of("laststand", "invisibility"), ended);
     assertTrue(failed.isEmpty());
     // A disposed controller keeps nothing and takes nothing new.
-    StatusEffect rejected = new FakeEffect();
+    StatusEffect rejected = new FakeEffect(new GameTime(), 10000);
     assertThrows(IllegalStateException.class, () -> controller.addStatusEffect(rejected));
   }
 
@@ -211,7 +210,7 @@ class StatusEffectsControllerComponentTest {
             .addComponent(new CombatStatsComponent(100, 10))
             .addComponent(new PlayerAbilitiesComponent(time));
     assertThrows(IllegalStateException.class, noController::create);
-    StatusEffect duplicate = new FakeEffect();
+    StatusEffect duplicate = new FakeEffect(new GameTime(), 10000);
     controller.addStatusEffect(duplicate);
     assertThrows(IllegalStateException.class, () -> controller.addStatusEffect(duplicate));
   }
@@ -219,7 +218,7 @@ class StatusEffectsControllerComponentTest {
   @Test
   void shouldAcceptEffectsBeforeCreateAndRemoveThemWhenTheyReportDone() {
     StatusEffectsControllerComponent uncreated = new StatusEffectsControllerComponent();
-    FakeEffect effect = new FakeEffect();
+    FakeEffect effect = new FakeEffect(new GameTime(), 10000);
     uncreated.addStatusEffect(effect);
     new Entity().addComponent(new CombatStatsComponent(100, 10)).addComponent(uncreated).create();
     uncreated.update();
@@ -237,12 +236,12 @@ class StatusEffectsControllerComponentTest {
 
   @Test
   void shouldRemoveEarlyExactlyOnceAndIgnoreUnknownEffects() {
-    FakeEffect effect = new FakeEffect();
+    FakeEffect effect = new FakeEffect(new GameTime(), 10000);
     controller.addStatusEffect(effect);
     controller.removeStatusEffect(effect);
     controller.removeStatusEffect(effect);
     controller.removeStatusEffect(null);
-    controller.removeStatusEffect(new FakeEffect());
+    controller.removeStatusEffect(new FakeEffect(new GameTime(), 10000));
     assertEquals(1, effect.removed);
     assertFalse(controller.hasStatusEffect(effect));
   }
@@ -252,7 +251,7 @@ class StatusEffectsControllerComponentTest {
     StatusEffectsControllerComponent standalone = new StatusEffectsControllerComponent();
     CombatStatsComponent combat = new CombatStatsComponent(100, 10);
     new Entity().addComponent(combat).addComponent(standalone).create();
-    FakeEffect effect = new FakeEffect();
+    FakeEffect effect = new FakeEffect(new GameTime(), 10000);
     standalone.addStatusEffect(effect);
     combat.setHealth(0);
     assertFalse(standalone.hasStatusEffect(effect));
@@ -284,14 +283,14 @@ class StatusEffectsControllerComponentTest {
   @Test
   void shouldNotifyAKillingStackOnceWhenDeathClearsTheListMidUpdate() {
     FakeEffect killer =
-        new FakeEffect() {
+        new FakeEffect(new GameTime(), 10000) {
           @Override
           public boolean update() {
             stats.setHealth(0);
             return true;
           }
         };
-    FakeEffect bystander = new FakeEffect();
+    FakeEffect bystander = new FakeEffect(new GameTime(), 10000);
     controller.addStatusEffect(killer);
     controller.addStatusEffect(bystander);
     controller.update();
@@ -303,7 +302,7 @@ class StatusEffectsControllerComponentTest {
   @Test
   void shouldComposeMultipliersPerStat() {
     FakeEffect slow =
-        new FakeEffect() {
+        new FakeEffect(new GameTime(), 10000) {
           @Override
           public float getStatMultiplier(Stat stat) {
             return stat == Stat.MOVEMENT_SPEED ? 0.5f : 1f;
@@ -319,9 +318,13 @@ class StatusEffectsControllerComponentTest {
   }
 
   /** Proves the controller drives anything implementing the contract, not one concrete class. */
-  private static class FakeEffect implements StatusEffect {
+  private static class FakeEffect extends StatusEffect {
     boolean expired;
     int removed;
+
+    public FakeEffect(GameTime time, long duration) {
+      super(time, duration);
+    }
 
     @Override
     public boolean update() {
@@ -360,8 +363,8 @@ class StatusEffectsControllerComponentTest {
     assertEquals(10, enemyStats.getEffectiveBaseAttack());
 
     when(time.getTime()).thenReturn(0L);
-    TimedStatusEffect hidden = StatusEffectsFactory.createInvisibility(time, 5_000);
-    TimedStatusEffect amplified = StatusEffectsFactory.createLastStand(time, 5_000);
+    StatusEffect hidden = StatusEffectsFactory.createInvisibility(time, 5_000);
+    StatusEffect amplified = StatusEffectsFactory.createLastStand(time, 5_000);
     enemyEffects.addStatusEffect(hidden);
     enemyEffects.addStatusEffect(amplified);
 

@@ -24,7 +24,7 @@ public class CerberusMistComponent extends RenderComponent {
 
   private CombatStatsComponent stats;
   private CombatStatsComponent targetStats;
-  private float cooldownReamining = COOLDOWN;
+  private float cooldownRemaining = COOLDOWN;
   private float remaining;
   private boolean active;
   private boolean inside;
@@ -49,7 +49,7 @@ public class CerberusMistComponent extends RenderComponent {
         && !stats.isDead()
         && targetStats != null
         && !targetStats.isDead()
-        && cooldownReamining <= 0f
+        && cooldownRemaining <= 0f
         && entity.getCenterPosition().dst2(target.getCenterPosition()) <= CAST_RANGE * CAST_RANGE;
   }
 
@@ -69,6 +69,7 @@ public class CerberusMistComponent extends RenderComponent {
 
   @Override
   public void update() {
+    /** handle death and invalid targets* */
     if (stopped || stats.isDead()) {
       stop();
       return;
@@ -76,17 +77,18 @@ public class CerberusMistComponent extends RenderComponent {
 
     if (targetStats == null || targetStats.isDead()) {
       clearMist();
-      cooldownReamining = COOLDOWN;
+      cooldownRemaining = COOLDOWN;
       return;
     }
 
     float delta = Math.max(0f, ServiceLocator.getTimeSource().getDeltaTime());
 
+    /** If mist is active, update its duration and check whether the player is inside.* */
     if (active) {
       remaining -= delta;
       if (remaining <= 0f) {
         clearMist();
-        cooldownReamining = COOLDOWN;
+        cooldownRemaining = COOLDOWN;
         return;
       }
 
@@ -94,7 +96,8 @@ public class CerberusMistComponent extends RenderComponent {
       return;
     }
 
-    cooldownReamining = Math.max(0f, cooldownReamining - delta);
+    /** Otherwise, reduce the cooldown and request attack permission.* */
+    cooldownRemaining = Math.max(0f, cooldownRemaining - delta);
     if (!canStartAttack()) {
       return;
     }
@@ -103,6 +106,7 @@ public class CerberusMistComponent extends RenderComponent {
       return;
     }
 
+    /** Otherwise, reduce the cooldown and request attack permission.* */
     centre.set(target.getCenterPosition());
     remaining = DURATION;
     active = true;

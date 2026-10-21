@@ -4,15 +4,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.physics.PhysicsEngine;
+import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.physics.raycast.RaycastHit;
+import com.csse3200.game.services.ServiceLocator;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ThunderOrbMovementComponentTest {
   private static final float EPSILON = 0.0001f;
-
+  private PhysicsEngine physics;
   private Entity target;
   private Entity orb;
   private ThunderOrbMovementComponent movement;
@@ -22,11 +32,17 @@ class ThunderOrbMovementComponentTest {
   void setUp() {
     target = new Entity();
     target.setPosition(10f, 0f);
-
+    physics = mock(PhysicsEngine.class);
+    ServiceLocator.registerPhysicsService(new PhysicsService(physics));
     movement = new ThunderOrbMovementComponent(target, 2f, 90f, 3f);
     orb = new Entity().addComponent(movement);
     orb.getEvents().addListener(ThunderOrbMovementComponent.EXPIRED, () -> expiryEvents++);
     orb.create();
+  }
+
+  @AfterEach
+  void tearDown() {
+    ServiceLocator.clear();
   }
 
   @Test
@@ -154,5 +170,28 @@ class ThunderOrbMovementComponentTest {
           IllegalArgumentException.class,
           () -> new ThunderOrbMovementComponent(target, 2f, 90f, invalid));
     }
+  }
+
+  @Test
+  void shouldStopBeforeWallAndReportBlockedOnlyOnce() {
+    when(physics.raycast(
+            any(Vector2.class),
+            any(Vector2.class),
+            eq(PhysicsLayer.OBSTACLE),
+            any(RaycastHit.class)))
+        .thenReturn(true);
+
+    int[] blockedEvents = {0};
+    orb.getEvents().addListener(ThunderOrbMovementComponent.BLOCKED, () -> blockedEvents[0]++);
+
+    Vector2 initialPosition = orb.getPosition().cpy();
+
+    movement.update(0.5f);
+    movement.update(0.5f);
+
+    assertEquals(initialPosition, orb.getPosition());
+    assertTrue(movement.isStopped());
+    assertEquals(1, blockedEvents[0]);
+    assertEquals(0, expiryEvents);
   }
 }
