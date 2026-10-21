@@ -585,6 +585,14 @@ public class ShopDisplay extends UIComponent implements ShopView {
     itemPanel.close();
     higherLowerPanel.close();
     shellGamePanel.close();
+    updateGameVisibility(game);
+    updateSelectorLabels(game);
+    if (!casino) return;
+    stage.setScrollFocus(openActiveGame(game));
+  }
+
+  /** Shows only the panel/scroll pair for the selected game, while the casino tab is active. */
+  private void updateGameVisibility(CasinoGame game) {
     boolean coin = game == CasinoGame.COIN_FLIP;
     boolean item = game == CasinoGame.ITEM_DRAW;
     boolean higherLower = game == CasinoGame.HIGHER_LOWER;
@@ -597,35 +605,46 @@ public class ShopDisplay extends UIComponent implements ShopView {
     higherLowerScroll.setVisible(casino && higherLower);
     shellGamePanel.setVisible(casino && shellGame);
     shellGameScroll.setVisible(casino && shellGame);
-    coinSelector.setText(coin ? "[ Coin Flip ]" : "Coin Flip");
-    itemSelector.setText(item ? "[ Item Draw ]" : "Item Draw");
-    higherLowerSelector.setText(higherLower ? "[ Higher/Lower ]" : "Higher/Lower");
-    shellGameSelector.setText(shellGame ? "[ Shell Game ]" : "Shell Game");
-    if (!casino) return;
-    ScrollPane activeScroll;
-    if (item) {
-      itemPanel.open();
-      sectionLabel.setText("ITEM DRAW");
-      feedback.setText(
-          "Spend gold for one random item or no prize. Rewards go straight to your inventory.");
-      activeScroll = itemScroll;
-    } else if (higherLower) {
-      higherLowerPanel.open();
-      sectionLabel.setText("HIGHER / LOWER");
-      feedback.setText("Guess right to grow your multiplier. Cash out any time.");
-      activeScroll = higherLowerScroll;
-    } else if (shellGame) {
-      shellGamePanel.open();
-      sectionLabel.setText("SHELL GAME");
-      feedback.setText("Pick the cup hiding the ball to double your stake.");
-      activeScroll = shellGameScroll;
-    } else {
-      casinoPanel.open();
-      sectionLabel.setText("COIN FLIP");
-      feedback.setText("A fair 50/50 toss. Win your stake or lose it.");
-      activeScroll = casinoScroll;
+  }
+
+  /** Brackets the selected game's tab button, e.g. "[ Shell Game ]", and plain-labels the rest. */
+  private void updateSelectorLabels(CasinoGame game) {
+    coinSelector.setText(game == CasinoGame.COIN_FLIP ? "[ Coin Flip ]" : "Coin Flip");
+    itemSelector.setText(game == CasinoGame.ITEM_DRAW ? "[ Item Draw ]" : "Item Draw");
+    higherLowerSelector.setText(
+        game == CasinoGame.HIGHER_LOWER ? "[ Higher/Lower ]" : "Higher/Lower");
+    shellGameSelector.setText(game == CasinoGame.SHELL_GAME ? "[ Shell Game ]" : "Shell Game");
+  }
+
+  /** Opens the selected game's panel and sets its heading/feedback text; returns its scroll. */
+  private ScrollPane openActiveGame(CasinoGame game) {
+    switch (game) {
+      case ITEM_DRAW -> {
+        itemPanel.open();
+        sectionLabel.setText("ITEM DRAW");
+        feedback.setText(
+            "Spend gold for one random item or no prize. Rewards go straight to your inventory.");
+        return itemScroll;
+      }
+      case HIGHER_LOWER -> {
+        higherLowerPanel.open();
+        sectionLabel.setText("HIGHER / LOWER");
+        feedback.setText("Guess right to grow your multiplier. Cash out any time.");
+        return higherLowerScroll;
+      }
+      case SHELL_GAME -> {
+        shellGamePanel.open();
+        sectionLabel.setText("SHELL GAME");
+        feedback.setText("Pick the cup hiding the ball to double your stake.");
+        return shellGameScroll;
+      }
+      default -> {
+        casinoPanel.open();
+        sectionLabel.setText("COIN FLIP");
+        feedback.setText("A fair 50/50 toss. Win your stake or lose it.");
+        return casinoScroll;
+      }
     }
-    stage.setScrollFocus(activeScroll);
   }
 
   private Label label(String text, Color color) {

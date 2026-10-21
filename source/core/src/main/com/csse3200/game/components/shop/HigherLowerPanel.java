@@ -150,7 +150,9 @@ public final class HigherLowerPanel extends Table {
           result.setText("Correct! Streak " + round.streak() + " - cash out or keep going.");
       case PUSH -> result.setText("Push - same rank again, try once more.");
       case BUST -> result.setText("Wrong guess. You lost your stake.");
-      default -> {}
+      default -> {
+        // ACTIVE and CASHED_OUT never come back from guess(); nothing to show for them here.
+      }
     }
     onResolved.accept(round);
     pulseCard();
