@@ -206,4 +206,27 @@ public class RoomSelectorTest {
     verify(roomLoader).getSpawnPoint(exit);
     verify(player).setPosition(new Vector2(2f, 2f));
   }
+
+  @Test
+  void startAtShouldMovePlayerToGivenPosition() {
+    RoomSelector roomSelector = new RoomSelector(null, player, camera, roomLoader);
+    when(roomLoader.getRoom(anyString(), anyBoolean())).thenReturn(mockedRoom);
+
+    roomSelector.startAt("room", 20f, 10f);
+
+    verify(player).setPosition(20f, 10f);
+  }
+
+  @Test
+  void startAtShouldRegisterPlayerAndRoom() {
+    RoomSelector roomSelector = new RoomSelector(null, player, camera, roomLoader);
+    when(roomLoader.getRoom(anyString(), anyBoolean())).thenReturn(mockedRoom);
+
+    roomSelector.startAt("room", 0f, 0f);
+
+    verify(roomLoader).getRoom(eq("room"), anyBoolean());
+
+    verify(entityService).register(player);
+    verify(entityService).register(mockedRoom);
+  }
 }
