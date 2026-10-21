@@ -3,7 +3,6 @@ package com.csse3200.game.components.rooms;
 import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.friendlynpc.NpcInteractableComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractableComponent.Availability;
-import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.PlayerActions;
@@ -142,10 +141,6 @@ public class FriendlyNpcManagerComponent extends EntityManagerComponent {
   private String promptToShow() {
     PlayerActions actions = player.getComponent(PlayerActions.class);
     if (actions != null && actions.areControlsLocked()) {
-      return null;
-    }
-    NpcInteractorComponent interactor = player.getComponent(NpcInteractorComponent.class);
-    if (interactor != null && interactor.isInteracting()) {
       return null;
     }
     return getPrompt(player);

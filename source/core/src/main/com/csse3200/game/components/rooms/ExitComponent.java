@@ -62,9 +62,9 @@ public class ExitComponent extends EntityManagerComponent {
   /**
    * Shows the exit prompt while the player is near a door, and hides it after they walk away.
    *
-   * <p>Pressing E is handled separately. The prompt has to be refreshed every frame because it
-   * depends on where the player is standing. A drop already in pickup range keeps "Press E — Pick
-   * up …" instead of the door sentence. The boss shelf uses the same sentence as the E key.
+   * <p>Pressing E is handled separately. The prompt is refreshed every frame because it depends on
+   * where the player is standing. A nearby NPC keeps its sentence, then a drop, then the door. The
+   * boss shelf uses the same sentence as the E key.
    */
   @Override
   public void update() {
@@ -80,15 +80,26 @@ public class ExitComponent extends EntityManagerComponent {
       display.clearPrompt();
       return;
     }
-    ItemPickupComponent pickup = player.getComponent(ItemPickupComponent.class);
-    String itemPrompt = pickup == null ? null : pickup.getPickupPrompt();
-    if (itemPrompt != null) {
-      display.setPrompt(itemPrompt);
-      return;
-    }
     EnemyManagerComponent enemies = entity.getComponent(EnemyManagerComponent.class);
     boolean roomCleared = enemies != null && enemies.isCleared();
-    display.setPrompt(promptAt(player.getCenterPosition(), roomCleared));
+    display.setPrompt(promptFor(player, roomCleared));
+  }
+
+  /**
+   * Chooses the HUD sentence for where the player is standing.
+   *
+   * @param standing the player
+   * @param roomCleared whether this room has no enemies left
+   * @return the NPC sentence, otherwise the pickup sentence, otherwise the door sentence
+   */
+  String promptFor(Entity standing, boolean roomCleared) {
+    FriendlyNpcManagerComponent npcs = entity.getComponent(FriendlyNpcManagerComponent.class);
+    String npcPrompt = npcs == null ? null : npcs.getPrompt(standing);
+    ItemPickupComponent pickup = standing.getComponent(ItemPickupComponent.class);
+    String itemPrompt = pickup == null ? null : pickup.getPickupPrompt();
+    String exitPrompt = promptAt(standing.getCenterPosition(), roomCleared);
+    return InteractionPrompt.resolve(
+        npcPrompt, itemPrompt, exitPrompt.isEmpty() ? null : exitPrompt);
   }
 
   /**

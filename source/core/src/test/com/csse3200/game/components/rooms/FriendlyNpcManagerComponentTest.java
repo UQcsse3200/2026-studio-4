@@ -20,6 +20,8 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractableComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
+import com.csse3200.game.components.player.InteractionPrompt;
+import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.components.rooms.configs.NpcSpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -109,6 +111,28 @@ class FriendlyNpcManagerComponentTest {
     player.setPosition(20f, 0f);
     assertNull(manager.findNearestInRange(player));
     assertNull(manager.getPrompt(player));
+  }
+
+  @Test
+  void keepsTheNpcPromptAheadOfANearbyDoor() {
+    FriendlyNpcManagerComponent manager = spawnedManager();
+    when(room.getComponent(FriendlyNpcManagerComponent.class)).thenReturn(manager);
+    TerrainComponent terrain = room.getComponent(TerrainComponent.class);
+    ExitConfig door = new ExitConfig();
+    door.x = 0;
+    door.y = 0;
+    door.kind = "DOOR";
+    door.available = true;
+    ExitComponent exits = new ExitComponent(new ExitConfig[] {door});
+    exits.setEntity(room);
+
+    player.setPosition(0f, 0f);
+    when(terrain.tileToWorldPosition(0, 0)).thenReturn(player.getCenterPosition().cpy());
+    assertEquals("Press E — Talk to near", exits.promptFor(player, true));
+
+    player.setPosition(4f, 0f);
+    when(terrain.tileToWorldPosition(0, 0)).thenReturn(player.getCenterPosition().cpy());
+    assertEquals(InteractionPrompt.NEXT_ROOM, exits.promptFor(player, true));
   }
 
   @Test

@@ -64,8 +64,7 @@ public class ItemPickupComponent extends Component {
     if (display == null) {
       return;
     }
-    // The room is registered before the player in the first room, so this update runs after the
-    // NPC prompt. Yielding here keeps "Press E — Talk to …" from being replaced by a drop.
+    // The first room updates the player after the room, so a drop must not replace an NPC sentence.
     if (npcPromptInRange() != null) {
       showingPickupPrompt = false;
       return;
