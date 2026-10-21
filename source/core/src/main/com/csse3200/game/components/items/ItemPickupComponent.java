@@ -4,7 +4,9 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InteractionPrompt;
+import com.csse3200.game.components.rooms.FriendlyNpcManagerComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -45,7 +47,8 @@ public class ItemPickupComponent extends Component {
 
   /**
    * Shows "Press E — Pick up …" while a drop is in range, and hides that sentence after the player
-   * walks away or picks it up. Another interaction's prompt is left as it is.
+   * walks away or picks it up. An NPC sentence takes priority, and any other prompt is left as it
+   * is.
    */
   @Override
   public void update() {
@@ -61,6 +64,12 @@ public class ItemPickupComponent extends Component {
     if (display == null) {
       return;
     }
+    // The room is registered before the player in the first room, so this update runs after the
+    // NPC prompt. Yielding here keeps "Press E — Talk to …" from being replaced by a drop.
+    if (npcPromptInRange() != null) {
+      showingPickupPrompt = false;
+      return;
+    }
     String prompt = getPickupPrompt();
     if (prompt != null) {
       display.setPrompt(prompt);
@@ -71,6 +80,29 @@ public class ItemPickupComponent extends Component {
       display.clearPrompt();
       showingPickupPrompt = false;
     }
+  }
+
+  /**
+   * The NPC sentence that should stay on the HUD instead of a pickup sentence.
+   *
+   * @return that sentence, or null when no NPC is in range
+   */
+  private String npcPromptInRange() {
+    EntityService entities = ServiceLocator.getEntityService();
+    if (entities == null) {
+      return null;
+    }
+    for (Entity other : entities.getEntities()) {
+      FriendlyNpcManagerComponent npcs = other.getComponent(FriendlyNpcManagerComponent.class);
+      if (npcs == null) {
+        continue;
+      }
+      String prompt = npcs.getPrompt(entity);
+      if (prompt != null) {
+        return prompt;
+      }
+    }
+    return null;
   }
 
   private void onCollisionStart(Fixture me, Fixture other) {
