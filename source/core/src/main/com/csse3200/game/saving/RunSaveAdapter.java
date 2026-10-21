@@ -29,6 +29,7 @@ public class RunSaveAdapter {
   public void restorePlayer(GameSaveData data) {
     GameSaveMapper.restore(player, data);
     GameSaveMapper.restoreAchievements(data);
+    GameSaveMapper.restoreRoomClears(data);
     timer.restoreRun(data.playTimeSeconds, data.dungeonTimesSeconds);
   }
 }

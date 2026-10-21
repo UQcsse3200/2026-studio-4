@@ -133,6 +133,7 @@ public class MainGameScreen extends ScreenAdapter {
     if (loadedSave != null && loadedSave.resumePosition != null) {
       GameSaveMapper.restore(player, loadedSave, loadAtCheckpoint);
       GameSaveMapper.restoreAchievements(loadedSave);
+      GameSaveMapper.restoreRoomClears(loadedSave);
       roomSelector.startAt(
           loadedSave.resumePosition.roomId,
           loadedSave.resumePosition.x,
