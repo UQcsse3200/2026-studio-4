@@ -140,6 +140,15 @@ implements <a href="../../ai/tasks/PriorityTask.html" title="interface in com.cs
 <div class="col-last odd-row-color">
 <div class="block">Creates a ranged attack whose projectiles are registered by the supplied owner.</div>
 </div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.entities.Entity,int,int,java.util.function.Consumer,java.lang.String)" class="member-name-link">RangedAttackTask</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ int&nbsp;priority,
+ int&nbsp;damage,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&nbsp;projectileSpawner,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;atlasPath)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Creates a ranged attack whose projectiles are registered by the supplied owner and rendered
+ from the given atlas, so a themed enemy (e.g.</div>
+</div>
 </div>
 </section>
 </li>
@@ -206,6 +215,19 @@ implements <a href="../../ai/tasks/PriorityTask.html" title="interface in com.cs
  int&nbsp;damage,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&nbsp;projectileSpawner)</span></div>
 <div class="block">Creates a ranged attack whose projectiles are registered by the supplied owner.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(com.csse3200.game.entities.Entity,int,int,java.util.function.Consumer,java.lang.String)">
+<h3>RangedAttackTask</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">RangedAttackTask</span><wbr><span class="parameters">(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ int&nbsp;priority,
+ int&nbsp;damage,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&nbsp;projectileSpawner,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;atlasPath)</span></div>
+<div class="block">Creates a ranged attack whose projectiles are registered by the supplied owner and rendered
+ from the given atlas, so a themed enemy (e.g. harpy, wasp, crow, jingwei) fires a projectile
+ matching its own look instead of the generic floating demon's.</div>
 </section>
 </li>
 </ul>
