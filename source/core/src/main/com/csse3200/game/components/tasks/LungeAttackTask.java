@@ -20,6 +20,7 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
   private static final float TELEGRAPH_DURATION = 0.5f;
   private static final float DASH_SPEED = 6f;
   private static final float DASH_DISTANCE = 4f;
+  private static final float DASH_STOP_BUFFER = 0.6f;
   private static final float DASH_DURATION = 0.4f;
   private static final float DEFAULT_COOLDOWN_DURATION = 2f;
 
@@ -189,8 +190,13 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
       phase = Phase.DONE;
       return;
     }
-    Vector2 direction = target.getPosition().cpy().sub(owner.getEntity().getPosition()).nor();
-    dashTargetPoint = owner.getEntity().getPosition().cpy().add(direction.scl(DASH_DISTANCE));
+    // Aim the dash at a point just short of the target instead of a fixed distance, so the
+    // enemy's body stops short of colliding with and jittering against the target's collider.
+    Vector2 enemyPos = owner.getEntity().getPosition();
+    Vector2 direction = target.getPosition().cpy().sub(enemyPos).nor();
+    float distanceToTarget = enemyPos.dst(target.getPosition());
+    float dashDistance = Math.min(DASH_DISTANCE, Math.max(distanceToTarget - DASH_STOP_BUFFER, 0f));
+    dashTargetPoint = enemyPos.cpy().add(direction.scl(dashDistance));
 
     movementComponent.setMaxSpeed(new Vector2(DASH_SPEED, DASH_SPEED));
     movementComponent.setTarget(dashTargetPoint);
