@@ -2,7 +2,7 @@ package com.csse3200.game.items.consumables;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.statuseffects.Stat;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.services.GameTime;
 
@@ -20,11 +20,11 @@ abstract class StatBoostPotion extends ConsumableItem {
   }
 
   @Override
-  public TimedStatusEffect use(CombatStatsComponent stats, GameTime time) {
+  public StatusEffect use(CombatStatsComponent stats, GameTime time) {
     return new StatBoostEffect(time, boost);
   }
 
-  private static final class StatBoostEffect extends TimedStatusEffect {
+  private static final class StatBoostEffect extends StatusEffect {
     private final Boost boost;
 
     StatBoostEffect(GameTime time, Boost boost) {

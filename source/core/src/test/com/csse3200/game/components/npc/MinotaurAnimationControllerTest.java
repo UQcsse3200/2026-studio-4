@@ -44,19 +44,22 @@ class MinotaurAnimationControllerTest {
     ServiceLocator.registerTimeSource(time);
     ResourceService resources = new ResourceService();
     resources.loadTextureAtlases(
-        new String[] {"images/minotaur.atlas", "images/minotaur-combat/attacks.atlas"});
+        new String[] {
+          "images/chase-enemy/minotaur.atlas", "images/chase-enemy/minotaur-combat/attacks.atlas"
+        });
     resources.loadAll();
     ServiceLocator.registerResourceService(resources);
     walking =
         new AnimationRenderComponent(
-            resources.getAsset("images/minotaur.atlas", TextureAtlas.class));
+            resources.getAsset("images/chase-enemy/minotaur.atlas", TextureAtlas.class));
     walking.addAnimation("default", 0.1f, Animation.PlayMode.LOOP);
     walking.addAnimation("move", 0.1f, Animation.PlayMode.LOOP);
     walking.addAnimation("chase", 0.1f, Animation.PlayMode.LOOP);
     walking.addAnimation("dieAnimation", 0.5f);
     attacks =
         new MinotaurAttackRenderComponent(
-            resources.getAsset("images/minotaur-combat/attacks.atlas", TextureAtlas.class));
+            resources.getAsset(
+                "images/chase-enemy/minotaur-combat/attacks.atlas", TextureAtlas.class));
     target =
         new Entity()
             .addComponent(new CombatStatsComponent(20, 0))

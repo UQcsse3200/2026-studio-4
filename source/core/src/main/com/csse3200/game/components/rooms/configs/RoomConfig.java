@@ -13,8 +13,16 @@ public class RoomConfig {
   public EnemySpawnConfig[] enemySpawns = new EnemySpawnConfig[0];
   public NpcSpawnConfig[] npcSpawns = new NpcSpawnConfig[0];
   public TrapSpawnConfig[] trapSpawns = new TrapSpawnConfig[0];
+  public PropSpawnConfig[] propSpawns = new PropSpawnConfig[0];
   public ExitConfig[] exits = new ExitConfig[0];
   public RoomSpawnConfig obstacles = new RoomSpawnConfig();
+
+  /**
+   * Whether this room is a safe practice space. While the player is in it their weapons count as
+   * upgraded, so heavy attacks can be tried, and anything lent to them by its supply stands is
+   * taken back when they leave.
+   */
+  public boolean trainingGrounds;
 
   /** Finds a named entry point, or null if the definition has none. */
   public EntryPointConfig getEntryPoint(String entryPointId) {

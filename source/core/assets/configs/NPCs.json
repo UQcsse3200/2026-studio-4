@@ -27,7 +27,7 @@
     "baseAttack": 20
   },
   "snakeMiniBoss" : {
-    "health": 150,
+    "health": 350,
     "baseAttack": 10,
     "movement": {
       "x": 2,
