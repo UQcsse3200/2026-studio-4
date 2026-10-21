@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 
 /** Supplied artwork, loaded once by the room and sliced in memory. */
@@ -17,24 +15,24 @@ public final class FinalBossStageThreeAssets {
 
   public static String[] paths() {
     return Stream.concat(
-                    Stream.of(
-                                    "idle",
-                                    "run",
-                                    "cast",
-                                    "hit",
-                                    "statue",
-                                    "ice-start",
-                                    "ice-loop",
-                                    "ice-hit",
-                                    "freeze-start",
-                                    "freeze-loop",
-                                    "freeze-end",
-                                    "burst",
-                                    "tornado-01",
-                                    "tornado-02")
-                            .map(name -> ROOT + name + ".png"),
-                    Stream.of(TORNADO_HIT))
-            .toArray(String[]::new);
+            Stream.of(
+                    "idle",
+                    "run",
+                    "cast",
+                    "hit",
+                    "statue",
+                    "ice-start",
+                    "ice-loop",
+                    "ice-hit",
+                    "freeze-start",
+                    "freeze-loop",
+                    "freeze-end",
+                    "burst",
+                    "tornado-01",
+                    "tornado-02")
+                .map(name -> ROOT + name + ".png"),
+            Stream.of(TORNADO_HIT))
+        .toArray(String[]::new);
   }
 
   private static Texture texture(String name) {

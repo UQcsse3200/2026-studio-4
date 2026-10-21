@@ -282,7 +282,7 @@ class TouchAttackComponentTest {
 
     // This should not cause an exception, but the attack should be ignored
     entity.getEvents().trigger("collisionStart", entityFixture, targetFixture);
-    //Should still be null, sonarcloud is silly.
+    // Should still be null, sonarcloud is silly.
     assertNull(target.getComponent(CombatStatsComponent.class));
   }
 

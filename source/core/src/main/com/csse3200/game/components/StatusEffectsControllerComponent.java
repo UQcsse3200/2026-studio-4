@@ -262,9 +262,9 @@ public class StatusEffectsControllerComponent extends Component {
    */
   public void damage(Damage damage) {
     statusEffects.stream()
-            .filter(effect -> effect instanceof Damageable damageable && damageable.damage(damage))
-            .toList()
-            .forEach(statusEffects::remove);
+        .filter(effect -> effect instanceof Damageable damageable && damageable.damage(damage))
+        .toList()
+        .forEach(statusEffects::remove);
   }
 
   /**

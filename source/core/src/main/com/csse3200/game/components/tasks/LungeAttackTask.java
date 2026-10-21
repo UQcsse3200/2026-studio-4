@@ -202,7 +202,8 @@ public class LungeAttackTask extends DefaultTask implements PriorityTask {
   }
 
   private void endDash(long now) {
-    PhysicsMovementComponent enemyMovementComponent = enemy.getComponent(PhysicsMovementComponent.class);
+    PhysicsMovementComponent enemyMovementComponent =
+        enemy.getComponent(PhysicsMovementComponent.class);
     enemyMovementComponent.setMoving(false);
     enemyMovementComponent.setMaxSpeed(new Vector2(restoreSpeed, restoreSpeed));
 

@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @ExtendWith(GameExtension.class)
 class FileLoaderTest {
