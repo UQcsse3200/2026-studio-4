@@ -1,6 +1,7 @@
 package com.csse3200.game.components.rooms;
 
 import com.badlogic.gdx.utils.Disposable;
+import com.csse3200.game.areas.attic.AtticSprites;
 import com.csse3200.game.components.boss.FinalBossStageThreeAssets;
 import com.csse3200.game.components.boss.FinalBossStageTwoAssets;
 import com.csse3200.game.components.boss.FinalBossVisualAssets;
@@ -118,6 +119,7 @@ public class RoomAssets implements Disposable {
               ITEM_TEXTURES,
               ENEMY_TEXTURES,
               PLAYER_TEXTURES,
+              AtticSprites.paths(),
               SnakePoisonAssets.paths(),
               FinalBossVisualAssets.paths(),
               FinalBossStageTwoAssets.paths(),
