@@ -4,7 +4,7 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.spells.LightningSpellComponent;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.components.tasks.LungeAttackTask;
 import com.csse3200.game.components.weapons.WeaponAttackSourceComponent;
 import com.csse3200.game.entities.Entity;
@@ -19,7 +19,7 @@ public class MedusaHitRecoveryComponent extends Component {
   private final Entity player;
   private final LungeAttackTask lunge;
   private StatusEffectsControllerComponent effects;
-  private TimedStatusEffect recovery;
+  private StatusEffect recovery;
   private Entity lightningCaster;
   private boolean disposed;
 
@@ -53,7 +53,7 @@ public class MedusaHitRecoveryComponent extends Component {
       effects.removeStatusEffect(recovery);
     }
     recovery =
-        new TimedStatusEffect(ServiceLocator.getTimeSource(), RECOVERY_MILLIS) {
+        new StatusEffect(ServiceLocator.getTimeSource(), RECOVERY_MILLIS) {
           @Override
           public boolean immobilisesOwner() {
             return true;
