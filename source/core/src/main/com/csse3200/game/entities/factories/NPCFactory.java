@@ -246,7 +246,8 @@ public class NPCFactory {
                     target,
                     10,
                     configs.floatingDemon.baseAttack,
-                    projectile -> enemy.getEvents().trigger(PROJECTILE_SPAWNED, projectile)));
+                    projectile -> enemy.getEvents().trigger(PROJECTILE_SPAWNED, projectile),
+                    skin));
 
     enemy.addComponent(aiComponent).addComponent(new FlyingEnemyPatrolComponent(spawn));
 
