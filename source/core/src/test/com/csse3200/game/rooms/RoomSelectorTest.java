@@ -149,11 +149,14 @@ public class RoomSelectorTest {
     RoomSelector roomSelector = new RoomSelector(null, player, camera, roomLoader);
     RoomSelector spy = spy(roomSelector);
 
-    doAnswer(invocation -> {
-      Runnable task = invocation.getArgument(0);
-      task.run();
-      return null;
-    }).when(entityService).schedule(any(Runnable.class));
+    doAnswer(
+            invocation -> {
+              Runnable task = invocation.getArgument(0);
+              task.run();
+              return null;
+            })
+        .when(entityService)
+        .schedule(any(Runnable.class));
     doNothing().when(spy).setRoom(any(ExitConfig.class));
 
     ExitConfig exit = new ExitConfig();
@@ -162,7 +165,7 @@ public class RoomSelectorTest {
     verify(entityService).schedule(any(Runnable.class));
     verify(spy).setRoom(exit);
   }
-  
+
   @Test
   void shouldResetCameraOnSettingANewRoom() {
     RoomSelector roomSelector = new RoomSelector(null, player, camera, roomLoader);
