@@ -3,6 +3,7 @@ package com.csse3200.game.components.settingsmenu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Graphics.Monitor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Settings menu display and logic. If you bork the settings, they can be changed manually in
- * CSSE320000Game/settings.json under your home directory (This is C:/users/[username] on Windows).
+ * CSSE3200Game/settings.json under your home directory (This is C:/users/[username] on Windows).
  */
 public class SettingsMenuDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(SettingsMenuDisplay.class);
@@ -61,6 +62,8 @@ public class SettingsMenuDisplay extends UIComponent {
   private Label lastRunLabel;
   private Label bestRunLabel;
   private Label resetStatusLabel;
+  private WindowSize.Preset loadedWindow;
+  private StringDecorator<DisplayMode> loadedResolution;
 
   public SettingsMenuDisplay(GdxGame game) {
     this(game, null, false);
@@ -83,6 +86,7 @@ public class SettingsMenuDisplay extends UIComponent {
     loadFromSavedSettings();
     menuOpen = true;
     setMenuVisible(true);
+    showScaleOnSettingsPage(1f);
     if (scaleStage) {
       hideGameUi();
     }
@@ -111,6 +115,7 @@ public class SettingsMenuDisplay extends UIComponent {
     ScrollPane pane = new ScrollPane(settingsTable, skin);
     pane.setFadeScrollBars(false);
     pane.setScrollingDisabled(true, false);
+    pane.setCancelTouchFocus(false);
     Table menuBtns = makeMenuBtns();
 
     backdrop = new Table();
@@ -171,21 +176,22 @@ public class SettingsMenuDisplay extends UIComponent {
     UserSettings.Settings settings = UserSettings.get();
     SettingsForm form = new SettingsForm(skin);
 
-    fpsText = new TextField(Integer.toString(settings.fps), skin);
+    fpsText = new TextField(Integer.toString(settings.fps), readableField());
     fullScreenCheck = new CheckBox("", skin);
     fullScreenCheck.setChecked(settings.fullscreen);
     vsyncCheck = new CheckBox("", skin);
     vsyncCheck.setChecked(settings.vsync);
     uiScaleSlider = new Slider(UiScale.MIN, UiScale.MAX, 0.1f, false, skin);
     uiScaleSlider.setValue(UiScale.clamp(settings.uiScale));
-    displayModeSelect = new SelectBox<>(skin);
+    displayModeSelect = readableSelect();
     Monitor selectedMonitor = Gdx.graphics.getMonitor();
     displayModeSelect.setItems(getDisplayModes(selectedMonitor));
     displayModeSelect.setSelected(getActiveMode(displayModeSelect.getItems()));
 
-    windowSizeSelect = new SelectBox<>(skin);
+    windowSizeSelect = readableSelect();
     windowSizeSelect.setItems(new Array<>(WindowSize.presets()));
     windowSizeSelect.setSelected(WindowSize.matching(settings.windowWidth, settings.windowHeight));
+    rememberLoadedSelection();
 
     form.section("Display", "Window size is used when fullscreen is off.");
     form.row("FPS cap", fpsText);
@@ -201,7 +207,8 @@ public class SettingsMenuDisplay extends UIComponent {
     soundSlider.setValue(settings.soundVolume);
     muteUnfocusedCheck = new CheckBox("", skin);
     muteUnfocusedCheck.setChecked(settings.muteUnfocused);
-    form.section("Audio", "Effects follow the slider. Music follows it on the next track.");
+    form.section(
+        "Audio", "Music during a run follows Apply. Effects use the new volume on the next sound.");
     form.percent("Music", musicSlider);
     form.percent("Effects", soundSlider);
     form.row("Mute in background", muteUnfocusedCheck);
@@ -270,6 +277,34 @@ public class SettingsMenuDisplay extends UIComponent {
 
   private String prettyPrint(DisplayMode displayMode) {
     return displayMode.width + "x" + displayMode.height + ", " + displayMode.refreshRate + "hz";
+  }
+
+  /**
+   * Text field style with black text and a black cursor. The shared skin draws white text on the
+   * gold field, which cannot be read.
+   *
+   * @return a copy of the default field style
+   */
+  private TextField.TextFieldStyle readableField() {
+    TextField.TextFieldStyle style =
+        new TextField.TextFieldStyle(skin.get(TextField.TextFieldStyle.class));
+    Color ink = skin.getColor("black");
+    style.fontColor = ink;
+    style.cursor = skin.newDrawable("white", ink);
+    return style;
+  }
+
+  /**
+   * Dropdown with black text. The shared skin draws white text on the gold box.
+   *
+   * @param <T> item type
+   * @return an empty dropdown whose current value is black
+   */
+  private <T> SelectBox<T> readableSelect() {
+    SelectBox.SelectBoxStyle style =
+        new SelectBox.SelectBoxStyle(skin.get(SelectBox.SelectBoxStyle.class));
+    style.fontColor = skin.getColor("black");
+    return new SelectBox<>(style);
   }
 
   private Table makeMenuBtns() {
@@ -355,9 +390,21 @@ public class SettingsMenuDisplay extends UIComponent {
 
     Integer fpsVal = parseOrNull(fpsText.getText());
     if (fpsVal != null) {
+      if (fpsVal != settings.fps) {
+        vsyncCheck.setChecked(false);
+      }
       settings.fps = fpsVal;
     }
-    settings.fullscreen = fullScreenCheck.isChecked();
+    boolean windowChanged = windowSelectionChanged();
+    boolean resolutionChanged = resolutionSelectionChanged();
+    boolean fullscreen = fullScreenCheck.isChecked();
+    if (windowChanged && !resolutionChanged) {
+      fullscreen = false;
+    } else if (resolutionChanged && !windowChanged) {
+      fullscreen = true;
+    }
+    fullScreenCheck.setChecked(fullscreen);
+    settings.fullscreen = fullscreen;
     DisplaySettings chosen = chosenDisplaySettings(displayModeSelect.getSelected());
     if (chosen != null) {
       settings.displayMode = chosen;
@@ -376,7 +423,69 @@ public class SettingsMenuDisplay extends UIComponent {
     settings.uiScale = UiScale.clamp(uiScaleSlider.getValue());
 
     UserSettings.set(settings, true);
+    rememberLoadedSelection();
     applyUiScale(settings.uiScale);
+    showScaleOnSettingsPage(settings.uiScale);
+  }
+
+  /**
+   * Scales the settings page itself so Apply shows the chosen UI scale. Opening or leaving the page
+   * puts it back to normal size. The run HUD is scaled separately.
+   *
+   * @param scale multiplier from 0.5 to 2
+   */
+  private void showScaleOnSettingsPage(float scale) {
+    if (rootTable != null) {
+      UiScale.apply(rootTable, scale);
+    }
+  }
+
+  /** Remembers the dropdowns currently shown, so a later Apply can tell what the player changed. */
+  private void rememberLoadedSelection() {
+    loadedWindow = windowSizeSelect.getSelected();
+    loadedResolution = displayModeSelect.getSelected();
+  }
+
+  /**
+   * True when the player picked a different window size from the one shown when the page opened.
+   *
+   * @return whether the window-size dropdown changed
+   */
+  private boolean windowSelectionChanged() {
+    WindowSize.Preset selected = windowSizeSelect.getSelected();
+    if (selected == null || loadedWindow == null) {
+      return selected != loadedWindow;
+    }
+    return selected.width != loadedWindow.width || selected.height != loadedWindow.height;
+  }
+
+  /**
+   * True when the player picked a different resolution from the one shown when the page opened.
+   *
+   * @return whether the resolution dropdown changed
+   */
+  private boolean resolutionSelectionChanged() {
+    return !sameMode(loadedResolution, displayModeSelect.getSelected());
+  }
+
+  /**
+   * True when two dropdown entries describe the same width, height, and refresh rate.
+   *
+   * @param first one resolution entry
+   * @param second another resolution entry
+   * @return whether the two modes match
+   */
+  private static boolean sameMode(
+      StringDecorator<DisplayMode> first, StringDecorator<DisplayMode> second) {
+    if (first == second) {
+      return true;
+    }
+    if (first == null || second == null || first.object == null || second.object == null) {
+      return false;
+    }
+    DisplayMode a = first.object;
+    DisplayMode b = second.object;
+    return a.width == b.width && a.height == b.height && a.refreshRate == b.refreshRate;
   }
 
   /**
@@ -413,6 +522,7 @@ public class SettingsMenuDisplay extends UIComponent {
     musicSlider.setValue(settings.musicVolume);
     soundSlider.setValue(settings.soundVolume);
     muteUnfocusedCheck.setChecked(settings.muteUnfocused);
+    rememberLoadedSelection();
   }
 
   private void refreshProgressLabel() {
@@ -428,6 +538,7 @@ public class SettingsMenuDisplay extends UIComponent {
   private void exitMenu() {
     if (onClose != null) {
       menuOpen = false;
+      showScaleOnSettingsPage(1f);
       if (scaleStage) {
         UiScale.applyToStage(stage, UserSettings.get().uiScale);
         showGameUi();

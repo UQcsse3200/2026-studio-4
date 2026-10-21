@@ -105,6 +105,43 @@ class UserSettingsTest {
   }
 
   @Test
+  void usesSameSizeWhenRefreshRateDiffers() {
+    Gdx.graphics = mock(Graphics.class);
+    DisplayMode fallback = new CustomDisplayMode(200, 100, 144, 0);
+    when(Gdx.graphics.getDisplayModes()).thenReturn(new DisplayMode[] {fallback});
+
+    Settings settings = new Settings();
+    settings.displayMode = new DisplaySettings();
+    settings.displayMode.height = 100;
+    settings.displayMode.width = 200;
+    settings.displayMode.refreshRate = 60;
+    settings.fullscreen = true;
+    UserSettings.applySettings(settings);
+
+    verify(Gdx.graphics).setFullscreenMode(fallback);
+  }
+
+  @Test
+  void usesTheCurrentMonitorWhenTheGlobalListHasNoMatch() {
+    Gdx.graphics = mock(Graphics.class);
+    DisplayMode monitorMode = new CustomDisplayMode(1920, 1080, 60, 0);
+    Graphics.Monitor monitor = mock(Graphics.Monitor.class);
+    when(Gdx.graphics.getDisplayModes()).thenReturn(new DisplayMode[0]);
+    when(Gdx.graphics.getMonitor()).thenReturn(monitor);
+    when(Gdx.graphics.getDisplayModes(monitor)).thenReturn(new DisplayMode[] {monitorMode});
+
+    Settings settings = new Settings();
+    settings.displayMode = new DisplaySettings();
+    settings.displayMode.width = 1920;
+    settings.displayMode.height = 1080;
+    settings.displayMode.refreshRate = 60;
+    settings.fullscreen = true;
+    UserSettings.applySettings(settings);
+
+    verify(Gdx.graphics).setFullscreenMode(monitorMode);
+  }
+
+  @Test
   void gameplayOptionsDefaultToVisible() {
     Settings settings = new Settings();
     assertTrue(settings.showTimer);
