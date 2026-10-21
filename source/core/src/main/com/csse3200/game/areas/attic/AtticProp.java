@@ -22,7 +22,8 @@ public enum AtticProp {
   FLOOR_LAMP(AtticSprites.FURNITURE_WOOD, 96, 112, 16, 48, 0.5f, 6),
   POTTED_PLANT(AtticSprites.FURNITURE_WOOD, 0, 160, 16, 32, 0.6f, 8),
   /** Three-slice table: set {@code "length"} (tiles) on the prop to stretch it. */
-  READING_TABLE(AtticSprites.FURNITURE_WOOD, 0, 32, 48, 32, 1f, 28, 16),
+  READING_TABLE(
+      new Region(AtticSprites.FURNITURE_WOOD, 0, 32, 48, 32), 1f, 28, Traits.stretchable(16)),
   DESK(AtticSprites.FURNITURE_WOOD, 0, 64, 32, 48, 1f, 40),
   PEDESTAL_TABLE(AtticSprites.FURNITURE_WOOD, 176, 0, 16, 32, 0.7f, 10),
   CHAIR(AtticSprites.FURNITURE_WOOD, 128, 0, 16, 32, 0.8f, 8),
@@ -70,77 +71,59 @@ public enum AtticProp {
   TOME_DRAGON(3, new Color(1f, 0.35f, 0.3f, 1f)),
   TOME_FINAL(4, new Color(0.7f, 0.45f, 1f, 1f));
 
-  private final String sheet;
-  private final int x;
-  private final int y;
-  private final int width;
-  private final int height;
+  /** Where a prop's sprite is: a pixel rectangle on one of the {@link AtticSprites} sheets. */
+  record Region(String sheet, int x, int y, int width, int height) {}
+
+  /** The less common behaviours a prop can have. Ordinary furniture has {@link #NONE}. */
+  record Traits(int sliceWidth, boolean floor, Color glow) {
+    static final Traits NONE = new Traits(0, false, null);
+    static final Traits FLOOR = new Traits(0, true, null);
+
+    /** Stretches horizontally: left cap, repeated middle, right cap, each this many pixels. */
+    static Traits stretchable(int sliceWidth) {
+      return new Traits(sliceWidth, false, null);
+    }
+
+    static Traits glowing(Color glow) {
+      return new Traits(0, false, glow);
+    }
+  }
+
+  private final Region region;
   private final float colliderWidth;
   private final int colliderHeight;
-  private final int sliceWidth;
-  private final boolean floor;
-  private final Color glow;
+  private final Traits traits;
 
   /** Solid furniture. */
   AtticProp(
       String sheet, int x, int y, int width, int height, float colliderWidth, int colliderHeight) {
-    this(sheet, x, y, width, height, colliderWidth, colliderHeight, 0, false, null);
-  }
-
-  /** Solid furniture that stretches horizontally (left cap, repeated middle, right cap). */
-  AtticProp(
-      String sheet,
-      int x,
-      int y,
-      int width,
-      int height,
-      float colliderWidth,
-      int colliderHeight,
-      int sliceWidth) {
-    this(sheet, x, y, width, height, colliderWidth, colliderHeight, sliceWidth, false, null);
+    this(new Region(sheet, x, y, width, height), colliderWidth, colliderHeight, Traits.NONE);
   }
 
   /** Floor covering (rugs): no collider, always drawn beneath everything standing on it. */
   AtticProp(String sheet, int x, int y, int width, int height) {
-    this(sheet, x, y, width, height, 0f, 0, 0, true, null);
+    this(new Region(sheet, x, y, width, height), 0f, 0, Traits.FLOOR);
   }
 
   /** A dungeon tome from the generated tome strip, with the colour of its magical glow. */
   AtticProp(int tomeIndex, Color glow) {
     this(
-        AtticSprites.TOMES,
-        tomeIndex * AtticSprites.TILE_PIXELS,
-        0,
-        AtticSprites.TILE_PIXELS,
-        AtticSprites.TILE_PIXELS,
+        new Region(
+            AtticSprites.TOMES,
+            tomeIndex * AtticSprites.TILE_PIXELS,
+            0,
+            AtticSprites.TILE_PIXELS,
+            AtticSprites.TILE_PIXELS),
         0f,
         0,
-        0,
-        false,
-        glow);
+        Traits.glowing(glow));
   }
 
-  AtticProp(
-      String sheet,
-      int x,
-      int y,
-      int width,
-      int height,
-      float colliderWidth,
-      int colliderHeight,
-      int sliceWidth,
-      boolean floor,
-      Color glow) {
-    this.sheet = sheet;
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
+  AtticProp(Region region, float colliderWidth, int colliderHeight, Traits traits) {
+    this.region = region;
     this.colliderWidth = colliderWidth;
     this.colliderHeight = colliderHeight;
-    this.sliceWidth = sliceWidth;
-    this.floor = floor;
-    this.glow = glow;
+    this.traits = traits;
   }
 
   /**
@@ -160,23 +143,23 @@ public enum AtticProp {
   }
 
   public String getSheet() {
-    return sheet;
+    return region.sheet();
   }
 
   public int getX() {
-    return x;
+    return region.x();
   }
 
   public int getY() {
-    return y;
+    return region.y();
   }
 
   public int getWidth() {
-    return width;
+    return region.width();
   }
 
   public int getHeight() {
-    return height;
+    return region.height();
   }
 
   /** Collider width as a fraction of the drawn width; 0 when the prop has no collider. */
@@ -195,21 +178,21 @@ public enum AtticProp {
 
   /** Width of the end caps for stretchable props, or 0 if the prop does not stretch. */
   public int getSliceWidth() {
-    return sliceWidth;
+    return traits.sliceWidth();
   }
 
   public boolean isStretchable() {
-    return sliceWidth > 0;
+    return traits.sliceWidth() > 0;
   }
 
   /** Whether the prop lies flat on the floor (drawn under all standing entities). */
   public boolean isFloorCovering() {
-    return floor;
+    return traits.floor();
   }
 
   /** Glow colour for magical props, or null for ordinary furniture. */
   public Color getGlow() {
-    return glow == null ? null : glow.cpy();
+    return traits.glow() == null ? null : traits.glow().cpy();
   }
 
   /**
@@ -219,7 +202,7 @@ public enum AtticProp {
    */
   public int drawnWidth(int lengthTiles) {
     if (!isStretchable() || lengthTiles <= 0) {
-      return width;
+      return region.width();
     }
     return Math.max(2, lengthTiles) * AtticSprites.TILE_PIXELS;
   }

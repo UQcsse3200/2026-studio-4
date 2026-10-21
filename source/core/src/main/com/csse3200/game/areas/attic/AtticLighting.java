@@ -7,6 +7,7 @@ import com.csse3200.game.components.rooms.configs.PropConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.rendering.LightSource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -67,16 +68,18 @@ public final class AtticLighting {
         add(lights, AtticProp.fromName(exit.sprite), exit.x, exit.y, exit.elevation);
       }
     }
-    for (LightConfig light : room.lights) {
-      lights.add(
-          new LightSource(
-              light.x * TILE + TILE / 2f,
-              light.y * TILE + TILE / 2f,
-              light.radius,
-              Color.valueOf(light.color),
-              light.flicker));
-    }
+    Arrays.stream(room.lights).map(AtticLighting::toLightSource).forEach(lights::add);
     return lights;
+  }
+
+  /** A free-standing light from the config, centred on its tile. */
+  private static LightSource toLightSource(LightConfig light) {
+    return new LightSource(
+        light.x * TILE + TILE / 2f,
+        light.y * TILE + TILE / 2f,
+        light.radius,
+        Color.valueOf(light.color),
+        light.flicker);
   }
 
   private static void add(

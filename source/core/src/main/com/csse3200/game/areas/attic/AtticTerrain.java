@@ -2,6 +2,7 @@ package com.csse3200.game.areas.attic;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
@@ -118,27 +119,10 @@ public final class AtticTerrain {
     for (int y = 0; y < grid.size(); y++) {
       String row = grid.get(y);
       for (int x = 0; x < row.length(); x++) {
-        char c = row.charAt(x);
-        TerrainTile tile = null;
-        int[] origin = floorBlockOrigin(c);
-        if (origin != null) {
-          int columns = origin[2];
-          int rows = origin[3];
-          int column = origin[0] / tilePixels + Math.floorMod(x, columns);
-          // Sheet rows run downwards while room rows run upwards; flip so the pattern stays
-          // upright.
-          int sheetRow = origin[1] / tilePixels + rows - 1 - Math.floorMod(y, rows);
-          tile = new TerrainTile(floors.tile(column, sheetRow));
-        } else if (isWall(c)) {
-          WallPiece piece = wallPieceAt(grid, x, y);
-          if (piece != null) {
-            boolean window = c == WINDOW && piece.ordinal() <= WallPiece.RIGHT.ordinal();
-            tile = new TerrainTile(walls.tile(piece.ordinal(), window ? 1 : 0));
-          }
-        }
-        if (tile != null) {
+        TextureRegion region = tileRegion(grid, x, y, floors, walls);
+        if (region != null) {
           Cell cell = new Cell();
-          cell.setTile(tile);
+          cell.setTile(new TerrainTile(region));
           layer.setCell(x, y, cell);
         }
       }
@@ -154,6 +138,42 @@ public final class AtticTerrain {
         renderer,
         TerrainOrientation.ORTHOGONAL,
         TILE_WORLD_SIZE);
+  }
+
+  /** The floor or wall art for one grid cell, or null for void and walls touching no floor. */
+  private static TextureRegion tileRegion(
+      List<String> grid, int x, int y, TileSheet floors, TileSheet walls) {
+    char c = grid.get(y).charAt(x);
+    int[] block = floorBlockOrigin(c);
+    if (block != null) {
+      return floorRegion(block, x, y, floors);
+    }
+    if (isWall(c)) {
+      return wallRegion(grid, x, y, walls);
+    }
+    return null;
+  }
+
+  /** The tile of a repeating floor block that falls at (x, y). */
+  private static TextureRegion floorRegion(int[] block, int x, int y, TileSheet floors) {
+    int tilePixels = AtticSprites.TILE_PIXELS;
+    int columns = block[2];
+    int rows = block[3];
+    int column = block[0] / tilePixels + Math.floorMod(x, columns);
+    // Sheet rows run downwards while room rows run upwards; flip so the pattern stays upright.
+    int sheetRow = block[1] / tilePixels + rows - 1 - Math.floorMod(y, rows);
+    return floors.tile(column, sheetRow);
+  }
+
+  /** The wall edge facing the floor next to (x, y); windows only exist on straight edges. */
+  private static TextureRegion wallRegion(List<String> grid, int x, int y, TileSheet walls) {
+    WallPiece piece = wallPieceAt(grid, x, y);
+    if (piece == null) {
+      return null;
+    }
+    boolean straight = piece.ordinal() <= WallPiece.RIGHT.ordinal();
+    boolean window = grid.get(y).charAt(x) == WINDOW && straight;
+    return walls.tile(piece.ordinal(), window ? 1 : 0);
   }
 
   private static Texture texture(String path) {

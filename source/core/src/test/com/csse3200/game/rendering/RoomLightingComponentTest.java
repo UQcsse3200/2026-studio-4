@@ -37,7 +37,7 @@ class RoomLightingComponentTest {
     RoomLightingComponent lighting = room(new LightSource(5f, 5f, 3f, Color.WHITE, 0f));
     for (float x = 5f; x < 9f; x += 0.05f) {
       float steps = lighting.shadeAt(x, 5f, 0f) * RoomLightingComponent.BANDS;
-      assertEquals(Math.round(steps), steps, 1e-4f);
+      assertEquals((float) Math.round(steps), steps, 1e-4f);
     }
   }
 

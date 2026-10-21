@@ -48,7 +48,6 @@ public class RoomLightingComponent extends RenderComponent {
   private Entity player;
   private Texture pixel;
   private Texture glow;
-  private float elapsed;
 
   /**
    * @param darkness opacity of the dark in unlit areas, 0..1
@@ -137,7 +136,7 @@ public class RoomLightingComponent extends RenderComponent {
       return;
     }
     // Absolute time rather than accumulated deltas, so extra render passes don't speed up flicker.
-    elapsed =
+    float elapsed =
         ServiceLocator.getTimeSource() == null
             ? 0f
             : ServiceLocator.getTimeSource().getTime() / 1000f;
