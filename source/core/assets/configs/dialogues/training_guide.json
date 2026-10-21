@@ -1,0 +1,14 @@
+{
+  "speakers": [
+    { "id": "sage", "name": "Old Sage", "atlas": "images/friendly-npcs/old-sage.atlas", "animation": "default" },
+    { "id": "hero", "name": "You", "atlas": "images/idle_down.atlas", "animation": "idle_down" }
+  ],
+  "lines": [
+    { "speaker": "sage", "text": "Welcome to my training grounds. Nothing in here can hurt you, and nothing in here is permanent." },
+    { "speaker": "sage", "text": "Read the notice boards and try what they say. Controls are by the start, melee is east, supplies are further east, archery is north and the dodging range is north-east." },
+    { "speaker": "sage", "text": "While you stand in here your weapons are enchanted, so heavy attacks (K) work. In the dungeons you will need the upgrade from the merchant." },
+    { "speaker": "sage", "text": "Potions and bombs from the stands are only lent to you. They go back when you leave, so use them freely." },
+    { "speaker": "hero", "text": "Got it. Anything else?" },
+    { "speaker": "sage", "text": "Only this: a dummy never hits back, but a dungeon does. Come back whenever you need a refresher." }
+  ]
+}

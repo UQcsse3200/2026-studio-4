@@ -11,6 +11,7 @@ import com.csse3200.game.entities.factories.RoomFactory;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Objects;
+import org.jcodec.common.logging.Logger;
 
 /** A facade for the WorldConfig, returns fully set up unintialised room entities */
 public class RoomLoader {
@@ -32,11 +33,23 @@ public class RoomLoader {
   /** Returns an unintialised starting room as decalred in config */
   public Entity getStartingRoom() {
     RoomConfig room = world.getRoom(world.startRoomId);
-    return RoomFactory.createRoom(room, camera, false);
+    return buildRoom(room, false);
   }
 
   public Entity getRoom(String roomId, boolean cleared) {
-    return RoomFactory.createRoom(world.getRoom(roomId), camera, cleared);
+    var config = world.getRoom(roomId);
+    if (config == null) return null;
+
+    return buildRoom(config, cleared);
+  }
+
+  /**
+   * Training grounds are built by their own factory function, every other room by the usual one.
+   */
+  private Entity buildRoom(RoomConfig config, boolean cleared) {
+    return config.trainingGrounds
+        ? RoomFactory.createTrainingRoom(config, camera, cleared)
+        : RoomFactory.createRoom(config, camera, cleared);
   }
 
   public Entity getRoom(ExitConfig exit, boolean cleared) {
@@ -48,10 +61,55 @@ public class RoomLoader {
     return getRoom(exit.destinationRoomId, cleared);
   }
 
+  /** Returns an unintialised room for a teleport, cleared if the player has cleared it before. */
+  public Entity getRoom(String roomId) {
+    return getRoom(roomId, ServiceLocator.getRoomClearService().isRoomCleared(roomId));
+  }
+
+  /**
+   * Returns where a teleport into the room lands the player.
+   *
+   * @throws IllegalArgumentException if the room has no such entry point
+   */
+  public GridPoint2 getEntrySpawn(String roomId, String entryPointId) {
+    RoomConfig room = world.getRoom(roomId);
+    PositionConfig spawn = room == null ? null : room.getEntryPoint(entryPointId);
+    if (spawn == null) {
+      throw new IllegalArgumentException("Unknown entry point " + entryPointId + " in " + roomId);
+    }
+    return new GridPoint2(spawn.x, spawn.y);
+  }
+
   public GridPoint2 getStartingSpawn() {
     RoomConfig startRoom = world.getRoom(world.startRoomId);
     PositionConfig spawn = startRoom.getEntryPoint(world.startEntryPointId);
     return new GridPoint2(spawn.x, spawn.y);
+  }
+
+  /**
+   * Debug function to get any valid spawn position to put the player in the room
+   *
+   * <p>Looks for the first entry point, if no entry points looks for the first exit.
+   *
+   * <p>Since this should only be used for debug functions so just needs to work.
+   *
+   * @requires roomId to exisit in config
+   */
+  GridPoint2 getAnyVaidSpawn(String roomId) {
+    RoomConfig config = world.getRoom(roomId);
+    PositionConfig position;
+    if (config.entryPoints.length > 0) {
+      position = config.entryPoints[0];
+    } else if (config.exits.length > 0) {
+      position = config.exits[0];
+    } else {
+      Logger.warn("No valid spawn point defaulting to 10, 10");
+      position = new PositionConfig();
+      position.x = 10;
+      position.y = 10;
+    }
+
+    return new GridPoint2(position.x, position.y);
   }
 
   public GridPoint2 getSpawnPoint(ExitConfig exit) {

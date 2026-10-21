@@ -1,41 +1,62 @@
 package com.csse3200.game.components.statuseffects;
 
 import com.badlogic.gdx.graphics.Color;
+import com.csse3200.game.services.GameTime;
 
 /**
- * Defines the behavior of status effects. Status effects implement these methods.
+ * A status effect that simply runs for a fixed time from the moment it is created, on whoever it is
+ * put on.
  *
- * <p>Every status effect lasts for some time and is driven by the status effects controller of the
- * entity it is on, which polls {@link #update()} once a frame and drops the effect when it reports
- * done. The controller only ever sees this interface, so what an effect does lives on the effect.
- *
- * <p>An effect does its work in one of two ways. Self-driven effects such as burning act on the
- * entity inside {@link #update()}. Declarative effects such as invisibility instead describe what
- * they do through the query methods below, and combat, rendering and enemy AI ask the controller
- * for the combined answer. The defaults are neutral, so an effect overrides only what it changes.
+ * <p>Anything that needs a countdown on an entity creates one of these and hands it to that
+ * entity's status effects controller, which runs the countdown. It does not care who created it or
+ * which entity it landed on, so an effect a player puts on an enemy works exactly like one they put
+ * on themselves. A fresh instance is made per application, the same as a burn stack.
  */
-public interface StatusEffect {
-  /**
-   * Updates the status effect.
-   *
-   * @return true if the status effect is to be removed. false otherwise.
-   */
-  boolean update();
+public class StatusEffect {
+  final GameTime time;
+  private final long duration;
+  private final long deadline;
+  private Runnable onEnded;
 
-  /**
-   * @return the time remaining until the status effect should be removed in milliseconds.
-   */
-  long getRemainingDuration();
+  public StatusEffect(GameTime time, long duration) {
+    this.time = time;
+    this.duration = duration;
+    this.deadline = time.getTime() + duration;
+  }
+
+  /** Sets the callback run once, after the effect expires or is removed. */
+  public void setOnEnded(Runnable onEnded) {
+    this.onEnded = onEnded;
+  }
+
+  /** Returns how long the effect lasts from creation, in milliseconds. */
+  public long getDuration() {
+    return duration;
+  }
+
+  public boolean update() {
+    return isExpired();
+  }
+
+  public long getRemainingDuration() {
+    return Math.max(0, deadline - time.getTime());
+  }
+
+  public void onRemoved() {
+    if (onEnded != null) {
+      onEnded.run();
+    }
+  }
 
   /** Returns whether the effect has run its course. Queries skip expired effects immediately. */
-  default boolean isExpired() {
+  public boolean isExpired() {
     return getRemainingDuration() <= 0;
   }
 
   /**
    * Returns whether hostiles should be unable to find, chase or damage the entity while this runs.
    */
-  default boolean concealsOwner() {
+  public boolean concealsOwner() {
     return false;
   }
 
@@ -46,7 +67,7 @@ public interface StatusEffect {
    * <p>Separate from a zero movement-speed multiplier, which only says the entity is standing
    * still. This says it is not choosing anything either.
    */
-  default boolean immobilisesOwner() {
+  public boolean immobilisesOwner() {
     return false;
   }
 
@@ -55,7 +76,10 @@ public interface StatusEffect {
    * are never touched, so charms and other adjustments keep working underneath and removing the
    * effect cannot leave a rounding remainder behind.
    */
-  default float getStatMultiplier(Stat stat) {
+  public float getStatMultiplier(Stat stat) {
+    if (stat == null) {
+      throw new IllegalArgumentException();
+    }
     return 1f;
   }
 
@@ -65,7 +89,7 @@ public interface StatusEffect {
    *
    * <p>Treat the returned colour as read only; the caller may be a renderer running every frame.
    */
-  default Color getTint() {
+  public Color getTint() {
     return null;
   }
 
@@ -77,14 +101,7 @@ public interface StatusEffect {
    * <p>Treat the returned colour as read only; the caller may be a renderer running every frame.
    * Its alpha is the strength of the glow rather than a transparency.
    */
-  default Color getGlow() {
+  public Color getGlow() {
     return null;
   }
-
-  /**
-   * Called once by the controller after the effect has been taken off its entity, whether it
-   * expired, was removed early, or the entity died or was disposed. Runs after the whole batch of
-   * expiring effects has been removed, so nothing observing from here sees a half-cleared list.
-   */
-  default void onRemoved() {}
 }

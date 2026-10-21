@@ -5,7 +5,7 @@ import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.player.BurnVialFeedbackComponent;
 import com.csse3200.game.components.spells.targeting.StrategyOnscreen;
 import com.csse3200.game.components.statuseffects.Burning;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.ItemIds;
@@ -54,7 +54,7 @@ public final class BurnVial extends ConsumableItem {
   }
 
   @Override
-  public TimedStatusEffect use(CombatStatsComponent stats, GameTime time) {
+  public StatusEffect use(CombatStatsComponent stats, GameTime time) {
     BurnVialFeedbackComponent feedback =
         stats.getEntity().getComponent(BurnVialFeedbackComponent.class);
     for (Entity enemy :
