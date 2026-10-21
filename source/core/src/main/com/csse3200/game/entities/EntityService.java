@@ -140,6 +140,17 @@ public class EntityService {
     return !freezeOwners.isEmpty();
   }
 
+  /**
+   * Whether the inventory, or another caller of {@link #toggleUpdate()}, is holding entity updates.
+   * The game loop skips physics while this is true, so enemies and projectiles do not keep moving
+   * behind that pause.
+   *
+   * @return true while that pause is held
+   */
+  public boolean isPaused() {
+    return paused;
+  }
+
   public void toggleUpdate() {
     update();
     paused = !paused;

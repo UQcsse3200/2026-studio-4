@@ -19,6 +19,7 @@ import com.csse3200.game.input.InputService;
 import com.csse3200.game.items.ItemIds;
 import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.RunTimer;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.KeyboardTerminalInputComponent;
 import com.csse3200.game.ui.terminal.Terminal;
@@ -477,6 +478,32 @@ class KeyboardPlayerInputComponentTest {
     assertTrue(input.keyDown(Keys.L));
 
     assertEquals(2, requests.size(), "L asks to cast every press");
+  }
+
+  @Test
+  void combatKeysDoNothingWhileTheInventoryPauseIsHeld() {
+    RunTimer timer = new RunTimer(time);
+    ServiceLocator.registerRunTimer(timer);
+    timer.requestPause();
+    List<String> requests = new ArrayList<>();
+    player
+        .getEvents()
+        .addListener(ConsumableSelectionComponent.USE_SELECTED_REQUEST, () -> requests.add("use"));
+    player
+        .getEvents()
+        .addListener(AbilityAttunementComponent.USE_ATTUNED_REQUEST, () -> requests.add("cast"));
+
+    assertTrue(input.keyDown(Keys.J));
+    assertTrue(input.keyDown(Keys.K));
+    assertTrue(input.keyDown(Keys.Q));
+    assertTrue(input.keyDown(Keys.L));
+    assertEquals(0, attackCount);
+    assertEquals(0, heavyAttackCount);
+    assertTrue(requests.isEmpty());
+
+    timer.requestResume();
+    assertTrue(input.keyDown(Keys.J));
+    assertEquals(1, attackCount);
   }
 
   @Test

@@ -74,6 +74,15 @@ class EntityServiceFreezeTest {
   }
 
   @Test
+  void inventoryPauseIsVisibleToTheGameLoop() {
+    assertFalse(service.isPaused());
+    service.toggleUpdate();
+    assertTrue(service.isPaused());
+    service.toggleUpdate();
+    assertFalse(service.isPaused());
+  }
+
+  @Test
   void freezeIsIndependentOfTheInventoryPause() {
     service.toggleUpdate(); // inventory opens: paused
     int before = world.updates;

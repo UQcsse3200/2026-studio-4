@@ -70,6 +70,28 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   /**
+   * Attack, ability, consumable, and weapon keys. I stays available so the inventory can close.
+   *
+   * @param keycode the key that was pressed
+   * @return true when this key would start combat or use an item
+   */
+  private boolean isCombatKey(int keycode) {
+    return switch (keycode) {
+      case Keys.NUM_1,
+              Keys.NUM_2,
+              Keys.NUM_3,
+              Keys.SPACE,
+              Keys.J,
+              Keys.K,
+              Keys.TAB,
+              Keys.Q,
+              Keys.L ->
+          true;
+      default -> false;
+    };
+  }
+
+  /**
    * Triggers player events on specific keycodes.
    *
    * @return whether the input was processed
@@ -77,6 +99,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean keyDown(int keycode) {
+    if (isCombatKey(keycode) && isInteractionBlocked()) {
+      return true;
+    }
     switch (keycode) {
       case Keys.NUM_1:
         entity.getEvents().trigger(EQUIP_WEAPON_EVENT, WeaponType.SWORD);
@@ -228,6 +253,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
   }
 
+  /**
+   * Whether combat and interaction keys must do nothing. Covers an NPC conversation, a frozen
+   * world, and the inventory pause.
+   *
+   * @return true when those keys should be ignored
+   */
   private boolean isInteractionBlocked() {
     return isNpcInteractionRunning()
         || (ServiceLocator.getEntityService() != null

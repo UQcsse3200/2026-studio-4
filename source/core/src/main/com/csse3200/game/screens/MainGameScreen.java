@@ -144,14 +144,15 @@ public class MainGameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    // A dialogue, cutscene, or the settings menu freezes the world.
+    // A dialogue, cutscene, or the settings menu freezes the world. The inventory pause is
+    // separate: entity updates already stop, and physics has to stop with them.
     boolean frozen = ServiceLocator.getEntityService().isFrozen();
     if (frozen != worldFrozen) {
       worldFrozen = frozen;
       // Scaled time also stops sprite animations, status effects and other timers
       ServiceLocator.getTimeSource().setTimeScale(frozen ? 0f : 1f);
     }
-    if (!frozen) {
+    if (!frozen && !ServiceLocator.getEntityService().isPaused()) {
       physicsEngine.update();
     }
     ServiceLocator.getEntityService().update();
