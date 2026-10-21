@@ -64,7 +64,6 @@ public class StampedeTask extends DefaultTask implements PriorityTask {
     Vector2 currentPosition = body.getPosition();
     Vector2 movementDirection = desiredPosition.sub(currentPosition);
     entity.getEvents().trigger("moving", movementDirection);
-    entity.getEvents().trigger("stampede");
     body.setLinearVelocity(movementDirection.scl(1f / deltaTime));
     applyDamage(deltaTime);
   }

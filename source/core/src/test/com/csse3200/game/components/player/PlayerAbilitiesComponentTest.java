@@ -8,7 +8,7 @@ import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.player.abilities.Invisibility;
 import com.csse3200.game.components.player.abilities.LastStand;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.listeners.EventListener1;
@@ -512,7 +512,7 @@ class PlayerAbilitiesComponentTest {
   /** A cast ability that starts locked, declared entirely outside PlayerAbilitiesComponent. */
   private static final class TestAbility extends TimedPlayerAbility {
     private TestAbility(GameTime time) {
-      super("testability", 20_000, false, () -> new TimedStatusEffect(time, 5_000));
+      super("testability", 20_000, false, () -> new StatusEffect(time, 5_000));
     }
 
     @Override
@@ -524,7 +524,7 @@ class PlayerAbilitiesComponentTest {
   /** A passive that starts on any hostile hit, declared entirely outside the component. */
   private static final class TestPassive extends TimedPlayerAbility {
     private TestPassive(GameTime time) {
-      super("testpassive", 9_000, true, () -> new TimedStatusEffect(time, 3_000));
+      super("testpassive", 9_000, true, () -> new StatusEffect(time, 3_000));
     }
 
     @Override

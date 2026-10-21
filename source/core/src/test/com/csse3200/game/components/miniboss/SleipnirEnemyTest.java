@@ -46,6 +46,7 @@ public class SleipnirEnemyTest {
 
     ResourceService resourceService = new ResourceService();
     resourceService.loadTextureAtlases(new String[] {"images/horse.atlas"});
+    resourceService.loadTextures(new String[] {"images/dust.png"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
