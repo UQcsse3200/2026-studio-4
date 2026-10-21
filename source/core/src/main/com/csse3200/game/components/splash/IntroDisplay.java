@@ -19,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
 /** Black intro screen with an idle book animation and a Space-triggered sequence. */
@@ -52,7 +51,8 @@ public class IntroDisplay extends UIComponent {
       throw new IllegalStateException("Intro regions '" + BOOK + "_*' missing from hud skin atlas");
     }
     openingAnimation =
-            new Animation<>(FRAME_DURATION, atlas.findRegions(BOOK + "_open"), Animation.PlayMode.NORMAL);
+        new Animation<>(
+            FRAME_DURATION, atlas.findRegions(BOOK + "_open"), Animation.PlayMode.NORMAL);
 
     Image background = new Image(skin.newDrawable("white", Color.BLACK));
     background.setFillParent(true);
@@ -75,16 +75,16 @@ public class IntroDisplay extends UIComponent {
     stage.addActor(whiteOverlay);
 
     stage.addListener(
-            new InputListener() {
-              @Override
-              public boolean keyDown(InputEvent event, int keycode) {
-                if (keycode == Input.Keys.SPACE && !triggered) {
-                  startTriggeredAnimation();
-                  return true;
-                }
-                return false;
-              }
-            });
+        new InputListener() {
+          @Override
+          public boolean keyDown(InputEvent event, int keycode) {
+            if (keycode == Input.Keys.SPACE && !triggered) {
+              startTriggeredAnimation();
+              return true;
+            }
+            return false;
+          }
+        });
   }
 
   @Override
@@ -94,7 +94,8 @@ public class IntroDisplay extends UIComponent {
 
     // Re-centre every frame so window resizes are handled.
     book.setPosition(stage.getWidth() / 2f, stage.getHeight() / 2f, Align.center);
-    continuePrompt.setBounds(0f, stage.getHeight() * 0.08f, stage.getWidth(), continuePrompt.getHeight());
+    continuePrompt.setBounds(
+        0f, stage.getHeight() * 0.08f, stage.getWidth(), continuePrompt.getHeight());
   }
 
   private void startTriggeredAnimation() {
@@ -103,14 +104,14 @@ public class IntroDisplay extends UIComponent {
     continuePrompt.setVisible(false);
     float open = openingAnimation.getAnimationDuration();
     book.addAction(
-            sequence(
-                    Actions.delay(open),
-                    Actions.scaleTo(2f, 2f, OPEN_BOOK_HOLD + 0.5f, Interpolation.pow2In)));
+        sequence(
+            Actions.delay(open),
+            Actions.scaleTo(2f, 2f, OPEN_BOOK_HOLD + 0.5f, Interpolation.pow2In)));
     whiteOverlay.addAction(
-            sequence(
-                    Actions.delay(open + OPEN_BOOK_HOLD),
-                    Actions.fadeIn(0.5f),
-                    run(() -> finished = true)));
+        sequence(
+            Actions.delay(open + OPEN_BOOK_HOLD),
+            Actions.fadeIn(0.5f),
+            run(() -> finished = true)));
   }
 
   public boolean isFinished() {

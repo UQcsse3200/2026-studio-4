@@ -288,32 +288,53 @@ public class SettingsMenuDisplay extends UIComponent {
     }
     DisplayMode active = Gdx.graphics.getDisplayMode();
     StringDecorator<DisplayMode> sameSize = null;
-    StringDecorator<DisplayMode> closest = null;
-    long closestGap = Long.MAX_VALUE;
 
-    for (StringDecorator<DisplayMode> stringMode : modes) {
-      DisplayMode mode = stringMode.object;
-      if (mode == null) {
+    for (StringDecorator<DisplayMode> entry : modes) {
+      DisplayMode mode = entry.object;
+      if (!hasSameSize(active, mode)) {
         continue;
       }
-      if (active.width == mode.width && active.height == mode.height) {
-        if (active.refreshRate == mode.refreshRate) {
-          return stringMode;
-        }
-        if (sameSize == null) {
-          sameSize = stringMode;
-        }
+      if (active.refreshRate == mode.refreshRate) {
+        return entry;
       }
-      long gap = Math.abs((long) active.width * active.height - (long) mode.width * mode.height);
-      if (gap < closestGap) {
-        closestGap = gap;
-        closest = stringMode;
+      if (sameSize == null) {
+        sameSize = entry;
       }
     }
     if (sameSize != null) {
       return sameSize;
     }
+    StringDecorator<DisplayMode> closest = findClosestSize(modes, active);
     return closest != null ? closest : modes.first();
+  }
+
+  /** Whether the mode exists and has the same pixel dimensions as the active one. */
+  private static boolean hasSameSize(DisplayMode active, DisplayMode mode) {
+    return mode != null && active.width == mode.width && active.height == mode.height;
+  }
+
+  /** Returns the entry whose total pixel count is nearest the active mode's, or null if none. */
+  private static StringDecorator<DisplayMode> findClosestSize(
+      Array<StringDecorator<DisplayMode>> modes, DisplayMode active) {
+    StringDecorator<DisplayMode> closest = null;
+    long closestGap = Long.MAX_VALUE;
+
+    for (StringDecorator<DisplayMode> entry : modes) {
+      DisplayMode mode = entry.object;
+      if (mode == null) {
+        continue;
+      }
+      long gap = Math.abs(pixelCount(active) - pixelCount(mode));
+      if (gap < closestGap) {
+        closestGap = gap;
+        closest = entry;
+      }
+    }
+    return closest;
+  }
+
+  private static long pixelCount(DisplayMode mode) {
+    return (long) mode.width * mode.height;
   }
 
   /**
