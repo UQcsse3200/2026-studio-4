@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 @ExtendWith(GameExtension.class)
 class FileLoaderTest {
-  private static final Logger logger = LoggerFactory.getLogger(FileLoaderTest.class);
 
   @Test
   void loadFromValidFile() {
