@@ -20,8 +20,8 @@ import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
 
 /**
- * Spawns a room's furniture props. In attic-themed rooms it also gives every wall tile of the
- * spawn grid an invisible collider (in tileset rooms {@link ObstacleComponent} already does that).
+ * Spawns a room's furniture props. In attic-themed rooms it also gives every wall tile of the spawn
+ * grid an invisible collider (in tileset rooms {@link ObstacleComponent} already does that).
  */
 public class AtticFurnitureComponent extends EntityManagerComponent {
   private static final float TILE_WORLD_SIZE = 0.5f;

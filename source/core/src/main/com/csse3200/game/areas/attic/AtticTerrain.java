@@ -15,8 +15,8 @@ import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
 
 /**
- * Builds the floor and wall terrain of a attic-themed room from its {@code obstacles.spawns}
- * grid. Row 0 of the grid is the bottom of the room, as in every other room.
+ * Builds the floor and wall terrain of a attic-themed room from its {@code obstacles.spawns} grid.
+ * Row 0 of the grid is the bottom of the room, as in every other room.
  *
  * <ul>
  *   <li>{@code 'w'} wooden planks, {@code 'p'} parquet, {@code 'l'} light planks, {@code 'd'} dark

@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * The dungeon selection room is a dark attic: a tileset room decorated with attic props
- * and lit by candles. Its layout must be consistent and fully reachable.
+ * The dungeon selection room is a dark attic: a tileset room decorated with attic props and lit by
+ * candles. Its layout must be consistent and fully reachable.
  */
 @ExtendWith(GameExtension.class)
 class AtticRoomConfigTest {
