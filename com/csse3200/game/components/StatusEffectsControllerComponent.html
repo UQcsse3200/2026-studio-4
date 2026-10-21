@@ -95,7 +95,7 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">StatusEffectsControllerComponent</span>
 <span class="extends-implements">extends <a href="Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
 <div class="block">Holds the status effects currently on an entity and drives them, treating every one of them as a
- plain <a href="statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects"><code>StatusEffect</code></a> so that nothing here depends on any concrete effect.
+ plain <a href="statuseffects/StatusEffect.html" title="class in com.csse3200.game.components.statuseffects"><code>StatusEffect</code></a> so that nothing here depends on any concrete effect.
 
  <p>Effects are ticked once per frame in <a href="#update()"><code>update()</code></a> and dropped when they report done. The
  query methods (<a href="#isConcealed()"><code>isConcealed()</code></a>, <a href="#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)"><code>getStatMultiplier(Stat)</code></a>, <a href="#getTint()"><code>getTint()</code></a>)
@@ -146,7 +146,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Adds stacks to a status effect.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)" class="member-name-link">addStatusEffect</a><wbr>(<a href="statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)" class="member-name-link">addStatusEffect</a><wbr>(<a href="statuseffects/StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Puts a status effect on this entity.</div>
 </div>
@@ -197,7 +197,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns the combined sprite tint of the entity's active effects, or null when nothing tints it.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)" class="member-name-link">hasStatusEffect</a><wbr>(<a href="statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)" class="member-name-link">hasStatusEffect</a><wbr>(<a href="statuseffects/StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns whether the effect is on this entity and still running.</div>
 </div>
@@ -225,7 +225,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns whether the entity currently cannot move or act under its own steam.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removeStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)" class="member-name-link">removeStatusEffect</a><wbr>(<a href="statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removeStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)" class="member-name-link">removeStatusEffect</a><wbr>(<a href="statuseffects/StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Takes an effect off early.</div>
 </div>
@@ -369,7 +369,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="hasStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)">
 <h3>hasStatusEffect</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasStatusEffect</span><wbr><span class="parameters">(<a href="statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasStatusEffect</span><wbr><span class="parameters">(<a href="statuseffects/StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</span></div>
 <div class="block">Returns whether the effect is on this entity and still running.</div>
 </section>
 </li>
@@ -395,7 +395,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="addStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)">
 <h3>addStatusEffect</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addStatusEffect</span><wbr><span class="parameters">(<a href="statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addStatusEffect</span><wbr><span class="parameters">(<a href="statuseffects/StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</span></div>
 <div class="block">Puts a status effect on this entity. The controller now owns its lifetime: it is ticked each
  frame and its <a href="statuseffects/StatusEffect.html#onRemoved()"><code>StatusEffect.onRemoved()</code></a> runs once when it comes off.</div>
 <dl class="notes">
@@ -421,7 +421,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="removeStatusEffect(com.csse3200.game.components.statuseffects.StatusEffect)">
 <h3>removeStatusEffect</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">removeStatusEffect</span><wbr><span class="parameters">(<a href="statuseffects/StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">removeStatusEffect</span><wbr><span class="parameters">(<a href="statuseffects/StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a>&nbsp;effect)</span></div>
 <div class="block">Takes an effect off early. Removing one that is not on this entity changes nothing.</div>
 </section>
 </li>

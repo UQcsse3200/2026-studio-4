@@ -86,18 +86,14 @@ loadScripts(document, 'script');</script>
 <h1 title="Class InvisibilityEffect" class="title">Class InvisibilityEffect</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance"><a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">com.csse3200.game.components.statuseffects.TimedStatusEffect</a>
+<div class="inheritance"><a href="StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">com.csse3200.game.components.statuseffects.StatusEffect</a>
 <div class="inheritance">com.csse3200.game.components.statuseffects.InvisibilityEffect</div>
 </div>
 </div>
 <section class="class-description" id="class-description">
-<dl class="notes">
-<dt>All Implemented Interfaces:</dt>
-<dd><code><a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></code></dd>
-</dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">InvisibilityEffect</span>
-<span class="extends-implements">extends <a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a></span></div>
+<span class="extends-implements">extends <a href="StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a></span></div>
 <div class="block">The condition the Invisibility ability puts on the player. While it runs the entity wearing it
  takes no hostile damage, hostiles cannot target it, and it is drawn faded.
 
@@ -146,14 +142,11 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-com.csse3200.game.components.statuseffects.TimedStatusEffect">Methods inherited from class&nbsp;com.csse3200.game.components.statuseffects.<a href="TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a></h3>
-<code><a href="TimedStatusEffect.html#getDuration()">getDuration</a>, <a href="TimedStatusEffect.html#getRemainingDuration()">getRemainingDuration</a>, <a href="TimedStatusEffect.html#onRemoved()">onRemoved</a>, <a href="TimedStatusEffect.html#setOnEnded(java.lang.Runnable)">setOnEnded</a>, <a href="TimedStatusEffect.html#update()">update</a></code></div>
+<h3 id="methods-inherited-from-class-com.csse3200.game.components.statuseffects.StatusEffect">Methods inherited from class&nbsp;com.csse3200.game.components.statuseffects.<a href="StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a></h3>
+<code><a href="StatusEffect.html#getDuration()">getDuration</a>, <a href="StatusEffect.html#getGlow()">getGlow</a>, <a href="StatusEffect.html#getRemainingDuration()">getRemainingDuration</a>, <a href="StatusEffect.html#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)">getStatMultiplier</a>, <a href="StatusEffect.html#immobilisesOwner()">immobilisesOwner</a>, <a href="StatusEffect.html#isExpired()">isExpired</a>, <a href="StatusEffect.html#onRemoved()">onRemoved</a>, <a href="StatusEffect.html#setOnEnded(java.lang.Runnable)">setOnEnded</a>, <a href="StatusEffect.html#update()">update</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
-<div class="inherited-list">
-<h3 id="methods-inherited-from-class-com.csse3200.game.components.statuseffects.StatusEffect">Methods inherited from interface&nbsp;com.csse3200.game.components.statuseffects.<a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></h3>
-<code><a href="StatusEffect.html#getGlow()">getGlow</a>, <a href="StatusEffect.html#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)">getStatMultiplier</a>, <a href="StatusEffect.html#immobilisesOwner()">immobilisesOwner</a>, <a href="StatusEffect.html#isExpired()">isExpired</a></code></div>
 </section>
 </li>
 </ul>
@@ -184,19 +177,27 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="concealsOwner()">
 <h3>concealsOwner</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">concealsOwner</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="StatusEffect.html#concealsOwner()">StatusEffect</a></code></span></div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="StatusEffect.html#concealsOwner()">StatusEffect</a></code></span></div>
 <div class="block">Returns whether hostiles should be unable to find, chase or damage the entity while this runs.</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="StatusEffect.html#concealsOwner()">concealsOwner</a></code>&nbsp;in class&nbsp;<code><a href="StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a></code></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getTint()">
 <h3>getTint</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.graphics.Color</span>&nbsp;<span class="element-name">getTint</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="StatusEffect.html#getTint()">StatusEffect</a></code></span></div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="StatusEffect.html#getTint()">StatusEffect</a></code></span></div>
 <div class="block">Returns the colour this effect multiplies into the sprite of whatever it is on, or null to
  leave the sprite alone. Lets an effect show itself without the renderer naming it.
 
  <p>Treat the returned colour as read only; the caller may be a renderer running every frame.</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="StatusEffect.html#getTint()">getTint</a></code>&nbsp;in class&nbsp;<code><a href="StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a></code></dd>
+</dl>
 </section>
 </li>
 </ul>

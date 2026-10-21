@@ -122,7 +122,7 @@ loadScripts(document, 'script');</script>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,long,boolean,java.util.function.Supplier)" class="member-name-link">TimedPlayerAbility</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  long&nbsp;cooldown,
  boolean&nbsp;unlockedByDefault,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="../statuseffects/TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a>&gt;&nbsp;effectFactory)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="../statuseffects/StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a>&gt;&nbsp;effectFactory)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -145,7 +145,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Hands over the player's status effects controller, along with the callback to run when this
  ability ends.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="../statuseffects/TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="../statuseffects/StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getEffect()" class="member-name-link">getEffect</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the condition currently on the player, or null when the ability is not running.</div>
@@ -196,7 +196,7 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="element-name">TimedPlayerAbility</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  long&nbsp;cooldown,
  boolean&nbsp;unlockedByDefault,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="../statuseffects/TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a>&gt;&nbsp;effectFactory)</span></div>
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="../statuseffects/StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a>&gt;&nbsp;effectFactory)</span></div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>name</code> - name carried by the abilityUsed, abilityEnded and abilityFailed events</dd>
@@ -217,7 +217,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getEffect()">
 <h3>getEffect</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="../statuseffects/TimedStatusEffect.html" title="class in com.csse3200.game.components.statuseffects">TimedStatusEffect</a></span>&nbsp;<span class="element-name">getEffect</span>()</div>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="../statuseffects/StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a></span>&nbsp;<span class="element-name">getEffect</span>()</div>
 <div class="block">Returns the condition currently on the player, or null when the ability is not running.</div>
 </section>
 </li>

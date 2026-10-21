@@ -86,17 +86,14 @@ loadScripts(document, 'script');</script>
 <h1 title="Class Regeneration" class="title">Class Regeneration</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance"><a href="StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">com.csse3200.game.components.statuseffects.StatusEffect</a>
 <div class="inheritance">com.csse3200.game.components.statuseffects.Regeneration</div>
 </div>
+</div>
 <section class="class-description" id="class-description">
-<dl class="notes">
-<dt>All Implemented Interfaces:</dt>
-<dd><code><a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></code></dd>
-</dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Regeneration</span>
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
-implements <a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></span></div>
+<span class="extends-implements">extends <a href="StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a></span></div>
 <div class="block">The object class for the regeneration status effect.</div>
 </section>
 <section class="summary">
@@ -144,11 +141,11 @@ implements <a href="StatusEffect.html" title="interface in com.csse3200.game.com
 </div>
 </div>
 <div class="inherited-list">
+<h3 id="methods-inherited-from-class-com.csse3200.game.components.statuseffects.StatusEffect">Methods inherited from class&nbsp;com.csse3200.game.components.statuseffects.<a href="StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a></h3>
+<code><a href="StatusEffect.html#concealsOwner()">concealsOwner</a>, <a href="StatusEffect.html#getDuration()">getDuration</a>, <a href="StatusEffect.html#getGlow()">getGlow</a>, <a href="StatusEffect.html#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)">getStatMultiplier</a>, <a href="StatusEffect.html#getTint()">getTint</a>, <a href="StatusEffect.html#immobilisesOwner()">immobilisesOwner</a>, <a href="StatusEffect.html#isExpired()">isExpired</a>, <a href="StatusEffect.html#onRemoved()">onRemoved</a>, <a href="StatusEffect.html#setOnEnded(java.lang.Runnable)">setOnEnded</a></code></div>
+<div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
-<div class="inherited-list">
-<h3 id="methods-inherited-from-class-com.csse3200.game.components.statuseffects.StatusEffect">Methods inherited from interface&nbsp;com.csse3200.game.components.statuseffects.<a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></h3>
-<code><a href="StatusEffect.html#concealsOwner()">concealsOwner</a>, <a href="StatusEffect.html#getGlow()">getGlow</a>, <a href="StatusEffect.html#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)">getStatMultiplier</a>, <a href="StatusEffect.html#getTint()">getTint</a>, <a href="StatusEffect.html#immobilisesOwner()">immobilisesOwner</a>, <a href="StatusEffect.html#isExpired()">isExpired</a>, <a href="StatusEffect.html#onRemoved()">onRemoved</a></code></div>
 </section>
 </li>
 </ul>
@@ -191,8 +188,8 @@ implements <a href="StatusEffect.html" title="interface in com.csse3200.game.com
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">update</span>()</div>
 <div class="block">Updates the regeneration. Heals the entity if the heal cooldown is completed.</div>
 <dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="StatusEffect.html#update()">update</a></code>&nbsp;in interface&nbsp;<code><a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></code></dd>
+<dt>Overrides:</dt>
+<dd><code><a href="StatusEffect.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a></code></dd>
 <dt>Returns:</dt>
 <dd>true if the heal status effect is ready for removal. false otherwise.</dd>
 </dl>
@@ -204,10 +201,8 @@ implements <a href="StatusEffect.html" title="interface in com.csse3200.game.com
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">long</span>&nbsp;<span class="element-name">getRemainingDuration</span>()</div>
 <div class="block">Returns the time left until the status effect should be removed (in milliseconds).</div>
 <dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="StatusEffect.html#getRemainingDuration()">getRemainingDuration</a></code>&nbsp;in interface&nbsp;<code><a href="StatusEffect.html" title="interface in com.csse3200.game.components.statuseffects">StatusEffect</a></code></dd>
-<dt>Returns:</dt>
-<dd>the time remaining until the status effect should be removed in milliseconds.</dd>
+<dt>Overrides:</dt>
+<dd><code><a href="StatusEffect.html#getRemainingDuration()">getRemainingDuration</a></code>&nbsp;in class&nbsp;<code><a href="StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a></code></dd>
 </dl>
 </section>
 </li>
