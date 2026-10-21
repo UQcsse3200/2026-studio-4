@@ -111,26 +111,23 @@ public class MainMenuDisplay extends UIComponent {
 
     float byWidth = (button.getWidth() * TEXT_FILL_WIDTH) / layout.width;
     float byHeight = (button.getHeight() * TEXT_FILL_HEIGHT) / layout.height;
-    float scale = Math.max(MIN_TEXT_SCALE, Math.min(byWidth, byHeight));
+    float scale = Math.clamp(byWidth, MIN_TEXT_SCALE, byHeight);
 
     button.getLabel().setFontScale(scale);
   }
 
-  private void placeOnImage(
-      Actor actor,
-      float x,
-      float top,
-      float width,
-      float height,
-      float offsetX,
-      float offsetY,
-      float drawW,
-      float drawH) {
+  /** A rectangle given as fractions (0 to 1) of an image, with y measured down from its top. */
+  private record ImageFraction(float x, float top, float width, float height) {}
+
+  /** The stage-space rectangle the image is actually drawn into. */
+  private record DrawArea(float x, float y, float width, float height) {}
+
+  private void placeOnImage(Actor actor, ImageFraction r, DrawArea img) {
     actor.setBounds(
-        offsetX + x * drawW,
-        offsetY + drawH - (top + height) * drawH,
-        width * drawW,
-        height * drawH);
+        img.x() + r.x() * img.width(),
+        img.y() + img.height() - (r.top() + r.height()) * img.height(),
+        r.width() * img.width(),
+        r.height() * img.height());
   }
 
   /**
@@ -153,8 +150,8 @@ public class MainMenuDisplay extends UIComponent {
     laidOutWidth = stageW;
     laidOutHeight = stageH;
 
-    float imageW = backgroundTexture.getWidth();
-    float imageH = backgroundTexture.getHeight();
+    int imageW = backgroundTexture.getWidth();
+    int imageH = backgroundTexture.getHeight();
     float scale =
         COVER_SCREEN
             ? Math.max(stageW / imageW, stageH / imageH)
@@ -166,11 +163,13 @@ public class MainMenuDisplay extends UIComponent {
 
     background.setBounds(offsetX, offsetY, drawW, drawH);
 
+    DrawArea image = new DrawArea(offsetX, offsetY, drawW, drawH);
+
     // Fractions of the image, with y measured from the top of the image.
-    placeOnImage(startBtn, 0.13f, 0.432f, 0.13f, 0.075f, offsetX, offsetY, drawW, drawH);
-    placeOnImage(loadBtn, 0.13f, 0.539f, 0.13f, 0.075f, offsetX, offsetY, drawW, drawH);
-    placeOnImage(settingsBtn, 0.13f, 0.644f, 0.13f, 0.075f, offsetX, offsetY, drawW, drawH);
-    placeOnImage(exitBtn, 0.775f, 0.675f, 0.12f, 0.078f, offsetX, offsetY, drawW, drawH);
+    placeOnImage(startBtn, new ImageFraction(0.13f, 0.432f, 0.13f, 0.075f), image);
+    placeOnImage(loadBtn, new ImageFraction(0.13f, 0.539f, 0.13f, 0.075f), image);
+    placeOnImage(settingsBtn, new ImageFraction(0.13f, 0.644f, 0.13f, 0.075f), image);
+    placeOnImage(exitBtn, new ImageFraction(0.775f, 0.675f, 0.12f, 0.078f), image);
 
     fitText(startBtn);
     fitText(loadBtn);
