@@ -128,6 +128,44 @@ class ConsumableUseIntegrationTest {
   }
 
   @Test
+  void fullHealthRejectionFiresUseFailedInsteadOfUsed() {
+    inventory.addConsumable(ItemIds.HEALTH_POTION);
+    AtomicInteger used = new AtomicInteger();
+    AtomicInteger failed = new AtomicInteger();
+    player
+        .getEvents()
+        .addListener(ConsumableEffectComponent.USED, (String type) -> used.incrementAndGet());
+    player
+        .getEvents()
+        .addListener(
+            ConsumableEffectComponent.USE_FAILED, (String type) -> failed.incrementAndGet());
+
+    assertFalse(consumables.tryUse(ItemIds.HEALTH_POTION));
+
+    assertEquals(0, used.get());
+    assertEquals(1, failed.get());
+    assertEquals(1, inventory.getConsumableCount(ItemIds.HEALTH_POTION));
+  }
+
+  @Test
+  void invalidOutOfStockOrDeadUsesDoNotFireUseFailed() {
+    AtomicInteger failed = new AtomicInteger();
+    player
+        .getEvents()
+        .addListener(
+            ConsumableEffectComponent.USE_FAILED, (String type) -> failed.incrementAndGet());
+
+    assertFalse(consumables.tryUse(null));
+    assertFalse(consumables.tryUse(ItemIds.GOLD_COIN));
+    assertFalse(consumables.tryUse(ItemIds.SHIELD));
+    stats.setHealth(0);
+    inventory.addConsumable(ItemIds.HEALTH_POTION);
+    assertFalse(consumables.tryUse(ItemIds.HEALTH_POTION));
+
+    assertEquals(0, failed.get());
+  }
+
+  @Test
   void strengthRefreshDoesNotCompoundOrRemoveNewCharm() {
     inventory.addConsumable(ItemIds.STRENGTH_POTION, 2);
     assertTrue(consumables.tryUse(ItemIds.STRENGTH_POTION));
