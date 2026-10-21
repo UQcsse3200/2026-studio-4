@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.CameraComponent;
@@ -51,6 +52,14 @@ class RoomLoaderTest {
     entry.x = x;
     entry.y = y;
     return entry;
+  }
+
+  @Test
+  void shouldValidateWorldOnContructor() {
+    var mockConfig = mock(WorldConfig.class);
+    new RoomLoader(camera, mockConfig);
+
+    verify(mockConfig).validate();
   }
 
   @Test
