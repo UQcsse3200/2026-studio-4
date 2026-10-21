@@ -46,6 +46,7 @@ com.csse3200.game.physics.components
 com.csse3200.game.physics.raycast
 com.csse3200.game.rendering
 com.csse3200.game.rooms
+com.csse3200.game.saving
 com.csse3200.game.screens
 com.csse3200.game.services
 com.csse3200.game.shop
