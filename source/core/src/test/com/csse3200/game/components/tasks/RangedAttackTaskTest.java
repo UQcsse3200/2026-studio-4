@@ -105,7 +105,7 @@ class RangedAttackTaskTest {
         mockStatic(FloatingDemonProjectileFactory.class)) {
       Entity projectile = new Entity();
       factory
-          .when(() -> FloatingDemonProjectileFactory.createProjectile(any(), any(), eq(7)))
+          .when(() -> FloatingDemonProjectileFactory.createProjectile(any(), any(), eq(7), any()))
           .thenReturn(projectile);
       task.start();
       task.update();
@@ -115,7 +115,8 @@ class RangedAttackTaskTest {
       callbacks.get(1).run();
       callbacks.get(2).run();
       assertEquals(List.of(projectile), spawned);
-      factory.verify(() -> FloatingDemonProjectileFactory.createProjectile(any(), any(), eq(7)));
+      factory.verify(
+          () -> FloatingDemonProjectileFactory.createProjectile(any(), any(), eq(7), any()));
 
       when(effects.isConcealed()).thenReturn(false);
       when(time.getDeltaTime()).thenReturn(2f);
@@ -123,7 +124,8 @@ class RangedAttackTaskTest {
       callbacks.subList(3, 6).forEach(Runnable::run);
       assertEquals(4, spawned.size());
       factory.verify(
-          () -> FloatingDemonProjectileFactory.createProjectile(any(), any(), eq(7)), times(4));
+          () -> FloatingDemonProjectileFactory.createProjectile(any(), any(), eq(7), any()),
+          times(4));
     }
   }
 

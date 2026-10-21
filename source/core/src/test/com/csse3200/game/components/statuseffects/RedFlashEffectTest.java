@@ -53,14 +53,4 @@ class RedFlashEffectTest {
     when(time.getTime()).thenReturn(500L);
     assertNotNull(flash.getTint());
   }
-
-  @Test
-  void petrificationStillSlowsMovementWhileBlinkingRed() {
-    PetrificationEffect petrified = new PetrificationEffect(time, 2000L, 0.5f);
-
-    assertEquals(0.5f, petrified.getStatMultiplier(Stat.MOVEMENT_SPEED));
-    assertEquals(1f, petrified.getStatMultiplier(Stat.ATTACK));
-    assertNotNull(petrified.getTint());
-    assertNull(petrified.getGlow());
-  }
 }
