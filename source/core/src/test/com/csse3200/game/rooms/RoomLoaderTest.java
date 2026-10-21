@@ -56,9 +56,10 @@ class RoomLoaderTest {
 
   @Test
   void shouldValidateWorldOnContructor() {
-    var roomLoader = new RoomLoader(camera, world);
+    var mockConfig = mock(WorldConfig.class);
+    new RoomLoader(camera, mockConfig);
 
-    verify(world).validate();
+    verify(mockConfig).validate();
   }
 
   @Test
