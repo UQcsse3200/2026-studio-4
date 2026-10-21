@@ -136,6 +136,14 @@ implements <a href="../../ai/tasks/PriorityTask.html" title="interface in com.cs
  float&nbsp;restoreSpeed,
  <a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;enemy)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.entities.Entity,int,float,com.csse3200.game.entities.Entity,float)" class="member-name-link">LungeAttackTask</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ int&nbsp;priority,
+ float&nbsp;restoreSpeed,
+ <a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;enemy,
+ float&nbsp;cooldownDuration)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a lunge with a configurable recovery between attacks.</div>
+</div>
 </div>
 </section>
 </li>
@@ -156,18 +164,23 @@ implements <a href="../../ai/tasks/PriorityTask.html" title="interface in com.cs
 <div class="block">A pure query: the scheduler calls this repeatedly, so it never changes state.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#start()" class="member-name-link">start</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#interrupt()" class="member-name-link">interrupt</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Start running this task.</div>
+<div class="block">Cancels a pending or active lunge and starts its cooldown again from now.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stop()" class="member-name-link">stop</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#start()" class="member-name-link">start</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Stop the task immediately.</div>
+<div class="block">Start running this task.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stop()" class="member-name-link">stop</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Stop the task immediately.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Run one frame of the task.</div>
 </div>
 </div>
@@ -203,7 +216,30 @@ implements <a href="../../ai/tasks/PriorityTask.html" title="interface in com.cs
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>target</code> - Entity to lunge toward (usually the player).</dd>
+<dd><code>priority</code> - task priority when a lunge is available</dd>
 <dd><code>restoreSpeed</code> - Normal movement speed to return to after the dash ends.</dd>
+<dd><code>enemy</code> - entity performing the lunge</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(com.csse3200.game.entities.Entity,int,float,com.csse3200.game.entities.Entity,float)">
+<h3>LungeAttackTask</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">LungeAttackTask</span><wbr><span class="parameters">(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ int&nbsp;priority,
+ float&nbsp;restoreSpeed,
+ <a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;enemy,
+ float&nbsp;cooldownDuration)</span></div>
+<div class="block">Creates a lunge with a configurable recovery between attacks.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>target</code> - entity to lunge toward</dd>
+<dd><code>priority</code> - task priority when a lunge is available</dd>
+<dd><code>restoreSpeed</code> - normal movement speed after a dash ends</dd>
+<dd><code>enemy</code> - entity performing the lunge</dd>
+<dd><code>cooldownDuration</code> - seconds before another lunge after finishing or interrupting one</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if the cooldown is not finite and positive</dd>
 </dl>
 </section>
 </li>
@@ -255,6 +291,16 @@ implements <a href="../../ai/tasks/PriorityTask.html" title="interface in com.cs
 <dt>Overrides:</dt>
 <dd><code><a href="../../ai/tasks/DefaultTask.html#stop()">stop</a></code>&nbsp;in class&nbsp;<code><a href="../../ai/tasks/DefaultTask.html" title="class in com.csse3200.game.ai.tasks">DefaultTask</a></code></dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="interrupt()">
+<h3>interrupt</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">interrupt</span>()</div>
+<div class="block">Cancels a pending or active lunge and starts its cooldown again from now.
+
+ <p>A dash announces its end only if it had started. When another task owns movement, this only
+ delays the next lunge and leaves that task's movement settings alone.</div>
 </section>
 </li>
 <li>

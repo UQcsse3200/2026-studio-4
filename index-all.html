@@ -1639,6 +1639,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/npc/FlyingEnemyPatrolComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/FlyingEnemyPatrolComponent.html" title="class in com.csse3200.game.components.npc">FlyingEnemyPatrolComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/npc/MedusaHitRecoveryComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/MedusaHitRecoveryComponent.html" title="class in com.csse3200.game.components.npc">MedusaHitRecoveryComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/npc/MinotaurAnimationController.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/MinotaurAnimationController.html" title="class in com.csse3200.game.components.npc">MinotaurAnimationController</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/AbilityAttunementComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/AbilityAttunementComponent.html" title="class in com.csse3200.game.components.player">AbilityAttunementComponent</a></dt>
@@ -2591,6 +2593,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/npc/DustCloudAnimation.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/DustCloudAnimation.html" title="class in com.csse3200.game.components.npc">DustCloudAnimation</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/npc/EnemyStatDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/EnemyStatDisplay.html" title="class in com.csse3200.game.components.npc">EnemyStatDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/npc/MedusaHitRecoveryComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/MedusaHitRecoveryComponent.html" title="class in com.csse3200.game.components.npc">MedusaHitRecoveryComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/npc/MinotaurAnimationController.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/MinotaurAnimationController.html" title="class in com.csse3200.game.components.npc">MinotaurAnimationController</a></dt>
 <dd>&nbsp;</dd>
@@ -5389,6 +5393,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/files/FileLoader.Location.html#INTERNAL" class="member-name-link">INTERNAL</a> - Enum constant in enum class com.csse3200.game.files.<a href="com/csse3200/game/files/FileLoader.Location.html" title="enum class in com.csse3200.game.files">FileLoader.Location</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/LungeAttackTask.html#interrupt()" class="member-name-link">interrupt()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/LungeAttackTask.html" title="class in com.csse3200.game.components.tasks">LungeAttackTask</a></dt>
+<dd>
+<div class="block">Cancels a pending or active lunge and starts its cooldown again from now.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/PropSpawnConfig.html#interval" class="member-name-link">interval</a> - Variable in class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/PropSpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">PropSpawnConfig</a></dt>
 <dd>
 <div class="block">DODGE_CANNON: seconds between shots.</div>
@@ -6224,6 +6232,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/tasks/LungeAttackTask.html#%3Cinit%3E(com.csse3200.game.entities.Entity,int,float,com.csse3200.game.entities.Entity)" class="member-name-link">LungeAttackTask(Entity, int, float, Entity)</a> - Constructor for class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/LungeAttackTask.html" title="class in com.csse3200.game.components.tasks">LungeAttackTask</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/tasks/LungeAttackTask.html#%3Cinit%3E(com.csse3200.game.entities.Entity,int,float,com.csse3200.game.entities.Entity,float)" class="member-name-link">LungeAttackTask(Entity, int, float, Entity, float)</a> - Constructor for class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/LungeAttackTask.html" title="class in com.csse3200.game.components.tasks">LungeAttackTask</a></dt>
+<dd>
+<div class="block">Creates a lunge with a configurable recovery between attacks.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:M">M</h2>
 <dl class="index">
@@ -6333,6 +6345,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html#MEDUSA" class="member-name-link">MEDUSA</a> - Enum constant in enum class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html" title="enum class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig.EnemyType</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/npc/MedusaHitRecoveryComponent.html" class="type-name-link" title="class in com.csse3200.game.components.npc">MedusaHitRecoveryComponent</a> - Class in <a href="com/csse3200/game/components/npc/package-summary.html">com.csse3200.game.components.npc</a></dt>
+<dd>
+<div class="block">Briefly interrupts Medusa's movement and attacks after a surviving hit from the player.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/npc/MedusaHitRecoveryComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity,com.csse3200.game.components.tasks.LungeAttackTask)" class="member-name-link">MedusaHitRecoveryComponent(Entity, LungeAttackTask)</a> - Constructor for class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/MedusaHitRecoveryComponent.html" title="class in com.csse3200.game.components.npc">MedusaHitRecoveryComponent</a></dt>
+<dd>
+<div class="block">Creates the recovery behaviour shared by Medusa and its split children.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/maingame/AbilityMenu.html#MENU_CLOSED" class="member-name-link">MENU_CLOSED</a> - Static variable in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/AbilityMenu.html" title="class in com.csse3200.game.components.maingame">AbilityMenu</a></dt>
 <dd>
 <div class="block">Triggered with no arguments when the menu closes, however it closed.</div>
@@ -9754,6 +9774,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/TouchAttackComponent.html#%3Cinit%3E(short,float,float)" class="member-name-link">TouchAttackComponent(short, float, float)</a> - Constructor for class com.csse3200.game.components.<a href="com/csse3200/game/components/TouchAttackComponent.html" title="class in com.csse3200.game.components">TouchAttackComponent</a></dt>
 <dd>
 <div class="block">Create a contact attack that repeats while touching a target.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/TouchAttackComponent.html#%3Cinit%3E(short,float,float,boolean)" class="member-name-link">TouchAttackComponent(short, float, float, boolean)</a> - Constructor for class com.csse3200.game.components.<a href="com/csse3200/game/components/TouchAttackComponent.html" title="class in com.csse3200.game.components">TouchAttackComponent</a></dt>
+<dd>
+<div class="block">Creates a repeating attack with an optional shared cooldown that survives contact exit.</div>
 </dd>
 <dt><a href="com/csse3200/game/input/InputComponent.html#touchDown(float,float,int,int)" class="member-name-link">touchDown(float, float, int, int)</a> - Method in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></dt>
 <dd>&nbsp;</dd>

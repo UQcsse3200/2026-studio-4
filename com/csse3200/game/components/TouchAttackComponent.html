@@ -135,6 +135,13 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">Create a contact attack that repeats while touching a target.</div>
 </div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(short,float,float,boolean)" class="member-name-link">TouchAttackComponent</a><wbr>(short&nbsp;targetLayer,
+ float&nbsp;knockback,
+ float&nbsp;repeatInterval,
+ boolean&nbsp;retainAttackCooldown)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a repeating attack with an optional shared cooldown that survives contact exit.</div>
+</div>
 </div>
 </section>
 </li>
@@ -229,6 +236,23 @@ loadScripts(document, 'script');</script>
 <dd><code>targetLayer</code> - target physics layers</dd>
 <dd><code>knockback</code> - knockback impulse</dd>
 <dd><code>repeatInterval</code> - seconds between hits; must be finite and positive</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(short,float,float,boolean)">
+<h3>TouchAttackComponent</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TouchAttackComponent</span><wbr><span class="parameters">(short&nbsp;targetLayer,
+ float&nbsp;knockback,
+ float&nbsp;repeatInterval,
+ boolean&nbsp;retainAttackCooldown)</span></div>
+<div class="block">Creates a repeating attack with an optional shared cooldown that survives contact exit.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>targetLayer</code> - target physics layers</dd>
+<dd><code>knockback</code> - knockback impulse</dd>
+<dd><code>repeatInterval</code> - seconds between hits; must be finite and positive</dd>
+<dd><code>retainAttackCooldown</code> - whether all contacts share a cooldown, including after re-entry</dd>
 </dl>
 </section>
 </li>
