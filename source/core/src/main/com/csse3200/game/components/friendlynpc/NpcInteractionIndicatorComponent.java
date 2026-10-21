@@ -25,9 +25,22 @@ public class NpcInteractionIndicatorComponent extends RenderComponent {
   private static final float BOB_SPEED = 4f;
   private static final Color COLOUR = new Color(1f, 0.85f, 0.3f, 0.95f);
 
+  private final float extraHeight;
   private Texture texture;
   private boolean visible;
   private float elapsed;
+
+  public NpcInteractionIndicatorComponent() {
+    this(0f);
+  }
+
+  /**
+   * @param extraHeight extra world units to raise the marker by, for entities with something
+   *     hovering over their head
+   */
+  public NpcInteractionIndicatorComponent(float extraHeight) {
+    this.extraHeight = extraHeight;
+  }
 
   @Override
   public void create() {
@@ -61,7 +74,7 @@ public class NpcInteractionIndicatorComponent extends RenderComponent {
     Vector2 scale = entity.getScale();
     float bob = MathUtils.sin(elapsed * BOB_SPEED) * BOB_HEIGHT;
     float x = position.x + (scale.x - SIZE) / 2f;
-    float y = position.y + scale.y + GAP_ABOVE_HEAD + bob;
+    float y = position.y + scale.y + extraHeight + GAP_ABOVE_HEAD + bob;
 
     Color previous = batch.getColor();
     float r = previous.r;

@@ -292,6 +292,8 @@ public class MainGameScreen extends ScreenAdapter {
     SettingsMenuDisplay settingsMenu = new SettingsMenuDisplay(this.game, () -> {}, true);
     // Opens itself when Hecate's interaction finishes; nothing else has to know about it.
     AbilityMenu abilityMenu = new AbilityMenu(player);
+    // Opens itself when an NPC with a teleport offer (the Old Sage) finishes talking.
+    TeleportMenu teleportMenu = new TeleportMenu(player);
 
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
@@ -321,6 +323,9 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(new KeyboardAbilityMenuInputComponent())
         .addComponent(new AbilityMenuDisplay(abilityMenu))
         .addComponent(new MagneticPickupHintDisplay(player))
+        .addComponent(teleportMenu)
+        .addComponent(new KeyboardTeleportMenuInputComponent())
+        .addComponent(new TeleportMenuDisplay(teleportMenu))
         .addComponent(new AchievementDisplay());
     ui.getComponent(InventoryDisplay.class).setEnabled(false);
     // The HUD keeps working while a dialogue or cutscene has the world frozen

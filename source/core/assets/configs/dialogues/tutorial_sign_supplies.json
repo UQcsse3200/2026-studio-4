@@ -1,0 +1,10 @@
+{
+  "speakers": [
+    { "id": "board", "name": "Notice Board", "texture": "images/tutorial/sign.png" }
+  ],
+  "lines": [
+    { "speaker": "board", "text": "SUPPLIES: walk up to a stand and press E to take one. It is lent to you and goes back when you leave the training grounds." },
+    { "speaker": "board", "text": "Press TAB to pick a potion and Q to use it. The healing, shield, speed and strength potions help you for a while." },
+    { "speaker": "board", "text": "Freeze Bombs and Burn Vials hit every enemy on screen. Try them on the test dummies at the bottom of this room. A Magnet Potion pulls nearby loot to you." }
+  ]
+}
