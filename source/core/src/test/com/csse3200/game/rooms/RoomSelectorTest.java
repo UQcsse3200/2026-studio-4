@@ -67,6 +67,15 @@ public class RoomSelectorTest {
   }
 
   @Test
+  void shouldAttachRoomClearListenersWhenSwitching() {
+    RoomSelector roomSelector = new RoomSelector(null, player, camera, roomLoader);
+
+    roomSelector.setRoom(mockedRoom, new GridPoint2());
+
+    verify(roomClear).attachListeners(mockedRoom);
+  }
+
+  @Test
   void shouldDisposeOldRoomWhenSwitching() {
     Entity room = mock(Entity.class);
     RoomSelector roomSelector = new RoomSelector(room, player, camera, roomLoader);
