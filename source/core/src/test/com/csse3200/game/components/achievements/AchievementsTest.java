@@ -197,7 +197,9 @@ class AchievementsTest {
 
     @Test
     void unknownTypeThrows() {
-      assertThrows(IllegalArgumentException.class, () -> AchievementsFactory.build(config("nope")));
+      AchievementConfig unknown = config("nope");
+
+      assertThrows(IllegalArgumentException.class, () -> AchievementsFactory.build(unknown));
     }
 
     @Test
