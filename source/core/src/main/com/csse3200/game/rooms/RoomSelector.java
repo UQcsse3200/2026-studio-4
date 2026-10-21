@@ -146,8 +146,8 @@ public class RoomSelector {
    * Propogate player events to rooms. Used by previous door/npc interaction logic. Do not add
    * aditional logic to this method.
    *
-   * <p>If your are writing a room component that needs to do something with the player. You can
-   * grab a reference to it via "RoomCreated" event. Try not to store the reference to maintain
+   * <p>If you are writing a room component that needs to do something with the player. You can grab
+   * a reference to it via "RoomCreated" event. Try not to store the reference to maintain
    * encapsulation.
    */
   void onPlayerInteract() {

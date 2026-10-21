@@ -1,6 +1,5 @@
 package com.csse3200.game.rooms;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -60,8 +59,20 @@ public class RoomSelectorTest {
 
     roomSelector.start();
 
+    verify(roomLoader).getStartingRoom();
+    verify(roomLoader).getStartingSpawn();
+
     verify(entityService).register(player);
     verify(entityService).register(mockedRoom);
+  }
+
+  @Test
+  void shouldAttachRoomClearListenersWhenSwitching() {
+    RoomSelector roomSelector = new RoomSelector(null, player, camera, roomLoader);
+
+    roomSelector.setRoom(mockedRoom, new GridPoint2());
+
+    verify(roomClear).attachListeners(mockedRoom);
   }
 
   @Test
@@ -112,18 +123,56 @@ public class RoomSelectorTest {
 
   @Test
   void shouldNotifyRoomSwitchEvent() {
-    RoomSelector roomSelector = new RoomSelector(null, player, camera, roomLoader);
-
-    int[] trigger = {0};
-
     EventHandler events = new EventHandler();
     when(mockedRoom.getEvents()).thenReturn(events);
+
+    var newConf = new RoomConfig();
+    newConf.id = "new";
+    when(roomData.getConfig()).thenReturn(newConf);
+
+    var oldConf = new RoomConfig();
+    oldConf.id = "old";
+    var oldRoom = mock(Entity.class);
+    var oldRoomData = mock(RoomDataComponent.class);
+    when(oldRoom.getComponent(RoomDataComponent.class)).thenReturn(oldRoomData);
+    when(oldRoomData.getConfig()).thenReturn(oldConf);
+
+    RoomSelector roomSelector = new RoomSelector(oldRoom, player, camera, roomLoader);
+
+    RoomConfig[] capturedRooms = new RoomConfig[2];
     events.addListener(
-        RoomSelector.ROOM_SWITCHED_EVENT, (RoomConfig oldConf, RoomConfig newConf) -> trigger[0]++);
+        RoomSelector.ROOM_SWITCHED_EVENT,
+        (RoomConfig oldC, RoomConfig newC) -> {
+          capturedRooms[0] = oldC;
+          capturedRooms[1] = newC;
+        });
 
     roomSelector.setRoom(mockedRoom, new GridPoint2());
 
-    assertEquals(1, trigger[0]);
+    assertSame(oldConf, capturedRooms[0], "Did not notify correct old room");
+    assertSame(newConf, capturedRooms[1], "Did not notify correct new room");
+  }
+
+  @Test
+  void switchRoomShouldSchedule() {
+    RoomSelector roomSelector = new RoomSelector(null, player, camera, roomLoader);
+    RoomSelector spy = spy(roomSelector);
+
+    doAnswer(
+            invocation -> {
+              Runnable task = invocation.getArgument(0);
+              task.run();
+              return null;
+            })
+        .when(entityService)
+        .schedule(any(Runnable.class));
+    doNothing().when(spy).setRoom(any(ExitConfig.class));
+
+    ExitConfig exit = new ExitConfig();
+    spy.switchRoom(exit);
+
+    verify(entityService).schedule(any(Runnable.class));
+    verify(spy).setRoom(exit);
   }
 
   @Test
@@ -153,6 +202,8 @@ public class RoomSelectorTest {
     when(roomLoader.getRoom(any(ExitConfig.class))).thenReturn(mockedRoom);
 
     roomSelector.setRoom(exit);
+    verify(roomLoader).getRoom(exit);
+    verify(roomLoader).getSpawnPoint(exit);
     verify(player).setPosition(new Vector2(2f, 2f));
   }
 }
