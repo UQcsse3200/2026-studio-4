@@ -15,7 +15,8 @@
         {"id": "fromDungeonOne", "x": 22, "y": 10},
         {"id": "fromDungeonTwo", "x": 22, "y": 10},
         {"id": "fromDungeonThree", "x": 22, "y": 10},
-        {"id": "fromDungeonFour", "x": 22, "y": 10}
+        {"id": "fromDungeonFour", "x": 22, "y": 10},
+        {"id": "fromTutorial", "x": 22, "y": 10}
       ],
       "enemySpawns": [],
       "npcSpawns": [
