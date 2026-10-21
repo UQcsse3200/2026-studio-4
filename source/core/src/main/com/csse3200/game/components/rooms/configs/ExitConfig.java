@@ -12,4 +12,13 @@ public class ExitConfig extends PositionConfig {
   public boolean requiresClear;
   public boolean completesDungeon;
   public String message;
+
+  /**
+   * Optional {@link com.csse3200.game.areas.attic.AtticProp} to draw instead of the default
+   * door or bookshelf, e.g. a dungeon tome lying on the library table.
+   */
+  public String sprite;
+
+  /** Pixels to lift {@link #sprite} by (e.g. onto a table top). Interaction uses x/y unchanged. */
+  public float elevation;
 }
