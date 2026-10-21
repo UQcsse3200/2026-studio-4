@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 /** Rock-Paper-Scissors screen for the merchant's casino, styled like the Coin Flip panel. */
 public final class RockPaperScissorsPanel extends Table {
   private static final String READY = "Choose your stake and press Start";
+  private static final String GOLD = " Gold";
 
   private final RockPaperScissorsGame game;
   private final Consumer<RockPaperScissorsGame.MatchOutcome> onResolved;
@@ -161,9 +162,9 @@ public final class RockPaperScissorsPanel extends Table {
   private void showOutcome(RockPaperScissorsGame.MatchOutcome outcome) {
     result.setText(
         switch (outcome.result()) {
-          case WIN -> "You won the match! +" + outcome.stake() + " Gold";
+          case WIN -> "You won the match! +" + outcome.stake() + GOLD;
           case TIE -> "Drawn match. Your " + outcome.stake() + " Gold is returned.";
-          case LOSE -> "The merchant won the match. -" + outcome.stake() + " Gold";
+          case LOSE -> "The merchant won the match. -" + outcome.stake() + GOLD;
         });
     onResolved.accept(outcome);
   }
@@ -210,7 +211,7 @@ public final class RockPaperScissorsPanel extends Table {
   /** Updates the stake text and which buttons can be pressed. */
   public void refresh() {
     game.refresh();
-    stakeLabel.setText(game.getStake() + " Gold");
+    stakeLabel.setText(game.getStake() + GOLD);
     boolean matchActive = game.isMatchActive();
     down.setDisabled(!active || matchActive);
     up.setDisabled(!active || matchActive);

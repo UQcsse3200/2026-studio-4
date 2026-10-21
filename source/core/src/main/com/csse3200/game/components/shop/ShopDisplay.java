@@ -47,6 +47,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
   private static final String SUPPLIES_HELP =
       "Choose your supplies. Each purchase adds one item to your inventory.";
   private static final String GOLD_SUFFIX = " gold.";
+  private static final String LOST_PREFIX = "Lost ";
   private final InventoryComponent inventoryData;
   private final ShopCatalog catalog;
   private final ShopService service;
@@ -65,9 +66,6 @@ public class ShopDisplay extends UIComponent implements ShopView {
   private Table root;
   private ScrollPane productScroll;
   private ScrollPane casinoScroll;
-  private CoinFlipPanel casinoPanel;
-  private ItemDrawPanel itemPanel;
-  private ScrollPane itemScroll;
   private Table casinoContent;
   private final Map<CasinoGame, CasinoView> casinoGames = new EnumMap<>(CasinoGame.class);
   private CasinoGame selectedGame = CasinoGame.COIN_FLIP;
@@ -360,7 +358,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
       ResourceService resources,
       ItemGambleConfig gambleConfig,
       CoinFlipPanel.Appearance appearance) {
-    casinoPanel =
+    CoinFlipPanel casinoPanel =
         new CoinFlipPanel(
             new CoinFlipGame(inventoryData, MathUtils::randomBoolean),
             resources.getAsset(GOLD_TEXTURE, Texture.class),
@@ -369,7 +367,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
               feedback.setText(
                   outcome.won()
                       ? "Won " + outcome.stake() + GOLD_SUFFIX
-                      : "Lost " + outcome.stake() + GOLD_SUFFIX);
+                      : LOST_PREFIX + outcome.stake() + GOLD_SUFFIX);
               entity.getEvents().trigger("coinFlipResolved", outcome.won(), outcome.stake());
               refresh();
             });
@@ -377,7 +375,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
     casinoScroll.setScrollingDisabled(true, false);
     casinoScroll.setFadeScrollBars(false);
     casinoScroll.setVisible(false);
-    itemPanel =
+    ItemDrawPanel itemPanel =
         new ItemDrawPanel(
             inventoryData,
             gambleConfig,
@@ -396,7 +394,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
               entity.getEvents().trigger("itemGambleResolved", outcome);
               refresh();
             });
-    itemScroll = new ScrollPane(itemPanel);
+    ScrollPane itemScroll = new ScrollPane(itemPanel);
     itemScroll.setName("item-draw-scroll");
     itemScroll.setScrollingDisabled(true, false);
     itemScroll.setFadeScrollBars(false);
@@ -444,7 +442,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
     casinoContent.setVisible(false);
   }
 
-  /** Creates Sumith's Dice Duel, Rock-Paper-Scissors and Scratch Card panels. */
+  /** Creates Dice Duel, Rock-Paper-Scissors and Scratch Card panels. */
   private void createMinigamePanels(CoinFlipPanel.Appearance appearance) {
     DiceDuelPanel dicePanel =
         new DiceDuelPanel(
@@ -455,7 +453,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
                   switch (outcome.result()) {
                     case WIN -> "Won " + (outcome.stake() + outcome.bonus()) + GOLD_SUFFIX;
                     case TIE -> "Tie. Your stake was returned.";
-                    case LOSE -> "Lost " + outcome.stake() + GOLD_SUFFIX;
+                    case LOSE -> LOST_PREFIX + outcome.stake() + GOLD_SUFFIX;
                   });
               entity.getEvents().trigger("diceDuelResolved", outcome);
               refresh();
@@ -478,7 +476,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
                   switch (outcome.result()) {
                     case WIN -> "Won " + outcome.stake() + GOLD_SUFFIX;
                     case TIE -> "Drawn match. Your stake was returned.";
-                    case LOSE -> "Lost " + outcome.stake() + GOLD_SUFFIX;
+                    case LOSE -> LOST_PREFIX + outcome.stake() + GOLD_SUFFIX;
                   });
               entity.getEvents().trigger("rockPaperScissorsResolved", outcome);
               refresh();

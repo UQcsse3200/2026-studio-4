@@ -2,6 +2,7 @@ package com.csse3200.game.components.shop;
 
 import com.csse3200.game.components.player.InventoryComponent;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.IntSupplier;
 import java.util.random.RandomGenerator;
@@ -163,21 +164,21 @@ public final class ScratchCardGame {
         matched = symbol;
       }
     }
-    int payout;
-    Result result;
-    if (matches == SPOTS) {
-      result = Result.JACKPOT;
-      payout = cardStake * matched.multiplier();
-    } else if (matches == 2) {
-      result = Result.PAIR;
-      payout = cardStake * TWO_MATCH_REFUND_PERCENT / 100;
-    } else {
-      result = Result.NO_MATCH;
-      payout = 0;
-    }
+    Result result =
+        switch (matches) {
+          case SPOTS -> Result.JACKPOT;
+          case 2 -> Result.PAIR;
+          default -> Result.NO_MATCH;
+        };
+    int payout =
+        switch (result) {
+          case JACKPOT -> cardStake * matched.multiplier();
+          case PAIR -> cardStake * TWO_MATCH_REFUND_PERCENT / 100;
+          case NO_MATCH -> 0;
+        };
     inventory.addGold(payout);
     refresh();
-    return new CardOutcome(result, matched, payout, cardStake, finished);
+    return new CardOutcome(result, matched, payout, cardStake, List.of(finished));
   }
 
   private Symbol pickSymbol() {
@@ -238,5 +239,5 @@ public final class ScratchCardGame {
    * @param symbols the three symbols on the card
    */
   public record CardOutcome(
-      Result result, Symbol matched, int payout, int stake, Symbol[] symbols) {}
+      Result result, Symbol matched, int payout, int stake, List<Symbol> symbols) {}
 }

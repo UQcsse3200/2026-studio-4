@@ -148,7 +148,7 @@ public final class ScratchCardPanel extends Table {
 
   private void showOutcome(ScratchCardGame.CardOutcome outcome) {
     for (int i = 0; i < spots.length; i++) {
-      spots[i].setText(outcome.symbols()[i].label());
+      spots[i].setText(outcome.symbols().get(i).label());
     }
     result.setText(
         switch (outcome.result()) {
