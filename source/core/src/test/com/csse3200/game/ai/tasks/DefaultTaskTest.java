@@ -14,7 +14,6 @@ class DefaultTaskTest {
   @Test
   void shouldHaveCorrectStatus() {
     DefaultTask task = spy(DefaultTask.class);
-    Entity entity = new Entity();
     assertEquals(Status.INACTIVE, task.getStatus());
 
     task.start();
