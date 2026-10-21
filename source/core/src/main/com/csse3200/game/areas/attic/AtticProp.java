@@ -75,7 +75,7 @@ public enum AtticProp {
   record Region(String sheet, int x, int y, int width, int height) {}
 
   /** The less common behaviours a prop can have. Ordinary furniture has {@link #NONE}. */
-  record Traits(int sliceWidth, boolean floor, Color glow) {
+  record Traits(int sliceWidth, boolean hasFloor, Color glow) {
     static final Traits NONE = new Traits(0, false, null);
     static final Traits FLOOR = new Traits(0, true, null);
 
@@ -187,7 +187,7 @@ public enum AtticProp {
 
   /** Whether the prop lies flat on the floor (drawn under all standing entities). */
   public boolean isFloorCovering() {
-    return traits.floor();
+    return traits.hasFloor();
   }
 
   /** Glow colour for magical props, or null for ordinary furniture. */

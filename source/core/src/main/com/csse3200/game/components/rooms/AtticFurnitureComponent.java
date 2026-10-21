@@ -87,15 +87,14 @@ public class AtticFurnitureComponent extends EntityManagerComponent {
             : new PropRenderComponent(region, elevation, prop.isFloorCovering());
 
     Entity entity = new Entity().addComponent(renderer);
-    float width = AtticSprites.toWorld((float) prop.drawnWidth(lengthTiles));
-    entity.setScale(width, AtticSprites.toWorld((float) prop.getHeight()));
+    float width = AtticSprites.toWorld(prop.drawnWidth(lengthTiles) * 1f);
+    entity.setScale(width, AtticSprites.toWorld(prop.getHeight() * 1f));
 
     if (prop.isSolid()) {
       // Box along the bottom of the sprite, in entity-local coordinates.
       Vector2 size =
           new Vector2(
-              width * prop.getColliderWidth(),
-              AtticSprites.toWorld((float) prop.getColliderHeight()));
+              width * prop.getColliderWidth(), AtticSprites.toWorld(prop.getColliderHeight() * 1f));
       entity
           .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
           .addComponent(
