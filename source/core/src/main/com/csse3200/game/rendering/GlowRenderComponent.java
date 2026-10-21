@@ -9,7 +9,7 @@ import com.csse3200.game.services.ServiceLocator;
 import java.util.function.BooleanSupplier;
 
 /**
- * A soft, slowly pulsing halo, used to mark the magical tomes in the library as interactable.
+ * A soft, slowly pulsing halo, used to mark the magical tomes in the attic as interactable.
  *
  * <p>Draws a circle of the given radius centred on {@code entity position + offset}, lifted by
  * {@code elevation} like a {@link PropRenderComponent}, and sorts just beneath a prop with the same

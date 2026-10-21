@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * The dungeon selection room is a dark attic library: a tileset room decorated with library props
+ * The dungeon selection room is a dark attic: a tileset room decorated with attic props
  * and lit by candles. Its layout must be consistent and fully reachable.
  */
 @ExtendWith(GameExtension.class)
@@ -37,7 +37,7 @@ class AtticRoomConfigTest {
 
   @Test
   void selectionRoomIsADarkAttic() {
-    assertEquals(AtticSprites.ATTIC_TILESET, RoomFactory.getTileSet(room));
+    assertEquals(AtticSprites.ATTIC_TILESET, RoomFactory.getTileSetFor(room));
     assertTrue(room.props.length > 0);
     assertEquals(room.mapHeight, grid.size());
     for (String row : grid) {
@@ -104,12 +104,12 @@ class AtticRoomConfigTest {
     }
   }
 
-  /** Floor in either a library room ('w', 'p', ...) or a tileset room (digits). */
+  /** Floor in either an attic room ('w', 'p', ...) or a tileset room (digits). */
   private static boolean isFloor(char c) {
     return AtticTerrain.isFloor(c) || Character.isDigit(c);
   }
 
-  /** Wall in either a library room ('#', 'W') or a tileset room ('#', '%'). */
+  /** Wall in either an attic room ('#', 'W') or a tileset room ('#', '%'). */
   private static boolean isWall(char c) {
     return AtticTerrain.isWall(c) || c == '%';
   }

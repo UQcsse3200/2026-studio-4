@@ -39,15 +39,15 @@ public class RoomFactory {
   public static final String DUNGEON4_TILESET = "images/dungeons/tileSet4.png";
   public static final String DUNGEON5_TILESET = "images/dungeons/tileSet5.png";
 
-  /** {@link RoomConfig#theme} value for home-library rooms such as dungeon selection. */
-  public static final String LIBRARY_THEME = "library";
+  /** {@link RoomConfig#theme} value for home-attic rooms such as dungeon selection. */
+  public static final String LIBRARY_THEME = "attic";
 
   private RoomFactory() {
     throw new IllegalStateException("Instantiating static utility class");
   }
 
   /** The tileset for a room: its own override if it has one, otherwise its dungeon's. */
-  public static String getTileSet(RoomConfig room) {
+  public static String getTileSetFor(RoomConfig room) {
     return room.tileset != null ? room.tileset : getTileSet(room.dungeonId);
   }
 
@@ -80,12 +80,12 @@ public class RoomFactory {
    * @return The room entity.
    */
   public static Entity createRoom(RoomConfig room, CameraComponent camera, boolean cleared) {
-    if (isLibrary(room)) {
-      return createLibraryRoom(room, camera);
+    if (isAttic(room)) {
+      return createAttic(room, camera);
     }
 
     GridPoint2 mapSize = new GridPoint2(room.mapWidth, room.mapHeight);
-    String tileset = getTileSet(room);
+    String tileset = getTileSetFor(room);
     TerrainBuilder terrainBuilder = new TerrainBuilder(camera, mapSize, tileset);
 
     spawnMap(room, terrainBuilder);
@@ -140,16 +140,16 @@ public class RoomFactory {
         .collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
-  /** Whether a room uses the home-library theme instead of a dungeon tileset. */
-  public static boolean isLibrary(RoomConfig room) {
+  /** Whether a room uses the attic theme instead of a dungeon tileset. */
+  public static boolean isAttic(RoomConfig room) {
     return LIBRARY_THEME.equals(room.theme);
   }
 
   /**
-   * Builds a home-library room: library floor and walls, furniture props, and exits drawn as their
+   * Builds an attic room: attic floor and walls, furniture props, and exits drawn as their
    * configured sprites (the dungeon tomes). Gameplay components match a dungeon room.
    */
-  private static Entity createLibraryRoom(RoomConfig room, CameraComponent camera) {
+  private static Entity createAttic(RoomConfig room, CameraComponent camera) {
     Entity entity = new Entity();
     if (room.darkness > 0f) {
       entity.addComponent(createLighting(room));

@@ -20,7 +20,7 @@ import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
 
 /**
- * Spawns a room's furniture props. In library-themed rooms it also gives every wall tile of the
+ * Spawns a room's furniture props. In attic-themed rooms it also gives every wall tile of the
  * spawn grid an invisible collider (in tileset rooms {@link ObstacleComponent} already does that).
  */
 public class AtticFurnitureComponent extends EntityManagerComponent {
@@ -31,7 +31,7 @@ public class AtticFurnitureComponent extends EntityManagerComponent {
   private final boolean wallColliders;
 
   /**
-   * @param room a library-themed room
+   * @param room an attic-themed room
    * @throws IllegalArgumentException if a prop names an unknown {@link AtticProp}
    */
   public AtticFurnitureComponent(RoomConfig room) {
@@ -40,7 +40,7 @@ public class AtticFurnitureComponent extends EntityManagerComponent {
 
   /**
    * @param room the room whose props to spawn
-   * @param wallColliders whether to add colliders for library wall characters ('#', 'W')
+   * @param wallColliders whether to add colliders for attic wall characters ('#', 'W')
    * @throws IllegalArgumentException if a prop names an unknown {@link AtticProp}
    */
   public AtticFurnitureComponent(RoomConfig room, boolean wallColliders) {

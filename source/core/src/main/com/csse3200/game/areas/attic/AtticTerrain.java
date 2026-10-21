@@ -15,7 +15,7 @@ import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
 
 /**
- * Builds the floor and wall terrain of a library-themed room from its {@code obstacles.spawns}
+ * Builds the floor and wall terrain of a attic-themed room from its {@code obstacles.spawns}
  * grid. Row 0 of the grid is the bottom of the room, as in every other room.
  *
  * <ul>
@@ -101,7 +101,7 @@ public final class AtticTerrain {
   }
 
   /**
-   * Builds the terrain component for a library room.
+   * Builds the terrain component for an attic room.
    *
    * @param grid the room's spawn grid (row 0 = bottom)
    * @param width map width in tiles

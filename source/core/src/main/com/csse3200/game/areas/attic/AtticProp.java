@@ -3,7 +3,7 @@ package com.csse3200.game.areas.attic;
 import com.badlogic.gdx.graphics.Color;
 
 /**
- * Furniture and ornaments that can be placed in a library room, keyed by the names used in {@code
+ * Furniture and ornaments that can be placed in an attic room, keyed by the names used in {@code
  * rooms.json} ({@code "prop"} on a room prop, {@code "sprite"} on an exit).
  *
  * <p>Each entry is a pixel rectangle on one of the {@link AtticSprites} sheets plus a collision
@@ -150,12 +150,12 @@ public enum AtticProp {
    */
   public static AtticProp fromName(String name) {
     if (name == null) {
-      throw new IllegalArgumentException("Library prop name is missing");
+      throw new IllegalArgumentException("Attic prop name is missing");
     }
     try {
       return valueOf(name);
     } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("Unknown library prop: " + name, e);
+      throw new IllegalArgumentException("Unknown attic prop: " + name, e);
     }
   }
 

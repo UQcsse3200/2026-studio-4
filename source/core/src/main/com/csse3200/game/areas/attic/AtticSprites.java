@@ -1,8 +1,8 @@
 package com.csse3200.game.areas.attic;
 
-/** Texture paths for the home-library art used by the dungeon selection room. */
+/** Texture paths for the attic art used by the dungeon selection room. */
 public final class AtticSprites {
-  /** Width and height of one tile on every library sheet, in pixels. */
+  /** Width and height of one tile on every attic sheet, in pixels. */
   public static final int TILE_PIXELS = 16;
 
   /** Pixels per world unit. A terrain tile is 0.5 world units, so 16px tiles draw at 32px/unit. */
@@ -31,7 +31,7 @@ public final class AtticSprites {
     throw new IllegalStateException("Instantiating static util class");
   }
 
-  /** Every texture a library room needs, for loading through the resource service. */
+  /** Every texture a attic room needs, for loading through the resource service. */
   public static String[] paths() {
     return ALL.clone();
   }

@@ -12,7 +12,7 @@ public class RoomConfig {
 
   /**
    * Visual theme. {@code null} (the default) builds a dungeon room from its tileset; {@code
-   * "library"} builds a home-library room with floor/wall characters and {@link #props}.
+   * "attic"} builds a home-attic room with floor/wall characters and {@link #props}.
    */
   public String theme;
 

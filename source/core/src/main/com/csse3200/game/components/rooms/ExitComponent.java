@@ -187,7 +187,7 @@ public class ExitComponent extends EntityManagerComponent {
   }
 
   /**
-   * Draws an exit as a library prop (e.g. a dungeon tome on the reading table). Magical props get a
+   * Draws an exit as a attic prop (e.g. a dungeon tome on the reading table). Magical props get a
    * pulsing halo in their colour; the final tome's halo only lights once the other dungeons are
    * cleared, mirroring the lock in {@link #onExitRequest}.
    */
