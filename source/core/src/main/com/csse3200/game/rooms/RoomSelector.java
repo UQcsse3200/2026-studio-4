@@ -12,6 +12,7 @@ import com.csse3200.game.components.rooms.RoomDataComponent;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.components.rooms.configs.RoomConfig;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,24 @@ public class RoomSelector {
   public void start() {
     setRoom(roomLoader.getStartingRoom(), roomLoader.getStartingSpawn());
 
+    ServiceLocator.getEntityService().register(player);
+  }
+
+  /**
+   * Alternative entry point to the game if starting from a save file
+   *
+   * @param roomId room to create/start at
+   * @param worldX player x position to spawn at
+   * @param worldY player y position to spawn at
+   */
+  public void startAt(String roomId, float worldX, float worldY) {
+    Entity savedRoom =
+        roomLoader.getRoom(roomId, ServiceLocator.getRoomClearService().isRoomCleared(roomId));
+
+    setRoom(savedRoom, new GridPoint2());
+
+    // need to reset player pos bc save doesn't use world tile position
+    player.setPosition(worldX, worldY);
     ServiceLocator.getEntityService().register(player);
   }
 

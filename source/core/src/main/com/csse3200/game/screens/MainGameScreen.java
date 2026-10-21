@@ -13,7 +13,6 @@ import com.csse3200.game.components.gamearea.TimerDisplay;
 import com.csse3200.game.components.maingame.*;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.rooms.RoomAssets;
-import com.csse3200.game.components.rooms.RoomManager;
 import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -38,6 +37,7 @@ import com.csse3200.game.rooms.MusicManager;
 import com.csse3200.game.rooms.RoomClearService;
 import com.csse3200.game.rooms.RoomCommand;
 import com.csse3200.game.rooms.RoomSelector;
+import com.csse3200.game.saving.RunSaveState;
 import com.csse3200.game.services.*;
 import com.csse3200.game.ui.UiScale;
 import com.csse3200.game.ui.terminal.Terminal;
@@ -66,7 +66,6 @@ public class MainGameScreen extends ScreenAdapter {
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
-  private RoomManager roomManager = null; // Will be removed in the future
   private RoomSelector roomSelector;
   private Entity player;
   private final Terminal terminal;
@@ -106,7 +105,6 @@ public class MainGameScreen extends ScreenAdapter {
 
     // load all game services
     logger.debug("Initialising main game screen services");
-    ServiceLocator.registerTimeSource(new GameTime());
     PhysicsService physicsService = new PhysicsService();
     ServiceLocator.registerPhysicsService(physicsService);
     physicsEngine = physicsService.getPhysics();
@@ -131,14 +129,19 @@ public class MainGameScreen extends ScreenAdapter {
     player.getEvents().addListener("winScreenRequested", () -> winScreenRequested = true);
 
     roomSelector = new RoomSelector(player, renderer.getCamera());
-    roomSelector.start();
-
-    // Unsure of how this interacts with current roomSelector implementation
-    if (loadedSave != null) {
-      GameSaveMapper.restore(player, loadedSave);
+    RunSaveState.reset();
+    if (loadedSave != null && loadedSave.resumePosition != null) {
+      GameSaveMapper.restore(player, loadedSave, loadAtCheckpoint);
       GameSaveMapper.restoreAchievements(loadedSave);
-    }
+      GameSaveMapper.restoreRoomClears(loadedSave);
+      roomSelector.startAt(
+          loadedSave.resumePosition.roomId,
+          loadedSave.resumePosition.x,
+          loadedSave.resumePosition.y);
 
+    } else {
+      roomSelector.start();
+    }
     createUI();
   }
 
@@ -194,15 +197,20 @@ public class MainGameScreen extends ScreenAdapter {
     }
 
     // This should all just be one function call GameSave.save();
-    if (saveOnDispose && !runSaved && player != null && roomManager != null) {
+    if (saveOnDispose && !runSaved && player != null && roomSelector != null) {
       runSaved = true;
       try {
         runTimer.stopDungeon();
-        GameSaveData save =
-            GameSaveMapper.capture(
-                player, roomManager.getCheckpointData(), roomManager.getResumePositionData());
+        GameSaveData save = GameSaveMapper.capture(player);
+        GameSaveData.ResumePosition resume = new GameSaveData.ResumePosition();
+        resume.roomId = RunSaveState.getCurrentRoomId();
+        resume.x = player.getPosition().x;
+        resume.y = player.getPosition().y;
+        save.resumePosition = resume;
+
         save.playTimeSeconds = runTimer.getTotalTime();
         save.dungeonTimesSeconds.putAll(runTimer.getDungeonTimes());
+
         FileLoader.save(save, saveSlot);
       } catch (RuntimeException exception) {
         logger.error("Failed to save game data for slot {}", saveSlot, exception);
