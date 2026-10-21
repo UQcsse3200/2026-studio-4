@@ -40,9 +40,11 @@ import org.slf4j.LoggerFactory;
  */
 public class SettingsMenuDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(SettingsMenuDisplay.class);
-  private static final String DEFAULT_HINT = "Apply saves these options. Exit leaves them unchanged.";
+  private static final String DEFAULT_HINT =
+      "Apply saves these options. Exit leaves them unchanged.";
   private static final int MIN_FPS = 15;
   private static final int MAX_FPS = 1000;
+
   /** Resolutions whose aspect ratio differs from the monitor by more than this are hidden. */
   private static final float ASPECT_TOLERANCE = 0.02f;
 
@@ -211,8 +213,7 @@ public class SettingsMenuDisplay extends UIComponent {
     rememberLoadedSelection();
 
     form.section(
-            "Display",
-            "Resolution applies in fullscreen. Window size applies when fullscreen is off.");
+        "Display", "Resolution applies in fullscreen. Window size applies when fullscreen is off.");
     form.row("FPS cap", fpsText);
     form.row("Fullscreen", fullScreenCheck);
     form.row("VSync", vsyncCheck);
@@ -227,7 +228,7 @@ public class SettingsMenuDisplay extends UIComponent {
     muteUnfocusedCheck = new CheckBox("", skin);
     muteUnfocusedCheck.setChecked(settings.muteUnfocused);
     form.section(
-            "Audio", "Music during a run follows Apply. Effects use the new volume on the next sound.");
+        "Audio", "Music during a run follows Apply. Effects use the new volume on the next sound.");
     form.percent("Music", musicSlider);
     form.percent("Effects", soundSlider);
     form.row("Mute in background", muteUnfocusedCheck);
@@ -245,8 +246,8 @@ public class SettingsMenuDisplay extends UIComponent {
     bestRunLabel = new Label(GameProgress.formatTime(save.bestRunMs), skin);
     resetStatusLabel = new Label("", skin);
     form.section(
-            "Run history",
-            "Last and best time on this computer. Achievements stay with save and load.");
+        "Run history",
+        "Last and best time on this computer. Achievements stay with save and load.");
     form.row("Last run", lastRunLabel);
     form.row("Best run", bestRunLabel);
     form.row("Saved on this computer", resetStatusLabel);
@@ -258,14 +259,14 @@ public class SettingsMenuDisplay extends UIComponent {
   private TextButton resetTimesButton() {
     TextButton resetSaveBtn = new TextButton("Reset times", skin);
     resetSaveBtn.addListener(
-            new ChangeListener() {
-              @Override
-              public void changed(ChangeEvent changeEvent, Actor actor) {
-                GameProgress.clearSave();
-                refreshProgressLabel();
-                resetStatusLabel.setText("Run times cleared.");
-              }
-            });
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            GameProgress.clearSave();
+            refreshProgressLabel();
+            resetStatusLabel.setText("Run times cleared.");
+          }
+        });
     return resetSaveBtn;
   }
 
@@ -303,8 +304,7 @@ public class SettingsMenuDisplay extends UIComponent {
           sameSize = stringMode;
         }
       }
-      long gap =
-              Math.abs((long) active.width * active.height - (long) mode.width * mode.height);
+      long gap = Math.abs((long) active.width * active.height - (long) mode.width * mode.height);
       if (gap < closestGap) {
         closestGap = gap;
         closest = stringMode;
@@ -358,7 +358,7 @@ public class SettingsMenuDisplay extends UIComponent {
    */
   private TextField.TextFieldStyle readableField() {
     TextField.TextFieldStyle style =
-            new TextField.TextFieldStyle(skin.get(TextField.TextFieldStyle.class));
+        new TextField.TextFieldStyle(skin.get(TextField.TextFieldStyle.class));
     Color ink = skin.getColor("black");
     style.fontColor = ink;
     style.cursor = skin.newDrawable("white", ink);
@@ -373,7 +373,7 @@ public class SettingsMenuDisplay extends UIComponent {
    */
   private <T> SelectBox<T> readableSelect() {
     SelectBox.SelectBoxStyle style =
-            new SelectBox.SelectBoxStyle(skin.get(SelectBox.SelectBoxStyle.class));
+        new SelectBox.SelectBoxStyle(skin.get(SelectBox.SelectBoxStyle.class));
     style.fontColor = skin.getColor("black");
     return new SelectBox<>(style);
   }
@@ -383,22 +383,22 @@ public class SettingsMenuDisplay extends UIComponent {
     TextButton applyBtn = new TextButton("Apply", skin);
 
     exitBtn.addListener(
-            new ChangeListener() {
-              @Override
-              public void changed(ChangeEvent changeEvent, Actor actor) {
-                logger.debug("Exit button clicked");
-                exitMenu();
-              }
-            });
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            logger.debug("Exit button clicked");
+            exitMenu();
+          }
+        });
 
     applyBtn.addListener(
-            new ChangeListener() {
-              @Override
-              public void changed(ChangeEvent changeEvent, Actor actor) {
-                logger.debug("Apply button clicked");
-                applyChanges();
-              }
-            });
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            logger.debug("Apply button clicked");
+            applyChanges();
+          }
+        });
 
     Table table = new Table();
     table.add(exitBtn).expandX().left().pad(0f, 15f, 15f, 0f);
@@ -569,7 +569,7 @@ public class SettingsMenuDisplay extends UIComponent {
    * @return whether the two modes match
    */
   private static boolean sameMode(
-          StringDecorator<DisplayMode> first, StringDecorator<DisplayMode> second) {
+      StringDecorator<DisplayMode> first, StringDecorator<DisplayMode> second) {
     if (first == second) {
       return true;
     }

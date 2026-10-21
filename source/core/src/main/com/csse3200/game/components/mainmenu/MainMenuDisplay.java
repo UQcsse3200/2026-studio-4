@@ -139,15 +139,15 @@ public class MainMenuDisplay extends UIComponent {
    */
   private void layoutMenu() {
     logger.info(
-            "Menu layout: stage {}x{}, window {}x{}, backbuffer {}x{}, desktop {}x{}",
-            stage.getWidth(),
-            stage.getHeight(),
-            Gdx.graphics.getWidth(),
-            Gdx.graphics.getHeight(),
-            Gdx.graphics.getBackBufferWidth(),
-            Gdx.graphics.getBackBufferHeight(),
-            Gdx.graphics.getDisplayMode().width,
-            Gdx.graphics.getDisplayMode().height);
+        "Menu layout: stage {}x{}, window {}x{}, backbuffer {}x{}, desktop {}x{}",
+        stage.getWidth(),
+        stage.getHeight(),
+        Gdx.graphics.getWidth(),
+        Gdx.graphics.getHeight(),
+        Gdx.graphics.getBackBufferWidth(),
+        Gdx.graphics.getBackBufferHeight(),
+        Gdx.graphics.getDisplayMode().width,
+        Gdx.graphics.getDisplayMode().height);
     float stageW = stage.getWidth();
     float stageH = stage.getHeight();
     laidOutWidth = stageW;
