@@ -4,11 +4,14 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Moves a homing orb with limited turning speed and a finite lifetime. */
 public class ThunderOrbMovementComponent extends Component {
   public static final String EXPIRED = "thunderOrbExpired";
+  public static final String BLOCKED = "thunderOrbBlocked";
 
   private final Entity target;
   private final float speed;
@@ -71,7 +74,21 @@ public class ThunderOrbMovementComponent extends Component {
     float stepTime = Math.min(delta, remaining);
 
     turnTowardsTarget(stepTime);
-    entity.setPosition(entity.getPosition().mulAdd(direction, speed * stepTime));
+
+    Vector2 displacement = direction.cpy().scl(speed * stepTime);
+    Vector2 from = entity.getCenterPosition();
+    Vector2 to = from.cpy().add(displacement);
+
+    if (!displacement.isZero()
+        && ServiceLocator.getPhysicsService()
+            .getPhysics()
+            .raycast(from, to, PhysicsLayer.OBSTACLE, new RaycastHit())) {
+      stop();
+      entity.getEvents().trigger(BLOCKED);
+      return;
+    }
+
+    entity.setPosition(entity.getPosition().add(displacement));
 
     age += stepTime;
     if (delta >= remaining) {

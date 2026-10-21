@@ -31,7 +31,8 @@ class FloatingDemonProjectileFactoryTest {
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/floatingDemon.atlas"});
+    resourceService.loadTextureAtlases(
+        new String[] {"images/flying-enemy/floating-demon-projectile.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }

@@ -1,0 +1,13 @@
+{
+  "speakers": [
+    { "id": "board", "name": "Notice Board", "texture": "images/tutorial/sign.png" }
+  ],
+  "lines": [
+    { "speaker": "board", "text": "MOVE: W, A, S and D. DASH: SPACE gives a quick burst in the direction you are moving, then needs a moment to recharge." },
+    { "speaker": "board", "text": "INTERACT: E talks to people, reads boards, picks up loot and steps through doorways." },
+    { "speaker": "board", "text": "BAG: I opens your inventory. TAB picks the next potion and Q uses the one you have picked." },
+    { "speaker": "board", "text": "WEAPONS: 1 is the sword, 2 the knife, 3 the bow. J is a quick attack and K is a heavy attack." },
+    { "speaker": "board", "text": "ABILITIES: Hecate lets you carry one gift at a time. Once you have chosen, L uses it." },
+    { "speaker": "board", "text": "Head east for melee practice, north for archery, and north-east to practise dodging and dashing." }
+  ]
+}

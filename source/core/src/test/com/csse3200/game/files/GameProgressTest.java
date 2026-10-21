@@ -41,6 +41,25 @@ class GameProgressTest {
     SaveData slower = GameProgress.get();
     assertEquals(45_000L, slower.lastRunMs);
     assertEquals(30_000L, slower.bestRunMs);
+
+    GameProgress.recordRun(10_000L, false);
+    SaveData unfinished = GameProgress.get();
+    assertEquals(10_000L, unfinished.lastRunMs);
+    assertEquals(30_000L, unfinished.bestRunMs);
+  }
+
+  @Test
+  void unfinishedRunDoesNotReplaceBest() {
+    GameProgress.recordRun(90_000L);
+    GameProgress.recordRun(10_000L, false);
+    SaveData abandoned = GameProgress.get();
+    assertEquals(10_000L, abandoned.lastRunMs);
+    assertEquals(90_000L, abandoned.bestRunMs);
+
+    GameProgress.recordRun(0L);
+    SaveData empty = GameProgress.get();
+    assertEquals(0L, empty.lastRunMs);
+    assertEquals(90_000L, empty.bestRunMs);
   }
 
   @Test

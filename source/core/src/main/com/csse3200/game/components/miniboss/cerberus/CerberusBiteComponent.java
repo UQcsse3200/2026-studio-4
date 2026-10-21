@@ -49,12 +49,14 @@ public class CerberusBiteComponent extends Component {
 
   @Override
   public void update() {
+    // cancel the attack if either entity is dead
     if (combatStats.isDead() || targetStats == null || targetStats.isDead()) {
       cancel();
       return;
     }
     float delta = Math.max(0f, ServiceLocator.getTimeSource().getDeltaTime());
 
+    // update the current state
     switch (state) {
       case READY:
         if (canStartAttack() && (attackCoordinator == null || attackCoordinator.tryStart(entity))) {
@@ -105,9 +107,8 @@ public class CerberusBiteComponent extends Component {
   }
 
   /**
-   * Applies attack movement before normal pursuit.
-   *
-   * @return true when the attack owns movement for this frame
+   * Applies attack movement before normal pursuit,return true when the attack owns movement for
+   * this frame*
    */
   public boolean controlMovement(PhysicsMovementComponent movement) {
     if (combatStats.isDead()) {

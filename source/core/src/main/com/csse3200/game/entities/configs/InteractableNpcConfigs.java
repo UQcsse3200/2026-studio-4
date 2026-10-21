@@ -46,6 +46,11 @@ public class InteractableNpcConfigs {
       require(
           npc.atlas != null || npc.texture != null,
           "Friendly NPC needs an atlas or a texture: " + npc.id);
+      if (npc.teleportOffer != null) {
+        require(
+            notBlank(npc.teleportOffer.roomId) && notBlank(npc.teleportOffer.entryPointId),
+            "Friendly NPC teleport offer needs a roomId and entryPointId: " + npc.id);
+      }
     }
     for (InteractableNpcConfig npc : npcs) {
       for (String required : npc.requiresCompleted) {
@@ -55,6 +60,10 @@ public class InteractableNpcConfigs {
         require(!npc.id.equals(required), "Friendly NPC requires itself: " + npc.id);
       }
     }
+  }
+
+  private static boolean notBlank(String text) {
+    return text != null && !text.isBlank();
   }
 
   private void require(boolean condition, String message) {

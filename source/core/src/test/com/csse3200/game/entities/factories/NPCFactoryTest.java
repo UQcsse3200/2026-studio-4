@@ -45,6 +45,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class NPCFactoryTest {
+  private final Vector2 spawnPoints = new Vector2(10, 10);
 
   @BeforeEach
   void beforeEach() {
@@ -61,14 +62,18 @@ class NPCFactoryTest {
     ResourceService resourceService = new ResourceService();
     resourceService.loadTextureAtlases(
         new String[] {
-          "images/beetle.atlas",
-          "images/crab.atlas",
-          "images/cyclops.atlas",
-          "images/floatingDemon.atlas",
-          "images/golem.atlas",
-          "images/medusa.atlas",
-          "images/mummy.atlas",
-          "images/snake.atlas"
+          "images/bomb-enemy/beetle.atlas",
+          "images/split-enemy/crab.atlas",
+          "images/giant-enemy/cyclops.atlas",
+          "images/flying-enemy/floating-demon-projectile.atlas",
+          "images/flying-enemy/jingwei.atlas",
+          "images/bomb-enemy/golem.atlas",
+          "images/bomb-enemy/knight.atlas",
+          "images/giant-enemy/jotunn.atlas",
+          "images/flying-enemy/crow.atlas",
+          "images/split-enemy/medusa.atlas",
+          "images/giant-enemy/mummy.atlas",
+          "images/snake-miniboss/snake.atlas"
         });
     resourceService.loadTextures(new String[] {SnakePlayerHitVisualComponent.HIT_SHEET});
     resourceService.loadTextures(SnakePoisonAssets.paths());
@@ -84,19 +89,19 @@ class NPCFactoryTest {
 
   @Test
   void giantEnemyHasHealthBar() {
-    Entity enemy = NPCFactory.createGiantEnemy(new Entity(), "images/mummy.atlas");
+    Entity enemy = NPCFactory.createGiantEnemy(new Entity(), "images/giant-enemy/mummy.atlas");
     assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
   }
 
   @Test
   void bombEnemyHasHealthBar() {
-    Entity enemy = NPCFactory.createBombEnemy(new Entity(), "images/beetle.atlas", 2f);
+    Entity enemy = NPCFactory.createBombEnemy(new Entity(), "images/bomb-enemy/beetle.atlas", 2f);
     assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
   }
 
   @Test
   void chaseEnemyHasHealthBar() {
-    Entity enemy = NPCFactory.createChaseEnemy(new Entity(), true, "images/crab.atlas");
+    Entity enemy = NPCFactory.createChaseEnemy(new Entity(), true, "images/split-enemy/crab.atlas");
     assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
   }
 
@@ -332,14 +337,72 @@ class NPCFactoryTest {
   }
 
   @Test
+  void jingweiShouldPatrolFromItsAssignedSpawnPosition() {
+    Entity target = new Entity();
+    target.setPosition(100f, 100f);
+
+    Entity jingwei = NPCFactory.createJingwei(target, spawnPoints);
+
+    jingwei
+        .getComponent(com.csse3200.game.components.npc.FlyingEnemyPatrolComponent.class)
+        .create();
+
+    // Simulate displacement before the first patrol update.
+    jingwei.setPosition(30f, 40f);
+    jingwei.getComponent(AITaskComponent.class).update();
+
+    assertEquals(
+        new Vector2(8f, 10f),
+        jingwei
+            .getComponent(com.csse3200.game.physics.components.PhysicsMovementComponent.class)
+            .getTarget());
+  }
+
+  @Test
+  void knightShouldKeepItsScaleAndExplosionComponent() {
+    Entity knight = NPCFactory.createKnight(new Entity());
+
+    assertEquals(0.75f, knight.getScale().x, 0.001f);
+    assertEquals(1f, knight.getScale().y, 0.001f);
+    assertNotNull(knight.getComponent(com.csse3200.game.components.ExplodeComponent.class));
+    assertNotNull(knight.getComponent(CombatStatsComponent.class));
+    assertNotNull(knight.getComponent(EnemyStatDisplay.class));
+  }
+
+  @Test
+  void jotunnShouldKeepItsScaleAndContactAttack() {
+    Entity jotunn = NPCFactory.createJotunn(new Entity());
+
+    assertEquals(3f, jotunn.getScale().x, 0.001f);
+    assertEquals(3f, jotunn.getScale().y, 0.001f);
+    assertNotNull(jotunn.getComponent(TouchAttackComponent.class));
+    assertNotNull(jotunn.getComponent(CombatStatsComponent.class));
+    assertNotNull(jotunn.getComponent(EnemyStatDisplay.class));
+  }
+
+  @Test
+  void crowShouldKeepPatrolOriginAfterDisplacement() {
+    Entity target = new Entity();
+    target.setPosition(100f, 100f);
+
+    Entity crow = NPCFactory.createCrow(target, spawnPoints);
+
+    crow.getComponent(com.csse3200.game.components.npc.FlyingEnemyPatrolComponent.class).create();
+
+    // Displacement before the first patrol must not change its origin.
+    crow.setPosition(30f, 40f);
+    crow.getComponent(AITaskComponent.class).update();
+
+    assertEquals(
+        new Vector2(8f, 10f),
+        crow.getComponent(com.csse3200.game.physics.components.PhysicsMovementComponent.class)
+            .getTarget());
+  }
+
+  @Test
   void floatingDemonHasHealthBar() {
-    Entity enemy =
-        NPCFactory.createFloatingDemon(
-            new Entity(),
-            new Vector2(0f, 0f),
-            new Vector2(1f, 1f),
-            new Vector2(2f, 0f),
-            "images/floatingDemon.atlas");
+    Entity enemy;
+    enemy = NPCFactory.createJingwei(new Entity(), spawnPoints);
     assertNotNull(enemy.getComponent(EnemyStatDisplay.class));
   }
 

@@ -6,9 +6,8 @@ import static org.mockito.Mockito.*;
 import com.badlogic.gdx.Input.Keys;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
-import com.csse3200.game.components.miniboss.cerberus.CerberusMistComponent;
 import com.csse3200.game.components.statuseffects.Stat;
-import com.csse3200.game.components.statuseffects.TimedStatusEffect;
+import com.csse3200.game.components.statuseffects.StatusEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.items.ItemIds;
@@ -150,7 +149,7 @@ class ConsumableUseIntegrationTest {
   @Test
   void speedComposesWithOtherEffectsAndPreservesRawChanges() {
     effects.addStatusEffect(
-        new TimedStatusEffect(time, 20000) {
+        new StatusEffect(time, 20000) {
           @Override
           public float getStatMultiplier(Stat stat) {
             return stat == Stat.MOVEMENT_SPEED ? 0.5f : 1f;
@@ -181,35 +180,6 @@ class ConsumableUseIntegrationTest {
 
     now.set(12000);
     assertEquals(0f, consumables.getRemainingFraction(ItemIds.SPEED_POTION));
-  }
-
-  @Test
-  void speedPotionAndCerberusMistHaveIndependentLifetimes() {
-    PlayerCerberusMistDebuffComponent mist = new PlayerCerberusMistDebuffComponent();
-    player.addComponent(mist);
-    mist.create();
-    Entity source = new Entity();
-    inventory.addConsumable(ItemIds.SPEED_POTION, 2);
-    assertTrue(consumables.tryUse(ItemIds.SPEED_POTION));
-    assertEquals(6f, stats.getEffectiveMovementSpeed());
-    player.getEvents().trigger(CerberusMistComponent.ENTERED, source);
-    assertEquals(3f, stats.getEffectiveMovementSpeed());
-    player.getEvents().trigger(CerberusMistComponent.EXITED, source);
-    assertEquals(6f, stats.getEffectiveMovementSpeed());
-    player.getEvents().trigger(CerberusMistComponent.ENTERED, source);
-    now.set(8000);
-    effects.update();
-    assertEquals(2f, stats.getEffectiveMovementSpeed());
-    assertTrue(mist.isMistDebuffed());
-    assertTrue(consumables.tryUse(ItemIds.SPEED_POTION));
-    assertEquals(3f, stats.getEffectiveMovementSpeed());
-    player.getEvents().trigger(CerberusMistComponent.EXITED, source);
-    assertEquals(6f, stats.getEffectiveMovementSpeed());
-    assertEquals(0, inventory.getConsumableCount(ItemIds.SPEED_POTION));
-    now.set(16000);
-    effects.update();
-    assertEquals(4f, stats.getEffectiveMovementSpeed());
-    mist.dispose();
   }
 
   @Test

@@ -104,6 +104,9 @@ public class SnakeBurrowComponent extends Component {
     }
     orbitAngle = entity.getCenterPosition().sub(target.getCenterPosition()).angleDeg();
     initialiseBurrowFootprint();
+    if (visual != null) {
+      visual.setDustArena(arena);
+    }
     beginBurrowing();
   }
 
@@ -207,7 +210,7 @@ public class SnakeBurrowComponent extends Component {
         .ifPresent(this::setGroundCentre);
     if (visual != null) {
       visual.hideWarning();
-      visual.startBurrow(entity.getCenterPosition());
+      visual.startBurrow(groundCentre(entity.getCenterPosition()));
     }
   }
 
@@ -261,7 +264,7 @@ public class SnakeBurrowComponent extends Component {
     if (trailTime >= TRAIL_INTERVAL) {
       trailTime = 0f;
       if (visual != null) {
-        visual.addTrail(entity.getCenterPosition());
+        visual.addTrail(groundCentre(entity.getCenterPosition()));
       }
     }
     if (stateTime >= config.undergroundDuration && !navigator.isDetouring()) {
@@ -316,7 +319,7 @@ public class SnakeBurrowComponent extends Component {
     setUnderground(false);
     if (visual != null) {
       visual.hideWarning();
-      visual.startEmergence(warningCentre);
+      visual.startEmergence(groundCentre(warningCentre));
     }
     CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
     if (targetStats != null

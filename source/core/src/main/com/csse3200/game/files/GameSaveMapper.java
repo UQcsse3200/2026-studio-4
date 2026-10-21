@@ -10,6 +10,7 @@ import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.items.charms.*;
+import com.csse3200.game.rooms.RoomClearService;
 import com.csse3200.game.services.AchievementService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -65,6 +66,12 @@ public final class GameSaveMapper {
       save.unlockedAchievements.addAll(achievementService.getUnlockedAchievementNames());
 
       save.achievementProgress.putAll(achievementService.getAchievementProgress());
+    }
+
+    RoomClearService clears = ServiceLocator.getRoomClearService();
+    if (clears != null) {
+      save.clearedRoomIds.addAll(clears.getClearedRoomIds());
+      save.clearedDungeonIds.addAll(clears.getClearedDungeonIds());
     }
 
     return save;
@@ -226,6 +233,14 @@ public final class GameSaveMapper {
 
     if (achievementService != null) {
       achievementService.restoreState(save.unlockedAchievements, save.achievementProgress);
+    }
+  }
+
+  public static void restoreRoomClears(GameSaveData save) {
+    if (save == null) return;
+    RoomClearService clears = ServiceLocator.getRoomClearService();
+    if (clears != null) {
+      clears.restoreState(save.clearedRoomIds, save.clearedDungeonIds);
     }
   }
 

@@ -41,8 +41,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class SnakeBurrowRoomTraversalTest {
   private static final float TILE_SIZE = 0.5f;
-  private static final Vector2 GROUND_HALF_SIZE = new Vector2(0.9f, 0.4f);
-  private static final Vector2 GROUND_OFFSET = new Vector2(0f, -0.6f);
+  private static final Vector2 GROUND_HALF_SIZE = new Vector2(1.35f, 0.6f);
+  private static final Vector2 GROUND_OFFSET = new Vector2(0f, -0.9f);
   private PhysicsService physics;
   private ResourceService resources;
   private Entity room;
@@ -63,7 +63,7 @@ class SnakeBurrowRoomTraversalTest {
     ServiceLocator.registerTimeSource(time);
 
     resources = spy(new ResourceService());
-    resources.loadTextureAtlases(new String[] {"images/snake.atlas"});
+    resources.loadTextureAtlases(new String[] {"images/snake-miniboss/snake.atlas"});
     resources.loadTextures(SnakePoisonAssets.paths());
     resources.loadTextures(
         new String[] {
@@ -121,8 +121,8 @@ class SnakeBurrowRoomTraversalTest {
 
   @Test
   void centralOpeningAllowsTravelInBothDirectionsAcrossEveryWallBand() {
-    Vector2 lower = new Vector2(13.25f, 1.4f);
-    Vector2 upper = new Vector2(13.25f, 23.9f);
+    Vector2 lower = new Vector2(13.25f, 1.7f);
+    Vector2 upper = new Vector2(13.25f, 23.7f);
 
     assertGroundRoute(lower, upper);
     assertGroundRoute(upper, lower);
@@ -130,9 +130,9 @@ class SnakeBurrowRoomTraversalTest {
 
   @Test
   void everyHorizontalLaneFitsSnakeAndConnectsBothSidesOfTheRoom() {
-    // Include the outermost lanes: top-face wall art extends below its configured row.
-    for (float y : new float[] {1.4f, 4.75f, 8.75f, 12.75f, 16.75f, 20.75f, 23.9f}) {
-      Vector2 left = new Vector2(2.5f, y);
+    // Leave clearance for the enlarged collider, including the top-face walls below their rows.
+    for (float y : new float[] {1.7f, 3.5f, 8.75f, 11f, 16.75f, 18f, 23.7f}) {
+      Vector2 left = new Vector2(3f, y);
       Vector2 right = new Vector2(27.5f, y);
       assertGroundRoute(left, right);
       assertGroundRoute(right, left);
@@ -154,7 +154,9 @@ class SnakeBurrowRoomTraversalTest {
             config.getExit("returnShelf").x * TILE_SIZE + 0.25f,
             config.getExit("returnShelf").y * TILE_SIZE + 0.25f);
 
-    assertGroundRoute(start, centralLane);
+    Vector2 spawnLane = new Vector2(13.25f, start.y);
+    assertGroundRoute(start, spawnLane);
+    assertGroundRoute(spawnLane, centralLane);
     assertGroundRoute(centralLane, leftLane);
     assertGroundRoute(leftLane, doorApproach);
     assertGroundRoute(doorApproach, leftLane);
@@ -164,7 +166,8 @@ class SnakeBurrowRoomTraversalTest {
     assertGroundRoute(centralLane, lowerCentre);
     assertGroundRoute(lowerCentre, shelfApproach);
     assertGroundRoute(shelfApproach, lowerCentre);
-    assertGroundRoute(lowerCentre, start);
+    assertGroundRoute(lowerCentre, spawnLane);
+    assertGroundRoute(spawnLane, start);
   }
 
   @Test
@@ -200,7 +203,7 @@ class SnakeBurrowRoomTraversalTest {
   @Test
   void controllerUpdatesItsDetourWhenPlayerMovesBehindTheWall() {
     SnakeBurrowComponent burrow = createControllerAt(new Vector2(20f, 17.6f), false);
-    Vector2 originalTarget = new Vector2(20f, 13.25f);
+    Vector2 originalTarget = new Vector2(20f, 10f);
     movePlayer(originalTarget);
     boolean startedDetour = false;
     for (int frame = 0; frame < 400; frame++) {
@@ -212,13 +215,13 @@ class SnakeBurrowRoomTraversalTest {
     }
     assertTrue(startedDetour, "Snake never moved away from the blocked direct approach");
 
-    Vector2 movedTarget = new Vector2(24f, 13.25f);
+    Vector2 movedTarget = new Vector2(24f, 10f);
     assertDetourReachesPlayer(burrow, movedTarget, true);
   }
 
   private void assertControllerDetours(boolean stageTwo, boolean rightWall) {
-    Vector2 start = rightWall ? new Vector2(20f, 17.6f) : new Vector2(6f, 13.25f);
-    Vector2 destination = rightWall ? new Vector2(20f, 13.25f) : new Vector2(6f, 9.35f);
+    Vector2 start = rightWall ? new Vector2(20f, 17.6f) : new Vector2(6f, 8.5f);
+    Vector2 destination = rightWall ? new Vector2(20f, 10f) : new Vector2(6f, 3.5f);
     assertFalse(
         arena.isPathClear(
             start.cpy().add(GROUND_OFFSET), destination.cpy().add(GROUND_OFFSET), GROUND_HALF_SIZE),

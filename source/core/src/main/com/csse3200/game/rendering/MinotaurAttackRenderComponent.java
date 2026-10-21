@@ -16,7 +16,7 @@ import java.util.Map;
 public class MinotaurAttackRenderComponent extends RenderComponent {
   public static final String NORMAL_ATTACK = "normalAttack";
   public static final String CHARGE_ATTACK = "chargeAttack";
-  public static final String ATLAS = "images/minotaur-combat/attacks.atlas";
+  public static final String ATLAS = "images/chase-enemy/minotaur-combat/attacks.atlas";
   private static final float FRAME_DURATION = 0.1f;
   private static final float TIME_EPSILON = 0.000001f;
   private final Map<String, Animation<TextureRegion>> animations;

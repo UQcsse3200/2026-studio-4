@@ -147,7 +147,7 @@ class InteractableNpcConfigsTest {
     npc.id = id;
     npc.name = id;
     npc.dialogueId = "talk";
-    npc.atlas = "images/ghost.atlas";
+    npc.atlas = "images/friendly-npcs/hecate.atlas";
     npc.animation = "float";
     return npc;
   }
