@@ -1,7 +1,6 @@
 package com.csse3200.game.components;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -283,6 +282,8 @@ class TouchAttackComponentTest {
 
     // This should not cause an exception, but the attack should be ignored
     entity.getEvents().trigger("collisionStart", entityFixture, targetFixture);
+    //Should still be null, sonarcloud is silly.
+    assertNull(target.getComponent(CombatStatsComponent.class));
   }
 
   Entity createAttacker(short targetLayer) {
