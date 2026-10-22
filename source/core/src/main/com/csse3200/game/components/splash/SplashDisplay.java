@@ -104,11 +104,11 @@ public class SplashDisplay extends UIComponent {
     }
 
     // Measure the full name in source pixels: S, the TUDIO letters, a word gap, then the 4.
-    float sourceHeight = Math.max(sTexture.getHeight(), fourTexture.getHeight());
+    float sourceHeight = Math.max(sTexture.getHeight() * 1f, fourTexture.getHeight() * 1f);
     float sourceWidth = sTexture.getWidth() + WORD_GAP + fourTexture.getWidth();
     for (Texture letter : tudioTextures) {
       sourceWidth += LETTER_GAP + letter.getWidth();
-      sourceHeight = Math.max(sourceHeight, letter.getHeight());
+      sourceHeight = Math.max(sourceHeight, letter.getHeight() * 1f);
     }
 
     // Scale to the target height, shrinking if needed so the full name fits across the screen.

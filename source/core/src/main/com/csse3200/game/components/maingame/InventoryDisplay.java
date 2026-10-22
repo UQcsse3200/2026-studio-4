@@ -537,7 +537,7 @@ public class InventoryDisplay extends UIComponent {
     for (int i = 0; i < totalSlots; i++) {
       Item item = i < items.size() ? items.get(i) : null;
       Stack slotStack = createItemSlot(i, item, enableDrag, equipped);
-      grid.add(slotStack).size(slotSize).pad(3);
+      grid.add(slotStack).size(slotSize * 1f).pad(3);
       // Break to a new row after reaching the column limit
       if ((i + 1) % columns == 0) {
         grid.row();
