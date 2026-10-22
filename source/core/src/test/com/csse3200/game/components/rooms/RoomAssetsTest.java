@@ -55,9 +55,9 @@ public class RoomAssetsTest {
                         && Arrays.asList(paths)
                             .containsAll(
                                 Arrays.asList(
-                                    "images/health_potion_small_pixel.png",
-                                    "images/health_potion_medium_pixel.png",
-                                    "images/health_potion_large_pixel.png"))));
+                                    "images/items/consumables/health_potion_small_pixel.png",
+                                    "images/items/consumables/health_potion_medium_pixel.png",
+                                    "images/items/consumables/health_potion_large_pixel.png"))));
   }
 
   /**
@@ -80,8 +80,8 @@ public class RoomAssetsTest {
                         && Arrays.asList(paths)
                             .containsAll(
                                 Arrays.asList(
-                                    "images/health_potion_small_pixel.png",
-                                    "images/health_potion_medium_pixel.png",
-                                    "images/health_potion_large_pixel.png"))));
+                                    "images/items/consumables/health_potion_small_pixel.png",
+                                    "images/items/consumables/health_potion_medium_pixel.png",
+                                    "images/items/consumables/health_potion_large_pixel.png"))));
   }
 }

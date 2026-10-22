@@ -6,7 +6,7 @@ import com.csse3200.game.items.ItemIds;
 
 public class AttackSpeedCharm extends Charm {
   private static final float VALUE = 1f;
-  public static final String TEXTURE = "images/attack_speed_charm.png";
+  public static final String TEXTURE = "images/items/charms/attack_speed_charm.png";
 
   public AttackSpeedCharm() {
     super(
