@@ -1,159 +1,260 @@
+medusa/Idle.png
+size: 896, 128
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+default
+  rotate: false
+  xy: 0, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 0
+default
+  rotate: false
+  xy: 128, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 1
+default
+  rotate: false
+  xy: 256, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 2
+default
+  rotate: false
+  xy: 384, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 3
+default
+  rotate: false
+  xy: 512, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 4
+default
+  rotate: false
+  xy: 640, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 5
+default
+  rotate: false
+  xy: 768, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 6
+
+medusa/Walk.png
+size: 1664, 128
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move
+  rotate: false
+  xy: 0, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 0
+move
+  rotate: false
+  xy: 128, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 1
+move
+  rotate: false
+  xy: 256, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 2
+move
+  rotate: false
+  xy: 384, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 3
+move
+  rotate: false
+  xy: 512, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 4
+move
+  rotate: false
+  xy: 640, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 5
+move
+  rotate: false
+  xy: 768, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 6
+move
+  rotate: false
+  xy: 896, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 7
+move
+  rotate: false
+  xy: 1024, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 8
+move
+  rotate: false
+  xy: 1152, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 9
+move
+  rotate: false
+  xy: 1280, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 10
+move
+  rotate: false
+  xy: 1408, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 11
+move
+  rotate: false
+  xy: 1536, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 12
+
 medusa.png
 size: 896, 512
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-default
-    rotate: false
-    xy: 32, 51
-    size: 65, 85
-    orig: 65, 85
-    offset: 0, 0
-    index: 0
-move
-    rotate: false
-    xy: 32, 51
-    size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
-    index: 0
-move
-    rotate: false
-    xy: 160, 50
-    size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
-    index: 1
-move
-    rotate: false
-    xy: 288, 48
-    size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
-    index: 2
-move
-    rotate: false
-    xy: 416, 48
-    size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
-    index: 3
-move
-    rotate: false
-    xy: 544, 48
-    size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
-    index: 4
-move
-    rotate: false
-    xy: 672, 48
-    size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
-    index: 5
-move
-    rotate: false
-    xy: 800, 48
-    size: 65, 85
-        orig: 65, 85
-        offset: 0, 0
-    index: 6
-move
-    rotate: false
-    xy: 23, 176
-    size: 65, 85
-    orig: 65, 85
-    offset: 0, 0
-    index: 7
-move
-    rotate: false
-    xy: 151, 176
-    size: 65, 85
-    orig: 65, 85
-    offset: 0, 0
-    index: 8
-move
-    rotate: false
-    xy: 279, 176
-    size: 65, 85
-    orig: 65, 85
-    offset: 0, 0
-    index: 9
-move
-    rotate: false
-    xy: 407, 176
-    size: 65, 85
-    orig: 65, 85
-    offset: 0, 0
-    index: 10
-move
-    rotate: false
-    xy: 535, 176
-    size: 65, 85
-    orig: 65, 85
-    offset: 0, 0
-    index: 11
 chase
-    rotate: false
-    xy: 30, 301
-    size: 65, 85
-    orig: 65, 85
-    offset: 0, 0
-    index: 0
+  rotate: false
+  xy: 0, 256
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 0
 chase
-    rotate: false
-    xy: 159, 303
-   size: 65, 85
-   orig: 65, 85
-   offset: 0, 0
-    index: 1
+  rotate: false
+  xy: 128, 256
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 1
 chase
-    rotate: false
-    xy: 292, 303
-    size: 65, 85
-    orig: 65, 85
-    offset: 0, 0
-    index: 2
+  rotate: false
+  xy: 256, 256
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 2
 chase
-    rotate: false
-    xy: 421, 305
-    size: 65, 85
-    orig: 65, 85
-    offset: 0, 0
-    index: 3
+  rotate: false
+  xy: 384, 256
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 3
 chase
-    rotate: false
-    xy: 547, 305
-    size: 65, 85
-    orig: 65, 85
-    offset: 0, 0
-    index: 4
+  rotate: false
+  xy: 512, 256
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 4
 chase
-    rotate: false
-    xy: 669, 303
-    size: 79, 81
-    orig: 79, 81
-    offset: 0, 0
-    index: 5
+  rotate: false
+  xy: 640, 256
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 5
 chase
-    rotate: false
-    xy: 794, 298
-    size: 49, 85
-    orig: 49, 85
-    offset: 0, 0
-    index: 6
+  rotate: false
+  xy: 768, 256
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 6
+
+medusa/Hurt.png
+size: 384, 128
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+hurt
+  rotate: false
+  xy: 0, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 0
+hurt
+  rotate: false
+  xy: 128, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 1
+hurt
+  rotate: false
+  xy: 256, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 2
+
+medusa/Dead.png
+size: 384, 128
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
 dieAnimation
-    rotate: false
-    xy: 151, 422
-    size: 65, 90
-    orig: 65, 90
-    offset: 0, 0
-    index: 1
+  rotate: false
+  xy: 0, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 0
 dieAnimation
-    rotate: false
-    xy: 279, 422
-    size: 65, 90
-    orig: 65, 90
-    offset: 0, 0
-    index: 2
+  rotate: false
+  xy: 128, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 1
+dieAnimation
+  rotate: false
+  xy: 256, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 2

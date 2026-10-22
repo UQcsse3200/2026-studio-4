@@ -142,6 +142,15 @@ public class CerberusFactory {
     mainHead
         .getEvents()
         .addListener(
+            "biteWindup",
+            () -> {
+              renderer.play(Part.BODY, Action.WINDUP);
+              renderer.play(Part.MIDDLE, Action.WINDUP);
+            });
+
+    mainHead
+        .getEvents()
+        .addListener(
             "attackStart",
             () -> {
               renderer.play(Part.BODY, Action.LUNGE);
@@ -153,9 +162,12 @@ public class CerberusFactory {
         .addListener(
             "default",
             () -> {
-              renderer.play(Part.BODY, Action.IDLE);
-              renderer.play(Part.MIDDLE, Action.IDLE);
+              renderer.resumeLocomotion(Part.BODY);
+              renderer.resumeLocomotion(Part.MIDDLE);
             });
+
+    leftHead.getEvents().addListener("cerberusCast", () -> renderer.play(Part.LEFT, Action.CAST));
+    rightHead.getEvents().addListener("cerberusCast", () -> renderer.play(Part.RIGHT, Action.CAST));
 
     mainHead
         .getEvents()

@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.EnumMap;
@@ -31,6 +32,7 @@ public class CerberusLayeredRenderComponent extends RenderComponent {
   public enum Action {
     IDLE("idle", true),
     MOVE("move", true),
+    WINDUP("lunge", false),
     LUNGE("lunge", false),
     CAST("cast", false);
 
@@ -98,10 +100,18 @@ public class CerberusLayeredRenderComponent extends RenderComponent {
     return currentActions.get(part);
   }
 
-  public TextureRegion getCurrentFrame(Part part) {
-    int index = Math.min((int) (elapsedTimes.get(part) / FRAME_DURATION), FRAME_COUNT - 1);
+  /** Returns a finished or cancelled attack layer to the body's current movement state. */
+  public void resumeLocomotion(Part part) {
+    play(part, getLocomotionAction());
+  }
 
-    return animations.get(part).get(currentActions.get(part))[index];
+  public TextureRegion getCurrentFrame(Part part) {
+    Action action = currentActions.get(part);
+    float frameDuration =
+        action == Action.LUNGE ? CerberusBiteComponent.LUNGE_TIME / FRAME_COUNT : FRAME_DURATION;
+    int index = Math.min((int) (elapsedTimes.get(part) / frameDuration), FRAME_COUNT - 1);
+
+    return animations.get(part).get(action)[index];
   }
 
   public void setPartVisible(Part part, boolean visible) {
@@ -153,15 +163,33 @@ public class CerberusLayeredRenderComponent extends RenderComponent {
       return;
     }
 
+    Action locomotion = getLocomotionAction();
     for (Part part : Part.values()) {
       if (isPartVisible(part)) {
-        advanceAnimation(part, delta);
+        advanceAnimation(part, delta, locomotion);
       }
     }
   }
 
-  private void advanceAnimation(Part part, float delta) {
+  private Action getLocomotionAction() {
+    CombatStatsComponent middleStats = headStats.get(Part.MIDDLE);
+    PhysicsMovementComponent movement = entity.getComponent(PhysicsMovementComponent.class);
+    return (middleStats == null || !middleStats.isDead())
+            && movement != null
+            && movement.getMoving()
+            && movement.getTarget() != null
+        ? Action.MOVE
+        : Action.IDLE;
+  }
+
+  private void advanceAnimation(Part part, float delta, Action locomotion) {
     Action action = currentActions.get(part);
+    if (action == Action.WINDUP) {
+      return; // Hold the first lunge frame until the bite starts or is cancelled.
+    }
+    if (action.looping && action != locomotion) {
+      play(part, locomotion);
+    }
     float elapsed = elapsedTimes.get(part);
 
     if (action.looping) {
@@ -169,9 +197,10 @@ public class CerberusLayeredRenderComponent extends RenderComponent {
       return;
     }
 
-    float remaining = ANIMATION_DURATION - elapsed;
+    float duration = action == Action.LUNGE ? CerberusBiteComponent.LUNGE_TIME : ANIMATION_DURATION;
+    float remaining = duration - elapsed;
     if (delta >= remaining) {
-      currentActions.put(part, Action.IDLE);
+      currentActions.put(part, locomotion);
       elapsedTimes.put(part, (delta - remaining) % ANIMATION_DURATION);
     } else {
       elapsedTimes.put(part, elapsed + delta);

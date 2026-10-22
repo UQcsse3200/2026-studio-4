@@ -186,6 +186,25 @@ class PlayerActionsTest {
   }
 
   @Test
+  void diagonalWalkMatchesCardinalSpeed() {
+    walk(new Vector2(1f, 1f));
+
+    ArgumentCaptor<Vector2> impulse = ArgumentCaptor.forClass(Vector2.class);
+    verify(body).applyLinearImpulse(impulse.capture(), any(Vector2.class), eq(true));
+    assertEquals(3f, impulse.getValue().len(), 0.001f);
+  }
+
+  @Test
+  void diagonalDashMatchesCardinalDashSpeed() {
+    player.getEvents().trigger("dash", new Vector2(1f, -1f));
+    player.update();
+
+    ArgumentCaptor<Vector2> impulse = ArgumentCaptor.forClass(Vector2.class);
+    verify(body).applyLinearImpulse(impulse.capture(), any(Vector2.class), eq(true));
+    assertEquals(15f, impulse.getValue().len(), 0.001f);
+  }
+
+  @Test
   void shouldDashFasterThanWalk() {
     walk(Vector2Utils.RIGHT);
     ArgumentCaptor<Vector2> walkImpulse = ArgumentCaptor.forClass(Vector2.class);
