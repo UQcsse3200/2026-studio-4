@@ -18,7 +18,7 @@ public class CerberusBiteComponent extends Component {
   private static final float TRIGGER_RANGE = 2f;
   private static final float HIT_RANGE = 1.2f;
   private static final float WINDUP_TIME = 0.5f;
-  private static final float LUNGE_TIME = 0.35f;
+  static final float LUNGE_TIME = 0.35f;
   private static final float COOLDOWN_TIME = 2f;
   private static final float LUNGE_SPEED = 6f;
 
@@ -135,6 +135,9 @@ public class CerberusBiteComponent extends Component {
   }
 
   private void cancel() {
+    if (state == State.WINDUP || state == State.LUNGE) {
+      entity.getEvents().trigger("default");
+    }
     state = State.READY;
     remaining = 0f;
     destination = null;

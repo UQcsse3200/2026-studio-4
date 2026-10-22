@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
@@ -47,6 +48,7 @@ public class AnimationRenderComponent extends RenderComponent {
   private float rotation;
   private boolean flipX;
   private boolean flipY;
+  private final Rectangle drawBounds = new Rectangle(0f, 0f, 1f, 1f);
 
   /**
    * Create the component for a given texture atlas.
@@ -178,6 +180,11 @@ public class AnimationRenderComponent extends RenderComponent {
     return currentAnimation == null ? null : currentAnimation.getKeyFrame(animationPlayTime);
   }
 
+  /** Current animation frame index, or -1 if no animation is playing. */
+  public int getCurrentFrameIndex() {
+    return currentAnimation == null ? -1 : currentAnimation.getKeyFrameIndex(animationPlayTime);
+  }
+
   /**
    * Has the playing animation finished? This will always be false for looping animations.
    *
@@ -194,6 +201,23 @@ public class AnimationRenderComponent extends RenderComponent {
 
   public float getVerticalOffset() {
     return verticalOffset;
+  }
+
+  /**
+   * Sets the visual canvas relative to the entity's size, without changing its physics or centre.
+   * The default (0, 0, 1, 1) fills the entity. Padded sprite sheets may extend beyond it; flipping
+   * mirrors these bounds around the entity centre as well as mirroring the pixels.
+   */
+  public void setDrawBounds(float x, float y, float width, float height) {
+    if (!Float.isFinite(x)
+        || !Float.isFinite(y)
+        || !Float.isFinite(width)
+        || !Float.isFinite(height)
+        || width <= 0f
+        || height <= 0f) {
+      throw new IllegalArgumentException("Draw bounds must be finite with positive dimensions");
+    }
+    drawBounds.set(x, y, width, height);
   }
 
   /** Rotates only the rendered sprite counterclockwise about its centre, in degrees. */
@@ -238,20 +262,17 @@ public class AnimationRenderComponent extends RenderComponent {
     }
     Vector2 pos = entity.getPosition();
     Vector2 scale = entity.getScale();
+    float x = pos.x + scale.x * (flipX ? 1f - drawBounds.x - drawBounds.width : drawBounds.x);
+    float y =
+        pos.y
+            + verticalOffset
+            + scale.y * (flipY ? 1f - drawBounds.y - drawBounds.height : drawBounds.y);
+    float width = scale.x * drawBounds.width;
+    float height = scale.y * drawBounds.height;
     if (rotation == 0f) {
-      batch.draw(region, pos.x, pos.y + verticalOffset, scale.x, scale.y);
+      batch.draw(region, x, y, width, height);
     } else {
-      batch.draw(
-          region,
-          pos.x,
-          pos.y + verticalOffset,
-          scale.x / 2f,
-          scale.y / 2f,
-          scale.x,
-          scale.y,
-          1f,
-          1f,
-          rotation);
+      batch.draw(region, x, y, width / 2f, height / 2f, width, height, 1f, 1f, rotation);
     }
     if (isRepeatPass()) {
       return;

@@ -262,13 +262,14 @@ public class PlayerActions extends Component {
     Vector2 desiredVelocity;
 
     float movementSpeed = combatStats.getEffectiveMovementSpeed();
-
-    if (dashOn) {
-      float dashSpeed = DASH_SPEED_MULTIPLIER * movementSpeed;
-      desiredVelocity = dashDirection.cpy().scl(new Vector2(dashSpeed, dashSpeed));
-    } else {
-      desiredVelocity = walkDirection.cpy().scl(new Vector2(movementSpeed, movementSpeed));
+    float speed = dashOn ? DASH_SPEED_MULTIPLIER * movementSpeed : movementSpeed;
+    // Two held directions are (1, 1). Scaling that vector makes a diagonal faster than a straight
+    // line, and a diagonal dash travels further in the same burst.
+    desiredVelocity = (dashOn ? dashDirection : walkDirection).cpy();
+    if (!desiredVelocity.isZero()) {
+      desiredVelocity.nor();
     }
+    desiredVelocity.scl(speed);
     // impulse = (desiredVel - currentVel) * mass
     Vector2 impulse = desiredVelocity.sub(velocity).scl(body.getMass());
     body.applyLinearImpulse(impulse, body.getWorldCenter(), true);

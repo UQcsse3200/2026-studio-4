@@ -11,6 +11,8 @@ import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.events.listeners.EventListener0;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +35,7 @@ class PatrolTaskTest {
     when(owner.getEntity()).thenReturn(enemy);
     when(enemy.getComponent(PhysicsMovementComponent.class)).thenReturn(movementComponent);
     when(enemy.getEvents()).thenReturn(events);
+    when(enemy.getPosition()).thenReturn(new Vector2());
   }
 
   @Test
@@ -63,6 +66,59 @@ class PatrolTaskTest {
     patrolTask.update();
 
     assertEquals(leftPoint, movement.getTarget());
+  }
+
+  @Test
+  void startShouldAnnounceDirectionAfterPatrolAnimation() {
+    Vector2 firstPoint = new Vector2(1f, 3f);
+    PatrolTask patrolTask = new PatrolTask(firstPoint, false);
+    PhysicsMovementComponent movement = new PhysicsMovementComponent();
+    Entity patroller =
+        new Entity().addComponent(new AITaskComponent().addTask(patrolTask)).addComponent(movement);
+    patroller.setPosition(4f, 2f);
+    List<String> animationEvents = new ArrayList<>();
+    List<Vector2> directions = new ArrayList<>();
+    patroller.getEvents().addListener("patrolStart", () -> animationEvents.add("patrolStart"));
+    patroller
+        .getEvents()
+        .addListener(
+            "moving",
+            (Vector2 direction) -> {
+              animationEvents.add("moving");
+              directions.add(direction.cpy());
+            });
+
+    patrolTask.start();
+
+    assertEquals(List.of("patrolStart", "moving"), animationEvents);
+    assertEquals(List.of(new Vector2(-1f, 1f)), directions);
+    assertEquals(firstPoint, movement.getTarget());
+  }
+
+  @Test
+  void resumedPatrolShouldAnnounceDirectionToRetainedWaypoint() {
+    Vector2 firstPoint = new Vector2(1f, 3f);
+    Vector2 secondPoint = new Vector2(11f, 13f);
+    PatrolTask patrolTask = new PatrolTask(firstPoint, false);
+    PhysicsMovementComponent movement = spy(new PhysicsMovementComponent());
+    // Stopping a physical body is outside this event test; keep target tracking real.
+    doNothing().when(movement).setMoving(false);
+    Entity patroller =
+        new Entity().addComponent(new AITaskComponent().addTask(patrolTask)).addComponent(movement);
+    patrolTask.start();
+    patroller.setPosition(firstPoint);
+    patrolTask.update();
+    patrolTask.stop();
+    patroller.setPosition(14f, 15f);
+    List<Vector2> directions = new ArrayList<>();
+    patroller
+        .getEvents()
+        .addListener("moving", (Vector2 direction) -> directions.add(direction.cpy()));
+
+    patrolTask.start();
+
+    assertEquals(List.of(new Vector2(-1f, -1f)), directions);
+    assertEquals(secondPoint, movement.getTarget());
   }
 
   @Test

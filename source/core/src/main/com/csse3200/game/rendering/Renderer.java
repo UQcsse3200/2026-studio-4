@@ -38,8 +38,8 @@ public class Renderer implements Disposable {
    */
   public Renderer(CameraComponent camera) {
     SpriteBatch spriteBatch = new SpriteBatch();
-    DebugRenderer debugRenderer = new DebugRenderer();
-    debugRenderer.setActive(false);
+    DebugRenderer localDebugRenderer = new DebugRenderer();
+    localDebugRenderer.setActive(false);
 
     init(
         camera,
@@ -47,7 +47,7 @@ public class Renderer implements Disposable {
         spriteBatch,
         new Stage(new ScreenViewport(), spriteBatch),
         ServiceLocator.getRenderService(),
-        debugRenderer);
+        localDebugRenderer);
   }
 
   /**

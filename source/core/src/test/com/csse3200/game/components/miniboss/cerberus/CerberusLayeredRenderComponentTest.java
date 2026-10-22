@@ -14,11 +14,13 @@ import static org.mockito.Mockito.when;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.miniboss.cerberus.CerberusLayeredRenderComponent.Action;
 import com.csse3200.game.components.miniboss.cerberus.CerberusLayeredRenderComponent.Part;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +35,7 @@ class CerberusLayeredRenderComponentTest {
   private AtlasRegion middle;
   private AtlasRegion right;
   private CerberusLayeredRenderComponent renderer;
+  private Entity entity;
 
   private Entity createHead(int health) {
     return new Entity().addComponent(new CombatStatsComponent(health, 10));
@@ -68,7 +71,7 @@ class CerberusLayeredRenderComponentTest {
 
     renderer = new CerberusLayeredRenderComponent(atlas);
 
-    Entity entity = new Entity().addComponent(renderer);
+    entity = new Entity().addComponent(renderer);
     entity.setPosition(2f, 3f);
     entity.setScale(4f, 4f);
   }
@@ -210,10 +213,44 @@ class CerberusLayeredRenderComponentTest {
   @Test
   void shouldReturnToIdleAfterAttack() {
     renderer.play(Part.MIDDLE, Action.LUNGE);
-    renderer.update(0.61f);
+    renderer.update(0.36f);
 
     assertEquals(Action.IDLE, renderer.getAction(Part.MIDDLE));
     assertSame(middle, renderer.getCurrentFrame(Part.MIDDLE));
+  }
+
+  @Test
+  void shouldFollowMovementWithoutRestartingFramesOrInterruptingCasts() {
+    PhysicsMovementComponent movement = mock(PhysicsMovementComponent.class);
+    entity.addComponent(movement);
+    when(movement.getMoving()).thenReturn(true);
+    when(movement.getTarget()).thenReturn(new Vector2(5f, 3f));
+    renderer.play(Part.LEFT, Action.CAST);
+
+    renderer.update(0.1f);
+    renderer.update(0.1f);
+
+    assertSame(atlas.findRegion("body_move", 1), renderer.getCurrentFrame(Part.BODY));
+    assertEquals(Action.MOVE, renderer.getAction(Part.MIDDLE));
+    assertEquals(Action.MOVE, renderer.getAction(Part.RIGHT));
+    assertEquals(Action.CAST, renderer.getAction(Part.LEFT));
+
+    renderer.update(0.41f);
+    assertEquals(Action.MOVE, renderer.getAction(Part.LEFT));
+    when(movement.getMoving()).thenReturn(false);
+    renderer.update(0.01f);
+    assertEquals(Action.IDLE, renderer.getAction(Part.BODY));
+    assertEquals(Action.IDLE, renderer.getAction(Part.LEFT));
+  }
+
+  @Test
+  void shouldShowLastLungeFrameBeforeExistingDamageWindowEnds() {
+    renderer.play(Part.MIDDLE, Action.LUNGE);
+    renderer.update(0.30f);
+
+    assertSame(atlas.findRegion("middle_lunge", 3), renderer.getCurrentFrame(Part.MIDDLE));
+    renderer.update(0.06f);
+    assertEquals(Action.IDLE, renderer.getAction(Part.MIDDLE));
   }
 
   @Test

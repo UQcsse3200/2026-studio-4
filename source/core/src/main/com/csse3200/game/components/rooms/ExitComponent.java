@@ -1,9 +1,12 @@
 package com.csse3200.game.components.rooms;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.areas.attic.AtticProp;
+import com.csse3200.game.areas.attic.AtticSprites;
 import com.csse3200.game.areas.terrain.DreamlandTile;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TileSheet;
@@ -14,10 +17,12 @@ import com.csse3200.game.components.player.InteractionPrompt;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.rendering.GlowRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +36,13 @@ public class ExitComponent extends EntityManagerComponent {
   private static final String FANTASY_DUNGEON_DOOR = "images/dungeons/fantasy_dreamland_door.png";
   private static final int TILE_SIZE = 16;
   private static final int DOOR_FRAME_SIZE = 32;
-  private static final float INTERACTION_RANGE = 1f;
+  private static final float INTERACTION_RANGE = 0.5f;
+  private static final String FINAL_DUNGEON_EXIT = "dungeonFiveShelf";
+  private static final int DUNGEONS_BEFORE_FINAL = 4;
+  private static final float GLOW_RADIUS = 0.45f;
+  // Centre of the book on the 16px tome sprite, in sprite pixels from its bottom-left.
+  private static final float TOME_CENTRE_X = 8.5f;
+  private static final float TOME_CENTRE_Y = 5f;
 
   private final ExitConfig[] exits;
   private Entity player;
@@ -48,7 +59,9 @@ public class ExitComponent extends EntityManagerComponent {
     doorTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     TileSheet tileSheet = new TileSheet(texture, TILE_SIZE);
     for (ExitConfig exit : exits) {
-      if ("BOOKSHELF".equals(exit.kind)) {
+      if (exit.sprite != null) {
+        spawnSprite(exit);
+      } else if ("BOOKSHELF".equals(exit.kind)) {
         spawnBookshelf(exit, tileSheet);
       } else if ("DOOR".equals(exit.kind)) {
         spawnDoor(exit, doorTexture);
@@ -62,9 +75,9 @@ public class ExitComponent extends EntityManagerComponent {
   /**
    * Shows the exit prompt while the player is near a door, and hides it after they walk away.
    *
-   * <p>Pressing E is handled separately. The prompt has to be refreshed every frame because it
-   * depends on where the player is standing. A drop already in pickup range keeps "Press E — Pick
-   * up …" instead of the door sentence. The boss shelf uses the same sentence as the E key.
+   * <p>Pressing E is handled separately. The prompt is refreshed every frame because it depends on
+   * where the player is standing. A nearby NPC keeps its sentence, then a drop, then the door. The
+   * boss shelf uses the same sentence as the E key.
    */
   @Override
   public void update() {
@@ -80,15 +93,26 @@ public class ExitComponent extends EntityManagerComponent {
       display.clearPrompt();
       return;
     }
-    ItemPickupComponent pickup = player.getComponent(ItemPickupComponent.class);
-    String itemPrompt = pickup == null ? null : pickup.getPickupPrompt();
-    if (itemPrompt != null) {
-      display.setPrompt(itemPrompt);
-      return;
-    }
     EnemyManagerComponent enemies = entity.getComponent(EnemyManagerComponent.class);
     boolean roomCleared = enemies != null && enemies.isCleared();
-    display.setPrompt(promptAt(player.getCenterPosition(), roomCleared));
+    display.setPrompt(promptFor(player, roomCleared));
+  }
+
+  /**
+   * Chooses the HUD sentence for where the player is standing.
+   *
+   * @param standing the player
+   * @param roomCleared whether this room has no enemies left
+   * @return the NPC sentence, otherwise the pickup sentence, otherwise the door sentence
+   */
+  String promptFor(Entity standing, boolean roomCleared) {
+    FriendlyNpcManagerComponent npcs = entity.getComponent(FriendlyNpcManagerComponent.class);
+    String npcPrompt = npcs == null ? null : npcs.getPrompt(standing);
+    ItemPickupComponent pickup = standing.getComponent(ItemPickupComponent.class);
+    String itemPrompt = pickup == null ? null : pickup.getPickupPrompt();
+    String exitPrompt = promptAt(standing.getCenterPosition(), roomCleared);
+    return InteractionPrompt.resolve(
+        npcPrompt, itemPrompt, exitPrompt.isEmpty() ? null : exitPrompt);
   }
 
   /**
@@ -151,8 +175,7 @@ public class ExitComponent extends EntityManagerComponent {
       // room is not yet cleared
       entity.getEvents().trigger(GameAreaDisplay.DISPLAY, "Defeat all enemies to progress");
       return;
-    } else if (Objects.equals(nearest.id, "dungeonFiveShelf")
-        && ServiceLocator.getRoomClearService().getDungeonClearedCount() < 4) {
+    } else if (Objects.equals(nearest.id, FINAL_DUNGEON_EXIT) && !finalDungeonUnlocked()) {
       // Access boss room before all other dungeons are cleared
       entity
           .getEvents()
@@ -172,6 +195,36 @@ public class ExitComponent extends EntityManagerComponent {
                     new TextureRegion(doorTexture, 0, 0, DOOR_FRAME_SIZE, DOOR_FRAME_SIZE)));
     door.getComponent(TextureRenderComponent.class).scaleEntity();
     spawnEntityAt(door, new GridPoint2(exit.x, exit.y), false, false);
+  }
+
+  /**
+   * Draws an exit as a attic prop (e.g. a dungeon tome on the reading table). Magical props get a
+   * pulsing halo in their colour; the final tome's halo only lights once the other dungeons are
+   * cleared, mirroring the lock in {@link #onExitRequest}.
+   */
+  private void spawnSprite(ExitConfig exit) {
+    AtticProp prop = AtticProp.fromName(exit.sprite);
+    GridPoint2 tile = new GridPoint2(exit.x, exit.y);
+    spawnEntityAt(AtticFurnitureComponent.createProp(prop, 0, exit.elevation), tile, false, false);
+
+    Color glow = prop.getGlow();
+    if (glow != null) {
+      BooleanSupplier lit =
+          FINAL_DUNGEON_EXIT.equals(exit.id) ? ExitComponent::finalDungeonUnlocked : () -> true;
+      Vector2 centre =
+          new Vector2(AtticSprites.toWorld(TOME_CENTRE_X), AtticSprites.toWorld(TOME_CENTRE_Y));
+      Entity halo =
+          new Entity()
+              .addComponent(
+                  new GlowRenderComponent(
+                      glow, GLOW_RADIUS, centre, AtticSprites.toWorld(exit.elevation), lit));
+      spawnEntityAt(halo, tile, false, false);
+    }
+  }
+
+  private static boolean finalDungeonUnlocked() {
+    return ServiceLocator.getRoomClearService() != null
+        && ServiceLocator.getRoomClearService().getDungeonClearedCount() >= DUNGEONS_BEFORE_FINAL;
   }
 
   private void spawnBookshelf(ExitConfig exit, TileSheet tileSheet) {

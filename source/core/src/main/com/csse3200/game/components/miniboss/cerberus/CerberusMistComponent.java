@@ -111,6 +111,7 @@ public class CerberusMistComponent extends RenderComponent {
     remaining = DURATION;
     active = true;
     updateOccupancy();
+    entity.getEvents().trigger("cerberusCast");
   }
 
   private void updateOccupancy() {

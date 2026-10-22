@@ -88,6 +88,8 @@ class CerberusProjectileComponentTest {
 
   @Test
   void shouldFireOnceAfterCooldownAndDeferCreation() {
+    int[] casts = {0};
+    rightHead.getEvents().addListener("cerberusCast", () -> casts[0]++);
     tick(2f);
     assertEquals(0, pending.size());
     assertEquals(0, spawned.size());
@@ -96,10 +98,12 @@ class CerberusProjectileComponentTest {
     assertEquals(1, pending.size());
     assertEquals(0, spawned.size());
     projectileFactory.verifyNoInteractions();
+    assertEquals(0, casts[0]);
 
     runPending();
 
     assertEquals(List.of(projectile), spawned);
+    assertEquals(1, casts[0]);
     projectileFactory.verify(
         () ->
             CerberusProjectileFactory.createHomingProjectile(
@@ -113,6 +117,7 @@ class CerberusProjectileComponentTest {
     tick(1.5f);
     runPending();
     assertEquals(2, spawned.size());
+    assertEquals(2, casts[0]);
   }
 
   @Test

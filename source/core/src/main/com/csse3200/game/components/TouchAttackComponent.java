@@ -207,6 +207,7 @@ public class TouchAttackComponent extends Component {
       nextAttackTime =
           ServiceLocator.getTimeSource().getTime() + Math.round(repeatInterval * 1000f);
     }
+    entity.getEvents().trigger("touchAttack");
     if (targetStats != null) {
       targetStats.hit(combatStats);
     }
@@ -218,6 +219,9 @@ public class TouchAttackComponent extends Component {
       Vector2 direction = target.getCenterPosition().sub(entity.getCenterPosition());
       Vector2 impulse = direction.setLength(knockbackForce);
       targetBody.applyLinearImpulse(impulse, targetBody.getWorldCenter(), true);
+    }
+    if (targetStats != null) {
+      entity.getEvents().trigger("contactAttack", target);
     }
   }
 }
