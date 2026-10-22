@@ -28,19 +28,12 @@ public final class ShellGamePanel extends Table {
     TextButton.TextButtonStyle flipStyle = appearance.flip();
     this.game = game;
     this.onResolved = onResolved;
-    CasinoPanelSupport.initPanel(this, "shell-game-panel", appearance.parchment());
-
-    CasinoPanelSupport.wrappedLabel(
-        this,
-        "SHELL GAME  |  Stake your gold, then pick the cup hiding the ball. Guess right to"
-            + " double your stake.",
-        textStyle,
-        12f);
-    row();
-
-    Table arena = new Table();
-    arena.setBackground(appearance.arena());
-    arena.pad(16f);
+    Table arena =
+        CasinoPanelSupport.initPanel(
+            this,
+            "shell-game-panel",
+            "SHELL GAME  |  Stake your gold, then pick the cup hiding the ball. Guess right to double your stake.",
+            appearance);
     Table cupRow = new Table();
     for (int i = 0; i < cups.length; i++) {
       int cup = i;
@@ -51,14 +44,9 @@ public final class ShellGamePanel extends Table {
       cupRow.add(button).width(90f).height(60f).padRight(i < cups.length - 1 ? 10f : 0f);
     }
     arena.add(cupRow).padBottom(10f);
-    arena.row();
-    result = new Label("Set your stake and start", goldStyle);
-    result.setName("shell-game-result");
-    result.setWrap(true);
-    result.setAlignment(Align.center);
-    arena.add(result).growX();
-    add(arena).growX().minHeight(180f).padBottom(12f);
-    row();
+    result =
+        CasinoPanelSupport.addArena(
+            this, arena, "shell-game-result", "Set your stake and start", goldStyle, 180f);
 
     add(new Label("WAGER STAKE", textStyle)).growX().left().padBottom(8f);
     row();

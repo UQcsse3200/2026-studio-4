@@ -37,18 +37,12 @@ public final class HigherLowerPanel extends Table {
     TextButton.TextButtonStyle flipStyle = appearance.flip();
     this.game = game;
     this.onResolved = onResolved;
-    CasinoPanelSupport.initPanel(this, "higher-lower-panel", appearance.parchment());
-
-    CasinoPanelSupport.wrappedLabel(
-        this,
-        "HIGHER / LOWER  |  Guess right to grow your multiplier. Cash out any time.",
-        textStyle,
-        12f);
-    row();
-
-    Table arena = new Table();
-    arena.setBackground(appearance.arena());
-    arena.pad(16f);
+    Table arena =
+        CasinoPanelSupport.initPanel(
+            this,
+            "higher-lower-panel",
+            "HIGHER / LOWER  |  Guess right to grow your multiplier. Cash out any time.",
+            appearance);
     cardLabel = new Label("", goldStyle);
     cardLabel.setName("higher-lower-card");
     cardLabel.setAlignment(Align.center);
@@ -58,14 +52,9 @@ public final class HigherLowerPanel extends Table {
     multiplierLabel.setName("higher-lower-multiplier");
     multiplierLabel.setAlignment(Align.center);
     arena.add(multiplierLabel).padBottom(8f);
-    arena.row();
-    result = new Label("Set your stake and start", goldStyle);
-    result.setName("higher-lower-result");
-    result.setWrap(true);
-    result.setAlignment(Align.center);
-    arena.add(result).growX();
-    add(arena).growX().minHeight(200f).padBottom(12f);
-    row();
+    result =
+        CasinoPanelSupport.addArena(
+            this, arena, "higher-lower-result", "Set your stake and start", goldStyle, 200f);
 
     add(new Label("WAGER STAKE", textStyle)).growX().left().padBottom(8f);
     row();

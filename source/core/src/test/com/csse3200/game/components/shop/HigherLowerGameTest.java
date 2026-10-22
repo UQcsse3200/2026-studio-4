@@ -79,7 +79,30 @@ class HigherLowerGameTest {
     assertEquals(25, game.getStake());
     game.start();
     game.adjustStake(10);
+    game.refresh();
+    game.adjustStake(Integer.MIN_VALUE);
     assertEquals(25, game.getStake());
+    assertFalse(game.canStart());
+    assertNull(game.start());
+    assertEquals(0, inventory.getGold());
+    assertEquals(25, game.cashOut().payout());
+  }
+
+  @Test
+  void idleStakeTracksBalanceAndRejectsUnaffordableWager() {
+    InventoryComponent inventory = new InventoryComponent(25);
+    HigherLowerGame game = new HigherLowerGame(inventory, sequence(5, 9));
+    game.adjustStake(Integer.MIN_VALUE);
+    assertEquals(10, game.getStake());
+    inventory.addGold(-20);
+    assertFalse(game.canStart());
+    game.refresh();
+    assertEquals(5, game.getStake());
+    assertTrue(game.canStart());
+    inventory.addGold(-5);
+    game.refresh();
+    assertEquals(0, game.getStake());
+    assertFalse(game.canStart());
   }
 
   @Test

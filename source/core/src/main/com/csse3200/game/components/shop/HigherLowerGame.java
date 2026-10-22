@@ -77,21 +77,15 @@ public final class HigherLowerGame {
 
   /** Clamps the stake between {@code MIN_STAKE} and the player's current Gold. Only while idle. */
   public void adjustStake(int delta) {
-    if (roundActive) {
-      return;
-    }
-    wager.adjust(delta);
+    wager.adjustWhileIdle(delta, roundActive);
   }
 
   public void refresh() {
-    if (!roundActive) {
-      adjustStake(0);
-    }
+    adjustStake(0);
   }
 
   public boolean canStart() {
-    int gold = inventory.getGold();
-    return !roundActive && wager.stake() > 0 && gold >= wager.stake();
+    return wager.canPlace(roundActive);
   }
 
   /** Deducts the stake up front and deals the first card of a new round. */

@@ -5,25 +5,49 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import java.util.function.BooleanSupplier;
 
 /**
- * Shared building blocks for the casino panels (Coin Flip, Higher/Lower, Shell Game): the wager
- * buttons, the stake label and the row that lays them out. Pulled out of the three panels since
- * each one built the same pieces by hand.
+ * Shared frame, result display and wager controls for the Coin Flip, Higher/Lower and Shell Game
+ * panels.
  */
 final class CasinoPanelSupport {
 
   private CasinoPanelSupport() {}
 
-  /** The shared frame every casino panel starts its constructor with. */
-  static void initPanel(Table panel, String name, Drawable parchment) {
+  /** Sets up the frame and rules, then returns the arena for the game's own content. */
+  static Table initPanel(
+      Table panel, String name, String rules, CoinFlipPanel.Appearance appearance) {
     panel.setName(name);
-    panel.setBackground(parchment);
+    panel.setBackground(appearance.parchment());
     panel.pad(14f);
     panel.top();
+    wrappedLabel(panel, rules, appearance.text(), 12f);
+    panel.row();
+    Table arena = new Table();
+    arena.setBackground(appearance.arena());
+    arena.pad(16f);
+    return arena;
+  }
+
+  /** Finishes the arena with a centred result below the game's content and adds it to the panel. */
+  static Label addArena(
+      Table panel,
+      Table arena,
+      String resultName,
+      String initialResult,
+      Label.LabelStyle style,
+      float minHeight) {
+    arena.row();
+    Label result = new Label(initialResult, style);
+    result.setName(resultName);
+    result.setWrap(true);
+    result.setAlignment(Align.center);
+    arena.add(result).growX();
+    panel.add(arena).growX().minHeight(minHeight).padBottom(12f);
+    panel.row();
+    return result;
   }
 
   /** A wrapped, growing label row - used for the rules/hint blurbs under each panel's title. */
