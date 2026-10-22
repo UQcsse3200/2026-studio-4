@@ -19,7 +19,7 @@ public final class HigherLowerGame {
 
   private final InventoryComponent inventory;
   private final IntSupplier cardDraw;
-  private int stake = MIN_STAKE;
+  private final Wager wager;
   private int currentCard;
   private int streak;
   private boolean roundActive;
@@ -32,6 +32,7 @@ public final class HigherLowerGame {
   public HigherLowerGame(InventoryComponent inventory, IntSupplier cardDraw) {
     this.inventory = Objects.requireNonNull(inventory);
     this.cardDraw = Objects.requireNonNull(cardDraw);
+    this.wager = new Wager(inventory, MIN_STAKE);
     currentCard = drawCard();
     refresh();
   }
@@ -45,7 +46,7 @@ public final class HigherLowerGame {
   }
 
   public int getStake() {
-    return stake;
+    return wager.stake();
   }
 
   public int getCurrentCard() {
@@ -71,7 +72,7 @@ public final class HigherLowerGame {
    * @return how much Gold cashing out right now would pay, floored to a whole coin
    */
   public int potentialPayout() {
-    return (int) Math.floor(stake * currentMultiplier());
+    return (int) Math.floor(wager.stake() * currentMultiplier());
   }
 
   /** Clamps the stake between {@code MIN_STAKE} and the player's current Gold. Only while idle. */
@@ -79,8 +80,7 @@ public final class HigherLowerGame {
     if (roundActive) {
       return;
     }
-    int gold = inventory.getGold();
-    stake = Math.clamp((long) stake + delta, Math.min(MIN_STAKE, gold), gold);
+    wager.adjust(delta);
   }
 
   public void refresh() {
@@ -91,7 +91,7 @@ public final class HigherLowerGame {
 
   public boolean canStart() {
     int gold = inventory.getGold();
-    return !roundActive && stake > 0 && gold >= stake;
+    return !roundActive && wager.stake() > 0 && gold >= wager.stake();
   }
 
   /** Deducts the stake up front and deals the first card of a new round. */
@@ -99,7 +99,7 @@ public final class HigherLowerGame {
     if (!canStart()) {
       return null;
     }
-    inventory.addGold(-stake);
+    inventory.addGold(-wager.stake());
     roundActive = true;
     streak = 0;
     currentCard = drawCard();

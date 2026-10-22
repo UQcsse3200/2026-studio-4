@@ -18,7 +18,7 @@ public final class ShellGame {
 
   private final InventoryComponent inventory;
   private final IntSupplier cupPicker;
-  private int stake = MIN_STAKE;
+  private final Wager wager;
   private int winningCup = -1;
   private boolean roundActive;
 
@@ -30,6 +30,7 @@ public final class ShellGame {
   public ShellGame(InventoryComponent inventory, IntSupplier cupPicker) {
     this.inventory = Objects.requireNonNull(inventory);
     this.cupPicker = Objects.requireNonNull(cupPicker);
+    this.wager = new Wager(inventory, MIN_STAKE);
     refresh();
   }
 
@@ -43,7 +44,7 @@ public final class ShellGame {
   }
 
   public int getStake() {
-    return stake;
+    return wager.stake();
   }
 
   public boolean isRoundActive() {
@@ -55,8 +56,7 @@ public final class ShellGame {
     if (roundActive) {
       return;
     }
-    int gold = inventory.getGold();
-    stake = Math.clamp((long) stake + delta, Math.min(MIN_STAKE, gold), gold);
+    wager.adjust(delta);
   }
 
   public void refresh() {
@@ -67,7 +67,7 @@ public final class ShellGame {
 
   public boolean canStart() {
     int gold = inventory.getGold();
-    return !roundActive && stake > 0 && gold >= stake;
+    return !roundActive && wager.stake() > 0 && gold >= wager.stake();
   }
 
   /** Deducts the stake up front and hides the ball under a cup, ready for a guess. */
@@ -75,7 +75,7 @@ public final class ShellGame {
     if (!canStart()) {
       return false;
     }
-    inventory.addGold(-stake);
+    inventory.addGold(-wager.stake());
     winningCup = pickCup();
     roundActive = true;
     return true;
@@ -96,7 +96,7 @@ public final class ShellGame {
     roundActive = false;
     winningCup = -1;
     if (won) {
-      int payout = stake * PAYOUT_MULTIPLIER;
+      int payout = wager.stake() * PAYOUT_MULTIPLIER;
       inventory.addGold(payout);
       return new Round(true, revealedCup, payout);
     }
