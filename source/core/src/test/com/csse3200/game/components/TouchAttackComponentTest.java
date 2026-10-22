@@ -33,6 +33,30 @@ class TouchAttackComponentTest {
   }
 
   @Test
+  void animationNotificationFollowsDamageAndPreservesTheExistingCooldown() {
+    Entity attacker = repeatingAttacker();
+    Entity target = durableTarget();
+    java.util.List<Integer> healthAtNotification = new java.util.ArrayList<>();
+    attacker
+        .getEvents()
+        .addListener(
+            "contactAttack",
+            (Entity victim) -> {
+              assertEquals(target, victim);
+              healthAtNotification.add(health(victim));
+            });
+    contact(attacker, target, "collisionStart");
+    assertEquals(java.util.List.of(90), healthAtNotification);
+    tick(attacker, 0.99f);
+    assertEquals(java.util.List.of(90), healthAtNotification);
+    tick(attacker, 0.02f);
+    assertEquals(java.util.List.of(90, 80), healthAtNotification);
+    contact(attacker, target, "collisionEnd");
+    tick(attacker, 2f);
+    assertEquals(java.util.List.of(90, 80), healthAtNotification);
+  }
+
+  @Test
   void repeatsOnlyAfterIntervalAndStopsOnExit() {
     Entity attacker = repeatingAttacker();
     Entity target = durableTarget();

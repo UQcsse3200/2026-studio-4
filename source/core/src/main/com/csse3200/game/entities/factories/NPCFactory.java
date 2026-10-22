@@ -63,6 +63,7 @@ public class NPCFactory {
   private static final String MOVE = "move";
   private static final String CHASE_ANIMATION = "chase";
   private static final String ATTACK_ANIMATION = "attack";
+  private static final String HARPY_ATLAS = "images/flying-enemy/harpy.atlas";
 
   public static Entity createGiantEnemy(Entity target, String skin) {
     Entity giantEnemy = createBaseNPC();
@@ -75,12 +76,19 @@ public class NPCFactory {
 
     TextureAtlas atlas = ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class);
     AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    boolean isCyclops = "images/giant-enemy/cyclops.atlas".equals(skin);
     animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DIE_ANIMATION, isCyclops ? 0.08f : 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     if (atlas.findRegions(ATTACK_ANIMATION).size > 0) {
       animator.addAnimation(ATTACK_ANIMATION, 0.08f, Animation.PlayMode.NORMAL);
+    }
+
+    if (isCyclops) {
+      // Full cells retain the old 28x40 body's size and ground anchor, including lying frames.
+      animator.setDrawBounds(-19f / 28f, 2f / 40f, 64f / 28f, 64f / 40f);
+      animator.startAnimation(DEFAULT_ANIMATION);
     }
 
     EnemyAnimationController animationController = new EnemyAnimationController();
@@ -159,8 +167,8 @@ public class NPCFactory {
 
   /**
    * Creates a chase enemy entity. Moves quickly toward the player, performs a telegraphed
-   * lunge/dash attack when close enough, and splits into two weaker copies the first time it is hit
-   * and survives.
+   * lunge/dash attack when close enough, and optionally splits into two weaker copies on a lethal
+   * hit.
    *
    * @param target entity to chase
    * @param shouldSplit whether the enemy should receive a {@link SplitComponent}
@@ -186,7 +194,16 @@ public class NPCFactory {
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
+
+    // Keep the original one-second death and the AI's 0.5s telegraph / 0.4s dash timings.
+    animator.addAnimation(DIE_ANIMATION, isMedusa ? 1f / 3f : 0.5f, Animation.PlayMode.NORMAL);
+    if (isMedusa) {
+      animator.addAnimation("hurt", 0.1f, Animation.PlayMode.NORMAL);
+      // The old idle crop was 65x85, including 8px below the body. Keep its height/foot position
+      // and centre the full 128px canvas, preserving square pixels and the existing entity size.
+      animator.setDrawBounds(-22f / 85f, 8f / 85f, 128f / 85f, 128f / 85f);
+    }
+
     if (atlas.findRegions(ATTACK_ANIMATION).size > 0) {
       animator.addAnimation(ATTACK_ANIMATION, 0.12f, Animation.PlayMode.NORMAL);
     }
@@ -210,7 +227,7 @@ public class NPCFactory {
           .addComponent(
               new TouchAttackComponent(
                   PhysicsLayer.PLAYER, 1.5f, isMedusa ? MEDUSA_CONTACT_INTERVAL : 1f, isMedusa))
-          .addComponent(new EnemyAnimationController());
+          .addComponent(new EnemyAnimationController(isMedusa ? CHASE_ANIMATION : null));
     }
     if (isMedusa) {
       chaseEnemy.addComponent(new MedusaHitRecoveryComponent(target, lunge));
@@ -239,10 +256,17 @@ public class NPCFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
 
-    animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
+    boolean isHarpy = HARPY_ATLAS.equals(skin);
+    animator.addAnimation(MOVE, isHarpy ? 0.06f : 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(ATTACK_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
-    animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(CHASE_ANIMATION, isHarpy ? 0.06f : 0.08f, Animation.PlayMode.LOOP);
+    // Multi-frame bird deaths should finish promptly (Harpy 0.8s, Jingwei 0.6s).
+    float deathFrameDuration =
+        switch (skin) {
+          case HARPY_ATLAS, "images/flying-enemy/jingwei.atlas" -> 0.1f;
+          default -> 0.5f;
+        };
+    animator.addAnimation(DIE_ANIMATION, deathFrameDuration, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     demon
@@ -536,7 +560,7 @@ public class NPCFactory {
 
   /** Creates a harpy with its standard appearance. */
   public static Entity createHarpy(Entity target, Vector2 spawn) {
-    return createFloatingEnemy(target, "images/flying-enemy/harpy.atlas", spawn);
+    return createFloatingEnemy(target, HARPY_ATLAS, spawn);
   }
 
   /** Creates a golem with its standard scale and collision bounds. */

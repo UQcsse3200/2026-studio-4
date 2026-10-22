@@ -89,6 +89,19 @@ class CerberusBiteComponentTest {
   }
 
   @Test
+  void shouldClearWindupAnimationOnceWhenTargetDies() {
+    int[] resets = {0};
+    boss.getEvents().addListener("default", () -> resets[0]++);
+    tick(0f);
+    playerStats.setHealth(0);
+
+    tick(0.1f);
+    tick(0.1f);
+
+    assertEquals(1, resets[0]);
+  }
+
+  @Test
   void shouldNotAttackAgainDuringCooldown() {
     tick(0f);
     tick(0.5f);
