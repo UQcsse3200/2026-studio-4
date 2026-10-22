@@ -264,8 +264,7 @@ class TouchAttackComponentTest {
     wielder.setPosition(0f, 0f);
     // Swing hitbox centred beyond the enemy, so pushing from the hitbox would pull it back.
     Entity hitbox =
-        attackerWith(
-            new TouchAttackComponent(PhysicsLayer.NPC, 2f).setKnockbackSource(wielder));
+        attackerWith(new TouchAttackComponent(PhysicsLayer.NPC, 2f).setKnockbackSource(wielder));
     hitbox.setPosition(2f, 0f);
     Entity enemy = steeredEnemy();
     enemy.setPosition(1f, 0f);

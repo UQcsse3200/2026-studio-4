@@ -26,6 +26,7 @@ import java.util.Set;
  */
 public class TouchAttackComponent extends Component {
   private short targetLayer;
+
   /** Seconds a knocked-back target stops steering, so the impulse is not cancelled next frame. */
   public static final float KNOCKBACK_STAGGER = 0.25f;
 
@@ -95,9 +96,9 @@ public class TouchAttackComponent extends Component {
   }
 
   /**
-   * Sets the entity knockback pushes targets away from, e.g. the wielder of a weapon hitbox. Without
-   * one, targets are pushed away from this entity's centre, which can pull an enemy standing
-   * between a wielder and the middle of a sword swing towards the wielder.
+   * Sets the entity knockback pushes targets away from, e.g. the wielder of a weapon hitbox.
+   * Without one, targets are pushed away from this entity's centre, which can pull an enemy
+   * standing between a wielder and the middle of a sword swing towards the wielder.
    *
    * @param knockbackSource entity to push targets away from; null to use this entity
    * @return this component, for chaining
