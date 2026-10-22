@@ -365,6 +365,10 @@ public class SettingsMenuDisplay extends UIComponent {
       super(9);
     }
 
+    private boolean blocksGameplayKeys() {
+      return scaleStage && menuOpen;
+    }
+
     @Override
     public boolean keyDown(int keycode) {
       return blocksGameplayKeys();
@@ -379,10 +383,6 @@ public class SettingsMenuDisplay extends UIComponent {
     public boolean keyTyped(char character) {
       return blocksGameplayKeys();
     }
-  }
-
-  private boolean blocksGameplayKeys() {
-    return scaleStage && menuOpen;
   }
 
   private void applyChanges() {
