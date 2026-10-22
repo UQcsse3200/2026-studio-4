@@ -3,6 +3,7 @@ package com.csse3200.game.entities.enemy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -69,6 +70,40 @@ class CerberusTest {
 
   private Entity createCerberusForAnimationTest() {
     return CerberusFactory.createCerberus(null, new Vector2(5f, 5f), null, entityService::register);
+  }
+
+  @Test
+  void shouldHoldWindupPoseUntilLungeStarts() {
+    Entity cerberus = createCerberusForAnimationTest();
+    CerberusLayeredRenderComponent renderer =
+        cerberus.getComponent(CerberusLayeredRenderComponent.class);
+
+    cerberus.getEvents().trigger("biteWindup");
+    renderer.update(0.49f);
+
+    assertSame(textureAtlas.findRegion("body_lunge", 0), renderer.getCurrentFrame(Part.BODY));
+    assertSame(textureAtlas.findRegion("middle_lunge", 0), renderer.getCurrentFrame(Part.MIDDLE));
+    assertEquals(Action.IDLE, renderer.getAction(Part.LEFT));
+    cerberus.getEvents().trigger("attackStart");
+    renderer.update(0.30f);
+    assertSame(textureAtlas.findRegion("middle_lunge", 3), renderer.getCurrentFrame(Part.MIDDLE));
+  }
+
+  @Test
+  void shouldCastOnlyTheHeadThatFiredWithoutInterruptingBite() {
+    List<Entity> heads = new ArrayList<>();
+    Entity cerberus = CerberusFactory.createCerberus(null, new Vector2(5f, 5f), null, heads::add);
+    CerberusLayeredRenderComponent renderer =
+        cerberus.getComponent(CerberusLayeredRenderComponent.class);
+
+    cerberus.getEvents().trigger("attackStart");
+    heads.get(0).getEvents().trigger("cerberusCast");
+    assertEquals(Action.CAST, renderer.getAction(Part.LEFT));
+    assertEquals(Action.IDLE, renderer.getAction(Part.RIGHT));
+    heads.get(1).getEvents().trigger("cerberusCast");
+    assertEquals(Action.CAST, renderer.getAction(Part.RIGHT));
+    assertEquals(Action.LUNGE, renderer.getAction(Part.BODY));
+    assertEquals(Action.LUNGE, renderer.getAction(Part.MIDDLE));
   }
 
   @Test
