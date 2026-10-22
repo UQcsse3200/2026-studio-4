@@ -21,6 +21,7 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   private Vector2 targetPosition;
   private boolean limitToTarget;
   private boolean movementEnabled = true;
+  private float staggerRemaining = 0f;
 
   @Override
   public void create() {
@@ -34,6 +35,13 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   public void update() {
     if (movementEnabled && targetPosition != null) {
       Body body = physicsComponent.getBody();
+      if (staggerRemaining > 0f) {
+        // Let a knockback impulse carry the body instead of steering cancelling it next frame.
+        // Checked before immobilisation so a hit that also stuns (e.g. Medusa's hit recovery)
+        // still pushes the enemy back before it is held still.
+        staggerRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
+        return;
+      }
       // Every steered entity stops here rather than each task learning to hold still, and the
       // target is left alone so the entity resumes its approach once the effect ends.
       if (statusEffects != null && statusEffects.isImmobilised()) {
@@ -104,6 +112,29 @@ public class PhysicsMovementComponent extends Component implements MovementContr
    */
   public void setMaxSpeed(Vector2 maxSpeed) {
     this.maxSpeed = maxSpeed;
+  }
+
+  /**
+   * Suspends steering for a short time so an external impulse (e.g. weapon knockback) can move the
+   * body. Without this, the next update applies an impulse back to the steering velocity and the
+   * knockback is cancelled within one frame. A shorter stagger never shortens a longer one.
+   *
+   * @param duration seconds to suspend steering for
+   * @require duration &gt;= 0
+   * @throws IllegalArgumentException if duration is negative
+   */
+  public void stagger(float duration) {
+    if (duration < 0f) {
+      throw new IllegalArgumentException("stagger duration must be >= 0");
+    }
+    staggerRemaining = Math.max(staggerRemaining, duration);
+  }
+
+  /**
+   * @return true while steering is suspended by {@link #stagger(float)}
+   */
+  public boolean isStaggered() {
+    return staggerRemaining > 0f;
   }
 
   private void updateDirection(Body body) {

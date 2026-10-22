@@ -1,6 +1,8 @@
 package com.csse3200.game.physics.components;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -70,5 +72,51 @@ class PhysicsMovementComponentTest {
     movement.update();
 
     assertEquals(6f, physics.getBody().getLinearVelocity().x, 0.001f);
+  }
+
+  @Test
+  void staggerKeepsKnockbackVelocityInsteadOfSteeringBack() {
+    movement.setTarget(new Vector2(10f, 0f));
+    movement.update();
+    assertEquals(2.5f, physics.getBody().getLinearVelocity().x, 0.001f);
+
+    // Knocked back the opposite way, as a weapon hit would.
+    physics.getBody().setLinearVelocity(-4f, 0f);
+    movement.stagger(0.1f);
+    movement.update();
+
+    assertTrue(movement.isStaggered());
+    assertEquals(-4f, physics.getBody().getLinearVelocity().x, 0.001f);
+  }
+
+  @Test
+  void steeringResumesOnceStaggerExpires() {
+    movement.setTarget(new Vector2(10f, 0f));
+    physics.getBody().setLinearVelocity(-4f, 0f);
+    movement.stagger(0.02f);
+
+    movement.update(); // 0.016s elapsed, still staggered
+    assertTrue(movement.isStaggered());
+    movement.update(); // 0.032s elapsed, stagger over
+    assertFalse(movement.isStaggered());
+    movement.update();
+
+    assertEquals(2.5f, physics.getBody().getLinearVelocity().x, 0.001f);
+  }
+
+  @Test
+  void shorterStaggerDoesNotCutALongerOneShort() {
+    movement.stagger(0.5f);
+    movement.stagger(0.01f);
+    movement.setTarget(new Vector2(10f, 0f));
+    for (int i = 0; i < 5; i++) {
+      movement.update();
+    }
+    assertTrue(movement.isStaggered());
+  }
+
+  @Test
+  void negativeStaggerIsRejected() {
+    assertThrows(IllegalArgumentException.class, () -> movement.stagger(-1f));
   }
 }
