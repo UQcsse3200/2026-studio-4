@@ -16,6 +16,7 @@ import com.csse3200.game.services.ServiceLocator;
  * animation mapping.
  */
 public class EnemyAnimationController extends Component {
+  private static final String ATTACK = "attack";
   private static final String CONTACT_ATTACK = "contactAttack";
   private static final String DEFAULT = "default";
   private static final String HURT = "hurt";
@@ -76,7 +77,7 @@ public class EnemyAnimationController extends Component {
         animator.startAnimation(animation);
       }
     } else if (animator.hasAnimation("move")
-        && !("attack".equals(animator.getCurrentAnimation()) && !animator.isFinished())
+        && !(ATTACK.equals(animator.getCurrentAnimation()) && !animator.isFinished())
         && !"move".equals(animator.getCurrentAnimation())) {
       // Flying skins share one flight loop instead of eight directional clips.
       animator.startAnimation("move");
@@ -119,11 +120,11 @@ public class EnemyAnimationController extends Component {
 
   @Override
   public void update() {
+    if (entity == null) {
+      return;
+    }
     if (dying) {
-      if (!disposalQueued && animator.isFinished()) {
-        disposalQueued = true;
-        ServiceLocator.getEntityService().scheduleDisposal(entity);
-      }
+      disposeAfterDeathAnimation();
       return;
     }
     if (hasContactAnimation) {
@@ -146,8 +147,15 @@ public class EnemyAnimationController extends Component {
       return;
     }
     updateFacingDirection(followPlayer);
-    if ("attack".equals(animator.getCurrentAnimation()) && animator.isFinished()) {
+    if (ATTACK.equals(animator.getCurrentAnimation()) && animator.isFinished()) {
       animator.startAnimation("move");
+    }
+  }
+
+  private void disposeAfterDeathAnimation() {
+    if (!disposalQueued && animator.isFinished()) {
+      disposalQueued = true;
+      ServiceLocator.getEntityService().scheduleDisposal(entity);
     }
   }
 
@@ -191,7 +199,7 @@ public class EnemyAnimationController extends Component {
 
   private void animateAttack() {
     if (!dying) {
-      animator.startAnimation("attack");
+      animator.startAnimation(ATTACK);
     }
   }
 

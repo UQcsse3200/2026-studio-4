@@ -140,6 +140,22 @@ class MedusaAnimationPlaybackTest {
   }
 
   @Test
+  void missingOwnerSkipsUpdateUntilReattached() {
+    medusa.getEvents().trigger("wanderStart");
+    movement.setMoving(false);
+    controller.setEntity(null);
+    try {
+      assertDoesNotThrow(controller::update);
+      assertEquals("move", animator.getCurrentAnimation());
+    } finally {
+      controller.setEntity(medusa);
+    }
+
+    controller.update();
+    assertEquals("default", animator.getCurrentAnimation());
+  }
+
+  @Test
   void concealedTargetCancelsTelegraphAndTheNextAiTaskRestoresLocomotion() {
     aiAt(0L);
     assertEquals("lungeTelegraph", animator.getCurrentAnimation());
