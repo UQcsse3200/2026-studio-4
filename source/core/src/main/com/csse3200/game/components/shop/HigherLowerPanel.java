@@ -39,12 +39,11 @@ public final class HigherLowerPanel extends Table {
     this.onResolved = onResolved;
     CasinoPanelSupport.initPanel(this, "higher-lower-panel", appearance.parchment());
 
-    Label rules =
-        new Label(
-            "HIGHER / LOWER  |  Guess right to grow your multiplier. Cash out any time.",
-            textStyle);
-    rules.setWrap(true);
-    add(rules).growX().padBottom(12f);
+    CasinoPanelSupport.wrappedLabel(
+        this,
+        "HIGHER / LOWER  |  Guess right to grow your multiplier. Cash out any time.",
+        textStyle,
+        12f);
     row();
 
     Table arena = new Table();
@@ -99,12 +98,11 @@ public final class HigherLowerPanel extends Table {
     add(playRow).growX().padBottom(12f);
     row();
 
-    Label hint =
-        new Label(
-            "Stake changes by 10 gold before you start. Each correct guess is worth 1.5x more.",
-            textStyle);
-    hint.setWrap(true);
-    add(hint).growX();
+    CasinoPanelSupport.wrappedLabel(
+        this,
+        "Stake changes by 10 gold before you start. Each correct guess is worth 1.5x more.",
+        textStyle,
+        0f);
   }
 
   private void adjust(int delta) {

@@ -37,9 +37,8 @@ public final class CoinFlipPanel extends Table {
     this.game = game;
     this.onResolved = onResolved;
     CasinoPanelSupport.initPanel(this, "coin-flip-panel", appearance.parchment());
-    Label rules = new Label("COIN FLIP  |  50/50 chance. Win: +stake. Lose: -stake.", textStyle);
-    rules.setWrap(true);
-    add(rules).growX().padBottom(12f);
+    CasinoPanelSupport.wrappedLabel(
+        this, "COIN FLIP  |  50/50 chance. Win: +stake. Lose: -stake.", textStyle, 12f);
     row();
     Table arena = new Table();
     arena.setBackground(appearance.arena());
@@ -69,12 +68,11 @@ public final class CoinFlipPanel extends Table {
     stakeLabel = CasinoPanelSupport.stakeLabel("coin-flip-stake", textStyle);
     add(CasinoPanelSupport.wagerRow(down, stakeLabel, up, flip)).growX().padBottom(12f);
     row();
-    Label hint =
-        new Label(
-            "Stake changes by 10 gold. Below 10 gold, you can bet your remaining coins.",
-            textStyle);
-    hint.setWrap(true);
-    add(hint).growX();
+    CasinoPanelSupport.wrappedLabel(
+        this,
+        "Stake changes by 10 gold. Below 10 gold, you can bet your remaining coins.",
+        textStyle,
+        0f);
   }
 
   public record Appearance(

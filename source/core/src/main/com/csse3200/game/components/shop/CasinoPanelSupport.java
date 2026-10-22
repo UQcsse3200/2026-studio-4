@@ -26,6 +26,13 @@ final class CasinoPanelSupport {
     panel.top();
   }
 
+  /** A wrapped, growing label row - used for the rules/hint blurbs under each panel's title. */
+  static void wrappedLabel(Table panel, String text, Label.LabelStyle style, float padBottom) {
+    Label label = new Label(text, style);
+    label.setWrap(true);
+    panel.add(label).growX().padBottom(padBottom);
+  }
+
   /** A button whose action only fires while {@code enabled} is true and it isn't disabled. */
   static TextButton actionButton(
       String text,

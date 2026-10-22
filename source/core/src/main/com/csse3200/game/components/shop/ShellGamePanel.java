@@ -30,13 +30,12 @@ public final class ShellGamePanel extends Table {
     this.onResolved = onResolved;
     CasinoPanelSupport.initPanel(this, "shell-game-panel", appearance.parchment());
 
-    Label rules =
-        new Label(
-            "SHELL GAME  |  Stake your gold, then pick the cup hiding the ball. Guess right to"
-                + " double your stake.",
-            textStyle);
-    rules.setWrap(true);
-    add(rules).growX().padBottom(12f);
+    CasinoPanelSupport.wrappedLabel(
+        this,
+        "SHELL GAME  |  Stake your gold, then pick the cup hiding the ball. Guess right to"
+            + " double your stake.",
+        textStyle,
+        12f);
     row();
 
     Table arena = new Table();
