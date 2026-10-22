@@ -203,22 +203,32 @@ public class TouchAttackComponent extends Component {
       targetStats.hit(combatStats);
     }
 
-    // Apply knockback
-    PhysicsComponent physicsComponent = target.getComponent(PhysicsComponent.class);
-    if (physicsComponent != null && knockbackForce > 0f) {
-      Body targetBody = physicsComponent.getBody();
-      Entity source = knockbackSource != null ? knockbackSource : entity;
-      Vector2 direction = target.getCenterPosition().sub(source.getCenterPosition());
-      if (direction.isZero()) {
-        direction = target.getCenterPosition().sub(entity.getCenterPosition());
-      }
-      Vector2 impulse = direction.setLength(knockbackForce);
-      targetBody.applyLinearImpulse(impulse, targetBody.getWorldCenter(), true);
+    applyKnockback(target);
+  }
 
-      PhysicsMovementComponent movement = target.getComponent(PhysicsMovementComponent.class);
-      if (movement != null) {
-        movement.stagger(KNOCKBACK_STAGGER);
-      }
+  /**
+   * Pushes the target away from the knockback source and briefly stops it steering, so the push is
+   * not cancelled by its movement on the next frame. Does nothing without knockback or physics.
+   *
+   * @param target entity that was hit
+   */
+  private void applyKnockback(Entity target) {
+    PhysicsComponent physicsComponent = target.getComponent(PhysicsComponent.class);
+    if (physicsComponent == null || knockbackForce <= 0f) {
+      return;
+    }
+    Body targetBody = physicsComponent.getBody();
+    Entity source = knockbackSource != null ? knockbackSource : entity;
+    Vector2 direction = target.getCenterPosition().sub(source.getCenterPosition());
+    if (direction.isZero()) {
+      direction = target.getCenterPosition().sub(entity.getCenterPosition());
+    }
+    Vector2 impulse = direction.setLength(knockbackForce);
+    targetBody.applyLinearImpulse(impulse, targetBody.getWorldCenter(), true);
+
+    PhysicsMovementComponent movement = target.getComponent(PhysicsMovementComponent.class);
+    if (movement != null) {
+      movement.stagger(KNOCKBACK_STAGGER);
     }
   }
 }
