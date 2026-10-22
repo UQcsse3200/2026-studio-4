@@ -8,7 +8,6 @@ import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,12 +25,7 @@ import java.util.Set;
  */
 public class TouchAttackComponent extends Component {
   private short targetLayer;
-
-  /** Seconds a knocked-back target stops steering, so the impulse is not cancelled next frame. */
-  public static final float KNOCKBACK_STAGGER = 0.25f;
-
   private float knockbackForce = 0f;
-  private Entity knockbackSource;
   private CombatStatsComponent combatStats;
   private HitboxComponent hitboxComponent;
   private float repeatInterval;
@@ -109,19 +103,6 @@ public class TouchAttackComponent extends Component {
    */
   public float getKnockbackForce() {
     return knockbackForce;
-  }
-
-  /**
-   * Sets the entity knockback pushes targets away from, e.g. the wielder of a weapon hitbox.
-   * Without one, targets are pushed away from this entity's centre, which can pull an enemy
-   * standing between a wielder and the middle of a sword swing towards the wielder.
-   *
-   * @param knockbackSource entity to push targets away from; null to use this entity
-   * @return this component, for chaining
-   */
-  public TouchAttackComponent setKnockbackSource(Entity knockbackSource) {
-    this.knockbackSource = knockbackSource;
-    return this;
   }
 
   @Override
@@ -231,35 +212,16 @@ public class TouchAttackComponent extends Component {
       targetStats.hit(combatStats);
     }
 
-    applyKnockback(target);
+    // Apply knockback
+    PhysicsComponent physicsComponent = target.getComponent(PhysicsComponent.class);
+    if (physicsComponent != null && knockbackForce > 0f) {
+      Body targetBody = physicsComponent.getBody();
+      Vector2 direction = target.getCenterPosition().sub(entity.getCenterPosition());
+      Vector2 impulse = direction.setLength(knockbackForce);
+      targetBody.applyLinearImpulse(impulse, targetBody.getWorldCenter(), true);
+    }
     if (targetStats != null) {
       entity.getEvents().trigger("contactAttack", target);
-    }
-  }
-
-  /**
-   * Pushes the target away from the knockback source and briefly stops it steering, so the push is
-   * not cancelled by its movement on the next frame. Does nothing without knockback or physics.
-   *
-   * @param target entity that was hit
-   */
-  private void applyKnockback(Entity target) {
-    PhysicsComponent physicsComponent = target.getComponent(PhysicsComponent.class);
-    if (physicsComponent == null || knockbackForce <= 0f) {
-      return;
-    }
-    Body targetBody = physicsComponent.getBody();
-    Entity source = knockbackSource != null ? knockbackSource : entity;
-    Vector2 direction = target.getCenterPosition().sub(source.getCenterPosition());
-    if (direction.isZero()) {
-      direction = target.getCenterPosition().sub(entity.getCenterPosition());
-    }
-    Vector2 impulse = direction.setLength(knockbackForce);
-    targetBody.applyLinearImpulse(impulse, targetBody.getWorldCenter(), true);
-
-    PhysicsMovementComponent movement = target.getComponent(PhysicsMovementComponent.class);
-    if (movement != null) {
-      movement.stagger(KNOCKBACK_STAGGER);
     }
   }
 }

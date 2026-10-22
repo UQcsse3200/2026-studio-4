@@ -44,9 +44,7 @@ public class HitboxFactory {
             .addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody))
             .addComponent(new HitboxComponent().setLayer(spec.getLayer()))
             .addComponent(new CombatStatsComponent(0, spec.getDamage()))
-            .addComponent(
-                new TouchAttackComponent(spec.getTargetLayer(), spec.getKnockback())
-                    .setKnockbackSource(spec.getOwner()))
+            .addComponent(new TouchAttackComponent(spec.getTargetLayer(), spec.getKnockback()))
             .addComponent(new LifetimeComponent(spec.getLifetime()));
 
     if (spec.getOwner() != null) {
