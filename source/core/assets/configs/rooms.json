@@ -76,7 +76,6 @@
         {"prop": "HANGING_LANTERN", "x": 26, "y": 16, "elevation": 24},
         {"prop": "STAIRS_DOWN", "x": 27, "y": 6},
         {"prop": "BARREL_PILE", "x": 24, "y": 6},
-        {"prop": "CRATE_STACK", "x": 27, "y": 11},
         {"prop": "OLD_TABLE", "x": 24, "y": 12},
         {"prop": "CRYSTAL_BALL", "x": 24, "y": 12, "elevation": 16},
         {"prop": "BOOK_STACK", "x": 25, "y": 12, "elevation": 16}
