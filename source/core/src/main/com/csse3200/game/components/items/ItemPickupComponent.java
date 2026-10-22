@@ -1,6 +1,7 @@
 package com.csse3200.game.components.items;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.maingame.InteractionPromptDisplay;
 import com.csse3200.game.components.player.InteractionPrompt;
@@ -91,7 +92,10 @@ public class ItemPickupComponent extends Component {
     if (entities == null) {
       return null;
     }
-    for (Entity other : entities.getEntities()) {
+    // EntityService.update is already iterating this array. A second iterator crashes on start.
+    Array<Entity> registered = entities.getEntities();
+    for (int i = 0; i < registered.size; i++) {
+      Entity other = registered.get(i);
       FriendlyNpcManagerComponent npcs = other.getComponent(FriendlyNpcManagerComponent.class);
       if (npcs == null) {
         continue;
