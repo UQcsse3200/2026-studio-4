@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.friendlynpc.NpcInteractableComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractableComponent.Availability;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.maingame.InteractionPromptDisplay;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.rooms.configs.NpcSpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.InteractableNpcConfig;
@@ -23,8 +25,9 @@ import java.util.Set;
  * <p>The friendly counterpart to EnemyManagerComponent. Friendly NPCs are tracked here and never
  * there, so they do not block a room from being cleared.
  *
- * <p>Each frame it shows the interaction indicator on the nearest in-range NPC that is available.
- * The room interaction system asks it for the HUD prompt and routes the E key to it.
+ * <p>Each frame it shows the interaction indicator on the nearest in-range NPC that is available,
+ * and puts that NPC's "Press E" sentence on the HUD. The room interaction system also asks for that
+ * sentence and routes the E key here. A door or pickup prompt is left as it is.
  */
 public class FriendlyNpcManagerComponent extends EntityManagerComponent {
   private final NpcSpawnConfig[] spawns;
@@ -33,6 +36,7 @@ public class FriendlyNpcManagerComponent extends EntityManagerComponent {
   private final String[] textures;
   private final List<NpcInteractableComponent> npcs = new ArrayList<>();
   private Entity player;
+  private String shownPrompt;
 
   /** Creates a manager for a room without friendly NPCs */
   public FriendlyNpcManagerComponent() {
@@ -95,11 +99,51 @@ public class FriendlyNpcManagerComponent extends EntityManagerComponent {
     }
   }
 
+  /**
+   * Shows the nearest NPC's sentence while the player is in range, and hides that sentence after
+   * they walk away or the conversation starts. A door or pickup prompt is left as it is.
+   */
   @Override
   public void update() {
-    if (player != null) {
-      updateIndicators(player);
+    if (player == null) {
+      return;
     }
+    updateIndicators(player);
+    refreshNpcPrompt(player.getComponent(InteractionPromptDisplay.class));
+  }
+
+  /**
+   * Puts the current NPC sentence on the HUD.
+   *
+   * @param display the player's prompt, or null when this entity has none
+   */
+  void refreshNpcPrompt(InteractionPromptDisplay display) {
+    if (display == null) {
+      return;
+    }
+    String prompt = promptToShow();
+    if (prompt != null) {
+      display.setPrompt(prompt);
+      shownPrompt = prompt;
+      return;
+    }
+    if (shownPrompt != null && shownPrompt.equals(display.getPrompt())) {
+      display.clearPrompt();
+    }
+    shownPrompt = null;
+  }
+
+  /**
+   * Sentence for the NPC the player is standing near, or null when no prompt should be shown.
+   *
+   * @return the HUD sentence, or null while the player is away, busy, or unable to act
+   */
+  private String promptToShow() {
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    if (actions != null && actions.areControlsLocked()) {
+      return null;
+    }
+    return getPrompt(player);
   }
 
   public void updateIndicators(Entity player) {

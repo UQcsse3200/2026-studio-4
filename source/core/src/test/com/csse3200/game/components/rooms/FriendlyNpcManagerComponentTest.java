@@ -19,6 +19,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractableComponent;
 import com.csse3200.game.components.friendlynpc.NpcInteractorComponent;
+import com.csse3200.game.components.maingame.InteractionPromptDisplay;
+import com.csse3200.game.components.player.InteractionPrompt;
+import com.csse3200.game.components.rooms.configs.ExitConfig;
 import com.csse3200.game.components.rooms.configs.NpcSpawnConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -108,6 +111,82 @@ class FriendlyNpcManagerComponentTest {
     player.setPosition(20f, 0f);
     assertNull(manager.findNearestInRange(player));
     assertNull(manager.getPrompt(player));
+  }
+
+  @Test
+  void keepsTheNpcPromptAheadOfANearbyDoor() {
+    FriendlyNpcManagerComponent manager = spawnedManager();
+    when(room.getComponent(FriendlyNpcManagerComponent.class)).thenReturn(manager);
+    TerrainComponent terrain = room.getComponent(TerrainComponent.class);
+    ExitConfig door = new ExitConfig();
+    door.x = 0;
+    door.y = 0;
+    door.kind = "DOOR";
+    door.available = true;
+    ExitComponent exits = new ExitComponent(new ExitConfig[] {door});
+    exits.setEntity(room);
+
+    player.setPosition(0f, 0f);
+    when(terrain.tileToWorldPosition(0, 0)).thenReturn(player.getCenterPosition().cpy());
+    assertEquals("Press E — Talk to near", exits.promptFor(player, true));
+
+    player.setPosition(4f, 0f);
+    when(terrain.tileToWorldPosition(0, 0)).thenReturn(player.getCenterPosition().cpy());
+    assertEquals(InteractionPrompt.NEXT_ROOM, exits.promptFor(player, true));
+  }
+
+  @Test
+  void showsTheNpcPromptWhileThePlayerIsInRange() {
+    FriendlyNpcManagerComponent manager = spawnedManager();
+    InteractionPromptDisplay display = mock(InteractionPromptDisplay.class);
+
+    player.setPosition(1f, 0f);
+    manager.refreshNpcPrompt(display);
+
+    verify(display).setPrompt("Press E — Talk to near");
+  }
+
+  @Test
+  void hidesTheNpcPromptAfterThePlayerWalksAway() {
+    FriendlyNpcManagerComponent manager = spawnedManager();
+    InteractionPromptDisplay display = mock(InteractionPromptDisplay.class);
+    player.setPosition(1f, 0f);
+    manager.refreshNpcPrompt(display);
+
+    player.setPosition(20f, 0f);
+    when(display.getPrompt()).thenReturn("Press E — Talk to near");
+    manager.refreshNpcPrompt(display);
+
+    verify(display).clearPrompt();
+  }
+
+  @Test
+  void hidesTheNpcPromptWhenTheConversationStarts() {
+    FriendlyNpcManagerComponent manager = spawnedManager();
+    InteractionPromptDisplay display = mock(InteractionPromptDisplay.class);
+    player.setPosition(1f, 0f);
+    manager.refreshNpcPrompt(display);
+
+    assertTrue(manager.getNpcs().get(0).interact(player));
+    when(display.getPrompt()).thenReturn("Press E — Talk to near");
+    manager.refreshNpcPrompt(display);
+
+    verify(display, times(1)).setPrompt("Press E — Talk to near");
+    verify(display).clearPrompt();
+  }
+
+  @Test
+  void leavesAnotherPromptAloneWhenNoNpcIsInRange() {
+    FriendlyNpcManagerComponent manager = spawnedManager();
+    InteractionPromptDisplay display = mock(InteractionPromptDisplay.class);
+    player.setPosition(1f, 0f);
+    manager.refreshNpcPrompt(display);
+
+    player.setPosition(20f, 0f);
+    when(display.getPrompt()).thenReturn("Press E for Next room");
+    manager.refreshNpcPrompt(display);
+
+    verify(display, never()).clearPrompt();
   }
 
   @Test
