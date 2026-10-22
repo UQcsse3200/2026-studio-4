@@ -232,6 +232,9 @@ public class TouchAttackComponent extends Component {
     }
 
     applyKnockback(target);
+    if (targetStats != null) {
+      entity.getEvents().trigger("contactAttack", target);
+    }
   }
 
   /**
@@ -257,9 +260,6 @@ public class TouchAttackComponent extends Component {
     PhysicsMovementComponent movement = target.getComponent(PhysicsMovementComponent.class);
     if (movement != null) {
       movement.stagger(KNOCKBACK_STAGGER);
-    }
-    if (targetStats != null) {
-      entity.getEvents().trigger("contactAttack", target);
     }
   }
 }
