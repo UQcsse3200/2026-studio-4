@@ -1,11 +1,9 @@
 package com.csse3200.game.components.shop;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import java.util.function.Consumer;
 
@@ -78,15 +76,8 @@ public final class HigherLowerPanel extends Table {
     down = button("-10", "higher-lower-down", wagerStyle, () -> adjust(-10));
     up = button("+10", "higher-lower-up", wagerStyle, () -> adjust(10));
     start = button("START", "higher-lower-start", flipStyle, this::start);
-    stakeLabel = new Label("", textStyle);
-    stakeLabel.setName("higher-lower-stake");
-    stakeLabel.setAlignment(Align.center);
-    Table wager = new Table();
-    wager.add(down).width(58f).height(42f).padRight(8f);
-    wager.add(stakeLabel).growX().minWidth(48f).padRight(8f);
-    wager.add(up).width(58f).height(42f).padRight(8f);
-    wager.add(start).width(90f).height(42f);
-    add(wager).growX().padBottom(12f);
+    stakeLabel = CasinoPanelSupport.stakeLabel("higher-lower-stake", textStyle);
+    add(CasinoPanelSupport.wagerRow(down, stakeLabel, up, start)).growX().padBottom(12f);
     row();
 
     higher = button("HIGHER", "higher-lower-higher", flipStyle, () -> guess(true));
@@ -109,16 +100,7 @@ public final class HigherLowerPanel extends Table {
 
   private TextButton button(
       String text, String name, TextButton.TextButtonStyle style, Runnable action) {
-    TextButton button = new TextButton(text, style);
-    button.setName(name);
-    button.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent event, Actor actor) {
-            if (active && !button.isDisabled()) action.run();
-          }
-        });
-    return button;
+    return CasinoPanelSupport.actionButton(text, name, style, () -> active, action);
   }
 
   private void adjust(int delta) {

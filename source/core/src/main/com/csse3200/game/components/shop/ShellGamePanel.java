@@ -1,12 +1,10 @@
 package com.csse3200.game.components.shop;
 
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import java.util.function.Consumer;
 
@@ -50,15 +48,9 @@ public final class ShellGamePanel extends Table {
     Table cupRow = new Table();
     for (int i = 0; i < cups.length; i++) {
       int cup = i;
-      TextButton button = new TextButton("CUP " + (i + 1), flipStyle);
-      button.setName("shell-game-cup-" + i);
-      button.addListener(
-          new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-              if (active && !button.isDisabled()) guess(cup);
-            }
-          });
+      TextButton button =
+          CasinoPanelSupport.actionButton(
+              "CUP " + (i + 1), "shell-game-cup-" + i, flipStyle, () -> active, () -> guess(cup));
       cups[i] = button;
       cupRow.add(button).width(90f).height(60f).padRight(i < cups.length - 1 ? 10f : 0f);
     }
@@ -77,29 +69,13 @@ public final class ShellGamePanel extends Table {
     down = button("-10", "shell-game-down", wagerStyle, () -> adjust(-10));
     up = button("+10", "shell-game-up", wagerStyle, () -> adjust(10));
     start = button("START", "shell-game-start", flipStyle, this::start);
-    stakeLabel = new Label("", textStyle);
-    stakeLabel.setName("shell-game-stake");
-    stakeLabel.setAlignment(Align.center);
-    Table wager = new Table();
-    wager.add(down).width(58f).height(42f).padRight(8f);
-    wager.add(stakeLabel).growX().minWidth(48f).padRight(8f);
-    wager.add(up).width(58f).height(42f).padRight(8f);
-    wager.add(start).width(90f).height(42f);
-    add(wager).growX();
+    stakeLabel = CasinoPanelSupport.stakeLabel("shell-game-stake", textStyle);
+    add(CasinoPanelSupport.wagerRow(down, stakeLabel, up, start)).growX();
   }
 
   private TextButton button(
       String text, String name, TextButton.TextButtonStyle style, Runnable action) {
-    TextButton button = new TextButton(text, style);
-    button.setName(name);
-    button.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent event, Actor actor) {
-            if (active && !button.isDisabled()) action.run();
-          }
-        });
-    return button;
+    return CasinoPanelSupport.actionButton(text, name, style, () -> active, action);
   }
 
   private void adjust(int delta) {
