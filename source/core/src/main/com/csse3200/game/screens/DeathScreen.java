@@ -25,6 +25,9 @@ import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 
+/**
+ * Screen shown when the player dies, with options to load a savepoint or return to the main menu.
+ */
 public class DeathScreen extends ScreenAdapter {
   private final GdxGame game;
   private Renderer renderer;
@@ -32,6 +35,11 @@ public class DeathScreen extends ScreenAdapter {
   private static final String DEATH_SOUND_C = "sounds/death_sound.mp3";
   private static final String[] DEATH_SOUND = {DEATH_SOUND_C};
 
+  /**
+   * Creates the death screen, initializes its services, loads its assets, and builds its UI.
+   *
+   * @param game game instance used to load a savepoint or switch screens
+   */
   public DeathScreen(GdxGame game) {
     this.game = game;
 
@@ -47,6 +55,7 @@ public class DeathScreen extends ScreenAdapter {
     playDeathSound();
   }
 
+  /** Loads the death screen's background texture and sound effect. */
   private void loadAssets() {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(DEATH_TEXTURES);
@@ -54,7 +63,7 @@ public class DeathScreen extends ScreenAdapter {
     resourceService.loadAll();
   }
 
-  /** Plays the death sound at the effects volume from Settings. */
+  /** Plays the death sound when the asset is available. */
   private void playDeathSound() {
     ResourceService resourceService = ServiceLocator.getResourceService();
     if (resourceService != null && resourceService.containsAsset(DEATH_SOUND_C, Sound.class)) {
@@ -62,6 +71,7 @@ public class DeathScreen extends ScreenAdapter {
     }
   }
 
+  /** Creates the death screen UI and registers its input handler. */
   private void createUI() {
     Stage stage = ServiceLocator.getRenderService().getStage();
 
@@ -107,6 +117,11 @@ public class DeathScreen extends ScreenAdapter {
     ServiceLocator.getEntityService().register(ui);
   }
 
+  /**
+   * Clears the frame, updates game entities, and renders the screen.
+   *
+   * @param delta time in seconds since the previous frame
+   */
   @Override
   public void render(float delta) {
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -114,11 +129,18 @@ public class DeathScreen extends ScreenAdapter {
     renderer.render();
   }
 
+  /**
+   * Updates the renderer after the window dimensions change.
+   *
+   * @param width new screen width in pixels
+   * @param height new screen height in pixels
+   */
   @Override
   public void resize(int width, int height) {
     renderer.resize(width, height);
   }
 
+  /** Disposes of the renderer and screen services. */
   @Override
   public void dispose() {
     renderer.dispose();

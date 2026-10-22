@@ -24,7 +24,7 @@ import java.util.Set;
  * there, so they do not block a room from being cleared.
  *
  * <p>Each frame it shows the interaction indicator on the nearest in-range NPC that is available.
- * RoomManager asks it for the HUD prompt and routes the E key to it.
+ * The room interaction system asks it for the HUD prompt and routes the E key to it.
  */
 public class FriendlyNpcManagerComponent extends EntityManagerComponent {
   private final NpcSpawnConfig[] spawns;
@@ -72,7 +72,6 @@ public class FriendlyNpcManagerComponent extends EntityManagerComponent {
     entity.getEvents().addListener("npcInteract", this::onInteract);
   }
 
-  // Moved from existing logic inside RoomManager
   public void onInteract(Entity player) {
     // Passing player through to here is kind of not great ...
     var npc = findNearestInRange(player);

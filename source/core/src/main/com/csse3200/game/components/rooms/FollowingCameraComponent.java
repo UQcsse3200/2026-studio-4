@@ -87,6 +87,9 @@ public class FollowingCameraComponent extends Component {
   private void applyLockedPosition() {
     cameraPosition = lockedPosition.cpy();
     camera.getEntity().setPosition(cameraPosition);
+    if (cameraPosition == null) {
+      throw new IllegalStateException("Cannot lock a camera to an undefined position");
+    }
     camera.getCamera().position.set(cameraPosition.x, cameraPosition.y, 0f);
     camera.getCamera().update();
   }

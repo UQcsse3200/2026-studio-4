@@ -26,8 +26,9 @@ import java.util.Objects;
 
 /** Four consumable slots along the bottom of the game UI, following the weapon slots. */
 public class ConsumableHotbarDisplay extends UIComponent {
-  public static final String IDLE_FRAME_TEXTURE = "images/consumable-slot-idle.png";
-  public static final String SELECTED_FRAME_TEXTURE = "images/consumable-slot-selected.png";
+  public static final String IDLE_FRAME_TEXTURE = "images/ui/inventory/consumable-slot-idle.png";
+  public static final String SELECTED_FRAME_TEXTURE =
+      "images/ui/inventory/consumable-slot-selected.png";
   private static final float USE_HINT_HEIGHT = 20f;
   private static final float USE_HINT_GAP = 4f;
   private final Entity player;

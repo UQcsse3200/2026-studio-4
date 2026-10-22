@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 
 /** Creates the Final Boss and its Stage 1 summons. */
 public final class FinalBossFactory {
-  public static final String PLACEHOLDER_SKIN = "images/bombEnemy.atlas";
+  public static final String PLACEHOLDER_SKIN = "images/bomb-enemy/golem.atlas";
 
   /**
    * Creates the Final Boss with its shared phase framework and Stage 1 behaviour.

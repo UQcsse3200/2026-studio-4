@@ -1,0 +1,83 @@
+intro.png
+size: 2056, 256
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+pentagram_idle
+  bounds: 0, 0, 81, 85
+pentagram_open
+  bounds: 85, 0, 82, 85
+  index: 0
+pentagram_open
+  bounds: 342, 0, 82, 85
+  index: 1
+pentagram_open
+  bounds: 599, 0, 82, 85
+  index: 2
+pentagram_open
+  bounds: 856, 0, 82, 85
+  index: 3
+pentagram_open
+  bounds: 1113, 0, 82, 85
+  index: 4
+pentagram_open
+  bounds: 1370, 0, 82, 85
+  index: 5
+pentagram_open
+  bounds: 1627, 0, 82, 85
+  index: 6
+pentagram_open
+  bounds: 1884, 0, 82, 85
+  index: 7
+moon_idle
+  bounds: 0, 85, 81, 85
+moon_open
+  bounds: 85, 85, 82, 85
+  index: 0
+moon_open
+  bounds: 342, 85, 82, 85
+  index: 1
+moon_open
+  bounds: 599, 85, 82, 85
+  index: 2
+moon_open
+  bounds: 856, 85, 82, 85
+  index: 3
+moon_open
+  bounds: 1113, 85, 82, 85
+  index: 4
+moon_open
+  bounds: 1370, 85, 82, 85
+  index: 5
+moon_open
+  bounds: 1627, 85, 82, 85
+  index: 6
+moon_open
+  bounds: 1884, 85, 82, 85
+  index: 7
+chain_idle
+  bounds: 0, 170, 81, 85
+chain_open
+  bounds: 85, 170, 82, 85
+  index: 0
+chain_open
+  bounds: 342, 170, 82, 85
+  index: 1
+chain_open
+  bounds: 599, 170, 82, 85
+  index: 2
+chain_open
+  bounds: 856, 170, 82, 85
+  index: 3
+chain_open
+  bounds: 1113, 170, 82, 85
+  index: 4
+chain_open
+  bounds: 1370, 170, 82, 85
+  index: 5
+chain_open
+  bounds: 1627, 170, 82, 85
+  index: 6
+chain_open
+  bounds: 1884, 170, 82, 85
+  index: 7

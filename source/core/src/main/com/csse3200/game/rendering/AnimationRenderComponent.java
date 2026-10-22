@@ -178,6 +178,11 @@ public class AnimationRenderComponent extends RenderComponent {
     return currentAnimation == null ? null : currentAnimation.getKeyFrame(animationPlayTime);
   }
 
+  /** Current animation frame index, or -1 if no animation is playing. */
+  public int getCurrentFrameIndex() {
+    return currentAnimation == null ? -1 : currentAnimation.getKeyFrameIndex(animationPlayTime);
+  }
+
   /**
    * Has the playing animation finished? This will always be false for looping animations.
    *

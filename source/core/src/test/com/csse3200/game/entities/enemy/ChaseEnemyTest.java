@@ -45,15 +45,17 @@ class ChaseEnemyTest {
     ServiceLocator.registerEntityService(entityService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/crab.atlas", "images/medusa.atlas"});
+    resourceService.loadTextureAtlases(
+        new String[] {"images/split-enemy/crab.atlas", "images/split-enemy/medusa.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
 
   @Test
   void shouldHaveChaseEnemyAnimations() {
-    Entity medusa = NPCFactory.createChaseEnemy(new Entity(), true, "images/medusa.atlas");
-    Entity crab = NPCFactory.createChaseEnemy(new Entity(), true, "images/crab.atlas");
+    Entity medusa =
+        NPCFactory.createChaseEnemy(new Entity(), true, "images/split-enemy/medusa.atlas");
+    Entity crab = NPCFactory.createChaseEnemy(new Entity(), true, "images/split-enemy/crab.atlas");
     AnimationRenderComponent golemAnimator = crab.getComponent(AnimationRenderComponent.class);
     AnimationRenderComponent beetleAnimator = medusa.getComponent(AnimationRenderComponent.class);
 
@@ -77,7 +79,7 @@ class ChaseEnemyTest {
             .addComponent(new com.csse3200.game.components.CombatStatsComponent(20, 0));
     player.create();
 
-    Entity chaseEnemy = NPCFactory.createChaseEnemy(player, true, "images/crab.atlas");
+    Entity chaseEnemy = NPCFactory.createChaseEnemy(player, true, "images/split-enemy/crab.atlas");
     chaseEnemy.create();
 
     Fixture chaseFixture = chaseEnemy.getComponent(HitboxComponent.class).getFixture();
@@ -102,7 +104,7 @@ class ChaseEnemyTest {
             .addComponent(new com.csse3200.game.components.CombatStatsComponent(20, 0));
     player.create();
 
-    Entity chaseEnemy = NPCFactory.createChaseEnemy(player, true, "images/crab.atlas");
+    Entity chaseEnemy = NPCFactory.createChaseEnemy(player, true, "images/split-enemy/crab.atlas");
     chaseEnemy.create();
 
     Entity otherEntity =
@@ -127,7 +129,8 @@ class ChaseEnemyTest {
 
   @Test
   void shouldUseConfiguredHealthAndAttack() {
-    Entity chaseEnemy = NPCFactory.createChaseEnemy(new Entity(), true, "images/crab.atlas");
+    Entity chaseEnemy =
+        NPCFactory.createChaseEnemy(new Entity(), true, "images/split-enemy/crab.atlas");
     CombatStatsComponent stats = chaseEnemy.getComponent(CombatStatsComponent.class);
 
     assertEquals(40, stats.getHealth());
@@ -137,7 +140,8 @@ class ChaseEnemyTest {
 
   @Test
   void shouldStartDefaultAnimationImmediately() {
-    Entity chaseChild = NPCFactory.createChaseEnemy(new Entity(), false, "images/crab.atlas");
+    Entity chaseChild =
+        NPCFactory.createChaseEnemy(new Entity(), false, "images/split-enemy/crab.atlas");
     AnimationRenderComponent animator = chaseChild.getComponent(AnimationRenderComponent.class);
 
     assertEquals("default", animator.getCurrentAnimation());

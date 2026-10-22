@@ -4,8 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.NPCFactory;
@@ -39,15 +41,20 @@ class GiantEnemyTest {
     ServiceLocator.registerEntityService(entityService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/cyclops.atlas", "images/mummy.atlas"});
+    resourceService.loadTextureAtlases(
+        new String[] {
+          "images/giant-enemy/cyclops.atlas",
+          "images/giant-enemy/mummy.atlas",
+          "images/giant-enemy/jotunn.atlas"
+        });
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
 
   @Test
   void shouldHaveGiantAnimations() {
-    Entity cyclops = NPCFactory.createGiantEnemy(new Entity(), "images/cyclops.atlas");
-    Entity mummy = NPCFactory.createGiantEnemy(new Entity(), "images/mummy.atlas");
+    Entity cyclops = NPCFactory.createGiantEnemy(new Entity(), "images/giant-enemy/cyclops.atlas");
+    Entity mummy = NPCFactory.createGiantEnemy(new Entity(), "images/giant-enemy/mummy.atlas");
     AnimationRenderComponent cyclopsAnimator = cyclops.getComponent(AnimationRenderComponent.class);
     AnimationRenderComponent mummyAnimator = mummy.getComponent(AnimationRenderComponent.class);
 
@@ -61,16 +68,37 @@ class GiantEnemyTest {
 
   @Test
   void getGiantEnemySize() {
-    Entity giantEnemy = NPCFactory.createGiantEnemy(new Entity(), "images/cyclops.atlas");
+    Entity giantEnemy =
+        NPCFactory.createGiantEnemy(new Entity(), "images/giant-enemy/cyclops.atlas");
     assertEquals(giantEnemy.getScale(), new Vector2(3f, 3f));
   }
 
   @Test
   void shouldUseConfiguredBaseCombatStats() {
-    Entity giant = NPCFactory.createGiantEnemy(new Entity(), "images/cyclops.atlas");
+    Entity giant = NPCFactory.createGiantEnemy(new Entity(), "images/giant-enemy/cyclops.atlas");
     CombatStatsComponent stats = giant.getComponent(CombatStatsComponent.class);
 
     assertEquals(30, stats.getHealth());
     assertEquals(3, stats.getBaseAttack());
+  }
+
+  @Test
+  void jotunnDeathAnimationRotatesLikeZombie() {
+    GameTime time = mock(GameTime.class);
+    when(time.getDeltaTime()).thenReturn(0.5f);
+    ServiceLocator.registerTimeSource(time);
+
+    Entity jotunn = NPCFactory.createGiantEnemy(new Entity(), "images/giant-enemy/jotunn.atlas");
+    jotunn.create();
+    AnimationRenderComponent animator = jotunn.getComponent(AnimationRenderComponent.class);
+    SpriteBatch batch = mock(SpriteBatch.class);
+
+    jotunn.getEvents().trigger("dieAnimation");
+    for (int frame = 0; frame < 3; frame++) {
+      animator.render(batch);
+      jotunn.getComponent(EnemyAnimationController.class).update();
+    }
+
+    assertEquals(90f, animator.getRotation());
   }
 }
