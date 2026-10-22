@@ -212,8 +212,7 @@ class ShopCasinoMinigamesTest {
   @Test
   void higherLowerRoundSurvivesSwitchingGamesAndCashOutPaysOnce() {
     List<HigherLowerGame.Round> rounds = new ArrayList<>();
-    shop.getEvents()
-        .addListener("higherLowerResolved", (HigherLowerGame.Round round) -> rounds.add(round));
+    shop.getEvents().<HigherLowerGame.Round>addListener("higherLowerResolved", rounds::add);
     openCasino();
     button("casino-select-higher-lower").fire(new ChangeEvent());
     button("higher-lower-start").fire(new ChangeEvent());
@@ -240,7 +239,7 @@ class ShopCasinoMinigamesTest {
   @Test
   void shellGameRoundSurvivesSwitchingGamesAndGuessPaysOnce() {
     List<ShellGame.Round> rounds = new ArrayList<>();
-    shop.getEvents().addListener("shellGameResolved", (ShellGame.Round round) -> rounds.add(round));
+    shop.getEvents().<ShellGame.Round>addListener("shellGameResolved", rounds::add);
     openCasino();
     button("casino-select-shell-game").fire(new ChangeEvent());
     button("shell-game-start").fire(new ChangeEvent());
