@@ -58,7 +58,11 @@ class EventHandlerTest {
 
   @Test
   void shouldHandleNoListeners() {
+    EventListener0 listener = mock(EventListener0.class);
+
     handler.trigger("not-real-event");
+
+    verifyNoInteractions(listener);
   }
 
   @Test
