@@ -97,8 +97,9 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">EnemyAnimationController</span>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">This class listens to events relevant to a ghost entity's state and plays the animation when one
- of the events is triggered.</div>
+<div class="block">Plays enemy animations in response to existing AI and combat events. Contact attackers with an
+ attack clip, or skins with lunge clips, opt into phase playback. An optional loop spans chase and
+ lunge phases; other skins retain their existing animation mapping.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -121,6 +122,8 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">EnemyAnimationController</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.lang.String)" class="member-name-link">EnemyAnimationController</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;lungeLoopAnimation)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -173,6 +176,16 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;()">
 <h3>EnemyAnimationController</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">EnemyAnimationController</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(java.lang.String)">
+<h3>EnemyAnimationController</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">EnemyAnimationController</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;lungeLoopAnimation)</span></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>lungeLoopAnimation</code> - optional shared chase/lunge loop, or null for separate phase clips</dd>
+</dl>
 </section>
 </li>
 </ul>

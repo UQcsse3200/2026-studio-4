@@ -130,9 +130,14 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the time left until the status effect should be removed (in milliseconds).</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onRemoved()" class="member-name-link">onRemoved</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Restores only this effect's speed adjustment when it expires or is removed early.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Updates the slow.</div>
 </div>
 </div>
@@ -140,7 +145,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.components.statuseffects.StatusEffect">Methods inherited from class&nbsp;com.csse3200.game.components.statuseffects.<a href="StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a></h3>
-<code><a href="StatusEffect.html#concealsOwner()">concealsOwner</a>, <a href="StatusEffect.html#getDuration()">getDuration</a>, <a href="StatusEffect.html#getGlow()">getGlow</a>, <a href="StatusEffect.html#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)">getStatMultiplier</a>, <a href="StatusEffect.html#getTint()">getTint</a>, <a href="StatusEffect.html#immobilisesOwner()">immobilisesOwner</a>, <a href="StatusEffect.html#isExpired()">isExpired</a>, <a href="StatusEffect.html#onRemoved()">onRemoved</a>, <a href="StatusEffect.html#setOnEnded(java.lang.Runnable)">setOnEnded</a></code></div>
+<code><a href="StatusEffect.html#concealsOwner()">concealsOwner</a>, <a href="StatusEffect.html#getDuration()">getDuration</a>, <a href="StatusEffect.html#getGlow()">getGlow</a>, <a href="StatusEffect.html#getStatMultiplier(com.csse3200.game.components.statuseffects.Stat)">getStatMultiplier</a>, <a href="StatusEffect.html#getTint()">getTint</a>, <a href="StatusEffect.html#immobilisesOwner()">immobilisesOwner</a>, <a href="StatusEffect.html#isExpired()">isExpired</a>, <a href="StatusEffect.html#setOnEnded(java.lang.Runnable)">setOnEnded</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
@@ -166,6 +171,7 @@ loadScripts(document, 'script');</script>
 <dt>Parameters:</dt>
 <dd><code>duration</code> - the total time the slow lasts for.</dd>
 <dd><code>combatStats</code> - the combat stats component of the entity which has the status effect.</dd>
+<dd><code>amount</code> - the movement speed adjustment, clamped so speed cannot become negative.</dd>
 </dl>
 </section>
 </li>
@@ -187,6 +193,17 @@ loadScripts(document, 'script');</script>
 <dd><code><a href="StatusEffect.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a></code></dd>
 <dt>Returns:</dt>
 <dd>true if the slow status effect is ready for removal. false otherwise.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="onRemoved()">
+<h3>onRemoved</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">onRemoved</span>()</div>
+<div class="block">Restores only this effect's speed adjustment when it expires or is removed early.</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="StatusEffect.html#onRemoved()">onRemoved</a></code>&nbsp;in class&nbsp;<code><a href="StatusEffect.html" title="class in com.csse3200.game.components.statuseffects">StatusEffect</a></code></dd>
 </dl>
 </section>
 </li>
