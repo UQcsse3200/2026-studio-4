@@ -35,15 +35,17 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   public void update() {
     if (movementEnabled && targetPosition != null) {
       Body body = physicsComponent.getBody();
+      if (staggerRemaining > 0f) {
+        // Let a knockback impulse carry the body instead of steering cancelling it next frame.
+        // Checked before immobilisation so a hit that also stuns (e.g. Medusa's hit recovery)
+        // still pushes the enemy back before it is held still.
+        staggerRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
+        return;
+      }
       // Every steered entity stops here rather than each task learning to hold still, and the
       // target is left alone so the entity resumes its approach once the effect ends.
       if (statusEffects != null && statusEffects.isImmobilised()) {
         setToVelocity(body, Vector2.Zero);
-        return;
-      }
-      if (staggerRemaining > 0f) {
-        // Let a knockback impulse carry the body instead of steering cancelling it next frame.
-        staggerRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
         return;
       }
       updateDirection(body);
