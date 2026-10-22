@@ -16,7 +16,7 @@ public class FloatingDemonProjectileFactory {
   private static final float PROJECTILE_RANGE = 7f;
   private static final float PROJECTILE_LIFETIME = 1.8f;
   private static final String PROJECTILE = "projectile";
-  private static final String DEFAULT_ATLAS = "images/floatingDemon.atlas";
+  private static final String DEFAULT_ATLAS = "images/flying-enemy/floating-demon-projectile.atlas";
 
   public static Entity createProjectile(Vector2 position, Vector2 direction, int damage) {
     return createProjectile(position, direction, damage, DEFAULT_ATLAS);

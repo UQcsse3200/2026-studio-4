@@ -15,7 +15,10 @@ class LoadGameScreenTest {
     int slot = 3;
     GameSaveData save = new GameSaveData();
     save.playTimeSeconds = 42f;
-    save.checkpoint.roomId = "final_dungeon";
+    save.resumePosition = new GameSaveData.ResumePosition();
+    save.resumePosition.roomId = "final_dungeon";
+    save.resumePosition.x = 12f;
+    save.resumePosition.y = 8f;
 
     try {
       FileLoader.save(save, slot);
@@ -23,7 +26,9 @@ class LoadGameScreenTest {
 
       assertNotNull(loaded);
       assertEquals(42f, loaded.playTimeSeconds);
-      assertEquals("final_dungeon", loaded.checkpoint.roomId);
+      assertEquals("final_dungeon", loaded.resumePosition.roomId);
+      assertEquals(12f, loaded.resumePosition.x);
+      assertEquals(8f, loaded.resumePosition.y);
     } finally {
       FileLoader.deleteSaveSlot(slot);
     }

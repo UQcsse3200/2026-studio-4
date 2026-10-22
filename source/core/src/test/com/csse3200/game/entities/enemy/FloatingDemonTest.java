@@ -42,7 +42,8 @@ class FloatingDemonTest {
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/harpy.atlas", "images/wasp.atlas"});
+    resourceService.loadTextureAtlases(
+        new String[] {"images/flying-enemy/harpy.atlas", "images/flying-enemy/wasp.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }

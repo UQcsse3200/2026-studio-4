@@ -16,9 +16,11 @@ import java.util.List;
 /** Draws green burrowing dust and a fixed warning circle without external effect textures. */
 public class SnakeBurrowVisualComponent extends RenderComponent {
   private static final int MAX_PARTICLES = 128;
-  private static final float PIXEL_SIZE = 0.065f;
+  private static final float DUST_SCALE = 1.5f;
+  private static final float PIXEL_SIZE = 0.065f * DUST_SCALE;
   private final List<Particle> particles = new ArrayList<>();
   private final Vector2 warningCentre = new Vector2();
+  private SnakeBurrowArena dustArena = new SnakeBurrowArena(null);
   private Texture pixel;
   private Texture circle;
   private float warningRadius;
@@ -31,6 +33,7 @@ public class SnakeBurrowVisualComponent extends RenderComponent {
     private final Vector2 velocity;
     private final float lifetime;
     private final float size;
+    private final Vector2 halfSize;
     private float age;
 
     private Particle(Vector2 centre, float angle, float spread) {
@@ -38,6 +41,9 @@ public class SnakeBurrowVisualComponent extends RenderComponent {
       velocity = new Vector2(MathUtils.cos(angle), MathUtils.sin(angle)).scl(spread);
       lifetime = MathUtils.random(0.4f, 0.7f);
       size = MathUtils.random(2, 4) * PIXEL_SIZE;
+      // Drawing rounds the centre to the pixel grid, so reserve half a pixel on every edge.
+      float halfExtent = (size + PIXEL_SIZE) / 2f;
+      halfSize = new Vector2(halfExtent, halfExtent);
     }
   }
 
@@ -46,6 +52,11 @@ public class SnakeBurrowVisualComponent extends RenderComponent {
     entity.getEvents().addListener("entityDied", this::stop);
     super.create();
     registered = true;
+  }
+
+  /** Shares the encounter's floor bounds for dust only; the attack warning is unchanged. */
+  void setDustArena(SnakeBurrowArena arena) {
+    dustArena = arena;
   }
 
   /** Adds the initial dust cloud; safe to call before render registration. */
@@ -68,11 +79,16 @@ public class SnakeBurrowVisualComponent extends RenderComponent {
       return;
     }
     for (int i = 0; i < count; i++) {
+      float angle = MathUtils.PI2 * i / count + MathUtils.random(0.3f);
+      Particle particle =
+          new Particle(centre, angle, spread * DUST_SCALE * MathUtils.random(0.5f, 1f));
+      if (!dustArena.isPathClear(particle.position, particle.position, particle.halfSize)) {
+        continue;
+      }
       if (particles.size() >= MAX_PARTICLES) {
         particles.removeFirst();
       }
-      float angle = MathUtils.PI2 * i / count + MathUtils.random(0.3f);
-      particles.add(new Particle(centre, angle, spread * MathUtils.random(0.5f, 1f)));
+      particles.add(particle);
     }
   }
 
@@ -134,11 +150,25 @@ public class SnakeBurrowVisualComponent extends RenderComponent {
     if (isWarningVisible()) {
       warningAge += delta;
     }
-    for (Particle particle : particles) {
-      particle.age += delta;
-      particle.position.mulAdd(particle.velocity, delta);
+    particles.removeIf(particle -> updateParticle(particle, delta));
+  }
+
+  private boolean updateParticle(Particle particle, float delta) {
+    particle.age += delta;
+    if (particle.age >= particle.lifetime) {
+      return true;
     }
-    particles.removeIf(particle -> particle.age >= particle.lifetime);
+    if (particle.velocity.isZero()) {
+      return false;
+    }
+    Vector2 destination = particle.position.cpy().mulAdd(particle.velocity, delta);
+    if (dustArena.isPathClear(particle.position, destination, particle.halfSize)) {
+      particle.position.set(destination);
+    } else {
+      // Leave blocked dust on clear floor to fade, rather than letting it spread into the wall.
+      particle.velocity.setZero();
+    }
+    return false;
   }
 
   @Override

@@ -147,7 +147,7 @@ class InGameSettingsTest {
 
     findButton(stage.getRoot(), "Apply").fire(new ChangeListener.ChangeEvent());
     assertEquals(changed, UserSettings.get().uiScale, 0.001f);
-    assertEquals(1f, menuRoot.getScaleX(), 0.001f);
+    assertEquals(changed, menuRoot.getScaleX(), 0.001f);
     assertEquals(changed, hud.getScaleX(), 0.001f);
     assertTrue(ServiceLocator.getEntityService().isFrozen());
 

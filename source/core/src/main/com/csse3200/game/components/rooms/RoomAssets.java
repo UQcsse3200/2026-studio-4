@@ -1,6 +1,7 @@
 package com.csse3200.game.components.rooms;
 
 import com.badlogic.gdx.utils.Disposable;
+import com.csse3200.game.areas.attic.AtticSprites;
 import com.csse3200.game.components.boss.FinalBossStageThreeAssets;
 import com.csse3200.game.components.boss.FinalBossStageTwoAssets;
 import com.csse3200.game.components.boss.FinalBossVisualAssets;
@@ -31,6 +32,7 @@ public class RoomAssets implements Disposable {
 
   private static final String[] ENEMY_TEXTURES = {
     "images/dragon/smoke_sheet.png",
+    "images/sleipnir/dust.png",
     SnakePlayerHitVisualComponent.HIT_SHEET,
     SnakeShieldComponent.SHIELD_TEXTURE,
     SnakeShieldPickupComponent.GEM_TEXTURE,
@@ -38,37 +40,35 @@ public class RoomAssets implements Disposable {
   };
 
   private static final String[] ENEMY_TEXTURE_ATLASES = {
-    "images/bombEnemy.atlas",
-    "images/beetle.atlas",
-    "images/snake.atlas",
-    "images/medusa.atlas",
-    "images/mummy.atlas",
-    "images/crab.atlas",
-    "images/golem.atlas",
-    "images/cyclops.atlas",
-    "images/wasp.atlas",
-    "images/dust.atlas",
-    "images/floatingDemon.atlas",
-    "images/harpy.atlas",
+    "images/bomb-enemy/beetle.atlas",
+    "images/snake-miniboss/snake.atlas",
+    "images/split-enemy/medusa.atlas",
+    "images/giant-enemy/mummy.atlas",
+    "images/split-enemy/crab.atlas",
+    "images/bomb-enemy/golem.atlas",
+    "images/giant-enemy/cyclops.atlas",
+    "images/flying-enemy/wasp.atlas",
+    "images/flying-enemy/floating-demon-projectile.atlas",
+    "images/flying-enemy/harpy.atlas",
     "images/cerberus/cerberus-modular.atlas",
     "images/cerberus/cerberus-fireball.atlas",
     "images/cerberus/cerberus-chain.atlas",
     "images/dragon/dragon.atlas",
     "images/dragon/thunder-orb.atlas",
-    "images/wolf.atlas",
-    "images/horse.atlas",
-    "images/crow.atlas",
-    "images/minotaur.atlas",
-    "images/minotaur-combat/attacks.atlas",
-    "images/sandeye.atlas",
-    "images/dark_elves.atlas",
-    "images/jingwei.atlas",
-    "images/zombie.atlas",
-    "images/wukong.atlas",
-    "images/bug.atlas",
-    "images/longwei.atlas",
-    "images/knight.atlas",
-    "images/jotunn.atlas",
+    "images/chase-enemy/wolf.atlas",
+    "images/sleipnir/horse.atlas",
+    "images/flying-enemy/crow.atlas",
+    "images/chase-enemy/minotaur.atlas",
+    "images/chase-enemy/minotaur-combat/attacks.atlas",
+    "images/chase-enemy/sandeye.atlas",
+    "images/split-enemy/dark_elves.atlas",
+    "images/flying-enemy/jingwei.atlas",
+    "images/bomb-enemy/zombie.atlas",
+    "images/giant-enemy/wukong.atlas",
+    "images/split-enemy/bug.atlas",
+    "images/chase-enemy/longwei.atlas",
+    "images/bomb-enemy/knight.atlas",
+    "images/giant-enemy/jotunn.atlas",
   };
 
   private static final String[] PLAYER_ATLASES = {"images/idle_down.atlas"};
@@ -94,22 +94,22 @@ public class RoomAssets implements Disposable {
   };
 
   private static final String[] ITEM_TEXTURES = {
-    "images/strength_charm_pixel.png",
-    "images/attack_speed_charm.png",
-    "images/speed_charm.png",
-    "images/health_potion_pixel.png",
-    "images/health_potion_small_pixel.png",
-    "images/health_potion_medium_pixel.png",
-    "images/health_potion_large_pixel.png",
-    "images/shield_consumable_pixel.png",
-    "images/speed_potion_pixel.png",
-    "images/strength_potion_pixel.png",
-    "images/freeze_bomb_pixel.png",
-    "images/burn_vial_pixel.png",
-    "images/magnet_potion_pixel.png",
-    "images/consumable-slot-idle.png",
-    "images/consumable-slot-selected.png",
-    "images/gold_coin_pixel.png"
+    "images/items/charms/strength_charm_pixel.png",
+    "images/items/charms/attack_speed_charm.png",
+    "images/items/charms/speed_charm.png",
+    "images/items/consumables/health_potion_pixel.png",
+    "images/items/consumables/health_potion_small_pixel.png",
+    "images/items/consumables/health_potion_medium_pixel.png",
+    "images/items/consumables/health_potion_large_pixel.png",
+    "images/items/consumables/shield_consumable_pixel.png",
+    "images/items/consumables/speed_potion_pixel.png",
+    "images/items/consumables/strength_potion_pixel.png",
+    "images/items/consumables/freeze_bomb_pixel.png",
+    "images/items/consumables/burn_vial_pixel.png",
+    "images/items/consumables/magnet_potion_pixel.png",
+    "images/ui/inventory/consumable-slot-idle.png",
+    "images/ui/inventory/consumable-slot-selected.png",
+    "images/items/currency/gold_coin_pixel.png"
   };
 
   private static final String[] ALL_TEXTURES =
@@ -121,6 +121,7 @@ public class RoomAssets implements Disposable {
               ITEM_TEXTURES,
               ENEMY_TEXTURES,
               PLAYER_TEXTURES,
+              AtticSprites.paths(),
               SnakePoisonAssets.paths(),
               FinalBossVisualAssets.paths(),
               FinalBossStageTwoAssets.paths(),

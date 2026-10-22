@@ -90,7 +90,7 @@ public class ExplodeComponent extends Component {
   private void lightFuse() {
     fuseLit = true;
 
-    entity.getEvents().trigger("fuseStarted");
+    entity.getEvents().trigger("fuseStarted", fuseTime);
 
     explosionTask =
         Timer.schedule(

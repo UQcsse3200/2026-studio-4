@@ -43,7 +43,7 @@ class GameSaveMapperTest {
     achievements.register(earned);
     achievements.register(pending);
     ServiceLocator.registerAchievementService(achievements);
-    GameSaveData save = roundTrip(GameSaveMapper.capture(original, new GameSaveData.Checkpoint()));
+    GameSaveData save = roundTrip(GameSaveMapper.capture(original));
 
     earned.restoreState(false, 0f);
     pending.restoreState(false, 0f);
@@ -77,7 +77,7 @@ class GameSaveMapperTest {
     inventory.equipConsumable(ItemIds.FREEZE_BOMB, 1);
     inventory.equipConsumable(ItemIds.HEALTH_POTION, 3);
 
-    GameSaveData save = roundTrip(GameSaveMapper.capture(original, new GameSaveData.Checkpoint()));
+    GameSaveData save = roundTrip(GameSaveMapper.capture(original));
     Entity restored = player();
     GameSaveMapper.restore(restored, save);
     InventoryComponent restoredInventory = restored.getComponent(InventoryComponent.class);
@@ -103,7 +103,7 @@ class GameSaveMapperTest {
     third.pickUp(original);
     inventory.setCharmEquipped(stored, false);
 
-    GameSaveData save = roundTrip(GameSaveMapper.capture(original, new GameSaveData.Checkpoint()));
+    GameSaveData save = roundTrip(GameSaveMapper.capture(original));
     Entity restored = player();
     GameSaveMapper.restore(restored, save);
     InventoryComponent restoredInventory = restored.getComponent(InventoryComponent.class);
@@ -155,8 +155,7 @@ class GameSaveMapperTest {
     charm.pickUp(original);
     inventory.setCharmEquipped(charm, false);
     Entity restored = player();
-    GameSaveMapper.restore(
-        restored, roundTrip(GameSaveMapper.capture(original, new GameSaveData.Checkpoint())));
+    GameSaveMapper.restore(restored, roundTrip(GameSaveMapper.capture(original)));
 
     InventoryComponent restoredInventory = restored.getComponent(InventoryComponent.class);
     for (int i = 0; i < InventoryComponent.CONSUMABLE_SLOT_COUNT; i++) {

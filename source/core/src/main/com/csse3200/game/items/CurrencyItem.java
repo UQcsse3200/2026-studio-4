@@ -12,7 +12,7 @@ public final class CurrencyItem extends Item {
         ItemIds.GOLD_COIN,
         "Gold Coin",
         "Currency dropped by defeated enemies.",
-        "images/gold_coin_pixel.png",
+        "images/items/currency/gold_coin_pixel.png",
         ItemCategory.CURRENCY);
     if (quantity <= 0) {
       throw new IllegalArgumentException("CurrencyItem requires positive quantity");

@@ -6,7 +6,7 @@ import com.csse3200.game.items.ItemIds;
 
 public class StrengthCharm extends Charm {
   private static final int VALUE = 10;
-  public static final String TEXTURE = "images/strength_charm_pixel.png";
+  public static final String TEXTURE = "images/items/charms/strength_charm_pixel.png";
 
   public StrengthCharm() {
     super(

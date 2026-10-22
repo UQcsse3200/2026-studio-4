@@ -52,13 +52,14 @@ class SplitComponentTest {
     ServiceLocator.registerEntityService(entityService);
 
     ResourceService resourceService = new ResourceService();
-    resourceService.loadTextureAtlases(new String[] {"images/crab.atlas", "images/medusa.atlas"});
+    resourceService.loadTextureAtlases(
+        new String[] {"images/split-enemy/crab.atlas", "images/split-enemy/medusa.atlas"});
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
 
   private Entity createSplitEnemy() {
-    return createSplitEnemy("images/crab.atlas");
+    return createSplitEnemy("images/split-enemy/crab.atlas");
   }
 
   private Entity createSplitEnemy(String skin) {
@@ -110,12 +111,12 @@ class SplitComponentTest {
 
   @Test
   void shouldSplitCrabAfterFourNormalHits() {
-    assertSplitAfterFourNormalHits("images/crab.atlas");
+    assertSplitAfterFourNormalHits("images/split-enemy/crab.atlas");
   }
 
   @Test
   void shouldSplitMedusaAfterFourNormalHits() {
-    assertSplitAfterFourNormalHits("images/medusa.atlas");
+    assertSplitAfterFourNormalHits("images/split-enemy/medusa.atlas");
   }
 
   private void assertSplitAfterFourNormalHits(String skin) {
@@ -152,7 +153,7 @@ class SplitComponentTest {
   @Test
   void medusaAndItsChildrenRecoverFromPlayerHitsWithoutChangingCrab() {
     Entity player = new Entity();
-    Entity medusa = NPCFactory.createChaseEnemy(player, true, "images/medusa.atlas");
+    Entity medusa = NPCFactory.createChaseEnemy(player, true, "images/split-enemy/medusa.atlas");
     medusa.create();
     EventListener1<Entity> childListener = addChildListener(medusa);
     CombatStatsComponent stats = medusa.getComponent(CombatStatsComponent.class);
@@ -172,7 +173,7 @@ class SplitComponentTest {
       assertTrue(StatusEffectsControllerComponent.isImmobilised(child));
     }
 
-    Entity crab = NPCFactory.createChaseEnemy(player, true, "images/crab.atlas");
+    Entity crab = NPCFactory.createChaseEnemy(player, true, "images/split-enemy/crab.atlas");
     crab.create();
     crab.getComponent(CombatStatsComponent.class).takeDamage(1, player);
     assertFalse(StatusEffectsControllerComponent.isImmobilised(crab));
