@@ -1,12 +1,15 @@
 package com.csse3200.game.screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.splash.SplashDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.files.AudioLevels;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.rendering.RenderService;
@@ -27,6 +30,7 @@ public class SplashScreen extends ScreenAdapter {
   private final Renderer renderer;
   private SplashDisplay display;
   private boolean leaving;
+  private Music welcomeMusic;
 
   public SplashScreen(GdxGame game) {
     this.game = game;
@@ -40,6 +44,10 @@ public class SplashScreen extends ScreenAdapter {
     renderer = RenderFactory.createRenderer();
 
     loadAssets();
+    welcomeMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/welcome.mp3"));
+    welcomeMusic.setLooping(true);
+    welcomeMusic.setVolume(AudioLevels.music());
+    welcomeMusic.play();
     createUI();
   }
 
@@ -47,11 +55,12 @@ public class SplashScreen extends ScreenAdapter {
   public void render(float delta) {
     ServiceLocator.getEntityService().update();
     renderer.render();
-
+    welcomeMusic.setVolume(AudioLevels.music());
     // Switch only after rendering, so this screen is never disposed while the stage is updating.
     if (!leaving && display.isFinished()) {
       leaving = true;
       game.setScreen(GdxGame.ScreenType.INTRO);
+      welcomeMusic.stop();
     }
   }
 
@@ -64,6 +73,8 @@ public class SplashScreen extends ScreenAdapter {
   @Override
   public void dispose() {
     logger.debug("Disposing splash screen");
+
+    welcomeMusic.dispose();
 
     renderer.dispose();
     unloadAssets();

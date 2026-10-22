@@ -75,7 +75,7 @@ public class SplashDisplay extends UIComponent {
   private static final float LETTER_DELAY = 0.1f;
   private static final float LETTER_STAGGER = 0.08f;
   private static final float LETTER_FADE = 0.25f;
-  private static final float FINAL_HOLD = 1.0f;
+  private static final float FINAL_HOLD = 2.0f;
   private static final float FADE_OUT = 0.5f;
 
   private Image background;
