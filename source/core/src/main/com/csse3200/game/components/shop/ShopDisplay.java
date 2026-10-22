@@ -416,6 +416,7 @@ public class ShopDisplay extends UIComponent implements ShopView {
         appearance);
     createMinigamePanels(appearance);
     createGuessingGamePanels(appearance);
+    createSlotMachinePanel(appearance);
     casinoContent = new Table();
     Table selectorRow = null;
     CasinoGame[] gamesInOrder = CasinoGame.values();
@@ -562,6 +563,31 @@ public class ShopDisplay extends UIComponent implements ShopView {
         appearance);
   }
 
+  /** Adds Slot Machine to the shared casino selector. */
+  private void createSlotMachinePanel(CoinFlipPanel.Appearance appearance) {
+    SlotMachinePanel slotPanel =
+        new SlotMachinePanel(
+            new SlotMachineGame(
+                inventoryData, () -> MathUtils.random(SlotMachineGame.Symbol.values().length - 1)),
+            appearance,
+            outcome -> {
+              feedback.setText(
+                  outcome.won()
+                      ? "Jackpot! Won " + outcome.goldDelta() + GOLD_SUFFIX
+                      : LOST_PREFIX + Math.abs(outcome.goldDelta()) + GOLD_SUFFIX);
+              entity.getEvents().trigger("slotMachineResolved", outcome);
+              refresh();
+            });
+    registerGame(
+        CasinoGame.SLOT_MACHINE,
+        slotPanel,
+        gameScroll(slotPanel, "slot-machine-scroll"),
+        slotPanel::open,
+        slotPanel::close,
+        slotPanel::refresh,
+        appearance);
+  }
+
   private static ScrollPane gameScroll(Table panel, String name) {
     ScrollPane scroll = new ScrollPane(panel);
     scroll.setName(name);
@@ -610,6 +636,12 @@ public class ShopDisplay extends UIComponent implements ShopView {
         "casino-select-scratch",
         "SCRATCH CARD",
         "Scratch three spots. Three of a kind wins; a pair returns half your stake."),
+    SLOT_MACHINE(
+        "Slot Machine",
+        "casino-select-slot",
+        "SLOT MACHINE",
+        "Spin three reels. Three matching symbols pay out the symbol's multiplier on"
+            + " your stake."),
     HIGHER_LOWER(
         "Higher/Lower",
         "casino-select-higher-lower",
