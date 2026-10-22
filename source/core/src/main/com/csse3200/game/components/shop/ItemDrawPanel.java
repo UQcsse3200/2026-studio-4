@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 /** Selected A layout: a draw arena beside the configured reward list, stacked on small screens. */
 public final class ItemDrawPanel extends Table {
-  private static final String GOLD_TEXTURE = "images/gold_coin_pixel.png";
+  private static final String GOLD_TEXTURE = "images/items/currency/gold_coin_pixel.png";
   private final InventoryComponent inventory;
   private final ItemGambleConfig config;
   private final GambleService game;

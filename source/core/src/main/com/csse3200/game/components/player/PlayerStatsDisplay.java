@@ -64,8 +64,8 @@ public class PlayerStatsDisplay extends UIComponent {
     // Health bar
     ProgressBar.ProgressBarStyle barStyle =
         hud.get("player-health-bar", ProgressBar.ProgressBarStyle.class);
-    healthBar = new ProgressBar(0, maxHealth, 1, false, barStyle);
-    healthBar.setValue(health);
+    healthBar = new ProgressBar(0, maxHealth * 1f, 1, false, barStyle);
+    healthBar.setValue(health * 1f);
     healthBar.setAnimateDuration(0.3f);
 
     float barWidth = 100f;
@@ -156,7 +156,7 @@ public class PlayerStatsDisplay extends UIComponent {
    * @param health player health
    */
   public void updatePlayerHealthUI(int health) {
-    healthBar.setValue(health);
+    healthBar.setValue(health * 1f);
     healthValueLabel.setText(health + " / " + this.maxHealth);
     this.health = health;
   }
@@ -188,7 +188,7 @@ public class PlayerStatsDisplay extends UIComponent {
    */
   public void updatePlayerMaxHealthUI(int maxHealth) {
     this.maxHealth = maxHealth;
-    healthBar.setRange(0, maxHealth);
+    healthBar.setRange(0, maxHealth * 1f);
     healthValueLabel.setText(this.health + " / " + maxHealth);
   }
 

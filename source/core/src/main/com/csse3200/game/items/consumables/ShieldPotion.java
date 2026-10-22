@@ -20,7 +20,7 @@ public final class ShieldPotion extends ConsumableItem {
         ItemIds.SHIELD,
         "Shield",
         "Provides temporary protection when consumed.",
-        "images/shield_consumable_pixel.png",
+        "images/items/consumables/shield_consumable_pixel.png",
         quantity);
     this.durationMs = durationMs;
   }

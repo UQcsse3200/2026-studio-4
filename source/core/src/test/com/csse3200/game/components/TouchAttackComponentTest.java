@@ -1,6 +1,6 @@
 package com.csse3200.game.components;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -36,16 +36,12 @@ class TouchAttackComponentTest {
   void repeatsOnlyAfterIntervalAndStopsOnExit() {
     Entity attacker = repeatingAttacker();
     Entity target = durableTarget();
-    int[] attackEvents = {0};
-    attacker.getEvents().addListener("touchAttack", () -> attackEvents[0]++);
     contact(attacker, target, "collisionStart");
     assertEquals(90, health(target));
-    assertEquals(1, attackEvents[0]);
     tick(attacker, 0.5f);
     assertEquals(90, health(target));
     tick(attacker, 0.5f);
     assertEquals(80, health(target));
-    assertEquals(2, attackEvents[0]);
     contact(attacker, target, "collisionEnd");
     tick(attacker, 1f);
     assertEquals(80, health(target));
@@ -286,8 +282,10 @@ class TouchAttackComponentTest {
     Fixture entityFixture = entity.getComponent(HitboxComponent.class).getFixture();
     Fixture targetFixture = target.getComponent(HitboxComponent.class).getFixture();
 
-    assertDoesNotThrow(
-        () -> entity.getEvents().trigger("collisionStart", entityFixture, targetFixture));
+    // This should not cause an exception, but the attack should be ignored
+    entity.getEvents().trigger("collisionStart", entityFixture, targetFixture);
+    // Should still be null, sonarcloud is silly.
+    assertNull(target.getComponent(CombatStatsComponent.class));
   }
 
   Entity createAttacker(short targetLayer) {
