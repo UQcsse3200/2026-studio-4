@@ -122,6 +122,11 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#DUNGEON5_TILESET" class="member-name-link">DUNGEON5_TILESET</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#LIBRARY_THEME" class="member-name-link">LIBRARY_THEME</a></code></div>
+<div class="col-last even-row-color">
+<div class="block"><a href="../../components/rooms/configs/RoomConfig.html#theme"><code>RoomConfig.theme</code></a> value for home-attic rooms such as dungeon selection.</div>
+</div>
 </div>
 </section>
 </li>
@@ -156,6 +161,16 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getTileSet(java.lang.String)" class="member-name-link">getTileSet</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;dungeonId)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Get the tileset to use based it's dungeon.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getTileSetFor(com.csse3200.game.components.rooms.configs.RoomConfig)" class="member-name-link">getTileSetFor</a><wbr>(<a href="../../components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">The tileset for a room: its own override if it has one, otherwise its dungeon's.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#isAttic(com.csse3200.game.components.rooms.configs.RoomConfig)" class="member-name-link">isAttic</a><wbr>(<a href="../../components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Whether a room uses the attic theme instead of a dungeon tileset.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#spawnMap(com.csse3200.game.components.rooms.configs.RoomConfig,com.csse3200.game.areas.terrain.TerrainBuilder)" class="member-name-link">spawnMap</a><wbr>(<a href="../../components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room,
@@ -264,6 +279,21 @@ loadScripts(document, 'script');</script>
 </dl>
 </section>
 </li>
+<li>
+<section class="detail" id="LIBRARY_THEME">
+<h3>LIBRARY_THEME</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">LIBRARY_THEME</span></div>
+<div class="block"><a href="../../components/rooms/configs/RoomConfig.html#theme"><code>RoomConfig.theme</code></a> value for home-attic rooms such as dungeon selection.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.RoomFactory.LIBRARY_THEME">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -272,6 +302,13 @@ loadScripts(document, 'script');</script>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="getTileSetFor(com.csse3200.game.components.rooms.configs.RoomConfig)">
+<h3>getTileSetFor</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getTileSetFor</span><wbr><span class="parameters">(<a href="../../components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room)</span></div>
+<div class="block">The tileset for a room: its own override if it has one, otherwise its dungeon's.</div>
+</section>
+</li>
 <li>
 <section class="detail" id="getTileSet(java.lang.String)">
 <h3>getTileSet</h3>
@@ -313,6 +350,13 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>The room entity.</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="isAttic(com.csse3200.game.components.rooms.configs.RoomConfig)">
+<h3>isAttic</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isAttic</span><wbr><span class="parameters">(<a href="../../components/rooms/configs/RoomConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomConfig</a>&nbsp;room)</span></div>
+<div class="block">Whether a room uses the attic theme instead of a dungeon tileset.</div>
 </section>
 </li>
 <li>

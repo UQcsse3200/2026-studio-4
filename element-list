@@ -1,6 +1,7 @@
 com.csse3200.game
 com.csse3200.game.ai.movement
 com.csse3200.game.ai.tasks
+com.csse3200.game.areas.attic
 com.csse3200.game.areas.terrain
 com.csse3200.game.components
 com.csse3200.game.components.achievements

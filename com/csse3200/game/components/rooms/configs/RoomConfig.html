@@ -104,21 +104,31 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#dungeonId" class="member-name-link">dungeonId</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="EnemySpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig</a>[]</code></div>
-<div class="col-second odd-row-color"><code><a href="#enemySpawns" class="member-name-link">enemySpawns</a></code></div>
+<div class="col-first even-row-color"><code>float</code></div>
+<div class="col-second even-row-color"><code><a href="#darkness" class="member-name-link">darkness</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">How dark unlit parts of the room are, 0 (normal) to 1 (black).</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#dungeonId" class="member-name-link">dungeonId</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="EntryPointConfig.html" title="class in com.csse3200.game.components.rooms.configs">EntryPointConfig</a>[]</code></div>
-<div class="col-second even-row-color"><code><a href="#entryPoints" class="member-name-link">entryPoints</a></code></div>
+<div class="col-first even-row-color"><code><a href="EnemySpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig</a>[]</code></div>
+<div class="col-second even-row-color"><code><a href="#enemySpawns" class="member-name-link">enemySpawns</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="ExitConfig.html" title="class in com.csse3200.game.components.rooms.configs">ExitConfig</a>[]</code></div>
-<div class="col-second odd-row-color"><code><a href="#exits" class="member-name-link">exits</a></code></div>
+<div class="col-first odd-row-color"><code><a href="EntryPointConfig.html" title="class in com.csse3200.game.components.rooms.configs">EntryPointConfig</a>[]</code></div>
+<div class="col-second odd-row-color"><code><a href="#entryPoints" class="member-name-link">entryPoints</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#id" class="member-name-link">id</a></code></div>
+<div class="col-first even-row-color"><code><a href="ExitConfig.html" title="class in com.csse3200.game.components.rooms.configs">ExitConfig</a>[]</code></div>
+<div class="col-second even-row-color"><code><a href="#exits" class="member-name-link">exits</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#id" class="member-name-link">id</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="LightConfig.html" title="class in com.csse3200.game.components.rooms.configs">LightConfig</a>[]</code></div>
+<div class="col-second even-row-color"><code><a href="#lights" class="member-name-link">lights</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Extra lights not tied to a prop, e.g.</div>
+</div>
 <div class="col-first odd-row-color"><code>int</code></div>
 <div class="col-second odd-row-color"><code><a href="#mapHeight" class="member-name-link">mapHeight</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
@@ -131,9 +141,29 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code><a href="RoomSpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">RoomSpawnConfig</a></code></div>
 <div class="col-second even-row-color"><code><a href="#obstacles" class="member-name-link">obstacles</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="PropSpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">PropSpawnConfig</a>[]</code></div>
-<div class="col-second odd-row-color"><code><a href="#propSpawns" class="member-name-link">propSpawns</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="PropConfig.html" title="class in com.csse3200.game.components.rooms.configs">PropConfig</a>[]</code></div>
+<div class="col-second odd-row-color"><code><a href="#props" class="member-name-link">props</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Furniture and decorations for themed rooms.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="PropSpawnConfig.html" title="class in com.csse3200.game.components.rooms.configs">PropSpawnConfig</a>[]</code></div>
+<div class="col-second even-row-color"><code><a href="#propSpawns" class="member-name-link">propSpawns</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#shadowColor" class="member-name-link">shadowColor</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Colour of the dark, as hex.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#theme" class="member-name-link">theme</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Visual theme.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#tileset" class="member-name-link">tileset</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Tileset for the floor and walls, overriding the one chosen from <a href="#dungeonId"><code>dungeonId</code></a>.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color"><code><a href="#title" class="member-name-link">title</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
@@ -230,6 +260,21 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="theme">
+<h3>theme</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">theme</span></div>
+<div class="block">Visual theme. <code>null</code> (the default) builds a dungeon room from its tileset; <code>
+ "attic"</code> builds a home-attic room with floor/wall characters and <a href="#props"><code>props</code></a>.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="tileset">
+<h3>tileset</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">tileset</span></div>
+<div class="block">Tileset for the floor and walls, overriding the one chosen from <a href="#dungeonId"><code>dungeonId</code></a>.</div>
+</section>
+</li>
+<li>
 <section class="detail" id="entryPoints">
 <h3>entryPoints</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="EntryPointConfig.html" title="class in com.csse3200.game.components.rooms.configs">EntryPointConfig</a>[]</span>&nbsp;<span class="element-name">entryPoints</span></div>
@@ -278,6 +323,35 @@ loadScripts(document, 'script');</script>
 <div class="block">Whether this room is a safe practice space. While the player is in it their weapons count as
  upgraded, so heavy attacks can be tried, and anything lent to them by its supply stands is
  taken back when they leave.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="props">
+<h3>props</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="PropConfig.html" title="class in com.csse3200.game.components.rooms.configs">PropConfig</a>[]</span>&nbsp;<span class="element-name">props</span></div>
+<div class="block">Furniture and decorations for themed rooms. Ignored by dungeon rooms.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="darkness">
+<h3>darkness</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">darkness</span></div>
+<div class="block">How dark unlit parts of the room are, 0 (normal) to 1 (black). Above 0 the room is lit only by
+ its light-giving props, its <a href="#lights"><code>lights</code></a> and the player's lantern.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="shadowColor">
+<h3>shadowColor</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">shadowColor</span></div>
+<div class="block">Colour of the dark, as hex. A little blue reads as night.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="lights">
+<h3>lights</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="LightConfig.html" title="class in com.csse3200.game.components.rooms.configs">LightConfig</a>[]</span>&nbsp;<span class="element-name">lights</span></div>
+<div class="block">Extra lights not tied to a prop, e.g. moonlight through a window.</div>
 </section>
 </li>
 </ul>
