@@ -61,6 +61,7 @@ class EnemyAnimationPlaybackTest {
     resources = new ResourceService();
     resources.loadTextureAtlases(
         new String[] {
+          "images/flying-enemy/harpy.atlas",
           "images/flying-enemy/wasp.atlas",
           "images/flying-enemy/crow.atlas",
           "images/flying-enemy/jingwei.atlas",
@@ -261,9 +262,8 @@ class EnemyAnimationPlaybackTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"wasp,1", "crow,0.5", "jingwei,3"})
-  void flyingDeathRetainsItsExistingDurationAndDisposesAfterTheLastFrame(
-      String skin, float duration) {
+  @CsvSource({"harpy,0.8", "wasp,1", "crow,0.5", "jingwei,0.6"})
+  void flyingDeathCompletesPromptlyAndDisposesAfterTheLastFrame(String skin, float duration) {
     Entity enemy = flyingEnemy(skin);
     AnimationRenderComponent animation = enemy.getComponent(AnimationRenderComponent.class);
     enemy.getEvents().trigger("entityDied");
@@ -368,6 +368,7 @@ class EnemyAnimationPlaybackTest {
     Vector2 spawn = new Vector2();
     Entity enemy =
         switch (skin) {
+          case "harpy" -> NPCFactory.createHarpy(player, spawn);
           case "wasp" -> NPCFactory.createWasp(player, spawn);
           case "crow" -> NPCFactory.createCrow(player, spawn);
           case "jingwei" -> NPCFactory.createJingwei(player, spawn);

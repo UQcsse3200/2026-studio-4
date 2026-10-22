@@ -249,7 +249,13 @@ public class NPCFactory {
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
+    // Multi-frame bird deaths should finish promptly (Harpy 0.8s, Jingwei 0.6s).
+    float deathFrameDuration =
+        switch (skin) {
+          case "images/flying-enemy/harpy.atlas", "images/flying-enemy/jingwei.atlas" -> 0.1f;
+          default -> 0.5f;
+        };
+    animator.addAnimation(DIE_ANIMATION, deathFrameDuration, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     demon
