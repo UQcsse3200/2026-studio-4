@@ -8,26 +8,24 @@ public class Slow extends StatusEffect {
 
   private final long duration;
   private final long slowInit;
-  private final float amount;
+  private final float appliedAmount;
   private final CombatStatsComponent combatStats;
+  private boolean removed;
 
   /**
    * Create a new stack of slow.
    *
    * @param duration the total time the slow lasts for.
    * @param combatStats the combat stats component of the entity which has the status effect.
+   * @param amount the movement speed adjustment, clamped so speed cannot become negative.
    */
   public Slow(long duration, CombatStatsComponent combatStats, float amount) {
     super(new GameTime(), duration);
     this.duration = duration;
     this.combatStats = combatStats;
     slowInit = time.getTime();
-    this.amount = amount;
-    if (0 <= (combatStats.getMovementSpeed() + amount)) {
-      combatStats.addMovementSpeed(amount);
-    } else {
-      combatStats.setMovementSpeed(0);
-    }
+    appliedAmount = Math.max(amount, -combatStats.getMovementSpeed());
+    combatStats.addMovementSpeed(appliedAmount);
   }
 
   /**
@@ -37,10 +35,18 @@ public class Slow extends StatusEffect {
    */
   @Override
   public boolean update() {
-    if (time.getTimeSince(slowInit) > duration) {
-      combatStats.addMovementSpeed(-amount);
-    }
     return time.getTimeSince(slowInit) > duration;
+  }
+
+  /** Restores only this effect's speed adjustment when it expires or is removed early. */
+  @Override
+  public void onRemoved() {
+    if (removed) {
+      return;
+    }
+    removed = true;
+    combatStats.addMovementSpeed(-appliedAmount);
+    super.onRemoved();
   }
 
   /** Returns the time left until the status effect should be removed (in milliseconds). */

@@ -5,6 +5,8 @@ import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.player.PlayerCerberusMistDebuffComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
@@ -17,6 +19,8 @@ class CerberusMistComponentTest {
   private GameTime time;
   private RenderService renderService;
   private Entity player;
+  private CombatStatsComponent playerStats;
+  private PlayerCerberusMistDebuffComponent mistDebuff;
   private Entity leftHead;
   private CombatStatsComponent leftStats;
   private CerberusMistComponent mist;
@@ -30,10 +34,18 @@ class CerberusMistComponentTest {
     ServiceLocator.registerTimeSource(time);
     ServiceLocator.registerRenderService(renderService);
 
-    player = new Entity().addComponent(new CombatStatsComponent(100, 0));
+    playerStats = new CombatStatsComponent(100, 0);
+    playerStats.setMovementSpeed(3f);
+    mistDebuff = new PlayerCerberusMistDebuffComponent();
+    player =
+        new Entity()
+            .addComponent(playerStats)
+            .addComponent(new StatusEffectsControllerComponent())
+            .addComponent(mistDebuff);
     player.setPosition(1f, 0f);
     player.getEvents().addListener(CerberusMistComponent.ENTERED, (Entity source) -> entered++);
     player.getEvents().addListener(CerberusMistComponent.EXITED, (Entity source) -> exited++);
+    player.create();
 
     leftStats = new CombatStatsComponent(100, 10);
     mist = new CerberusMistComponent(player);
@@ -73,6 +85,8 @@ class CerberusMistComponentTest {
     tick(1f);
     assertFalse(mist.isMistActive());
     assertEquals(1, exited);
+    assertEquals(3f, playerStats.getMovementSpeed());
+    assertFalse(mistDebuff.isMistDebuffed());
 
     tick(4f);
     assertFalse(mist.isMistActive());
@@ -93,6 +107,7 @@ class CerberusMistComponentTest {
 
     assertEquals(originalCentre, mist.getMistCentre());
     assertEquals(1, exited);
+    assertEquals(3f, playerStats.getMovementSpeed());
 
     tick(0.1f);
     assertEquals(1, exited);
@@ -120,11 +135,14 @@ class CerberusMistComponentTest {
   @Test
   void shouldClearImmediatelyWhenLeftHeadDiesAndNeverRecast() {
     tick(5f);
+    assertEquals(1.5f, playerStats.getMovementSpeed());
 
     leftStats.setHealth(0);
 
     assertFalse(mist.isMistActive());
     assertEquals(1, exited);
+    assertEquals(3f, playerStats.getMovementSpeed());
+    assertFalse(mistDebuff.isMistDebuffed());
 
     tick(10f);
     assertFalse(mist.isMistActive());
@@ -140,6 +158,7 @@ class CerberusMistComponentTest {
 
     assertFalse(mist.isMistActive());
     assertEquals(1, exited);
+    assertEquals(3f, playerStats.getMovementSpeed());
     verify(renderService).unregister(mist);
 
     tick(10f);
@@ -156,6 +175,20 @@ class CerberusMistComponentTest {
 
     assertFalse(mist.isMistActive());
     assertEquals(1, exited);
+    assertEquals(3f, playerStats.getMovementSpeed());
+  }
+
+  @Test
+  void repeatedMistExposureDoesNotPermanentlyReduceMovement() {
+    for (int exposure = 0; exposure < 3; exposure++) {
+      tick(5f);
+      assertEquals(1.5f, playerStats.getMovementSpeed());
+      assertTrue(mistDebuff.isMistDebuffed());
+
+      tick(3f);
+      assertEquals(3f, playerStats.getMovementSpeed());
+      assertFalse(mistDebuff.isMistDebuffed());
+    }
   }
 
   @Test
