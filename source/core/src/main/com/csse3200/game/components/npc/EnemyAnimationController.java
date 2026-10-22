@@ -1,9 +1,12 @@
 package com.csse3200.game.components.npc;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.statuseffects.FlashEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
@@ -11,12 +14,17 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * Plays enemy animations in response to existing AI and combat events. Skins with a contact-attack
- * clip or with both lunge clips opt into phase playback; other skins retain their existing
- * animation mapping.
+ * Plays enemy animations in response to existing AI and combat events. Contact attackers with an
+ * attack clip, or skins with both lunge clips, opt into phase playback; other skins retain their
+ * existing animation mapping.
  */
 public class EnemyAnimationController extends Component {
-  private static final String CONTACT_ATTACK = "contactAttack";
+  private static final String CONTACT_ATTACK = "attack";
+  private static final String ATTACK_ANIMATION = "attack";
+  private static final Color FUSE_FLASH_TINT = new Color(Color.WHITE);
+  private static final Color FUSE_FLASH_GLOW = new Color(1f, 0f, 0f, 1f);
+  private StatusEffectsControllerComponent statusEffects;
+  private FlashEffect fuseFlash;
   private static final String DEFAULT = "default";
   private static final String HURT = "hurt";
   private AnimationRenderComponent animator;
@@ -28,9 +36,24 @@ public class EnemyAnimationController extends Component {
   private boolean followPlayer = false; // used by enemies to follow player
   private boolean lunging = false;
 
+  private float deathRotationPerFrame;
+  private float maxDeathRotation;
+
+  public void setDeathRotation(float degreesPerFrame, float maxDegrees) {
+    if (!Float.isFinite(degreesPerFrame)
+        || degreesPerFrame < 0f
+        || !Float.isFinite(maxDegrees)
+        || maxDegrees < 0f) {
+      throw new IllegalArgumentException("Death rotation values must be finite and non-negative");
+    }
+    deathRotationPerFrame = degreesPerFrame;
+    maxDeathRotation = maxDegrees;
+  }
+
   @Override
   public void create() {
     animator = entity.getComponent(AnimationRenderComponent.class);
+    statusEffects = entity.getComponent(StatusEffectsControllerComponent.class);
 
     entity.getEvents().addListener("wanderStart", this::animateWander);
     entity.getEvents().addListener("chaseStart", this::animateChase);
@@ -38,14 +61,17 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener("patrolStart", this::animatePatrol);
     entity.getEvents().addListener("dieAnimation", this::animateDie);
     entity.getEvents().addListener("rangedAttack", this::animateAttack);
+    entity.getEvents().addListener("touchAttack", this::animateAttack);
     entity.getEvents().addListener("fuseStarted", this::animateFuse);
     entity.getEvents().addListener(DEFAULT, this::animatePause);
     entity.getEvents().addListener("moving", this::animateMove);
     entity.getEvents().addListener("stampede", this::dustCloud);
 
-    hasContactAnimation = animator.hasAnimation(CONTACT_ATTACK);
+    hasContactAnimation =
+        animator.hasAnimation(CONTACT_ATTACK)
+            && entity.getComponent(TouchAttackComponent.class) != null;
     if (hasContactAnimation) {
-      entity.getEvents().addListener(CONTACT_ATTACK, this::animateContactAttack);
+      entity.getEvents().addListener("contactAttack", this::animateContactAttack);
     }
 
     hasLungeAnimations =
@@ -120,6 +146,12 @@ public class EnemyAnimationController extends Component {
   @Override
   public void update() {
     if (dying) {
+      if (deathRotationPerFrame > 0f) {
+        int frameIndex = animator.getCurrentFrameIndex();
+        if (frameIndex >= 0) {
+          animator.setRotation(Math.min(frameIndex * deathRotationPerFrame, maxDeathRotation));
+        }
+      }
       if (!disposalQueued && animator.isFinished()) {
         disposalQueued = true;
         ServiceLocator.getEntityService().scheduleDisposal(entity);
@@ -172,16 +204,25 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateChase() {
-    animateLocomotion("chase", hasContactAnimation || hasLungeAnimations);
+    animateLocomotion("chase", true);
   }
 
   private void animatePause() {
     animateLocomotion(DEFAULT, followPlayer);
   }
 
-  private void animateFuse() {
-    if (!dying) {
-      animator.startAnimation("fuse");
+  private void animateFuse(float fuseTime) {
+    if (dying) {
+      return;
+    }
+    animator.startAnimation("fuse");
+    if (statusEffects != null) {
+      statusEffects.removeStatusEffect(fuseFlash);
+      long durationMillis = Math.max(1L, Math.round(fuseTime * 1000d));
+      fuseFlash =
+          new FlashEffect(
+              ServiceLocator.getTimeSource(), durationMillis, FUSE_FLASH_TINT, FUSE_FLASH_GLOW);
+      statusEffects.addStatusEffect(fuseFlash);
     }
   }
 
@@ -190,8 +231,10 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateAttack() {
-    if (!dying) {
-      animator.startAnimation("attack");
+    if (!dying
+        && animator.hasAnimation(ATTACK_ANIMATION)
+        && !(hasContactAnimation && isPlayingContactAttack())) {
+      animator.startAnimation(ATTACK_ANIMATION);
     }
   }
 

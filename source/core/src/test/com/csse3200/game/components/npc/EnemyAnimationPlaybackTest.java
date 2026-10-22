@@ -183,7 +183,7 @@ class EnemyAnimationPlaybackTest {
     renderFor(animation, 0.11f);
     TextureRegion frame = animation.getCurrentFrame();
 
-    enemy.getEvents().trigger("fuseStarted");
+    enemy.getEvents().trigger("fuseStarted", 2f);
     assertEquals("chase", animation.getCurrentAnimation());
     assertSame(frame, animation.getCurrentFrame());
   }
@@ -204,7 +204,7 @@ class EnemyAnimationPlaybackTest {
   void beetleStillPlaysItsExistingFuseAnimation() {
     Entity beetle = bombEnemy("beetle");
     AnimationRenderComponent animation = beetle.getComponent(AnimationRenderComponent.class);
-    beetle.getEvents().trigger("fuseStarted");
+    beetle.getEvents().trigger("fuseStarted", 2f);
     assertEquals("fuse", animation.getCurrentAnimation());
     TextureRegion frame = animation.getCurrentFrame();
     renderFor(animation, 0.11f);
@@ -295,7 +295,7 @@ class EnemyAnimationPlaybackTest {
             enemy.getComponent(HitboxComponent.class).getFixture(),
             player.getComponent(HitboxComponent.class).getFixture());
     assertEquals(100 - damage, player.getComponent(CombatStatsComponent.class).getHealth());
-    assertEquals("contactAttack", animation.getCurrentAnimation());
+    assertEquals("attack", animation.getCurrentAnimation());
     TextureRegion first = animation.getCurrentFrame();
     renderFor(animation, frameTime + 0.01f);
     TextureRegion second = animation.getCurrentFrame();
@@ -303,7 +303,7 @@ class EnemyAnimationPlaybackTest {
     enemy.getEvents().trigger("chaseStart");
     enemy.getEvents().trigger("contactAttack", player);
     controller.update();
-    assertEquals("contactAttack", animation.getCurrentAnimation());
+    assertEquals("attack", animation.getCurrentAnimation());
     assertSame(
         second,
         animation.getCurrentFrame(),
@@ -335,19 +335,23 @@ class EnemyAnimationPlaybackTest {
   }
 
   @Test
-  void zombieUsesExistingWalkingPosesWithoutChangingBodySizeOrDeathTime() {
+  void zombiePreservesUpstreamPosesBodySizeAndDeathRotation() {
     Entity zombie = bombEnemy("zombie");
-    assertEquals(new Vector2(1f, 1f), zombie.getScale());
+    assertEquals(new Vector2(1f, 42f / 31f), zombie.getScale());
     AnimationRenderComponent animation = zombie.getComponent(AnimationRenderComponent.class);
     for (String event : new String[] {"wanderStart", "chaseStart"}) {
       zombie.getEvents().trigger(event);
       TextureRegion first = animation.getCurrentFrame();
       renderFor(animation, event.equals("wanderStart") ? 0.71f : 0.11f);
-      assertNotSame(first, animation.getCurrentFrame(), "Walking must change the visible pose");
+      if (event.equals("wanderStart")) {
+        assertSame(first, animation.getCurrentFrame(), "Keep upstream single-frame wander pose");
+      } else {
+        assertNotSame(first, animation.getCurrentFrame(), "Chase must change the visible pose");
+      }
     }
     zombie.getEvents().trigger("entityDied");
     assertEquals(2, animation.getCurrentFrame().getRegionX());
-    renderFor(animation, 0.49f);
+    renderFor(animation, 2.49f);
     assertFalse(animation.isFinished());
     renderFor(animation, 0.02f);
     zombie.getComponent(EnemyAnimationController.class).update();
@@ -431,6 +435,8 @@ class EnemyAnimationPlaybackTest {
     TextureRegion frame = animation.getCurrentFrame();
     if ("moving".equals(event)) {
       enemy.getEvents().trigger(event, new Vector2(-1, 1));
+    } else if ("fuseStarted".equals(event)) {
+      enemy.getEvents().trigger(event, 2f);
     } else {
       enemy.getEvents().trigger(event);
     }

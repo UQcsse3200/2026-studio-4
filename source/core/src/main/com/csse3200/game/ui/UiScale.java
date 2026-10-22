@@ -64,7 +64,7 @@ public final class UiScale {
     if (group instanceof WidgetGroup widget) {
       widget.validate();
     }
-    float base = baseScale.computeIfAbsent(group, actor -> actor.getScaleX());
+    float base = baseScale.computeIfAbsent(group, Actor::getScaleX);
     group.setTransform(true);
     group.setOrigin(align);
     group.setScale(base * factor);

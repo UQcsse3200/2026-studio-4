@@ -29,6 +29,8 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.ui.UiScale;
 import com.csse3200.game.utils.StringDecorator;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +40,14 @@ import org.slf4j.LoggerFactory;
  */
 public class SettingsMenuDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(SettingsMenuDisplay.class);
+  private static final String DEFAULT_HINT =
+      "Apply saves these options. Exit leaves them unchanged.";
+  private static final int MIN_FPS = 15;
+  private static final int MAX_FPS = 1000;
+
+  /** Resolutions whose aspect ratio differs from the monitor by more than this are hidden. */
+  private static final float ASPECT_TOLERANCE = 0.02f;
+
   private final GdxGame game;
   private final Runnable onClose;
   private final boolean scaleStage;
@@ -46,6 +56,7 @@ public class SettingsMenuDisplay extends UIComponent {
   private Table rootTable;
   private Table actionsTable;
   private Table backdrop;
+  private Label hintLabel;
   private final Array<Actor> hiddenHud = new Array<>();
   private InputComponent gameplayKeys;
   private TextField fpsText;
@@ -64,6 +75,8 @@ public class SettingsMenuDisplay extends UIComponent {
   private Label resetStatusLabel;
   private WindowSize.Preset loadedWindow;
   private StringDecorator<DisplayMode> loadedResolution;
+  private boolean loadedFullscreen;
+  private boolean loadedVsync;
 
   public SettingsMenuDisplay(GdxGame game) {
     this(game, null, false);
@@ -84,6 +97,7 @@ public class SettingsMenuDisplay extends UIComponent {
   /** Shows the menu over the current screen and pauses the world. */
   public void open() {
     loadFromSavedSettings();
+    setHint(DEFAULT_HINT);
     menuOpen = true;
     setMenuVisible(true);
     showScaleOnSettingsPage(1f);
@@ -109,8 +123,7 @@ public class SettingsMenuDisplay extends UIComponent {
 
   private void addActors() {
     Label title = new Label("Settings", skin, "title");
-    Label hint =
-        new Label("Apply saves these options. Exit leaves them unchanged.", skin, "caption");
+    hintLabel = new Label(DEFAULT_HINT, skin, "caption");
     Table settingsTable = makeSettingsTable();
     ScrollPane pane = new ScrollPane(settingsTable, skin);
     pane.setFadeScrollBars(false);
@@ -131,7 +144,7 @@ public class SettingsMenuDisplay extends UIComponent {
 
     rootTable.add(title).expandX().top().padTop(16f);
     rootTable.row().padTop(6f);
-    rootTable.add(hint).expandX().top();
+    rootTable.add(hintLabel).expandX().top();
     rootTable.row().padTop(12f);
     rootTable.add(pane).grow().pad(8f, 48f, 72f, 48f);
 
@@ -148,6 +161,12 @@ public class SettingsMenuDisplay extends UIComponent {
       actionsTable.toFront();
     } else {
       setMenuVisible(false);
+    }
+  }
+
+  private void setHint(String text) {
+    if (hintLabel != null) {
+      hintLabel.setText(text);
     }
   }
 
@@ -186,14 +205,15 @@ public class SettingsMenuDisplay extends UIComponent {
     displayModeSelect = readableSelect();
     Monitor selectedMonitor = Gdx.graphics.getMonitor();
     displayModeSelect.setItems(getDisplayModes(selectedMonitor));
-    displayModeSelect.setSelected(getActiveMode(displayModeSelect.getItems()));
+    selectActiveMode();
 
     windowSizeSelect = readableSelect();
     windowSizeSelect.setItems(new Array<>(WindowSize.presets()));
     windowSizeSelect.setSelected(WindowSize.matching(settings.windowWidth, settings.windowHeight));
     rememberLoadedSelection();
 
-    form.section("Display", "Window size is used when fullscreen is off.");
+    form.section(
+        "Display", "Resolution applies in fullscreen. Window size applies when fullscreen is off.");
     form.row("FPS cap", fpsText);
     form.row("Fullscreen", fullScreenCheck);
     form.row("VSync", vsyncCheck);
@@ -250,28 +270,100 @@ public class SettingsMenuDisplay extends UIComponent {
     return resetSaveBtn;
   }
 
-  private StringDecorator<DisplayMode> getActiveMode(Array<StringDecorator<DisplayMode>> modes) {
-    DisplayMode active = Gdx.graphics.getDisplayMode();
-
-    for (StringDecorator<DisplayMode> stringMode : modes) {
-      DisplayMode mode = stringMode.object;
-      if (active.width == mode.width
-          && active.height == mode.height
-          && active.refreshRate == mode.refreshRate) {
-        return stringMode;
-      }
+  /** Selects the entry for the running display mode, never leaving the dropdown blank. */
+  private void selectActiveMode() {
+    StringDecorator<DisplayMode> active = getActiveMode(displayModeSelect.getItems());
+    if (active != null) {
+      displayModeSelect.setSelected(active);
     }
-    return null;
   }
 
+  /**
+   * Finds the list entry that best matches the running display mode: an exact match, else the same
+   * size at another refresh rate, else the closest size. Only an empty list gives null.
+   */
+  private StringDecorator<DisplayMode> getActiveMode(Array<StringDecorator<DisplayMode>> modes) {
+    if (modes == null || modes.isEmpty()) {
+      return null;
+    }
+    DisplayMode active = Gdx.graphics.getDisplayMode();
+    StringDecorator<DisplayMode> sameSize = null;
+
+    for (StringDecorator<DisplayMode> entry : modes) {
+      DisplayMode mode = entry.object;
+      if (!hasSameSize(active, mode)) {
+        continue;
+      }
+      if (active.refreshRate == mode.refreshRate) {
+        return entry;
+      }
+      if (sameSize == null) {
+        sameSize = entry;
+      }
+    }
+    if (sameSize != null) {
+      return sameSize;
+    }
+    StringDecorator<DisplayMode> closest = findClosestSize(modes, active);
+    return closest != null ? closest : modes.first();
+  }
+
+  /** Whether the mode exists and has the same pixel dimensions as the active one. */
+  private static boolean hasSameSize(DisplayMode active, DisplayMode mode) {
+    return mode != null && active.width == mode.width && active.height == mode.height;
+  }
+
+  /** Returns the entry whose total pixel count is nearest the active mode's, or null if none. */
+  private static StringDecorator<DisplayMode> findClosestSize(
+      Array<StringDecorator<DisplayMode>> modes, DisplayMode active) {
+    StringDecorator<DisplayMode> closest = null;
+    long closestGap = Long.MAX_VALUE;
+
+    for (StringDecorator<DisplayMode> entry : modes) {
+      DisplayMode mode = entry.object;
+      if (mode == null) {
+        continue;
+      }
+      long gap = Math.abs(pixelCount(active) - pixelCount(mode));
+      if (gap < closestGap) {
+        closestGap = gap;
+        closest = entry;
+      }
+    }
+    return closest;
+  }
+
+  private static long pixelCount(DisplayMode mode) {
+    return (long) mode.width * mode.height;
+  }
+
+  /**
+   * Lists the monitor's resolutions that keep its aspect ratio. Other ratios are stretched by the
+   * monitor in fullscreen, which makes the whole picture look distorted.
+   */
   private Array<StringDecorator<DisplayMode>> getDisplayModes(Monitor monitor) {
     DisplayMode[] displayModes = Gdx.graphics.getDisplayModes(monitor);
     Array<StringDecorator<DisplayMode>> arr = new Array<>();
-
-    for (DisplayMode displayMode : displayModes) {
-      arr.add(new StringDecorator<>(displayMode, this::prettyPrint));
+    if (displayModes == null) {
+      return arr;
     }
 
+    DisplayMode desktop = Gdx.graphics.getDisplayMode(monitor);
+    if (desktop != null && desktop.height > 0) {
+      float nativeAspect = (float) desktop.width / desktop.height;
+      for (DisplayMode displayMode : displayModes) {
+        float aspect = (float) displayMode.width / displayMode.height;
+        if (Math.abs(aspect - nativeAspect) < ASPECT_TOLERANCE) {
+          arr.add(new StringDecorator<>(displayMode, this::prettyPrint));
+        }
+      }
+    }
+
+    if (arr.isEmpty()) { // unusual monitor or no desktop mode: show everything rather than nothing
+      for (DisplayMode displayMode : displayModes) {
+        arr.add(new StringDecorator<>(displayMode, this::prettyPrint));
+      }
+    }
     return arr;
   }
 
@@ -365,6 +457,10 @@ public class SettingsMenuDisplay extends UIComponent {
       super(9);
     }
 
+    private boolean blocksGameplayKeys() {
+      return scaleStage && menuOpen;
+    }
+
     @Override
     public boolean keyDown(int keycode) {
       return blocksGameplayKeys();
@@ -381,30 +477,42 @@ public class SettingsMenuDisplay extends UIComponent {
     }
   }
 
-  private boolean blocksGameplayKeys() {
-    return scaleStage && menuOpen;
-  }
-
   private void applyChanges() {
     UserSettings.Settings settings = UserSettings.get();
+    List<String> notes = new ArrayList<>();
 
+    // FPS cap. Invalid input keeps the old value and tells the player.
     Integer fpsVal = parseOrNull(fpsText.getText());
-    if (fpsVal != null) {
-      if (fpsVal != settings.fps) {
+    if (fpsVal == null || fpsVal < MIN_FPS || fpsVal > MAX_FPS) {
+      fpsText.setText(Integer.toString(settings.fps));
+      notes.add("FPS cap must be " + MIN_FPS + " to " + MAX_FPS + ", so it was not changed.");
+    } else {
+      boolean vsyncTouched = vsyncCheck.isChecked() != loadedVsync;
+      if (fpsVal != settings.fps && vsyncCheck.isChecked() && !vsyncTouched) {
         vsyncCheck.setChecked(false);
+        notes.add("VSync turned off so the FPS cap applies.");
       }
       settings.fps = fpsVal;
     }
+
+    // Fullscreen. A box the player ticked themselves always wins. Otherwise, changing only the
+    // resolution means fullscreen and changing only the window size means windowed.
     boolean windowChanged = windowSelectionChanged();
     boolean resolutionChanged = resolutionSelectionChanged();
     boolean fullscreen = fullScreenCheck.isChecked();
-    if (windowChanged && !resolutionChanged) {
-      fullscreen = false;
-    } else if (resolutionChanged && !windowChanged) {
-      fullscreen = true;
+    boolean fullscreenTouched = fullscreen != loadedFullscreen;
+    if (!fullscreenTouched) {
+      if (resolutionChanged && !windowChanged && !fullscreen) {
+        fullscreen = true;
+        notes.add("Switched to fullscreen to use the new resolution.");
+      } else if (windowChanged && !resolutionChanged && fullscreen) {
+        fullscreen = false;
+        notes.add("Switched to windowed to use the new window size.");
+      }
     }
     fullScreenCheck.setChecked(fullscreen);
     settings.fullscreen = fullscreen;
+
     DisplaySettings chosen = chosenDisplaySettings(displayModeSelect.getSelected());
     if (chosen != null) {
       settings.displayMode = chosen;
@@ -426,6 +534,7 @@ public class SettingsMenuDisplay extends UIComponent {
     rememberLoadedSelection();
     applyUiScale(settings.uiScale);
     showScaleOnSettingsPage(settings.uiScale);
+    setHint(notes.isEmpty() ? "Saved." : "Saved. " + String.join(" ", notes));
   }
 
   /**
@@ -440,10 +549,15 @@ public class SettingsMenuDisplay extends UIComponent {
     }
   }
 
-  /** Remembers the dropdowns currently shown, so a later Apply can tell what the player changed. */
+  /**
+   * Remembers what the page currently shows, so a later Apply can tell what the player changed
+   * rather than guessing.
+   */
   private void rememberLoadedSelection() {
     loadedWindow = windowSizeSelect.getSelected();
     loadedResolution = displayModeSelect.getSelected();
+    loadedFullscreen = fullScreenCheck.isChecked();
+    loadedVsync = vsyncCheck.isChecked();
   }
 
   /**
@@ -515,7 +629,7 @@ public class SettingsMenuDisplay extends UIComponent {
     fullScreenCheck.setChecked(settings.fullscreen);
     vsyncCheck.setChecked(settings.vsync);
     uiScaleSlider.setValue(UiScale.clamp(settings.uiScale));
-    displayModeSelect.setSelected(getActiveMode(displayModeSelect.getItems()));
+    selectActiveMode();
     windowSizeSelect.setSelected(WindowSize.matching(settings.windowWidth, settings.windowHeight));
     showTimerCheck.setChecked(settings.showTimer);
     showFpsCheck.setChecked(settings.showFps);
@@ -557,7 +671,7 @@ public class SettingsMenuDisplay extends UIComponent {
 
   private Integer parseOrNull(String num) {
     try {
-      return Integer.parseInt(num, 10);
+      return Integer.parseInt(num.trim(), 10);
     } catch (NumberFormatException e) {
       return null;
     }

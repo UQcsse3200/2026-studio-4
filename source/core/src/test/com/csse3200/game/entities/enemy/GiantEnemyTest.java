@@ -4,8 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.NPCFactory;
@@ -40,7 +42,11 @@ class GiantEnemyTest {
 
     ResourceService resourceService = new ResourceService();
     resourceService.loadTextureAtlases(
-        new String[] {"images/giant-enemy/cyclops.atlas", "images/giant-enemy/mummy.atlas"});
+        new String[] {
+          "images/giant-enemy/cyclops.atlas",
+          "images/giant-enemy/mummy.atlas",
+          "images/giant-enemy/jotunn.atlas"
+        });
     resourceService.loadAll();
     ServiceLocator.registerResourceService(resourceService);
   }
@@ -74,5 +80,25 @@ class GiantEnemyTest {
 
     assertEquals(30, stats.getHealth());
     assertEquals(3, stats.getBaseAttack());
+  }
+
+  @Test
+  void jotunnDeathAnimationRotatesLikeZombie() {
+    GameTime time = mock(GameTime.class);
+    when(time.getDeltaTime()).thenReturn(0.5f);
+    ServiceLocator.registerTimeSource(time);
+
+    Entity jotunn = NPCFactory.createGiantEnemy(new Entity(), "images/giant-enemy/jotunn.atlas");
+    jotunn.create();
+    AnimationRenderComponent animator = jotunn.getComponent(AnimationRenderComponent.class);
+    SpriteBatch batch = mock(SpriteBatch.class);
+
+    jotunn.getEvents().trigger("dieAnimation");
+    for (int frame = 0; frame < 3; frame++) {
+      animator.render(batch);
+      jotunn.getComponent(EnemyAnimationController.class).update();
+    }
+
+    assertEquals(90f, animator.getRotation());
   }
 }

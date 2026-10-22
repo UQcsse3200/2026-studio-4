@@ -59,8 +59,8 @@ public class EnemyStatDisplay extends UIComponent {
 
     ProgressBar.ProgressBarStyle barStyle =
         hud.get("enemy-health-bar", ProgressBar.ProgressBarStyle.class);
-    healthBar = new ProgressBar(0, maxHealth, 1, false, barStyle);
-    healthBar.setValue(health);
+    healthBar = new ProgressBar(0, maxHealth * 1f, 1, false, barStyle);
+    healthBar.setValue(health * 1f);
     healthBar.setAnimateDuration(0.3f);
 
     table.add(healthBar).width(50f);
@@ -107,7 +107,7 @@ public class EnemyStatDisplay extends UIComponent {
             newPosition.y + entity.getScale().y + Y_OFFSET,
             0);
 
-    camera.project(worldPos, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    camera.project(worldPos, 0, 0, Gdx.graphics.getWidth() * 1f, Gdx.graphics.getHeight() * 1f);
 
     table.setPosition(worldPos.x - table.getWidth() / 2f, worldPos.y);
   }
@@ -118,7 +118,7 @@ public class EnemyStatDisplay extends UIComponent {
    * @param health enemy health
    */
   public void updateEnemyHealthUI(int health) {
-    healthBar.setValue(health);
+    healthBar.setValue(health * 1f);
     this.health = health;
   }
 
@@ -129,7 +129,7 @@ public class EnemyStatDisplay extends UIComponent {
    */
   public void updateEnemyMaxHealthUI(int maxHealth) {
     this.maxHealth = maxHealth;
-    healthBar.setRange(0, maxHealth);
+    healthBar.setRange(0, maxHealth * 1f);
   }
 
   @Override
