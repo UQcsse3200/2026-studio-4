@@ -110,7 +110,6 @@ public final class HigherLowerPanel extends Table {
     add(hint).growX();
   }
 
-
   private void adjust(int delta) {
     game.adjustStake(delta);
     refresh();
