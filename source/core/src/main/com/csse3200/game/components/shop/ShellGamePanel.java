@@ -66,16 +66,17 @@ public final class ShellGamePanel extends Table {
 
     add(new Label("WAGER STAKE", textStyle)).growX().left().padBottom(8f);
     row();
-    down = button("-10", "shell-game-down", wagerStyle, () -> adjust(-10));
-    up = button("+10", "shell-game-up", wagerStyle, () -> adjust(10));
-    start = button("START", "shell-game-start", flipStyle, this::start);
+    down =
+        CasinoPanelSupport.actionButton(
+            "-10", "shell-game-down", wagerStyle, () -> active, () -> adjust(-10));
+    up =
+        CasinoPanelSupport.actionButton(
+            "+10", "shell-game-up", wagerStyle, () -> active, () -> adjust(10));
+    start =
+        CasinoPanelSupport.actionButton(
+            "START", "shell-game-start", flipStyle, () -> active, this::start);
     stakeLabel = CasinoPanelSupport.stakeLabel("shell-game-stake", textStyle);
     add(CasinoPanelSupport.wagerRow(down, stakeLabel, up, start)).growX();
-  }
-
-  private TextButton button(
-      String text, String name, TextButton.TextButtonStyle style, Runnable action) {
-    return CasinoPanelSupport.actionButton(text, name, style, () -> active, action);
   }
 
   private void adjust(int delta) {

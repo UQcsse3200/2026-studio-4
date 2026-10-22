@@ -73,16 +73,28 @@ public final class HigherLowerPanel extends Table {
 
     add(new Label("WAGER STAKE", textStyle)).growX().left().padBottom(8f);
     row();
-    down = button("-10", "higher-lower-down", wagerStyle, () -> adjust(-10));
-    up = button("+10", "higher-lower-up", wagerStyle, () -> adjust(10));
-    start = button("START", "higher-lower-start", flipStyle, this::start);
+    down =
+        CasinoPanelSupport.actionButton(
+            "-10", "higher-lower-down", wagerStyle, () -> active, () -> adjust(-10));
+    up =
+        CasinoPanelSupport.actionButton(
+            "+10", "higher-lower-up", wagerStyle, () -> active, () -> adjust(10));
+    start =
+        CasinoPanelSupport.actionButton(
+            "START", "higher-lower-start", flipStyle, () -> active, this::start);
     stakeLabel = CasinoPanelSupport.stakeLabel("higher-lower-stake", textStyle);
     add(CasinoPanelSupport.wagerRow(down, stakeLabel, up, start)).growX().padBottom(12f);
     row();
 
-    higher = button("HIGHER", "higher-lower-higher", flipStyle, () -> guess(true));
-    lower = button("LOWER", "higher-lower-lower", flipStyle, () -> guess(false));
-    cashOut = button("CASH OUT", "higher-lower-cashout", wagerStyle, this::cashOut);
+    higher =
+        CasinoPanelSupport.actionButton(
+            "HIGHER", "higher-lower-higher", flipStyle, () -> active, () -> guess(true));
+    lower =
+        CasinoPanelSupport.actionButton(
+            "LOWER", "higher-lower-lower", flipStyle, () -> active, () -> guess(false));
+    cashOut =
+        CasinoPanelSupport.actionButton(
+            "CASH OUT", "higher-lower-cashout", wagerStyle, () -> active, this::cashOut);
     Table playRow = new Table();
     playRow.add(lower).growX().height(42f).padRight(8f);
     playRow.add(higher).growX().height(42f).padRight(8f);
@@ -98,10 +110,6 @@ public final class HigherLowerPanel extends Table {
     add(hint).growX();
   }
 
-  private TextButton button(
-      String text, String name, TextButton.TextButtonStyle style, Runnable action) {
-    return CasinoPanelSupport.actionButton(text, name, style, () -> active, action);
-  }
 
   private void adjust(int delta) {
     game.adjustStake(delta);

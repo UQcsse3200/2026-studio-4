@@ -60,9 +60,15 @@ public final class CoinFlipPanel extends Table {
     row();
     add(new Label("WAGER STAKE", textStyle)).growX().left().padBottom(8f);
     row();
-    down = button("-10", "coin-flip-down", wagerStyle, () -> adjust(-10));
-    up = button("+10", "coin-flip-up", wagerStyle, () -> adjust(10));
-    flip = button("FLIP", "coin-flip-button", flipStyle, this::flip);
+    down =
+        CasinoPanelSupport.actionButton(
+            "-10", "coin-flip-down", wagerStyle, () -> active && !animating, () -> adjust(-10));
+    up =
+        CasinoPanelSupport.actionButton(
+            "+10", "coin-flip-up", wagerStyle, () -> active && !animating, () -> adjust(10));
+    flip =
+        CasinoPanelSupport.actionButton(
+            "FLIP", "coin-flip-button", flipStyle, () -> active && !animating, this::flip);
     stakeLabel = CasinoPanelSupport.stakeLabel("coin-flip-stake", textStyle);
     add(CasinoPanelSupport.wagerRow(down, stakeLabel, up, flip)).growX().padBottom(12f);
     row();
@@ -81,11 +87,6 @@ public final class CoinFlipPanel extends Table {
       TextButton.TextButtonStyle flip,
       Drawable parchment,
       Drawable arena) {}
-
-  private TextButton button(
-      String text, String name, TextButton.TextButtonStyle style, Runnable action) {
-    return CasinoPanelSupport.actionButton(text, name, style, () -> active && !animating, action);
-  }
 
   private void adjust(int delta) {
     game.adjustStake(delta);
