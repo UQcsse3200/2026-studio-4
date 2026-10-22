@@ -15,11 +15,13 @@ import java.util.Map;
 /**
  * Owns consumable use: validates, removes exactly one item, applies its effect, then emits
  * itemUsed. Input requests use through tryUse or useConsumable; itemUsed is a success notification
- * only.
+ * only, and itemUseFailed fires instead when the item exists and is in stock but its own rules
+ * reject the attempt (e.g. already at full health).
  */
 public class ConsumableEffectComponent extends Component {
   public static final String USE_REQUEST = "useConsumable";
   public static final String USED = "itemUsed";
+  public static final String USE_FAILED = "itemUseFailed";
   private final Map<String, StatusEffect> active = new HashMap<>();
   private CombatStatsComponent stats;
   private InventoryComponent inventory;
@@ -58,6 +60,7 @@ public class ConsumableEffectComponent extends Component {
       return false;
     }
     if (!item.canUse(stats, effects, time)) {
+      entity.getEvents().trigger(USE_FAILED, id);
       return false;
     }
     if (!inventory.removeConsumable(id)) {
