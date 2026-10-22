@@ -1,296 +1,312 @@
-jotunn_idle.png
-size: 1376, 584
+jotunn.png
+size: 2048, 1024
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 default
   rotate: false
-  xy: 0, 0
+  xy: 2, 148
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 0
 dieAnimation
   rotate: false
-  xy: 172, 0
+  xy: 174, 148
+  size: 172, 146
+  orig: 172, 146
+  offset: 0, 0
+  index: 0
+dieAnimation
+  rotate: false
+  xy: 174, 148
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 1
-move
+dieAnimation
   rotate: false
-  xy: 172, 0
-  size: 172, 146
-  orig: 172, 146
-  offset: 0, 0
-  index: 1
-move
-  rotate: false
-  xy: 344, 0
+  xy: 174, 148
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 2
-move
+dieAnimation
   rotate: false
-  xy: 516, 0
+  xy: 174, 148
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 3
 move
   rotate: false
-  xy: 688, 0
+  xy: 174, 148
+  size: 172, 146
+  orig: 172, 146
+  offset: 0, 0
+  index: 1
+move
+  rotate: false
+  xy: 346, 148
+  size: 172, 146
+  orig: 172, 146
+  offset: 0, 0
+  index: 2
+move
+  rotate: false
+  xy: 518, 148
+  size: 172, 146
+  orig: 172, 146
+  offset: 0, 0
+  index: 3
+move
+  rotate: false
+  xy: 690, 148
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 4
 move
   rotate: false
-  xy: 860, 0
+  xy: 862, 148
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 5
 move
   rotate: false
-  xy: 1032, 0
+  xy: 1034, 148
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 6
 move
   rotate: false
-  xy: 1204, 0
+  xy: 1206, 148
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 7
 move
   rotate: false
-  xy: 0, 146
+  xy: 2, 294
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 8
 move
   rotate: false
-  xy: 172, 146
+  xy: 174, 294
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 9
 move
   rotate: false
-  xy: 344, 146
+  xy: 346, 294
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 10
 move
   rotate: false
-  xy: 516, 146
+  xy: 518, 294
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 11
 move
   rotate: false
-  xy: 688, 146
+  xy: 690, 294
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 12
 move
   rotate: false
-  xy: 860, 146
+  xy: 862, 294
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 13
 move
   rotate: false
-  xy: 1032, 146
+  xy: 1034, 294
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 14
 move
   rotate: false
-  xy: 1204, 146
+  xy: 1206, 294
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 15
 move
   rotate: false
-  xy: 0, 292
+  xy: 2, 440
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 16
 move
   rotate: false
-  xy: 172, 292
+  xy: 174, 440
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 17
 move
   rotate: false
-  xy: 344, 292
+  xy: 346, 440
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 18
 move
   rotate: false
-  xy: 516, 292
+  xy: 518, 440
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 19
 move
   rotate: false
-  xy: 688, 292
+  xy: 690, 440
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 20
 move
   rotate: false
-  xy: 860, 292
+  xy: 862, 440
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 21
 move
   rotate: false
-  xy: 1032, 292
+  xy: 1034, 440
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 22
 move
   rotate: false
-  xy: 1204, 292
+  xy: 1206, 440
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 23
 move
   rotate: false
-  xy: 0, 438
+  xy: 2, 586
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 24
 move
   rotate: false
-  xy: 172, 438
+  xy: 174, 586
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 25
 move
   rotate: false
-  xy: 344, 438
+  xy: 346, 586
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 26
 move
   rotate: false
-  xy: 516, 438
+  xy: 518, 586
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 27
 move
   rotate: false
-  xy: 688, 438
+  xy: 690, 586
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 28
 move
   rotate: false
-  xy: 860, 438
+  xy: 862, 586
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 29
 move
   rotate: false
-  xy: 1032, 438
+  xy: 1034, 586
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 30
 move
   rotate: false
-  xy: 1204, 438
+  xy: 1206, 586
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 31
-jotunn_move_resized.png
-size: 1720, 146
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
 chase
   rotate: false
-  xy: 0, 0
+  xy: 2, 2
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 1
 chase
   rotate: false
-  xy: 172, 0
+  xy: 174, 2
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 2
 chase
   rotate: false
-  xy: 344, 0
+  xy: 346, 2
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 3
 chase
   rotate: false
-  xy: 516, 0
+  xy: 518, 2
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 4
 chase
   rotate: false
-  xy: 688, 0
+  xy: 690, 2
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 5
 chase
   rotate: false
-  xy: 860, 0
+  xy: 862, 2
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 6
 chase
   rotate: false
-  xy: 1032, 0
+  xy: 1034, 2
   size: 172, 146
   orig: 172, 146
   offset: 0, 0
   index: 7
 chase
   rotate: false
-  xy: 1204, 0
+  xy: 1206, 2
   size: 172, 146
   orig: 172, 146
   offset: 0, 0

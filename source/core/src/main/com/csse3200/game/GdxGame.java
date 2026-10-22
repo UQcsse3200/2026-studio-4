@@ -7,6 +7,7 @@ import com.badlogic.gdx.Screen;
 import com.csse3200.game.files.GameSaveData;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.DeathScreen;
+import com.csse3200.game.screens.IntroScreen;
 import com.csse3200.game.screens.LoadGameScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
@@ -91,6 +92,8 @@ public class GdxGame extends Game {
     switch (screenType) {
       case SPLASH:
         return new SplashScreen(this);
+      case INTRO:
+        return new IntroScreen(this);
       case MAIN_MENU:
         return new MainMenuScreen(this);
       case LOAD_GAME:
@@ -110,6 +113,7 @@ public class GdxGame extends Game {
 
   public enum ScreenType {
     SPLASH,
+    INTRO,
     MAIN_MENU,
     LOAD_GAME,
     MAIN_GAME,

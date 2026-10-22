@@ -1,9 +1,12 @@
 package com.csse3200.game.components.npc;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.statuseffects.FlashEffect;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
@@ -11,13 +14,16 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * Plays enemy animations in response to existing AI and combat events. Skins with a contact-attack
- * clip or with both lunge clips opt into phase playback; other skins retain their existing
- * animation mapping.
+ * Plays enemy animations in response to existing AI and combat events. Contact attackers with an
+ * attack clip, or skins with lunge clips, opt into phase playback. An optional loop spans chase and
+ * lunge phases; other skins retain their existing animation mapping.
  */
 public class EnemyAnimationController extends Component {
   private static final String ATTACK = "attack";
-  private static final String CONTACT_ATTACK = "contactAttack";
+  private static final Color FUSE_FLASH_TINT = new Color(Color.WHITE);
+  private static final Color FUSE_FLASH_GLOW = new Color(1f, 0f, 0f, 1f);
+  private StatusEffectsControllerComponent statusEffects;
+  private FlashEffect fuseFlash;
   private static final String DEFAULT = "default";
   private static final String HURT = "hurt";
   private AnimationRenderComponent animator;
@@ -29,9 +35,36 @@ public class EnemyAnimationController extends Component {
   private boolean followPlayer = false; // used by enemies to follow player
   private boolean lunging = false;
 
+  private final String lungeLoopAnimation;
+  private float deathRotationPerFrame;
+  private float maxDeathRotation;
+
+  public EnemyAnimationController() {
+    this(null);
+  }
+
+  /**
+   * @param lungeLoopAnimation optional shared chase/lunge loop, or null for separate phase clips
+   */
+  public EnemyAnimationController(String lungeLoopAnimation) {
+    this.lungeLoopAnimation = lungeLoopAnimation;
+  }
+
+  public void setDeathRotation(float degreesPerFrame, float maxDegrees) {
+    if (!Float.isFinite(degreesPerFrame)
+        || degreesPerFrame < 0f
+        || !Float.isFinite(maxDegrees)
+        || maxDegrees < 0f) {
+      throw new IllegalArgumentException("Death rotation values must be finite and non-negative");
+    }
+    deathRotationPerFrame = degreesPerFrame;
+    maxDeathRotation = maxDegrees;
+  }
+
   @Override
   public void create() {
     animator = entity.getComponent(AnimationRenderComponent.class);
+    statusEffects = entity.getComponent(StatusEffectsControllerComponent.class);
 
     entity.getEvents().addListener("wanderStart", this::animateWander);
     entity.getEvents().addListener("chaseStart", this::animateChase);
@@ -39,18 +72,21 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener("patrolStart", this::animatePatrol);
     entity.getEvents().addListener("dieAnimation", this::animateDie);
     entity.getEvents().addListener("rangedAttack", this::animateAttack);
+    entity.getEvents().addListener("touchAttack", this::animateTouchAttack);
     entity.getEvents().addListener("fuseStarted", this::animateFuse);
     entity.getEvents().addListener(DEFAULT, this::animatePause);
     entity.getEvents().addListener("moving", this::animateMove);
     entity.getEvents().addListener("stampede", this::dustCloud);
 
-    hasContactAnimation = animator.hasAnimation(CONTACT_ATTACK);
+    hasContactAnimation =
+        animator.hasAnimation(ATTACK) && entity.getComponent(TouchAttackComponent.class) != null;
     if (hasContactAnimation) {
-      entity.getEvents().addListener(CONTACT_ATTACK, this::animateContactAttack);
+      entity.getEvents().addListener("contactAttack", this::animateContactAttack);
     }
 
     hasLungeAnimations =
-        animator.hasAnimation("lungeTelegraph") && animator.hasAnimation("lungeDash");
+        (lungeLoopAnimation != null && animator.hasAnimation(lungeLoopAnimation))
+            || (animator.hasAnimation("lungeTelegraph") && animator.hasAnimation("lungeDash"));
     if (hasLungeAnimations) {
       entity.getEvents().addListener("lungeTelegraphStart", () -> animateLunge("lungeTelegraph"));
       entity.getEvents().addListener("lungeDashStart", () -> animateLunge("lungeDash"));
@@ -64,7 +100,7 @@ public class EnemyAnimationController extends Component {
       return;
     }
     if (hasContactAnimation || hasLungeAnimations) {
-      if (!lunging && !isPlayingContactAttack() && dir.x != 0f) {
+      if (!lunging && !isPlayingAttack() && dir.x != 0f) {
         animator.setFlipX(dir.x < 0f);
       }
       animateLocomotion("move", true);
@@ -76,10 +112,21 @@ public class EnemyAnimationController extends Component {
       if (!animation.equals(animator.getCurrentAnimation())) {
         animator.startAnimation(animation);
       }
-    } else if (animator.hasAnimation("move")
-        && !(ATTACK.equals(animator.getCurrentAnimation()) && !animator.isFinished())
-        && !"move".equals(animator.getCurrentAnimation())) {
-      // Flying skins share one flight loop instead of eight directional clips.
+    } else {
+      animateFlyingMovement(dir);
+    }
+  }
+
+  private void animateFlyingMovement(Vector2 direction) {
+    if (!animator.hasAnimation("move") || isPlayingAttack()) {
+      return;
+    }
+    // Flying skins share one flight loop instead of eight directional clips.
+    followPlayer = true;
+    if (direction.x != 0f) {
+      animator.setFlipX(direction.x < 0f);
+    }
+    if (!"move".equals(animator.getCurrentAnimation())) {
       animator.startAnimation("move");
     }
   }
@@ -124,11 +171,11 @@ public class EnemyAnimationController extends Component {
       return;
     }
     if (dying) {
-      disposeAfterDeathAnimation();
+      updateDeathAnimation();
       return;
     }
     if (hasContactAnimation) {
-      if (StatusEffectsControllerComponent.isImmobilised(entity) || isPlayingContactAttack()) {
+      if (StatusEffectsControllerComponent.isImmobilised(entity) || isPlayingAttack()) {
         return;
       }
       updateFacingDirection(followPlayer);
@@ -152,7 +199,13 @@ public class EnemyAnimationController extends Component {
     }
   }
 
-  private void disposeAfterDeathAnimation() {
+  private void updateDeathAnimation() {
+    if (deathRotationPerFrame > 0f) {
+      int frameIndex = animator.getCurrentFrameIndex();
+      if (frameIndex >= 0) {
+        animator.setRotation(Math.min(frameIndex * deathRotationPerFrame, maxDeathRotation));
+      }
+    }
     if (!disposalQueued && animator.isFinished()) {
       disposalQueued = true;
       ServiceLocator.getEntityService().scheduleDisposal(entity);
@@ -180,51 +233,71 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateChase() {
-    animateLocomotion("chase", hasContactAnimation || hasLungeAnimations);
+    animateLocomotion("chase", true);
   }
 
   private void animatePause() {
     animateLocomotion(DEFAULT, followPlayer);
   }
 
-  private void animateFuse() {
-    if (!dying) {
-      animator.startAnimation("fuse");
+  private void animateFuse(float fuseTime) {
+    if (dying) {
+      return;
+    }
+    animator.startAnimation("fuse");
+    if (statusEffects != null) {
+      statusEffects.removeStatusEffect(fuseFlash);
+      long durationMillis = Math.max(1L, Math.round(fuseTime * 1000d));
+      fuseFlash =
+          new FlashEffect(
+              ServiceLocator.getTimeSource(), durationMillis, FUSE_FLASH_TINT, FUSE_FLASH_GLOW);
+      statusEffects.addStatusEffect(fuseFlash);
     }
   }
 
   private void animatePatrol() {
-    animateLocomotion("move", hasContactAnimation);
+    animateLocomotion("move", hasContactAnimation || !animator.hasAnimation("move_NE"));
+  }
+
+  private void animateTouchAttack() {
+    // Contact clips start with the target-bearing event so they face the victim before playing.
+    if (!hasContactAnimation) {
+      animateAttack();
+    }
   }
 
   private void animateAttack() {
-    if (!dying) {
+    if (!dying && animator.hasAnimation(ATTACK) && !(hasContactAnimation && isPlayingAttack())) {
       animator.startAnimation(ATTACK);
     }
   }
 
   private void animateContactAttack(Entity target) {
-    if (dying
-        || StatusEffectsControllerComponent.isImmobilised(entity)
-        || isPlayingContactAttack()) {
+    if (dying || StatusEffectsControllerComponent.isImmobilised(entity) || isPlayingAttack()) {
       return;
     }
     float direction = target.getCenterPosition().x - entity.getCenterPosition().x;
     if (direction != 0f) {
       animator.setFlipX(direction < 0f);
     }
-    animator.startAnimation(CONTACT_ATTACK);
+    animator.startAnimation(ATTACK);
   }
 
-  private boolean isPlayingContactAttack() {
-    return CONTACT_ATTACK.equals(animator.getCurrentAnimation()) && !animator.isFinished();
+  private boolean isPlayingAttack() {
+    return ATTACK.equals(animator.getCurrentAnimation()) && !animator.isFinished();
   }
 
   private void animateLunge(String animation) {
     if (!dying) {
       lunging = true;
       followPlayer = true;
-      animator.startAnimation(animation);
+      if (lungeLoopAnimation != null) {
+        animation = lungeLoopAnimation;
+        locomotionAnimation = lungeLoopAnimation;
+      }
+      if (lungeLoopAnimation == null || !animation.equals(animator.getCurrentAnimation())) {
+        animator.startAnimation(animation);
+      }
     }
   }
 
@@ -251,20 +324,23 @@ public class EnemyAnimationController extends Component {
     }
     followPlayer = followMovement;
     if (!hasContactAnimation && !hasLungeAnimations) {
-      animator.startAnimation(animation);
+      if (!isPlayingAttack()) {
+        animator.startAnimation(animation);
+      }
       return;
     }
     locomotionAnimation = animation;
     // A cancelled telegraph can yield to wander/chase without emitting lungeDashEnd.
     lunging = false;
-    if (!isPlayingContactAttack() && !isPlayingHurt()) {
+    if (!isPlayingAttack() && !isPlayingHurt()) {
       updateLocomotion();
     }
   }
 
   private void updateLocomotion() {
     PhysicsMovementComponent movement = entity.getComponent(PhysicsMovementComponent.class);
-    String animation = movement.getMoving() ? locomotionAnimation : DEFAULT;
+    boolean keepLungeLoop = locomotionAnimation.equals(lungeLoopAnimation);
+    String animation = movement.getMoving() || keepLungeLoop ? locomotionAnimation : DEFAULT;
     if (!animation.equals(animator.getCurrentAnimation())) {
       animator.startAnimation(animation);
     }

@@ -360,13 +360,6 @@ chase
   orig: 42, 44
   offset: 0, 0
   index: 23
-chase
-  rotate: false
-  xy: 46, 132
-  size: 42, 44
-  orig: 42, 44
-  offset: 0, 0
-  index: 25
 dieAnimation
   rotate: false
   xy: 184, 176

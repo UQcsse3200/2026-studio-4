@@ -55,8 +55,8 @@ class RendererTest {
   @Test
   void shouldResizeCamera() {
     CameraComponent cameraComponent = makeCameraEntity(camera);
-
-    when(stage.getViewport()).thenReturn(mock(Viewport.class));
+    Viewport view = mock(Viewport.class);
+    when(stage.getViewport()).thenReturn(view);
     when(graphics.getWidth()).thenReturn(100);
     when(graphics.getHeight()).thenReturn(200);
     Renderer renderer =
@@ -75,18 +75,18 @@ class RendererTest {
   void shouldResizeViewPort() {
     CameraComponent cameraComponent = makeCameraEntity(camera);
     ScreenViewport screenViewport = spy(ScreenViewport.class);
-    Stage stage = new Stage(screenViewport, spriteBatch);
+    Stage localStage = new Stage(screenViewport, spriteBatch);
 
     Renderer renderer =
-        new Renderer(cameraComponent, 10, spriteBatch, stage, renderService, debugRenderer);
+        new Renderer(cameraComponent, 10, spriteBatch, localStage, renderService, debugRenderer);
 
-    assertEquals(0, stage.getViewport().getScreenWidth());
-    assertEquals(0, stage.getViewport().getScreenHeight());
+    assertEquals(0, localStage.getViewport().getScreenWidth());
+    assertEquals(0, localStage.getViewport().getScreenHeight());
 
     renderer.resize(200, 100);
     verify(screenViewport).update(200, 100, true);
-    assertEquals(200, stage.getViewport().getScreenWidth());
-    assertEquals(100, stage.getViewport().getScreenHeight());
+    assertEquals(200, localStage.getViewport().getScreenWidth());
+    assertEquals(100, localStage.getViewport().getScreenHeight());
   }
 
   @Test

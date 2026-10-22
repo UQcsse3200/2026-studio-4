@@ -62,7 +62,7 @@ public class NPCFactory {
   private static final String DIE_ANIMATION = "dieAnimation";
   private static final String MOVE = "move";
   private static final String CHASE_ANIMATION = "chase";
-  private static final String CONTACT_ATTACK = "contactAttack";
+  private static final String ATTACK_ANIMATION = "attack";
 
   public static Entity createGiantEnemy(Entity target, String skin) {
     Entity giantEnemy = createBaseNPC();
@@ -75,22 +75,33 @@ public class NPCFactory {
 
     TextureAtlas atlas = ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class);
     AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    boolean isCyclops = "images/giant-enemy/cyclops.atlas".equals(skin);
     animator.addAnimation(MOVE, 0.7f, Animation.PlayMode.LOOP);
     animator.addAnimation(CHASE_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(DIE_ANIMATION, isCyclops ? 0.08f : 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
+    if (atlas.findRegions(ATTACK_ANIMATION).size > 0) {
+      animator.addAnimation(ATTACK_ANIMATION, 0.08f, Animation.PlayMode.NORMAL);
+    }
 
-    if (atlas.findRegion(CONTACT_ATTACK) != null) {
-      animator.addAnimation(CONTACT_ATTACK, 0.08f, Animation.PlayMode.NORMAL);
+    if (isCyclops) {
+      // Full cells retain the old 28x40 body's size and ground anchor, including lying frames.
+      animator.setDrawBounds(-19f / 28f, 2f / 40f, 64f / 28f, 64f / 40f);
+      animator.startAnimation(DEFAULT_ANIMATION);
+    }
+
+    EnemyAnimationController animationController = new EnemyAnimationController();
+    if ("images/giant-enemy/jotunn.atlas".equals(skin)) {
+      animationController.setDeathRotation(30f, 90f);
     }
 
     giantEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
+        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f, 1f))
         .addComponent(aiComponent)
         .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(animator)
-        .addComponent(new EnemyAnimationController())
+        .addComponent(animationController)
         .addComponent(new EnemyStatDisplay(2.0f));
     giantEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
     giantEnemy.setScale(3f, 3f);
@@ -135,6 +146,10 @@ public class NPCFactory {
     animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("fuse", 0.1f, Animation.PlayMode.LOOP);
+    EnemyAnimationController animationController = new EnemyAnimationController();
+    if ("images/bomb-enemy/zombie.atlas".equals(skin)) {
+      animationController.setDeathRotation(30f, 90f);
+    }
 
     bombEnemy
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack + 4))
@@ -142,13 +157,9 @@ public class NPCFactory {
         .addComponent(new EnemyDeathComponent(true, true))
         .addComponent(animator)
         .addComponent(new ExplodeComponent(target, fuseTime))
-        .addComponent(new EnemyAnimationController())
+        .addComponent(animationController)
         .addComponent(new EnemyStatDisplay(1.5f));
     bombEnemy.getComponent(AnimationRenderComponent.class).scaleEntity();
-    if ("images/bomb-enemy/zombie.atlas".equals(skin)) {
-      // The replacement frames are rectangular; retain the original square physics bounds.
-      bombEnemy.setScale(1f, 1f);
-    }
 
     return bombEnemy;
   }
@@ -186,16 +197,14 @@ public class NPCFactory {
     // Keep the original one-second death and the AI's 0.5s telegraph / 0.4s dash timings.
     animator.addAnimation(DIE_ANIMATION, isMedusa ? 1f / 3f : 0.5f, Animation.PlayMode.NORMAL);
     if (isMedusa) {
-      animator.addAnimation("lungeTelegraph", 0.5f / 6f, Animation.PlayMode.NORMAL);
-      animator.addAnimation("lungeDash", 0.1f, Animation.PlayMode.NORMAL);
       animator.addAnimation("hurt", 0.1f, Animation.PlayMode.NORMAL);
       // The old idle crop was 65x85, including 8px below the body. Keep its height/foot position
       // and centre the full 128px canvas, preserving square pixels and the existing entity size.
       animator.setDrawBounds(-22f / 85f, 8f / 85f, 128f / 85f, 128f / 85f);
     }
 
-    if (atlas.findRegion(CONTACT_ATTACK) != null) {
-      animator.addAnimation(CONTACT_ATTACK, 0.12f, Animation.PlayMode.NORMAL);
+    if (atlas.findRegions(ATTACK_ANIMATION).size > 0) {
+      animator.addAnimation(ATTACK_ANIMATION, 0.12f, Animation.PlayMode.NORMAL);
     }
 
     chaseEnemy
@@ -217,7 +226,7 @@ public class NPCFactory {
           .addComponent(
               new TouchAttackComponent(
                   PhysicsLayer.PLAYER, 1.5f, isMedusa ? MEDUSA_CONTACT_INTERVAL : 1f, isMedusa))
-          .addComponent(new EnemyAnimationController());
+          .addComponent(new EnemyAnimationController(isMedusa ? CHASE_ANIMATION : null));
     }
     if (isMedusa) {
       chaseEnemy.addComponent(new MedusaHitRecoveryComponent(target, lunge));
@@ -246,10 +255,17 @@ public class NPCFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
 
-    animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("attack", 0.1f, Animation.PlayMode.NORMAL);
-    animator.addAnimation(CHASE_ANIMATION, 0.08f, Animation.PlayMode.LOOP);
-    animator.addAnimation(DIE_ANIMATION, 0.5f, Animation.PlayMode.NORMAL);
+    boolean isHarpy = "images/flying-enemy/harpy.atlas".equals(skin);
+    animator.addAnimation(MOVE, isHarpy ? 0.06f : 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation(ATTACK_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
+    animator.addAnimation(CHASE_ANIMATION, isHarpy ? 0.06f : 0.08f, Animation.PlayMode.LOOP);
+    // Multi-frame bird deaths should finish promptly (Harpy 0.8s, Jingwei 0.6s).
+    float deathFrameDuration =
+        switch (skin) {
+          case "images/flying-enemy/harpy.atlas", "images/flying-enemy/jingwei.atlas" -> 0.1f;
+          default -> 0.5f;
+        };
+    animator.addAnimation(DIE_ANIMATION, deathFrameDuration, Animation.PlayMode.NORMAL);
     animator.addAnimation(DEFAULT_ANIMATION, 0.1f, Animation.PlayMode.LOOP);
 
     demon
@@ -381,7 +397,7 @@ public class NPCFactory {
             ServiceLocator.getResourceService()
                 .getAsset("images/sleipnir/horse.atlas", TextureAtlas.class));
     animator.addAnimation(MOVE, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("attack", 0.3f, Animation.PlayMode.LOOP);
+    animator.addAnimation(ATTACK_ANIMATION, 0.3f, Animation.PlayMode.LOOP);
     animator.addAnimation("move_up", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("move_down", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("move_right", 0.1f, Animation.PlayMode.LOOP);

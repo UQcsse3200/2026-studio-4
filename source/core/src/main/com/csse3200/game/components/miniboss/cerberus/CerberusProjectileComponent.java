@@ -96,6 +96,7 @@ public class CerberusProjectileComponent extends Component {
               entity.getCenterPosition().sub(0.4f, 0.4f), target, stats.getBaseAttack());
 
       projectileSpawner.accept(projectile);
+      entity.getEvents().trigger("cerberusCast");
     } finally {
       pendingShot = false;
       finishAttack();

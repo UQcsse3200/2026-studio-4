@@ -93,22 +93,22 @@ public class RoomAssets implements Disposable {
   };
 
   private static final String[] ITEM_TEXTURES = {
-    "images/strength_charm_pixel.png",
-    "images/attack_speed_charm.png",
-    "images/speed_charm.png",
-    "images/health_potion_pixel.png",
-    "images/health_potion_small_pixel.png",
-    "images/health_potion_medium_pixel.png",
-    "images/health_potion_large_pixel.png",
-    "images/shield_consumable_pixel.png",
-    "images/speed_potion_pixel.png",
-    "images/strength_potion_pixel.png",
-    "images/freeze_bomb_pixel.png",
-    "images/burn_vial_pixel.png",
-    "images/magnet_potion_pixel.png",
-    "images/consumable-slot-idle.png",
-    "images/consumable-slot-selected.png",
-    "images/gold_coin_pixel.png"
+    "images/items/charms/strength_charm_pixel.png",
+    "images/items/charms/attack_speed_charm.png",
+    "images/items/charms/speed_charm.png",
+    "images/items/consumables/health_potion_pixel.png",
+    "images/items/consumables/health_potion_small_pixel.png",
+    "images/items/consumables/health_potion_medium_pixel.png",
+    "images/items/consumables/health_potion_large_pixel.png",
+    "images/items/consumables/shield_consumable_pixel.png",
+    "images/items/consumables/speed_potion_pixel.png",
+    "images/items/consumables/strength_potion_pixel.png",
+    "images/items/consumables/freeze_bomb_pixel.png",
+    "images/items/consumables/burn_vial_pixel.png",
+    "images/items/consumables/magnet_potion_pixel.png",
+    "images/ui/inventory/consumable-slot-idle.png",
+    "images/ui/inventory/consumable-slot-selected.png",
+    "images/items/currency/gold_coin_pixel.png"
   };
 
   private static final String[] ALL_TEXTURES =

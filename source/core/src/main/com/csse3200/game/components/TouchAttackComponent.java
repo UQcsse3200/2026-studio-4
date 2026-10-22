@@ -207,6 +207,7 @@ public class TouchAttackComponent extends Component {
       nextAttackTime =
           ServiceLocator.getTimeSource().getTime() + Math.round(repeatInterval * 1000f);
     }
+    entity.getEvents().trigger("touchAttack");
     if (targetStats != null) {
       targetStats.hit(combatStats);
     }

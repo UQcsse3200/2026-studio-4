@@ -109,26 +109,35 @@ public class UserSettings {
       }
       Gdx.graphics.setFullscreenMode(displayMode);
     } else {
-      Gdx.graphics.setWindowedMode(
-          WindowSize.width(settings.windowWidth), WindowSize.height(settings.windowHeight));
+      int w = WindowSize.width(settings.windowWidth);
+      int h = WindowSize.height(settings.windowHeight);
+      DisplayMode desktop = Gdx.graphics.getDisplayMode();
+      if (desktop != null && desktop.width > 0 && desktop.height > 0) {
+        float fit = Math.min(1f, Math.min((float) desktop.width / w, (float) desktop.height / h));
+        w = Math.round(w * fit);
+        h = Math.round(h * fit);
+      }
+      Gdx.graphics.setWindowedMode(w, h);
     }
   }
 
-  private static DisplayMode findMatching(DisplaySettings desiredSettings) {
-    DisplayMode match = matchSize(desiredSettings, Gdx.graphics.getDisplayModes());
-    if (match != null) {
-      return match;
-    }
-    Monitor monitor = Gdx.graphics.getMonitor();
-    if (monitor == null) {
+  private static DisplayMode findMatching(DisplaySettings desired) {
+    if (desired == null) {
       return null;
     }
-    return matchSize(desiredSettings, Gdx.graphics.getDisplayModes(monitor));
+    Monitor monitor = Gdx.graphics.getMonitor();
+    if (monitor != null) {
+      DisplayMode onMonitor = matchSize(desired, Gdx.graphics.getDisplayModes(monitor));
+      if (onMonitor != null) {
+        return onMonitor;
+      }
+    }
+    return matchSize(desired, Gdx.graphics.getDisplayModes());
   }
 
   /**
-   * A display mode of the requested size. An exact refresh rate wins. Otherwise the first mode of
-   * that size is used, so a 59 Hz panel still accepts a 60 Hz choice.
+   * A display mode of the requested size. An exact refresh rate wins. Otherwise the mode of that
+   * size with the closest refresh rate is used, so a 59 Hz panel still accepts a 60 Hz choice.
    *
    * @param desired width, height, and refresh rate chosen in the menu
    * @param modes modes to search; null is treated as none
@@ -138,19 +147,22 @@ public class UserSettings {
     if (desired == null || modes == null) {
       return null;
     }
-    DisplayMode sameSize = null;
+    DisplayMode closest = null;
+    int closestGap = Integer.MAX_VALUE;
     for (DisplayMode mode : modes) {
       if (mode == null || mode.width != desired.width || mode.height != desired.height) {
         continue;
       }
-      if (mode.refreshRate == desired.refreshRate) {
+      int gap = Math.abs(mode.refreshRate - desired.refreshRate);
+      if (gap == 0) {
         return mode;
       }
-      if (sameSize == null) {
-        sameSize = mode;
+      if (gap < closestGap) {
+        closestGap = gap;
+        closest = mode;
       }
     }
-    return sameSize;
+    return closest;
   }
 
   /** Stores game settings, can be serialised/deserialised. */

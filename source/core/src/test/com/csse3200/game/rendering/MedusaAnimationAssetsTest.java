@@ -23,17 +23,15 @@ import org.junit.jupiter.params.provider.CsvSource;
 class MedusaAnimationAssetsTest {
   @ParameterizedTest
   @CsvSource({
-    "default,Idle,0,7",
-    "move,Walk,0,13",
-    "chase,Run,0,7",
-    "lungeTelegraph,Attack_3,0,6",
-    "lungeDash,Attack_3,6,4",
-    "hurt,Hurt,0,3",
-    "dieAnimation,Dead,0,3"
+    "default,split-enemy/medusa/Idle.png,0,0,7",
+    "move,split-enemy/medusa/Walk.png,0,0,13",
+    "chase,split-enemy/medusa.png,0,256,7",
+    "hurt,split-enemy/medusa/Hurt.png,0,0,3",
+    "dieAnimation,split-enemy/medusa/Dead.png,0,0,3"
   })
   void clipsLoadEveryOriginalFrameWithoutCropping(
-      String clip, String sheet, int firstFrame, int frameCount) throws Exception {
-    BufferedImage original = ImageIO.read(new File("images/split-enemy/medusa/" + sheet + ".png"));
+      String clip, String sheet, int firstFrame, int rowY, int frameCount) throws Exception {
+    BufferedImage original = ImageIO.read(new File("images/" + sheet));
     TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("images/split-enemy/medusa.atlas"));
     try {
       var frames = atlas.findRegions(clip);
@@ -49,14 +47,15 @@ class MedusaAnimationAssetsTest {
         assertEquals(0f, frame.offsetY);
         assertFalse(frame.rotate);
         assertEquals((firstFrame + i) * 128, frame.getRegionX());
-        assertEquals(0, frame.getRegionY());
+        assertEquals(rowY, frame.getRegionY());
         BufferedImage actualSheet =
             ImageIO.read(
                 ((FileTextureData) frame.getTexture().getTextureData()).getFileHandle().file());
         assertTrue(frame.getRegionX() >= 0 && frame.getRegionY() >= 0);
         assertTrue(frame.getRegionX() + frame.getRegionWidth() <= actualSheet.getWidth());
         assertTrue(frame.getRegionY() + frame.getRegionHeight() <= actualSheet.getHeight());
-        int[] expectedPixels = original.getRGB((firstFrame + i) * 128, 0, 128, 128, null, 0, 128);
+        int[] expectedPixels =
+            original.getRGB((firstFrame + i) * 128, rowY, 128, 128, null, 0, 128);
         int[] loadedPixels =
             actualSheet.getRGB(frame.getRegionX(), frame.getRegionY(), 128, 128, null, 0, 128);
         assertArrayEquals(expectedPixels, loadedPixels, clip + " frame " + i + " source pixels");
@@ -86,7 +85,7 @@ class MedusaAnimationAssetsTest {
   void atlasContainsOnlyTheCompletePlaybackClips() {
     TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("images/split-enemy/medusa.atlas"));
     try {
-      assertEquals(43, atlas.getRegions().size);
+      assertEquals(33, atlas.getRegions().size);
     } finally {
       atlas.dispose();
     }

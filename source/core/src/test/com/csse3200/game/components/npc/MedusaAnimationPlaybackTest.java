@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FileTextureData;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.SplitComponent;
@@ -96,31 +97,60 @@ class MedusaAnimationPlaybackTest {
   @Test
   void existingAiDrivesTelegraphDashAndCooldownWithoutChangingTheirTiming() {
     aiAt(0L);
-    assertEquals("lungeTelegraph", animator.getCurrentAnimation());
+    assertEquals("chase", animator.getCurrentAnimation());
     renderFor(0.42f);
     controller.update();
-    assertEquals(6, frameIndex());
+    assertEquals(5, frameIndex());
     aiAt(499L);
-    assertEquals("lungeTelegraph", animator.getCurrentAnimation());
+    assertEquals("chase", animator.getCurrentAnimation());
     aiAt(500L);
-    assertEquals("lungeDash", animator.getCurrentAnimation());
-    assertEquals(1, frameIndex());
+    assertEquals("chase", animator.getCurrentAnimation());
+    assertEquals(5, frameIndex(), "starting the dash must not restart the spin");
     movement.update();
     assertEquals(
         6f, medusa.getComponent(PhysicsComponent.class).getBody().getLinearVelocity().x, 0.001f);
     renderFor(0.31f);
     controller.update();
-    assertEquals(4, frameIndex());
+    assertEquals(1, frameIndex(), "the seven-frame spin loops after 0.7 seconds");
     aiAt(899L);
-    assertEquals("lungeDash", animator.getCurrentAnimation());
+    assertEquals("chase", animator.getCurrentAnimation());
     aiAt(900L);
-    assertEquals("default", animator.getCurrentAnimation());
+    assertFalse(movement.getMoving(), "the dash still ends after 0.4 seconds");
+    assertEquals("chase", animator.getCurrentAnimation());
+    renderFor(0.2f);
+    assertEquals(3, frameIndex());
     aiAt(901L);
     assertEquals("chase", animator.getCurrentAnimation());
+    assertEquals(3, frameIndex(), "returning to chase must not restart the spin");
     aiAt(3899L);
     assertEquals("chase", animator.getCurrentAnimation());
+    renderFor(0.21f);
+    assertEquals(5, frameIndex());
     aiAt(3900L);
-    assertEquals("lungeTelegraph", animator.getCurrentAnimation());
+    assertFalse(movement.getMoving(), "the next telegraph starts after the three-second cooldown");
+    assertEquals("chase", animator.getCurrentAnimation());
+    assertEquals(5, frameIndex(), "the next telegraph must keep the current spin frame");
+  }
+
+  @Test
+  void closeRangeChaseLoopsOriginalSpinEvenWhenMovementStops() {
+    medusa.getEvents().trigger("chaseStart");
+    renderFor(0.35f);
+    TextureAtlas.AtlasRegion frame = (TextureAtlas.AtlasRegion) animator.getCurrentFrame();
+    assertEquals(4, frameIndex());
+    assertEquals(256, frame.getRegionY(), "chase must use the original spinning attack row");
+    assertEquals(
+        "medusa.png",
+        ((FileTextureData) frame.getTexture().getTextureData()).getFileHandle().name());
+    movement.setMoving(false);
+    controller.update();
+    assertEquals("chase", animator.getCurrentAnimation());
+    assertEquals(4, frameIndex());
+    renderFor(0.4f);
+    assertEquals(1, frameIndex());
+    medusa.getEvents().trigger("wanderStart");
+    controller.update();
+    assertEquals("default", animator.getCurrentAnimation());
   }
 
   @Test
@@ -158,7 +188,7 @@ class MedusaAnimationPlaybackTest {
   @Test
   void concealedTargetCancelsTelegraphAndTheNextAiTaskRestoresLocomotion() {
     aiAt(0L);
-    assertEquals("lungeTelegraph", animator.getCurrentAnimation());
+    assertEquals("chase", animator.getCurrentAnimation());
     player
         .getComponent(StatusEffectsControllerComponent.class)
         .addStatusEffect(new InvisibilityEffect(time, 5000L));
@@ -178,7 +208,7 @@ class MedusaAnimationPlaybackTest {
         .hit(player.getComponent(CombatStatsComponent.class));
     assertEquals(35, medusa.getComponent(CombatStatsComponent.class).getHealth());
     assertEquals("hurt", animator.getCurrentAnimation());
-    // The 350ms hit recovery freezes playback, so the hurt pose is held rather than skipped.
+    // Preserve the upstream 350ms hit recovery before animation playback resumes.
     renderFor(0.2f);
     assertEquals(1, frameIndex());
     when(time.getTime()).thenReturn(400L);
@@ -188,7 +218,7 @@ class MedusaAnimationPlaybackTest {
     movement.setMoving(false);
     renderFor(0.11f);
     controller.update();
-    assertEquals("default", animator.getCurrentAnimation());
+    assertEquals("chase", animator.getCurrentAnimation());
     movement.setMoving(true);
     controller.update();
     assertEquals("chase", animator.getCurrentAnimation());
@@ -198,10 +228,10 @@ class MedusaAnimationPlaybackTest {
   void hitReactionCannotHideTelegraphOrDash() {
     aiAt(0L);
     medusa.getEvents().trigger("hitReaction", player);
-    assertEquals("lungeTelegraph", animator.getCurrentAnimation());
+    assertEquals("chase", animator.getCurrentAnimation());
     aiAt(500L);
     medusa.getEvents().trigger("hitReaction", player);
-    assertEquals("lungeDash", animator.getCurrentAnimation());
+    assertEquals("chase", animator.getCurrentAnimation());
   }
 
   @Test
@@ -294,8 +324,7 @@ class MedusaAnimationPlaybackTest {
       assertEquals(1, child.getComponent(CombatStatsComponent.class).getBaseAttack());
       child.getEvents().trigger("lungeTelegraphStart");
       assertEquals(
-          "lungeTelegraph",
-          child.getComponent(AnimationRenderComponent.class).getCurrentAnimation());
+          "chase", child.getComponent(AnimationRenderComponent.class).getCurrentAnimation());
     }
   }
 

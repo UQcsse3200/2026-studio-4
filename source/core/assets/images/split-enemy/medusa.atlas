@@ -150,136 +150,60 @@ move
   offset: 0, 0
   index: 12
 
-medusa/Run.png
-size: 896, 128
+medusa.png
+size: 896, 512
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 chase
   rotate: false
-  xy: 0, 0
+  xy: 0, 256
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
 chase
   rotate: false
-  xy: 128, 0
+  xy: 128, 256
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
 chase
   rotate: false
-  xy: 256, 0
+  xy: 256, 256
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 2
 chase
   rotate: false
-  xy: 384, 0
+  xy: 384, 256
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 3
 chase
   rotate: false
-  xy: 512, 0
+  xy: 512, 256
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 4
 chase
   rotate: false
-  xy: 640, 0
+  xy: 640, 256
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 5
 chase
   rotate: false
-  xy: 768, 0
+  xy: 768, 256
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 6
-
-medusa/Attack_3.png
-size: 1280, 128
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-lungeTelegraph
-  rotate: false
-  xy: 0, 0
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 0
-lungeTelegraph
-  rotate: false
-  xy: 128, 0
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 1
-lungeTelegraph
-  rotate: false
-  xy: 256, 0
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 2
-lungeTelegraph
-  rotate: false
-  xy: 384, 0
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 3
-lungeTelegraph
-  rotate: false
-  xy: 512, 0
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 4
-lungeTelegraph
-  rotate: false
-  xy: 640, 0
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 5
-lungeDash
-  rotate: false
-  xy: 768, 0
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 0
-lungeDash
-  rotate: false
-  xy: 896, 0
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 1
-lungeDash
-  rotate: false
-  xy: 1024, 0
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 2
-lungeDash
-  rotate: false
-  xy: 1152, 0
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 3
 
 medusa/Hurt.png
 size: 384, 128

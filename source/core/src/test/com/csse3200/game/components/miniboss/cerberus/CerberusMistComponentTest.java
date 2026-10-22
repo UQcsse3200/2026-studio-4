@@ -54,16 +54,21 @@ class CerberusMistComponentTest {
 
   @Test
   void shouldWaitForCooldownAndExpireAfterDuration() {
+    int[] casts = {0};
+    leftHead.getEvents().addListener("cerberusCast", () -> casts[0]++);
     tick(4f);
     assertFalse(mist.isMistActive());
+    assertEquals(0, casts[0]);
 
     tick(1f);
     assertTrue(mist.isMistActive());
     assertEquals(1, entered);
+    assertEquals(1, casts[0]);
 
     tick(2f);
     assertTrue(mist.isMistActive());
     assertEquals(1, entered);
+    assertEquals(1, casts[0]);
 
     tick(1f);
     assertFalse(mist.isMistActive());
@@ -75,6 +80,7 @@ class CerberusMistComponentTest {
     tick(1f);
     assertTrue(mist.isMistActive());
     assertEquals(2, entered);
+    assertEquals(2, casts[0]);
   }
 
   @Test

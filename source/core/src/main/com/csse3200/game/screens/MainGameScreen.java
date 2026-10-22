@@ -138,7 +138,6 @@ public class MainGameScreen extends ScreenAdapter {
           loadedSave.resumePosition.roomId,
           loadedSave.resumePosition.x,
           loadedSave.resumePosition.y);
-
     } else {
       roomSelector.start();
     }
@@ -196,7 +195,7 @@ public class MainGameScreen extends ScreenAdapter {
       GameProgress.recordRun((long) (runTimer.getTotalTime() * 1000f), winTransitionStarted);
     }
 
-    // This should all just be one function call GameSave.save();
+    // This should all just be one function
     if (saveOnDispose && !runSaved && player != null && roomSelector != null) {
       runSaved = true;
       try {

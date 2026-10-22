@@ -15,6 +15,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.events.listeners.EventListener0;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -84,12 +85,13 @@ class BombEnemyTest {
 
     Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
 
-    EventListener0 fuseStarted = mock(EventListener0.class);
+    @SuppressWarnings("unchecked")
+    EventListener1<Float> fuseStarted = mock(EventListener1.class);
     bombEnemy.getEvents().addListener("fuseStarted", fuseStarted);
 
     bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
 
-    verify(fuseStarted, times(1)).handle();
+    verify(fuseStarted, times(1)).handle(0.05f);
   }
 
   @Test
@@ -107,12 +109,13 @@ class BombEnemyTest {
     Fixture bombFixture = bombEnemy.getComponent(HitboxComponent.class).getFixture();
     Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
 
-    EventListener0 fuseStarted = mock(EventListener0.class);
+    @SuppressWarnings("unchecked")
+    EventListener1<Float> fuseStarted = mock(EventListener1.class);
     bombEnemy.getEvents().addListener("fuseStarted", fuseStarted);
 
     bombEnemy.getEvents().trigger("collisionStart", playerFixture, bombFixture);
 
-    verify(fuseStarted, never()).handle();
+    verify(fuseStarted, never()).handle(0.05f);
   }
 
   @Test
@@ -130,14 +133,15 @@ class BombEnemyTest {
     Fixture bombFixture = bombEnemy.getComponent(HitboxComponent.class).getFixture();
     Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
 
-    EventListener0 fuseStarted = mock(EventListener0.class);
+    @SuppressWarnings("unchecked")
+    EventListener1<Float> fuseStarted = mock(EventListener1.class);
     bombEnemy.getEvents().addListener("fuseStarted", fuseStarted);
 
     bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
     bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
     bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
 
-    verify(fuseStarted, times(1)).handle();
+    verify(fuseStarted, times(1)).handle(0.05f);
   }
 
   @Test
@@ -190,7 +194,8 @@ class BombEnemyTest {
     Fixture bombFixture = bombEnemy.getComponent(HitboxComponent.class).getFixture();
     Fixture playerFixture = player.getComponent(HitboxComponent.class).getFixture();
 
-    EventListener0 fuseStarted = mock(EventListener0.class);
+    @SuppressWarnings("unchecked")
+    EventListener1<Float> fuseStarted = mock(EventListener1.class);
     bombEnemy.getEvents().addListener("fuseStarted", fuseStarted);
     ExplodeComponent explode = bombEnemy.getComponent(ExplodeComponent.class);
 
@@ -198,18 +203,18 @@ class BombEnemyTest {
     bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
     explode.update();
 
-    verify(fuseStarted, times(0)).handle();
+    verify(fuseStarted, never()).handle(0.05f);
     assertFalse(bombEnemy.getComponent(CombatStatsComponent.class).isDead());
 
     // The player is still standing on the bomb when invisibility wears off: the fuse lights on the
     // next frame without the fixtures having to separate and touch again.
     when(abilityTime.getTime()).thenReturn(1_000L + Invisibility.DURATION_MS);
     explode.update();
-    verify(fuseStarted, times(1)).handle();
+    verify(fuseStarted, times(1)).handle(0.05f);
 
     // A repeat contact does not light a second fuse.
     bombEnemy.getEvents().trigger("collisionStart", bombFixture, playerFixture);
     explode.update();
-    verify(fuseStarted, times(1)).handle();
+    verify(fuseStarted, times(1)).handle(0.05f);
   }
 }
