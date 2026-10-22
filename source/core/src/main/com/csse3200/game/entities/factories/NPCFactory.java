@@ -63,6 +63,7 @@ public class NPCFactory {
   private static final String MOVE = "move";
   private static final String CHASE_ANIMATION = "chase";
   private static final String ATTACK_ANIMATION = "attack";
+  private static final String HARPY_ATLAS = "images/flying-enemy/harpy.atlas";
 
   public static Entity createGiantEnemy(Entity target, String skin) {
     Entity giantEnemy = createBaseNPC();
@@ -255,14 +256,14 @@ public class NPCFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(skin, TextureAtlas.class));
 
-    boolean isHarpy = "images/flying-enemy/harpy.atlas".equals(skin);
+    boolean isHarpy = HARPY_ATLAS.equals(skin);
     animator.addAnimation(MOVE, isHarpy ? 0.06f : 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation(ATTACK_ANIMATION, 0.1f, Animation.PlayMode.NORMAL);
     animator.addAnimation(CHASE_ANIMATION, isHarpy ? 0.06f : 0.08f, Animation.PlayMode.LOOP);
     // Multi-frame bird deaths should finish promptly (Harpy 0.8s, Jingwei 0.6s).
     float deathFrameDuration =
         switch (skin) {
-          case "images/flying-enemy/harpy.atlas", "images/flying-enemy/jingwei.atlas" -> 0.1f;
+          case HARPY_ATLAS, "images/flying-enemy/jingwei.atlas" -> 0.1f;
           default -> 0.5f;
         };
     animator.addAnimation(DIE_ANIMATION, deathFrameDuration, Animation.PlayMode.NORMAL);
@@ -559,7 +560,7 @@ public class NPCFactory {
 
   /** Creates a harpy with its standard appearance. */
   public static Entity createHarpy(Entity target, Vector2 spawn) {
-    return createFloatingEnemy(target, "images/flying-enemy/harpy.atlas", spawn);
+    return createFloatingEnemy(target, HARPY_ATLAS, spawn);
   }
 
   /** Creates a golem with its standard scale and collision bounds. */
