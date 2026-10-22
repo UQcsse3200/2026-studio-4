@@ -20,8 +20,6 @@
       ],
       "enemySpawns": [],
       "npcSpawns": [
-        {"npcId": "merchant", "x": 26, "y": 9},
-        {"npcId": "hecate", "x": 13, "y": 13},
         {"npcId": "tutorialGuide", "x": 21, "y": 7}
       ],
       "obstacles": {
@@ -147,7 +145,9 @@
           "y": 50
         }
       ],
-      "npcSpawns": [],
+      "npcSpawns": [
+        {"npcId": "hecate", "x": 13, "y": 13}
+      ],
       "trapSpawns": [
         {
           "type": "FREEZE",
@@ -510,7 +510,9 @@
           "y": 36
         }
       ],
-      "npcSpawns": [],
+      "npcSpawns": [
+        {"npcId": "merchant", "x": 26, "y": 9}
+      ],
       "obstacles": {
         "spawns": [
           "                                                              ",
@@ -1110,7 +1112,9 @@
           "y": 39
         }
       ],
-      "npcSpawns": [],
+      "npcSpawns": [
+        {"npcId": "hecate", "x": 13, "y": 13}
+      ],
       "trapSpawns": [
         {
           "type": "BURN",
@@ -1492,7 +1496,9 @@
           "y": 52
         }
       ],
-      "npcSpawns": [],
+      "npcSpawns": [
+        {"npcId": "merchant", "x": 26, "y": 9}
+      ],
       "trapSpawns": [
         {
           "type": "BURN",
@@ -2012,7 +2018,9 @@
           "y": 40
         }
       ],
-      "npcSpawns": [],
+      "npcSpawns": [
+        {"npcId": "hecate", "x": 13, "y": 13}
+      ],
       "trapSpawns": [
         {
           "type": "FREEZE",
@@ -2324,7 +2332,9 @@
           "y": 14
         }
       ],
-      "npcSpawns": [],
+      "npcSpawns": [
+        {"npcId": "merchant", "x": 26, "y": 9}
+      ],
       "trapSpawns": [
         {
           "type": "FREEZE",
@@ -2980,7 +2990,9 @@
           "y": 14
         }
       ],
-      "npcSpawns": [],
+      "npcSpawns": [
+        {"npcId": "hecate", "x": 13, "y": 13}
+      ],
       "trapSpawns": [
         {
           "type": "FREEZE",
@@ -3123,7 +3135,9 @@
           "y": 10
         }
       ],
-      "npcSpawns": [],
+      "npcSpawns": [
+        {"npcId": "merchant", "x": 26, "y": 9}
+      ],
       "trapSpawns": [
         {
           "type": "BURN",
