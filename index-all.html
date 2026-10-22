@@ -201,6 +201,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ai/tasks/Task.Status.html#ACTIVE" class="member-name-link">ACTIVE</a> - Enum constant in enum class com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/Task.Status.html" title="enum class in com.csse3200.game.ai.tasks">Task.Status</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Outcome.html#ACTIVE" class="member-name-link">ACTIVE</a> - Enum constant in enum class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.Outcome.html" title="enum class in com.csse3200.game.components.shop">HigherLowerGame.Outcome</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/AnimationRenderComponent.html#addAnimation(java.lang.String,float)" class="member-name-link">addAnimation(String, float)</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a></dt>
 <dd>
 <div class="block">Register an animation from the texture atlas.</div>
@@ -309,6 +311,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Changes the stake but keeps it between MIN_STAKE (or the player's whole balance if they have
  less than that) and the player's Gold.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html#adjustStake(int)" class="member-name-link">adjustStake(int)</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.html" title="class in com.csse3200.game.components.shop">HigherLowerGame</a></dt>
+<dd>
+<div class="block">Clamps the stake between <code>MIN_STAKE</code> and the player's current Gold.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/shop/RockPaperScissorsGame.html#adjustStake(int)" class="member-name-link">adjustStake(int)</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/RockPaperScissorsGame.html" title="class in com.csse3200.game.components.shop">RockPaperScissorsGame</a></dt>
 <dd>
 <div class="block">Changes the stake within the player's Gold.</div>
@@ -316,6 +322,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/shop/ScratchCardGame.html#adjustStake(int)" class="member-name-link">adjustStake(int)</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ScratchCardGame.html" title="class in com.csse3200.game.components.shop">ScratchCardGame</a></dt>
 <dd>
 <div class="block">Changes the stake within the player's Gold.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.html#adjustStake(int)" class="member-name-link">adjustStake(int)</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.html" title="class in com.csse3200.game.components.shop">ShellGame</a></dt>
+<dd>
+<div class="block">Clamps the stake between <code>MIN_STAKE</code> and the player's current Gold.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/cutscene/DialogueDisplay.html#advance()" class="member-name-link">advance()</a> - Method in class com.csse3200.game.components.cutscene.<a href="com/csse3200/game/components/cutscene/DialogueDisplay.html" title="class in com.csse3200.game.components.cutscene">DialogueDisplay</a></dt>
 <dd>&nbsp;</dd>
@@ -857,6 +867,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/shop/GambleResult.html#bust(com.csse3200.game.shop.GambleEntry)" class="member-name-link">bust(GambleEntry)</a> - Static method in record class com.csse3200.game.shop.<a href="com/csse3200/game/shop/GambleResult.html" title="class in com.csse3200.game.shop">GambleResult</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Outcome.html#BUST" class="member-name-link">BUST</a> - Enum constant in enum class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.Outcome.html" title="enum class in com.csse3200.game.components.shop">HigherLowerGame.Outcome</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/shop/GambleResult.Status.html#BUST" class="member-name-link">BUST</a> - Enum constant in enum class com.csse3200.game.shop.<a href="com/csse3200/game/shop/GambleResult.Status.html" title="enum class in com.csse3200.game.shop">GambleResult.Status</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/friendlynpc/NpcInteractableComponent.Availability.html#BUSY" class="member-name-link">BUSY</a> - Enum constant in enum class com.csse3200.game.components.friendlynpc.<a href="com/csse3200/game/components/friendlynpc/NpcInteractableComponent.Availability.html" title="enum class in com.csse3200.game.components.friendlynpc">NpcInteractableComponent.Availability</a></dt>
@@ -922,10 +934,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">True when no round is active, the player can afford the stake and a win cannot overflow.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html#canStart()" class="member-name-link">canStart()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.html" title="class in com.csse3200.game.components.shop">HigherLowerGame</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/RockPaperScissorsGame.html#canStart()" class="member-name-link">canStart()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/RockPaperScissorsGame.html" title="class in com.csse3200.game.components.shop">RockPaperScissorsGame</a></dt>
 <dd>
 <div class="block">True when no match is running, the stake is affordable and a win cannot overflow.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.html#canStart()" class="member-name-link">canStart()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.html" title="class in com.csse3200.game.components.shop">ShellGame</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/ConsumableItem.html#canUse(com.csse3200.game.components.CombatStatsComponent,com.csse3200.game.components.StatusEffectsControllerComponent,com.csse3200.game.services.GameTime)" class="member-name-link">canUse(CombatStatsComponent, StatusEffectsControllerComponent, GameTime)</a> - Method in class com.csse3200.game.items.<a href="com/csse3200/game/items/ConsumableItem.html" title="class in com.csse3200.game.items">ConsumableItem</a></dt>
 <dd>
 <div class="block">Whether this item can be consumed with the player's current state.</div>
@@ -952,9 +968,19 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/GameSaveMapper.html#capture(com.csse3200.game.entities.Entity,com.csse3200.game.files.GameSaveData.ResumePosition)" class="member-name-link">capture(Entity, GameSaveData.ResumePosition)</a> - Static method in class com.csse3200.game.files.<a href="com/csse3200/game/files/GameSaveMapper.html" title="class in com.csse3200.game.files">GameSaveMapper</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html#card()" class="member-name-link">card()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html" title="class in com.csse3200.game.components.shop">HigherLowerGame.Round</a></dt>
+<dd>
+<div class="block">Returns the value of the <code>card</code> record component.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/shop/ScratchCardGame.CardOutcome.html#%3Cinit%3E(com.csse3200.game.components.shop.ScratchCardGame.Result,com.csse3200.game.components.shop.ScratchCardGame.Symbol,int,int,java.util.List)" class="member-name-link">CardOutcome(ScratchCardGame.Result, ScratchCardGame.Symbol, int, int, List&lt;ScratchCardGame.Symbol&gt;)</a> - Constructor for record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ScratchCardGame.CardOutcome.html" title="class in com.csse3200.game.components.shop">ScratchCardGame.CardOutcome</a></dt>
 <dd>
 <div class="block">Creates an instance of a <code>CardOutcome</code> record class.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Outcome.html#CASHED_OUT" class="member-name-link">CASHED_OUT</a> - Enum constant in enum class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.Outcome.html" title="enum class in com.csse3200.game.components.shop">HigherLowerGame.Outcome</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html#cashOut()" class="member-name-link">cashOut()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.html" title="class in com.csse3200.game.components.shop">HigherLowerGame</a></dt>
+<dd>
+<div class="block">Banks the current multiplier's payout and ends the round.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/spells/SpellComponent.html#cast()" class="member-name-link">cast()</a> - Method in class com.csse3200.game.components.spells.<a href="com/csse3200/game/components/spells/SpellComponent.html" title="class in com.csse3200.game.components.spells">SpellComponent</a></dt>
 <dd>
@@ -1232,6 +1258,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Hides the panel.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerPanel.html#close()" class="member-name-link">close()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerPanel.html" title="class in com.csse3200.game.components.shop">HigherLowerPanel</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/ItemDrawPanel.html#close()" class="member-name-link">close()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ItemDrawPanel.html" title="class in com.csse3200.game.components.shop">ItemDrawPanel</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/RockPaperScissorsPanel.html#close()" class="member-name-link">close()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/RockPaperScissorsPanel.html" title="class in com.csse3200.game.components.shop">RockPaperScissorsPanel</a></dt>
@@ -1242,6 +1270,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Hides the panel.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGamePanel.html#close()" class="member-name-link">close()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGamePanel.html" title="class in com.csse3200.game.components.shop">ShellGamePanel</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/ShopDisplay.html#close()" class="member-name-link">close()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShopDisplay.html" title="class in com.csse3200.game.components.shop">ShopDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/ShopSessionComponent.html#close()" class="member-name-link">close()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShopSessionComponent.html" title="class in com.csse3200.game.components.shop">ShopSessionComponent</a></dt>
@@ -1570,6 +1600,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/areas/attic/AtticTerrain.WallPiece.html#CORNER_TOP_LEFT" class="member-name-link">CORNER_TOP_LEFT</a> - Enum constant in enum class com.csse3200.game.areas.attic.<a href="com/csse3200/game/areas/attic/AtticTerrain.WallPiece.html" title="enum class in com.csse3200.game.areas.attic">AtticTerrain.WallPiece</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/attic/AtticTerrain.WallPiece.html#CORNER_TOP_RIGHT" class="member-name-link">CORNER_TOP_RIGHT</a> - Enum constant in enum class com.csse3200.game.areas.attic.<a href="com/csse3200/game/areas/attic/AtticTerrain.WallPiece.html" title="enum class in com.csse3200.game.areas.attic">AtticTerrain.WallPiece</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Outcome.html#CORRECT" class="member-name-link">CORRECT</a> - Enum constant in enum class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.Outcome.html" title="enum class in com.csse3200.game.components.shop">HigherLowerGame.Outcome</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/shop/ItemGambleConfig.Config.html#cost" class="member-name-link">cost</a> - Variable in class com.csse3200.game.shop.<a href="com/csse3200/game/shop/ItemGambleConfig.Config.html" title="class in com.csse3200.game.shop">ItemGambleConfig.Config</a></dt>
 <dd>&nbsp;</dd>
@@ -2291,6 +2323,8 @@ loadScripts(document, 'script');</script>
 <div class="block">If true, <a href="com/csse3200/game/components/cutscene/CutsceneEvents.html#DIALOGUE_CUTSCENE_CUE"><code>CutsceneEvents.DIALOGUE_CUTSCENE_CUE</code></a> fires when this line appears, which
  starts an NPC's DURING_DIALOGUE cutscene.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.html#CUP_COUNT" class="member-name-link">CUP_COUNT</a> - Static variable in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.html" title="class in com.csse3200.game.components.shop">ShellGame</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/ItemCategory.html#CURRENCY" class="member-name-link">CURRENCY</a> - Enum constant in enum class com.csse3200.game.items.<a href="com/csse3200/game/items/ItemCategory.html" title="enum class in com.csse3200.game.items">ItemCategory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/CurrencyItem.html" class="type-name-link" title="class in com.csse3200.game.items">CurrencyItem</a> - Class in <a href="com/csse3200/game/items/package-summary.html">com.csse3200.game.items</a></dt>
@@ -2298,6 +2332,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Stackable currency represented by the same world-item and pickup contract.</div>
 </dd>
 <dt><a href="com/csse3200/game/items/CurrencyItem.html#%3Cinit%3E(int)" class="member-name-link">CurrencyItem(int)</a> - Constructor for class com.csse3200.game.items.<a href="com/csse3200/game/items/CurrencyItem.html" title="class in com.csse3200.game.items">CurrencyItem</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html#currentMultiplier()" class="member-name-link">currentMultiplier()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.html" title="class in com.csse3200.game.components.shop">HigherLowerGame</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/saving/RunSaveState.html#currentRoomId" class="member-name-link">currentRoomId</a> - Static variable in class com.csse3200.game.saving.<a href="com/csse3200/game/saving/RunSaveState.html" title="class in com.csse3200.game.saving">RunSaveState</a></dt>
 <dd>&nbsp;</dd>
@@ -3498,6 +3534,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html" title="class in com.csse3200.game.components.shop">HigherLowerGame.Round</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/shop/RockPaperScissorsGame.MatchOutcome.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/RockPaperScissorsGame.MatchOutcome.html" title="class in com.csse3200.game.components.shop">RockPaperScissorsGame.MatchOutcome</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
@@ -3507,6 +3547,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/shop/ScratchCardGame.CardOutcome.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ScratchCardGame.CardOutcome.html" title="class in com.csse3200.game.components.shop">ScratchCardGame.CardOutcome</a></dt>
+<dd>
+<div class="block">Indicates whether some other object is "equal to" this one.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.Round.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.Round.html" title="class in com.csse3200.game.components.shop">ShellGame.Round</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
@@ -4357,6 +4401,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/rendering/MinotaurAttackRenderComponent.html#getCurrentAnimation()" class="member-name-link">getCurrentAnimation()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/MinotaurAttackRenderComponent.html" title="class in com.csse3200.game.rendering">MinotaurAttackRenderComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html#getCurrentCard()" class="member-name-link">getCurrentCard()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.html" title="class in com.csse3200.game.components.shop">HigherLowerGame</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/RunTimer.html#getCurrentDungeonId()" class="member-name-link">getCurrentDungeonId()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/RunTimer.html" title="class in com.csse3200.game.services">RunTimer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/AnimationRenderComponent.html#getCurrentFrame()" class="member-name-link">getCurrentFrame()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a></dt>
@@ -4939,9 +4985,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/DiceDuelGame.html#getStake()" class="member-name-link">getStake()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/DiceDuelGame.html" title="class in com.csse3200.game.components.shop">DiceDuelGame</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html#getStake()" class="member-name-link">getStake()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.html" title="class in com.csse3200.game.components.shop">HigherLowerGame</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/RockPaperScissorsGame.html#getStake()" class="member-name-link">getStake()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/RockPaperScissorsGame.html" title="class in com.csse3200.game.components.shop">RockPaperScissorsGame</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/ScratchCardGame.html#getStake()" class="member-name-link">getStake()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ScratchCardGame.html" title="class in com.csse3200.game.components.shop">ScratchCardGame</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.html#getStake()" class="member-name-link">getStake()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.html" title="class in com.csse3200.game.components.shop">ShellGame</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rooms/RoomLoader.html#getStartingRoom()" class="member-name-link">getStartingRoom()</a> - Method in class com.csse3200.game.rooms.<a href="com/csse3200/game/rooms/RoomLoader.html" title="class in com.csse3200.game.rooms">RoomLoader</a></dt>
 <dd>
@@ -4990,6 +5040,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the current status of the task.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html#getStreak()" class="member-name-link">getStreak()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.html" title="class in com.csse3200.game.components.shop">HigherLowerGame</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ai/movement/MovementController.html#getTarget()" class="member-name-link">getTarget()</a> - Method in interface com.csse3200.game.ai.movement.<a href="com/csse3200/game/ai/movement/MovementController.html" title="interface in com.csse3200.game.ai.movement">MovementController</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/achievements/Achievement.html#getTarget()" class="member-name-link">getTarget()</a> - Method in class com.csse3200.game.components.achievements.<a href="com/csse3200/game/components/achievements/Achievement.html" title="class in com.csse3200.game.components.achievements">Achievement</a></dt>
@@ -5274,6 +5326,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainConfig.html#groundTexture" class="member-name-link">groundTexture</a> - Variable in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainConfig.html" title="class in com.csse3200.game.areas.terrain">TerrainConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html#guess(boolean)" class="member-name-link">guess(boolean)</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.html" title="class in com.csse3200.game.components.shop">HigherLowerGame</a></dt>
+<dd>
+<div class="block">Draws the next card and resolves the guess.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.html#guess(int)" class="member-name-link">guess(int)</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.html" title="class in com.csse3200.game.components.shop">ShellGame</a></dt>
+<dd>
+<div class="block">Resolves the player's guess against the hidden cup.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:H">H</h2>
 <dl class="index">
@@ -5341,6 +5401,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html" title="class in com.csse3200.game.components.shop">HigherLowerGame.Round</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/shop/RockPaperScissorsGame.MatchOutcome.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/RockPaperScissorsGame.MatchOutcome.html" title="class in com.csse3200.game.components.shop">RockPaperScissorsGame.MatchOutcome</a></dt>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
@@ -5350,6 +5414,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/shop/ScratchCardGame.CardOutcome.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ScratchCardGame.CardOutcome.html" title="class in com.csse3200.game.components.shop">ScratchCardGame.CardOutcome</a></dt>
+<dd>
+<div class="block">Returns a hash code value for this object.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.Round.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.Round.html" title="class in com.csse3200.game.components.shop">ShellGame.Round</a></dt>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
@@ -5459,6 +5527,23 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Removes the warning without discarding dust still fading out.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html" class="type-name-link" title="class in com.csse3200.game.components.shop">HigherLowerGame</a> - Class in <a href="com/csse3200/game/components/shop/package-summary.html">com.csse3200.game.components.shop</a></dt>
+<dd>
+<div class="block">Higher/Lower card-guessing logic: guess whether the next card is higher or lower than the current
+ one.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html#%3Cinit%3E(com.csse3200.game.components.player.InventoryComponent,java.util.function.IntSupplier)" class="member-name-link">HigherLowerGame(InventoryComponent, IntSupplier)</a> - Constructor for class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.html" title="class in com.csse3200.game.components.shop">HigherLowerGame</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Outcome.html" class="type-name-link" title="enum class in com.csse3200.game.components.shop">HigherLowerGame.Outcome</a> - Enum Class in <a href="com/csse3200/game/components/shop/package-summary.html">com.csse3200.game.components.shop</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html" class="type-name-link" title="class in com.csse3200.game.components.shop">HigherLowerGame.Round</a> - Record Class in <a href="com/csse3200/game/components/shop/package-summary.html">com.csse3200.game.components.shop</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerPanel.html" class="type-name-link" title="class in com.csse3200.game.components.shop">HigherLowerPanel</a> - Class in <a href="com/csse3200/game/components/shop/package-summary.html">com.csse3200.game.components.shop</a></dt>
+<dd>
+<div class="block">Higher/Lower casino panel, styled to match <a href="com/csse3200/game/components/shop/CoinFlipPanel.html" title="class in com.csse3200.game.components.shop"><code>CoinFlipPanel</code></a> in the same Casino tab.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerPanel.html#%3Cinit%3E(com.csse3200.game.components.shop.HigherLowerGame,com.csse3200.game.components.shop.CoinFlipPanel.Appearance,java.util.function.Consumer)" class="member-name-link">HigherLowerPanel(HigherLowerGame, CoinFlipPanel.Appearance, Consumer&lt;HigherLowerGame.Round&gt;)</a> - Constructor for class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerPanel.html" title="class in com.csse3200.game.components.shop">HigherLowerPanel</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/AbilityMenuDisplay.html#highlight(int)" class="member-name-link">highlight(int)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/AbilityMenuDisplay.html" title="class in com.csse3200.game.components.maingame">AbilityMenuDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/ModalMenuDisplay.html#highlight(int)" class="member-name-link">highlight(int)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/ModalMenuDisplay.html" title="class in com.csse3200.game.components.maingame">ModalMenuDisplay</a></dt>
@@ -6057,6 +6142,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/rooms/RoomClearService.html#isRoomCleared(java.lang.String)" class="member-name-link">isRoomCleared(String)</a> - Method in class com.csse3200.game.rooms.<a href="com/csse3200/game/rooms/RoomClearService.html" title="class in com.csse3200.game.rooms">RoomClearService</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/DiceDuelGame.html#isRoundActive()" class="member-name-link">isRoundActive()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/DiceDuelGame.html" title="class in com.csse3200.game.components.shop">DiceDuelGame</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html#isRoundActive()" class="member-name-link">isRoundActive()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.html" title="class in com.csse3200.game.components.shop">HigherLowerGame</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.html#isRoundActive()" class="member-name-link">isRoundActive()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.html" title="class in com.csse3200.game.components.shop">ShellGame</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerAbility.html#isRunning()" class="member-name-link">isRunning()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAbility.html" title="class in com.csse3200.game.components.player">PlayerAbility</a></dt>
 <dd>
@@ -6794,6 +6883,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/math/Vector2Utils.html#MAX" class="member-name-link">MAX</a> - Static variable in class com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/Vector2Utils.html" title="class in com.csse3200.game.utils.math">Vector2Utils</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html#MAX_RANK" class="member-name-link">MAX_RANK</a> - Static variable in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.html" title="class in com.csse3200.game.components.shop">HigherLowerGame</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/RockPaperScissorsGame.html#MAX_ROUNDS" class="member-name-link">MAX_ROUNDS</a> - Static variable in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/RockPaperScissorsGame.html" title="class in com.csse3200.game.components.shop">RockPaperScissorsGame</a></dt>
 <dd>
 <div class="block">Most rounds played in one match.</div>
@@ -6865,6 +6956,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/ui/UiScale.html#MIN" class="member-name-link">MIN</a> - Static variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/UiScale.html" title="class in com.csse3200.game.ui">UiScale</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/math/Vector2Utils.html#MIN" class="member-name-link">MIN</a> - Static variable in class com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/Vector2Utils.html" title="class in com.csse3200.game.utils.math">Vector2Utils</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html#MIN_RANK" class="member-name-link">MIN_RANK</a> - Static variable in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.html" title="class in com.csse3200.game.components.shop">HigherLowerGame</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/DiceDuelGame.html#MIN_STAKE" class="member-name-link">MIN_STAKE</a> - Static variable in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/DiceDuelGame.html" title="class in com.csse3200.game.components.shop">DiceDuelGame</a></dt>
 <dd>
@@ -7284,6 +7377,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Shows the panel ready for a new round.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerPanel.html#open()" class="member-name-link">open()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerPanel.html" title="class in com.csse3200.game.components.shop">HigherLowerPanel</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/ItemDrawPanel.html#open()" class="member-name-link">open()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ItemDrawPanel.html" title="class in com.csse3200.game.components.shop">ItemDrawPanel</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/RockPaperScissorsPanel.html#open()" class="member-name-link">open()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/RockPaperScissorsPanel.html" title="class in com.csse3200.game.components.shop">RockPaperScissorsPanel</a></dt>
@@ -7294,6 +7389,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Shows the panel ready for a new card.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGamePanel.html#open()" class="member-name-link">open()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGamePanel.html" title="class in com.csse3200.game.components.shop">ShellGamePanel</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/ShopSessionComponent.html#open()" class="member-name-link">open()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShopSessionComponent.html" title="class in com.csse3200.game.components.shop">ShopSessionComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/WeaponUpgradePanel.html#open()" class="member-name-link">open()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/WeaponUpgradePanel.html" title="class in com.csse3200.game.components.shop">WeaponUpgradePanel</a></dt>
@@ -7316,6 +7413,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainComponent.TerrainOrientation.html#ORTHOGONAL" class="member-name-link">ORTHOGONAL</a> - Enum constant in enum class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainComponent.TerrainOrientation.html" title="enum class in com.csse3200.game.areas.terrain">TerrainComponent.TerrainOrientation</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html#outcome()" class="member-name-link">outcome()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html" title="class in com.csse3200.game.components.shop">HigherLowerGame.Round</a></dt>
+<dd>
+<div class="block">Returns the value of the <code>outcome</code> record component.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/shop/CoinFlipGame.Outcome.html#%3Cinit%3E(boolean,int)" class="member-name-link">Outcome(boolean, int)</a> - Constructor for record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/CoinFlipGame.Outcome.html" title="class in com.csse3200.game.components.shop">CoinFlipGame.Outcome</a></dt>
 <dd>
 <div class="block">Creates an instance of a <code>Outcome</code> record class.</div>
@@ -7397,9 +7498,17 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/FinalBossStageTwoConfig.html#pauseDuration" class="member-name-link">pauseDuration</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/FinalBossStageTwoConfig.html" title="class in com.csse3200.game.entities.configs">FinalBossStageTwoConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html#payout()" class="member-name-link">payout()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html" title="class in com.csse3200.game.components.shop">HigherLowerGame.Round</a></dt>
+<dd>
+<div class="block">Returns the value of the <code>payout</code> record component.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/shop/ScratchCardGame.CardOutcome.html#payout()" class="member-name-link">payout()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ScratchCardGame.CardOutcome.html" title="class in com.csse3200.game.components.shop">ScratchCardGame.CardOutcome</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./com/csse3200/game/components/shop/ScratchCardGame.CardOutcome.html#param-payout"><code>payout</code></a> record component.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.Round.html#payout()" class="member-name-link">payout()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.Round.html" title="class in com.csse3200.game.components.shop">ShellGame.Round</a></dt>
+<dd>
+<div class="block">Returns the value of the <code>payout</code> record component.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/boss/FinalBossStageThreeState.html#PEACEFUL" class="member-name-link">PEACEFUL</a> - Enum constant in enum class com.csse3200.game.components.boss.<a href="com/csse3200/game/components/boss/FinalBossStageThreeState.html" title="enum class in com.csse3200.game.components.boss">FinalBossStageThreeState</a></dt>
 <dd>&nbsp;</dd>
@@ -7742,6 +7851,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsContactListener.html#postSolve(com.badlogic.gdx.physics.box2d.Contact,com.badlogic.gdx.physics.box2d.ContactImpulse)" class="member-name-link">postSolve(Contact, ContactImpulse)</a> - Method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsContactListener.html" title="class in com.csse3200.game.physics">PhysicsContactListener</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html#potentialPayout()" class="member-name-link">potentialPayout()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.html" title="class in com.csse3200.game.components.shop">HigherLowerGame</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/ScratchCardGame.Symbol.html#POTION" class="member-name-link">POTION</a> - Enum constant in enum class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ScratchCardGame.Symbol.html" title="enum class in com.csse3200.game.components.shop">ScratchCardGame.Symbol</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/attic/AtticProp.html#POTTED_PLANT" class="member-name-link">POTTED_PLANT</a> - Enum constant in enum class com.csse3200.game.areas.attic.<a href="com/csse3200/game/areas/attic/AtticProp.html" title="enum class in com.csse3200.game.areas.attic">AtticProp</a></dt>
@@ -7876,6 +7987,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/areas/terrain/DreamlandTile.html#PURPLE_STONE_FLOOR" class="member-name-link">PURPLE_STONE_FLOOR</a> - Enum constant in enum class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/DreamlandTile.html" title="enum class in com.csse3200.game.areas.terrain">DreamlandTile</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/DreamlandTile.html#PURPLE_STONE_WALL" class="member-name-link">PURPLE_STONE_WALL</a> - Enum constant in enum class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/DreamlandTile.html" title="enum class in com.csse3200.game.areas.terrain">DreamlandTile</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Outcome.html#PUSH" class="member-name-link">PUSH</a> - Enum constant in enum class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.Outcome.html" title="enum class in com.csse3200.game.components.shop">HigherLowerGame.Outcome</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/SortedIntMap.html#put(int,V)" class="member-name-link">put(int, V)</a> - Method in class com.csse3200.game.utils.<a href="com/csse3200/game/utils/SortedIntMap.html" title="class in com.csse3200.game.utils">SortedIntMap</a></dt>
 <dd>
@@ -8027,6 +8140,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Updates the stake text and which buttons can be pressed.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html#refresh()" class="member-name-link">refresh()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.html" title="class in com.csse3200.game.components.shop">HigherLowerGame</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerPanel.html#refresh()" class="member-name-link">refresh()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerPanel.html" title="class in com.csse3200.game.components.shop">HigherLowerPanel</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/ItemDrawPanel.html#refresh()" class="member-name-link">refresh()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ItemDrawPanel.html" title="class in com.csse3200.game.components.shop">ItemDrawPanel</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/RockPaperScissorsGame.html#refresh()" class="member-name-link">refresh()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/RockPaperScissorsGame.html" title="class in com.csse3200.game.components.shop">RockPaperScissorsGame</a></dt>
@@ -8045,6 +8162,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Updates the stake text and which buttons can be pressed.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.html#refresh()" class="member-name-link">refresh()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.html" title="class in com.csse3200.game.components.shop">ShellGame</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGamePanel.html#refresh()" class="member-name-link">refresh()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGamePanel.html" title="class in com.csse3200.game.components.shop">ShellGamePanel</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/ShopDisplay.html#refresh()" class="member-name-link">refresh()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShopDisplay.html" title="class in com.csse3200.game.components.shop">ShopDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/ShopView.html#refresh()" class="member-name-link">refresh()</a> - Method in interface com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShopView.html" title="interface in com.csse3200.game.components.shop">ShopView</a></dt>
@@ -8598,7 +8719,15 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Constant correction for a sprite not drawn pointing right at 0 degrees.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.Round.html#%3Cinit%3E(boolean,int,int)" class="member-name-link">Round(boolean, int, int)</a> - Constructor for record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.Round.html" title="class in com.csse3200.game.components.shop">ShellGame.Round</a></dt>
+<dd>
+<div class="block">Creates an instance of a <code>Round</code> record class.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/shop/DiceDuelGame.Round.html#%3Cinit%3E(int,int,int,int,int,boolean)" class="member-name-link">Round(int, int, int, int, int, boolean)</a> - Constructor for record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/DiceDuelGame.Round.html" title="class in com.csse3200.game.components.shop">DiceDuelGame.Round</a></dt>
+<dd>
+<div class="block">Creates an instance of a <code>Round</code> record class.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html#%3Cinit%3E(com.csse3200.game.components.shop.HigherLowerGame.Outcome,int,int,int)" class="member-name-link">Round(HigherLowerGame.Outcome, int, int, int)</a> - Constructor for record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html" title="class in com.csse3200.game.components.shop">HigherLowerGame.Round</a></dt>
 <dd>
 <div class="block">Creates an instance of a <code>Round</code> record class.</div>
 </dd>
@@ -9231,6 +9360,20 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/shapes/ShapeActor.html#shapeColor" class="member-name-link">shapeColor</a> - Variable in class com.csse3200.game.utils.shapes.<a href="com/csse3200/game/utils/shapes/ShapeActor.html" title="class in com.csse3200.game.utils.shapes">ShapeActor</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.html" class="type-name-link" title="class in com.csse3200.game.components.shop">ShellGame</a> - Class in <a href="com/csse3200/game/components/shop/package-summary.html">com.csse3200.game.components.shop</a></dt>
+<dd>
+<div class="block">Shell Game logic: stake, watch three cups shuffle, then pick the one hiding the ball.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.html#%3Cinit%3E(com.csse3200.game.components.player.InventoryComponent,java.util.function.IntSupplier)" class="member-name-link">ShellGame(InventoryComponent, IntSupplier)</a> - Constructor for class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.html" title="class in com.csse3200.game.components.shop">ShellGame</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.Round.html" class="type-name-link" title="class in com.csse3200.game.components.shop">ShellGame.Round</a> - Record Class in <a href="com/csse3200/game/components/shop/package-summary.html">com.csse3200.game.components.shop</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGamePanel.html" class="type-name-link" title="class in com.csse3200.game.components.shop">ShellGamePanel</a> - Class in <a href="com/csse3200/game/components/shop/package-summary.html">com.csse3200.game.components.shop</a></dt>
+<dd>
+<div class="block">Shell Game casino panel, styled to match <a href="com/csse3200/game/components/shop/CoinFlipPanel.html" title="class in com.csse3200.game.components.shop"><code>CoinFlipPanel</code></a> in the same Casino tab.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGamePanel.html#%3Cinit%3E(com.csse3200.game.components.shop.ShellGame,com.csse3200.game.components.shop.CoinFlipPanel.Appearance,java.util.function.Consumer)" class="member-name-link">ShellGamePanel(ShellGame, CoinFlipPanel.Appearance, Consumer&lt;ShellGame.Round&gt;)</a> - Constructor for class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGamePanel.html" title="class in com.csse3200.game.components.shop">ShellGamePanel</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/Shield.html" class="type-name-link" title="class in com.csse3200.game.components.statuseffects">Shield</a> - Class in <a href="com/csse3200/game/components/statuseffects/package-summary.html">com.csse3200.game.components.statuseffects</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/statuseffects/Shield.html#%3Cinit%3E(com.csse3200.game.services.GameTime,long)" class="member-name-link">Shield(GameTime, long)</a> - Constructor for class com.csse3200.game.components.statuseffects.<a href="com/csse3200/game/components/statuseffects/Shield.html" title="class in com.csse3200.game.components.statuseffects">Shield</a></dt>
@@ -9809,9 +9952,17 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/player/TimedPlayerAbility.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/TimedPlayerAbility.html" title="class in com.csse3200.game.components.player">TimedPlayerAbility</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.html" title="class in com.csse3200.game.components.shop">HigherLowerGame</a></dt>
+<dd>
+<div class="block">Deducts the stake up front and deals the first card of a new round.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/shop/RockPaperScissorsGame.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/RockPaperScissorsGame.html" title="class in com.csse3200.game.components.shop">RockPaperScissorsGame</a></dt>
 <dd>
 <div class="block">Takes the stake and starts a new best-of-three match.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.html" title="class in com.csse3200.game.components.shop">ShellGame</a></dt>
+<dd>
+<div class="block">Deducts the stake up front and hides the ball under a cup, ready for a guess.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/tasks/ChaseTask.html#start()" class="member-name-link">start()</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/ChaseTask.html" title="class in com.csse3200.game.components.tasks">ChaseTask</a></dt>
 <dd>&nbsp;</dd>
@@ -10104,6 +10255,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/spells/targeting/StrategyWithinRadius.html#%3Cinit%3E(float)" class="member-name-link">StrategyWithinRadius(float)</a> - Constructor for class com.csse3200.game.components.spells.targeting.<a href="com/csse3200/game/components/spells/targeting/StrategyWithinRadius.html" title="class in com.csse3200.game.components.spells.targeting">StrategyWithinRadius</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html#streak()" class="member-name-link">streak()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html" title="class in com.csse3200.game.components.shop">HigherLowerGame.Round</a></dt>
+<dd>
+<div class="block">Returns the value of the <code>streak</code> record component.</div>
+</dd>
 <dt><a href="com/csse3200/game/items/ItemIds.html#STRENGTH_CHARM" class="member-name-link">STRENGTH_CHARM</a> - Static variable in class com.csse3200.game.items.<a href="com/csse3200/game/items/ItemIds.html" title="class in com.csse3200.game.items">ItemIds</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/items/ItemIds.html#STRENGTH_POTION" class="member-name-link">STRENGTH_POTION</a> - Static variable in class com.csse3200.game.items.<a href="com/csse3200/game/items/ItemIds.html" title="class in com.csse3200.game.items">ItemIds</a></dt>
@@ -10571,6 +10726,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html#toString()" class="member-name-link">toString()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.Round.html" title="class in com.csse3200.game.components.shop">HigherLowerGame.Round</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/shop/RockPaperScissorsGame.MatchOutcome.html#toString()" class="member-name-link">toString()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/RockPaperScissorsGame.MatchOutcome.html" title="class in com.csse3200.game.components.shop">RockPaperScissorsGame.MatchOutcome</a></dt>
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
@@ -10580,6 +10739,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/shop/ScratchCardGame.CardOutcome.html#toString()" class="member-name-link">toString()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ScratchCardGame.CardOutcome.html" title="class in com.csse3200.game.components.shop">ScratchCardGame.CardOutcome</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.Round.html#toString()" class="member-name-link">toString()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.Round.html" title="class in com.csse3200.game.components.shop">ShellGame.Round</a></dt>
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
@@ -11420,6 +11583,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Asks for the attuned ability to be cast.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/player/ConsumableEffectComponent.html#USE_FAILED" class="member-name-link">USE_FAILED</a> - Static variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumableEffectComponent.html" title="class in com.csse3200.game.components.player">ConsumableEffectComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/ConsumableEffectComponent.html#USE_REQUEST" class="member-name-link">USE_REQUEST</a> - Static variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumableEffectComponent.html" title="class in com.csse3200.game.components.player">ConsumableEffectComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/ConsumableSelectionComponent.html#USE_SELECTED_REQUEST" class="member-name-link">USE_SELECTED_REQUEST</a> - Static variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ConsumableSelectionComponent.html" title="class in com.csse3200.game.components.player">ConsumableSelectionComponent</a></dt>
@@ -11554,6 +11719,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/shop/DiceDuelGame.Result.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/DiceDuelGame.Result.html" title="enum class in com.csse3200.game.components.shop">DiceDuelGame.Result</a></dt>
+<dd>
+<div class="block">Returns the enum constant of this class with the specified name.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Outcome.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.Outcome.html" title="enum class in com.csse3200.game.components.shop">HigherLowerGame.Outcome</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
 </dd>
@@ -11732,6 +11901,11 @@ the order they are declared.</div>
 the order they are declared.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/shop/DiceDuelGame.Result.html#values()" class="member-name-link">values()</a> - Static method in enum class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/DiceDuelGame.Result.html" title="enum class in com.csse3200.game.components.shop">DiceDuelGame.Result</a></dt>
+<dd>
+<div class="block">Returns an array containing the constants of this enum class, in
+the order they are declared.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/HigherLowerGame.Outcome.html#values()" class="member-name-link">values()</a> - Static method in enum class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/HigherLowerGame.Outcome.html" title="enum class in com.csse3200.game.components.shop">HigherLowerGame.Outcome</a></dt>
 <dd>
 <div class="block">Returns an array containing the constants of this enum class, in
 the order they are declared.</div>
@@ -12111,6 +12285,10 @@ the order they are declared.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/miniboss/cerberus/CerberusLayeredRenderComponent.Action.html#WINDUP" class="member-name-link">WINDUP</a> - Enum constant in enum class com.csse3200.game.components.miniboss.cerberus.<a href="com/csse3200/game/components/miniboss/cerberus/CerberusLayeredRenderComponent.Action.html" title="enum class in com.csse3200.game.components.miniboss.cerberus">CerberusLayeredRenderComponent.Action</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.Round.html#winningCup()" class="member-name-link">winningCup()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.Round.html" title="class in com.csse3200.game.components.shop">ShellGame.Round</a></dt>
+<dd>
+<div class="block">Returns the value of the <code>winningCup</code> record component.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/shop/RockPaperScissorsGame.html#WINS_NEEDED" class="member-name-link">WINS_NEEDED</a> - Static variable in class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/RockPaperScissorsGame.html" title="class in com.csse3200.game.components.shop">RockPaperScissorsGame</a></dt>
 <dd>
 <div class="block">Round wins needed to take the match early.</div>
@@ -12133,6 +12311,10 @@ the order they are declared.</div>
 <dt><a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html#WOLF" class="member-name-link">WOLF</a> - Enum constant in enum class com.csse3200.game.components.rooms.configs.<a href="com/csse3200/game/components/rooms/configs/EnemySpawnConfig.EnemyType.html" title="enum class in com.csse3200.game.components.rooms.configs">EnemySpawnConfig.EnemyType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/CoinFlipGame.Outcome.html#won()" class="member-name-link">won()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/CoinFlipGame.Outcome.html" title="class in com.csse3200.game.components.shop">CoinFlipGame.Outcome</a></dt>
+<dd>
+<div class="block">Returns the value of the <code>won</code> record component.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/shop/ShellGame.Round.html#won()" class="member-name-link">won()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShellGame.Round.html" title="class in com.csse3200.game.components.shop">ShellGame.Round</a></dt>
 <dd>
 <div class="block">Returns the value of the <code>won</code> record component.</div>
 </dd>
