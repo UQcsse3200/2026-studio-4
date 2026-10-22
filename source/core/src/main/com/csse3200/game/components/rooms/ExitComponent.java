@@ -36,7 +36,7 @@ public class ExitComponent extends EntityManagerComponent {
   private static final String FANTASY_DUNGEON_DOOR = "images/dungeons/fantasy_dreamland_door.png";
   private static final int TILE_SIZE = 16;
   private static final int DOOR_FRAME_SIZE = 32;
-  private static final float INTERACTION_RANGE = 1f;
+  private static final float INTERACTION_RANGE = 0.5f;
   private static final String FINAL_DUNGEON_EXIT = "dungeonFiveShelf";
   private static final int DUNGEONS_BEFORE_FINAL = 4;
   private static final float GLOW_RADIUS = 0.45f;
