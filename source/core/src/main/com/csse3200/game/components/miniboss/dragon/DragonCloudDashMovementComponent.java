@@ -93,6 +93,7 @@ public class DragonCloudDashMovementComponent extends Component {
     body.setLinearVelocity(0f, 0f);
   }
 
+  // Check obstacle
   private void moveDash(float delta) {
     float distance = Math.min(SPEED * delta, MAX_DISTANCE - travelled);
     Vector2 direction = dragonCloudDash.getLockedDirection();

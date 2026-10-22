@@ -33,6 +33,8 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     CANCELLED
   }
 
+  private boolean winComboHeld;
+
   public KeyboardPlayerInputComponent() {
     super(5);
   }
@@ -77,6 +79,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean keyDown(int keycode) {
+    // Debug shortcut: Ctrl+Shift+W skips straight to the win screen.
+    if (keycode == Keys.W && isWinCombo()) {
+      winComboHeld = true;
+      entity.getEvents().trigger("winScreenRequested");
+      return true;
+    }
     switch (keycode) {
       case Keys.NUM_1:
         entity.getEvents().trigger(EQUIP_WEAPON_EVENT, WeaponType.SWORD);
@@ -147,6 +155,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean keyUp(int keycode) {
+    if (keycode == Keys.W && winComboHeld) {
+      winComboHeld = false;
+      return true; // this W press never added to walkDirection
+    }
     if (ignoreStaleKeyUps
         && (keycode == Keys.W || keycode == Keys.A || keycode == Keys.S || keycode == Keys.D)) {
       return true;
@@ -246,5 +258,13 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     } else {
       entity.getEvents().trigger("walk", walkDirection);
     }
+  }
+
+  private static boolean isWinCombo() {
+    boolean ctrl =
+        Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT);
+    boolean shift =
+        Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT);
+    return ctrl && shift;
   }
 }

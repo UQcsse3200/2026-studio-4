@@ -1,8 +1,11 @@
 package com.csse3200.game.components.npc;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.StatusEffectsControllerComponent;
+import com.csse3200.game.components.statuseffects.FlashEffect;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
@@ -13,14 +16,33 @@ import com.csse3200.game.services.ServiceLocator;
  * of the events is triggered.
  */
 public class EnemyAnimationController extends Component {
+  private static final String ATTACK_ANIMATION = "attack";
+  private static final Color FUSE_FLASH_TINT = new Color(Color.WHITE);
+  private static final Color FUSE_FLASH_GLOW = new Color(1f, 0f, 0f, 1f);
   private AnimationRenderComponent animator;
+  private StatusEffectsControllerComponent statusEffects;
+  private FlashEffect fuseFlash;
   private static final String DEFAULT = "default";
   private boolean dying = false;
   private boolean followPlayer = false; // used by enemies to follow player
+  private float deathRotationPerFrame;
+  private float maxDeathRotation;
+
+  public void setDeathRotation(float degreesPerFrame, float maxDegrees) {
+    if (!Float.isFinite(degreesPerFrame)
+        || degreesPerFrame < 0f
+        || !Float.isFinite(maxDegrees)
+        || maxDegrees < 0f) {
+      throw new IllegalArgumentException("Death rotation values must be finite and non-negative");
+    }
+    deathRotationPerFrame = degreesPerFrame;
+    maxDeathRotation = maxDegrees;
+  }
 
   @Override
   public void create() {
     animator = entity.getComponent(AnimationRenderComponent.class);
+    statusEffects = entity.getComponent(StatusEffectsControllerComponent.class);
 
     entity.getEvents().addListener("wanderStart", this::animateWander);
     entity.getEvents().addListener("chaseStart", this::animateChase);
@@ -28,6 +50,7 @@ public class EnemyAnimationController extends Component {
     entity.getEvents().addListener("patrolStart", this::animatePatrol);
     entity.getEvents().addListener("dieAnimation", this::animateDie);
     entity.getEvents().addListener("rangedAttack", this::animateAttack);
+    entity.getEvents().addListener("touchAttack", this::animateAttack);
     entity.getEvents().addListener("fuseStarted", this::animateFuse);
     entity.getEvents().addListener(DEFAULT, this::animatePause);
     entity.getEvents().addListener("moving", this::animateMove);
@@ -82,11 +105,18 @@ public class EnemyAnimationController extends Component {
   public void update() {
     updateFacingDirection(followPlayer);
 
+    if (dying && deathRotationPerFrame > 0f) {
+      int frameIndex = animator.getCurrentFrameIndex();
+      if (frameIndex >= 0) {
+        animator.setRotation(Math.min(frameIndex * deathRotationPerFrame, maxDeathRotation));
+      }
+    }
+
     if (dying && animator.isFinished()) {
       dying = false;
       ServiceLocator.getEntityService().scheduleDisposal(entity);
     }
-    if ("attack".equals(animator.getCurrentAnimation()) && animator.isFinished()) {
+    if (ATTACK_ANIMATION.equals(animator.getCurrentAnimation()) && animator.isFinished()) {
       animator.startAnimation("move");
     }
   }
@@ -113,7 +143,7 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateChase() {
-    followPlayer = false;
+    followPlayer = true;
     animator.startAnimation("chase");
   }
 
@@ -121,8 +151,16 @@ public class EnemyAnimationController extends Component {
     animator.startAnimation(DEFAULT);
   }
 
-  private void animateFuse() {
+  private void animateFuse(float fuseTime) {
     animator.startAnimation("fuse");
+    if (statusEffects != null) {
+      statusEffects.removeStatusEffect(fuseFlash);
+      long durationMillis = Math.max(1L, Math.round(fuseTime * 1000d));
+      fuseFlash =
+          new FlashEffect(
+              ServiceLocator.getTimeSource(), durationMillis, FUSE_FLASH_TINT, FUSE_FLASH_GLOW);
+      statusEffects.addStatusEffect(fuseFlash);
+    }
   }
 
   private void animatePatrol() {
@@ -133,8 +171,8 @@ public class EnemyAnimationController extends Component {
   }
 
   private void animateAttack() {
-    if (!dying) {
-      animator.startAnimation("attack");
+    if (!dying && animator.hasAnimation(ATTACK_ANIMATION)) {
+      animator.startAnimation(ATTACK_ANIMATION);
     }
   }
 }

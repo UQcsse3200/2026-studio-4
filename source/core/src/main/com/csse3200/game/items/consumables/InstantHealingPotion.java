@@ -35,10 +35,10 @@ public final class InstantHealingPotion extends ConsumableItem {
 
   private static String textureFor(int healing) {
     return switch (healing) {
-      case 25 -> "images/health_potion_small_pixel.png";
-      case 50 -> "images/health_potion_medium_pixel.png";
-      case 100 -> "images/health_potion_large_pixel.png";
-      default -> "images/health_potion_pixel.png";
+      case 25 -> "images/items/consumables/health_potion_small_pixel.png";
+      case 50 -> "images/items/consumables/health_potion_medium_pixel.png";
+      case 100 -> "images/items/consumables/health_potion_large_pixel.png";
+      default -> "images/items/consumables/health_potion_pixel.png";
     };
   }
 

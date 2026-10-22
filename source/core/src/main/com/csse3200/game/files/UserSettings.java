@@ -2,6 +2,7 @@ package com.csse3200.game.files;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
+import com.badlogic.gdx.Graphics.Monitor;
 import com.badlogic.gdx.files.FileHandle;
 import com.csse3200.game.files.FileLoader.Location;
 import java.io.File;
@@ -108,24 +109,60 @@ public class UserSettings {
       }
       Gdx.graphics.setFullscreenMode(displayMode);
     } else {
-      Gdx.graphics.setWindowedMode(
-          WindowSize.width(settings.windowWidth), WindowSize.height(settings.windowHeight));
+      int w = WindowSize.width(settings.windowWidth);
+      int h = WindowSize.height(settings.windowHeight);
+      DisplayMode desktop = Gdx.graphics.getDisplayMode();
+      if (desktop != null && desktop.width > 0 && desktop.height > 0) {
+        float fit = Math.min(1f, Math.min((float) desktop.width / w, (float) desktop.height / h));
+        w = Math.round(w * fit);
+        h = Math.round(h * fit);
+      }
+      Gdx.graphics.setWindowedMode(w, h);
     }
   }
 
-  private static DisplayMode findMatching(DisplaySettings desiredSettings) {
-    if (desiredSettings == null) {
+  private static DisplayMode findMatching(DisplaySettings desired) {
+    if (desired == null) {
       return null;
     }
-    for (DisplayMode displayMode : Gdx.graphics.getDisplayModes()) {
-      if (displayMode.refreshRate == desiredSettings.refreshRate
-          && displayMode.height == desiredSettings.height
-          && displayMode.width == desiredSettings.width) {
-        return displayMode;
+    Monitor monitor = Gdx.graphics.getMonitor();
+    if (monitor != null) {
+      DisplayMode onMonitor = matchSize(desired, Gdx.graphics.getDisplayModes(monitor));
+      if (onMonitor != null) {
+        return onMonitor;
       }
     }
+    return matchSize(desired, Gdx.graphics.getDisplayModes());
+  }
 
-    return null;
+  /**
+   * A display mode of the requested size. An exact refresh rate wins. Otherwise the mode of that
+   * size with the closest refresh rate is used, so a 59 Hz panel still accepts a 60 Hz choice.
+   *
+   * @param desired width, height, and refresh rate chosen in the menu
+   * @param modes modes to search; null is treated as none
+   * @return a matching mode, or null when the size is absent
+   */
+  static DisplayMode matchSize(DisplaySettings desired, DisplayMode[] modes) {
+    if (desired == null || modes == null) {
+      return null;
+    }
+    DisplayMode closest = null;
+    int closestGap = Integer.MAX_VALUE;
+    for (DisplayMode mode : modes) {
+      if (mode == null || mode.width != desired.width || mode.height != desired.height) {
+        continue;
+      }
+      int gap = Math.abs(mode.refreshRate - desired.refreshRate);
+      if (gap == 0) {
+        return mode;
+      }
+      if (gap < closestGap) {
+        closestGap = gap;
+        closest = mode;
+      }
+    }
+    return closest;
   }
 
   /** Stores game settings, can be serialised/deserialised. */

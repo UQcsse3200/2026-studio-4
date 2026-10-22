@@ -1,5 +1,6 @@
 package com.csse3200.game.files;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.player.InventoryComponent;
@@ -9,6 +10,7 @@ import com.csse3200.game.items.ConsumableItem;
 import com.csse3200.game.items.ItemCatalog;
 import com.csse3200.game.items.WeaponItem.WeaponType;
 import com.csse3200.game.items.charms.*;
+import com.csse3200.game.rooms.RoomClearService;
 import com.csse3200.game.services.AchievementService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -21,22 +23,22 @@ import java.util.Set;
 public final class GameSaveMapper {
   private GameSaveMapper() {}
 
-  public static GameSaveData capture(Entity player, GameSaveData.Checkpoint checkpoint) {
-    return capture(player, checkpoint, null);
+  public static GameSaveData capture(Entity player) {
+    return capture(player, null);
   }
 
-  public static GameSaveData capture(
-      Entity player,
-      GameSaveData.Checkpoint checkpoint,
-      GameSaveData.ResumePosition resumePosition) {
+  public static GameSaveData capture(Entity player, GameSaveData.ResumePosition resumePosition) {
     GameSaveData save = new GameSaveData();
-    save.checkpoint = copyCheckpoint(checkpoint);
     save.resumePosition = copyResumePosition(resumePosition);
 
     InventoryComponent inventory = required(player, InventoryComponent.class);
     GameSaveData.PlayerData data = save.playerData;
+    CombatStatsComponent stats = required(player, CombatStatsComponent.class);
+
+    data.health = stats.getHealth();
     data.gold = inventory.getGold();
     data.inventory.putAll(inventory.getConsumables());
+
     data.consumableSlots = new ArrayList<>();
     for (int i = 0; i < InventoryComponent.CONSUMABLE_SLOT_COUNT; i++) {
       data.consumableSlots.add(inventory.getConsumableSlot(i));
@@ -66,10 +68,20 @@ public final class GameSaveMapper {
       save.achievementProgress.putAll(achievementService.getAchievementProgress());
     }
 
+    RoomClearService clears = ServiceLocator.getRoomClearService();
+    if (clears != null) {
+      save.clearedRoomIds.addAll(clears.getClearedRoomIds());
+      save.clearedDungeonIds.addAll(clears.getClearedDungeonIds());
+    }
+
     return save;
   }
 
   public static void restore(Entity player, GameSaveData save) {
+    restore(player, save, false);
+  }
+
+  public static void restore(Entity player, GameSaveData save, boolean atCheckpoint) {
     validateSave(save);
 
     GameSaveData.PlayerData data = save.playerData;
@@ -81,11 +93,11 @@ public final class GameSaveMapper {
     restoreCharms(player, data.charms, data.charmEquipped);
     restoreSelectedWeapon(player, data.selectedWeapon);
     restoreUpgrades(player, data.upgradedWeapons);
-    restorePlayerHealth(player);
+    restorePlayerHealth(player, data.health, atCheckpoint);
   }
 
   private static void validateSave(GameSaveData save) {
-    if (save == null || save.version != 1 || save.playerData == null) {
+    if (save == null || save.version != 2 || save.playerData == null) {
       throw new IllegalArgumentException("Invalid or unsupported save data");
     }
     GameSaveData.PlayerData data = save.playerData;
@@ -202,10 +214,14 @@ public final class GameSaveMapper {
     }
   }
 
-  private static void restorePlayerHealth(Entity player) {
+  private static void restorePlayerHealth(Entity player, int savedHealth, boolean atCheckpoint) {
     CombatStatsComponent stats = required(player, CombatStatsComponent.class);
-    // Death restores the player alive at the checkpoint.
-    stats.setHealth(stats.getMaxHealth());
+
+    if (atCheckpoint) {
+      stats.setHealth(stats.getMaxHealth());
+    } else {
+      stats.setHealth(MathUtils.clamp(savedHealth, 0, stats.getMaxHealth()));
+    }
   }
 
   public static void restoreAchievements(GameSaveData save) {
@@ -217,6 +233,14 @@ public final class GameSaveMapper {
 
     if (achievementService != null) {
       achievementService.restoreState(save.unlockedAchievements, save.achievementProgress);
+    }
+  }
+
+  public static void restoreRoomClears(GameSaveData save) {
+    if (save == null) return;
+    RoomClearService clears = ServiceLocator.getRoomClearService();
+    if (clears != null) {
+      clears.restoreState(save.clearedRoomIds, save.clearedDungeonIds);
     }
   }
 
@@ -234,16 +258,6 @@ public final class GameSaveMapper {
       case "speed" -> new SpeedCharm();
       default -> throw new IllegalArgumentException("Unknown saved charm: " + id);
     };
-  }
-
-  private static GameSaveData.Checkpoint copyCheckpoint(GameSaveData.Checkpoint source) {
-    if (source == null) throw new IllegalArgumentException("Checkpoint is required");
-    GameSaveData.Checkpoint copy = new GameSaveData.Checkpoint();
-    copy.roomId = source.roomId;
-    copy.entryPointId = source.entryPointId;
-    copy.tileX = source.tileX;
-    copy.tileY = source.tileY;
-    return copy;
   }
 
   private static GameSaveData.ResumePosition copyResumePosition(
