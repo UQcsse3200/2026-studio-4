@@ -7,12 +7,10 @@ import com.csse3200.game.extensions.GameExtension;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.stream.Stream;
-import java.lang.IllegalAccessException;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @ExtendWith(GameExtension.class)
 class InputServiceTest {
@@ -79,12 +77,11 @@ class InputServiceTest {
   @ParameterizedTest
   @MethodSource("inputMethods")
   void shouldCallInputHandlersInPriorityOrder(String methodName)
-          throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+      throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-    Method method =
-            InputComponent.class.getDeclaredMethod(methodName, float.class, float.class);
+    Method method = InputComponent.class.getDeclaredMethod(methodName, float.class, float.class);
     Method serviceMethod =
-            InputService.class.getDeclaredMethod(methodName, float.class, float.class);
+        InputService.class.getDeclaredMethod(methodName, float.class, float.class);
 
     shouldCallInputHandlersInPriorityOrder(method, serviceMethod, 5f, 6f);
   }
@@ -148,7 +145,6 @@ class InputServiceTest {
     shouldCallInputHandlersInPriorityOrder(method, serviceMethod, 5f, 6f, 7f, 8f);
   }
 
-
   @Test
   void shouldHandlePinch()
       throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -165,15 +161,14 @@ class InputServiceTest {
   @ParameterizedTest
   @MethodSource("inputMethodsWithPointer")
   void shouldCallInputHandlersInPriorityOrder2(String methodName)
-          throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-
+      throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     Method method =
-            InputComponent.class.getDeclaredMethod(
-                    methodName, float.class, float.class, int.class, int.class);
+        InputComponent.class.getDeclaredMethod(
+            methodName, float.class, float.class, int.class, int.class);
 
     Method serviceMethod =
-            InputService.class.getDeclaredMethod(
-                    methodName, float.class, float.class, int.class, int.class);
+        InputService.class.getDeclaredMethod(
+            methodName, float.class, float.class, int.class, int.class);
 
     shouldCallInputHandlersInPriorityOrder(method, serviceMethod, 5f, 6f, 7, 8);
   }
