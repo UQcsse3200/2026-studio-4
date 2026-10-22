@@ -223,8 +223,8 @@
         {
           "id": "sideDoor",
           "kind": "DOOR",
-          "x": 55,
-          "y": 52,
+          "x": 60,
+          "y": 45,
           "side": "RIGHT",
           "destinationRoomId": "dungeonOneSide",
           "destinationExitId": "returnDoor",
@@ -233,8 +233,8 @@
         {
           "id": "endDoor",
           "kind": "DOOR",
-          "x": 59,
-          "y": 16,
+          "x": 60,
+          "y": 10,
           "side": "RIGHT",
           "destinationRoomId": "dungeonOneMiddle",
           "destinationExitId": "returnDoor",
