@@ -100,8 +100,9 @@ loadScripts(document, 'script');</script>
  <p>The friendly counterpart to EnemyManagerComponent. Friendly NPCs are tracked here and never
  there, so they do not block a room from being cleared.
 
- <p>Each frame it shows the interaction indicator on the nearest in-range NPC that is available.
- The room interaction system asks it for the HUD prompt and routes the E key to it.</div>
+ <p>Each frame it shows the interaction indicator on the nearest in-range NPC that is available,
+ and puts that NPC's "Press E" sentence on the HUD. The room interaction system also asks for that
+ sentence and routes the E key here. A door or pickup prompt is left as it is.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -174,7 +175,8 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called once per frame of the game, and should be used for most component logic.</div>
+<div class="block">Shows the nearest NPC's sentence while the player is in range, and hides that sentence after
+ they walk away or the conversation starts.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateIndicators(com.csse3200.game.entities.Entity)" class="member-name-link">updateIndicators</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
@@ -253,9 +255,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#update()">Component</a></code></span></div>
-<div class="block">Called once per frame of the game, and should be used for most component logic. Not called if
- component is disabled.</div>
+<div class="block">Shows the nearest NPC's sentence while the player is in range, and hides that sentence after
+ they walk away or the conversation starts. A door or pickup prompt is left as it is.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>

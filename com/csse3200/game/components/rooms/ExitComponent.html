@@ -202,9 +202,9 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
 <div class="block">Shows the exit prompt while the player is near a door, and hides it after they walk away.
 
- <p>Pressing E is handled separately. The prompt has to be refreshed every frame because it
- depends on where the player is standing. A drop already in pickup range keeps "Press E — Pick
- up …" instead of the door sentence. The boss shelf uses the same sentence as the E key.</div>
+ <p>Pressing E is handled separately. The prompt is refreshed every frame because it depends on
+ where the player is standing. A nearby NPC keeps its sentence, then a drop, then the door. The
+ boss shelf uses the same sentence as the E key.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
