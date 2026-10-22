@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import java.util.function.BooleanSupplier;
 
@@ -16,6 +17,14 @@ import java.util.function.BooleanSupplier;
 final class CasinoPanelSupport {
 
   private CasinoPanelSupport() {}
+
+  /** The shared frame every casino panel starts its constructor with. */
+  static void initPanel(Table panel, String name, Drawable parchment) {
+    panel.setName(name);
+    panel.setBackground(parchment);
+    panel.pad(14f);
+    panel.top();
+  }
 
   /** A button whose action only fires while {@code enabled} is true and it isn't disabled. */
   static TextButton actionButton(

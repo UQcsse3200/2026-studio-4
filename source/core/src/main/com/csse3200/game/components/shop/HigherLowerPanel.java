@@ -37,10 +37,7 @@ public final class HigherLowerPanel extends Table {
     TextButton.TextButtonStyle flipStyle = appearance.flip();
     this.game = game;
     this.onResolved = onResolved;
-    setName("higher-lower-panel");
-    setBackground(appearance.parchment());
-    pad(14f);
-    top();
+    CasinoPanelSupport.initPanel(this, "higher-lower-panel", appearance.parchment());
 
     Label rules =
         new Label(

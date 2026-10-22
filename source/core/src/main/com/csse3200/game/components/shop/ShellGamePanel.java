@@ -28,10 +28,7 @@ public final class ShellGamePanel extends Table {
     TextButton.TextButtonStyle flipStyle = appearance.flip();
     this.game = game;
     this.onResolved = onResolved;
-    setName("shell-game-panel");
-    setBackground(appearance.parchment());
-    pad(14f);
-    top();
+    CasinoPanelSupport.initPanel(this, "shell-game-panel", appearance.parchment());
 
     Label rules =
         new Label(

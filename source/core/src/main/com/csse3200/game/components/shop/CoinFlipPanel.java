@@ -36,10 +36,7 @@ public final class CoinFlipPanel extends Table {
     TextButton.TextButtonStyle flipStyle = appearance.flip();
     this.game = game;
     this.onResolved = onResolved;
-    setName("coin-flip-panel");
-    setBackground(appearance.parchment());
-    pad(14f);
-    top();
+    CasinoPanelSupport.initPanel(this, "coin-flip-panel", appearance.parchment());
     Label rules = new Label("COIN FLIP  |  50/50 chance. Win: +stake. Lose: -stake.", textStyle);
     rules.setWrap(true);
     add(rules).growX().padBottom(12f);
