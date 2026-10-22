@@ -138,7 +138,6 @@ public class MainGameScreen extends ScreenAdapter {
           loadedSave.resumePosition.roomId,
           loadedSave.resumePosition.x,
           loadedSave.resumePosition.y);
-
     } else {
       roomSelector.start();
     }
