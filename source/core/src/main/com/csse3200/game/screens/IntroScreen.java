@@ -1,12 +1,15 @@
 package com.csse3200.game.screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.splash.IntroDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.files.AudioLevels;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.rendering.RenderService;
@@ -24,12 +27,12 @@ import org.slf4j.LoggerFactory;
  */
 public class IntroScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(IntroScreen.class);
-  private static final String INTRO_TEXTURE = "images/intro.png";
 
   private final GdxGame game;
   private final Renderer renderer;
   private IntroDisplay display;
   private boolean leaving;
+  private Music introMusic;
 
   /**
    * Creates the intro screen, loads its background texture, and registers its display and input
@@ -46,7 +49,6 @@ public class IntroScreen extends ScreenAdapter {
     ServiceLocator.registerRenderService(new RenderService());
     renderer = RenderFactory.createRenderer();
 
-    ServiceLocator.getResourceService().loadTextures(new String[] {INTRO_TEXTURE});
     ServiceLocator.getResourceService().loadAll();
 
     Stage stage = ServiceLocator.getRenderService().getStage();
@@ -54,6 +56,11 @@ public class IntroScreen extends ScreenAdapter {
     Entity ui = new Entity();
     ui.addComponent(display).addComponent(new InputDecorator(stage, 10));
     ServiceLocator.getEntityService().register(ui);
+
+    introMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/intro.mp3"));
+    introMusic.setLooping(true);
+    introMusic.setVolume(AudioLevels.music());
+    introMusic.play();
   }
 
   /**
@@ -70,6 +77,7 @@ public class IntroScreen extends ScreenAdapter {
     if (!leaving && display.isFinished()) {
       leaving = true;
       game.setScreen(GdxGame.ScreenType.MAIN_MENU);
+      introMusic.stop();
     }
   }
 
@@ -89,7 +97,7 @@ public class IntroScreen extends ScreenAdapter {
   public void dispose() {
     logger.debug("Disposing intro screen");
     renderer.dispose();
-    ServiceLocator.getResourceService().unloadAssets(new String[] {INTRO_TEXTURE});
+    introMusic.dispose();
     ServiceLocator.getRenderService().dispose();
     ServiceLocator.getEntityService().dispose();
     ServiceLocator.clear();
