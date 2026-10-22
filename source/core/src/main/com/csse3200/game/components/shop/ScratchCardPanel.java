@@ -1,10 +1,8 @@
 package com.csse3200.game.components.shop;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import java.util.function.Consumer;
 
@@ -32,23 +30,14 @@ public final class ScratchCardPanel extends Table {
     this.onResolved = onResolved;
     Label.LabelStyle textStyle = appearance.text();
     Label.LabelStyle goldStyle = appearance.gold();
-    setName("scratch-card-panel");
-    setBackground(appearance.parchment());
-    pad(14f);
-    top();
+    CasinoPanelUi.configure(
+        this,
+        "scratch-card-panel",
+        appearance,
+        "SCRATCH CARD  |  Three matching symbols win: Coin 3x, Potion 5x, Charm 10x,"
+            + " Crown 25x. Two matching return half your stake.");
 
-    Label rules =
-        new Label(
-            "SCRATCH CARD  |  Three matching symbols win: Coin 3x, Potion 5x, Charm 10x,"
-                + " Crown 25x. Two matching return half your stake.",
-            textStyle);
-    rules.setWrap(true);
-    add(rules).growX().padBottom(12f);
-    row();
-
-    Table arena = new Table();
-    arena.setBackground(appearance.arena());
-    arena.pad(16f);
+    Table arena = CasinoPanelUi.arena(appearance);
     Table spotRow = new Table();
     for (int i = 0; i < spots.length; i++) {
       int spot = i;
@@ -57,10 +46,7 @@ public final class ScratchCardPanel extends Table {
     }
     arena.add(spotRow).padBottom(16f);
     arena.row();
-    result = new Label("", goldStyle);
-    result.setName("scratch-result");
-    result.setWrap(true);
-    result.setAlignment(Align.center);
+    result = CasinoPanelUi.arenaLabel("scratch-result", goldStyle);
     arena.add(result).growX();
     add(arena).growX().minHeight(200f).padBottom(12f);
     row();
@@ -85,26 +71,13 @@ public final class ScratchCardPanel extends Table {
     add(scratchAll).growX().height(42f).padBottom(12f);
     row();
 
-    Label hint = new Label("Click each ? to scratch it, or Scratch All.", textStyle);
-    hint.setWrap(true);
-    add(hint).growX();
+    CasinoPanelUi.addHint(this, "Click each ? to scratch it, or Scratch All.", textStyle);
     showReady();
   }
 
   private TextButton button(
       String text, String name, TextButton.TextButtonStyle style, Runnable action) {
-    TextButton button = new TextButton(text, style);
-    button.setName(name);
-    button.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent event, Actor actor) {
-            if (active && !button.isDisabled()) {
-              action.run();
-            }
-          }
-        });
-    return button;
+    return CasinoPanelUi.button(text, name, style, () -> active, action);
   }
 
   private void adjust(int delta) {

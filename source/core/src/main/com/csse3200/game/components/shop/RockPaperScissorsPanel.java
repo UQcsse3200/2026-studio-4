@@ -1,10 +1,8 @@
 package com.csse3200.game.components.shop;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.components.shop.RockPaperScissorsGame.Choice;
 import java.util.function.Consumer;
@@ -36,26 +34,17 @@ public final class RockPaperScissorsPanel extends Table {
     this.onResolved = onResolved;
     Label.LabelStyle textStyle = appearance.text();
     Label.LabelStyle goldStyle = appearance.gold();
-    setName("rps-panel");
-    setBackground(appearance.parchment());
-    pad(14f);
-    top();
+    CasinoPanelUi.configure(
+        this,
+        "rps-panel",
+        appearance,
+        "ROCK PAPER SCISSORS  |  Best of three against the merchant. First to two round wins"
+            + " takes your stake. A drawn match returns it.");
 
-    Label rules =
-        new Label(
-            "ROCK PAPER SCISSORS  |  Best of three against the merchant. First to two round wins"
-                + " takes your stake. A drawn match returns it.",
-            textStyle);
-    rules.setWrap(true);
-    add(rules).growX().padBottom(12f);
-    row();
-
-    Table arena = new Table();
-    arena.setBackground(appearance.arena());
-    arena.pad(16f);
-    throwsLabel = arenaLabel("rps-throws", goldStyle);
-    scoreLabel = arenaLabel("rps-score", goldStyle);
-    result = arenaLabel("rps-result", goldStyle);
+    Table arena = CasinoPanelUi.arena(appearance);
+    throwsLabel = CasinoPanelUi.arenaLabel("rps-throws", goldStyle);
+    scoreLabel = CasinoPanelUi.arenaLabel("rps-score", goldStyle);
+    result = CasinoPanelUi.arenaLabel("rps-result", goldStyle);
     arena.add(throwsLabel).growX().padBottom(8f);
     arena.row();
     arena.add(scoreLabel).growX().padBottom(16f);
@@ -91,35 +80,14 @@ public final class RockPaperScissorsPanel extends Table {
     add(hands).growX().padBottom(12f);
     row();
 
-    Label hint =
-        new Label("Rock beats Scissors, Scissors beats Paper, Paper beats Rock.", textStyle);
-    hint.setWrap(true);
-    add(hint).growX();
+    CasinoPanelUi.addHint(
+        this, "Rock beats Scissors, Scissors beats Paper, Paper beats Rock.", textStyle);
     showReady();
-  }
-
-  private static Label arenaLabel(String name, Label.LabelStyle style) {
-    Label label = new Label("", style);
-    label.setName(name);
-    label.setWrap(true);
-    label.setAlignment(Align.center);
-    return label;
   }
 
   private TextButton button(
       String text, String name, TextButton.TextButtonStyle style, Runnable action) {
-    TextButton button = new TextButton(text, style);
-    button.setName(name);
-    button.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent event, Actor actor) {
-            if (active && !button.isDisabled()) {
-              action.run();
-            }
-          }
-        });
-    return button;
+    return CasinoPanelUi.button(text, name, style, () -> active, action);
   }
 
   private void adjust(int delta) {

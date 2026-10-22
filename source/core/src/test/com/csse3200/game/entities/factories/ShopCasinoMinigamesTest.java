@@ -34,6 +34,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /** Plays Dice Duel, Rock-Paper-Scissors and Scratch Card through the real merchant casino. */
 @ExtendWith(GameExtension.class)
@@ -101,6 +103,47 @@ class ShopCasinoMinigamesTest {
         assertEquals(expected, button(game[0]).getText().toString());
       }
     }
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "casino-select-dice, dice-duel-roll",
+    "casino-select-rps, rps-start",
+    "casino-select-scratch, scratch-buy"
+  })
+  void closedMinigameIgnoresInputAndCanBeReopened(String selector, String action) {
+    openCasino();
+    button(selector).fire(new ChangeEvent());
+    TextButton play = button(action);
+    button("casino-select-coin").fire(new ChangeEvent());
+
+    // A stale actor event must not spend gold, even if the hidden button was re-enabled.
+    play.setDisabled(false);
+    play.fire(new ChangeEvent());
+    assertEquals(25, inventory.getGold());
+
+    button(selector).fire(new ChangeEvent());
+    play.fire(new ChangeEvent());
+    assertEquals(15, inventory.getGold());
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "casino-select-dice, dice-duel-roll",
+    "casino-select-rps, rps-start",
+    "casino-select-scratch, scratch-buy"
+  })
+  void disabledMinigameButtonIgnoresInput(String selector, String action) {
+    openCasino();
+    button(selector).fire(new ChangeEvent());
+    TextButton play = button(action);
+    play.setDisabled(true);
+    play.fire(new ChangeEvent());
+    assertEquals(25, inventory.getGold());
+
+    play.setDisabled(false);
+    play.fire(new ChangeEvent());
+    assertEquals(15, inventory.getGold());
   }
 
   @Test

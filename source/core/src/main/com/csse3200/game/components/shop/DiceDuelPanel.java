@@ -1,10 +1,8 @@
 package com.csse3200.game.components.shop;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import java.util.function.Consumer;
 
@@ -33,28 +31,19 @@ public final class DiceDuelPanel extends Table {
     this.onResolved = onResolved;
     Label.LabelStyle textStyle = appearance.text();
     Label.LabelStyle goldStyle = appearance.gold();
-    setName("dice-duel-panel");
-    setBackground(appearance.parchment());
-    pad(14f);
-    top();
+    CasinoPanelUi.configure(
+        this,
+        "dice-duel-panel",
+        appearance,
+        "DICE DUEL  |  You and the merchant each roll two dice. Higher total wins your stake."
+            + " A tie returns it. You may reroll your dice once for "
+            + DiceDuelGame.REROLL_FEE
+            + " Gold.");
 
-    Label rules =
-        new Label(
-            "DICE DUEL  |  You and the merchant each roll two dice. Higher total wins your stake."
-                + " A tie returns it. You may reroll your dice once for "
-                + DiceDuelGame.REROLL_FEE
-                + " Gold.",
-            textStyle);
-    rules.setWrap(true);
-    add(rules).growX().padBottom(12f);
-    row();
-
-    Table arena = new Table();
-    arena.setBackground(appearance.arena());
-    arena.pad(16f);
-    playerDice = arenaLabel("dice-duel-player", goldStyle);
-    merchantDice = arenaLabel("dice-duel-merchant", goldStyle);
-    result = arenaLabel("dice-duel-result", goldStyle);
+    Table arena = CasinoPanelUi.arena(appearance);
+    playerDice = CasinoPanelUi.arenaLabel("dice-duel-player", goldStyle);
+    merchantDice = CasinoPanelUi.arenaLabel("dice-duel-merchant", goldStyle);
+    result = CasinoPanelUi.arenaLabel("dice-duel-result", goldStyle);
     arena.add(playerDice).growX().padBottom(8f);
     arena.row();
     arena.add(merchantDice).growX().padBottom(16f);
@@ -92,36 +81,14 @@ public final class DiceDuelPanel extends Table {
     add(actions).growX().padBottom(12f);
     row();
 
-    Label hint =
-        new Label(
-            "Roll, then reroll once if you are behind, or stand to settle the round.", textStyle);
-    hint.setWrap(true);
-    add(hint).growX();
+    CasinoPanelUi.addHint(
+        this, "Roll, then reroll once if you are behind, or stand to settle the round.", textStyle);
     showEmptyDice();
-  }
-
-  private static Label arenaLabel(String name, Label.LabelStyle style) {
-    Label label = new Label("", style);
-    label.setName(name);
-    label.setWrap(true);
-    label.setAlignment(Align.center);
-    return label;
   }
 
   private TextButton button(
       String text, String name, TextButton.TextButtonStyle style, Runnable action) {
-    TextButton button = new TextButton(text, style);
-    button.setName(name);
-    button.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent event, Actor actor) {
-            if (active && !button.isDisabled()) {
-              action.run();
-            }
-          }
-        });
-    return button;
+    return CasinoPanelUi.button(text, name, style, () -> active, action);
   }
 
   private void adjust(int delta) {
