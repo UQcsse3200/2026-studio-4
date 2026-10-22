@@ -146,7 +146,7 @@
         }
       ],
       "npcSpawns": [
-        {"npcId": "hecate", "x": 13, "y": 13}
+        {"npcId": "hecate", "x": 30, "y": 13}
       ],
       "trapSpawns": [
         {
@@ -511,7 +511,7 @@
         }
       ],
       "npcSpawns": [
-        {"npcId": "merchant", "x": 26, "y": 9}
+        {"npcId": "merchant", "x": 30, "y": 9}
       ],
       "obstacles": {
         "spawns": [
@@ -1113,7 +1113,7 @@
         }
       ],
       "npcSpawns": [
-        {"npcId": "hecate", "x": 13, "y": 13}
+        {"npcId": "hecate", "x": 13, "y": 20}
       ],
       "trapSpawns": [
         {
@@ -1497,7 +1497,7 @@
         }
       ],
       "npcSpawns": [
-        {"npcId": "merchant", "x": 26, "y": 9}
+        {"npcId": "merchant", "x": 36, "y": 9}
       ],
       "trapSpawns": [
         {
@@ -2333,7 +2333,7 @@
         }
       ],
       "npcSpawns": [
-        {"npcId": "merchant", "x": 26, "y": 9}
+        {"npcId": "merchant", "x": 35, "y": 9}
       ],
       "trapSpawns": [
         {
@@ -2826,7 +2826,7 @@
           "y": 17
         }
       ],
-      "npcSpawns": [],
+      "npcSpawns": [{"npcId": "hecate", "x": 13, "y": 13}],
       "trapSpawns": [
         {
           "type": "BURN",
@@ -2990,9 +2990,7 @@
           "y": 14
         }
       ],
-      "npcSpawns": [
-        {"npcId": "hecate", "x": 13, "y": 13}
-      ],
+      "npcSpawns": [],
       "trapSpawns": [
         {
           "type": "FREEZE",
