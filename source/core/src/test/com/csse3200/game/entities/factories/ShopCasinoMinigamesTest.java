@@ -17,8 +17,10 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.components.friendlynpc.NpcInteractionEvents;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.shop.DiceDuelGame;
+import com.csse3200.game.components.shop.HigherLowerGame;
 import com.csse3200.game.components.shop.RockPaperScissorsGame;
 import com.csse3200.game.components.shop.ScratchCardGame;
+import com.csse3200.game.components.shop.ShellGame;
 import com.csse3200.game.components.weapons.WeaponUpgradeComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -28,6 +30,7 @@ import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
@@ -37,7 +40,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-/** Plays Dice Duel, Rock-Paper-Scissors and Scratch Card through the real merchant casino. */
+/** Exercises all seven games through the real merchant casino and player inventory. */
 @ExtendWith(GameExtension.class)
 class ShopCasinoMinigamesTest {
   private static final List<String[]> GAMES =
@@ -46,7 +49,9 @@ class ShopCasinoMinigamesTest {
           new String[] {"casino-select-item", "item-draw-panel", "Item Draw"},
           new String[] {"casino-select-dice", "dice-duel-panel", "Dice Duel"},
           new String[] {"casino-select-rps", "rps-panel", "Rock Paper Scissors"},
-          new String[] {"casino-select-scratch", "scratch-card-panel", "Scratch Card"});
+          new String[] {"casino-select-scratch", "scratch-card-panel", "Scratch Card"},
+          new String[] {"casino-select-higher-lower", "higher-lower-panel", "Higher/Lower"},
+          new String[] {"casino-select-shell-game", "shell-game-panel", "Shell Game"});
 
   private Stage stage;
   private ResourceService resources;
@@ -109,7 +114,9 @@ class ShopCasinoMinigamesTest {
   @CsvSource({
     "casino-select-dice, dice-duel-roll",
     "casino-select-rps, rps-start",
-    "casino-select-scratch, scratch-buy"
+    "casino-select-scratch, scratch-buy",
+    "casino-select-higher-lower, higher-lower-start",
+    "casino-select-shell-game, shell-game-start"
   })
   void closedMinigameIgnoresInputAndCanBeReopened(String selector, String action) {
     openCasino();
@@ -131,7 +138,9 @@ class ShopCasinoMinigamesTest {
   @CsvSource({
     "casino-select-dice, dice-duel-roll",
     "casino-select-rps, rps-start",
-    "casino-select-scratch, scratch-buy"
+    "casino-select-scratch, scratch-buy",
+    "casino-select-higher-lower, higher-lower-start",
+    "casino-select-shell-game, shell-game-start"
   })
   void disabledMinigameButtonIgnoresInput(String selector, String action) {
     openCasino();
@@ -198,6 +207,59 @@ class ShopCasinoMinigamesTest {
     assertTrue(payout[0] >= 0);
     assertEquals(15 + payout[0], inventory.getGold());
     assertTrue(button("scratch-spot-0").isDisabled());
+  }
+
+  @Test
+  void higherLowerRoundSurvivesSwitchingGamesAndCashOutPaysOnce() {
+    List<HigherLowerGame.Round> rounds = new ArrayList<>();
+    shop.getEvents().<HigherLowerGame.Round>addListener("higherLowerResolved", rounds::add);
+    openCasino();
+    button("casino-select-higher-lower").fire(new ChangeEvent());
+    button("higher-lower-start").fire(new ChangeEvent());
+    assertEquals(15, inventory.getGold());
+    assertEquals(1, rounds.size());
+    assertEquals(HigherLowerGame.Outcome.ACTIVE, rounds.get(0).outcome());
+
+    button("casino-select-coin").fire(new ChangeEvent());
+    button("higher-lower-cashout").fire(new ChangeEvent());
+    assertEquals(15, inventory.getGold());
+    assertEquals(1, rounds.size());
+    button("casino-select-higher-lower").fire(new ChangeEvent());
+    assertTrue(button("higher-lower-start").isDisabled());
+    assertFalse(button("higher-lower-cashout").isDisabled());
+    button("higher-lower-cashout").fire(new ChangeEvent());
+    button("higher-lower-cashout").fire(new ChangeEvent());
+
+    assertEquals(2, rounds.size());
+    assertEquals(HigherLowerGame.Outcome.CASHED_OUT, rounds.get(1).outcome());
+    assertEquals(10, rounds.get(1).payout());
+    assertEquals(25, inventory.getGold());
+  }
+
+  @Test
+  void shellGameRoundSurvivesSwitchingGamesAndGuessPaysOnce() {
+    List<ShellGame.Round> rounds = new ArrayList<>();
+    shop.getEvents().<ShellGame.Round>addListener("shellGameResolved", rounds::add);
+    openCasino();
+    button("casino-select-shell-game").fire(new ChangeEvent());
+    button("shell-game-start").fire(new ChangeEvent());
+    assertEquals(15, inventory.getGold());
+
+    button("casino-select-coin").fire(new ChangeEvent());
+    button("shell-game-cup-0").fire(new ChangeEvent());
+    assertEquals(15, inventory.getGold());
+    assertTrue(rounds.isEmpty());
+    button("casino-select-shell-game").fire(new ChangeEvent());
+    assertTrue(button("shell-game-start").isDisabled());
+    assertFalse(button("shell-game-cup-0").isDisabled());
+    button("shell-game-cup-0").fire(new ChangeEvent());
+    button("shell-game-cup-0").fire(new ChangeEvent());
+
+    assertEquals(1, rounds.size());
+    ShellGame.Round round = rounds.get(0);
+    assertEquals(round.winningCup() == 0, round.won());
+    assertEquals(round.won() ? 20 : 0, round.payout());
+    assertEquals(15 + round.payout(), inventory.getGold());
   }
 
   @Test

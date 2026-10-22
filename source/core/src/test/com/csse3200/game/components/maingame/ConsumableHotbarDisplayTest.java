@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -260,6 +261,36 @@ class ConsumableHotbarDisplayTest {
     assertEquals(2, inventory.getConsumableCount(ItemIds.HEALTH_POTION));
     assertEquals("2", count("1").getText().toString());
     assertEquals(100, player.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void fullHealthUseFlashesTheRejectedSlotRedThenFadesBack() {
+    inventory.addConsumable(ItemIds.HEALTH_POTION, 2);
+    Group slot = actor("consumable-slot-1");
+    Image frame = (Image) slot.getChildren().get(0);
+    assertEquals(Color.WHITE, frame.getColor());
+
+    input.keyDown(Keys.Q);
+    assertEquals(2, inventory.getConsumableCount(ItemIds.HEALTH_POTION));
+    stage.act(0.08f);
+    Color flashed = frame.getColor();
+    assertTrue(flashed.r > 0.9f);
+    assertTrue(flashed.g < 0.5f && flashed.b < 0.5f);
+
+    stage.act(0.25f);
+    assertEquals(Color.WHITE, frame.getColor());
+  }
+
+  @Test
+  void successfulUseDoesNotFlashTheSlotRed() {
+    player.getComponent(CombatStatsComponent.class).setHealth(50);
+    inventory.addConsumable(ItemIds.HEALTH_POTION);
+    Group slot = actor("consumable-slot-1");
+    Image frame = (Image) slot.getChildren().get(0);
+
+    input.keyDown(Keys.Q);
+    stage.act(0.08f);
+    assertEquals(Color.WHITE, frame.getColor());
   }
 
   @Test

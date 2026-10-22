@@ -415,23 +415,24 @@ public class ShopDisplay extends UIComponent implements ShopView {
         itemPanel::refresh,
         appearance);
     createMinigamePanels(appearance);
+    createGuessingGamePanels(appearance);
     casinoContent = new Table();
-    Table firstRow = new Table();
-    Table secondRow = new Table();
-    for (CasinoGame game : CasinoGame.values()) {
-      Table selectorRow = game.ordinal() < 3 ? firstRow : secondRow;
-      boolean lastInRow = game.ordinal() == 2 || game.ordinal() == CasinoGame.values().length - 1;
+    Table selectorRow = null;
+    CasinoGame[] gamesInOrder = CasinoGame.values();
+    for (int index = 0; index < gamesInOrder.length; index++) {
+      if (index % 3 == 0) {
+        selectorRow = new Table();
+        casinoContent.add(selectorRow).growX().padBottom(6f);
+        casinoContent.row();
+      }
+      boolean lastInRow = index % 3 == 2 || index == gamesInOrder.length - 1;
       selectorRow
-          .add(casinoGames.get(game).selector())
+          .add(casinoGames.get(gamesInOrder[index]).selector())
           .growX()
           .uniformX()
           .height(38f)
           .padRight(lastInRow ? 0f : 8f);
     }
-    casinoContent.add(firstRow).growX().padBottom(6f);
-    casinoContent.row();
-    casinoContent.add(secondRow).growX().padBottom(10f);
-    casinoContent.row();
     Stack games = new Stack();
     for (CasinoView view : casinoGames.values()) {
       games.add(view.scroll());
@@ -513,6 +514,54 @@ public class ShopDisplay extends UIComponent implements ShopView {
         appearance);
   }
 
+  /** Adds Higher/Lower and Shell Game to the shared casino selector. */
+  private void createGuessingGamePanels(CoinFlipPanel.Appearance appearance) {
+    HigherLowerPanel higherLowerPanel =
+        new HigherLowerPanel(
+            new HigherLowerGame(inventoryData, () -> MathUtils.random(1, 13)),
+            appearance,
+            round -> {
+              feedback.setText(
+                  switch (round.outcome()) {
+                    case ACTIVE -> "New round dealt.";
+                    case CORRECT -> "Correct guess! Streak " + round.streak() + ".";
+                    case PUSH -> "Push - same rank, redraw.";
+                    case BUST -> "Wrong guess. Stake lost.";
+                    case CASHED_OUT -> "Cashed out " + round.payout() + GOLD_SUFFIX;
+                  });
+              entity.getEvents().trigger("higherLowerResolved", round);
+              refresh();
+            });
+    registerGame(
+        CasinoGame.HIGHER_LOWER,
+        higherLowerPanel,
+        gameScroll(higherLowerPanel, "higher-lower-scroll"),
+        higherLowerPanel::open,
+        higherLowerPanel::close,
+        higherLowerPanel::refresh,
+        appearance);
+    ShellGamePanel shellGamePanel =
+        new ShellGamePanel(
+            new ShellGame(inventoryData, () -> MathUtils.random(0, ShellGame.CUP_COUNT - 1)),
+            appearance,
+            round -> {
+              feedback.setText(
+                  round.won()
+                      ? "Found it! Won " + round.payout() + GOLD_SUFFIX
+                      : "Wrong cup. Lost your stake.");
+              entity.getEvents().trigger("shellGameResolved", round);
+              refresh();
+            });
+    registerGame(
+        CasinoGame.SHELL_GAME,
+        shellGamePanel,
+        gameScroll(shellGamePanel, "shell-game-scroll"),
+        shellGamePanel::open,
+        shellGamePanel::close,
+        shellGamePanel::refresh,
+        appearance);
+  }
+
   private static ScrollPane gameScroll(Table panel, String name) {
     ScrollPane scroll = new ScrollPane(panel);
     scroll.setName(name);
@@ -560,7 +609,17 @@ public class ShopDisplay extends UIComponent implements ShopView {
         "Scratch Card",
         "casino-select-scratch",
         "SCRATCH CARD",
-        "Scratch three spots. Three of a kind wins; a pair returns half your stake.");
+        "Scratch three spots. Three of a kind wins; a pair returns half your stake."),
+    HIGHER_LOWER(
+        "Higher/Lower",
+        "casino-select-higher-lower",
+        "HIGHER / LOWER",
+        "Guess right to grow your multiplier. Cash out any time."),
+    SHELL_GAME(
+        "Shell Game",
+        "casino-select-shell-game",
+        "SHELL GAME",
+        "Pick the cup hiding the ball to double your stake.");
 
     private final String label;
     private final String selectorName;
