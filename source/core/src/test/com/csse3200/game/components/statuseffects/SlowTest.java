@@ -77,9 +77,7 @@ class SlowTest {
     List<Float> endedSpeeds = new ArrayList<>();
     List<Float> movementUpdates = new ArrayList<>();
     slow.setOnEnded(() -> endedSpeeds.add(stats.getMovementSpeed()));
-    entity
-        .getEvents()
-        .addListener("updateMovementSpeed", (Float speed) -> movementUpdates.add(speed));
+    entity.getEvents().<Float>addListener("updateMovementSpeed", movementUpdates::add);
 
     effects.removeStatusEffect(slow);
     effects.removeStatusEffect(slow);
