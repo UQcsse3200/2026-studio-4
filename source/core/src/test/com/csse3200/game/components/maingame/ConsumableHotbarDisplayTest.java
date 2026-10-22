@@ -73,17 +73,17 @@ class ConsumableHotbarDisplayTest {
     ServiceLocator.registerResourceService(resources);
     resources.loadTextures(
         new String[] {
-          "images/consumable-slot-idle.png",
-          "images/consumable-slot-selected.png",
-          "images/health_potion_pixel.png",
-          "images/shield_consumable_pixel.png",
-          "images/health_potion_small_pixel.png",
-          "images/health_potion_medium_pixel.png",
-          "images/health_potion_large_pixel.png",
-          "images/speed_potion_pixel.png",
-          "images/strength_potion_pixel.png",
-          "images/burn_vial_pixel.png",
-          "images/magnet_potion_pixel.png"
+          "images/ui/inventory/consumable-slot-idle.png",
+          "images/ui/inventory/consumable-slot-selected.png",
+          "images/items/consumables/health_potion_pixel.png",
+          "images/items/consumables/shield_consumable_pixel.png",
+          "images/items/consumables/health_potion_small_pixel.png",
+          "images/items/consumables/health_potion_medium_pixel.png",
+          "images/items/consumables/health_potion_large_pixel.png",
+          "images/items/consumables/speed_potion_pixel.png",
+          "images/items/consumables/strength_potion_pixel.png",
+          "images/items/consumables/burn_vial_pixel.png",
+          "images/items/consumables/magnet_potion_pixel.png"
         });
     resources.loadAll();
     inventory = new InventoryComponent(0);
@@ -119,7 +119,7 @@ class ConsumableHotbarDisplayTest {
     assertEquals("2", count("2").getText().toString());
     Image icon = actor("consumable-icon-2");
     assertSame(
-        resources.getAsset("images/burn_vial_pixel.png", Texture.class),
+        resources.getAsset("images/items/consumables/burn_vial_pixel.png", Texture.class),
         ((TextureRegionDrawable) icon.getDrawable()).getRegion().getTexture());
     assertNull(stage.getRoot().findActor("consumable-slot-5"));
     assertNull(stage.getRoot().findActor("consumable-slot-6"));
@@ -145,7 +145,7 @@ class ConsumableHotbarDisplayTest {
     ItemCatalog.create(ItemIds.MAGNET_POTION, 2).pickUp(player);
     Image icon = actor("consumable-icon-4");
     assertSame(
-        resources.getAsset("images/magnet_potion_pixel.png", Texture.class),
+        resources.getAsset("images/items/consumables/magnet_potion_pixel.png", Texture.class),
         ((TextureRegionDrawable) icon.getDrawable()).getRegion().getTexture());
     assertEquals("2", count("4").getText().toString());
     for (int i = 0; i < 3; i++) input.keyDown(Keys.TAB);
@@ -270,7 +270,7 @@ class ConsumableHotbarDisplayTest {
       Group slot = actor("consumable-slot-" + id);
       Image frame = (Image) slot.getChildren().get(0);
       assertSame(
-          resources.getAsset("images/consumable-slot-selected.png", Texture.class),
+          resources.getAsset("images/ui/inventory/consumable-slot-selected.png", Texture.class),
           ((TextureRegionDrawable) frame.getDrawable()).getRegion().getTexture());
     }
     assertFalse(actor("consumable-pointer-2").isVisible());
@@ -414,7 +414,8 @@ class ConsumableHotbarDisplayTest {
     assertNull(stage.getRoot().findActor("consumable-hotbar"));
     assertDoesNotThrow(() -> inventory.addConsumable(ItemIds.SHIELD));
     assertDoesNotThrow(() -> input.keyDown(Keys.TAB));
-    assertNotNull(resources.getAsset("images/consumable-slot-idle.png", Texture.class));
+    assertNotNull(
+        resources.getAsset("images/ui/inventory/consumable-slot-idle.png", Texture.class));
     ui = new Entity().addComponent(new ConsumableHotbarDisplay(player));
     ui.create();
     assertEquals(1, stage.getActors().size);
@@ -429,10 +430,10 @@ class ConsumableHotbarDisplayTest {
     Image first = actor("consumable-icon-1");
     Image second = actor("consumable-icon-2");
     assertSame(
-        resources.getAsset("images/shield_consumable_pixel.png", Texture.class),
+        resources.getAsset("images/items/consumables/shield_consumable_pixel.png", Texture.class),
         ((TextureRegionDrawable) first.getDrawable()).getRegion().getTexture());
     assertSame(
-        resources.getAsset("images/strength_potion_pixel.png", Texture.class),
+        resources.getAsset("images/items/consumables/strength_potion_pixel.png", Texture.class),
         ((TextureRegionDrawable) second.getDrawable()).getRegion().getTexture());
     assertEquals("2", count("1").getText().toString());
     assertFalse(actor("consumable-icon-3").isVisible());
@@ -443,7 +444,7 @@ class ConsumableHotbarDisplayTest {
     assertTrue(second.isVisible());
     inventory.addConsumable(ItemIds.SPEED_POTION);
     assertSame(
-        resources.getAsset("images/speed_potion_pixel.png", Texture.class),
+        resources.getAsset("images/items/consumables/speed_potion_pixel.png", Texture.class),
         ((TextureRegionDrawable) first.getDrawable()).getRegion().getTexture());
     input.keyDown(Keys.TAB);
     input.keyDown(Keys.Q);
@@ -470,7 +471,8 @@ class ConsumableHotbarDisplayTest {
       Image icon = actor("consumable-icon-" + (i + 1));
       var region = ((TextureRegionDrawable) icon.getDrawable()).getRegion();
       assertSame(
-          resources.getAsset("images/health_potion_" + tiers[i] + "_pixel.png", Texture.class),
+          resources.getAsset(
+              "images/items/consumables/health_potion_" + tiers[i] + "_pixel.png", Texture.class),
           region.getTexture());
       assertEquals(widths[i], region.getRegionWidth());
       assertEquals(heights[i], region.getRegionHeight());

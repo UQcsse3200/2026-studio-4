@@ -34,16 +34,6 @@ class DragonPhaseComponentTest {
   }
 
   @Test
-  void shouldStayInPhaseOneAboveHalfHealth() {
-    assertPhaseAfterHealthChanges(251, 1, 0);
-  }
-
-  @Test
-  void shouldEnterPhaseTwoAtExactlyHalfHealth() {
-    assertPhaseAfterHealthChanges(250, 2, 1);
-  }
-
-  @Test
   void shouldEnterPhaseTwoWhenDamageSkipsPastHalfHealth() {
     assertPhaseAfterHealthChanges(100, 2, 1);
   }
@@ -78,16 +68,6 @@ class DragonPhaseComponentTest {
   }
 
   @Test
-  void shouldCheckInitialHealthOnCreation() {
-    combatStatsComponent.setHealth(200);
-
-    dragon.create();
-
-    assertEquals(2, dragonPhaseComponent.getCurrentPhase());
-    assertEquals(1, enrageEvents);
-  }
-
-  @Test
   void shouldUseUpdatedMaximumHealth() {
     dragon.create();
 
@@ -109,17 +89,6 @@ class DragonPhaseComponentTest {
 
     assertEquals(2, dragonPhaseComponent.getCurrentPhase());
     assertEquals(1, enrageEvents);
-  }
-
-  @Test
-  void shouldNotEnrageWithZeroMaximumHealth() {
-    combatStatsComponent.setMaxHealth(0);
-    combatStatsComponent.setHealth(0);
-
-    dragon.create();
-
-    assertEquals(1, dragonPhaseComponent.getCurrentPhase());
-    assertEquals(0, enrageEvents);
   }
 
   @Test

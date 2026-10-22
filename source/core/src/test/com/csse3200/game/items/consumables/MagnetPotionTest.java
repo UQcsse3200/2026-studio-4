@@ -83,7 +83,7 @@ class MagnetPotionTest {
     MagnetPotion potion = assertInstanceOf(MagnetPotion.class, item);
     assertEquals(ItemCategory.CONSUMABLE, potion.getCategory());
     assertEquals(2, potion.getQuantity());
-    assertEquals("images/magnet_potion_pixel.png", potion.getTexture());
+    assertEquals("images/items/consumables/magnet_potion_pixel.png", potion.getTexture());
   }
 
   @Test

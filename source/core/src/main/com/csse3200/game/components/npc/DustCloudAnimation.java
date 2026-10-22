@@ -64,8 +64,11 @@ public class DustCloudAnimation extends RenderComponent {
 
   /** populate frames */
   private void ensureFrames() {
-    String atlas = "images/dust.png";
+    String atlas = "images/sleipnir/dust.png";
+
     Texture sheet = ServiceLocator.getResourceService().getAsset(atlas, Texture.class);
+    sheet.load(sheet.getTextureData());
+
     for (int i = 0; i < FRAME_COUNT; i++) {
       frames[i] = new TextureRegion(sheet, i * CELL_SIZE, ROW * CELL_SIZE, CELL_SIZE, CELL_SIZE);
     }

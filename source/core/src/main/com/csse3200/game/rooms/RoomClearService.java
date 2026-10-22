@@ -1,8 +1,7 @@
 package com.csse3200.game.rooms;
 
 import com.csse3200.game.entities.Entity;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +14,6 @@ public class RoomClearService {
   private static final Logger logger = LoggerFactory.getLogger(RoomClearService.class);
   private final Set<String> clearedRoomIds = new HashSet<>();
   private final Set<String> clearedDungeonIds = new HashSet<>();
-
   public static final String ROOM_CLEARED = "RoomCleared";
   public static final String DUNGEON_CLEARED = "DungeonCleared";
 
@@ -58,6 +56,22 @@ public class RoomClearService {
 
   public boolean isDungeonCleared(String dungeonId) {
     return clearedDungeonIds.contains(dungeonId);
+  }
+
+  public List<String> getClearedRoomIds() {
+    return new ArrayList<>(clearedRoomIds);
+  }
+
+  public List<String> getClearedDungeonIds() {
+    return new ArrayList<>(clearedDungeonIds);
+  }
+
+  /** Replaces the cleared state with the given saved ids. Null is treated as empty. */
+  public void restoreState(Collection<String> rooms, Collection<String> dungeons) {
+    clearedRoomIds.clear();
+    clearedDungeonIds.clear();
+    if (rooms != null) clearedRoomIds.addAll(rooms);
+    if (dungeons != null) clearedDungeonIds.addAll(dungeons);
   }
 
   /**

@@ -91,6 +91,7 @@ public class PatrolTask extends DefaultTask implements PriorityTask {
     setTarget();
     movementComponent.setMoving(true);
     owner.getEntity().getEvents().trigger("patrolStart");
+    updateDirection(owner.getEntity().getPosition(), patrolPoints[currentPoint]);
   }
 
   @Override

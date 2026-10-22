@@ -91,6 +91,10 @@ public class Entity {
    * @param position new position.
    */
   public void setPosition(Vector2 position) {
+    if (position == null) {
+      logger.error("Cannot set position: position is null");
+      return;
+    }
     this.position = position.cpy();
     getEvents().trigger(EVT_NAME_POS, position.cpy());
   }
@@ -302,7 +306,7 @@ public class Entity {
 
   @Override
   public boolean equals(Object obj) {
-    return (obj instanceof Entity && ((Entity) obj).getId() == this.getId());
+    return (obj instanceof Entity entity && entity.getId() == this.getId());
   }
 
   @Override

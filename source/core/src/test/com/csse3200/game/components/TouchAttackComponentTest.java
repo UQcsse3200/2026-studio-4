@@ -1,5 +1,6 @@
 package com.csse3200.game.components;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -29,6 +30,30 @@ class TouchAttackComponentTest {
     ServiceLocator.registerPhysicsService(new PhysicsService());
     time = mock(GameTime.class);
     ServiceLocator.registerTimeSource(time);
+  }
+
+  @Test
+  void animationNotificationFollowsDamageAndPreservesTheExistingCooldown() {
+    Entity attacker = repeatingAttacker();
+    Entity target = durableTarget();
+    java.util.List<Integer> healthAtNotification = new java.util.ArrayList<>();
+    attacker
+        .getEvents()
+        .addListener(
+            "contactAttack",
+            (Entity victim) -> {
+              assertEquals(target, victim);
+              healthAtNotification.add(health(victim));
+            });
+    contact(attacker, target, "collisionStart");
+    assertEquals(java.util.List.of(90), healthAtNotification);
+    tick(attacker, 0.99f);
+    assertEquals(java.util.List.of(90), healthAtNotification);
+    tick(attacker, 0.02f);
+    assertEquals(java.util.List.of(90, 80), healthAtNotification);
+    contact(attacker, target, "collisionEnd");
+    tick(attacker, 2f);
+    assertEquals(java.util.List.of(90, 80), healthAtNotification);
   }
 
   @Test
@@ -283,6 +308,8 @@ class TouchAttackComponentTest {
 
     // This should not cause an exception, but the attack should be ignored
     entity.getEvents().trigger("collisionStart", entityFixture, targetFixture);
+    // Should still be null, sonarcloud is silly.
+    assertNull(target.getComponent(CombatStatsComponent.class));
   }
 
   Entity createAttacker(short targetLayer) {

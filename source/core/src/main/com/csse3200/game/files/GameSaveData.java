@@ -7,23 +7,19 @@ import java.util.List;
 import java.util.Map;
 
 public class GameSaveData {
-  public int version = 1;
+  public int version = 2;
   public float playTimeSeconds;
   public Map<String, Float> dungeonTimesSeconds = new LinkedHashMap<>();
-  public Checkpoint checkpoint = new Checkpoint();
   public ResumePosition resumePosition;
   public PlayerData playerData = new PlayerData();
+  public String checkpointRoomId;
+  public String checkpointEntryPointId;
+  public List<String> clearedRoomIds = new ArrayList<>();
+  public List<String> clearedDungeonIds = new ArrayList<>();
 
   // Add these fields
   public List<String> unlockedAchievements = new ArrayList<>();
   public Map<String, Float> achievementProgress = new HashMap<>();
-
-  public static class Checkpoint {
-    public String roomId;
-    public String entryPointId;
-    public int tileX;
-    public int tileY;
-  }
 
   public static class ResumePosition {
     public String roomId;
@@ -32,6 +28,7 @@ public class GameSaveData {
   }
 
   public static class PlayerData {
+    public int health;
     public int gold;
     public Map<String, Integer> inventory = new HashMap<>();
     public List<String> charms = new ArrayList<>();

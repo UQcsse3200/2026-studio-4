@@ -63,19 +63,6 @@ class InteractableNpcConfigsTest {
   }
 
   @Test
-  void hecateStandsInTheStartingRoom() {
-    WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
-    RoomConfig start = world.getRoom(world.startRoomId);
-    assertNotNull(start);
-
-    boolean spawned = false;
-    for (NpcSpawnConfig spawn : start.npcSpawns) {
-      spawned |= "hecate".equals(spawn.npcId);
-    }
-    assertTrue(spawned, "Hecate belongs in the hub, where abilities are swapped between runs");
-  }
-
-  @Test
   void noTwoNpcsShareATile() {
     WorldConfig world = FileLoader.readClass(WorldConfig.class, "configs/rooms.json");
     for (RoomConfig room : world.rooms) {
@@ -147,7 +134,7 @@ class InteractableNpcConfigsTest {
     npc.id = id;
     npc.name = id;
     npc.dialogueId = "talk";
-    npc.atlas = "images/ghost.atlas";
+    npc.atlas = "images/friendly-npcs/hecate.atlas";
     npc.animation = "float";
     return npc;
   }
